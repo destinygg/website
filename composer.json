@@ -1,0 +1,9 @@
+{
+	"require": {
+		"php"						: ">=5.3.0",
+		"ext-curl"					: "*",
+		"ext-json"					: "*",
+		"ext-openssl"				: "*",
+		"paypal/rest-api-sdk-php" 	: "0.5.*"
+	}
+}

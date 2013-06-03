@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<project name="destiny.gg Project Deployment" default="init">
+
+	<target name="loadproperties">
+		<property file="lib/.version" />
+		<property name="build.base" value="../destiny_build" />
+		<echo>Version ${version}</echo>
+		<echo>Exporting to ${build.base}</echo>
+	</target>
+	
+	<target name="clean" depends="loadproperties">
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${build.base}" includes="**/*" excludes="**/tmp/*" />
+		</delete>
+	</target>
+	
+	<target name="init" depends="clean">
+		<mkdir dir="${build.base}/" />
+		<mkdir dir="${build.base}/tmp/" />
+		<mkdir dir="${build.base}/log/" />
+		<antcall target="copysource" />
+		<antcall target="compresscss" />
+		<antcall target="compressjs" />
+	</target>
+	
+	<target name="compress">
+		<java jar="yuicompressor-2.4.2.jar" fork="true">
+			<arg value="${file}" />
+			<arg value="-o" />
+			<arg value="${file}" />
+		</java>
+	</target>
+
+	<target name="concatcss">
+		<filelist id="adminfiles" dir="${build.base}/html/css/">
+			<file name="destiny.admin.css" />
+		</filelist>
+		<filelist id="files" dir="${build.base}/html/css/">
+			<file name="destiny.css" />
+			<file name="destiny.flags.css" />
+			<file name="destiny.teammaker.css" />
+			<file name="destiny.fantasy.css" />
+		</filelist>
+		<concat destfile="${build.base}/html/css/destiny.${version}.css">
+			<filelist refid="files"/> 
+		</concat>
+		<concat destfile="${build.base}/html/css/destiny.admin.${version}.css">
+			<filelist refid="adminfiles"/> 
+		</concat>
+		<delete><filelist refid="files"/></delete>
+		<delete><filelist refid="adminfiles"/></delete>
+	</target>
+	
+	<target name="concatjs">
+		<filelist id="adminfiles" dir="${build.base}/html/js/">
+			<file name="destiny.admin.js" />
+		</filelist>
+		<filelist id="files" dir="${build.base}/html/js/">
+			<file name="destiny.utils.js" />
+			<file name="destiny.js" />
+			<file name="destiny.feed.js" />
+			<file name="destiny.twitch.js" />
+			<file name="destiny.teambar.js" />
+			<file name="destiny.teamcreator.js" />
+			<file name="destiny.ui.js" />
+			<file name="destiny.profile.js" />
+			<file name="destiny.challenger.js" />
+		</filelist>
+		<concat destfile="${build.base}/html/js/destiny.${version}.js">
+			<filelist refid="files"/> 
+		</concat>
+		<concat destfile="${build.base}/html/js/destiny.admin.${version}.js">
+			<filelist refid="adminfiles"/> 
+		</concat>
+		<delete><filelist refid="files"/></delete>
+		<delete><filelist refid="adminfiles"/></delete>
+	</target>
+	
+	<target name="compresscss" depends="concatcss">
+		<antcall target="compress">
+			<param name="file" value="${build.base}/html/css/destiny.${version}.css" />
+		</antcall>
+		<antcall target="compress">
+			<param name="file" value="${build.base}/html/css/destiny.admin.${version}.css" />
+		</antcall>
+		<antcall target="compress">
+			<param name="file" value="${build.base}/html/errors/errors.css" />
+		</antcall>
+	</target>
+	
+	<target name="compressjs" depends="concatjs">
+		<antcall target="compress">
+			<param name="file" value="${build.base}/html/js/destiny.${version}.js" />
+		</antcall>
+		<antcall target="compress">
+			<param name="file" value="${build.base}/html/js/destiny.admin.${version}.js" />
+		</antcall>
+	</target>
+	
+	<target name="copysource">
+		<copy todir="${build.base}/lib">
+			<fileset dir="lib"/>
+		</copy>
+		<copy todir="${build.base}/vendor">
+			<fileset dir="vendor"/>
+		</copy>
+		<copy todir="${build.base}/html/">
+			<fileset dir="html"/>
+		</copy>
+		<copy todir="${build.base}/cron">
+			<fileset dir="cron"/>
+		</copy>
+	</target>
+
+</project>

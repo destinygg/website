@@ -1,0 +1,82 @@
+body {
+background: #111 url("../img/bodybg.png") repeat top center;
+position: relative;
+padding-top: 40px;
+}
+section {
+margin-top:15px;
+}
+#header-band {
+background: url("../img/cloudbg.jpg") repeat-x top center; 
+background-color: rgba(0,0,0,0.76);
+margin:0; 
+border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+#overview {
+height: 130px;
+padding: 30px 30px;
+color: white;
+background: url("../img/destinylogoblue.png") no-repeat 20px 5px;
+margin-top:35px; 
+position: relative;
+margin-bottom:0;
+border-radius:0;
+}
+#overview .bio {
+color:#797979;
+font-size: 14px;
+line-height: 18px;
+padding-top: 1px;
+padding: 8px 0;
+margin:0;
+position: absolute;
+width:500px;
+left:30px;
+top:110px;
+z-index:102;
+}
+
+footer {
+font-size:12px;
+color: #555;
+text-shadow: 1px 1px 1px black;
+padding:0;
+}
+
+body.error {
+margin:0; padding:0;
+}
+body.error #header-band {
+border-bottom: 1px solid rgba(255,255,255,0.1);
+border-top: 1px solid rgba(255,255,255,0.1);
+margin-top: 200px;
+}
+body.error #header-band .hero-unit {
+padding-left:0;
+margin-top:0;
+position: relative;
+background:0;
+}
+body.error #header-band .hero-unit h1 {
+font-size:42px;
+font-weight: normal;
+opacity: 0.9;
+margin:15px 0 10px 0;
+padding:0;
+}
+body.error #header-band .hero-unit p {
+font-size: 16px;
+font-weight: normal;
+opacity: 0.8;
+line-height:25px;
+}
+#destiny-illustration {
+background:url(../img/destinybannerhead.large.png) no-repeat top left;	
+top:0;
+right:0;
+z-index:101;	
+width:500px;
+height:190px;
+position: absolute;
+}

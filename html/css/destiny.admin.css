@@ -1,0 +1,4 @@
+body{
+overflow: -moz-scrollbars-vertical; 
+overflow-y: scroll;
+}
