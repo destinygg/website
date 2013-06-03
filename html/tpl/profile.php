@@ -33,10 +33,10 @@ $activeSub = $subService->getUserActiveSubscription(Session::$userId);
 						
 							<?if(!empty($activeSub)):?>
 							<p>Additional subscriptions can be purchased at any time.<br />Your active subscription will expire in <span class="label label-success"><?=Date::getRemainingTime(new \DateTime($activeSub['endDate']))?></span></p>
-							<p><a class="btn btn-primary" href="/subscribe"><i class="icon-check icon-white"></i> Add subscription</a></p>
+							<p><a href="/subscribe"><i class="icon-check icon-white"></i> Add subscription</a></p>
 							<?else:?>
 							<p>You have no active subscriptions. Additional subscriptions can be purchased at any time.</p>
-							<p><a class="btn btn-primary" href="/subscribe"><i class="icon-check icon-white"></i> Subscribe</a></p>
+							<p><a href="/subscribe"><i class="icon-check icon-white"></i> Subscribe</a></p>
 							<?endif;?>
 						
 						</div>

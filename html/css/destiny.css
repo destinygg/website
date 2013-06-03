@@ -665,3 +665,24 @@ border: 0;
 border-top: 1px solid #000;
 border-bottom: 1px solid #222;
 }
+
+.subscribe-form {
+border-top:1px solid #222;
+margin:0;
+}
+.subscribe-form fieldset > .control-group {
+margin:10px 20px;
+}
+.subscribe-form .subscription-type {
+margin:15px 0;
+}
+.subscribe-form .subscription-type .price {
+width:70px;
+text-align: right;
+display: block;
+float:left;
+font-size:40px;
+line-height:45px;
+font-weight: normal;
+margin-right:20px;
+}
