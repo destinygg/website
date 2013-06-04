@@ -22,8 +22,7 @@ String.prototype.twitterText = function(){
 	return this.linkify().twitterReply();
 };
 
-function htmlEncode(value){ return $('<div/>').text(value).html() };
-function htmlDecode(value){ return $('<div/>').html(value).text() };
+function htmlEncode(value){ return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
 
 $.fn.loadImages = function(options){
 	options = $.extend({}, {attr:'src'}, options);
