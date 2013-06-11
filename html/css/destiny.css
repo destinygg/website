@@ -667,24 +667,6 @@ a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
 	overflow: hidden;
 }
 
-#lolpanel .summoner-next {
-	display: none;
-	margin: 10px 0 10px 10px;
-	opacity: 0.05;
-	background: url(../img/chevron-left.png) no-repeat center center;
-	width: 34px;
-	height: 45px;
-	float: left;
-	-webkit-transition: opacity 200ms ease-out;
-	-moz-transition: opacity 200ms ease-out;
-	-o-transition: opacity 200ms ease-out;
-	transition: opacity 200ms ease-out;
-}
-
-#lolpanel .summoner-next:hover {
-	opacity: 0.75;
-}
-
 #lolpanel .summoner-rank-info .summon-rank-stats {
 	font-size: 12px;
 	text-align: right;

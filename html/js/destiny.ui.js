@@ -167,7 +167,6 @@ $(function(){
 					ui = $('<div id="summoner-'+ summoner.summonerId +'" class="summoner-stub clearfix" />');
 				ui.append(
 					'<div class="summoner-info pull-left">'+
-						'<a href="#" class="summoner-next"></a>'+
 						'<div class="summoner-info-stub pull-left">'+
 							'<div class="summoner-icon">'+
 								'<img src="'+destiny.cdn+'/img/64x64.gif" style="width:45px; height:45px;"'+ ((summoner['profileIconId'] != undefined) ? ' data-src="'+destiny.cdn+'/img/lol/summoner/profileIcon'+summoner.profileIconId+'.jpg"' : '' ) +'" />' +
@@ -234,19 +233,6 @@ $(function(){
 			panel.loadImages();
 			panel.find('[rel="tooltip"]').tooltip();
 		}
-	});
-	
-	$('#lolpanel').on('click', '.summoner-next', function(){
-		summonerFeed.resetPoll();
-		var stub = $(this).closest('.summoner-stub'), 
-			panel = $('#lolpanel');
-		stub.fadeOut(200);
-		if(stub.next()[0] != null){
-			stub.next().fadeIn(200);
-		}else{
-			panel.find('.summoner-stub:first').fadeIn(200);
-		}
-		return false;
 	});
 
 	// Ingame

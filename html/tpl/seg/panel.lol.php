@@ -11,7 +11,6 @@ use Destiny\Utils\Tpl;
 			class="summoner-stub clearfix">
 
 			<div class="summoner-info pull-left">
-				<a href="#" class="summoner-next"></a>
 				<div class="summoner-info-stub pull-left">
 					<div class="summoner-icon">
 						<img src="<?=Config::cdn()?>/img/64x64.gif" style="width:45px; height:45px;"<?=((!empty($summoner['profileIconId'])) ? ' data-src="'.Config::cdn().'/img/lol/summoner/profileIcon'. $summoner['profileIconId'] .'.jpg"' : '' )?> />
