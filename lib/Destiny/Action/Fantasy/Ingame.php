@@ -21,8 +21,8 @@ class Ingame {
 				continue;
 			}
 			
-			$ingame = $cache = $app->getMemoryCache ( 'ingame.' . $summoner ['id'] );
-			$cache->read ();
+			$cache = $app->getMemoryCache ( 'ingame.' . $summoner ['id'] );
+			$ingame = $cache->read ();
 			
 			if ($ingame != null && $ingame ['success'] == true && $ingame ['data'] != null) {
 				$ingame = $ingame ['data'];

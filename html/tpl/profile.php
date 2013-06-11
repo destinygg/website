@@ -83,7 +83,7 @@ use Destiny\Session;
 
 						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
 							<?if(!empty($model->subscription)):?>
-							<a href="/unsubscribe" class="btn btn-danger"><i class="icon-remove icon-white"></i> Cancel subscription</a>\
+							<a href="/unsubscribe" class="btn btn-danger"><i class="icon-remove icon-white"></i> Cancel subscription</a>
 							<?else:?>
 							<a href="/subscribe" class="btn btn-primary"><i class="icon-shopping-cart icon-white"></i> Subscribe</a>
 							<?endif;?>

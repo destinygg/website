@@ -17,14 +17,12 @@ class Cron {
 		}
 		set_time_limit ( 180 );
 		$log = Application::getInstance ()->getLogger ();
-		$scheduler = new Scheduler ( array (
-				'logger' => $log,
-				'logPath' => Config::$a ['log'] ['path'] 
-		) );
+		$scheduler = new Scheduler ();
+		$scheduler->setLogger ( $log );
 		$response = array ();
 		try {
 			$scheduler->executeAction ( $params ['id'] );
-			$response ['message'] = sprintf ( 'Execute [%s]', $params ['id'] );
+			$response ['message'] = sprintf ( 'Execute %s', $params ['id'] );
 		} catch ( \Exception $e ) {
 			$log->error ( $e->getMessage () );
 			$response ['message'] = $e->getMessage ();

@@ -134,13 +134,13 @@ $(function(){
 			if(textStatus == 'notmodified') return;
 			var ui = $('#twitchpanel .panelheader .game');
 			if(data != null && data.stream != null){
-				ui.html( '<i class="icon-time icon-white" style="opacity:0.5;"></i> <span>Started '+ moment(data.stream.channel.updated_at).fromNow() +'</span>' + ((data.stream.channel.delay > 0) ? ' - ' + parseInt((data.stream.channel.delay/60)) + 'm delay':'')).show();
+				ui.html( '<i class="icon-time icon-white subtle"></i> <span>Started '+ moment(data.stream.channel.updated_at).fromNow() +'</span>' + ((data.stream.channel.delay > 0) ? ' - ' + parseInt((data.stream.channel.delay/60)) + 'm delay':'')).show();
 				$('#twitchpanel').removeClass('offline').addClass('online');
 			}else{
 				try{
-					ui.html( '<i class="icon-time icon-white" style="opacity:0.5;"></i> <span>Last broadcast ended '+ moment(data.lastbroadcast).fromNow() +'</span>').show();
+					ui.html( '<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended '+ moment(data.lastbroadcast).fromNow() +'</span>').show();
 				}catch(e){
-					ui.html( '<i class="icon-time icon-white" style="opacity:0.5;"></i> <span>Broadcast has ended</span>').show();
+					ui.html( '<i class="icon-time icon-white subtle"></i> <span>Broadcast has ended</span>').show();
 				}
 				$('#twitchpanel').removeClass('online').addClass('offline');
 			}

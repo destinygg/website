@@ -18,13 +18,6 @@ class Scheduler {
 	public $logger = null;
 	
 	/**
-	 * A valid path to a log directory
-	 *
-	 * @var string
-	 */
-	public $logPath = '';
-	
-	/**
 	 * The schedule data
 	 *
 	 * @var array
@@ -32,15 +25,12 @@ class Scheduler {
 	public $schedule = array ();
 
 	/**
-	 * [logger,logPath,schedule]
+	 * [logger,schedule]
 	 *
 	 * @param array $args
 	 */
 	public function __construct(array $args = array()) {
 		Options::setOptions ( $this, $args );
-		if (! is_dir ( $this->logPath )) {
-			throw new \Exception ( 'Log path is not valid [' . $this->logPath . ']' );
-		}
 		$this->loadSchedule ();
 	}
 
@@ -166,14 +156,6 @@ class Scheduler {
 
 	public function setLogger(LoggerInterface $logger) {
 		$this->logger = $logger;
-	}
-
-	public function getLogPath() {
-		return $this->logPath;
-	}
-
-	public function setLogPath($logPath) {
-		$this->logPath = $logPath;
 	}
 
 	public function getSchedule() {

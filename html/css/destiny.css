@@ -115,8 +115,7 @@ body#home #top-left-nav li:first-child a:hover {
 
 #header-band {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x
-		center -50px;
+	background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x center -50px;
 	margin: 0;
 }
 
@@ -310,20 +309,12 @@ a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
 #twitchpanel #twitch-player.defocus {
 	position: relative;
 	background: rgb(43, 43, 43);
-	background: -moz-linear-gradient(top, rgba(43, 43, 43, 1) 0%,
-		rgba(0, 0, 0, 1) 100% );
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(43,
-		43, 43, 1) ), color-stop(100%, rgba(0, 0, 0, 1) ) );
-	background: -webkit-linear-gradient(top, rgba(43, 43, 43, 1) 0%,
-		rgba(0, 0, 0, 1) 100% );
-	background: -o-linear-gradient(top, rgba(43, 43, 43, 1) 0%,
-		rgba(0, 0, 0, 1) 100% );
-	background: -ms-linear-gradient(top, rgba(43, 43, 43, 1) 0%,
-		rgba(0, 0, 0, 1) 100% );
-	background: linear-gradient(to bottom, rgba(43, 43, 43, 1) 0%,
-		rgba(0, 0, 0, 1) 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(  startColorstr='#2b2b2b',
-		endColorstr='#000000', GradientType=0 );
+	background: -moz-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(43, 43, 43, 1) ), color-stop(100%, rgba(0, 0, 0, 1) ) );
+	background: -webkit-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+	background: -o-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+	background: -ms-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+	background: linear-gradient(to bottom, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
 }
 
 #twitchpanel #twitch-player.defocus object {
@@ -623,27 +614,12 @@ a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
 	border-radius: 22px;
 	border: 1px solid #ff9933;
 	background: rgb(252, 234, 187);
-	background: -moz-linear-gradient(top, rgba(252, 234, 187, 1) 0%,
-		rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%,
-		rgba(251, 223, 147, 1) 100% );
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(252,
-		234, 187, 1) ), color-stop(50%, rgba(252, 205, 77, 1) ),
-		color-stop(51%, rgba(248, 181, 0, 1) ),
-		color-stop(100%, rgba(251, 223, 147, 1) ) );
-	background: -webkit-linear-gradient(top, rgba(252, 234, 187, 1) 0%,
-		rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%,
-		rgba(251, 223, 147, 1) 100% );
-	background: -o-linear-gradient(top, rgba(252, 234, 187, 1) 0%,
-		rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%,
-		rgba(251, 223, 147, 1) 100% );
-	background: -ms-linear-gradient(top, rgba(252, 234, 187, 1) 0%,
-		rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%,
-		rgba(251, 223, 147, 1) 100% );
-	background: linear-gradient(to bottom, rgba(252, 234, 187, 1) 0%,
-		rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%,
-		rgba(251, 223, 147, 1) 100% );
-	filter: progid:DXImageTransform.Microsoft.gradient(  startColorstr='#fceabb',
-		endColorstr='#fbdf93', GradientType=0 );
+	background: -moz-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(252, 234, 187, 1) ), color-stop(50%, rgba(252, 205, 77, 1) ), color-stop(51%, rgba(248, 181, 0, 1) ), color-stop(100%, rgba(251, 223, 147, 1) ) );
+	background: -webkit-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+	background: -o-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+	background: -ms-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+	background: linear-gradient(to bottom, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
 }
 
 #adblocker-message>a {
@@ -760,11 +736,14 @@ a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
 }
 
 footer {
-	position: relative;
-	font-size: 12px;
-	color: #555;
-	text-shadow: 1px 1px 1px black;
-	padding: 0;
+position: relative;
+font-size: 12px;
+color: #555;
+text-shadow: 1px 1px 1px black;
+padding: 0;
+}
+footer p.pull-right {
+text-align: right;	
 }
 
 /* Bootstrap overrides */

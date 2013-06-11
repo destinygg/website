@@ -1,10 +1,7 @@
 <?
-
 namespace Destiny;
-
 use Destiny\Utils\Tpl;
 use Destiny\Utils\String;
-
 ?>
 <ul class="nav nav-tabs" style="margin-bottom: 0; border-bottom: 0;">
 	<li class="active"><a href="#LogInfo" data-toggle="tab">Details</a></li>

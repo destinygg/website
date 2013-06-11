@@ -5,6 +5,7 @@ use Destiny\SessionInterface;
 use Destiny\Session;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Processor\WebProcessor;
 use Destiny\Config;
 
 $base = realpath ( __DIR__ . '/../' );
@@ -15,13 +16,12 @@ Config::load ( $base . '/lib/config.php' );
 
 $log = new Logger ( 'events' );
 $log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . '/events.log', Logger::DEBUG ) );
+$log->pushProcessor ( new WebProcessor () );
+
 $app = Application::getInstance ();
 $app->setLogger ( $log );
 
 Session::init ( Config::$a ['cookie'] );
-
-// Simple HTTP request calls
-$log->debug ( sprintf ( 'HTTP: %s', $app->getPath () ) );
 
 // Admins only
 $app->bind ( '/^\/(admin)/i', function (Application $app) {
