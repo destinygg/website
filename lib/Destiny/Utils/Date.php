@@ -7,7 +7,7 @@ namespace Destiny\Utils;
  */
 abstract class Date {
 	const STRING_FORMAT_YEAR = 'g:ia, D jS F Y';
-	const STRING_FORMAT = 'D jS F, g:ia';
+	const STRING_FORMAT = 'D jS F, g:ia e';
 	const STRING_DATE_FORMAT = 'jS F, Y';
 	const STRING_TIME_FORMAT = 'H:i';
 	const FORMAT = DATE_ISO8601;
@@ -88,7 +88,7 @@ abstract class Date {
 	 * @param \DateTime $compareTo
 	 * @return string
 	 */
-	public static function getElapsedTime(\DateTime $date, \DateTime $compareTo = NULL) {
+	public static function getElapsedTime(\DateTime $date,\DateTime $compareTo = NULL) {
 		if (is_null ( $compareTo )) {
 			$compareTo = new \DateTime ( 'now' );
 		}

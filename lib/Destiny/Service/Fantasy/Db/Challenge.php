@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service\Fantasy\Db;
 
 use Destiny\Service;
@@ -9,6 +10,7 @@ use Destiny\Utils\Cache;
 class Challenge extends Service {
 	
 	/**
+	 *
 	 * @var Service
 	 */
 	protected static $instance = null;
@@ -42,7 +44,7 @@ class Challenge extends Service {
 				FROM dfl_teams AS `teams`
 				LEFT JOIN dfl_challengers AS `challengers` ON (challengers.challengeTeamId = teams.teamId)
 				INNER JOIN dfl_users AS `users` ON (users.userId = challengers.challengeTeamId)
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = challengers.challengeTeamId)  
 				WHERE ((challengers.ownerTeamId = {teamId} AND challengers.status = \'ACCEPTED\') OR teams.teamId = {teamId}) AND teams.teamActive = 1
 				GROUP BY teams.teamId
@@ -53,7 +55,7 @@ class Challenge extends Service {
 				'limit' => $limit,
 				'teamId' => $teamId,
 				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
-		) )->fetchObjects ();
+		) )->fetchRows ();
 	}
 
 	public function getInvites($teamId, $limit = 1, $offset = 0) {
@@ -72,13 +74,13 @@ class Challenge extends Service {
 			FROM dfl_challengers AS `challengers`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.ownerTeamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 			WHERE challengers.challengeTeamId = {teamId} AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC
 			', array (
 				'teamId' => $teamId,
 				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
-		) )->fetchObjects ();
+		) )->fetchRows ();
 	}
 
 	public function getSentInvites($teamId, $limit = 1, $offset = 0) {
@@ -97,13 +99,13 @@ class Challenge extends Service {
 			FROM dfl_challengers AS `challengers`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.challengeTeamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 			WHERE challengers.ownerTeamId = {teamId} AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC
 			', array (
 				'teamId' => $teamId,
 				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
-		) )->fetchObjects ();
+		) )->fetchRows ();
 	}
 
 	public function getChallengeExists($ownerTeamId, $teamId) {

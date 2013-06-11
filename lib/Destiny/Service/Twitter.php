@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service;
 
 use Destiny\Service;
@@ -9,42 +10,39 @@ use Destiny\Utils\String;
 use Destiny\Utils\Date;
 
 class Twitter extends Service {
-	
 	protected static $instance = null;
-	
+
 	/**
+	 *
 	 * @return Service\Twitter
 	 */
 	public static function getInstance() {
-		return parent::getInstance();
+		return parent::getInstance ();
 	}
 
 	public function getTimeline(array $options = array()) {
 		return new Consumer ( array_merge ( array (
-			'url' => new String ( 'http://api.twitter.com/1/statuses/user_timeline.json?count={limit}&screen_name={user}', array (
-				'user' => Config::$a ['twitter'] ['user'],
-				'limit' => 3 
-			) ),
-			'tag' => 'twitter.timeline',
-			'checkIfModified' => false,
-			'life' => 3603,
-			'contentType' => Mimetype::JSON,
-			'onfetch' => function ($json) {
-				if (is_array ( $json ) && count ( $json ) > 0) {
-					foreach ( $json as $tweetIndex => $tweet ) {
-						$json [$tweetIndex]->created_at = Date::getDateTime ( $tweet->created_at, Date::FORMAT );
+				'url' => new String ( 'http://api.twitter.com/1/statuses/user_timeline.json?count={limit}&screen_name={user}', array (
+						'user' => Config::$a ['twitter'] ['user'],
+						'limit' => 3 
+				) ),
+				'contentType' => Mimetype::JSON,
+				'onfetch' => function ($json) {
+					if (is_array ( $json ) && count ( $json ) > 0) {
+						foreach ( $json as $tweetIndex => $tweet ) {
+							$json [$tweetIndex] ['created_at'] = Date::getDateTime ( $tweet ['created_at'], Date::FORMAT );
+						}
+					} else {
+						throw new \Exception ( 'Twitter API down' );
 					}
-				} else {
-					throw new \Exception ( 'Twitter API down' );
-				}
-				return $json;
-			} 
-		), $options) );
+					return $json;
+				} 
+		), $options ) );
 	}
-	
+
 	/**
 	 * Adds links, users and hashtags
-	 * 
+	 *
 	 * @param string $str
 	 * @return mixed
 	 */

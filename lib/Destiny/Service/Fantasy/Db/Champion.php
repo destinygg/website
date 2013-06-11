@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service\Fantasy\Db;
 
 use Destiny\Service;

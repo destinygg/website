@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Utils;
 /*
  * Abstract class to help set class properties using constructor arguments

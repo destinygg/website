@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service\Fantasy\Db;
 
 use Destiny\Service;
@@ -7,23 +8,23 @@ use Destiny\Config;
 use Destiny\Utils\Cache;
 
 class Game extends Service {
-	
 	protected static $instance = null;
-	
+
 	/**
+	 *
 	 * @return Service\Fantasy\Db\Game
 	 */
 	public static function getInstance() {
-		return parent::getInstance();
+		return parent::getInstance ();
 	}
-	
-	public function getRecentGameData(){
+
+	public function getRecentGameData() {
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( '
 			SELECT games.gameId,games.aggregatedDate FROM dfl_games AS `games` 
 			WHERE games.aggregated = 1
 			ORDER BY games.aggregatedDate DESC 
-			LIMIT 0,1')->fetchRow ();
+			LIMIT 0,1' )->fetchRow ();
 	}
 
 	public function getGameById($gameId) {
@@ -32,7 +33,7 @@ class Game extends Service {
 				SELECT * FROM dfl_games AS `games` 
 				WHERE games.gameId = \'{gameId}\' 
 				ORDER BY games.gameCreatedDate DESC ', array (
-				'gameId' => (int) $gameId 
+				'gameId' => ( int ) $gameId 
 		) )->fetchRow ();
 		if (true == empty ( $game )) {
 			throw new \Exception ( 'Game data not found' );
@@ -50,8 +51,8 @@ class Game extends Service {
 				FROM dfl_ingame_progress AS `ingame` 
 				ORDER BY ingame.gameId DESC 
 				LIMIT {offset},{limit}', array (
-				'offset' => (int) $offset,
-				'limit' => (int) $limit 
+				'offset' => ( int ) $offset,
+				'limit' => ( int ) $limit 
 		) )->fetchRows ();
 	}
 
@@ -61,8 +62,8 @@ class Game extends Service {
 				SELECT * FROM dfl_games AS `games` 
 				ORDER BY games.gameId DESC 
 				LIMIT {offset},{limit}', array (
-				'offset' => (int) $offset,
-				'limit' => (int) $limit 
+				'offset' => ( int ) $offset,
+				'limit' => ( int ) $limit 
 		) )->fetchRows ();
 	}
 
@@ -73,8 +74,8 @@ class Game extends Service {
 				WHERE games.aggregated = \'0\' 
 				ORDER BY games.gameCreatedDate ASC 
 				LIMIT {offset},{limit}', array (
-				'offset' => (int) $offset,
-				'limit' => (int) $limit 
+				'offset' => ( int ) $offset,
+				'limit' => ( int ) $limit 
 		) )->fetchRows ();
 	}
 
@@ -85,8 +86,8 @@ class Game extends Service {
 				WHERE games.aggregated = \'1\' 
 				ORDER BY games.gameCreatedDate DESC 
 				LIMIT {offset},{limit}', array (
-				'offset' => (int) $offset,
-				'limit' => (int) $limit 
+				'offset' => ( int ) $offset,
+				'limit' => ( int ) $limit 
 		) )->fetchRows ();
 	}
 
@@ -104,7 +105,7 @@ class Game extends Service {
 	public function getTeamGameChampionsScores(array $games, $teamId) {
 		$gameIds = array ();
 		foreach ( $games as $i => $gameId ) {
-			$gameIds[] = $gameId['gameId'];
+			$gameIds [] = $gameId ['gameId'];
 		}
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( '
@@ -119,8 +120,8 @@ class Game extends Service {
 				WHERE teamchampscores.gameId IN ({gameIds}) AND teamchampscores.teamId = \'{teamId}\'
 				GROUP BY teamchampscores.championId, teamchampscores.gameId
 				', array (
-				'gameIds' => join(',', $gameIds),
-				'teamId' => ( int ) $teamId
+				'gameIds' => join ( ',', $gameIds ),
+				'teamId' => ( int ) $teamId 
 		) )->fetchRows ();
 	}
 

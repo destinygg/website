@@ -311,11 +311,11 @@
 					' or <a title="Purchase" href="#" class="purchase-link">Purchase '+htmlEncode(champ.championName)+'</a>.')+
 				'</p>'+
 				'<div>'+
-					'<button class="btn btn-primary">Add</button>&nbsp;'+
+					'<button class="btn btn-add">Add</button>&nbsp;'+
 					'<button class="btn btn-danger">Cancel</button>'+
 				'</div>'
 			);
-			self.progressModal.find('button.btn-primary').one('click', function(){
+			self.progressModal.find('button.btn-add').one('click', function(){
 				self.hideProgress();
 				if(self.hasFreeSlot(champ)){
 					self.addChampion(champ);

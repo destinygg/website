@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Utils;
 
 use Destiny\Config;
@@ -23,7 +24,7 @@ abstract class Country {
 	 * @var array
 	 */
 	public static $codeIndex = null;
-	
+
 	/**
 	 * Return a cached list of countries
 	 *
@@ -36,7 +37,7 @@ abstract class Country {
 					'life' => 1 * 30 * 24 * 60 * 60 
 			) );
 			if (! $cache->cached ()) {
-				self::$countries = json_decode ( file_get_contents ( Config::$a ['geodata'] ) );
+				self::$countries = json_decode ( file_get_contents ( Config::$a ['geodata'] ), true );
 				$cache->write ( self::$countries );
 			} else {
 				self::$countries = $cache->read ();
@@ -47,13 +48,13 @@ abstract class Country {
 		}
 		return self::$countries;
 	}
-	
+
 	private static function buildIndex() {
 		foreach ( self::$countries as $i => $country ) {
-			self::$codeIndex [strtolower ( $country->{'alpha-2'} )] = $i;
+			self::$codeIndex [strtolower ( $country ['alpha-2'] )] = $i;
 		}
 	}
-	
+
 	public static function getCountryByCode($code) {
 		$code = strtolower ( $code );
 		$countries = self::getCountries ();

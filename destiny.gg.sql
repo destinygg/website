@@ -107,34 +107,6 @@ CREATE TABLE `dfl_orders_items` (
   `itemPrice` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-/*Table structure for table `dfl_polls` */
-
-CREATE TABLE `dfl_polls` (
-  `pollId` int(14) NOT NULL AUTO_INCREMENT,
-  `userId` int(14) NOT NULL,
-  `pollQuestion` mediumtext COLLATE utf8_unicode_ci NOT NULL,
-  `pollOpen` tinyint(1) NOT NULL,
-  `pollLife` int(14) NOT NULL,
-  `pollViewAccess` enum('public','subscriber','admin','user') COLLATE utf8_unicode_ci NOT NULL,
-  `pollVoteAccess` enum('subscriber','admin','user') COLLATE utf8_unicode_ci NOT NULL,
-  `pollVoteCount` int(14) NOT NULL,
-  `modifiedDate` datetime NOT NULL,
-  `createdDate` datetime NOT NULL,
-  PRIMARY KEY (`pollId`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_polls_answers_users` */
-
-CREATE TABLE `dfl_polls_answers_users` (
-  `pollId` int(14) NOT NULL,
-  `optionId` int(14) NOT NULL,
-  `userId` int(14) NOT NULL,
-  `createdDate` datetime NOT NULL,
-  PRIMARY KEY (`pollId`,`userId`),
-  KEY `pollId` (`pollId`),
-  KEY `optionId` (`optionId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 /*Table structure for table `dfl_polls_options` */
 
 CREATE TABLE `dfl_polls_options` (

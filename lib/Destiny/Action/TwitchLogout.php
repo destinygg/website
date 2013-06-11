@@ -1,6 +1,8 @@
 <?php
+
 namespace Destiny\Action;
 
+use Destiny\Application;
 use Destiny\Session;
 use Destiny\Utils\Http;
 
@@ -10,5 +12,5 @@ class TwitchLogout {
 		Session::destroy ();
 		Http::header ( 'Location', '/' );
 	}
-	
+
 }

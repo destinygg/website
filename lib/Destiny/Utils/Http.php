@@ -1,8 +1,8 @@
 <?php
+
 namespace Destiny\Utils;
 
 abstract class Http {
-	
 	const HEADER_ETAG = 'Etag';
 	const HEADER_STATUS = 'Status';
 	const HEADER_CONTENTLENGTH = 'Content-Length';
@@ -19,7 +19,6 @@ abstract class Http {
 	const STATUS_UNAUTHORIZED = 401;
 	const STATUS_ERROR = 500;
 	const STATUS_OK = 200;
-	
 	public static $HEADER_STATUSES = array (
 			304 => 'Not Modified',
 			500 => 'Error',
@@ -35,9 +34,9 @@ abstract class Http {
 	public static function status($status) {
 		header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
 	}
-	
-	public static function auth($type, $realm){
-		header ( 'WWW-Authenticate: '. $type .' realm="'. $realm .'"' );
+
+	public static function auth($type, $realm) {
+		header ( 'WWW-Authenticate: ' . $type . ' realm="' . $realm . '"' );
 	}
 
 	public static function sendFile($filename) {
@@ -51,7 +50,7 @@ abstract class Http {
 		@flush ();
 		echo $str;
 	}
-	
+
 	public static function sendNotModifiedResponse() {
 		if (isset ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] ) && ! empty ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] )) {
 			self::status ( self::STATUS_NOT_MODIFIED );
@@ -69,7 +68,7 @@ abstract class Http {
 			if ($_SERVER ['HTTP_IF_MODIFIED_SINCE'] == gmdate ( 'r', $mtime )) {
 				if ($send) {
 					self::header ( self::HEADER_LAST_MODIFIED, gmdate ( 'r', $mtime ) );
-					self::sendNotModifiedResponse();
+					self::sendNotModifiedResponse ();
 				}
 				return false;
 			}
@@ -83,7 +82,7 @@ abstract class Http {
 		if (isset ( $_SERVER ['HTTP_IF_NONE_MATCH'] ) && ! empty ( $_SERVER ['HTTP_IF_NONE_MATCH'] )) {
 			if ($_SERVER ['HTTP_IF_NONE_MATCH'] == $etag) {
 				if ($send) {
-					self::sendNotModifiedResponse();
+					self::sendNotModifiedResponse ();
 				}
 				return false;
 			}
@@ -94,7 +93,7 @@ abstract class Http {
 	/**
 	 * ### getBaseUrl function
 	 * // utility function that returns base url for
-	 * 
+	 *
 	 * @return string
 	 */
 	public static function getBaseUrl() {
@@ -110,4 +109,5 @@ abstract class Http {
 		$request = $_SERVER ['PHP_SELF'];
 		return dirname ( $protocol . '://' . $host . ($port == $protocol_port ? '' : ':' . $port) . $request );
 	}
+
 }

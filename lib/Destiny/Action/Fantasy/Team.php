@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Action\Fantasy;
 
 use Destiny\Utils\Http;
@@ -16,13 +17,13 @@ class Team {
 		if (empty ( $team )) {
 			throw new \Exception ( 'Team not found' );
 		}
-		if (! Session::getAuthorized ()) {
+		if (! Session::authorized ()) {
 			Http::status ( 401 );
-			exit;
+			exit ();
 		}
 		// Security
-		if (Session::$userId != $team ['userId']) {
-			throw new \Exception ( 'Get team failed:  User does not have rights to this team. {"userId":'.$team ['userId'].',"teamId":'.$team ['teamId'].'}' );
+		if (Session::get ( 'userId' ) != $team ['userId']) {
+			throw new \Exception ( 'Get team failed:  User does not have rights to this team. {"userId":' . $team ['userId'] . ',"teamId":' . $team ['teamId'] . '}' );
 		}
 		$modifiedTime = strtotime ( $team ['modifiedDate'] );
 		$createdTime = strtotime ( $team ['modifiedDate'] );
@@ -42,5 +43,5 @@ class Team {
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $team ) );
 	}
-	
+
 }

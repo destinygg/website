@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service;
 
 use Destiny\Service;
@@ -8,81 +9,102 @@ use Destiny\Session;
 
 class Settings extends Service {
 	
+	/**
+	 * The singleton instance
+	 *
+	 * @var \Destiny\Service\Settings
+	 */
 	protected static $instance = null;
 	
 	/**
+	 * The default settings
 	 *
-	 * @var CacheApc
+	 * @var array
 	 */
-	protected $cache = null;
+	protected $defaultSettings = array ();
 	
 	/**
+	 * The user settings
 	 *
-	 * @var Array
+	 * @var array
 	 */
-	protected $settings = array ();
+	public $settings = array ();
 
 	/**
+	 * Return the singleton instance
 	 *
-	 * @return ServiceSettings
+	 * @return \Destiny\Service\Settings
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();
 	}
 
 	/**
-	 * Load the initial setting cache
-	 *
-	 * @return void
+	 * Loads the settings SESSION variable
 	 */
-	private function init() {
-		if ($this->cache == null) {
-			$this->cache = new Config::$a ['cache'] ['memory'] ( array (
-					'filename' => 'usersettings' 
-			) );
-			$this->settings = $this->cache->read ();
-			if ($this->settings == null) {
-				$this->settings = array ();
-			}
+	public function __construct() {
+		$this->defaultSettings = Config::$a ['users'] ['settings'];
+		$settings = Session::get ( 'settings' );
+		if (is_array ( $settings )) {
+			$this->setSettings ( $settings );
 		}
-		$userId = Session::getUserId ();
-		if (! empty ( $userId ) && ! isset ( $this->settings [$userId] )) {
-			$this->settings [$userId] = $this->loadSettingsByUser ( $userId );
-			$this->cache->write ( $this->settings );
-		}
-		return $userId;
 	}
 
 	/**
-	 * Load a settings group by user
+	 * Set all the settings at once
+	 *
+	 * @param array $settings
+	 */
+	public function setSettings(array $settings) {
+		$this->settings = $this->defaultSettings + $settings;
+		Session::set ( 'settings', $this->settings );
+	}
+
+	/**
+	 * Loads the users settings
+	 * puts them on the session for later use
 	 *
 	 * @param int $userId
 	 */
-	private function loadSettingsByUser($userId) {
+	public function getUserSettings($userId) {
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( 'SELECT userId, settingName, settingValue FROM dfl_users_settings WHERE userId = \'{userId}\'', array (
-				'userId' => intval ( $userId ) 
+				'userId' => Session::get ( 'userId' ) 
 		) )->fetchRows ();
 	}
 
 	/**
-	 * Load a settings group by user
+	 * Set a setting value
 	 *
-	 * @param int $userId
+	 * @param string $name
+	 * @param string $value
 	 */
-	private function saveSettingByUser($userId, $name, $value) {
+	public function setSetting($name, $value) {
 		$db = Application::getInstance ()->getDb ();
 		$db->insert ( '
-				INSERT INTO dfl_users_settings 
-					(userId,settingName,settingValue)
-				VALUES
-					(\'{userId}\',\'{settingName}\',\'{settingValue}\')
-				ON DUPLICATE KEY UPDATE settingValue = \'{settingValue}\'
-			', array (
-				'userId' => intval ( $userId ),
+			INSERT INTO dfl_users_settings  (userId,settingName,settingValue)
+			VALUES (\'{userId}\',\'{settingName}\',\'{settingValue}\')
+			ON DUPLICATE KEY UPDATE settingValue = \'{settingValue}\'
+		', array (
+				'userId' => Session::get ( 'userId' ),
 				'settingName' => $name,
 				'settingValue' => $value 
 		) );
+		$this->settings [$name] = $value;
+		Session::set ( 'settings', $this->settings );
+	}
+
+	/**
+	 * Get a setting by name
+	 *
+	 * @param string $name
+	 * @return mix
+	 */
+	public function getSetting($name) {
+		if (isset ( $this->settings [$name] )) {
+			return $this->settings [$name];
+		}
+		return null;
 	}
 
 	/**
@@ -91,15 +113,8 @@ class Settings extends Service {
 	 * @param string $name
 	 * @return string null
 	 */
-	public function get($name) {
-		$userId = $this->init ();
-		if (empty ( $userId ) || empty ( $name )) {
-			return null;
-		}
-		if (isset ( $this->settings [$userId] [$name] )) {
-			return $this->settings [$userId] [$name];
-		}
-		return null;
+	public static function get($name) {
+		return self::getInstance ()->getSetting ( $name );
 	}
 
 	/**
@@ -108,14 +123,8 @@ class Settings extends Service {
 	 * @param string $name
 	 * @param string $value
 	 */
-	public function set($name, $value) {
-		$userId = $this->init ();
-		if (empty ( $userId ) || empty ( $name )) {
-			return;
-		}
-		$this->settings [$userId] [$name] = $value;
-		$this->saveSettingByUser ( $userId, $name, $value );
-		$this->cache->write ( $this->settings );
+	public static function set($name, $value) {
+		return self::getInstance ()->setSetting ( $name, $value );
 	}
 
 }

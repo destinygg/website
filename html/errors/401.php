@@ -1,10 +1,12 @@
 <?
+
 namespace Destiny;
+
 $words = include 'words.php';
-$word = $words[array_rand($words,1)];
-if(preg_match('/^local/i', $_SERVER['HTTP_HOST']) > 0){
+$word = $words [array_rand ( $words, 1 )];
+if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 	$cdn = '//local.destiny.cdn';
-}else{
+} else {
 	$cdn = '//cdn.destiny.gg';
 }
 ?>
@@ -12,7 +14,7 @@ if(preg_match('/^local/i', $_SERVER['HTTP_HOST']) > 0){
 <html>
 <head>
 <title>Error : Not Authorized</title>
-<link href="<?=$cdn?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=$cdn?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=$cdn?>/errors/errors.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=$cdn?>/favicon.png">
 <?include'ga.php'?>
@@ -23,8 +25,13 @@ if(preg_match('/^local/i', $_SERVER['HTTP_HOST']) > 0){
 		<div class="container">
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
-					<h1><strong><?=$word?>!</strong> Authentication required</h1>
-					<p>Are you looking for the <strong>fantasy league?</strong>. <br />Click here to <a title="Login with your twitch account" href="#" rel="twitchlogin" data-request-perms="<?=Config::$a['twitch']['request_perms']?>" data-redirect-uri="<?=urlencode(Config::$a['twitch']['redirect_uri'])?>" data-client-id="<?=Config::$a['twitch']['client_id']?>"><i class="icon-user icon-white subtle"></i> Login</a></p>
+					<h1>
+						<strong><?=$word?>!</strong> Authentication required
+					</h1>
+					<p>
+						Are you looking for the <strong>fantasy league?</strong>. <br />Click
+						here to <a title="Login with your twitch account" href="#" rel="twitchlogin" data-request-perms="<?=Config::$a['twitch']['request_perms']?>" data-redirect-uri="<?=urlencode(Config::$a['twitch']['redirect_uri'])?>" data-client-id="<?=Config::$a['twitch']['client_id']?>"><i class="icon-user icon-white subtle"></i> Login</a>
+					</p>
 				</div>
 				<div id="destiny-illustration"></div>
 			</header>

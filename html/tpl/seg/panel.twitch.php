@@ -6,7 +6,7 @@
 			<div class="toolgroup clearfix">
 				<div class="pull-left channel-stat game" style="display: none;"></div>
 				<div class="btn-group pull-right" style="margin-left: 10px;">
-					<a id="popoutvideo" title="Pop-out video" class="btn btn-mini btn-link">Pop-out player</a> 
+					<a id="popoutvideo" title="Pop-out video" class="btn btn-mini btn-link">Pop-out player</a>
 					<a id="popoutchat" title="Pop-out chat" class="btn btn-mini btn-link">Pop-out chat</a>
 				</div>
 			</div>

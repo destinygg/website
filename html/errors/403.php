@@ -1,9 +1,9 @@
 <?
 $words = include 'words.php';
-$word = $words[array_rand($words,1)];
-if(preg_match('/^local/i', $_SERVER['HTTP_HOST']) > 0){
+$word = $words [array_rand ( $words, 1 )];
+if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 	$cdn = '//local.destiny.cdn';
-}else{
+} else {
 	$cdn = '//cdn.destiny.gg';
 }
 ?>
@@ -11,18 +11,20 @@ if(preg_match('/^local/i', $_SERVER['HTTP_HOST']) > 0){
 <html>
 <head>
 <title>Error : 403</title>
-<link href="<?=$cdn?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=$cdn?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=$cdn?>/errors/errors.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=$cdn?>/favicon.png">
 <?include'ga.php'?>
 </head>
 <body class="error forbidden">
-	
+
 	<section id="header-band">
 		<div class="container">
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
-					<h1><strong><?=$word?>!</strong> Forbidden</h1>
+					<h1>
+						<strong><?=$word?>!</strong> Forbidden
+					</h1>
 					<p>This request is not allowed. <br />Would you like to <a href="/">return to the start</a>?</p>
 				</div>
 				<div id="destiny-illustration"></div>
@@ -34,6 +36,6 @@ if(preg_match('/^local/i', $_SERVER['HTTP_HOST']) > 0){
 	
 	<script src="<?=$cdn?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=$cdn?>/js/vendor/bootstrap.js"></script>
-	
+
 </body>
 </html>

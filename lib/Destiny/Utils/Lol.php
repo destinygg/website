@@ -1,24 +1,25 @@
 <?php
+
 namespace Destiny\Utils;
 
 use Destiny\Config;
 
 abstract class Lol {
-	
 	public static $gameTypes = array (
-		'NONE' 				=> 'None',
-		'BOT' 				=> 'Bot',
-		'BOT_3x3' 			=> 'Bot 3v3',
-		'NORMAL' 			=> 'Normal',
-		'NORMAL_3x3'		=> 'Normal 3v3',
-		'ODIN_UNRANKED' 	=> 'Odin Unranked',
-		'RANKED_SOLO_5x5' 	=> 'Ranked Solo 5v5',
-		'RANKED_TEAM_3x3' 	=> 'Ranked Team 3v3',
-		'RANKED_TEAM_5x5' 	=> 'Ranked Team 5v5',
-		'ARAM_UNRANKED_5x5' => 'ARAM Unranked 5v5'
+			'NONE' => 'None',
+			'BOT' => 'Bot',
+			'BOT_3x3' => 'Bot 3v3',
+			'NORMAL' => 'Normal',
+			'NORMAL_3x3' => 'Normal 3v3',
+			'ODIN_UNRANKED' => 'Odin Unranked',
+			'RANKED_SOLO_5x5' => 'Ranked Solo 5v5',
+			'RANKED_TEAM_3x3' => 'Ranked Team 3v3',
+			'RANKED_TEAM_5x5' => 'Ranked Team 5v5',
+			'ARAM_UNRANKED_5x5' => 'ARAM Unranked 5v5' 
 	);
 
 	/**
+	 *
 	 * @param string $rank
 	 * @return number
 	 */
@@ -43,17 +44,18 @@ abstract class Lol {
 
 	/**
 	 * @param string $id
-	 * @return \stdClass
+	 * @return array
 	 */
 	public static function getRegion($id) {
 		$id = strtolower ( $id );
-		$region = new \stdClass ();
-		$region->id = $id;
-		$region->label = Config::$a ['lol'] ['regions'] [$id];
-		return $region;
+		return array (
+				'id' => $id,
+				'label' => Config::$a ['lol'] ['regions'] [$id] 
+		);
 	}
 
 	/**
+	 *
 	 * @param array $game
 	 * @param array $champ
 	 * @param array $scores
@@ -69,12 +71,14 @@ abstract class Lol {
 		}
 		return $points;
 	}
-	
+
 	/**
+	 *
 	 * @param string $name
 	 * @return string
 	 */
-	public static function getIcon($name){
+	public static function getIcon($name) {
 		return Config::cdn () . '/img/lol/champions/' . strtolower ( preg_replace ( '/([^\d\w\-]+)/i', '', str_replace ( ' ', '-', $name ) ) ) . '.png';
 	}
+
 }

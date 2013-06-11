@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service\Fantasy\Db;
 
 use Destiny\Service;
@@ -8,9 +9,15 @@ use Destiny\Utils\Cache;
 
 class Team extends Service {
 	
+	/**
+	 * The static singleton instance
+	 *
+	 * @var Service\Fantasy\Db\Team
+	 */
 	protected static $instance = null;
 
 	/**
+	 * Create the singleton instance
 	 *
 	 * @return Service\Fantasy\Db\Team
 	 */
@@ -18,19 +25,17 @@ class Team extends Service {
 		return parent::getInstance ();
 	}
 
-	public function setupUserTeam(array $user) {
-		$teams = $this->getTeamsByUserId ( ( int ) $user ['userId'] );
-		if (count ( $teams ) <= 0) {
-			return $this->setupNewTeam ( $user );
-		}
-		return null;
-	}
-
-	public function setupNewTeam(array $user) {
+	/**
+	 * Setup a new team for a user
+	 *
+	 * @param string $userId
+	 * @return array
+	 */
+	public function addTeam($userId, $credits, $transfers) {
 		$db = Application::getInstance ()->getDb ();
 		$team = array (
 				'teamId' => null,
-				'userId' => $user ['userId'],
+				'userId' => $userId,
 				'credits' => Config::$a ['fantasy'] ['team'] ['startCredit'],
 				'transfersRemaining' => Config::$a ['fantasy'] ['team'] ['startTransfers'],
 				'scoreValue' => 0 
@@ -47,6 +52,11 @@ class Team extends Service {
 		return $team;
 	}
 
+	/**
+	 * Get a team record by teamId
+	 *
+	 * @param string $teamId
+	 */
 	public function getTeamById($teamId) {
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( '
@@ -59,11 +69,13 @@ class Team extends Service {
 		) )->fetchRow ();
 	}
 
-	public function getTeamByUserId($userId) {
-		$teams = self::getTeamsByUserId ( $userId );
-		return (isset ( $teams [0] )) ? $teams [0] : null;
-	}
-
+	/**
+	 * Return a list of teams by the teams username
+	 *
+	 * @param string $username
+	 * @param int $limit
+	 * @param int $offset
+	 */
 	public function getTeamsByUsername($username, $limit = 1, $offset = 0) {
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( '
@@ -84,6 +96,25 @@ class Team extends Service {
 		) )->fetchRows ();
 	}
 
+	/**
+	 * Get a team by userId
+	 *
+	 * @param int $userId
+	 * @return array | null
+	 */
+	public function getTeamByUserId($userId) {
+		$teams = self::getTeamsByUserId ( $userId );
+		return (isset ( $teams [0] )) ? $teams [0] : null;
+	}
+
+	/**
+	 * Get a list of team by userId
+	 *
+	 * @param int $userId
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
+	 */
 	public function getTeamsByUserId($userId, $limit = 1, $offset = 0) {
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( '
@@ -100,6 +131,13 @@ class Team extends Service {
 		) )->fetchRows ();
 	}
 
+	/**
+	 * Get the teams transfers
+	 *
+	 * @param int $teamId
+	 * @param int $limit
+	 * @param int $offset
+	 */
 	public function getTeamTransfers($teamId, $limit = 1, $offset = 0) {
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( '
@@ -114,6 +152,12 @@ class Team extends Service {
 		) )->fetchRows ();
 	}
 
+	/**
+	 * Get a flat list of teams
+	 *
+	 * @param int $limit
+	 * @param int $offset
+	 */
 	public function getTeams($limit = 1, $offset = 0) {
 		$db = Application::getInstance ()->getDb ();
 		return $db->select ( '
@@ -125,7 +169,7 @@ class Team extends Service {
 					IF(subs.userId IS NULL,0,1) AS `subscriber` 
 				FROM dfl_teams AS `teams` 
 				INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
 				ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
 				LIMIT {offset},{limit} ', array (
@@ -134,6 +178,13 @@ class Team extends Service {
 		) )->fetchRows ();
 	}
 
+	/**
+	 * Get the teams champions
+	 *
+	 * @param int $teamId
+	 * @param int $limit
+	 * @param int $offset
+	 */
 	public function getTeamChamps($teamId, $limit = null, $offset = 0) {
 		if ($limit == null) {
 			$limit = Config::$a ['fantasy'] ['team'] ['maxChampions'];
@@ -152,6 +203,11 @@ class Team extends Service {
 		) )->fetchRows ();
 	}
 
+	/**
+	 * Reset and remove team
+	 *
+	 * @param array $team
+	 */
 	public function resetTeam(array $team) {
 		$db = Application::getInstance ()->getDb ();
 		$team ['credits'] = Config::$a ['fantasy'] ['team'] ['startCredit'];
@@ -178,6 +234,11 @@ class Team extends Service {
 		) );
 	}
 
+	/**
+	 * Update an existing team (credits,transfersRemaining,scoreValue,modifiedDate) based on teamId
+	 *
+	 * @param array $team
+	 */
 	public function updateTeam(array $team) {
 		$db = Application::getInstance ()->getDb ();
 		$db->update ( '
@@ -189,6 +250,12 @@ class Team extends Service {
 				WHERE teamId = \'{teamId}\'', $team );
 	}
 
+	/**
+	 * Update the champion order selection
+	 *
+	 * @param int $teamId
+	 * @param array $champions
+	 */
 	public function updateChampionOrders($teamId, array $champions) {
 		$db = Application::getInstance ()->getDb ();
 		foreach ( $champions as $order => $id ) {
@@ -202,6 +269,11 @@ class Team extends Service {
 		}
 	}
 
+	/**
+	 * Update team credits,transfers
+	 *
+	 * @param array $team
+	 */
 	public function updateTeamResources(array $team) {
 		$db = Application::getInstance ()->getDb ();
 		$db->update ( '
@@ -212,31 +284,17 @@ class Team extends Service {
 			WHERE teamId = \'{teamId}\'', array (
 				'maxTransfers' => Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'],
 				'transfersRemaining' => $team ['transfersRemaining'],
-				'credits' => $team ['credits'] ,
+				'credits' => $team ['credits'],
 				'teamId' => $team ['teamId'] 
 		) );
 	}
 
-	public function insertTeam(array $team) {
-		$db = Application::getInstance ()->getDb ();
-		$id = $db->insert ( '
-				INSERT INTO dfl_teams SET 
-					userId = \'{userId}\',
-					credits = \'{credits}\',
-					scoreValue = \'{scoreValue}\',
-					transfersRemaining = LEAST({transfersRemaining},{maxTransfers}), 
-					createdDate =  UTC_TIMESTAMP(),
-					modifiedDate = UTC_TIMESTAMP()', array (
-				'userId' => $team ['userId'],
-				'credits' => $team ['credits'],
-				'scoreValue' => $team ['scoreValue'],
-				'transfersRemaining' => $team ['transfersRemaining'],
-				'maxTransfers' => Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'] 
-		) );
-		$team ['teamId'] = $id;
-		return $team;
-	}
-
+	/**
+	 * Transfer a champion out of a team
+	 *
+	 * @param array $team
+	 * @param array $champ
+	 */
 	public function transferOut(array $team, array $champ) {
 		$db = Application::getInstance ()->getDb ();
 		$db->insert ( '
@@ -256,6 +314,12 @@ class Team extends Service {
 		) );
 	}
 
+	/**
+	 * Transfer a champion into a team
+	 *
+	 * @param array $team
+	 * @param array $champ
+	 */
 	public function transferIn(array $team, array $champ) {
 		$db = Application::getInstance ()->getDb ();
 		$db->insert ( '
@@ -277,7 +341,8 @@ class Team extends Service {
 				createdDate = UTC_TIMESTAMP()', array (
 				'teamId' => $team ['teamId'],
 				'championId' => $champ ['championId'],
-				'championValue' => $champ ['championValue']
+				'championValue' => $champ ['championValue'] 
 		) );
 	}
+
 }

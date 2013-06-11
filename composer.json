@@ -1,9 +1,12 @@
 {
+	"name" 							: "Destiny.gg",
 	"require": {
 		"php"						: ">=5.3.0",
 		"ext-curl"					: "*",
 		"ext-json"					: "*",
 		"ext-openssl"				: "*",
-		"paypal/rest-api-sdk-php" 	: "0.5.*"
+		"paypal/merchant-sdk-php"	: "3.4.*",
+		"nervo/yuicompressor"		: "2.4.7",
+		"monolog/monolog"			: "1.6.*@dev"
 	}
 }

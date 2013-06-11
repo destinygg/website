@@ -157,7 +157,7 @@ $(function(){
 		success: function(summoners, textStatus){
 			if(textStatus == 'notmodified') return;
 			var panel = $('#lolpanel');
-			if(typeof summoners != 'object' || summoners.length == 0){
+			if(typeof summoners != 'object' || summoners == null || summoners.length == 0){
 				panel.hide(); 
 				return;
 			};
@@ -361,7 +361,7 @@ $(function(){
 	}, 8000);
 	
 	// Twitch Connect button
-	$('a[rel="twitchlogin"]').on('click', function(){
+	$('a[rel="twitchlogin"],button[rel="twitchlogin"]').on('click', function(){
 		var url = 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id='+$(this).data('client-id')+'&redirect_uri='+$(this).data('redirect-uri')+'&scope='+$(this).data('request-perms');
 		window.location.href = url;
 		return false;
@@ -404,8 +404,8 @@ $(function(){
 			if(btn.hasClass('busy')){
 				return false;
 			}
-			btn.removeClass('btn-inverse').addClass('btn-primary busy');
-			btn.html('<i class="icon-time icon-white"></i> Checking for new games....');
+			btn.addClass('busy');
+			btn.html('<i class="icon-time"></i> Checking for new games....');
 			window.setTimeout(function(){
 				$.ajax({
 					ifModified: true,
@@ -413,13 +413,13 @@ $(function(){
 					success: function(data, textStatus){
 						var aggregateDate = (data != null) ? new Date(data.date) : null;
 						if(textStatus == 'notmodified' || !aggregateDate || aggregateDate <= lastCheck){
-							btn.removeClass('btn-primary').addClass('btn-danger');
+							btn.addClass('btn-danger');
 							btn.html('<i class="icon-remove icon-white"></i> No new games found');
 							window.setTimeout(function(){
-								btn.html(html).removeClass('btn-danger busy').addClass('btn-inverse');
+								btn.html(html).removeClass('btn-danger busy');
 							}, 3000);
 						}else{
-							btn.removeClass('btn-primary').addClass('btn-success').html('<i class="icon-thumbs-up icon-white"></i> New game was found');
+							btn.addClass('btn-success').html('<i class="icon-thumbs-up icon-white"></i> New game was found');
 							window.setTimeout(function(){window.location.reload(false)}, 1000);
 						};
 					}
@@ -428,6 +428,19 @@ $(function(){
 			return false;
 		});
 		
+	});
+	
+	// Subscriptions
+	$(function(){
+		var subscriptionsUi = $('#subscriptions');
+		subscriptionsUi.on('click', '.subscription:not(.active)', function(e){
+			subscriptionsUi.find('.subscription.active').each(function(){
+				$(this).removeClass('active');
+			});
+			$(this).find('input[name="subscription"]').prop('checked', true);
+			$(this).find('.payment-options input[type="radio"]:first').prop('checked', true);
+			$(this).addClass('active');
+		});
 	});
 	
 	// Add collapses

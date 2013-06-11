@@ -1,11 +1,11 @@
 <?php
+
 namespace Destiny\Db;
 
 use Destiny\Utils\Options;
 use Destiny\Utils\String\Params;
 
 class Mysql {
-	
 	private $database;
 	private $username;
 	private $password;
@@ -25,7 +25,7 @@ class Mysql {
 	}
 
 	public function update($sql, array $params = array()) {
-		return (! $this->query ( $sql, $params )) ? false : true;
+		return (! $this->query ( $sql, $params )) ? false : mysql_affected_rows ( $this->getConnection ()->getLink () );
 	}
 
 	public function query($sql, array $params = array()) {
@@ -45,6 +45,7 @@ class Mysql {
 			$connection->connectDb ( $this->getDatabase () );
 			$this->setConnection ( $connection );
 			$this->query ( 'SET CHARACTER SET utf8' );
+			$this->query ( 'SET time_zone = \'+00:00\'' );
 		}
 		return $connection;
 	}
@@ -98,11 +99,9 @@ class Mysql {
 	}
 
 }
-
 class Result {
-	
-	private $result;
-	private $data;
+	private $result = null;
+	private $data = null;
 
 	public function __construct($result) {
 		$this->result = $result;
@@ -122,7 +121,7 @@ class Result {
 	}
 
 	public function fetchRows() {
-		if (empty ( $this->data ) && $this->result != null) {
+		if (empty ( $this->data ) && ($this->result != null && ! is_bool ( $this->result ))) {
 			$this->data = array ();
 			while ( false != ($assoc = mysql_fetch_assoc ( $this->result )) ) {
 				$this->data [] = $assoc;
@@ -131,25 +130,15 @@ class Result {
 		return $this->data;
 	}
 
-	public function fetchObjects() {
-		if (empty ( $this->data ) && $this->result != null) {
-			$this->data = array ();
-			while ( false != ($assoc = mysql_fetch_object ( $this->result )) ) {
-				$this->data [] = $assoc;
-			}
-		}
-		return $this->data;
-	}
-
 	public function fetchRow() {
-		if (empty ( $this->data ) && $this->result != null) {
+		if (empty ( $this->data ) && ($this->result != null && ! is_bool ( $this->result ))) {
 			$this->data = ($this->result != null) ? mysql_fetch_assoc ( $this->result ) : array ();
 		}
 		return $this->data;
 	}
 
 	public function fetchValue() {
-		if (empty ( $this->data ) && $this->result != null) {
+		if (empty ( $this->data ) && ($this->result != null && ! is_bool ( $this->result ))) {
 			$row = ($this->result != null) ? mysql_fetch_row ( $this->result ) : array ();
 			if (! empty ( $row ) && isset ( $row [0] )) {
 				$this->data = $row [0];
@@ -159,9 +148,7 @@ class Result {
 	}
 
 }
-
 class Connection {
-	
 	private $link;
 	private $open;
 	private $database;

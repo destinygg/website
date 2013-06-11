@@ -8,7 +8,6 @@ $(function(){
 			return false;
 		}
 		name.attr('disabled','disabled');
-		btn.removeClass('btn-inverse').addClass('btn-primary');
 		btn.text('Sending...');
 		btn.attr('disabled','disabled');
 		name.attr('disabled','disabled');
@@ -19,7 +18,6 @@ $(function(){
 			success: function(data){
 				name.removeAttr('disabled');
 				btn.removeAttr('disabled');
-				btn.removeClass('btn-primary');
 				btn.text(data.message);
 				if(data.success){
 					btn.addClass('btn-success');
@@ -28,7 +26,7 @@ $(function(){
 				}
 				window.setTimeout(function(){
 					btn.text('Challenge!');
-					btn.removeClass('btn-primary btn-danger').addClass('btn-inverse');
+					btn.removeClass('btn-danger');
 					name.val('');
 				},2000);
 			},
@@ -36,7 +34,7 @@ $(function(){
 				btn.addClass('btn-danger');
 				window.setTimeout(function(){
 					btn.text('Challenge!');
-					btn.removeClass('btn-primary btn-danger').addClass('btn-inverse');
+					btn.removeClass('btn-danger');
 					name.val('');
 				},2000);
 			}

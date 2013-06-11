@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Action\Fantasy\Champion;
 
 use Destiny\Service\Fantasy\Db\Team;
@@ -16,7 +17,7 @@ class Purchase {
 				'message' => '' 
 		);
 		try {
-			if (! Session::getAuthorized ()) {
+			if (! Session::authorized ()) {
 				throw new \Exception ( 'User required' );
 			}
 			if (! isset ( $params ['championId'] ) || empty ( $params ['championId'] )) {
@@ -45,8 +46,8 @@ class Purchase {
 			throw new \Exception ( 'Team not found' );
 		}
 		// Security
-		if (Session::$userId != $team ['userId']) {
-			throw new \Exception ( 'Update team failed: User does not have rights to this team. {"userId":'.$team ['userId'].',"teamId":'.$team ['teamId'].'}' );
+		if (Session::get ( 'userId' ) != $team ['userId']) {
+			throw new \Exception ( 'Update team failed: User does not have rights to this team. {"userId":' . $team ['userId'] . ',"teamId":' . $team ['teamId'] . '}' );
 		}
 		$champ = $champService->getChampionById ( $params ['championId'] );
 		$team ['credits'] = floatval ( $team ['credits'] );
@@ -54,7 +55,7 @@ class Purchase {
 			throw new \Exception ( 'Not enough credits' );
 		}
 		$team ['credits'] = $team ['credits'] - floatval ( $champ ['championValue'] );
-		$champService->unlockChampion ( Session::$userId, $champ ['championId'] );
+		$champService->unlockChampion ( Session::get ( 'userId' ), $champ ['championId'] );
 		$teamService->updateTeamResources ( $team );
 		return $team;
 	}

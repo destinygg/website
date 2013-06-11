@@ -1,18 +1,57 @@
 <?php
+
 namespace Destiny;
 
 use Destiny\Db\Mysql;
+use Destiny\ViewModel;
 use Destiny\Utils\Http;
 use Destiny\Utils\Options;
 use Destiny\Utils\String\Params;
+use Psr\Log\LoggerInterface;
 
 class Application extends Service {
 	
+	/**
+	 * The current full url
+	 *
+	 * @var string
+	 */
 	public $uri = '';
+	
+	/**
+	 * The current URL path
+	 *
+	 * @var string
+	 */
 	public $path = '';
+	
+	/**
+	 * The global db object
+	 *
+	 * @var Destiny\Db\Mysql
+	 */
 	public $db = null;
+	
+	/**
+	 * _REQUEST variables, as well as mapped request variables
+	 *
+	 * @var array
+	 */
 	public $params = array ();
+	
+	/**
+	 * Last thrown exception
+	 *
+	 * @var \Exception
+	 */
 	public $exception = null;
+	
+	/**
+	 * Public logger
+	 *
+	 * @var LoggerInterface
+	 */
+	public $logger = null;
 	
 	/**
 	 * The application
@@ -59,15 +98,32 @@ class Application extends Service {
 		if (preg_match ( $pattern, $this->path ) > 0) {
 			try {
 				if (is_callable ( $fn )) {
+					$this->logger->debug ( 'Bind(Callable): ' . $this->path );
 					$fn ( $this, $this->params );
 				}
 				if (is_string ( $fn )) {
-					$this->template ( $fn );
+					$this->logger->debug ( 'Bind(Template): ' . $this->path );
+					$this->template ( $fn, new ViewModel () );
 				}
 			} catch ( \Exception $e ) {
 				$this->error ( 500, $e );
 			}
 		}
+	}
+
+	/**
+	 * Dirty way to nomalize class path \Namespace\Folder\Class
+	 * Make a url / path request a class / namespace path
+	 *
+	 * @param string $namespace
+	 * @param array $pathinfo
+	 * @return string
+	 */
+	private function prepareActionPath($namespace, array $pathinfo) {
+		return $namespace . str_replace ( array (
+				'/',
+				'\\\\' 
+		), '\\', $pathinfo ['dirname'] . '\\' ) . $pathinfo ['filename'];
 	}
 
 	/**
@@ -77,23 +133,33 @@ class Application extends Service {
 	 *
 	 * @param string $namespace
 	 */
-	public function bindNamespace($namespace) {
+	public function bindNamespace($namespace, $default = null) {
 		$pathinfo = pathinfo ( $this->path );
-		if (! empty ( $pathinfo ['filename'] )) {
-			// Dirty way to nomalize class path \Namespace\Folder\Class
-			$actionPath = $namespace . str_replace ( array ('/','\\\\'), '\\', $pathinfo ['dirname'] . '\\' ) . $pathinfo ['filename'];
-			if (class_exists ( $actionPath, true )) {
-				try {
-					$action = new $actionPath ();
-					ob_clean ();
-					ob_start ();
-					$action->execute ( $this->params );
-					ob_flush ();
-					exit ();
-				} catch ( \Exception $e ) {
-					$this->error ( 500, $e );
+		if (empty ( $pathinfo ['filename'] ) && ! empty ( $default )) {
+			$pathinfo ['filename'] = $default;
+		}
+		$actionPath = $this->prepareActionPath ( $namespace, $pathinfo );
+		if (! class_exists ( $actionPath, true )) {
+			$this->logger->debug ( sprintf ( 'BindNamespace: Class not found %s', $actionPath ) );
+			$this->error ( 404 );
+		}
+		try {
+			$this->logger->debug ( 'Action: ' . $actionPath );
+			$action = new $actionPath ();
+			ob_clean ();
+			ob_start ();
+			$model = new ViewModel ();
+			$response = $action->execute ( $this->params, $model );
+			if (is_string ( $response )) {
+				$tpl = './tpl/' . $response . '.php';
+				if (is_file ( $tpl )) {
+					$this->template ( $tpl, $model );
 				}
 			}
+			ob_flush ();
+			exit ();
+		} catch ( \Exception $e ) {
+			$this->error ( 500, $e );
 		}
 	}
 
@@ -109,14 +175,17 @@ class Application extends Service {
 		// Set a copy of the last thrown exception for use in templates
 		$this->exception = $e;
 		if ($e != null && $code >= Config::$a ['log'] ['level']) {
-			$errorLog = new Logger ( Config::$a ['log'] ['path'] . 'error.log' );
-			$errorLog->log ( $code . ': ' . $e->getMessage () );
+			$this->logger->error ( $code . ': ' . $e->getMessage () );
 		}
 		Http::status ( $code );
-		$this->template ( 'errors/' . $code . '.php' );
+		$this->template ( './errors/' . $code . '.php', new ViewModel ( array (
+				'error' => $e,
+				'code' => $code 
+		) ) );
 	}
 
 	/**
+	 * Get the URL
 	 *
 	 * @return the $uri
 	 */
@@ -125,6 +194,7 @@ class Application extends Service {
 	}
 
 	/**
+	 * Set the URL
 	 *
 	 * @param string $uri
 	 */
@@ -133,6 +203,8 @@ class Application extends Service {
 	}
 
 	/**
+	 * Get the path
+	 *
 	 * @return the $path
 	 */
 	public function getPath() {
@@ -140,6 +212,8 @@ class Application extends Service {
 	}
 
 	/**
+	 * Set the path
+	 *
 	 * @param string $path
 	 */
 	public function setPath($path) {
@@ -147,6 +221,8 @@ class Application extends Service {
 	}
 
 	/**
+	 * Get the DBL
+	 *
 	 * @return Mysql
 	 */
 	public function getDb() {
@@ -154,6 +230,8 @@ class Application extends Service {
 	}
 
 	/**
+	 * Set the DBL
+	 *
 	 * @param Mysql $db
 	 */
 	public function setDb($db) {
@@ -161,6 +239,8 @@ class Application extends Service {
 	}
 
 	/**
+	 * Get request params
+	 *
 	 * @return array
 	 */
 	public function getParams() {
@@ -168,6 +248,8 @@ class Application extends Service {
 	}
 
 	/**
+	 * Set request params
+	 *
 	 * @param array $params
 	 */
 	public function setParams(array $params) {
@@ -175,6 +257,10 @@ class Application extends Service {
 	}
 
 	/**
+	 * Get the last thrown exception
+	 *
+	 * @todo remove this
+	 *      
 	 * @return \Exception
 	 */
 	public function getException() {
@@ -189,12 +275,43 @@ class Application extends Service {
 	 *
 	 * @param string $filename
 	 */
-	public function template($filename) {
+	public function template($filename, ViewModel $model) {
+		$this->logger->debug ( 'Template: ' . $filename );
 		ob_clean ();
 		ob_start ();
 		include $filename;
 		ob_flush ();
 		exit ();
+	}
+
+	/**
+	 * Set logger
+	 *
+	 * @return LoggerInterface
+	 */
+	public function getLogger() {
+		return $this->logger;
+	}
+
+	/**
+	 * Get logger
+	 *
+	 * @param LoggerInterface $logger
+	 */
+	public function setLogger(LoggerInterface $logger) {
+		$this->logger = $logger;
+	}
+
+	/**
+	 * Get the type of cache
+	 *
+	 * @param string $filename
+	 * @return \Destiny\Cache\Apc
+	 */
+	public function getMemoryCache($filename = null) {
+		$params = array ();
+		$params ['filename'] = Config::$a ['cache'] ['path'] . $filename . '.tmp';
+		return new Config::$a ['cache'] ['memory'] ( $params );
 	}
 
 }

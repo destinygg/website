@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Action\Fantasy\Team;
 
 use Destiny\Service\Fantasy\Db\Team;
@@ -12,17 +13,17 @@ class Update {
 
 	public function execute(array $params) {
 		$response = array (
-			'success' => false,
-			'data' => array (),
-			'message' => '' 
+				'success' => false,
+				'data' => array (),
+				'message' => '' 
 		);
 		try {
 			
-			if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+			if ($_SERVER ['REQUEST_METHOD'] != 'POST') {
 				throw new \Exception ( 'POST required' );
 			}
 			
-			if (! Session::getAuthorized ()) {
+			if (! Session::authorized ()) {
 				throw new \Exception ( 'User required' );
 			}
 			if (! isset ( $params ['champions'] ) || ! isset ( $params ['teamId'] )) {
@@ -33,7 +34,6 @@ class Update {
 			$response ['data'] ['team'] = $team;
 			$response ['data'] ['champions'] = Team::getInstance ()->getTeamChamps ( $team ['teamId'] );
 			$response ['success'] = true;
-			
 		} catch ( \Exception $e ) {
 			$response ['success'] = false;
 			$response ['message'] = $e->getMessage ();
@@ -52,12 +52,12 @@ class Update {
 			throw new \Exception ( 'Team not found' );
 		}
 		// Security
-		if (Session::$userId != $team ['userId']) {
-			throw new \Exception ( 'Update team failed:  User does not have rights to this team. {"userId":'.$team ['userId'].',"teamId":'.$team ['teamId'].'}' );
+		if (Session::get ( 'userId' ) != $team ['userId']) {
+			throw new \Exception ( 'Update team failed:  User does not have rights to this team. {"userId":' . $team ['userId'] . ',"teamId":' . $team ['teamId'] . '}' );
 		}
-
+		
 		// Get the users unlocked champs
-		$userChampions = Champion::getInstance ()->getUserChampions ( Session::$userId );
+		$userChampions = Champion::getInstance ()->getUserChampions ( Session::get ( 'userId' ) );
 		$userChampionIds = array ();
 		foreach ( $userChampions as $userChamp ) {
 			$userChampionIds [$userChamp ['championId']] = $userChamp ['championName'];
@@ -82,11 +82,11 @@ class Update {
 		
 		// Not enough champs / Too many champs on the new team size
 		$this->checkTeamSize ( count ( $newChamps ) );
-
-		$removedChamps = $addedChamps = array();
+		
+		$removedChamps = $addedChamps = array ();
 		$addedChamps = array_diff ( $newChampsId, $oldChampsId );
 		$removedChamps = array_diff ( $oldChampsId, $newChampsId );
-
+		
 		// Calculate the transfer offset, when free champs rotate out, you can have illegal champs in your team, which should not cost.
 		$transferOffset = $transferDebit = 0;
 		foreach ( $removedChamps as $removedId ) {
@@ -102,10 +102,10 @@ class Update {
 		$transferDebit = (count ( $addedChamps ) - (Config::$a ['fantasy'] ['team'] ['maxChampions'] - count ( $oldChamps ))) - $transferOffset;
 		
 		// Check & debit transfers
-		if (intval($team ['transfersRemaining']) < $transferDebit) {
+		if (intval ( $team ['transfersRemaining'] ) < $transferDebit) {
 			throw new \Exception ( 'No available transfers' );
 		}
-		$team ['transfersRemaining'] = intval($team ['transfersRemaining']) - $transferDebit;
+		$team ['transfersRemaining'] = intval ( $team ['transfersRemaining'] ) - $transferDebit;
 		
 		// Update transfers
 		foreach ( $addedChamps as $addedId ) {

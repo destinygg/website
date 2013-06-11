@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Action\Fantasy;
 
 use Destiny\Service\Fantasy\Db\Team;
@@ -21,7 +22,7 @@ class Challenge {
 			if (! isset ( $params ['name'] ) || empty ( $params ['name'] )) {
 				throw new \Exception ( 'name required.' );
 			}
-			if (! Session::getAuthorized ()) {
+			if (! Session::authorized ()) {
 				throw new \Exception ( 'User required' );
 			}
 			$teamService = Team::getInstance ();
@@ -29,16 +30,15 @@ class Challenge {
 			if (empty ( $teams )) {
 				throw new \Exception ( 'User not found' );
 			}
-			$team = $teams[0];
-			if (intval ( $team ['teamId'] ) == intval ( Session::$team ['teamId'] )) {
+			$team = $teams [0];
+			if (intval ( $team ['teamId'] ) == intval ( Session::get ( 'teamId' ) )) {
 				throw new \Exception ( 'Play with yourself?' );
 			}
-			$response ['success'] = Challenge::getInstance ()->challengeTeam ( Session::$team ['teamId'], $team ['teamId'] );
+			$response ['success'] = Challenge::getInstance ()->challengeTeam ( Session::get ( 'teamId' ), $team ['teamId'] );
 			$response ['message'] = ($response ['success']) ? 'Challenge sent.' : 'Challenge already exists';
-		
 		} catch ( \Exception $e ) {
 			$response ['success'] = false;
-			$response ['message'] = $e->getMessage();
+			$response ['message'] = $e->getMessage ();
 		}
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );

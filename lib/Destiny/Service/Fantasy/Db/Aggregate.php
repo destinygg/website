@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service\Fantasy\Db;
 
 use Destiny\Application;
@@ -10,11 +11,13 @@ use Destiny\Utils\Cache;
 class Aggregate extends Service {
 	
 	/**
+	 *
 	 * @var Destiny\Service\Fantasy\Db\Aggregate
 	 */
 	protected static $instance = null;
 
 	/**
+	 *
 	 * @return Destiny\Service\Fantasy\Db\Aggregate
 	 */
 	public static function getInstance() {
@@ -43,26 +46,11 @@ class Aggregate extends Service {
 		$this->calculateChampionTeamScore ( $gameId, 'GAME' );
 		
 		// Recalc team scores, ranks, credits and milestones
-		$this->calculateTeamScore ();
+		$this->calculateTeamScore ( $gameId );
 		$this->calculateTeamRanks ();
 		$this->calculateTeamCredits ( $gameId );
 		$this->calculateMilestones ();
 		$this->updateChampionStats ();
-			
-		// Clear caches, this should be replaced using "tags"
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'champions' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'recentgames' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'recentgames3' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'leadersboard' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'leadersboard5' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'leadersboard10' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'leaderboardbyweek' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'topchampionscores' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'recentgameleaderboard' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'leadersboardsubscribers' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'leadersboardsubscribers10' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'topsummoners' );
-		Cache::clear ( Config::$a ['cache'] ['path'] . 'topsummoners10' );
 		return true;
 	}
 	
@@ -318,18 +306,32 @@ class Aggregate extends Service {
 	 * This has the potential to become very slow, since it does a full re-calc for all teams
 	 * Need to think of a way to reduce it
 	 */
-	public function calculateTeamScore() {
+	public function calculateTeamScore($gameId = null) {
 		$db = Application::getInstance ()->getDb ();
-		$db->update ( '
+		if ($gameId == null) {
+			$db->update ( '
 			UPDATE dfl_teams AS `teams`, ( 
-				SELECT 
-					scoresteams.teamId, 
-					SUM(scoresteams.scoreValue) AS `total` 
+				SELECT scoresteams.teamId, SUM(scoresteams.scoreValue) AS `total` 
 				FROM dfl_scores_teams AS `scoresteams` 
 				GROUP BY scoresteams.teamId 
-				) AS scoresteams 
+			) AS scoresteams 
 			SET teams.scoreValue = scoresteams.total, teams.modifiedDate = UTC_TIMESTAMP()
 			WHERE teams.teamId = scoresteams.teamId' );
+		} else {
+			$db->update ( '
+				UPDATE dfl_teams AS `teams`, ( 
+					SELECT scoresteams.teamId, SUM(scoresteams.scoreValue) AS `total` 
+					FROM dfl_scores_teams AS `scoresteams`
+					WHERE scoresteams.gameId = \'{gameId}\' 
+					GROUP BY scoresteams.teamId 
+				) AS scoresteams 
+				INNER JOIN dfl_scores_teams AS `scoresteams` ON (scoresteams.teamId = teams.teamId)
+				SET teams.scoreValue = scoresteams.total, teams.modifiedDate = UTC_TIMESTAMP()
+				WHERE scoresteams.gameId = \'{gameId}\'
+			', array (
+					'gameId' => $gameId 
+			) );
+		}
 	}
 
 	public function calculateTeamRanks() {
@@ -462,5 +464,5 @@ class Aggregate extends Service {
 				'date' => $date 
 		) );
 	}
-	
+
 }

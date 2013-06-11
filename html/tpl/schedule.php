@@ -1,18 +1,24 @@
-<? namespace Destiny; ?>
+<?php
+
+namespace Destiny;
+
+use Destiny\Utils\Tpl;
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Schedule : <?=Config::$a['meta']['title']?></title>
+<title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
 <meta name="description" content="<?=Config::$a['meta']['description']?>">
 <meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
 <meta name="author" content="<?=Config::$a['meta']['author']?>">
-<link href="<?=Config::cdn()?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
 <?include'seg/google.tracker.php'?>
 </head>
-<body>
+<body id="schedule">
 	<?include'seg/top.php'?>
 	<?include'seg/embed.calendar.php'?>
 	<?include'seg/panel.calendar.php'?>

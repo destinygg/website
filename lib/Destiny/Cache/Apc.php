@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Cache;
 
 use Destiny\Config;
@@ -8,7 +9,6 @@ use Destiny\Utils\Options;
  * Simple abstraction of file caching logic
  */
 class Apc {
-	
 	public $filename = '';
 	public $life = 0;
 	public $exists = false;

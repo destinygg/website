@@ -1,16 +1,20 @@
-<? 
-namespace Destiny; 
+<?
+
+namespace Destiny;
+
 use Destiny\Utils\Tpl;
+
+$subsService = \Destiny\Service\Subscriptions::getInstance ();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Config::$a['meta']['title']?></title>
+<title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
 <meta name="description" content="<?=Config::$a['meta']['description']?>">
 <meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
 <meta name="author" content="<?=Config::$a['meta']['author']?>">
-<link href="<?=Config::cdn()?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
 <?include'seg/google.tracker.php'?>
@@ -20,23 +24,86 @@ use Destiny\Utils\Tpl;
 	<?include'seg/top.php'?>
 	
 	<section class="container">
+		<h1 class="title">
+			<span>Subscribe</span> <small>become one of the brave</small>
+		</h1>
 		<div class="content content-dark clearfix">
-			<div style="width:100%;" class="clearfix stream">
-				<h3 class="title"><span>Subscribe</span> <a href="#">destiny.gg</a></h3>
-				<form action="/Order/Create" method="POST" style="margin:0; border-top:1px solid #222;">
+			<div class="ui-step-legend-wrap clearfix">
+				<div class="ui-step-legend clearfix">
+					<ul>
+						<li style="width: 25%;" class="active"><a>Select a subscription</a><i class="arrow"></i></li>
+						<li style="width: 25%;"><a>Confirmation</a></li>
+						<li style="width: 25%;"><a>Pay subscription</a></li>
+						<li style="width: 25%;"><a>Complete</a></li>
+					</ul>
+				</div>
+			</div>
+			<div style="width: 100%;" class="clearfix stream">
+				<form action="/order/confirm" method="post" style="margin: 0;">
+					<input type="hidden" name="checkoutId" value="<?=$model->checkoutId?>" />
 					<fieldset>
-						<div class="control-group" style="margin:10px 20px;">
-							<p>Use your PayPal account to pay for the new subscriptions. <br />If you have an existing subscription, the expiration date will be extended by the new subscription.</p>
-							<?$i=0;foreach(Config::$a['commerce']['subscriptions'] as $id=>$v):?>
-							<label class="radio">
-								<input type="radio" name="subscription" value="<?=$id?>"<?=($i == 0) ? ' checked':''?>>
-								<span class="label label-inverse">$<?=number_format($v['amount'], 2)?></span> <?=Tpl::out($v['label'])?>
-							</label>
-							<?$i++;endforeach;?>
+						<div class="control-group" style="margin: 10px 20px;">
+							<?php if(!empty($model->subscription)): ?>
+							<p>
+								<span class="label label-inverse">HMMM</span> You already have
+								an active subscription. <br />Click the button below to go to
+								your profile.
+							</p>
+							<?php endif; ?>
+							
+							<?php if(empty($model->subscription)): ?>
+							<p>
+								Choose a subscription from the selection below. <br />Payments
+								are processed and secured by PayPal.
+							</p>
+							<div id="subscriptions">
+								<?php $sub = $subsService->getSubscriptionType('1-MONTH-SUB')?>
+								<div class="subscription active">
+									<label class="radio">
+										<input type="radio" name="subscription" value="<?=$sub['id']?>" checked="checked">
+										<strong class="sub-amount">$<?=$sub['amount']?></strong>
+										<span class="sub-label"><?=$sub['label']?></span>
+									</label>
+									<div class="payment-options">
+										<label class="radio">
+											<input type="radio" name="renew" value="1" checked>
+											Renew each month
+										</label> 
+										<label class="radio">
+											<input type="radio" name="renew" value="0">
+											Once-off payment
+										</label>
+									</div>
+								</div>
+								<?php $sub = $subsService->getSubscriptionType('3-MONTH-SUB')?>
+								<div class="subscription">
+									<label class="radio">
+										<input type="radio" name="subscription" value="<?=$sub['id']?>">
+										<strong class="sub-amount">$<?=$sub['amount']?></strong>
+										<span class="sub-label"><?=$sub['label']?></span>
+									</label>
+									<div class="payment-options">
+										<label class="radio">
+											<input type="radio" name="renew" value="1">
+											Renew every 3 months
+										</label>
+										<label class="radio">
+											<input type="radio" name="renew" value="0">
+											Once-off payment
+										</label>
+									</div>
+								</div>
+							</div>
+							<?php endif; ?>
+							
 						</div>
-						<div class="form-actions" style="margin:15px 0 0 0; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:0;">
-							<button type="submit" class="btn"><i class="icon-shopping-cart"></i> Proceed</button>
-							<img src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+							<?php if(empty($model->subscription)): ?>
+							<button type="submit" class="btn"><i class="icon-shopping-cart"></i> Setup payment</button>
+							<?php else: ?>
+							<a href="/profile" class="btn"><i class="icon-user"></i> Manage subscriptions</a>
+							<?php endif; ?>
 						</div>
 					</fieldset>
 				</form>

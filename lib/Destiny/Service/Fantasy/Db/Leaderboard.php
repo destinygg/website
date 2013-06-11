@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service\Fantasy\Db;
 
 use Destiny\Service;
@@ -8,14 +9,14 @@ use Destiny\Utils\Cache;
 use Destiny\Service\Fantasy\Db\Game;
 
 class Leaderboard extends Service {
-	
 	protected static $instance = null;
-	
+
 	/**
-	 * @return ServiceFantasyDbLeaderboard
+	 *
+	 * @return Leaderboard
 	 */
 	public static function getInstance() {
-		return parent::getInstance();
+		return parent::getInstance ();
 	}
 
 	public function getTeamLeaderboard($limit = 1, $offset = 0) {
@@ -43,15 +44,15 @@ class Leaderboard extends Service {
 					) AS `champions` 
 				FROM dfl_teams AS `teams` 
 				INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
 				WHERE teams.teamActive = 1
 				GROUP BY teams.teamId 
 				ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 END, ranks.teamRank ASC 
 				LIMIT {offset},{limit} ', array (
-				'offset' 		=> $offset,
-				'limit' 		=> $limit,
-				'maxChampions' 	=> Config::$a['fantasy']['team']['maxChampions']
+				'offset' => $offset,
+				'limit' => $limit,
+				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
 		) )->fetchRows ();
 	}
 
@@ -80,16 +81,16 @@ class Leaderboard extends Service {
 					) AS `champions` 
 				FROM dfl_teams AS `teams` 
 				INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
 				WHERE teams.teamActive = 1
 				GROUP BY teams.teamId 
 				ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 END, ranks.teamRank ASC 
 				LIMIT {offset},{limit} ', array (
-				'offset' 		=> $offset,
-				'limit' 		=> $limit,
-				'maxChampions' 	=> Config::$a['fantasy']['team']['maxChampions']
-		) )->fetchObjects ();
+				'offset' => $offset,
+				'limit' => $limit,
+				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
+		) )->fetchRows ();
 	}
 
 	public function getTeamRangeLeaderboard($start, $end, $limit = 1, $offset = 0) {
@@ -116,16 +117,16 @@ class Leaderboard extends Service {
 				FROM dfl_scores_teams AS `scoreteams`
 				INNER JOIN dfl_teams AS `teams` ON (teams.teamId = scoreteams.teamId)
 				INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 				WHERE teams.teamActive = 1 AND scoreteams.createdDate BETWEEN \'{start}\' AND \'{end}\'
 				GROUP BY scoreteams.teamId
 				ORDER BY `weekScore` DESC
 				LIMIT {offset},{limit} ', array (
-				'offset' 		=> $offset,
-				'limit' 		=> $limit,
-				'start' 		=> $start,
-				'end' 			=> $end,
-				'maxChampions' 	=> Config::$a['fantasy']['team']['maxChampions']
+				'offset' => $offset,
+				'limit' => $limit,
+				'start' => $start,
+				'end' => $end,
+				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
 		) )->fetchRows ();
 	}
 
@@ -167,8 +168,8 @@ class Leaderboard extends Service {
 			GROUP BY gameschamps.summonerId
 			ORDER BY `gamesPlayed` DESC, gameschamps.summonerId
 			LIMIT 0,{limit}', array (
-				'limit' => $limit
-		) )->fetchObjects ();
+				'limit' => $limit 
+		) )->fetchRows ();
 	}
 
 	public function getTeamChampionScores($teamId, $limit) {
@@ -181,21 +182,9 @@ class Leaderboard extends Service {
 			GROUP BY tchamps.championId
 			ORDER BY scoreValueSum DESC
 			LIMIT 0,{limit}', array (
-				'limit' 	=> $limit,
-				'teamId' 	=> $teamId
-		) )->fetchRows();
-	}
-
-	public function getTopChampionScores($limit) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
-			SELECT champs.*,SUM(scoreValue) AS `scoreValueSum` FROM dfl_scores_champs AS `steamchamps`
-			INNER JOIN dfl_champs AS `champs` ON (champs.championId = steamchamps.championId)
-			GROUP BY steamchamps.championId
-			ORDER BY scoreValueSum DESC
-			LIMIT 0,{limit}', array (
-				'limit' => $limit
-		) )->fetchRows();
+				'limit' => $limit,
+				'teamId' => $teamId 
+		) )->fetchRows ();
 	}
 
 	public function getRecentGameLeaderboard($limit, $offset = 0) {
@@ -227,18 +216,18 @@ class Leaderboard extends Service {
 				FROM dfl_scores_teams AS `scoreteams`
 				INNER JOIN dfl_teams AS `teams` ON (teams.teamId = scoreteams.teamId)
 				INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.active = 1) 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
 				WHERE teams.teamActive = 1 AND scoreteams.gameId = \'{gameId}\'
 				GROUP BY scoreteams.teamId
 				ORDER BY `sumScore` DESC, ranks.teamRank ASC
 				LIMIT {offset},{limit} 
 				', array (
-				'offset' 		=> $offset,
-				'limit' 		=> $limit,
-				'gameId' 		=> $game ['gameId'],
-				'maxChampions' 	=> Config::$a['fantasy']['team']['maxChampions']
-		) )->fetchObjects ();
+				'offset' => $offset,
+				'limit' => $limit,
+				'gameId' => $game ['gameId'],
+				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
+		) )->fetchRows ();
 	}
 
 	public function getTopTeamChampionScores($limit) {
@@ -253,8 +242,8 @@ class Leaderboard extends Service {
 			GROUP BY tcscores.championId
 			ORDER BY scoreValueSum DESC
 			LIMIT 0,{limit}', array (
-				'limit' => $limit
-		) )->fetchRows();
+				'limit' => $limit 
+		) )->fetchRows ();
 	}
-	
+
 }

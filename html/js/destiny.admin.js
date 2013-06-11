@@ -18,7 +18,7 @@ $(function(){
 			url: destiny.baseUrl + 'Admin/Cron',
 			success: function(data){
 				btn.removeAttr('disabled');
-				if(confirm(data.message + "\r\n" + "Refresh?")){
+				if(confirm('Response: '+ data.message + "\r\n" + "Refresh?")){
 					window.location.reload();
 				}
 			}
@@ -34,7 +34,7 @@ $(function(){
 		$.ajax($.extend({}, ajaxSettings, {
 			type: 'get',
 			data: {'gameId':gameId},
-			url: destiny.baseUrl + 'Admin/Game/Reset',
+			url: destiny.baseUrl + 'Admin/ResetGame',
 			success: function(data){
 				window.location.reload();
 			}

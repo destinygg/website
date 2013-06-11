@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Service\Google;
 
 use Destiny\Service;
@@ -30,18 +31,14 @@ class Calendar extends Service {
 	 */
 	public function getEventsInRange(array $options = array()) {
 		return new Consumer ( array_merge ( array (
-			'url' => new String ( 'http://www.google.com/calendar/feeds/{calendar.id}/public/full?alt=jsonc&max-results={limit}&singleevents=true&orderby=starttime&sortorder=ascending&start-min={start}&start-max={end}&ctz={tz}', array (
-					'calendar.id' => Config::$a ['google'] ['calendar'] ['id'],
-					'limit'	=> $options['limit'],
-					'start' => urlencode($options['start']),
-					'end' => urlencode($options['end']),
-					'tz' => urlencode($options['tz'])
-			) ),
-			'id' => 'googlecalendars',
-			'tag' => 'events',
-			'life' => 3600,
-			'contentType' => Mimetype::JSON,
-			'checkIfModified' => false
+				'url' => new String ( 'http://www.google.com/calendar/feeds/{calendar.id}/public/full?alt=jsonc&max-results={limit}&singleevents=true&orderby=starttime&sortorder=ascending&start-min={start}&start-max={end}&ctz={tz}', array (
+						'calendar.id' => Config::$a ['google'] ['calendar'] ['id'],
+						'limit' => $options ['limit'],
+						'start' => urlencode ( $options ['start'] ),
+						'end' => urlencode ( $options ['end'] ),
+						'tz' => urlencode ( $options ['tz'] ) 
+				) ),
+				'contentType' => Mimetype::JSON 
 		), $options ) );
 	}
 

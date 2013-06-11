@@ -10,7 +10,7 @@
 	
 	<target name="clean" depends="loadproperties">
 		<delete includeemptydirs="true" quiet="true">
-			<fileset dir="${build.base}" includes="**/*" excludes="**/tmp/*" />
+			<fileset dir="${build.base}" includes="**/*" excludes="**/tmp/*,**/log/*" />
 		</delete>
 	</target>
 	
@@ -19,15 +19,20 @@
 		<mkdir dir="${build.base}/tmp/" />
 		<mkdir dir="${build.base}/log/" />
 		<antcall target="copysource" />
+		<antcall target="concatcss" />
+		<antcall target="concatjs" />
+		<!--
 		<antcall target="compresscss" />
 		<antcall target="compressjs" />
+		-->
 	</target>
 	
 	<target name="compress">
-		<java jar="yuicompressor-2.4.2.jar" fork="true">
+		<java jar="vendor/nervo/yuicompressor/yuicompressor.jar" fork="true">
 			<arg value="${file}" />
 			<arg value="-o" />
 			<arg value="${file}" />
+			<arg value="--nomunge" />
 		</java>
 	</target>
 
@@ -76,7 +81,7 @@
 		<delete><filelist refid="adminfiles"/></delete>
 	</target>
 	
-	<target name="compresscss" depends="concatcss">
+	<target name="compresscss">
 		<antcall target="compress">
 			<param name="file" value="${build.base}/html/css/destiny.${version}.css" />
 		</antcall>
@@ -88,7 +93,7 @@
 		</antcall>
 	</target>
 	
-	<target name="compressjs" depends="concatjs">
+	<target name="compressjs">
 		<antcall target="compress">
 			<param name="file" value="${build.base}/html/js/destiny.${version}.js" />
 		</antcall>

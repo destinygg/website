@@ -1,8 +1,9 @@
 <?php
+
 namespace Destiny\Utils\String;
 
 abstract class Params {
-	
+
 	public static function params($params) {
 		$str = array ();
 		foreach ( $params as $n => $v ) {
