@@ -56,7 +56,7 @@ use Destiny\Utils\Date;
 						</div>
 						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
 							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-							<button type="submit" class="btn btn-primary">Activate scheduled payment</button>
+							<button type="submit" class="btn btn-primary"><i class="icon-shopping-cart icon-white"></i> Activate payment</button>
 							<a href="/profile" class="btn">Back to profile</a>
 						</div>
 					</fieldset>
@@ -96,7 +96,7 @@ use Destiny\Utils\Date;
 						</div>
 						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
 							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-								<a href="/profile" class="btn">Go back to profile</a>
+							<a href="/profile" class="btn">Go back to profile</a>
 						</div>
 					</fieldset>
 				</form>

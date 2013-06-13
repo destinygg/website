@@ -1,20 +1,20 @@
 @-moz-keyframes spin { 
-	0% { -moz-transform: rotate(0deg); }
-	100% { -moz-transform: rotate(-360deg); }
+0% { -moz-transform: rotate(0deg); }
+100% { -moz-transform: rotate(-360deg); }
 }
 @-webkit-keyframes spin { 
-	0% { -webkit-transform: rotate(0deg); }
-	100%{ -webkit-transform: rotate(-360deg); }
+0% { -webkit-transform: rotate(0deg); }
+100%{ -webkit-transform: rotate(-360deg); }
 }
 @-webkit-keyframes whitetxtglow { 
-	0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
-	50% { text-shadow: 0 0 4px rgba(0,136,204,1); color: white; }
-	100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
+0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
+50% { text-shadow: 0 0 4px rgba(0,136,204,1); color: white; }
+100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
 }
 @-moz-keyframes whitetxtglow { 
-	0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
-	50% { text-shadow: 0 0 4px rgba(0,136,204,1); color: white; }
-	100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
+0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
+50% { text-shadow: 0 0 4px rgba(0,136,204,1); color: white; }
+100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
 }
 body {
 background: #111 url("../img/bodybg.png") repeat top center;
@@ -49,6 +49,10 @@ i.subtle {
 opacity: 0.4;
 }
 
+a:hover {
+color: #ffffff;
+text-decoration: none;
+}
 a:hover>.subtle {
 opacity: 1;
 }
@@ -198,169 +202,169 @@ color: #888;
 }
 
 .content-embed {
-	padding: 5px;
-	-webkit-border-radius: 6px;
-	-moz-border-radius: 6px;
-	border-radius: 6px;
-	background: white;
+padding: 5px;
+-webkit-border-radius: 6px;
+-moz-border-radius: 6px;
+border-radius: 6px;
+background: white;
 }
 
 .content-header {
-	padding: 20px;
-	background: #111;
-	border-bottom: 1px solid #000;
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
+padding: 20px;
+background: #111;
+border-bottom: 1px solid #000;
+border-bottom-left-radius: 6px;
+border-bottom-right-radius: 6px;
 }
 
 i.icon-bobross {
-	background: url(../favicon.png) no-repeat center center;
-	margin-bottom: 1px;
-	margin-top: 0;
-	-webkit-transform: rotate(0deg);
-	-webkit-transition: all 0.2s ease-in-out;
-	-moz-transition: all 0.2s ease-in-out;
-	-o-transition: all 0.2s ease-in-out;
-	transition: all 0.2s ease-in-out;
+background: url(../favicon.png) no-repeat center center;
+margin-bottom: 1px;
+margin-top: 0;
+-webkit-transform: rotate(0deg);
+-webkit-transition: all 0.2s ease-in-out;
+-moz-transition: all 0.2s ease-in-out;
+-o-transition: all 0.2s ease-in-out;
+transition: all 0.2s ease-in-out;
 }
 
 a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
-	-moz-animation: spin 3s infinite linear;
-	-webkit-animation: spin 3s infinite linear;
+-moz-animation: spin 3s infinite linear;
+-webkit-animation: spin 3s infinite linear;
 }
 
 #twitchpanel .panelheader .game>div {
-	padding: 0 0 0 10px;
-	display: inline-block;
+padding: 0 0 0 10px;
+display: inline-block;
 }
 
 #twitchpanel .panelheader {
-	border-top-left-radius: 6px;
-	border-top-right-radius: 6px;
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 0;
+border-top-left-radius: 6px;
+border-top-right-radius: 6px;
+border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
 }
 
 #twitchpanel .panelheader .toolgroup {
-	padding: 5px;
-	color: #777;
-	font-size: 12px;
-	line-height: 22px;
+padding: 5px;
+color: #777;
+font-size: 12px;
+line-height: 22px;
 }
 
 #twitchpanel .panelheader .toolgroup strong {
-	color: #ececec;
-	font-weight: normal;
+color: #ececec;
+font-weight: normal;
 }
 
 #twitchpanel.split-view>.content,#twitchpanel.single-view>.content {
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+border-bottom-right-radius: 0;
 }
 
 #twitchpanel.split-view .panelheader .toolgroup,#twitchpanel.single-view .panelheader .toolgroup
-	{
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+{
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #twitchpanel #twitch-elements {
-	overflow: hidden;
+overflow: hidden;
 }
 
 #twitchpanel .twitch-element,#twitchpanel .twitch-element-wrap {
-	width: 100%;
-	height: 475px;
+width: 100%;
+height: 475px;
 }
 
 #twitchpanel #twitch-player object {
-	height: 476px;
+height: 476px;
 }
 
 #twitchpanel.split-view #twitch-player {
-	width: 68%;
+width: 68%;
 }
 
 #twitchpanel.split-view #twitch-chat {
-	width: 32%;
-	background: white;
+width: 32%;
+background: white;
 }
 
 #twitchpanel.single-view .twitch-element,#twitchpanel.single-view .twitch-element-wrap
-	{
-	width: 100%;
-	height: 559px;
+{
+width: 100%;
+height: 559px;
 }
 
 #twitchpanel.single-view #twitch-player object {
-	height: 560px;
+height: 560px;
 }
 
 @media ( min-width : 1200px) {
-	#twitchpanel.single-view .twitch-element,#twitchpanel.single-view .twitch-element-wrap
-		{
-		width: 100%;
-		height: 689px;
-	}
-	#twitchpanel.single-view #twitch-player object {
-		height: 690px;
-	}
+#twitchpanel.single-view .twitch-element,#twitchpanel.single-view .twitch-element-wrap
+{
+width: 100%;
+height: 689px;
+}
+#twitchpanel.single-view #twitch-player object {
+height: 690px;
+}
 }
 
 #twitchpanel #twitch-player.defocus {
-	position: relative;
-	background: rgb(43, 43, 43);
-	background: -moz-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(43, 43, 43, 1) ), color-stop(100%, rgba(0, 0, 0, 1) ) );
-	background: -webkit-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-	background: -o-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-	background: -ms-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-	background: linear-gradient(to bottom, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+position: relative;
+background: rgb(43, 43, 43);
+background: -moz-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(43, 43, 43, 1) ), color-stop(100%, rgba(0, 0, 0, 1) ) );
+background: -webkit-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+background: -o-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+background: -ms-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
+background: linear-gradient(to bottom, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
 }
 
 #twitchpanel #twitch-player.defocus object {
-	display: none;
+display: none;
 }
 
 #twitchpanel a#popoutvideo,#twitchpanel a#popoutchat {
-	text-shadow: none;
+text-shadow: none;
 }
 
 #twitchpanel a#popoutvideo.btn-down,#twitchpanel a#popoutchat.btn-down {
-	color: #ccc;
+color: #ccc;
 }
 
 #player-ads {
-	margin: 0;
+margin: 0;
 }
 
 #player-ads-video {
-	width: 100%;
-	float: left;
+width: 100%;
+float: left;
 }
 
 #player-ads-video p {
-	margin: 10px 0;
-	text-align: center;
-	color: #777;
-	font-size: 12px;
+margin: 10px 0;
+text-align: center;
+color: #777;
+font-size: 12px;
 }
 
 #player-ads-video iframe {
-	width: 100%;
-	height: 415px;
+width: 100%;
+height: 415px;
 }
 
 #twitchpanel.single-view #player-ads-video iframe {
-	height: 500px;
+height: 500px;
 }
 
 @media ( min-width : 1200px) {
-	#player-ads-video iframe {
-		height: 415px;
-	}
-	#twitchpanel.single-view #player-ads-video iframe {
-		height: 630px;
-	}
+#player-ads-video iframe {
+height: 415px;
+}
+#twitchpanel.single-view #player-ads-video iframe {
+height: 630px;
+}
 }
 
 .stream {
@@ -389,10 +393,6 @@ margin: 0;
 .stream .title a {
 font-size: 14px;
 text-decoration: none;
-}
-
-.stream .title a:hover {
-color: #5cd2ff;
 }
 
 .stream:first-child .media {
@@ -428,6 +428,7 @@ overflow: hidden;
 }
 
 .stream .media:hover {
+text-shadow: none;
 color: #c9c9c9;
 background: none;
 background-color: rgba(255, 255, 255, 0.1);
@@ -611,131 +612,131 @@ margin: 15px auto 0 auto;
 }
 
 #paypal-form .btn-paypal {
-	font-weight: bold;
-	font-size: 20px;
-	color: #003366;
-	border-radius: 22px;
-	border: 1px solid #ff9933;
-	background: rgb(252, 234, 187);
-	background: -moz-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(252, 234, 187, 1) ), color-stop(50%, rgba(252, 205, 77, 1) ), color-stop(51%, rgba(248, 181, 0, 1) ), color-stop(100%, rgba(251, 223, 147, 1) ) );
-	background: -webkit-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
-	background: -o-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
-	background: -ms-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
-	background: linear-gradient(to bottom, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+font-weight: bold;
+font-size: 20px;
+color: #003366;
+border-radius: 22px;
+border: 1px solid #ff9933;
+background: rgb(252, 234, 187);
+background: -moz-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(252, 234, 187, 1) ), color-stop(50%, rgba(252, 205, 77, 1) ), color-stop(51%, rgba(248, 181, 0, 1) ), color-stop(100%, rgba(251, 223, 147, 1) ) );
+background: -webkit-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: -o-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: -ms-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: linear-gradient(to bottom, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
 }
 
 #adblocker-message>a {
-	text-indent: -999em;
-	text-align: center;
-	margin: 50px auto 10px auto;
-	width: 90px;
-	height: 90px;
-	display: block;
-	background: url("../img/adblocker.png") no-repeat top left;
+text-indent: -999em;
+text-align: center;
+margin: 50px auto 10px auto;
+width: 90px;
+height: 90px;
+display: block;
+background: url("../img/adblocker.png") no-repeat top left;
 }
 
 #adblocker-message>p {
-	color: #888;
-	text-align: center;
-	padding: 0 30px;
+color: #888;
+text-align: center;
+padding: 0 30px;
 }
 
 #lolpanel>.content {
-	height: 65px;
-	overflow: hidden;
+height: 65px;
+overflow: hidden;
 }
 
 #lolpanel .summoner-rank-info .summon-rank-stats {
-	font-size: 12px;
-	text-align: right;
-	line-height: 16px;
-	padding-right: 20px;
-	margin: 16px 15px 16px 0;
-	border-right: 1px solid #222;
-	color: #444;
+font-size: 12px;
+text-align: right;
+line-height: 16px;
+padding-right: 20px;
+margin: 16px 15px 16px 0;
+border-right: 1px solid #222;
+color: #444;
 }
 
 #lolpanel .summon-rank-display {
-	margin: 10px 10px 10px 0;
+margin: 10px 10px 10px 0;
 }
 
 #lolpanel .summoner-info .summoner-info-stub {
-	margin: 10px 10px 10px 20px;
-	position: relative;
+margin: 10px 10px 10px 20px;
+position: relative;
 }
 
 #lolpanel .summoner-info .summoner-icon {
-	display: none;
-	opacity: 0.75;
-	position: absolute;
-	top: 0;
-	left: 0;
+display: none;
+opacity: 0.75;
+position: absolute;
+top: 0;
+left: 0;
 }
 
 #lolpanel .summoner-info .summoner-title {
-	font-weight: normal;
-	margin: 0;
-	line-height: 25px;
-	font-size: 25px;
+font-weight: normal;
+margin: 0;
+line-height: 25px;
+font-size: 25px;
 }
 
 #lolpanel .summoner-info .summoner-region {
-	margin: 0;
-	color: #444;
+margin: 0;
+color: #444;
 }
 
 #lolpanel .summoner-rank-info .summoner-rank-thumbnail i {
-	display: block;
+display: block;
 }
 
 #lolpanel .summoner-rank-info .summoner-rank {
-	font-size: 24px;
-	line-height: 45px;
-	padding-right: 10px;
+font-size: 24px;
+line-height: 45px;
+padding-right: 10px;
 }
 
 #lolpanel .summoner-rank-info .summoner-rank.unranked {
-	font-size: 28px;
-	opacity: 0.5;
+font-size: 28px;
+opacity: 0.5;
 }
 
 #lolpanel .summoner-info .summoner-revision-date {
-	text-shadow: none;
-	font-size: 11px;
-	color: #333;
+text-shadow: none;
+font-size: 11px;
+color: #333;
 }
 
 #lolpanel i[class^="icon-"] {
-	opacity: 0.3;
+opacity: 0.3;
 }
 
 #lolpanel i[class^="icon-"]:hover {
-	opacity: 1;
+opacity: 1;
 }
 
 .icon-money {
-	background: url(../img/ico/100.png) no-repeat center center;
+background: url(../img/ico/100.png) no-repeat center center;
 }
 
 .icon-multiplier {
-	background: url(../img/ico/091.png) no-repeat center center;
+background: url(../img/ico/091.png) no-repeat center center;
 }
 
 .icon-transfers {
-	background: url(../img/ico/124.png) no-repeat center center;
+background: url(../img/ico/124.png) no-repeat center center;
 }
 
 .icon-rating {
-	background: url(../img/ico/092.png) no-repeat center center;
+background: url(../img/ico/092.png) no-repeat center center;
 }
 
 .icon-transfer-out {
-	background: url(../img/ico/116.png) no-repeat center center;
+background: url(../img/ico/116.png) no-repeat center center;
 }
 
 .icon-transfer-in {
-	background: url(../img/ico/113.png) no-repeat center center;
+background: url(../img/ico/113.png) no-repeat center center;
 }
 
 footer {
@@ -746,27 +747,27 @@ text-shadow: 1px 1px 1px black;
 padding: 0;
 }
 footer p.pull-right {
-text-align: right;	
+text-align: right;
 }
 
 /* Bootstrap overrides */
 .popover-title,.popover-content {
-	color: #444;
-	text-shadow: none;
+color: #444;
+text-shadow: none;
 }
 
 .popover-title {
-	color: #333;
+color: #333;
 }
 
 .nav-tabs>.active>a,.nav-tabs>.active>a:hover {
-	color: #ddd;
-	text-shadow: -1px -1px 0 black;
-	background: rgba(0, 0, 0, 0.5);
-	border-top: 1px solid #444;
-	border-left: 1px solid #444;
-	border-right: 1px solid #222;
-	border-bottom: 1px solid #222;
+color: #ddd;
+text-shadow: -1px -1px 0 black;
+background: rgba(0, 0, 0, 0.5);
+border-top: 1px solid #444;
+border-left: 1px solid #444;
+border-right: 1px solid #222;
+border-bottom: 1px solid #222;
 }
 
 .nav-tabs>li>a {
@@ -784,97 +785,97 @@ background: rgba(0, 0, 0, 0.25);
 }
 
 hr {
-	margin: 20px 0;
-	border: 0;
-	border-top: 1px solid #000;
-	border-bottom: 1px solid #222;
+margin: 20px 0;
+border: 0;
+border-top: 1px solid #000;
+border-bottom: 1px solid #222;
 }
 
 .subscription {
-	margin-top: 20px;
-	margin-bottom: 20px;
+margin-top: 20px;
+margin-bottom: 20px;
 }
 
 .subscription .sub-amount {
-	font-size: 18px;
+font-size: 18px;
 }
 
 .subscription .payment-options {
-	margin-left: 20px;
-	opacity: 0.25;
+margin-left: 20px;
+opacity: 0.25;
 }
 
 .subscription.active .payment-options {
-	opacity: 1;
+opacity: 1;
 }
 
 .subscription.active .sub-amount {
-	color: #f2f2f2;
-	font-size: 22px;
+color: #f2f2f2;
+font-size: 22px;
 }
 
 .subscription.active .sub-label {
-	font-size: 16px;
+font-size: 16px;
 }
 
 .ui-step-legend {
-	margin: 15px;
+margin: 15px;
 }
 
 .ui-step-legend ul {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	list-style: none;
+margin: 0;
+padding: 0;
+width: 100%;
+list-style: none;
 }
 
 .ui-step-legend ul li {
-	position: relative;
-	float: left;
-	margin: 0;
-	background: #0088cc;
-	background: -moz-linear-gradient(top, #0099e6 0%, #0088cc 100%);
-	/* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0099e6),
-		color-stop(100%, #0088cc) ); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #0099e6 0%, #0088cc 100%);
-	/* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #0099e6 0%, #0088cc 100%);
-	/* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #0099e6 0%, #0088cc 100%);
-	/* IE10+ */
-	background: linear-gradient(to bottom, #0099e6 0%, #0088cc 100%);
-	/* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient(  startColorstr='#0099e6',
-		endColorstr='#0088cc', GradientType=0 ); /* IE6-9 */
+position: relative;
+float: left;
+margin: 0;
+background: #0088cc;
+background: -moz-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0099e6),
+color-stop(100%, #0088cc) ); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* Opera 11.10+ */
+background: -ms-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* IE10+ */
+background: linear-gradient(to bottom, #0099e6 0%, #0088cc 100%);
+/* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient(  startColorstr='#0099e6',
+endColorstr='#0088cc', GradientType=0 ); /* IE6-9 */
 }
 
 .ui-step-legend ul li:first-child {
-	border-top-left-radius: 6px;
-	border-bottom-left-radius: 6px;
+border-top-left-radius: 6px;
+border-bottom-left-radius: 6px;
 }
 
 .ui-step-legend ul li:last-child {
-	border-top-right-radius: 6px;
-	border-bottom-right-radius: 6px;
+border-top-right-radius: 6px;
+border-bottom-right-radius: 6px;
 }
 
 .ui-step-legend ul li a {
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.95);
-	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
-	line-height: 60px;
-	text-align: center;
-	display: block;
+font-size: 16px;
+color: rgba(255, 255, 255, 0.95);
+text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+line-height: 60px;
+text-align: center;
+display: block;
 }
 
 .ui-step-legend ul li .arrow {
-	display: block;
-	width: 30px;
-	height: 15px;
-	background: url(../img/steplegendarrow.png) no-repeat top left;
-	position: absolute;
-	bottom: -15px;
-	margin-left: -15px;
-	left: 50%;
+display: block;
+width: 30px;
+height: 15px;
+background: url(../img/steplegendarrow.png) no-repeat top left;
+position: absolute;
+bottom: -15px;
+margin-left: -15px;
+left: 50%;
 }

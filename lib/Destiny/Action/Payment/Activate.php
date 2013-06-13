@@ -50,6 +50,7 @@ class Activate {
 		if (! empty ( $subscription ['paymentProfileId'] )) {
 			$paymentProfile = $orderService->getPaymentProfileById ( $subscription ['paymentProfileId'] );
 			if (! empty ( $paymentProfile )) {
+				
 				$paymentProfile ['billingCycle'] = $orderService->buildBillingCycleString ( $paymentProfile ['billingFrequency'], $paymentProfile ['billingPeriod'] );
 				$paymentProfile ['billingStartDate'] = $subscription ['endDate'];
 				$paymentProfile ['billingNextDate'] = $subscription ['endDate'];

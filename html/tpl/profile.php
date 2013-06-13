@@ -86,7 +86,6 @@ use Destiny\Session;
 							<dt>&nbsp;</dt>
 							<dd><a title="Cancel this recurring payment" href="/payment/cancel">Cancel</a></dd>
 							<?php endif; ?>
-							
 							<?php endif; ?>
 			
 						</dl>
@@ -96,7 +95,7 @@ use Destiny\Session;
 
 					<?if(empty($model->subscription) && empty($model->paymentProfile)):?>
 					<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-						<a href="/subscribe" class="btn btn-primary"><i class="icon-remove icon-white"></i> Subscribe</a>
+						<a href="/subscribe" class="btn btn-primary"><i class="icon-heart icon-white"></i> Subscribe</a>
 					</div>
 					<?endif;?>
 

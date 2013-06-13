@@ -96,7 +96,7 @@ use Destiny\Utils\Date;
 			
 			<div class="form-actions clearfix" style="clear: both; margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
 				<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-				<a class="btn" href="/profile"><i class="icon-user"></i> Back to profile</a>
+				<a class="btn" href="/profile">Back to profile</a>
 			</div>
 
 		</div>

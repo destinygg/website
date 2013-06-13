@@ -88,11 +88,11 @@ use Destiny\Utils\Lol;
 				</table>
 			</div>			
 				
-			<div style="margin-top: 20px;">
-				<a rel="Aggregate" class="btn btn-cron-action">Aggregate recent game(s)</a>
-				<a rel="Recentgames" class="btn btn-cron-action">Check recent games</a>
-				<a rel="Ingame" class="btn btn-cron-action">Check ingame progress</a>
-			</div>
+			<ul style="margin-top: 20px;" class="inline">
+				<li><a href="#" rel="Aggregate" class="btn-cron-action">Aggregate recent game(s)</a></li>
+				<li><a href="#" rel="Recentgames" class="btn-cron-action">Check recent games</a></li>
+				<li><a href="#" rel="Ingame" class="btn-cron-action">Check ingame progress</a></li>
+			</ul>
 				
 		</div>
 		

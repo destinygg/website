@@ -96,9 +96,10 @@ use Destiny\Utils\Tpl;
 						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
 							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
 							<?php if(empty($model->subscription)): ?>
-							<button type="submit" class="btn"><i class="icon-shopping-cart"></i> Setup payment</button>
+							<button type="submit" class="btn btn-primary"><i class="icon-check icon-white"></i> Confirm selection</button>
+							<a href="/profile" class="btn">Back to profile</a>
 							<?php else: ?>
-							<a href="/profile" class="btn"><i class="icon-user"></i> Manage subscriptions</a>
+							<a href="/profile" class="btn">Back to profile</a>
 							<?php endif; ?>
 						</div>
 					</fieldset>

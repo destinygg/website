@@ -11,13 +11,13 @@ $(function(){
 	
 	adminTabs.find('.btn-cron-action').on('click', function(){
 		var btn = $(this), action = btn.attr('rel');
-		btn.attr('disabled','disabled');
+		btn.attr('disabled','disabled').addClass('muted');
 		$.ajax($.extend({}, ajaxSettings, {
 			type: 'get',
 			data: {id:action},
 			url: destiny.baseUrl + 'Admin/Cron',
 			success: function(data){
-				btn.removeAttr('disabled');
+				btn.removeAttr('disabled').removeClass('muted');
 				if(confirm('Response: '+ data.message + "\r\n" + "Refresh?")){
 					window.location.reload();
 				}
