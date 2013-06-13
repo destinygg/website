@@ -1,25 +1,25 @@
 <?php
 
-namespace Destiny\Service\Fantasy\Db;
+namespace Destiny\Service\Fantasy;
 
 use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Cache;
 
-class Team extends Service {
+class TeamService extends Service {
 	
 	/**
 	 * The static singleton instance
 	 *
-	 * @var Service\Fantasy\Db\Team
+	 * @var TeamService
 	 */
 	protected static $instance = null;
 
 	/**
 	 * Create the singleton instance
 	 *
-	 * @return Service\Fantasy\Db\Team
+	 * @return TeamService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

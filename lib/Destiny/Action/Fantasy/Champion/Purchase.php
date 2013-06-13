@@ -2,8 +2,8 @@
 
 namespace Destiny\Action\Fantasy\Champion;
 
-use Destiny\Service\Fantasy\Db\Team;
-use Destiny\Service\Fantasy\Db\Champion;
+use Destiny\Service\Fantasy\TeamService;
+use Destiny\Service\Fantasy\ChampionService;
 use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Session;
@@ -30,8 +30,8 @@ class Purchase {
 	}
 
 	private function updateTeam(array $params) {
-		$teamService = Team::getInstance ();
-		$champService = Champion::getInstance ();
+		$teamService = TeamService::getInstance ();
+		$champService = ChampionService::getInstance ();
 		// Get team - Make sure this is one of the users teams
 		$team = $teamService->getTeamById ( ( int ) $params ['teamId'] );
 		if (empty ( $team )) {

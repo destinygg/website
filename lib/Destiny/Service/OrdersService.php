@@ -6,17 +6,14 @@ use Destiny\Service;
 use Destiny\Application;
 use Destiny\Utils\Date;
 
-class Orders extends Service {
+class OrdersService extends Service {
 	
-	/**
-	 * var Service\Orders
-	 */
 	protected static $instance = null;
 
 	/**
 	 * Get the singleton instance
 	 *
-	 * @return Service\Orders
+	 * @return OrdersService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

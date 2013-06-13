@@ -1,19 +1,20 @@
 <?php
 
-namespace Destiny\Service\Fantasy\Db;
+namespace Destiny\Service\Fantasy;
 
 use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Cache;
-use Destiny\Service\Fantasy\Db\Game;
+use Destiny\Service\Fantasy\GameService;
 
-class Leaderboard extends Service {
+class LeaderboardService extends Service {
+	
 	protected static $instance = null;
 
 	/**
 	 *
-	 * @return Leaderboard
+	 * @return LeaderboardService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();
@@ -188,7 +189,7 @@ class Leaderboard extends Service {
 	}
 
 	public function getRecentGameLeaderboard($limit, $offset = 0) {
-		$game = Game::getInstance ()->getRecentGameData ();
+		$game = GameService::getInstance ()->getRecentGameData ();
 		if (empty ( $game )) {
 			return array ();
 		}

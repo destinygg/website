@@ -1,6 +1,6 @@
 <?php
 
-namespace Destiny\Service\Fantasy\Db;
+namespace Destiny\Service\Fantasy;
 
 use Destiny\Service;
 use Destiny\Application;
@@ -8,12 +8,12 @@ use Destiny\Config;
 use Destiny\Utils\Cache;
 use Destiny\AppException;
 
-class Game extends Service {
+class GameService extends Service {
+	
 	protected static $instance = null;
 
 	/**
-	 *
-	 * @return Service\Fantasy\Db\Game
+	 * @return Service\Fantasy\GameService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

@@ -4,7 +4,7 @@ namespace Destiny\Scheduled;
 
 use Destiny\Application;
 use Destiny\Config;
-use Destiny\Service\Twitch\Subscription;
+use Destiny\Service\TwitchApiService;
 use Destiny\Utils\Date;
 use Psr\Log\LoggerInterface;
 use Destiny\AppException;
@@ -20,7 +20,7 @@ class Subscriptions {
 		$isSubsCleared = false;
 		while ( $i < $total ) {
 			set_time_limit ( 20 );
-			$subscriptions = Subscription::getInstance ()->getChannelSubscriptions ( Config::$a ['twitch'] ['broadcaster'] ['user'], $increments, $i );
+			$subscriptions = TwitchApiService::getInstance ()->getChannelSubscriptions ( Config::$a ['twitch'] ['broadcaster'] ['user'], $increments, $i );
 			if ($subscriptions == null) {
 				throw new AppException ( 'Error requesting subscriptions' );
 				break;

@@ -8,7 +8,7 @@ use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Service\Fantasy\Db\User;
 use Destiny\Service\Settings;
-use Destiny\Service\Users;
+use Destiny\Service\UsersService;
 use Destiny\ViewModel;
 use Destiny\AppException;
 
@@ -16,7 +16,7 @@ class Save {
 
 	public function execute(array $params) {
 		// Get user
-		$user = Users::getInstance ()->getUserById ( Session::get ( 'userId' ) );
+		$user = UsersService::getInstance ()->getUserById ( Session::get ( 'userId' ) );
 		if (empty ( $user )) {
 			throw new AppException ( 'Invalid user' );
 		}

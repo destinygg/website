@@ -18,7 +18,10 @@ use Destiny\Utils\Date;
 			<?if($tweetIndex == 3){break;};?>
 				<div class="media">
 					<div class="media-body">
-						<div class="media-heading"><a target="_blank" href="https://twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>"><i class="icon-share icon-white subtle"></i></a> <?=Service\Twitter::getTweetHtml($tweet['text'])?></div>
+						<div class="media-heading">
+							<a target="_blank" href="https://twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>"><i class="icon-share icon-white subtle"></i></a>
+							<?=$tweet['html']?>
+						</div>
 						<time datetime="<?=$tweet['created_at']?>" pubdate><?=Date::getElapsedTime(new \DateTime($tweet['created_at']))?></time>
 					</div>
 				</div>

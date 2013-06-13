@@ -5,19 +5,14 @@ namespace Destiny\Service;
 use Destiny\Service;
 use Destiny\Application;
 
-class Users extends Service {
+class UsersService extends Service {
 	
-	/**
-	 * Users service
-	 *
-	 * @var Service\Users
-	 */
 	protected static $instance = null;
 
 	/**
-	 * Get the singleton instance
+	 * Singleton instance
 	 *
-	 * @return Service\Users
+	 * @return UsersService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

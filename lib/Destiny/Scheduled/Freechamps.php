@@ -3,12 +3,12 @@
 namespace Destiny\Scheduled;
 
 use Psr\Log\LoggerInterface;
-use Destiny\Service\Fantasy\Db\Champion;
+use Destiny\Service\Fantasy\ChampionService;
 
 class Freechamps {
 
 	public function execute(LoggerInterface $log) {
-		Champion::getInstance ()->updateFreeChampions ();
+		ChampionService::getInstance ()->updateFreeChampions ();
 		$log->info ( 'Rotated free champions' );
 	}
 

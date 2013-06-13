@@ -118,7 +118,7 @@ class Application extends Service {
 				$this->error ( 500, $e );
 			} catch ( \Exception $e ) {
 				$this->logger->critical ( $e->getMessage () );
-				$this->error ( 500, $e );
+				$this->error ( 500, new \Exception('Something went real wrong..') );
 			}
 		}
 	}
@@ -312,12 +312,18 @@ class Application extends Service {
 	 *
 	 * @todo seems out of place
 	 *      
-	 * @param string $filename
+	 * @param array|string $params
 	 * @return \Destiny\Cache\Apc
 	 */
-	public function getMemoryCache($filename = null) {
-		$params = array ();
-		$params ['filename'] = Config::$a ['cache'] ['path'] . $filename . '.tmp';
+	public function getMemoryCache($params = null) {
+		if ($params === null) {
+			throw new \InvalidArgumentException ( $params );
+		}
+		if (is_string ( $params )) {
+			$params = array (
+					'filename' => Config::$a ['cache'] ['path'] . $params . '.tmp' 
+			);
+		}
 		return new Config::$a ['cache'] ['memory'] ( $params );
 	}
 

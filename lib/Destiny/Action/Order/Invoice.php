@@ -5,14 +5,14 @@ namespace Destiny\Action\Order;
 use Destiny\Utils\Http;
 use Destiny\ViewModel;
 use Destiny\Session;
-use Destiny\Service\Orders;
+use Destiny\Service\OrdersService;
 use Destiny\AppException;
 
 class Invoice {
 
 	public function execute(array $params, ViewModel $model) {
 		if (isset ( $params ['orderId'] )) {
-			$ordersService = Orders::getInstance ();
+			$ordersService = OrdersService::getInstance ();
 			$order = $ordersService->getOrderById ( $params ['orderId'] );
 			
 			if (empty ( $order )) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Destiny\Service\Fantasy\Db;
+namespace Destiny\Service\Fantasy;
 
 use Destiny\Service;
 use Destiny\Application;
@@ -9,19 +9,25 @@ use Destiny\Utils\Cache;
 use Destiny\Utils\Date;
 use Destiny\AppException;
 
-class Tracking extends Service {
+class GameTrackingService extends Service {
+	
 	protected static $instance = null;
 
 	/**
-	 *
-	 * @return Tracking
+	 * Singleton
+	 * 
+	 * @return GameTrackingService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();
 	}
-	
-	/*
-	 * This method may be called multiple times for a single game Because the api method generates the stats in the context of the requested summoner
+
+	/**
+	 * This method is called multiple times for a single game Because the api method generates the stats in the context of the requested summoner
+	 *
+	 * @param int $game
+	 * @param array $summoner
+	 * @return boolean
 	 */
 	public function persistGame($game, array $summoner) {
 		if (! isset ( $game ['statistics'] )) {

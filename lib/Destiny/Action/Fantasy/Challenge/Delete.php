@@ -2,7 +2,7 @@
 
 namespace Destiny\Action\Fantasy\Challenge;
 
-use Destiny\Service\Fantasy\Db\Challenge;
+use Destiny\Service\Fantasy\ChallengeService;
 use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Session;
@@ -22,7 +22,7 @@ class Delete {
 				'data' => array (),
 				'message' => '' 
 		);
-		$response ['response'] = Challenge::getInstance ()->deleteChallenge ( intval ( Session::get ( 'teamId' ) ), intval ( $params ['teamId'] ) );
+		$response ['response'] = ChallengeService::getInstance ()->deleteChallenge ( intval ( Session::get ( 'teamId' ) ), intval ( $params ['teamId'] ) );
 		$response ['message'] = ($response ['response']) ? 'Deleted' : 'Failed!';
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );

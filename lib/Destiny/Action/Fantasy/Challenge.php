@@ -2,9 +2,8 @@
 
 namespace Destiny\Action\Fantasy;
 
-use Destiny\Service\Fantasy\Db\Team;
-use Destiny\Service\Fantasy\Db\Champion;
-use Destiny\Service\Fantasy\Db\Challenge;
+use Destiny\Service\Fantasy\TeamService;
+use Destiny\Service\Fantasy\ChallengeService;
 use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Session;
@@ -23,7 +22,7 @@ class Challenge {
 			if (! isset ( $params ['name'] ) || empty ( $params ['name'] )) {
 				throw new AppException ( 'Name required.' );
 			}
-			$teamService = Team::getInstance ();
+			$teamService = TeamService::getInstance ();
 			$teams = $teamService->getTeamsByUsername ( mysql_real_escape_string ( $params ['name'] ) );
 			if (empty ( $teams )) {
 				throw new AppException ( 'User not found' );
@@ -32,7 +31,7 @@ class Challenge {
 			if (intval ( $team ['teamId'] ) == intval ( Session::get ( 'teamId' ) )) {
 				throw new AppException ( 'Play with yourself?' );
 			}
-			$response ['success'] = Challenge::getInstance ()->challengeTeam ( Session::get ( 'teamId' ), $team ['teamId'] );
+			$response ['success'] = ChallengeService::getInstance ()->challengeTeam ( Session::get ( 'teamId' ), $team ['teamId'] );
 			$response ['message'] = ($response ['success']) ? 'Challenge sent.' : 'Challenge already exists';
 		} catch ( \Exception $e ) {
 			$response ['success'] = false;

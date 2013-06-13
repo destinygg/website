@@ -6,7 +6,7 @@ use Destiny\Cache\File;
 use Destiny\Application;
 use Destiny\Config;
 use Psr\Log\LoggerInterface;
-use Destiny\Service\Google\Calendar;
+use Destiny\Service\Google\CalendarService;
 
 class CalendarEvents {
 
@@ -16,7 +16,7 @@ class CalendarEvents {
 		$end = new \DateTime ();
 		$end->setDate ( date ( 'Y', strtotime ( '+1 year' ) ), 1, 1 );
 		$end->setTime ( date ( 'H' ), 0, 0 );
-		$response = Calendar::getInstance ()->getEventsInRange ( array (
+		$response = CalendarService::getInstance ()->getEventsInRange ( array (
 				'start' => $start->format ( DATE_RFC3339 ),
 				'end' => $end->format ( DATE_RFC3339 ),
 				'limit' => 3,

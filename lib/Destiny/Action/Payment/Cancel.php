@@ -3,8 +3,8 @@
 namespace Destiny\Action\Payment;
 
 use Destiny\Application;
-use Destiny\Service\Subscriptions;
-use Destiny\Service\Orders;
+use Destiny\Service\SubscriptionsService;
+use Destiny\Service\OrdersService;
 use Destiny\Utils\Http;
 use Destiny\ViewModel;
 use Destiny\Session;
@@ -17,10 +17,10 @@ use PayPal\Service\PayPalAPIInterfaceServiceService;
 class Cancel {
 
 	public function execute(array $params, ViewModel $model) {
-		$subService = Subscriptions::getInstance ();
-		$orderService = Orders::getInstance ();
+		$subService = SubscriptionsService::getInstance ();
+		$orderService = OrdersService::getInstance ();
 		
-		$subscription = Subscriptions::getInstance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = SubscriptionsService::getInstance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		$paymentProfile = null;
 		if (! empty ( $subscription ['paymentProfileId'] )) {
 			$paymentProfile = $orderService->getPaymentProfileById ( $subscription ['paymentProfileId'] );

@@ -28,7 +28,7 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 					<?if(preg_match('/^local[.*]+/i', $_SERVER['HTTP_HOST']) > 0):?>
 					<div class="alert alert-error">
 						<h4>Error!</h4>
-						<?=Tpl::out($model->error->getMessage())?>
+						<?=nl2br($model->error->getMessage())?>
 					</div>
 					<?else:?>
 					<p>The hamster jimmies have been rustled. <br />Would you like to <a href="/">return to the start</a>?</p>

@@ -1,23 +1,22 @@
 <?php
 
-namespace Destiny\Service\Fantasy\Db;
+namespace Destiny\Service\Fantasy;
 
 use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Cache;
 
-class Challenge extends Service {
+class ChallengeService extends Service {
 	
 	/**
-	 *
-	 * @var Service
+	 * @var ChallengeService
 	 */
 	protected static $instance = null;
 
 	/**
 	 *
-	 * @return Destiny\Service\Fantasy\Db\Challenge
+	 * @return Destiny\Service\Fantasy\ChallengeService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

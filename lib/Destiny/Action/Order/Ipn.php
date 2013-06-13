@@ -4,10 +4,10 @@ namespace Destiny\Action\Order;
 
 use PayPal\IPN\PPIPNMessage;
 use Destiny\Application;
-use Destiny\Service\Orders;
+use Destiny\Service\OrdersService;
 use Destiny\Config;
 use Destiny\Utils\Date;
-use Destiny\Service\Subscriptions;
+use Destiny\Service\SubscriptionsService;
 use Destiny\AppException;
 
 class Ipn {
@@ -26,7 +26,7 @@ class Ipn {
 		}
 		$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $ipnMessage->getTransactionType () ) );
 		$data = $ipnMessage->getRawData ();
-		$orderService = Orders::getInstance ();
+		$orderService = OrdersService::getInstance ();
 		$orderService->addIPNRecord ( array (
 				'ipnTrackId' => $data ['ipn_track_id'],
 				'ipnTransactionId' => $ipnMessage->getTransactionId (),
@@ -46,7 +46,7 @@ class Ipn {
 		if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {
 			throw new AppException ( 'Invalid recurring_payment_id' );
 		}
-		$orderService = Orders::getInstance ();
+		$orderService = OrdersService::getInstance ();
 		$paymentProfile = $orderService->getPaymentProfileByPaymentProfileId ( $data ['recurring_payment_id'] );
 		if (empty ( $paymentProfile )) {
 			throw new AppException ( 'Invalid payment profile' );
@@ -64,7 +64,7 @@ class Ipn {
 		$transactionId = $ipnMessage->getTransactionId ();
 		$transactionType = $ipnMessage->getTransactionType ();
 		$data = $ipnMessage->getRawData ();
-		$orderService = Orders::getInstance ();
+		$orderService = OrdersService::getInstance ();
 		
 		// Make sure this IPN is for the merchant
 		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
@@ -111,10 +111,10 @@ class Ipn {
 					$orderService->addOrderPayment ( $payment );
 					
 					// Extend the subscription if the payment was successful
-					Subscriptions::getInstance ()->updateUserSubscriptionDateEnd ( $paymentProfile ['userId'], $nextPaymentDate );
+					SubscriptionsService::getInstance ()->updateUserSubscriptionDateEnd ( $paymentProfile ['userId'], $nextPaymentDate );
 					$log->notice ( sprintf ( 'Renewed profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				} else {
-					Subscriptions::getInstance ()->updateUserSubscriptionState ( $paymentProfile ['userId'], $data ['payment_status'] );
+					SubscriptionsService::getInstance ()->updateUserSubscriptionState ( $paymentProfile ['userId'], $data ['payment_status'] );
 					$log->notice ( sprintf ( 'Failed to renew profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				}
 				

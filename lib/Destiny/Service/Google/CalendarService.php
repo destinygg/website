@@ -8,17 +8,12 @@ use Destiny\Api\Consumer;
 use Destiny\Utils\String;
 use Destiny\Mimetype;
 
-class Calendar extends Service {
+class CalendarService extends Service {
 	
-	/**
-	 *
-	 * @var Service
-	 */
 	protected static $instance = null;
 
 	/**
-	 *
-	 * @return Service\Google\Calendar
+	 * @return Service\CalendarServicer
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

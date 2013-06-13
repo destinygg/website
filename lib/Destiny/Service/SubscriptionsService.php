@@ -8,16 +8,14 @@ use Destiny\Config;
 use Destiny\Utils\Date;
 use Destiny\AppException;
 
-class Subscriptions extends Service {
+class SubscriptionsService extends Service {
 	
-	/**
-	 * var Service\Subscriptions
-	 */
 	protected static $instance = null;
 
 	/**
-	 *
-	 * @return Service\Subscriptions
+	 * Singleton
+	 * 
+	 * @return SubscriptionsService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();
@@ -83,7 +81,7 @@ class Subscriptions extends Service {
 	 * @param int $userId
 	 * @param \DateTime $endDate
 	 */
-	public function updateUserSubscriptionDateEnd($userId, \DateTime $endDate) {
+	public function updateUserSubscriptionDateEnd($userId,\DateTime $endDate) {
 		$db = Application::getInstance ()->getDb ();
 		$db->insert ( "UPDATE dfl_users_subscriptions SET endDate = '{billingNextDate}' WHERE userId = '{userId}'", array (
 				'userId' => $userId,

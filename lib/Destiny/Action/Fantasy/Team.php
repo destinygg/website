@@ -8,11 +8,12 @@ use Destiny\Mimetype;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppException;
+use Destiny\Service\Fantasy\TeamService;
 
 class Team {
 
 	public function execute(array $params) {
-		$ftService = \Destiny\Service\Fantasy\Db\Team::getInstance ();
+		$ftService = TeamService::getInstance ();
 		// Get team - Make sure this is one of the users teams
 		$team = $ftService->getTeamById ( ( int ) $params ['teamId'] );
 		if (empty ( $team )) {

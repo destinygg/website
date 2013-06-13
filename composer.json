@@ -1,15 +1,16 @@
 {
-	"name" 							: "Destiny.gg",
+	"name" : "Destiny.gg",
 	"require": {
-		"php"						: ">=5.3.0",
-		"ext-curl"					: "*",
-		"ext-json"					: "*",
-		"ext-openssl"				: "*",
-		"paypal/merchant-sdk-php"	: "3.4.*",
-		"nervo/yuicompressor"		: "2.4.7",
-		"monolog/monolog"			: "1.6.*@dev"
+		"php" : ">=5.3.0",
+		"ext-curl" : "*",
+		"ext-json" : "*",
+		"ext-openssl" : "*",
+		"paypal/merchant-sdk-php" : "3.4.*",
+		"nervo/yuicompressor" : "2.4.7",
+		"monolog/monolog" : "1.6.*@dev",
+		"nixilla/twitter-api-consumer": "dev-master"
 	},
 	"autoload": {
-		"files": ["vendor/HTTP_Accept/HTTP_Accept.php"]
+		"files": ["lib/HttpAccept/HTTP_Accept.php"]
 	}
 }

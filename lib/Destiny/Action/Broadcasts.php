@@ -2,7 +2,6 @@
 
 namespace Destiny\Action;
 
-use Destiny\Service\Twitch;
 use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Application;

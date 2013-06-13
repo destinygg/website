@@ -1,17 +1,16 @@
 <?php
 
-namespace Destiny\Service\Fantasy\Db;
+namespace Destiny\Service\Fantasy;
 
 use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Cache;
 
-class Champion extends Service {
+class ChampionService extends Service {
 	
 	/**
-	 *
-	 * @var ServiceFantasyDbChampion
+	 * @var ChampionService
 	 */
 	protected static $instance = null;
 	protected $champions = array ();
@@ -19,7 +18,7 @@ class Champion extends Service {
 
 	/**
 	 *
-	 * @return Service\Fantasy\Db\Champion
+	 * @return ChampionService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

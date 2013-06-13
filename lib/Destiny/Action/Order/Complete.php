@@ -23,8 +23,8 @@ use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 use Destiny\Application;
 use Destiny\Session;
 use Destiny\Utils\Http;
-use Destiny\Service\Subscriptions;
-use Destiny\Service\Orders;
+use Destiny\Service\SubscriptionsService;
+use Destiny\Service\OrdersService;
 use Destiny\Config;
 use Destiny\Utils\Date;
 use Destiny\ViewModel;
@@ -46,7 +46,7 @@ class Complete {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$this->checkoutId = Session::get ( 'checkoutId' );
-		$ordersService = Orders::getInstance ();
+		$ordersService = OrdersService::getInstance ();
 		$log = Application::getInstance ()->getLogger ();
 		
 		// Make sure our checkoutId is valid
@@ -91,7 +91,7 @@ class Complete {
 			return 'ordererror';
 		}
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
-		$subscription = Subscriptions::getInstance ()->getSubscriptionType ( $order ['items'] [0] ['itemSku'] );
+		$subscription = SubscriptionsService::getInstance ()->getSubscriptionType ( $order ['items'] [0] ['itemSku'] );
 		$paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
 		// END REALLY DIRTY
 		
@@ -199,7 +199,7 @@ class Complete {
 		}
 		
 		// Create / adjust subscription
-		Subscriptions::getInstance ()->addUserSubscription ( $order ['userId'], $subscription, 'Active', $paymentProfile );
+		SubscriptionsService::getInstance ()->addUserSubscription ( $order ['userId'], $subscription, 'Active', $paymentProfile );
 		
 		// Add the subscriber role, this is just for UI
 		$authCreds = Session::getAuthCreds ();

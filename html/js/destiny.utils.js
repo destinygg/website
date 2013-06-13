@@ -15,11 +15,6 @@ jQuery.fn.replaceClass = function(toReplace,replaceWith){
 	return this.each(function(){
 		return $(this).removeClass(toReplace).addClass(replaceWith);
 	});
-}
-
-// Link and add @ links to twitter text
-String.prototype.twitterText = function(){
-	return this.linkify().twitterReply();
 };
 
 function htmlEncode(value){ return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
@@ -45,12 +40,11 @@ $.fn.sortElements = (function(){
 	return function(comparator, getSortable) {
 		getSortable = getSortable || function(){return this;};
 		var placements = this.map(function(){
-			var sortElement = getSortable.call(this),
-				parentNode = sortElement.parentNode,
+			var sortElement = getSortable.call(this), parentNode = sortElement.parentNode;
 				// Since the element itself will change position, we have
 				// to have some way of storing its original position in
 				// the DOM. The easiest way is to have a 'flag' node:
-				nextSibling = parentNode.insertBefore(document.createTextNode(''), sortElement.nextSibling);
+			var nextSibling = parentNode.insertBefore(document.createTextNode(''), sortElement.nextSibling);
 			return function() {
 				if (parentNode === this) {
 					throw new Error("You can't sort elements if any one is a descendant of another.");
@@ -61,7 +55,6 @@ $.fn.sortElements = (function(){
 				parentNode.removeChild(nextSibling);
 			};
 		});
-
 		return sort.call(this, comparator).each(function(i){
 			placements[i].call(getSortable.call(this));
 		});

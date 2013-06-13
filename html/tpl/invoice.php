@@ -3,7 +3,6 @@ namespace Destiny;
 use Destiny\Utils\Tpl;
 use Destiny\Utils\Currency;
 use Destiny\Utils\Date;
-$ordersService = \Destiny\Service\Orders::getInstance ();
 ?>
 <!DOCTYPE html>
 <html>

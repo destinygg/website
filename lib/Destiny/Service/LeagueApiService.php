@@ -12,12 +12,14 @@ use Destiny\Utils\Lol;
 use Destiny\Utils\Http;
 use Destiny\AppException;
 
-class Leagueapi extends Service {
+class LeagueApiService extends Service {
+	
 	protected static $instance = null;
 
 	/**
-	 *
-	 * @return Destiny\Service\Leagueapi
+	 * Singleton
+	 * 
+	 * @return LeagueApiService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();

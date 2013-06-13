@@ -2,6 +2,7 @@
 namespace Destiny;
 use Destiny\Utils\Tpl;
 use Destiny\Utils\Lol;
+use Destiny\Service\Fantasy\ChampionService;
 ?>
 <div class="content content-dark clearfix">
 
@@ -32,7 +33,7 @@ use Destiny\Utils\Lol;
 				<td style="text-align: right;"><?=Tpl::n($topTeam['transfersRemaining'])?></td>
 				<td style="text-align: right;">
 					<div class="team-champions" style="width:<?=(25*Config::$a['fantasy']['team']['maxChampions'])?>px;">
-					<?$champions = Service\Fantasy\Db\Champion::getInstance ()->getChampionsById (explode(',', $topTeam['champions']));?>
+					<?$champions = ChampionService::getInstance ()->getChampionsById (explode(',', $topTeam['champions']));?>
 					<?foreach($champions as $champion):?>
 						<div class="thumbnail">
 							<img title="<?=Tpl::out($champion['championName'])?>" style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($champion['championName'])?>" />

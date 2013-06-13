@@ -7,15 +7,15 @@ use Destiny\ViewModel;
 use Destiny\Application;
 use Destiny\Session;
 use Destiny\Service\Settings;
-use Destiny\Service\Fantasy\Db\Team;
+use Destiny\Service\Fantasy\TeamService;
 
 class Home {
 
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::getInstance ();
 		if (Session::authorized () && Settings::get ( 'teambar_homepage' )) {
-			$model->team = Team::getInstance ()->getTeamByUserId ( Session::get ( 'userId' ) );
-			$model->teamChamps = Team::getInstance ()->getTeamChamps ( $model->team ['teamId'] );
+			$model->team = TeamService::getInstance ()->getTeamByUserId ( Session::get ( 'userId' ) );
+			$model->teamChamps = TeamService::getInstance ()->getTeamChamps ( $model->team ['teamId'] );
 			
 			$cache = $app->getMemoryCache ( 'champions' );
 			$model->champions = $cache->read ();

@@ -9,9 +9,9 @@ use Destiny\Config;
 use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Logger;
-use Destiny\Service\Users;
-use Destiny\Service\Fantasy\Db\Team;
-use Destiny\Service\Subscriptions;
+use Destiny\Service\UsersService;
+use Destiny\Service\Fantasy\TeamService;
+use Destiny\Service\SubscriptionsService;
 use Destiny\Service\Settings;
 use Destiny\Utils\String\Params;
 use Destiny\AppException;
@@ -55,9 +55,9 @@ class TwitchAuth {
 			exit ();
 		}
 		
-		$teamsService = Team::getInstance ();
-		$usersService = Users::getInstance ();
-		$subsService = Subscriptions::getInstance ();
+		$teamsService = TeamService::getInstance ();
+		$usersService = UsersService::getInstance ();
+		$subsService = SubscriptionsService::getInstance ();
 		// See if there is already a user with the TwitchId as the externalId
 		$existingUser = $usersService->getUserByExternalId ( $user ['externalId'] );
 		if (! empty ( $existingUser )) {

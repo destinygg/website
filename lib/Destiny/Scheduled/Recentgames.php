@@ -4,15 +4,15 @@ namespace Destiny\Scheduled;
 
 use Destiny\Config;
 use Psr\Log\LoggerInterface;
-use Destiny\Service\Leagueapi;
-use Destiny\Service\Fantasy\Db\Tracking;
+use Destiny\Service\LeagueApiService;
+use Destiny\Service\Fantasy\GameTrackingService;
 
 class Recentgames {
 
 	public function execute(LoggerInterface $log) {
 		$log->info ( 'Tracking recent games' );
-		$ftrackService = Tracking::getInstance ();
-		$leagueApiService = Leagueapi::getInstance ();
+		$ftrackService = GameTrackingService::getInstance ();
+		$leagueApiService = LeagueApiService::getInstance ();
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == false) {
 				continue;

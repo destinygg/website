@@ -15,8 +15,8 @@ use PayPal\PayPalAPI\GetExpressCheckoutDetailsRequestType;
 use Destiny\Application;
 use Destiny\Session;
 use Destiny\Utils\Http;
-use Destiny\Service\Orders;
-use Destiny\Service\Subscriptions;
+use Destiny\Service\OrdersService;
+use Destiny\Service\SubscriptionsService;
 use Destiny\ViewModel;
 use Destiny\AppException;
 use Destiny\Config;
@@ -39,7 +39,7 @@ class Create {
 		$this->checkoutId = Session::get ( 'checkoutId' );
 		
 		// Make sure the user hasnt somehow started the process with an active subscription
-		$subsService = Subscriptions::getInstance ();
+		$subsService = SubscriptionsService::getInstance ();
 		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		if (! empty ( $subscription )) {
 			$model->error = new AppException ( 'User already has a valid subscription' );
@@ -57,7 +57,7 @@ class Create {
 		}
 		
 		$subscription = $subsService->getSubscriptionType ( $params ['subscription'] );
-		$ordersService = Orders::getInstance ();
+		$ordersService = OrdersService::getInstance ();
 		$order = $this->createOrder ( $subscription );
 		
 		if (isset ( $params ['renew'] ) && $params ['renew'] == '1') {
@@ -141,7 +141,7 @@ class Create {
 	 * @return array
 	 */
 	private function createOrder(array $subscription) {
-		$ordersService = Orders::getInstance ();
+		$ordersService = OrdersService::getInstance ();
 		$order = array ();
 		$order ['userId'] = Session::get ( 'userId' );
 		$order ['description'] = $subscription ['label'];
@@ -166,7 +166,7 @@ class Create {
 	 * @return array
 	 */
 	private function createPaymentProfile(array $order, array $subscription) {
-		$ordersService = Orders::getInstance ();
+		$ordersService = OrdersService::getInstance ();
 		// @TODO this should be set in the payment profile
 		$billingStartDate = new \DateTime ( date ( 'm/d/y' ) );
 		// @TODO this is dangerous, using strtotime format - there is not solid link between them to prevent it from breaking

@@ -6,7 +6,7 @@ use Destiny\Config;
 use Destiny\Utils\Options;
 
 /**
- * Simple abstraction of file caching logic
+ * Simple abstraction of APC caching logic
  */
 class Apc {
 	public $filename = '';

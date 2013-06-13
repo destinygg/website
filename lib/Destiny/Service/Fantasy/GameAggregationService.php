@@ -1,32 +1,36 @@
 <?php
 
-namespace Destiny\Service\Fantasy\Db;
+namespace Destiny\Service\Fantasy;
 
 use Destiny\Application;
 use Destiny\Service;
 use Destiny\Config;
-use Destiny\Service\Fantasy\Db\Game;
+use Destiny\Service\Fantasy\GameService;
 use Destiny\Utils\Cache;
 use Destiny\AppException;
 
-class Aggregate extends Service {
+class GameAggregationService extends Service {
 	
-	/**
-	 *
-	 * @var Destiny\Service\Fantasy\Db\Aggregate
-	 */
 	protected static $instance = null;
 
 	/**
-	 *
-	 * @return Destiny\Service\Fantasy\Db\Aggregate
+	 * Singleton instance
+	 * 
+	 * @return Destiny\Service\Fantasy\GameAggregationService
 	 */
 	public static function getInstance() {
 		return parent::getInstance ();
 	}
 
+	/**
+	 * Aggregate / calculate the scoring for a game
+	 *
+	 * @param int $gameId
+	 * @throws AppException
+	 * @return boolean
+	 */
 	public function aggregateGame($gameId) {
-		$fgService = Game::getInstance ();
+		$fgService = GameService::getInstance ();
 		$scores = Config::$a ['fantasy'] ['scores'];
 		
 		$game = $fgService->getGameById ( $gameId );

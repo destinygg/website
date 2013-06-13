@@ -3,7 +3,7 @@
 namespace Destiny\Action\Order;
 
 use Destiny\Application;
-use Destiny\Service\Subscriptions;
+use Destiny\Service\SubscriptionsService;
 use Destiny\Session;
 use Destiny\ViewModel;
 use Destiny\AppException;
@@ -34,7 +34,7 @@ class Confirm {
 			return 'ordererror';
 		}
 		$recurringSubscription = (isset ( $params ['renew'] ) && $params ['renew'] == '1') ? true : false;
-		$subscription = Subscriptions::getInstance ()->getSubscriptionType ( $params ['subscription'] );
+		$subscription = SubscriptionsService::getInstance ()->getSubscriptionType ( $params ['subscription'] );
 		
 		$model->subscription = $subscription;
 		$model->renew = $recurringSubscription;

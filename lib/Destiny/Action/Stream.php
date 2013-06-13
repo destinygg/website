@@ -3,7 +3,6 @@
 namespace Destiny\Action;
 
 use Destiny\AppException;
-use Destiny\Service\Twitch;
 use Destiny\Utils\Http;
 use Destiny\Application;
 use Destiny\MimeType;

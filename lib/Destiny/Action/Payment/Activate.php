@@ -2,10 +2,10 @@
 
 namespace Destiny\Action\Payment;
 
-use Destiny\Service\Subscriptions;
+use Destiny\Service\SubscriptionsService;
 use Destiny\ViewModel;
 use Destiny\Session;
-use Destiny\Service\Orders;
+use Destiny\Service\OrdersService;
 use Destiny\Utils\Http;
 use Destiny\Config;
 use Destiny\AppException;
@@ -36,8 +36,8 @@ use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 class Activate {
 
 	public function execute(array $params, ViewModel $model) {
-		$subService = Subscriptions::getInstance ();
-		$orderService = Orders::getInstance ();
+		$subService = SubscriptionsService::getInstance ();
+		$orderService = OrdersService::getInstance ();
 		
 		$subscription = $subService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		// This can only be done on active subscriptions, else the user must resub

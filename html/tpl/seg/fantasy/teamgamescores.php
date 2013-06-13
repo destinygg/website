@@ -3,9 +3,10 @@ namespace Destiny;
 use Destiny\Utils\Tpl;
 use Destiny\Utils\Lol;
 use Destiny\Utils\Date;
+use Destiny\Service\Fantasy\GameService;
 ?>
 <?if(!empty($model->games) && count($model->games) >= 3):?>
-<?$userScores = \Destiny\Service\Fantasy\Db\Game::getInstance()->getTeamGameChampionsScores ($model->games, Session::get('teamId'));?>
+<?$userScores = GameService::getInstance()->getTeamGameChampionsScores ($model->games, Session::get('teamId'));?>
 <div class="content content-dark clearfix">
 
 	<div class="games clearfix" style="margin-top: 20px;">

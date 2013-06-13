@@ -4,15 +4,15 @@ namespace Destiny\Action;
 
 use Destiny\Session;
 use Destiny\ViewModel;
-use Destiny\Service\Orders;
-use Destiny\Service\Subscriptions;
+use Destiny\Service\OrdersService;
+use Destiny\Service\SubscriptionsService;
 
 class Profile {
 
 	public function execute(array $params, ViewModel $model) {
 		$model->title = 'Profile';
-		$orderService = Orders::getInstance ();
-		$subsService = Subscriptions::getInstance ();
+		$orderService = OrdersService::getInstance ();
+		$subsService = SubscriptionsService::getInstance ();
 		$orders = $orderService->getCompletedOrdersByUserId ( Session::get ( 'userId' ), 5, 0, 'DESC' );
 		for($i = 0; $i < count ( $orders ); ++ $i) {
 			$orders [$i] ['orderReference'] = $orderService->buildOrderRef ( $orders [$i] );

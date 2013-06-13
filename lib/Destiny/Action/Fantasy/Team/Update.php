@@ -2,8 +2,8 @@
 
 namespace Destiny\Action\Fantasy\Team;
 
-use Destiny\Service\Fantasy\Db\Team;
-use Destiny\Service\Fantasy\Db\Champion;
+use Destiny\Service\Fantasy\TeamService;
+use Destiny\Service\Fantasy\ChampionService;
 use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Session;
@@ -24,15 +24,15 @@ class Update {
 		$team = $this->updateTeam ( $response, $params );
 		$response ['data'] = array ();
 		$response ['data'] ['team'] = $team;
-		$response ['data'] ['champions'] = Team::getInstance ()->getTeamChamps ( $team ['teamId'] );
+		$response ['data'] ['champions'] = TeamService::getInstance ()->getTeamChamps ( $team ['teamId'] );
 		$response ['success'] = true;
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 
 	private function updateTeam(array &$response, array $params) {
-		$teamService = Team::getInstance ();
-		$champService = Champion::getInstance ();
+		$teamService = TeamService::getInstance ();
+		$champService = ChampionService::getInstance ();
 		
 		// Get team - Make sure this is one of the users teams
 		$team = $teamService->getTeamById ( ( int ) $params ['teamId'] );
@@ -45,7 +45,7 @@ class Update {
 		}
 		
 		// Get the users unlocked champs
-		$userChampions = Champion::getInstance ()->getUserChampions ( Session::get ( 'userId' ) );
+		$userChampions = ChampionService::getInstance ()->getUserChampions ( Session::get ( 'userId' ) );
 		$userChampionIds = array ();
 		foreach ( $userChampions as $userChamp ) {
 			$userChampionIds [$userChamp ['championId']] = $userChamp ['championName'];

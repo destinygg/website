@@ -2,7 +2,7 @@
 
 namespace Destiny\Action\Fantasy;
 
-use Destiny\Service\Leagueapi;
+use Destiny\Service\LeagueApiService;
 use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Session;
@@ -12,8 +12,7 @@ use Destiny\Config;
 class Ingame {
 
 	public function execute(array $params) {
-		$leagueService = Leagueapi::getInstance ();
-		$status = $leagueService->getStatus ();
+		$status = LeagueApiService::getInstance ()->getStatus ();
 		$app = Application::getInstance ();
 		$ingame = null;
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {

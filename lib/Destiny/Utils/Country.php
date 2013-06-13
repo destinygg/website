@@ -2,6 +2,7 @@
 
 namespace Destiny\Utils;
 
+use Destiny\Application;
 use Destiny\Config;
 
 /**
@@ -32,7 +33,7 @@ abstract class Country {
 	 */
 	public static function getCountries() {
 		if (self::$countries == null) {
-			$cache = new Config::$a ['cache'] ['memory'] ( array (
+			$cache = Application::getInstance ()->getMemoryCache ( array (
 					'filename' => 'geodata',
 					'life' => 1 * 30 * 24 * 60 * 60 
 			) );
