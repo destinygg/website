@@ -10,7 +10,8 @@ class TwitchLogout {
 
 	public function execute(array $params) {
 		Session::destroy ();
-		Http::header ( 'Location', '/' );
+		Http::header ( Http::HEADER_LOCATION, '/' );
+		exit ();
 	}
 
 }

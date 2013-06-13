@@ -7,8 +7,8 @@ use Destiny\Config;
 
 class Tpl {
 
-	public static function out($var) {
-		return htmlentities ( $var, ENT_QUOTES, 'UTF-8' );
+	public static function out($var, $default=null) {
+		return htmlentities ( ((empty ( $var )) ? $default : $var), ENT_QUOTES, 'UTF-8' );
 	}
 
 	public static function flag($code) {

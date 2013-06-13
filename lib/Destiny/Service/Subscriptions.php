@@ -6,6 +6,7 @@ use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Date;
+use Destiny\AppException;
 
 class Subscriptions extends Service {
 	
@@ -34,7 +35,7 @@ class Subscriptions extends Service {
 		if (! empty ( $subscriptionId ) && isset ( $subscriptions [$subscriptionId] )) {
 			return $subscriptions [$subscriptionId];
 		}
-		throw new \Exception ( 'Subscription type not found' );
+		throw new AppException ( 'Subscription type not found' );
 	}
 
 	/**
@@ -64,13 +65,14 @@ class Subscriptions extends Service {
 
 	/**
 	 * Get the first active subscription
+	 * Note: This does not take into account end date.
 	 *
 	 * @param int $userId
 	 * @return array
 	 */
 	public function getUserActiveSubscription($userId) {
 		$db = Application::getInstance ()->getDb ();
-		return $db->select ( 'SELECT * FROM dfl_users_subscriptions WHERE endDate > NOW() AND userId = \'{userId}\' AND status = \'Active\' ORDER BY createdDate DESC LIMIT 0,1', array (
+		return $db->select ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = \'{userId}\' AND status = \'Active\' ORDER BY createdDate DESC LIMIT 0,1', array (
 				'userId' => $userId 
 		) )->fetchRow ();
 	}
@@ -81,11 +83,25 @@ class Subscriptions extends Service {
 	 * @param int $userId
 	 * @param \DateTime $endDate
 	 */
-	public function updateUserSubscriptionDateEnd($userId,\DateTime $endDate) {
+	public function updateUserSubscriptionDateEnd($userId, \DateTime $endDate) {
 		$db = Application::getInstance ()->getDb ();
 		$db->insert ( "UPDATE dfl_users_subscriptions SET endDate = '{billingNextDate}' WHERE userId = '{userId}'", array (
 				'userId' => $userId,
 				'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
+		) );
+	}
+
+	/**
+	 * Update a subscriptions recurring field
+	 *
+	 * @param int $userId
+	 * @param \DateTime $endDate
+	 */
+	public function updateUserSubscriptionRecurring($userId, $recurring) {
+		$db = Application::getInstance ()->getDb ();
+		$db->insert ( "UPDATE dfl_users_subscriptions SET recurring = '{recurring}' WHERE userId = '{userId}'", array (
+				'userId' => $userId,
+				'recurring' => ($recurring) ? 1 : 0 
 		) );
 	}
 
@@ -112,8 +128,29 @@ class Subscriptions extends Service {
 		$db = Application::getInstance ()->getDb ();
 		return $db->update ( "
 			UPDATE dfl_users_subscriptions SET `status` = 'Expired'
-			WHERE recurring = 1 AND status = 'Active' AND endDate <= NOW() + INTERVAL 1 DAY
+			WHERE status = 'Active' AND endDate + INTERVAL 24 HOUR <= NOW()
 		" );
+	}
+
+	/**
+	 * Update a subscriptions payment profile
+	 *
+	 * @param int $subscriptionId
+	 * @param int $profileId
+	 * @param boolean $recurring
+	 * @return int
+	 */
+	public function updateSubscriptionPaymentProfile($subscriptionId, $profileId, $recurring) {
+		$db = Application::getInstance ()->getDb ();
+		return $db->update ( "
+			UPDATE dfl_users_subscriptions 
+			SET `paymentProfileId` = '{paymentProfileId}', `recurring` = '{recurring}'
+			WHERE subscriptionId = '{subscriptionId}'
+		", array (
+				'subscriptionId' => $subscriptionId,
+				'paymentProfileId' => $profileId,
+				'recurring' => ($recurring) ? '1' : '0' 
+		) );
 	}
 
 }

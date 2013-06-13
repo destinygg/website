@@ -1,10 +1,6 @@
 <?
-
 namespace Destiny;
-
 use Destiny\Utils\Tpl;
-
-$subsService = \Destiny\Service\Subscriptions::getInstance ();
 ?>
 <!DOCTYPE html>
 <html>
@@ -57,7 +53,7 @@ $subsService = \Destiny\Service\Subscriptions::getInstance ();
 								are processed and secured by PayPal.
 							</p>
 							<div id="subscriptions">
-								<?php $sub = $subsService->getSubscriptionType('1-MONTH-SUB')?>
+								<?php $sub = $model->subscriptions['1-MONTH-SUB']?>
 								<div class="subscription active">
 									<label class="radio">
 										<input type="radio" name="subscription" value="<?=$sub['id']?>" checked="checked">
@@ -75,7 +71,7 @@ $subsService = \Destiny\Service\Subscriptions::getInstance ();
 										</label>
 									</div>
 								</div>
-								<?php $sub = $subsService->getSubscriptionType('3-MONTH-SUB')?>
+								<?php $sub = $model->subscriptions['3-MONTH-SUB']?>
 								<div class="subscription">
 									<label class="radio">
 										<input type="radio" name="subscription" value="<?=$sub['id']?>">

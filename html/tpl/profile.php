@@ -1,5 +1,4 @@
 <?
-
 namespace Destiny;
 
 use Destiny\Utils\Tpl;
@@ -32,71 +31,112 @@ use Destiny\Session;
 		<div class="content content-dark clearfix">
 
 			<div style="width: 100%;" class="clearfix stream">
-				<h3 class="title">Subscription 
-				<?if(!empty($model->subscription)):?>
-				<span class="label label-success" title="Active time remaining: <?=Date::getRemainingTime(new \DateTime($model->subscription['endDate']))?>">Active</span>
-				<?else:?>
-				<span class="label label-inverse" title="No subscriptions">Inactive</span>
-				<?endif;?>
-				</h3>
+				<h3 class="title">Subscription</h3>
+				
 				<form action="/subscribe" method="post" style="margin: 0; border-top: 1px solid #222;">
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px 20px 20px;">
+					<div class="control-group" style="margin: 10px 20px 20px 20px;">
+
+						<?if(empty($model->subscription)):?>
+						<p>You have no active subscriptions. Click the 'Subscribe' button below to get one!</p>
+						<?endif;?>
 						
-							<?if(empty($model->subscription)):?>
-							<p>You have no active subscriptions</p>
-							<?endif;?>
+						<?if(!empty($model->subscription)):?>
+						<dl class="dl-horizontal">
+							<dt>Status:</dt>
+							<dd>
+							<span class="label label-<?=($model->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($model->subscription['status'])?></span>
+							<?php if($model->subscription['recurring']):?>
+							<span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
+							<?php endif; ?>
+							</dd>
 							
-							<?if(!empty($model->subscription)):?>
-							<p>Your subscription will expire on <?=Date::getDateTime($model->subscription['endDate'], Date::STRING_FORMAT)?></p>
-							<?endif;?>
+							<dt>Created date:</dt>
+							<dd><?=Tpl::out(Date::getDateTime($model->subscription['createdDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<dt>End date:</dt>
+							<dd><?=Tpl::out(Date::getDateTime($model->subscription['endDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<dt>Time left:</dt>
+							<dd><?=Date::getRemainingTime(new \DateTime($model->subscription['endDate']))?></dd>
+							<br />
 							
-							<?php if(count($model->orders)>0): ?>
-							<table class="grid" style="width: 100%; margin-bottom: 20px;">
-								<thead>
-									<tr>
-										<td style="width: 100%;">Transactions</td>
-										<td></td>
-										<td>Status</td>
-									</tr>
-								</thead>
-								<tbody>
-									<?php foreach($model->orders as $order): ?>
-									<tr class="on">
-										<td><a title="See this order invoice" href="/order/invoice?orderId=<?=$order['orderId']?>" style="display: block"><?=Tpl::out($order['orderReference'])?></a></td>
-										<td style="text-align: right;"><small class="subtle"><?=Tpl::out($order['description'])?></small></td>
-										<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($order['state'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($order['state'])?></span></td>
-									</tr>
-									<?php foreach($order['payments'] as $payment): ?>
-									<tr class="off">
-										<td><?=Tpl::currency($payment['currency'], $payment['amount'])?> - <?=Date::getDateTime($payment['paymentDate'], Date::STRING_FORMAT)?></td>
-										<td style="text-align: right;"><small class="subtle">Payment</small></td>
-										<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($payment['paymentStatus'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($payment['paymentStatus'])?></span></td>
-									</tr>
-									<?php endforeach; ?>
-									<?php endforeach; ?>
-								</tbody>
-							</table>
-							<?endif;?>
+							<?php if(!empty($model->paymentProfile)): ?>
+							<dt>Billing:</dt>
+							<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
+							<dt>Amount:</dt>
+							<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
+							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+							<dt>Profile:</dt>
+							<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'])?></dd>
+							<?php endif; ?>
+							<dt>Billing Cycle:</dt>
+							<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
+							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+							<dt>Billing start date:</dt>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
+							<dt>Billing next date:</dt>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<?php endif; ?>
+							<?php endif; ?>
 							
-						</div>
+							<?if(strcasecmp($model->paymentProfile['state'], 'Cancelled')===0):?>
+							<dt>&nbsp;</dt>
+							<dd><a title="Re-activate this recurring payment" href="/payment/activate">Re-activate</a></dd>
+							<?php endif; ?>
+							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+							<dt>&nbsp;</dt>
+							<dd><a title="Cancel this recurring payment" href="/payment/cancel">Cancel</a></dd>
+							<?php endif; ?>
+							
+							<?php endif; ?>
+			
+						</dl>
+						<?php endif; ?>
+						
+					</div>
 
-						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<?if(!empty($model->subscription)):?>
-							<a href="/unsubscribe" class="btn btn-danger"><i class="icon-remove icon-white"></i> Cancel subscription</a>
-							<?else:?>
-							<a href="/subscribe" class="btn btn-primary"><i class="icon-shopping-cart icon-white"></i> Subscribe</a>
-							<?endif;?>
-						</div>
+					<?if(empty($model->subscription) && empty($model->paymentProfile)):?>
+					<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+						<a href="/subscribe" class="btn btn-primary"><i class="icon-remove icon-white"></i> Subscribe</a>
+					</div>
+					<?endif;?>
 
-					</fieldset>
 				</form>
 			</div>
 
 		</div>
-	</section>
-
-	<section class="container">
+		
+		<?php if(!empty($model->orders)): ?>
+		<hr size="1" />
+		
+		<div class="content content-dark clearfix">
+			<div style="width: 100%;" class="clearfix stream">
+				<h3 class="title">Transactions</h3>
+				<div class="control-group" style="margin:0; padding: 20px; border-top: 1px solid #222;">
+					<table class="grid" style="width: 100%;">
+						<tbody>
+							<?php foreach($model->orders as $order): ?>
+							<tr class="on">
+								<td style="width: 100%;"><a title="See this order invoice" href="/order/invoice?orderId=<?=$order['orderId']?>" style="display: block"><?=Tpl::out($order['orderReference'])?></a></td>
+								<td style="text-align: right;"><small class="subtle"><?=Tpl::out($order['description'])?></small></td>
+								<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($order['state'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($order['state'])?></span></td>
+							</tr>
+							<?php foreach($order['payments'] as $payment): ?>
+							<tr class="off">
+								<td style="width: 100%;"><?=Tpl::currency($payment['currency'], $payment['amount'])?> - <?=Date::getDateTime($payment['paymentDate'], Date::STRING_FORMAT)?></td>
+								<td style="text-align: right;"><small class="subtle">Payment</small></td>
+								<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($payment['paymentStatus'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($payment['paymentStatus'])?></span></td>
+							</tr>
+							<?php endforeach; ?>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+					
+				</div>
+			</div>
+		</div>
+		<?endif;?>
+		
+		<hr size="1" />
 		<div class="content content-dark clearfix">
 
 			<div style="width: 100%;" class="clearfix stream">

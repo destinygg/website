@@ -10,18 +10,15 @@ use Destiny\Service\Fantasy\Db\User;
 use Destiny\Service\Settings;
 use Destiny\Service\Users;
 use Destiny\ViewModel;
+use Destiny\AppException;
 
 class Save {
 
 	public function execute(array $params) {
-		if ($_SERVER ['REQUEST_METHOD'] != 'POST') {
-			throw new \Exception ( 'POST required' );
-		}
-		
 		// Get user
 		$user = Users::getInstance ()->getUserById ( Session::get ( 'userId' ) );
 		if (empty ( $user )) {
-			throw new \Exception ( 'Invalid user' );
+			throw new AppException ( 'Invalid user' );
 		}
 		
 		// Geo
@@ -38,9 +35,9 @@ class Save {
 		}
 		
 		// Update authentication credentials
-		$authCreds = Session::getAuthCredentials ();
+		$authCreds = Session::getAuthCreds ();
 		$authCreds->setCountry ( $user ['country'] );
-		Session::setAuthCredentials ( $authCreds );
+		Session::setAuthCreds ( $authCreds );
 		
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( array (

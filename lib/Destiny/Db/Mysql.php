@@ -2,8 +2,10 @@
 
 namespace Destiny\Db;
 
+use Destiny\Application;
 use Destiny\Utils\Options;
 use Destiny\Utils\String\Params;
+use Destiny\AppException;
 
 class Mysql {
 	private $database;
@@ -33,7 +35,9 @@ class Mysql {
 		$query = Params::apply ( $sql, $params, true );
 		$result = mysql_query ( $query, $connection->getLink () );
 		if ($result === false) {
-			throw new \Exception ( mysql_error ( $connection->getLink () ) );
+			$log = Application::getInstance ()->getLogger ();
+			$log->critical ( mysql_error ( $connection->getLink () ) );
+			throw new AppException ( 'A databse error has occurred' );
 		}
 		return $result;
 	}
@@ -160,7 +164,7 @@ class Connection {
 	public function open($host, $username, $password) {
 		$link = mysql_connect ( $host, $username, $password, true );
 		if ($link == null) {
-			throw new \Exception ( 'Could not open DB connection ' . $username . '@' . $host );
+			throw new AppException ( 'Could not open DB connection ' . $username . '@' . $host );
 		}
 		return $link;
 	}
@@ -173,7 +177,7 @@ class Connection {
 
 	public function connectDb($database) {
 		if (! mysql_select_db ( $database, $this->getLink () )) {
-			throw new \Exception ( 'DB Select failed' );
+			throw new AppException ( 'DB Select failed' );
 		}
 	}
 

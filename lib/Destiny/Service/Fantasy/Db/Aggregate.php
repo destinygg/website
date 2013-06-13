@@ -7,6 +7,7 @@ use Destiny\Service;
 use Destiny\Config;
 use Destiny\Service\Fantasy\Db\Game;
 use Destiny\Utils\Cache;
+use Destiny\AppException;
 
 class Aggregate extends Service {
 	
@@ -30,7 +31,7 @@ class Aggregate extends Service {
 		
 		$game = $fgService->getGameById ( $gameId );
 		if ($game ['aggregated'] == 1) {
-			throw new \Exception ( 'Game already aggregated.' );
+			throw new AppException ( 'Game already aggregated.' );
 		}
 		
 		// Set the aggregated flag before an error occurs later on
@@ -43,7 +44,7 @@ class Aggregate extends Service {
 		$this->addChampionScores ( $gameId, 'WIN', $scores ['WIN'], $game ['gameWinSideId'] );
 		$this->addChampionScores ( $gameId, 'LOSE', $scores ['LOSE'], $game ['gameLoseSideId'] );
 		
-		$this->calculateChampionTeamScore ( $gameId, 'GAME' );
+		$this->calculateChampionTeamScore ( $gameId );
 		
 		// Recalc team scores, ranks, credits and milestones
 		$this->calculateTeamScore ( $gameId );
@@ -109,7 +110,7 @@ class Aggregate extends Service {
 								'maxTransfers' => Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'] 
 						) );
 					} else {
-						throw new \Exception ( 'Unsupported reward type' );
+						throw new AppException ( 'Unsupported reward type' );
 					}
 					break;
 				
@@ -142,7 +143,7 @@ class Aggregate extends Service {
 								'maxTransfers' => Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'] 
 						) );
 					} else {
-						throw new \Exception ( 'Unsupported reward type' );
+						throw new AppException ( 'Unsupported reward type' );
 					}
 					break;
 			}
@@ -198,8 +199,9 @@ class Aggregate extends Service {
 		) );
 	}
 
-	private function calculateChampionTeamScore($gameId, $scoreType) {
+	private function calculateChampionTeamScore($gameId) {
 		$db = Application::getInstance ()->getDb ();
+		$scoreType = 'GAME';
 		// Owned champions only SCORES_TEAMS_CHAMPS
 		$db->insert ( '
 			INSERT INTO dfl_scores_teams_champs (`gameId`, `teamId`, `championId`, `championMultiplier`, `penalty`, `scoreValue`, `createdDate`) 
@@ -311,23 +313,23 @@ class Aggregate extends Service {
 		if ($gameId == null) {
 			$db->update ( '
 			UPDATE dfl_teams AS `teams`, ( 
-				SELECT scoresteams.teamId, SUM(scoresteams.scoreValue) AS `total` 
-				FROM dfl_scores_teams AS `scoresteams` 
-				GROUP BY scoresteams.teamId 
+				SELECT a.teamId, SUM(a.scoreValue) AS `total` 
+				FROM dfl_scores_teams AS a
+				GROUP BY a.teamId  
 			) AS scoresteams 
 			SET teams.scoreValue = scoresteams.total, teams.modifiedDate = UTC_TIMESTAMP()
 			WHERE teams.teamId = scoresteams.teamId' );
 		} else {
+			// Quick dirty way when we have the game Id
 			$db->update ( '
-				UPDATE dfl_teams AS `teams`, ( 
-					SELECT scoresteams.teamId, SUM(scoresteams.scoreValue) AS `total` 
-					FROM dfl_scores_teams AS `scoresteams`
-					WHERE scoresteams.gameId = \'{gameId}\' 
-					GROUP BY scoresteams.teamId 
-				) AS scoresteams 
-				INNER JOIN dfl_scores_teams AS `scoresteams` ON (scoresteams.teamId = teams.teamId)
-				SET teams.scoreValue = scoresteams.total, teams.modifiedDate = UTC_TIMESTAMP()
-				WHERE scoresteams.gameId = \'{gameId}\'
+				UPDATE dfl_teams t 
+					INNER JOIN (
+					SELECT c.teamId, SUM(c.scoreValue) AS `total` 
+					FROM dfl_scores_teams AS c
+					WHERE c.gameId = \'{gameId}\'
+					GROUP BY c.teamId 
+				) b ON b.teamId = t.teamId 
+				SET t.scoreValue = t.scoreValue + b.total, t.modifiedDate = UTC_TIMESTAMP()
 			', array (
 					'gameId' => $gameId 
 			) );

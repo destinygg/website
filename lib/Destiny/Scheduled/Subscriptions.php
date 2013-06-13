@@ -7,6 +7,7 @@ use Destiny\Config;
 use Destiny\Service\Twitch\Subscription;
 use Destiny\Utils\Date;
 use Psr\Log\LoggerInterface;
+use Destiny\AppException;
 
 class Subscriptions {
 
@@ -21,7 +22,7 @@ class Subscriptions {
 			set_time_limit ( 20 );
 			$subscriptions = Subscription::getInstance ()->getChannelSubscriptions ( Config::$a ['twitch'] ['broadcaster'] ['user'], $increments, $i );
 			if ($subscriptions == null) {
-				throw new \Exception ( 'Error requesting subscriptions' );
+				throw new AppException ( 'Error requesting subscriptions' );
 				break;
 			}
 			if ($isSubsCleared == false) {
@@ -29,11 +30,11 @@ class Subscriptions {
 				$db->update ( 'UPDATE dfl_users_twitch_subscribers SET validated = 0' );
 			}
 			if (! isset ( $subscriptions ['_total'] ) || ! is_numeric ( $subscriptions ['_total'] )) {
-				throw new \Exception ( 'Error requesting subscriptions. Total: 0' );
+				throw new AppException ( 'Error requesting subscriptions. Total: 0' );
 			}
 			$total = intval ( $subscriptions ['_total'] );
 			if ($total == 0) {
-				throw new \Exception ( 'Error requesting subscriptions. Total: 0' );
+				throw new AppException ( 'Error requesting subscriptions. Total: 0' );
 				break;
 			}
 			$log->info ( 'Checked subscriptions [' . $i . ' out of ' . $total . ']' );

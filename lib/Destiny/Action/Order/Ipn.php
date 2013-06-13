@@ -8,6 +8,7 @@ use Destiny\Service\Orders;
 use Destiny\Config;
 use Destiny\Utils\Date;
 use Destiny\Service\Subscriptions;
+use Destiny\AppException;
 
 class Ipn {
 
@@ -24,37 +25,31 @@ class Ipn {
 			return;
 		}
 		$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $ipnMessage->getTransactionType () ) );
-		try {
-			$data = $ipnMessage->getRawData ();
-			$orderService = Orders::getInstance ();
-			$orderService->addIPNRecord ( array (
-					'ipnTrackId' => $data ['ipn_track_id'],
-					'ipnTransactionId' => $ipnMessage->getTransactionId (),
-					'ipnTransactionType' => $ipnMessage->getTransactionType (),
-					'ipnData' => json_encode ( $data ) 
-			) );
-			$this->handleIPN ( $ipnMessage );
-		} catch ( \Exception $e ) {
-			// Capture errors, log them, but return a 200 success response to paypal
-			$log->error ( $e->getMessage () );
-		}
+		$data = $ipnMessage->getRawData ();
+		$orderService = Orders::getInstance ();
+		$orderService->addIPNRecord ( array (
+				'ipnTrackId' => $data ['ipn_track_id'],
+				'ipnTransactionId' => $ipnMessage->getTransactionId (),
+				'ipnTransactionType' => $ipnMessage->getTransactionType (),
+				'ipnData' => json_encode ( $data ) 
+		) );
+		$this->handleIPN ( $ipnMessage );
 	}
 
 	/**
 	 * Get payment profile from IPN
 	 *
 	 * @param array $data
-	 * @throws \Exception
 	 * @return unknown
 	 */
 	protected function getPaymentProfile(array $data) {
 		if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {
-			throw new \Exception ( 'Invalid recurring_payment_id' );
+			throw new AppException ( 'Invalid recurring_payment_id' );
 		}
 		$orderService = Orders::getInstance ();
 		$paymentProfile = $orderService->getPaymentProfileByPaymentProfileId ( $data ['recurring_payment_id'] );
 		if (empty ( $paymentProfile )) {
-			throw new \Exception ( 'Invalid payment profile' );
+			throw new AppException ( 'Invalid payment profile' );
 		}
 		return $paymentProfile;
 	}
@@ -63,7 +58,6 @@ class Ipn {
 	 * Handles the IPN message
 	 *
 	 * @param PPIPNMessage $ipnMessage
-	 * @throws \Exception
 	 */
 	protected function handleIPN(PPIPNMessage $ipnMessage) {
 		$log = Application::getInstance ()->getLogger ();
@@ -74,7 +68,7 @@ class Ipn {
 		
 		// Make sure this IPN is for the merchant
 		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
-			throw new \Exception ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
+			throw new AppException ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
 		}
 		
 		switch (strtolower ( $transactionType )) {
@@ -84,7 +78,7 @@ class Ipn {
 				$payment = $orderService->getPaymentByTransactionId ( $data ['txn_id'] );
 				if (! empty ( $payment )) {
 					if (number_format ( $payment ['amount'], 2 ) != number_format ( $data ['mc_gross'], 2 )) {
-						throw new \Exception ( 'Amount for payment do not match' );
+						throw new AppException ( 'Amount for payment do not match' );
 					}
 					$orderService->updatePaymentState ( $payment, $data ['payment_status'] );
 					$log->notice ( sprintf ( 'Updated payment status %s status %s', $data ['txn_id'], $data ['payment_status'] ) );
@@ -94,7 +88,7 @@ class Ipn {
 			// Recurring payment, renew subscriptions. make sure 'payment_status' == 'completed'
 			case 'recurring_payment' :
 				if (! isset ( $data ['payment_status'] )) {
-					throw new \Exception ( 'Invalid payment status' );
+					throw new AppException ( 'Invalid payment status' );
 				}
 				$paymentProfile = $this->getPaymentProfile ( $data );
 				$nextPaymentDate = Date::getDateTime ( $data ['next_payment_date'] );

@@ -4,6 +4,7 @@ namespace Destiny\Service;
 
 use Destiny\Service;
 use Destiny\Application;
+use Destiny\Utils\Date;
 
 class Orders extends Service {
 	
@@ -219,7 +220,7 @@ class Orders extends Service {
 	 * @param int $paymentProfileId
 	 * @param \DateTime $billingNextDate
 	 */
-	public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
+	public function updatePaymentProfileNextPayment($paymentProfileId,\DateTime $billingNextDate) {
 		$db = Application::getInstance ()->getDb ();
 		$db->insert ( "UPDATE dfl_orders_payment_profiles SET billingNextDate = '{billingNextDate}' WHERE profileId = '{profileId}'", array (
 				'profileId' => $paymentProfileId,
@@ -235,7 +236,7 @@ class Orders extends Service {
 	 * @param int $paymentProfileId
 	 * @param string $status
 	 */
-	public function activatePaymentProfile($profileId, $paymentProfileId, $status = 'Active') {
+	public function updatePaymentProfileStatus($profileId, $paymentProfileId, $status) {
 		$db = Application::getInstance ()->getDb ();
 		$db->insert ( "
 			UPDATE dfl_orders_payment_profiles
@@ -344,7 +345,27 @@ class Orders extends Service {
 	 * @return string
 	 */
 	public function buildOrderRef(array $order) {
-		return '#ORDER-' . $order ['userId'] . '-' . $order ['orderId'];
+		return strtoupper ( base_convert ( strtotime ( $order ['createdDate'] ), 10, 36 ) ) . '-' . strlen ( $order ['userId'] ) . $order ['userId'] . strlen ( $order ['orderId'] ) . $order ['orderId'];
+	}
+
+	/**
+	 * Returns an easier way to read a billing cycle
+	 *
+	 * @param int $frequency
+	 * @param string $period
+	 * @return string
+	 */
+	public function buildBillingCycleString($frequency, $period) {
+		if ($frequency < 1) {
+			return 'Never';
+		}
+		if ($frequency == 1) {
+			return 'Once a ' . strtolower ( $period );
+		}
+		if ($frequency > 1) {
+			return 'Every ' . $frequency . ' ' . strtolower ( $period ) . 's';
+		}
+		return '';
 	}
 
 }

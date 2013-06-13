@@ -8,6 +8,7 @@ use Destiny\Mimetype;
 use Destiny\Api\Consumer;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
+use Destiny\AppException;
 
 class Youtube extends Service {
 	protected static $instance = null;
@@ -35,7 +36,7 @@ class Youtube extends Service {
 							$item ['snippet'] ['publishedAt'] = Date::getDateTime ( $item ['snippet'] ['publishedAt'], Date::FORMAT );
 						}
 					} else {
-						throw new \Exception ( 'Youtube API Down' );
+						throw new AppException ( 'Youtube API Down' );
 					}
 					return $json;
 				} 

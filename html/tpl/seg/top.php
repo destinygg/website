@@ -11,14 +11,14 @@
 					<li><a title="reddit.com" href="<?=Config::$a['nav']['reddit']?>">Reddit</a></li>
 					<li><a title="facebook.com" href="<?=Config::$a['nav']['facebook']?>">Facebook</a></li>
 					<li class="divider-vertical"></li>
-					<li><a href="/league">Fantasy League</a></li>
+					<li><a href="/league" rel="league">Fantasy League</a></li>
 				</ul>
 				<?if(Session::authorized()):?>
 				<ul class="nav pull-right">
 					<?if(Session::hasRole('admin')):?>
-					<li><a href="/admin">Admin</i></a></li>
+					<li><a href="/admin" rel="admin">Admin</i></a></li>
 					<?endif;?>
-					<li><a href="/profile">Profile</span></a></li>
+					<li><a href="/profile" rel="profile">Profile</span></a></li>
 					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
 				</ul>
 				<?else:?>

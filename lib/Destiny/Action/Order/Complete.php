@@ -28,6 +28,7 @@ use Destiny\Service\Orders;
 use Destiny\Config;
 use Destiny\Utils\Date;
 use Destiny\ViewModel;
+use Destiny\AppException;
 
 class Complete {
 	
@@ -42,11 +43,11 @@ class Complete {
 	 * We were redirected here from PayPal after the buyer approved/cancelled the payment
 	 *
 	 * @param array $params
-	 * @throws \Exception
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$this->checkoutId = Session::get ( 'checkoutId' );
 		$ordersService = Orders::getInstance ();
+		$log = Application::getInstance ()->getLogger ();
 		
 		// Make sure our checkoutId is valid
 		if (! isset ( $params ['checkoutId'] ) || empty ( $this->checkoutId ) || $this->checkoutId != $params ['checkoutId']) {
@@ -60,16 +61,20 @@ class Complete {
 					die ();
 				}
 			}
-			throw new \Exception ( 'Invalid checkout token' );
+			$model->error = new AppException ( 'Invalid checkout token' );
+			return 'ordererror';
 		}
 		if (! isset ( $params ['token'] ) || empty ( $params ['token'] )) {
-			throw new \Exception ( 'Invalid token' );
+			$model->error = new AppException ( 'Invalid token' );
+			return 'ordererror';
 		}
 		if (! isset ( $params ['success'] )) {
-			throw new \Exception ( 'Invalid success response' );
+			$model->error = new AppException ( 'Invalid success response' );
+			return 'ordererror';
 		}
 		if (! isset ( $params ['orderId'] )) {
-			throw new \Exception ( 'Invalid orderId' );
+			$model->error = new AppException ( 'Invalid orderId' );
+			return 'ordererror';
 		}
 		
 		// The token from paypal
@@ -78,10 +83,12 @@ class Complete {
 		// Get | Build the order | Dirty
 		$order = $ordersService->getOrderById ( $params ['orderId'] );
 		if (empty ( $order )) {
-			throw new \Exception ( 'Invalid order record' );
+			$model->error = new AppException ( 'Invalid order record' );
+			return 'ordererror';
 		}
 		if ($order ['state'] != 'New') {
-			throw new \Exception ( 'Invalid order status' );
+			$model->error = new AppException ( 'Invalid order status' );
+			return 'ordererror';
 		}
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
 		$subscription = Subscriptions::getInstance ()->getSubscriptionType ( $order ['items'] [0] ['itemSku'] );
@@ -95,19 +102,22 @@ class Complete {
 			if (! empty ( $paymentProfile )) {
 				$ordersService->updatePaymentProfileState ( $paymentProfile ['profileId'], 'Error' );
 			}
-			throw new \Exception ( 'Order request failed' );
+			$model->error = new AppException ( 'Order request failed' );
+			return 'ordererror';
 		}
 		
 		// Get the checkout info
 		$ecResponse = $this->retrieveCheckoutInfo ( $token );
 		if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
 			$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-			throw new \Exception ( 'Failed to retrieve express checkout details' );
+			$model->error = new AppException ( 'Failed to retrieve express checkout details' );
+			return 'ordererror';
 		}
 		
 		// Is done after the success check
 		if (! isset ( $params ['PayerID'] ) || empty ( $params ['PayerID'] )) {
-			throw new \Exception ( 'Invalid PayerID' );
+			$model->error = new AppException ( 'Invalid PayerID' );
+			return 'ordererror';
 		}
 		
 		// Point of no return - we only every want a person to get here if their order was a successful sequence
@@ -120,16 +130,18 @@ class Complete {
 			$createRPProfileResponse = $this->createRecurringPaymentProfile ( $paymentProfile, $token, $subscription );
 			if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
 				$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-				throw new \Exception ( 'Failed to create recurring payment request' );
+				$model->error = new AppException ( 'Failed to create recurring payment request' );
+				return 'ordererror';
 			}
 			$paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
 			$paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
 			if (empty ( $paymentProfileId )) {
 				$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-				throw new \Exception ( 'Invalid recurring payment profileId returned from Paypal' );
+				$model->error = new AppException ( 'Invalid recurring payment profileId returned from Paypal' );
+				return 'ordererror';
 			}
 			// Set the payment profile to active, and paymetProfileId
-			$ordersService->activatePaymentProfile ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
+			$ordersService->updatePaymentProfileStatus ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
 		}
 		
 		// Complete the checkout
@@ -176,21 +188,24 @@ class Complete {
 				$ordersService->updateOrderState ( $order ['orderId'], $orderStatus );
 			} else {
 				$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-				throw new \Exception ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
+				$model->error = new AppException ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
+				return 'ordererror';
 			}
 		} else {
 			$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-			throw new \Exception ( $DoECResponse->Errors [0]->LongMessage );
+			$log->error ( $DoECResponse->Errors [0]->LongMessage );
+			$model->error = new AppException ( 'Unable to retrieve response from Paypal' );
+			return 'ordererror';
 		}
 		
 		// Create / adjust subscription
 		Subscriptions::getInstance ()->addUserSubscription ( $order ['userId'], $subscription, 'Active', $paymentProfile );
 		
 		// Add the subscriber role, this is just for UI
-		$authCreds = Session::getAuthCredentials ();
+		$authCreds = Session::getAuthCreds ();
 		if (! empty ( $authCreds )) {
 			$authCreds->addRoles ( 'subscriber' );
-			Session::setAuthCredentials ( $authCreds );
+			Session::setAuthCreds ( $authCreds );
 		}
 		
 		// Show the order complete screen
@@ -222,15 +237,12 @@ class Complete {
 	 * @return \PayPalAPI\CreateRecurringPaymentsProfileResponseType
 	 */
 	protected function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscription) {
-		$paypalService = new PayPalAPIInterfaceServiceService ();
-		
-		// @TODO this is strange, or dirty cant tell
 		$billingStartDate = new \DateTime ( $paymentProfile ['billingStartDate'] );
 		
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
 		$RPProfileDetails->SubscriberName = Session::get ( 'displayName' ); // This should be passed in
 		$RPProfileDetails->BillingStartDate = $billingStartDate->format ( \DateTime::ATOM );
-		$RPProfileDetails->ProfileReference = $paymentProfile ['userId'] . '-' . $paymentProfile ['profileId'] . '-' . $paymentProfile ['orderId'];
+		$RPProfileDetails->ProfileReference = $paymentProfile ['userId'] . '-' . $paymentProfile ['orderId'];
 		
 		$paymentBillingPeriod = new BillingPeriodDetailsType ();
 		$paymentBillingPeriod->BillingFrequency = $paymentProfile ['billingFrequency'];
@@ -241,11 +253,6 @@ class Complete {
 		$scheduleDetails->Description = $subscription ['agreement'];
 		$scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
 		
-		// $activationDetails = new ActivationDetailsType ();
-		// $activationDetails->InitialAmount = new BasicAmountType ( Config::$a ['commerce'] ['currency'], 100000.00 );
-		// $activationDetails->FailedInitialAmountAction = 'CancelOnFailure';
-		// $scheduleDetails->ActivationDetails = $activationDetails;
-		
 		$createRPProfileRequestDetail = new CreateRecurringPaymentsProfileRequestDetailsType ();
 		$createRPProfileRequestDetail->Token = $token;
 		$createRPProfileRequestDetail->ScheduleDetails = $scheduleDetails;
@@ -253,10 +260,10 @@ class Complete {
 		
 		$createRPProfileRequest = new CreateRecurringPaymentsProfileRequestType ();
 		$createRPProfileRequest->CreateRecurringPaymentsProfileRequestDetails = $createRPProfileRequestDetail;
-		
 		$createRPProfileReq = new CreateRecurringPaymentsProfileReq ();
 		$createRPProfileReq->CreateRecurringPaymentsProfileRequest = $createRPProfileRequest;
 		
+		$paypalService = new PayPalAPIInterfaceServiceService ();
 		return $paypalService->CreateRecurringPaymentsProfile ( $createRPProfileReq );
 	}
 

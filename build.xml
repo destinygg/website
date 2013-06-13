@@ -107,7 +107,7 @@
 			<fileset dir="lib"/>
 		</copy>
 		<copy todir="${build.base}/vendor">
-			<fileset dir="vendor"/>
+			<fileset dir="vendor" excludes="/nervo/,**/.git/,**/tests/,**/samples/,**/examples/,**/doc/,**/bin/,**/.travis.yml,**/VERSION**,**/CHANGELOG.**,**/README.**,**/FAQ.**,**/CONTRIBUTING.**,**/LICENSE**,**/composer.json"/>
 		</copy>
 		<copy todir="${build.base}/html/">
 			<fileset dir="html"/>

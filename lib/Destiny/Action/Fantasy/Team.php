@@ -7,6 +7,7 @@ use Destiny\Utils\Date;
 use Destiny\Mimetype;
 use Destiny\Session;
 use Destiny\Config;
+use Destiny\AppException;
 
 class Team {
 
@@ -15,15 +16,11 @@ class Team {
 		// Get team - Make sure this is one of the users teams
 		$team = $ftService->getTeamById ( ( int ) $params ['teamId'] );
 		if (empty ( $team )) {
-			throw new \Exception ( 'Team not found' );
-		}
-		if (! Session::authorized ()) {
-			Http::status ( 401 );
-			exit ();
+			throw new AppException ( 'Team not found' );
 		}
 		// Security
 		if (Session::get ( 'userId' ) != $team ['userId']) {
-			throw new \Exception ( 'Get team failed:  User does not have rights to this team. {"userId":' . $team ['userId'] . ',"teamId":' . $team ['teamId'] . '}' );
+			throw new AppException ( 'User does not have rights to this team.' );
 		}
 		$modifiedTime = strtotime ( $team ['modifiedDate'] );
 		$createdTime = strtotime ( $team ['modifiedDate'] );

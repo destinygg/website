@@ -4,7 +4,7 @@ namespace Destiny;
 
 use Destiny\Utils\Options;
 
-class SessionInterface {
+class SessionInstance {
 	
 	/**
 	 * The unique session Id
@@ -41,6 +41,7 @@ class SessionInterface {
 	/**
 	 * Start the session
 	 *
+	 * @todo this does a mix of things, need to clean-up
 	 * @return void
 	 */
 	public function start() {
@@ -49,6 +50,9 @@ class SessionInterface {
 		session_name ( $sessionCookie->getName () );
 		session_start ();
 		$this->setSessionId ( session_id () );
+		// weird
+		$authCreds = $this->getAuthenticationCredentials ();
+		$authCreds->setCredentials ( $this->getData () );
 	}
 
 	/**
@@ -75,8 +79,8 @@ class SessionInterface {
 	 *
 	 * @param unknown_type $sessionAuthenticationCredentials
 	 */
-	public function setAuthenticationCredentials(SessionAuthenticationCredentials $authenticationCredentials) {
-		$this->authenticationCredentials = $authenticationCredentials;
+	public function setAuthenticationCredentials(SessionAuthenticationCredentials $authCreds) {
+		$this->authenticationCredentials = $authCreds;
 	}
 
 	/**
@@ -225,116 +229,6 @@ class SessionCookieInterface {
 	}
 
 }
-abstract class Session {
-	
-	/**
-	 * The single session interface
-	 *
-	 * @var SessionInterface
-	 */
-	public static $instance = null;
-
-	/**
-	 * Get the session interface
-	 *
-	 * @return \Destiny\SessionInterface
-	 */
-	public static function getInstance() {
-		return self::$instance;
-	}
-
-	/**
-	 * Create a new session interface
-	 *
-	 * @return \Destiny\SessionInterface
-	 */
-	public static function init(array $params) {
-		self::$instance = new SessionInterface ();
-		self::$instance->setSessionCookieInterface ( new SessionCookieInterface ( $params ) );
-		self::$instance->start ();
-		self::$instance->setAuthenticationCredentials ( new SessionAuthenticationCredentials ( self::$instance->getData () ) );
-		return self::$instance;
-	}
-
-	/**
-	 * Set and validate authentication creditials
-	 *
-	 * @param SessionAuthenticationCredentials $authenticationCredentials
-	 */
-	public static function setAuthCredentials(SessionAuthenticationCredentials $authenticationCredentials) {
-		self::$instance->set ( 'email', $authenticationCredentials->getEmail () );
-		self::$instance->set ( 'displayName', $authenticationCredentials->getDisplayName () );
-		self::$instance->set ( 'username', $authenticationCredentials->getUserName () );
-		self::$instance->set ( 'userId', $authenticationCredentials->getUserId () );
-		self::$instance->set ( 'country', $authenticationCredentials->getCountry () );
-		self::$instance->set ( 'roles', $authenticationCredentials->getRoles () );
-		self::$instance->set ( 'authorized', $authenticationCredentials->getAuthorized () );
-		self::$instance->setAuthenticationCredentials ( $authenticationCredentials );
-	}
-
-	/**
-	 * Get the current authenticated session credentials
-	 *
-	 * @return \Destiny\SessionAuthenticationCredentials
-	 */
-	public static function getAuthCredentials() {
-		return self::getInstance ()->getAuthenticationCredentials ();
-	}
-
-	/**
-	 * Destroys the current session
-	 *
-	 * @return void
-	 */
-	public static function destroy() {
-		self::getInstance ()->destroy ();
-	}
-
-	/**
-	 * Get a session variable
-	 *
-	 * @param string $name
-	 * @return mix
-	 */
-	public static function get($name) {
-		return self::getInstance ()->get ( $name );
-	}
-
-	/**
-	 * Set a session variable
-	 *
-	 * @param string $name
-	 * @param string $value
-	 */
-	public static function set($name, $value = null) {
-		self::getInstance ()->set ( $name, $value );
-	}
-
-	/**
-	 * Check if the creditials has a specific role
-	 *
-	 * @param string $roleId
-	 * @return boolean
-	 */
-	public static function hasRole($roleId) {
-		$authCreds = self::getAuthCredentials ();
-		if (! empty ( $authCreds ) && $authCreds->hasRole ( $roleId )) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Return if the creds have been authorized
-	 *
-	 * @return boolean
-	 */
-	public static function authorized() {
-		$authCreds = self::getAuthCredentials ();
-		return $authCreds->getAuthorized ();
-	}
-
-}
 class SessionAuthenticationCredentials {
 	
 	/**
@@ -387,11 +281,22 @@ class SessionAuthenticationCredentials {
 	protected $roles = array ();
 
 	/**
-	 * Setup credentials
+	 * Set the creds
 	 *
 	 * @param array $params
 	 */
 	public function __construct(array $params = null) {
+		if (! empty ( $params )) {
+			$this->setCredentials ( $params );
+		}
+	}
+
+	/**
+	 * Set all the credentials at once
+	 *
+	 * @param array $params
+	 */
+	public function setCredentials(array $params) {
 		if (! empty ( $params )) {
 			if (isset ( $params ['userId'] ) && ! empty ( $params ['userId'] )) {
 				$this->setUserId ( $params ['userId'] );
@@ -412,12 +317,29 @@ class SessionAuthenticationCredentials {
 				if (! is_array ( $params ['roles'] )) {
 					$params ['roles'] = explode ( ',', $params ['roles'] );
 				}
-				$this->setRoles ( $params ['roles'] );
+				$this->setRoles ( array_unique ( $params ['roles'] ) );
 			}
 			if (isset ( $params ['authorized'] ) && ! empty ( $params ['authorized'] ) && $params ['authorized'] == '1') {
 				$this->setAuthorized ( true );
 			}
 		}
+	}
+
+	/**
+	 * Set all the credentials at once
+	 *
+	 * @param array $params
+	 */
+	public function getCredentials() {
+		return array (
+				'email' => $this->getEmail (),
+				'displayName' => $this->getDisplayName (),
+				'username' => $this->getUserName (),
+				'userId' => $this->getUserId (),
+				'country' => $this->getCountry (),
+				'roles' => $this->getRoles (),
+				'authorized' => $this->getAuthorized () 
+		);
 	}
 
 	/**
@@ -508,8 +430,12 @@ class SessionAuthenticationCredentials {
 	 */
 	public function addRoles($role) {
 		if (is_array ( $role )) {
-			$this->roles [] += $role;
-		} else {
+			for($i = 0; $i < count ( $role ); ++ $i) {
+				if (! in_array ( $role [$i], $this->roles )) {
+					$this->roles [] = $role [$i];
+				}
+			}
+		} elseif (! in_array ( $role, $this->roles )) {
 			$this->roles [] = $role;
 		}
 	}
@@ -580,6 +506,121 @@ class SessionAuthenticationCredentials {
 	 */
 	public function setUserId($userId) {
 		$this->userId = $userId;
+	}
+
+}
+abstract class Session {
+	
+	/**
+	 * The single session interface
+	 *
+	 * @var SessionInstance
+	 */
+	public static $instance = null;
+
+	/**
+	 * Return the instances unique session Id
+	 *
+	 * @return string
+	 */
+	public static function getSessionId() {
+		return self::getInstance ()->getSessionId ();
+	}
+
+	/**
+	 * Get the session interface
+	 *
+	 * @return \Destiny\SessionInstance
+	 */
+	public static function getInstance() {
+		return self::$instance;
+	}
+
+	/**
+	 * Set the session instance
+	 *
+	 * @param SessionInstance $session
+	 */
+	public static function setInstance(SessionInstance $session) {
+		self::$instance = $session;
+		return self::$instance;
+	}
+
+	/**
+	 * Get the current authenticated session credentials
+	 *
+	 * @return \Destiny\SessionAuthenticationCredentials
+	 */
+	public static function getAuthCreds() {
+		return self::getInstance ()->getAuthenticationCredentials ();
+	}
+
+	/**
+	 * Set and validate authentication creditials
+	 *
+	 * @param SessionAuthenticationCredentials $authenticationCredentials
+	 */
+	public static function setAuthCreds(SessionAuthenticationCredentials $authCreds) {
+		$session = self::getInstance ();
+		$session->setAuthenticationCredentials ( $authCreds );
+		$params = $session->getAuthenticationCredentials ()->getCredentials ();
+		foreach ( $params as $name => $value ) {
+			$session->set ( $name, $value );
+		}
+	}
+
+	/**
+	 * Destroys the current session
+	 *
+	 * @return void
+	 */
+	public static function destroy() {
+		$session = self::getInstance ();
+		$session->destroy ();
+	}
+
+	/**
+	 * Get a session variable
+	 *
+	 * @param string $name
+	 * @return mix
+	 */
+	public static function get($name) {
+		return self::getInstance ()->get ( $name );
+	}
+
+	/**
+	 * Set a session variable
+	 *
+	 * @param string $name
+	 * @param string $value
+	 */
+	public static function set($name, $value = null) {
+		self::getInstance ()->set ( $name, $value );
+	}
+
+	/**
+	 * Check if the creditials has a specific role
+	 *
+	 * @param string $roleId
+	 * @return boolean
+	 */
+	public static function hasRole($roleId) {
+		$authCreds = self::getAuthCreds ();
+		if (! empty ( $authCreds ) && $authCreds->hasRole ( $roleId )) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Return if the creds have been authorized
+	 *
+	 * @return boolean
+	 */
+	public static function authorized() {
+		$authCreds = self::getAuthCreds ();
+		return $authCreds->getAuthorized ();
 	}
 
 }

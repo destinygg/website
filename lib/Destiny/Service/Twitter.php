@@ -8,6 +8,7 @@ use Destiny\Mimetype;
 use Destiny\Api\Consumer;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
+use Destiny\AppException;
 
 class Twitter extends Service {
 	protected static $instance = null;
@@ -33,7 +34,7 @@ class Twitter extends Service {
 							$json [$tweetIndex] ['created_at'] = Date::getDateTime ( $tweet ['created_at'], Date::FORMAT );
 						}
 					} else {
-						throw new \Exception ( 'Twitter API down' );
+						throw new AppException ( 'Twitter API down' );
 					}
 					return $json;
 				} 

@@ -10,7 +10,7 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 <!DOCTYPE html>
 <html>
 <head>
-<title>Error : 403</title>
+<title>Error : Forbidden</title>
 <link href="<?=$cdn?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=$cdn?>/errors/errors.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=$cdn?>/favicon.png">
@@ -22,9 +22,7 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 		<div class="container">
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
-					<h1>
-						<strong><?=$word?>!</strong> Forbidden
-					</h1>
+					<h1><strong><?=$word?>!</strong> Forbidden</h1>
 					<p>This request is not allowed. <br />Would you like to <a href="/">return to the start</a>?</p>
 				</div>
 				<div id="destiny-illustration"></div>

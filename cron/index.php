@@ -1,51 +1,46 @@
 <?php
 use Destiny\Application;
+use Destiny\AppException;
 use Destiny\Session;
+use Destiny\Scheduler;
+use Destiny\Config;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Destiny\Scheduler;
-use Destiny\Service\Leagueapi;
-use Destiny\Config;
+use Monolog\Processor\WebProcessor;
+use Monolog\Processor\ProcessIdProcessor;
+use Monolog\Processor\MemoryPeakUsageProcessor;
 
 $base = realpath ( __DIR__ . '/../' );
 $loader = require $base . '/vendor/autoload.php';
 $loader->add ( 'Destiny', $base . '/lib/' );
-define ( 'PP_CONFIG_PATH', $base . '/lib' ); // Paypal configuration
 Config::load ( $base . '/lib/config.php' );
 
-$log = new Logger ( 'events' );
+$log = new Logger ( 'cron' );
 $log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . '/cron.log', Logger::DEBUG ) );
+$log->pushProcessor ( new WebProcessor () );
+$log->pushProcessor ( new ProcessIdProcessor () );
+$log->pushProcessor ( new MemoryPeakUsageProcessor () );
+
 $app = Application::getInstance ();
 $app->setLogger ( $log );
 
-// Cron doesnt need session - this file should also not be accessible via browser
-// Session::init ();
-
-/**
- * Cron is run every 60 seconds.
- * There can be a time where actions are executed before they have ended
- */
+// Cron is run every 60 seconds.
+// There can be a time where actions are executed before they have ended
+$scheduler = new Scheduler ( Config::$a ['scheduler'] );
+$scheduler->setLogger ( $log );
+$scheduler->loadSchedule ();
 $stime = microtime ( true );
-$scheduler = new Scheduler ( array (
-		'logger' => $log,
-		'frequency' => 1,
-		'period' => 'minute',
-		'schedule' => Config::$a ['schedule'] 
-) );
 
-// If this is run via cron, the first argv is the file, the others are params
-// If we are running it via http, simulate argv parameters by setting the first arg to the file, and second to ACTION
-if (! isset ( $argv ) || ! is_array ( $argv )) {
-	$argv = array ();
-	$argv [] = __FILE__;
-	if (isset ( $_GET ['action'] )) {
-		$argv [] = $_GET ['action'];
-	}
+try {
+	$scheduler->executeShedule ();
+	echo PHP_EOL . 'Scheduler completed';
+} catch ( AppException $e ) {
+	$log->error ( $e->getMessage () );
+	echo PHP_EOL . 'Scheduler completed with errors';
+} catch ( \Exception $e ) {
+	$log->critical ( $e->getMessage () );
+	echo PHP_EOL . 'Scheduler completed with errors';
 }
-array_shift ( $argv );
-
-$scheduler->execute ( $argv );
-
-$log->info ( 'Completed cron: ' . (microtime ( true ) - $stime) . ' seconds' );
-echo PHP_EOL . 'Completed scheduler: ' . (microtime ( true ) - $stime) . ' seconds' . PHP_EOL;
+echo PHP_EOL . 'Completed in ' . (microtime ( true ) - $stime) . ' seconds';
+echo PHP_EOL;
 ?>

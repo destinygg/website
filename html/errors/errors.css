@@ -58,26 +58,26 @@ body.error #header-band {
 	margin-top: 200px;
 }
 
-body.error #header-band .hero-unit {
-	padding-left: 0;
-	margin-top: 0;
-	position: relative;
-	background: 0;
+body.error #header-band #overview {
+padding-left: 0;
+margin-top: 0;
+position: relative;
+background: 0;
 }
 
-body.error #header-band .hero-unit h1 {
-	font-size: 42px;
-	font-weight: normal;
-	opacity: 0.9;
-	margin: 15px 0 10px 0;
-	padding: 0;
+body.error #header-band #overview h1 {
+font-size: 42px;
+font-weight: normal;
+opacity: 0.9;
+margin: 15px 0 10px 0;
+padding: 0;
 }
 
-body.error #header-band .hero-unit p {
-	font-size: 16px;
-	font-weight: normal;
-	opacity: 0.8;
-	line-height: 25px;
+body.error #header-band #overview p {
+font-size: 16px;
+font-weight: normal;
+opacity: 0.8;
+line-height: 25px;
 }
 
 #destiny-illustration {

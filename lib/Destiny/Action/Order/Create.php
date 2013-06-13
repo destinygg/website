@@ -17,6 +17,8 @@ use Destiny\Session;
 use Destiny\Utils\Http;
 use Destiny\Service\Orders;
 use Destiny\Service\Subscriptions;
+use Destiny\ViewModel;
+use Destiny\AppException;
 use Destiny\Config;
 
 class Create {
@@ -32,24 +34,26 @@ class Create {
 	 * Create and send the order
 	 *
 	 * @param array $params
-	 * @throws \Exception
 	 */
-	public function execute(array $params) {
+	public function execute(array $params, ViewModel $model) {
 		$this->checkoutId = Session::get ( 'checkoutId' );
 		
 		// Make sure the user hasnt somehow started the process with an active subscription
 		$subsService = Subscriptions::getInstance ();
 		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		if (! empty ( $subscription )) {
-			throw new \Exception ( 'User already has a valid subscription' );
+			$model->error = new AppException ( 'User already has a valid subscription' );
+			return 'ordererror';
 		}
 		
 		// Make sure our checkoutId is valid
 		if (! isset ( $params ['checkoutId'] ) || empty ( $this->checkoutId ) || $this->checkoutId != $params ['checkoutId']) {
-			throw new \Exception ( 'Invalid checkout token' );
+			$model->error = new AppException ( 'Invalid checkout token' );
+			return 'ordererror';
 		}
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
-			throw new \Exception ( 'Empty subscription type' );
+			$model->error = new AppException ( 'Invalid subscription type' );
+			return 'ordererror';
 		}
 		
 		$subscription = $subsService->getSubscriptionType ( $params ['subscription'] );
@@ -69,7 +73,11 @@ class Create {
 		}
 		
 		$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-		throw new \Exception ( $setECResponse->Errors->ShortMessage );
+		$log = Application::getInstance ()->getLogger ();
+		$log->error ( $setECResponse->Errors->ShortMessage );
+		
+		$model->error = new AppException ( sprintf ( 'A order error has occurred. The order reference is: %s', $order ['orderId'] ) );
+		return 'ordererror';
 	}
 
 	/**
@@ -78,7 +86,6 @@ class Create {
 	 * @param array $order
 	 * @param array $subscription
 	 * @param array $paymentProfile
-	 * @throws \Exception
 	 */
 	protected function getExpressCheckoutResponse(array $order, array $subscription, array $paymentProfile = null) {
 		$returnUrl = Http::getBaseUrl () . '/order/complete?success=true&orderId=' . urlencode ( $order ['orderId'] ) . '&checkoutId=' . urlencode ( $this->checkoutId );
@@ -165,7 +172,6 @@ class Create {
 		// @TODO this is dangerous, using strtotime format - there is not solid link between them to prevent it from breaking
 		// @TODO does paypal accept any timezones?
 		$billingStartDate->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
-		
 		$paymentProfile = array ();
 		$paymentProfile ['paymentProfileId'] = '';
 		$paymentProfile ['userId'] = Session::get ( 'userId' );

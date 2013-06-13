@@ -432,7 +432,11 @@ $(function(){
 	// Add collapses
 	$(".collapse").collapse();
 	
-    if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
+	// Tabs selector - dont know why I need this
+	if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
+
+	// Set the top nav selection
+	$('.navbar a[rel="'+$('body').attr('id')+'"]').closest('li').addClass('active');
 	
 	// Change time on selected elements
 	$('time[data-moment="true"]').each(function(){

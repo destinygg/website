@@ -3,17 +3,17 @@ namespace Destiny;
 use Destiny\Utils\Date;
 use Destiny\Utils\Lol;
 ?>
-<ul class="nav nav-tabs" style="margin-bottom: 0; border-bottom: 0;">
-	<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>
-	<li><a href="#Tracking" data-toggle="tab">Tracking</a></li>
-</ul>
-<div class="content content-dark clearfix"
-	style="border-top-left-radius: 0; border-top-right-radius: 0;">
+<div class="content content-dark clearfix">
 	<div style="width: 100%;" class="clearfix stream">
-		<div class="tab-content">
-
+		<h3 class="title">Fantasy League</h3>
+		<div class="tab-content" style="padding: 10px 20px 20px 20px; border-top: 1px solid #222;">
+			
+			<ul class="nav nav-pills">
+				<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>
+				<li><a href="#Tracking" data-toggle="tab">Tracking</a></li>
+			</ul>
+			
 			<div class="tab-pane active clearfix" id="Games">
-
 				<table class="grid" style="width: 100%;">
 					<thead>
 						<tr>
@@ -58,11 +58,9 @@ use Destiny\Utils\Lol;
 						<?endfor;?>
 					</tbody>
 				</table>
-
 			</div>
-
+			
 			<div class="tab-pane clearfix" id="Tracking">
-
 				<table class="grid" style="width: 100%;">
 					<thead>
 						<tr>
@@ -88,9 +86,15 @@ use Destiny\Utils\Lol;
 						<?endfor;?>
 					</tbody>
 				</table>
-
+			</div>			
+				
+			<div style="margin-top: 20px;">
+				<a rel="Aggregate" class="btn btn-cron-action">Aggregate recent game(s)</a>
+				<a rel="Recentgames" class="btn btn-cron-action">Check recent games</a>
+				<a rel="Ingame" class="btn btn-cron-action">Check ingame progress</a>
 			</div>
-
+				
 		</div>
+		
 	</div>
 </div>

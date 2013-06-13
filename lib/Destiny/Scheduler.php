@@ -31,7 +31,6 @@ class Scheduler {
 	 */
 	public function __construct(array $args = array()) {
 		Options::setOptions ( $this, $args );
-		$this->loadSchedule ();
 	}
 
 	/**
@@ -39,7 +38,7 @@ class Scheduler {
 	 *
 	 * @return void
 	 */
-	protected function loadSchedule() {
+	public function loadSchedule() {
 		$db = Application::getInstance ()->getDb ();
 		foreach ( $this->schedule as $i => $action ) {
 			$task = $this->getTask ( $this->schedule [$i] ['action'] );
@@ -68,9 +67,9 @@ class Scheduler {
 	 *
 	 * @param array $schedule
 	 */
-	protected function updateTask(array $schedule) {
+	protected function updateTask(array $task) {
 		$db = Application::getInstance ()->getDb ();
-		$db->select ( 'UPDATE dfl_scheduled_tasks SET lastExecuted=\'{lastExecuted}\',executeCount=\'{executeCount}\' WHERE action=\'{action}\'', $schedule )->fetchRows ();
+		$db->select ( 'UPDATE dfl_scheduled_tasks SET lastExecuted=\'{lastExecuted}\',executeCount=\'{executeCount}\' WHERE action=\'{action}\'', $task )->fetchRows ();
 	}
 
 	/**
@@ -78,76 +77,86 @@ class Scheduler {
 	 *
 	 * @param array $schedule
 	 */
-	protected function insertTask(array $schedule) {
+	protected function insertTask(array $task) {
 		$db = Application::getInstance ()->getDb ();
-		$db->select ( 'INSERT INTO dfl_scheduled_tasks SET action=\'{action}\',lastExecuted=\'{lastExecuted}\',frequency=\'{frequency}\',period=\'{period}\',executeOnStart=\'{executeOnStart}\',executeCount=\'{executeCount}\'', $schedule )->fetchRows ();
+		$db->select ( 'INSERT INTO dfl_scheduled_tasks SET action=\'{action}\',lastExecuted=\'{lastExecuted}\',frequency=\'{frequency}\',period=\'{period}\',executeOnStart=\'{executeOnStart}\',executeCount=\'{executeCount}\'', $task )->fetchRows ();
 	}
 
 	/**
-	 * Execute all or one action
+	 * Get a registered task by name
 	 *
-	 * @param array $argv
-	 * @throws \Exception
+	 * @param string $name
+	 * @return array
 	 */
-	public function execute(array $argv = array()) {
-		$this->logger->info ( "Schedule execution starting" );
-		if (empty ( $argv )) {
-			// If the action was not specified run all the actions in sequence
-			foreach ( $this->schedule as $i => $action ) {
-				
-				// First run
-				if ($this->schedule [$i] ['executeCount'] == 0 && $this->schedule [$i] ['executeOnStart']) {
-					$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
-					$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
-					$this->updateTask ( $this->schedule [$i] );
-					$this->executeAction ( $this->schedule [$i] ['action'] );
-					continue;
-				}
-				
-				// Schedule run
-				$nextExecute = new \DateTime ( $this->schedule [$i] ['lastExecuted'] );
-				$nextExecute->modify ( '+' . $this->schedule [$i] ['frequency'] . ' ' . $this->schedule [$i] ['period'] );
-				if (time () > $nextExecute->getTimestamp ()) {
-					$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
-					$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
-					$this->updateTask ( $this->schedule [$i] );
-					$this->executeAction ( $this->schedule [$i] ['action'] );
-				}
-			}
-		} else {
-			// If the action was specified run just the actions without adhering to the cooldown
-			foreach ( $this->schedule as $i => $action ) {
-				if (strcasecmp ( $action ['action'], $argv [0] ) === 0) {
-					$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
-					$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
-					$this->updateTask ( $this->schedule [$i] );
-					$this->executeAction ( $action ['action'] );
-				}
+	public function getTaskByName($name) {
+		foreach ( $this->schedule as $i => $action ) {
+			if (strcasecmp ( $action ['action'], $name ) === 0) {
+				return $this->schedule [$i];
 			}
 		}
-		$this->logger->debug ( 'Schedule execution complete' );
+		return null;
+	}
+
+	/**
+	 * Executes all the tasks
+	 *
+	 * @return void
+	 */
+	public function executeShedule() {
+		$this->logger->info ( 'Schedule starting' );
+		foreach ( $this->schedule as $i => $action ) {
+			// First run
+			if ($this->schedule [$i] ['executeCount'] == 0 && $this->schedule [$i] ['executeOnStart']) {
+				$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
+				$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
+				$this->updateTask ( $this->schedule [$i] );
+				$this->executeTask ( $this->schedule [$i] );
+				continue;
+			}
+			// Schedule run
+			$nextExecute = new \DateTime ( $this->schedule [$i] ['lastExecuted'] );
+			$nextExecute->modify ( '+' . $this->schedule [$i] ['frequency'] . ' ' . $this->schedule [$i] ['period'] );
+			if (time () > $nextExecute->getTimestamp ()) {
+				$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
+				$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
+				$this->updateTask ( $this->schedule [$i] );
+				$this->executeTask ( $this->schedule [$i] );
+			}
+		}
+		$this->logger->debug ( 'Schedule complete' );
+	}
+
+	/**
+	 * Execute a task by name
+	 *
+	 * @param string $name
+	 */
+	public function executeTaskByName($name) {
+		$this->logger->info ( sprintf ( 'Schedule task %s', $name ) );
+		$task = $this->getTaskByName ( $name );
+		if (! empty ( $task )) {
+			$task ['executeCount'] = intval ( $task ['executeCount'] ) + 1;
+			$task ['lastExecuted'] = date ( \DateTime::ATOM );
+			$this->updateTask ( $task );
+			$this->executeTask ( $task );
+		}
 	}
 
 	/**
 	 * Execute schedule task
 	 *
-	 * @param array $action
-	 * @throws \Exception
+	 * @param array $task
 	 */
-	public function executeAction($id) {
-		$this->logger->info ( sprintf ( 'Execute: %s', $id ) );
-		$actionClass = 'Destiny\\Scheduled\\' . $id;
-		try {
-			if (class_exists ( $actionClass, true )) {
-				$actionObj = new $actionClass ();
-				$actionObj->execute ( $this->logger );
-			} else {
-				throw new \Exception ( sprintf ( 'Action not found: %s', $id ) );
-			}
-		} catch ( \Exception $e ) {
-			$this->logger->error ( $e->getMessage () );
+	protected function executeTask(array $task) {
+		$this->logger->info ( sprintf ( 'Execute start %s', $task ['action'] ) );
+		$actionClass = 'Destiny\\Scheduled\\' . $task ['action'];
+		if (class_exists ( $actionClass, true )) {
+			$actionObj = new $actionClass ();
+			$actionObj->execute ( $this->logger );
+		} else {
+			throw new AppException ( sprintf ( 'Action not found: %s', $task ['action'] ) );
 		}
-		$this->logger->debug ( sprintf ( 'Execute End: %s', $id ) );
+		$this->logger->info ( sprintf ( 'Execute end %s', $task ['action'] ) );
 	}
 
 	public function getLogger() {

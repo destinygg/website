@@ -31,19 +31,16 @@ $ordersService = \Destiny\Service\Orders::getInstance ();
 
 			<div style="width: 100%; clear: both;" class="clearfix stream">
 				<h3 class="title">Details</h3>
-				<div
-					style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
+				<div style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
 					<dl class="dl-horizontal">
 						<dt>Status:</dt>
-						<dd>
-							<span class="label label-<?=($model->order['state'] == 'Completed') ? 'success':'warning'?>"><?=Tpl::out($model->order['state'])?></span>
-						</dd>
+						<dd><span class="label label-<?=($model->order['state'] == 'Completed') ? 'success':'warning'?>"><?=Tpl::out($model->order['state'])?></span></dd>
 						<dt>Amount:</dt>
 						<dd><?=Tpl::currency($model->order['currency'], $model->order['amount'])?></dd>
 						<dt>Description:</dt>
 						<dd><?=Tpl::out($model->order['description'])?></dd>
 						<dt>Created on:</dt>
-						<dd><?=Date::getDateTime($model->order['createdDate'], Date::STRING_FORMAT)?></dd>
+						<dd><?=Date::getDateTime($model->order['createdDate'], Date::STRING_FORMAT_YEAR)?></dd>
 					</dl>
 				</div>
 			</div>
@@ -51,13 +48,10 @@ $ordersService = \Destiny\Service\Orders::getInstance ();
 			<?php if(!empty($model->payment)): ?>
 			<div style="width: 100%; clear: both;" class="clearfix stream">
 				<h3 class="title">Payment</h3>
-				<div
-					style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
+				<div style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
 					<dl class="dl-horizontal">
 						<dt>Status:</dt>
-						<dd>
-							<span class="label label-<?=($model->payment['paymentStatus'] == 'Completed') ? 'success':'warning'?>"><?=Tpl::out($model->payment['paymentStatus'])?></span>
-						</dd>
+						<dd><span class="label label-<?=($model->payment['paymentStatus'] == 'Completed') ? 'success':'warning'?>"><?=Tpl::out($model->payment['paymentStatus'])?></span></dd>
 						<dt>Amount:</dt>
 						<dd><?=Tpl::currency($model->payment['currency'], $model->payment['amount'])?></dd>
 						<dt>Id:</dt>
@@ -69,7 +63,7 @@ $ordersService = \Destiny\Service\Orders::getInstance ();
 						<dt>Payment:</dt>
 						<dd><?=Tpl::out($model->payment['paymentType'])?></dd>
 						<dt>Payed on:</dt>
-						<dd><?=Date::getDateTime($model->payment['paymentDate'], Date::STRING_FORMAT)?></dd>
+						<dd><?=Date::getDateTime($model->payment['paymentDate'], Date::STRING_FORMAT_YEAR)?></dd>
 					</dl>
 				</div>
 			</div>
@@ -78,24 +72,23 @@ $ordersService = \Destiny\Service\Orders::getInstance ();
 			<?php if(!empty($model->paymentProfile)): ?>
 			<div style="width: 100%; clear: both;" class="clearfix stream">
 				<h3 class="title">Recurring</h3>
-				<div
-					style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
+				<div style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
 					<dl class="dl-horizontal">
 						<dt>Status:</dt>
-						<dd>
-							<span class="label label-<?=($model->paymentProfile['state'] == 'ActiveProfile') ? 'success':'warning'?>"><?=Tpl::out($model->paymentProfile['state'])?></span>
-						</dd>
+						<dd><span class="label label-<?=($model->paymentProfile['state'] == 'ActiveProfile') ? 'success':'warning'?>"><?=Tpl::out($model->paymentProfile['state'])?></span></dd>
 						<dt>Amount:</dt>
 						<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
 						<dt>Profile:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'])?></dd>
+						<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'], 'none')?></dd>
 						<dt>Billing period:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['billingPeriod'])?></dd>
+						<dd><?=Tpl::out($model->paymentProfile['billingPeriod'], 'none')?></dd>
+						<dt>Billing frequency:</dt>
+						<dd><?=Tpl::out($model->paymentProfile['billingFrequency'], 'none')?></dd>
 						<dt>Billing start date:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['billingStartDate'])?></dd>
+						<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
 						<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
 						<dt>Billing next date:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['billingNextDate'])?></dd>
+						<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
 						<?php endif; ?>
 					</dl>
 				</div>

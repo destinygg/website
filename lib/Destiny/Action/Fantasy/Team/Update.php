@@ -8,6 +8,7 @@ use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Session;
 use Destiny\Config;
+use Destiny\AppException;
 
 class Update {
 
@@ -17,27 +18,14 @@ class Update {
 				'data' => array (),
 				'message' => '' 
 		);
-		try {
-			
-			if ($_SERVER ['REQUEST_METHOD'] != 'POST') {
-				throw new \Exception ( 'POST required' );
-			}
-			
-			if (! Session::authorized ()) {
-				throw new \Exception ( 'User required' );
-			}
-			if (! isset ( $params ['champions'] ) || ! isset ( $params ['teamId'] )) {
-				throw new \Exception ( 'Invalid request' );
-			}
-			$team = $this->updateTeam ( $response, $params );
-			$response ['data'] = array ();
-			$response ['data'] ['team'] = $team;
-			$response ['data'] ['champions'] = Team::getInstance ()->getTeamChamps ( $team ['teamId'] );
-			$response ['success'] = true;
-		} catch ( \Exception $e ) {
-			$response ['success'] = false;
-			$response ['message'] = $e->getMessage ();
+		if (! isset ( $params ['champions'] ) || ! isset ( $params ['teamId'] )) {
+			throw new AppException ( 'Invalid request' );
 		}
+		$team = $this->updateTeam ( $response, $params );
+		$response ['data'] = array ();
+		$response ['data'] ['team'] = $team;
+		$response ['data'] ['champions'] = Team::getInstance ()->getTeamChamps ( $team ['teamId'] );
+		$response ['success'] = true;
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
@@ -49,11 +37,11 @@ class Update {
 		// Get team - Make sure this is one of the users teams
 		$team = $teamService->getTeamById ( ( int ) $params ['teamId'] );
 		if (empty ( $team )) {
-			throw new \Exception ( 'Team not found' );
+			throw new AppException ( 'Team not found' );
 		}
 		// Security
 		if (Session::get ( 'userId' ) != $team ['userId']) {
-			throw new \Exception ( 'Update team failed:  User does not have rights to this team. {"userId":' . $team ['userId'] . ',"teamId":' . $team ['teamId'] . '}' );
+			throw new AppException ( 'Update team failed user does not have rights to this team.' );
 		}
 		
 		// Get the users unlocked champs
@@ -73,7 +61,7 @@ class Update {
 			$newChampsId [] = $champ ['championId'];
 			// Check if champions have been unlocked || if the champ is currently free
 			if (! isset ( $userChampionIds [$champ ['championId']] ) && $champ ['championFree'] == '0') {
-				throw new \Exception ( 'Champion "' . $userChamp ['championName'] . '" not unlocked' );
+				throw new AppException ( 'Champion "' . $userChamp ['championName'] . '" not unlocked' );
 			}
 		}
 		foreach ( $oldChamps as $champ ) {
@@ -103,7 +91,7 @@ class Update {
 		
 		// Check & debit transfers
 		if (intval ( $team ['transfersRemaining'] ) < $transferDebit) {
-			throw new \Exception ( 'No available transfers' );
+			throw new AppException ( 'No available transfers' );
 		}
 		$team ['transfersRemaining'] = intval ( $team ['transfersRemaining'] ) - $transferDebit;
 		
@@ -136,11 +124,11 @@ class Update {
 		$max = ( int ) Config::$a ['fantasy'] ['team'] ['maxChampions'];
 		// Not enough champs
 		if ($size < $min) {
-			throw new \Exception ( 'Min [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
+			throw new AppException ( 'Min [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
 		}
 		// Too many champs
 		if ($size > $max) {
-			throw new \Exception ( 'Max [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
+			throw new AppException ( 'Max [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
 		}
 	}
 

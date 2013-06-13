@@ -15,6 +15,7 @@ abstract class Http {
 	const HEADER_ACCEPT_RANGES = 'Accept-Ranges';
 	const HEADER_CONNECTION = 'Connection';
 	const STATUS_NOT_MODIFIED = 304;
+	const STATUS_FORBIDDEN = 403;
 	const STATUS_NOT_FOUND = 404;
 	const STATUS_UNAUTHORIZED = 401;
 	const STATUS_ERROR = 500;
@@ -43,12 +44,14 @@ abstract class Http {
 		@ob_end_flush ();
 		@flush ();
 		readfile ( "$filename" );
+		exit ();
 	}
 
 	public static function sendString($str) {
 		@ob_end_flush ();
 		@flush ();
 		echo $str;
+		exit ();
 	}
 
 	public static function sendNotModifiedResponse() {

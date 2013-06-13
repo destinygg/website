@@ -9,6 +9,7 @@ use Destiny\Utils\Http;
 use Destiny\Mimetype;
 use Destiny\Session;
 use Destiny\Config;
+use Destiny\AppException;
 
 class Challenge {
 
@@ -20,19 +21,16 @@ class Challenge {
 		);
 		try {
 			if (! isset ( $params ['name'] ) || empty ( $params ['name'] )) {
-				throw new \Exception ( 'name required.' );
-			}
-			if (! Session::authorized ()) {
-				throw new \Exception ( 'User required' );
+				throw new AppException ( 'Name required.' );
 			}
 			$teamService = Team::getInstance ();
 			$teams = $teamService->getTeamsByUsername ( mysql_real_escape_string ( $params ['name'] ) );
 			if (empty ( $teams )) {
-				throw new \Exception ( 'User not found' );
+				throw new AppException ( 'User not found' );
 			}
 			$team = $teams [0];
 			if (intval ( $team ['teamId'] ) == intval ( Session::get ( 'teamId' ) )) {
-				throw new \Exception ( 'Play with yourself?' );
+				throw new AppException ( 'Play with yourself?' );
 			}
 			$response ['success'] = Challenge::getInstance ()->challengeTeam ( Session::get ( 'teamId' ), $team ['teamId'] );
 			$response ['message'] = ($response ['success']) ? 'Challenge sent.' : 'Challenge already exists';

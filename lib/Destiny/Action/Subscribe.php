@@ -5,6 +5,7 @@ namespace Destiny\Action;
 use Destiny\Application;
 use Destiny\ViewModel;
 use Destiny\Session;
+use Destiny\Config;
 use Destiny\Service\Subscriptions;
 
 class Subscribe {
@@ -22,11 +23,15 @@ class Subscribe {
 	 * @param array $params
 	 */
 	public function execute(array $params, ViewModel $model) {
+		$subsService = Subscriptions::getInstance ();
+		$subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		
 		// Setup the initial checkout token, the value is checked in each step, to make sure the user actually used the checkout process
 		$this->checkoutId = md5 ( microtime ( true ) . Session::get ( 'userId' ) );
 		Session::set ( 'checkoutId', $this->checkoutId );
 		$model->title = 'Subscribe';
-		$model->subscription = Subscriptions::getInstance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
+		$model->subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		$model->checkoutId = $this->checkoutId;
 		return 'subscribe';
 	}

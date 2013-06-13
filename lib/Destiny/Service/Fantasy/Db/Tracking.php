@@ -7,6 +7,7 @@ use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Cache;
 use Destiny\Utils\Date;
+use Destiny\AppException;
 
 class Tracking extends Service {
 	protected static $instance = null;
@@ -126,7 +127,7 @@ class Tracking extends Service {
 				}
 			}
 			if ($game ['gameStartTime'] == null) {
-				throw new \Exception ( 'GameStartTime could not be retrieved' );
+				throw new AppException ( 'GameStartTime could not be retrieved' );
 			}
 			//
 			$db->insert ( '

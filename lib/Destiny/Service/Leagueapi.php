@@ -10,6 +10,7 @@ use Destiny\Utils\String;
 use Destiny\Utils\Date;
 use Destiny\Utils\Lol;
 use Destiny\Utils\Http;
+use Destiny\AppException;
 
 class Leagueapi extends Service {
 	protected static $instance = null;
@@ -28,7 +29,7 @@ class Leagueapi extends Service {
 				'contentType' => Mimetype::JSON,
 				'onfetch' => function ($json) {
 					if (false == $json ['success'] && $json ['data'] != null) {
-						throw new \Exception ( 'LoL API down.' );
+						throw new AppException ( 'LoL API down.' );
 					}
 					return $json ['data'];
 				} 
@@ -46,7 +47,7 @@ class Leagueapi extends Service {
 				'params' => $summoner,
 				'onfetch' => function ($league, $summoner) {
 					if (false == $league ['success']) {
-						throw new \Exception ( 'LoL API down.' );
+						throw new AppException ( 'LoL API down.' );
 					}
 					$league ['data'] ['rankInt'] = Lol::rankToInt ( $league ['data'] ['rank'] );
 					return $league ['data'];
@@ -90,7 +91,7 @@ class Leagueapi extends Service {
 				'contentType' => Mimetype::JSON,
 				'onfetch' => function ($json) {
 					if (false == $json ['success']) {
-						throw new \Exception ( 'LoL API down.' );
+						throw new AppException ( 'LoL API down.' );
 					}
 					$json ['data'] ['revisionDate'] = Date::getDateTime ( floatval ( $json ['data'] ['revisionDate'] ) / 1000, Date::FORMAT );
 					return $json;

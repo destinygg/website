@@ -40,13 +40,6 @@ class Application extends Service {
 	public $params = array ();
 	
 	/**
-	 * Last thrown exception
-	 *
-	 * @var \Exception
-	 */
-	public $exception = null;
-	
-	/**
 	 * Public logger
 	 *
 	 * @var LoggerInterface
@@ -89,6 +82,21 @@ class Application extends Service {
 	}
 
 	/**
+	 * Dirty way to nomalize class path \Namespace\Folder\Class
+	 * Make a url / path request a class / namespace path
+	 *
+	 * @param string $namespace
+	 * @param array $pathinfo
+	 * @return string
+	 */
+	private function prepareActionPath($namespace, array $pathinfo) {
+		return $namespace . str_replace ( array (
+				'/',
+				'\\\\' 
+		), '\\', $pathinfo ['dirname'] . '\\' ) . $pathinfo ['filename'];
+	}
+
+	/**
 	 * Bind to a pattern, execute if found, or include a template if $fn is a string
 	 *
 	 * @param string $pattern
@@ -105,25 +113,14 @@ class Application extends Service {
 					$this->logger->debug ( 'Bind(Template): ' . $this->path );
 					$this->template ( $fn, new ViewModel () );
 				}
+			} catch ( AppException $e ) {
+				$this->logger->error ( $e->getMessage () );
+				$this->error ( 500, $e );
 			} catch ( \Exception $e ) {
+				$this->logger->critical ( $e->getMessage () );
 				$this->error ( 500, $e );
 			}
 		}
-	}
-
-	/**
-	 * Dirty way to nomalize class path \Namespace\Folder\Class
-	 * Make a url / path request a class / namespace path
-	 *
-	 * @param string $namespace
-	 * @param array $pathinfo
-	 * @return string
-	 */
-	private function prepareActionPath($namespace, array $pathinfo) {
-		return $namespace . str_replace ( array (
-				'/',
-				'\\\\' 
-		), '\\', $pathinfo ['dirname'] . '\\' ) . $pathinfo ['filename'];
 	}
 
 	/**
@@ -150,15 +147,26 @@ class Application extends Service {
 			ob_start ();
 			$model = new ViewModel ();
 			$response = $action->execute ( $this->params, $model );
+			
+			// if a action returns string, try to load it as a template
 			if (is_string ( $response )) {
 				$tpl = './tpl/' . $response . '.php';
 				if (is_file ( $tpl )) {
 					$this->template ( $tpl, $model );
 				}
 			}
+			
+			// If the response is here, and we have not outputted data. the user would get a blank screen
+			throw new AppException ( 'Invalid action response' );
+			
+			// Else exit
 			ob_flush ();
 			exit ();
+		} catch ( AppException $e ) {
+			$this->logger->error ( $e->getMessage () );
+			$this->error ( 500, $e );
 		} catch ( \Exception $e ) {
+			$this->logger->critical ( $e->getMessage () );
 			$this->error ( 500, $e );
 		}
 	}
@@ -172,12 +180,23 @@ class Application extends Service {
 	 * @param Exception $e
 	 */
 	public function error($code, $e = null) {
-		// Set a copy of the last thrown exception for use in templates
-		$this->exception = $e;
-		if ($e != null && $code >= Config::$a ['log'] ['level']) {
-			$this->logger->error ( $code . ': ' . $e->getMessage () );
-		}
 		Http::status ( $code );
+		
+		// Check if accept type is JSON
+		if (isset ( $_SERVER ['HTTP_ACCEPT'] )) {
+			$accept = new \HTTP_Accept ( $_SERVER ['HTTP_ACCEPT'] );
+			if (! in_array ( Mimetype::HTML, $accept->getTypes () )) {
+				if (in_array ( Mimetype::JSON, $accept->getTypes () )) {
+					Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+					Http::sendString ( json_encode ( array (
+							'success' => false,
+							'data' => null,
+							'message' => $e->getMessage () 
+					) ) );
+				}
+			}
+		}
+		
 		$this->template ( './errors/' . $code . '.php', new ViewModel ( array (
 				'error' => $e,
 				'code' => $code 
@@ -257,20 +276,6 @@ class Application extends Service {
 	}
 
 	/**
-	 * Get the last thrown exception
-	 *
-	 * @todo remove this
-	 *      
-	 * @return \Exception
-	 */
-	public function getException() {
-		if ($this->exception == null) {
-			$this->exception = new \Exception ( 'None error' );
-		}
-		return $this->exception;
-	}
-
-	/**
 	 * Include a template and exit
 	 *
 	 * @param string $filename
@@ -305,6 +310,8 @@ class Application extends Service {
 	/**
 	 * Get the type of cache
 	 *
+	 * @todo seems out of place
+	 *      
 	 * @param string $filename
 	 * @return \Destiny\Cache\Apc
 	 */

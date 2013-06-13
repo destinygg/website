@@ -8,6 +8,7 @@ use Destiny\Utils\Http;
 use Destiny\Utils\Options;
 use Destiny\Application;
 use Psr\Log\LoggerInterface;
+use Destiny\AppException;
 
 /**
  * Used simply to retrieve HTTP data via a curl URL request
@@ -104,18 +105,14 @@ class Consumer {
 	}
 
 	public function consume(array $args = null) {
-		try {
-			$response = $this->fetch ( $this->url );
-			if ($this->responseCode != Http::STATUS_OK) {
-				throw new \Exception ( "Error: " . $this->responseCode . ' Data: ' . $response );
-			}
-			$this->logger->debug ( sprintf ( 'Curl.HTTP(%s): %s', $this->responseCode, \Destiny\Utils\String::strictUTF8 ( $this->url ) ) );
-			$response = $this->stringToDataType ( $response );
-			if (! empty ( $this->onfetch ) && is_callable ( $this->onfetch )) {
-				$response = call_user_func ( $this->onfetch, $response, $this->params );
-			}
-		} catch ( \Exception $e ) {
-			throw $e;
+		$response = $this->fetch ( $this->url );
+		if ($this->responseCode != Http::STATUS_OK) {
+			throw new AppException ( "Error: " . $this->responseCode . ' Data: ' . $response );
+		}
+		$this->logger->debug ( sprintf ( 'Curl.HTTP(%s): %s', $this->responseCode, \Destiny\Utils\String::strictUTF8 ( $this->url ) ) );
+		$response = $this->stringToDataType ( $response );
+		if (! empty ( $this->onfetch ) && is_callable ( $this->onfetch )) {
+			$response = call_user_func ( $this->onfetch, $response, $this->params );
 		}
 		return $response;
 	}

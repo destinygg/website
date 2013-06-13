@@ -6,6 +6,7 @@ use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Cache;
+use Destiny\AppException;
 
 class Game extends Service {
 	protected static $instance = null;
@@ -36,7 +37,7 @@ class Game extends Service {
 				'gameId' => ( int ) $gameId 
 		) )->fetchRow ();
 		if (true == empty ( $game )) {
-			throw new \Exception ( 'Game data not found' );
+			throw new AppException ( 'Game data not found' );
 		}
 		return $game;
 	}

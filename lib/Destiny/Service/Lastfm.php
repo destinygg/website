@@ -8,6 +8,7 @@ use Destiny\Mimetype;
 use Destiny\Api\Consumer;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
+use Destiny\AppException;
 
 class Lastfm extends Service {
 	protected static $instance = null;
@@ -24,7 +25,6 @@ class Lastfm extends Service {
 	 * Get the most recent LastFM tracks
 	 *
 	 * @param array $options
-	 * @throws \Exception
 	 * @return \Destiny\ApiConsumer
 	 */
 	public function getRecentTracks(array $options = array()) {
@@ -33,7 +33,7 @@ class Lastfm extends Service {
 				'contentType' => Mimetype::JSON,
 				'onfetch' => function ($json) {
 					if (! $json || isset ( $json ['error'] ) && $json ['error'] > 0 || count ( $json ['recenttracks'] ['track'] ) <= 0) {
-						throw new \Exception ( 'Error fetching tracks' );
+						throw new AppException ( 'Error fetching tracks' );
 					}
 					foreach ( $json ['recenttracks'] ['track'] as $i => $track ) {
 						// Timezone DST = -1

@@ -22,22 +22,10 @@ use Destiny\Utils\Tpl;
 			<span>Administration</span> <small>(<a title="<?=Tpl::out(Session::get('email'))?>" href="mailto:<?=Tpl::out(Session::get('email'))?>"><?=Tpl::out(Session::get('displayName'))?></a>)
 			</small>
 		</h1>
-		<hr size="1" />
-
-		<h3 class="title">Fantasy League</h3>
+		
 		<?php include'admin/games.php'?>
-		<div style="margin: 20px 0;">
-			<p>
-				<a href="#Events" rel="Aggregate" class="btn btn-inverse btn-cron-action">Aggregate recent game(s)</a>
-				<a href="#Events" rel="Recentgames" class="btn btn-inverse btn-cron-action">Check recent games</a>
-				<a href="#Events" rel="Ingame" class="btn btn-inverse btn-cron-action">Check ingame progress</a>
-			</p>
-		</div>
 		<hr size="1" />
-
-		<h3 class="title">Logs</h3>
-		<?include'admin/logs.php'?>
-		<hr size="1" />
+		<?php include'admin/logs.php'?>
 
 	</section>
 	

@@ -39,7 +39,7 @@ use Destiny\Utils\Date;
 			<?foreach($model->music['recenttracks']['track'] as $trackIndex=>$track):?>
 			<?if($trackIndex == 3){break;};?>
 				<div class="media">
-					<a class="pull-left cover-image" href="<?=$track->url?>"><img class="media-object" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=$track['image'][1]['#text']?>"></a>
+					<a class="pull-left cover-image" href="<?=$track['url']?>"><img class="media-object" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=$track['image'][1]['#text']?>"></a>
 					<div class="media-body">
 						<h4 class="media-heading trackname">
 							<a href="<?=$track['url']?>"><?=Tpl::out($track['name'])?></a>

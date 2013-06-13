@@ -6,7 +6,7 @@ namespace Destiny\Utils;
  * This class is bad
  */
 abstract class Date {
-	const STRING_FORMAT_YEAR = 'g:ia, D jS F Y';
+	const STRING_FORMAT_YEAR = 'g:ia, D jS F Y e';
 	const STRING_FORMAT = 'D jS F, g:ia e';
 	const STRING_DATE_FORMAT = 'jS F, Y';
 	const STRING_TIME_FORMAT = 'H:i';
@@ -67,7 +67,7 @@ abstract class Date {
 		}
 		if ($interval->s !== 0) {
 			if (! count ( $format )) {
-				return "less than a minute ago";
+				return "less than a minute";
 			} else {
 				$format [] = "%s " . $doPlural ( $interval->s, "second" );
 			}
@@ -79,7 +79,7 @@ abstract class Date {
 			$format = array_pop ( $format );
 		}
 		// Prepend 'since ' or whatever you like
-		return $interval->format ( $format );
+		return (($start < $end) ? '-' : '') . $interval->format ( $format );
 	}
 
 	/**
@@ -88,7 +88,7 @@ abstract class Date {
 	 * @param \DateTime $compareTo
 	 * @return string
 	 */
-	public static function getElapsedTime(\DateTime $date,\DateTime $compareTo = NULL) {
+	public static function getElapsedTime(\DateTime $date, \DateTime $compareTo = NULL) {
 		if (is_null ( $compareTo )) {
 			$compareTo = new \DateTime ( 'now' );
 		}

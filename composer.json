@@ -8,5 +8,8 @@
 		"paypal/merchant-sdk-php"	: "3.4.*",
 		"nervo/yuicompressor"		: "2.4.7",
 		"monolog/monolog"			: "1.6.*@dev"
+	},
+	"autoload": {
+		"files": ["vendor/HTTP_Accept/HTTP_Accept.php"]
 	}
 }

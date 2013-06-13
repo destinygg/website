@@ -15,7 +15,8 @@ class Aggregate {
 			$log->info ( 'Aggregate #' . $aggregateGame ['gameId'] );
 			$faService->aggregateGame ( $aggregateGame ['gameId'] );
 		}
-		$log->info ( 'Aggregated ' . count ( $aggregateGames ) . ' game(s)' );
+		$task = new \Destiny\Scheduled\Leaderboards ();
+		$task->execute ( $log );
 	}
 
 }

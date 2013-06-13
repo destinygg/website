@@ -16,17 +16,8 @@ class Champions {
 				'data' => array (),
 				'message' => '' 
 		);
-		try {
-			if (! Session::authorized ()) {
-				throw new \Exception ( 'User required' );
-			}
-			$response ['success'] = true;
-			$response ['data'] = Champion::getInstance ()->getUserChampions ( Session::get ( 'userId' ) );
-		} catch ( \Exception $e ) {
-			$response ['success'] = false;
-			$response ['message'] = $e->getMessage ();
-		}
-		
+		$response ['success'] = true;
+		$response ['data'] = Champion::getInstance ()->getUserChampions ( Session::get ( 'userId' ) );
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}

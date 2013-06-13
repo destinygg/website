@@ -2,6 +2,7 @@
 
 namespace Destiny\Action\Admin;
 
+use Destiny\AppException;
 use Destiny\Application;
 use Destiny\Scheduler;
 use Destiny\Utils\Http;
@@ -13,20 +14,17 @@ class Cron {
 
 	public function execute(array $params) {
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new \Exception ( 'Action id required.' );
+			throw new AppException ( 'Action id required.' );
 		}
 		set_time_limit ( 180 );
 		$log = Application::getInstance ()->getLogger ();
-		$scheduler = new Scheduler ();
-		$scheduler->setLogger ( $log );
+		
 		$response = array ();
-		try {
-			$scheduler->executeAction ( $params ['id'] );
-			$response ['message'] = sprintf ( 'Execute %s', $params ['id'] );
-		} catch ( \Exception $e ) {
-			$log->error ( $e->getMessage () );
-			$response ['message'] = $e->getMessage ();
-		}
+		$scheduler = new Scheduler ( Config::$a ['scheduler'] );
+		$scheduler->setLogger ( $log );
+		$scheduler->loadSchedule ();
+		$scheduler->executeTaskByName ( $params ['id'] );
+		$response ['message'] = sprintf ( 'Execute %s', $params ['id'] );
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
