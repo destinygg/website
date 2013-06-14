@@ -199,6 +199,7 @@ class OrdersService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payment_profiles WHERE orderId = :orderId LIMIT 0,1' );
 		$stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
+		$stmt->execute ();
 		return $stmt->fetch ();
 	}
 
@@ -212,6 +213,7 @@ class OrdersService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payment_profiles WHERE paymentProfileId = :paymentProfileId LIMIT 0,1' );
 		$stmt->bindValue ( 'paymentProfileId', $paymentProfileId, \PDO::PARAM_STR );
+		$stmt->execute ();
 		return $stmt->fetch ();
 	}
 
@@ -225,6 +227,7 @@ class OrdersService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payment_profiles WHERE profileId = :profileId LIMIT 0,1' );
 		$stmt->bindValue ( 'profileId', $profileId, \PDO::PARAM_INT );
+		$stmt->execute ();
 		return $stmt->fetch ();
 	}
 
@@ -285,6 +288,7 @@ class OrdersService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payments WHERE transactionId = :transactionId LIMIT 0,1' );
 		$stmt->bindValue ( 'transactionId', $transactionId, \PDO::PARAM_STR );
+		$stmt->execute ();
 		return $stmt->fetch ();
 	}
 

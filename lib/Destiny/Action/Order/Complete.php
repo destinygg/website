@@ -152,7 +152,7 @@ class Complete {
 		
 		$paymentDetails = new PaymentDetailsType ();
 		$paymentDetails->OrderTotal = new BasicAmountType ( $order ['currency'], $order ['amount'] );
-		$paymentDetails->NotifyURL = 'http://cene.co.za/pp/ipn.php';
+		$paymentDetails->NotifyURL = Config::$a ['paypal'] ['api'] ['ipn'];
 		$DoECRequestDetails->PaymentDetails [0] = $paymentDetails;
 		
 		$DoECRequest = new DoExpressCheckoutPaymentRequestType ();

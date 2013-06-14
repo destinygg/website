@@ -134,7 +134,8 @@ class Activate {
 			$newPaymentProfile ['profileId'] = $orderService->addPaymentProfile ( $newPaymentProfile );
 			$setECResponse = $this->getExpressCheckoutResponse ( $subscription, $newPaymentProfile, $params ['confirmationId'] );
 			if (isset ( $setECResponse ) && $setECResponse->Ack == 'Success') {
-				Http::header ( Http::HEADER_LOCATION, 'https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=' . urlencode ( $setECResponse->Token ) );
+				// &useraction=commit
+				Http::header ( Http::HEADER_LOCATION, Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token ) );
 				exit ();
 			}
 		}
@@ -179,7 +180,7 @@ class Activate {
 		
 		$paymentDetails = new PaymentDetailsType ();
 		$paymentDetails->PaymentAction = 'Sale';
-		$paymentDetails->NotifyURL = 'http://cene.co.za/pp/ipn.php';
+		$paymentDetails->NotifyURL = Config::$a ['paypal'] ['api'] ['ipn'];
 		$paymentDetails->OrderTotal = new BasicAmountType ( $paymentProfile ['currency'], $paymentProfile ['amount'] );
 		$paymentDetails->ItemTotal = new BasicAmountType ( $paymentProfile ['currency'], $paymentProfile ['amount'] );
 		$paymentDetails->Recurring = 0;

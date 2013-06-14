@@ -23,16 +23,16 @@ class Profile {
 			$orders [$i] ['payments'] = $payments;
 		}
 		$model->orders = $orders;
-		$model->subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
-		$model->paymentProfile = null;
-		if (! empty ( $model->subscription ['paymentProfileId'] )) {
-			$paymentProfile = $orderService->getPaymentProfileById ( $model->subscription ['paymentProfileId'] );
+		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$paymentProfile = null;
+		if (! empty ( $subscription ) && ! empty ( $subscription ['paymentProfileId'] )) {
+			$paymentProfile = $orderService->getPaymentProfileById ( $subscription ['paymentProfileId'] );
 			if (! empty ( $paymentProfile )) {
 				$paymentProfile ['billingCycle'] = $orderService->buildBillingCycleString ( $paymentProfile ['billingFrequency'], $paymentProfile ['billingPeriod'] );
-				$model->paymentProfile = $paymentProfile;
 			}
 		}
-		
+		$model->paymentProfile = $paymentProfile;
+		$model->subscription = $subscription;
 		return 'profile';
 	}
 

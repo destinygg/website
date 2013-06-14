@@ -68,7 +68,8 @@ class Create {
 		}
 		
 		if (isset ( $setECResponse ) && $setECResponse->Ack == 'Success') {
-			Http::header ( Http::HEADER_LOCATION, 'https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=' . urlencode ( $setECResponse->Token ) );
+			// &useraction=commit
+			Http::header ( Http::HEADER_LOCATION, Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token ) );
 			die ();
 		}
 		
@@ -108,7 +109,7 @@ class Create {
 		
 		$paymentDetails = new PaymentDetailsType ();
 		$paymentDetails->PaymentAction = 'Sale';
-		$paymentDetails->NotifyURL = 'http://cene.co.za/pp/ipn.php';
+		$paymentDetails->NotifyURL = Config::$a ['paypal'] ['api'] ['ipn'];
 		$paymentDetails->OrderTotal = new BasicAmountType ( $order ['currency'], $order ['amount'] );
 		$paymentDetails->ItemTotal = new BasicAmountType ( $order ['currency'], $order ['amount'] );
 		$paymentDetails->Recurring = 0;
