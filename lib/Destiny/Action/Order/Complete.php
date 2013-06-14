@@ -46,8 +46,8 @@ class Complete {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$this->checkoutId = Session::get ( 'checkoutId' );
-		$ordersService = OrdersService::getInstance ();
-		$log = Application::getInstance ()->getLogger ();
+		$ordersService = OrdersService::instance ();
+		$log = Application::instance ()->getLogger ();
 		
 		// Make sure our checkoutId is valid
 		if (! isset ( $params ['checkoutId'] ) || empty ( $this->checkoutId ) || $this->checkoutId != $params ['checkoutId']) {
@@ -91,7 +91,7 @@ class Complete {
 			return 'ordererror';
 		}
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
-		$subscription = SubscriptionsService::getInstance ()->getSubscriptionType ( $order ['items'] [0] ['itemSku'] );
+		$subscription = SubscriptionsService::instance ()->getSubscriptionType ( $order ['items'] [0] ['itemSku'] );
 		$paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
 		// END REALLY DIRTY
 		
@@ -199,7 +199,7 @@ class Complete {
 		}
 		
 		// Create / adjust subscription
-		SubscriptionsService::getInstance ()->addUserSubscription ( $order ['userId'], $subscription, 'Active', $paymentProfile );
+		SubscriptionsService::instance ()->addUserSubscription ( $order ['userId'], $subscription, 'Active', $paymentProfile );
 		
 		// Add the subscriber role, this is just for UI
 		$authCreds = Session::getAuthCreds ();

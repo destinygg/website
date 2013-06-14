@@ -11,8 +11,8 @@ class LeagueStatus {
 
 	public function execute(LoggerInterface $log) {
 		$log->info ( 'Updated lol status' );
-		$response = LeagueApiService::getInstance ()->getStatus ()->getResponse ();
-		$app = Application::getInstance ();
+		$response = LeagueApiService::instance ()->getStatus ()->getResponse ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'leaguestatus' );
 		$cache->write ( $response );
 	}

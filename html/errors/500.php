@@ -30,6 +30,7 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 						<h4>Error!</h4>
 						<?=nl2br($model->error->getMessage())?>
 					</div>
+					<pre><?=$model->error->getTraceAsString()?></pre>
 					<?else:?>
 					<p>The hamster jimmies have been rustled. <br />Would you like to <a href="/">return to the start</a>?</p>
 					<?endif;?>

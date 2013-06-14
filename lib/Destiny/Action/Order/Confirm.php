@@ -34,7 +34,7 @@ class Confirm {
 			return 'ordererror';
 		}
 		$recurringSubscription = (isset ( $params ['renew'] ) && $params ['renew'] == '1') ? true : false;
-		$subscription = SubscriptionsService::getInstance ()->getSubscriptionType ( $params ['subscription'] );
+		$subscription = SubscriptionsService::instance ()->getSubscriptionType ( $params ['subscription'] );
 		
 		$model->subscription = $subscription;
 		$model->renew = $recurringSubscription;

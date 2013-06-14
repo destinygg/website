@@ -6,20 +6,20 @@ use Destiny\Application;
 use Destiny\Service;
 use Destiny\Config;
 use Destiny\Service\Fantasy\GameService;
+use Destiny\Utils\Date;
 use Destiny\Utils\Cache;
 use Destiny\AppException;
 
 class GameAggregationService extends Service {
-	
 	protected static $instance = null;
 
 	/**
 	 * Singleton instance
-	 * 
-	 * @return Destiny\Service\Fantasy\GameAggregationService
+	 *
+	 * @return GameAggregationService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -30,10 +30,13 @@ class GameAggregationService extends Service {
 	 * @return boolean
 	 */
 	public function aggregateGame($gameId) {
-		$fgService = GameService::getInstance ();
+		$fgService = GameService::instance ();
 		$scores = Config::$a ['fantasy'] ['scores'];
 		
 		$game = $fgService->getGameById ( $gameId );
+		if (empty ( $game )) {
+			throw new AppException ( 'Game data not found' );
+		}
 		if ($game ['aggregated'] == 1) {
 			throw new AppException ( 'Game already aggregated.' );
 		}
@@ -60,59 +63,63 @@ class GameAggregationService extends Service {
 	}
 	
 	// Note: negative earn rate is disregarded
-	// This is dangerous, as the you cannot roll back "additions" like this.
+	// This is dangerous you cannot roll back "additions" like this.
 	private function calculateTeamCredits($gameId) {
-		$db = Application::getInstance ()->getDb ();
-		$db->query ( '
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			UPDATE dfl_teams AS `teams`
 			INNER JOIN (
 				SELECT 
 					scores.teamId, 
 					SUM(scores.scoreValue)*' . Config::$a ['fantasy'] ['credit'] ['scoreToCreditEarnRate'] . ' AS `earn`
 				FROM dfl_scores_teams AS `scores`
-				WHERE scores.gameId = \'{gameId}\'
+				WHERE scores.gameId = :gameId
 				GROUP BY scores.teamId
 			) AS `scores` ON (scores.teamId = teams.teamId)
 			SET teams.credits = teams.credits + scores.earn
-			WHERE scores.earn > 0', array (
-				'gameId' => $gameId 
-		) );
+			WHERE scores.earn > 0
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->execute ();
 	}
 
 	private function calculateMilestones() {
-		$db = Application::getInstance ()->getDb ();
+		$conn = Application::instance ()->getConnection ();
 		foreach ( Config::$a ['fantasy'] ['milestones'] as $milestone ) {
 			switch ($milestone ['type']) {
 				
 				case 'GAMEPOINTS' :
 					// Make sure everyone has the milestone, and its up to date.
 					// Note we dont set the goalValue on the duplicate key, because it needs to update in another query
-					$db->query ( '
+					$stmt = $conn->prepare ( '
 						INSERT INTO dfl_team_milestones (`teamId`, `milestoneType`, `milestoneValue`, `milestoneGoal`, `createdDate`, `modifiedDate`) 
-						SELECT dfl_teams.teamId, \'{milestoneType}\', dfl_teams.scoreValue, \'{goalValue}\', UTC_TIMESTAMP(), UTC_TIMESTAMP() 
+						SELECT dfl_teams.teamId, :milestoneType, dfl_teams.scoreValue, :goalValue, UTC_TIMESTAMP(), UTC_TIMESTAMP() 
 						FROM dfl_teams 
-						ON DUPLICATE KEY UPDATE modifiedDate=VALUES(modifiedDate), milestoneValue=VALUES(milestoneValue)', array (
-							'milestoneType' => $milestone ['type'],
-							'goalValue' => $milestone ['goalValue'] 
-					) );
+						ON DUPLICATE KEY UPDATE modifiedDate=VALUES(modifiedDate), milestoneValue=VALUES(milestoneValue)
+					' );
+					$stmt->bindValue ( 'milestoneType', $milestone ['type'], \PDO::PARAM_STR );
+					$stmt->bindValue ( 'goalValue', $milestone ['goalValue'], \PDO::PARAM_INT );
+					$stmt->execute ();
+					
 					// Update the milestone (value = currentValue, goal = currentValue + startGoal)
 					// Give reward
 					if ($milestone ['reward'] ['type'] == 'TRANSFER') {
-						$db->update ( '
+						$stmt = $conn->prepare ( '
 							UPDATE dfl_teams 
 							INNER JOIN dfl_team_milestones AS `milestones` ON (milestones.teamId = dfl_teams.teamId) 
 							SET 
-								dfl_teams.transfersRemaining = LEAST(dfl_teams.transfersRemaining + {rewardValue}, {maxTransfers}), 
+								dfl_teams.transfersRemaining = LEAST(dfl_teams.transfersRemaining + :rewardValue, :maxTransfers), 
 								dfl_teams.modifiedDate = UTC_TIMESTAMP(), 
 								milestones.milestoneValue = dfl_teams.scoreValue, 
-								milestones.milestoneGoal = milestones.milestoneGoal+{goalValue}, 
+								milestones.milestoneGoal = milestones.milestoneGoal+:goalValue, 
 								milestones.modifiedDate = UTC_TIMESTAMP() 
-							WHERE milestones.milestoneValue > milestones.milestoneGoal AND milestones.milestoneType = \'{milestoneType}\'', array (
-								'milestoneType' => $milestone ['type'],
-								'rewardValue' => $milestone ['reward'] ['value'],
-								'goalValue' => $milestone ['goalValue'],
-								'maxTransfers' => Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'] 
-						) );
+							WHERE milestones.milestoneValue > milestones.milestoneGoal AND milestones.milestoneType = :milestoneType
+						' );
+						$stmt->bindValue ( 'milestoneType', $milestone ['type'], \PDO::PARAM_STR );
+						$stmt->bindValue ( 'rewardValue', $milestone ['reward'] ['value'], \PDO::PARAM_INT );
+						$stmt->bindValue ( 'goalValue', $milestone ['goalValue'], \PDO::PARAM_INT );
+						$stmt->bindValue ( 'maxTransfers', Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'], \PDO::PARAM_INT );
+						$stmt->execute ();
 					} else {
 						throw new AppException ( 'Unsupported reward type' );
 					}
@@ -120,32 +127,34 @@ class GameAggregationService extends Service {
 				
 				case 'GAMES' :
 					// Make sure everyone has the milestone, and its up to date.
-					$db->query ( '
+					$stmt = $conn->prepare ( '
 						INSERT INTO dfl_team_milestones (`teamId`, `milestoneType`, `milestoneValue`, `milestoneGoal`, `createdDate`, `modifiedDate`) 
-						SELECT dfl_teams.teamId, \'{milestoneType}\', COUNT(dfl_scores_teams.teamId), \'{goalValue}\', UTC_TIMESTAMP(), UTC_TIMESTAMP() 
+						SELECT dfl_teams.teamId, :milestoneType, COUNT(dfl_scores_teams.teamId), :goalValue, UTC_TIMESTAMP(), UTC_TIMESTAMP() 
 						FROM dfl_teams 
 							LEFT JOIN dfl_scores_teams ON (dfl_teams.teamId = dfl_scores_teams.teamId AND dfl_scores_teams.scoreType = \'PARTICIPATE\') 
 							GROUP BY dfl_scores_teams.teamId 
-						ON DUPLICATE KEY UPDATE modifiedDate=VALUES(modifiedDate), milestoneValue=VALUES(milestoneValue)', array (
-							'milestoneType' => $milestone ['type'],
-							'goalValue' => $milestone ['goalValue'] 
-					) );
+						ON DUPLICATE KEY UPDATE modifiedDate=VALUES(modifiedDate), milestoneValue=VALUES(milestoneValue)
+					' );
+					$stmt->bindValue ( 'milestoneType', $milestone ['type'], \PDO::PARAM_STR );
+					$stmt->bindValue ( 'goalValue', $milestone ['goalValue'], \PDO::PARAM_INT );
+					$stmt->execute ();
 					// Update the milestone (value = currentValue, goal = currentValue + startGoal)
 					// Give reward
 					if ($milestone ['reward'] ['type'] == 'TRANSFER') {
-						$db->update ( '
+						$stmt = $conn->prepare ( '
 							UPDATE dfl_teams 
 								INNER JOIN dfl_team_milestones AS `milestones` ON (milestones.teamId = dfl_teams.teamId) SET 
-								dfl_teams.transfersRemaining = LEAST(dfl_teams.transfersRemaining + {rewardValue}, {maxTransfers}), 
+								dfl_teams.transfersRemaining = LEAST(dfl_teams.transfersRemaining + :rewardValue, :maxTransfers), 
 								dfl_teams.modifiedDate = UTC_TIMESTAMP(), 
-								milestones.milestoneGoal = milestones.milestoneGoal+{goalValue}, 
+								milestones.milestoneGoal = milestones.milestoneGoal+:goalValue, 
 								milestones.modifiedDate = UTC_TIMESTAMP() 
-							WHERE milestones.milestoneValue > milestones.milestoneGoal AND milestones.milestoneType = \'{milestoneType}\' ', array (
-								'milestoneType' => $milestone ['type'],
-								'rewardValue' => $milestone ['reward'] ['value'],
-								'goalValue' => $milestone ['goalValue'],
-								'maxTransfers' => Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'] 
-						) );
+							WHERE milestones.milestoneValue > milestones.milestoneGoal AND milestones.milestoneType = :milestoneType 
+						' );
+						$stmt->bindValue ( 'milestoneType', $milestone ['type'], \PDO::PARAM_STR );
+						$stmt->bindValue ( 'rewardValue', $milestone ['reward'] ['value'], \PDO::PARAM_INT );
+						$stmt->bindValue ( 'goalValue', $milestone ['goalValue'], \PDO::PARAM_INT );
+						$stmt->bindValue ( 'maxTransfers', Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'], \PDO::PARAM_INT );
+						$stmt->execute ();
 					} else {
 						throw new AppException ( 'Unsupported reward type' );
 					}
@@ -155,59 +164,64 @@ class GameAggregationService extends Service {
 	}
 
 	private function setGameAggregated($gameId) {
-		$db = Application::getInstance ()->getDb ();
-		$db->update ( '
-			UPDATE `dfl_games` AS `games` SET 
-				aggregated = \'1\', 
-				aggregatedDate = UTC_TIMESTAMP() 
-			WHERE games.gameId = \'{gameId}\'', array (
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_games', array (
+				'aggregated' => true,
+				'aggregatedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+		), array (
 				'gameId' => $gameId 
+		), array (
+				\PDO::PARAM_BOOL,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_INT 
 		) );
 	}
 
 	private function addTeamScore($gameId, $scoreType, $scoreValue) {
-		$db = Application::getInstance ()->getDb ();
-		$db->update ( '
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			INSERT INTO dfl_scores_teams (`gameId`, `teamId`, `scoreValue`, `scoreType`, `createdDate`) 
 			SELECT 
-				\'{gameId}\' AS `gameId`, 
+				:gameId AS `gameId`, 
 				teams.teamId AS `teamId`, 
-				\'{scoreValue}\' AS `scoreValue`, 
-				\'{scoreType}\' AS `scoreType`, 
+				:scoreValue AS `scoreValue`, 
+				:scoreType AS `scoreType`, 
 				UTC_TIMESTAMP() AS `createdDate` 
-			FROM dfl_teams AS `teams` ', array (
-				'gameId' => $gameId,
-				'scoreValue' => $scoreValue,
-				'scoreType' => $scoreType 
-		) );
+			FROM dfl_teams AS `teams`		
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'scoreType', $scoreType, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'scoreValue', $scoreValue, \PDO::PARAM_INT );
+		$stmt->execute ();
 	}
 
 	private function addChampionScores($gameId, $scoreType, $scoreValue, $teamSideId) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( '
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			INSERT INTO dfl_scores_champs (`gameId`, `championId`, `championMultiplier`, `scoreType`, `scoreValue`, `createdDate`) 
 			SELECT 
-				\'{gameId}\' AS `gameId`, 
+				:gameId AS `gameId`, 
 				champs.championId AS `championId`, 
 				champs.championMultiplier AS `championMultiplier`, 
-				\'{scoreType}\' AS `scoreType`, 
-				ROUND({scoreValue}*champs.championMultiplier) AS `scoreValue`, 
+				:scoreType AS `scoreType`, 
+				ROUND(:scoreValue*champs.championMultiplier) AS `scoreValue`, 
 				UTC_TIMESTAMP() AS `createdDate` 
 			FROM dfl_champs as `champs` 
 			INNER JOIN dfl_games_champs AS `gamechamps` ON (gamechamps.championId = champs.championId) 
-			WHERE gamechamps.gameId = \'{gameId}\' AND gamechamps.teamSideId = \'{teamSideId}\' ', array (
-				'gameId' => $gameId,
-				'scoreType' => $scoreType,
-				'scoreValue' => $scoreValue,
-				'teamSideId' => $teamSideId 
-		) );
+			WHERE gamechamps.gameId = :gameId AND gamechamps.teamSideId = :teamSideId 
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'scoreType', $scoreType, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'scoreValue', $scoreValue, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'teamSideId', $teamSideId, \PDO::PARAM_STR );
+		$stmt->execute ();
 	}
 
 	private function calculateChampionTeamScore($gameId) {
-		$db = Application::getInstance ()->getDb ();
+		$conn = Application::instance ()->getConnection ();
 		$scoreType = 'GAME';
 		// Owned champions only SCORES_TEAMS_CHAMPS
-		$db->insert ( '
+		$stmt = $conn->prepare ( '
 			INSERT INTO dfl_scores_teams_champs (`gameId`, `teamId`, `championId`, `championMultiplier`, `penalty`, `scoreValue`, `createdDate`) 
 				SELECT 
 					champscores.gameId, 
@@ -218,7 +232,7 @@ class GameAggregationService extends Service {
 				
 					ROUND(champscores.scoreValue + (champscores.scoreValue * (
 					
-							SELECT ((COUNT(*)-1)/({maxPotentialChamps}-1))*{teammateBonusModifier} FROM dfl_team_champs AS `a`
+							SELECT ((COUNT(*)-1)/(:maxPotentialChamps-1))*' . Config::$a ['fantasy'] ['team'] ['teammateBonusModifier'] . ' FROM dfl_team_champs AS `a`
 							INNER JOIN dfl_teams AS `e` ON (e.teamId = a.teamId)
 							INNER JOIN dfl_games AS `b`
 							INNER JOIN dfl_games_champs AS `c` ON (c.gameId = b.gameId AND c.championId = a.championId)
@@ -240,26 +254,25 @@ class GameAggregationService extends Service {
 				)
 				INNER JOIN dfl_teams AS `teams` ON (teams.teamId = teamchamps.teamId) 
 				INNER JOIN dfl_users_champs AS `userchamps` ON (userchamps.championId = champscores.championId AND userchamps.userId = teams.userId) 
-				WHERE champscores.gameId = \'{gameId}\'
-			', array (
-				'gameId' => $gameId,
-				'scoreType' => $scoreType,
-				'maxPotentialChamps' => Config::$a ['fantasy'] ['team'] ['maxPotentialChamps'],
-				'teammateBonusModifier' => Config::$a ['fantasy'] ['team'] ['teammateBonusModifier'] 
-		) );
+				WHERE champscores.gameId = :gameId
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'maxPotentialChamps', Config::$a ['fantasy'] ['team'] ['maxPotentialChamps'], \PDO::PARAM_INT );
+		$stmt->execute ();
+		
 		// Free champions only SCORES_TEAMS_CHAMPS
-		$db->insert ( '
+		$stmt = $conn->prepare ( '
 			INSERT INTO dfl_scores_teams_champs (`gameId`, `teamId`, `championId`, `championMultiplier`, `penalty`, `scoreValue`, `createdDate`) 
 				SELECT 
 					champscores.gameId, 
 					teamchamps.teamId, 
 					champs.championId, 
 					champs.championMultiplier, 
-					\'{penalty}\' AS `penalty`,
+					:penalty AS `penalty`,
 				
-					ROUND((champscores.scoreValue*(1-{penalty})) + (champscores.scoreValue*(1-{penalty})) * (
+					ROUND((champscores.scoreValue*(1-:penalty)) + (champscores.scoreValue*(1-:penalty)) * (
 					
-							SELECT ((COUNT(*)-1)/({maxPotentialChamps}-1))*{teammateBonusModifier} FROM dfl_team_champs AS `a`
+							SELECT ((COUNT(*)-1)/(:maxPotentialChamps-1))*:teammateBonusModifier FROM dfl_team_champs AS `a`
 							INNER JOIN dfl_teams AS `e` ON (e.teamId = a.teamId)
 							INNER JOIN dfl_games AS `b`
 							INNER JOIN dfl_games_champs AS `c` ON (c.gameId = b.gameId AND c.championId = a.championId)
@@ -271,7 +284,6 @@ class GameAggregationService extends Service {
 					
 					)) AS `scoreValue`,
 				
-				
 					UTC_TIMESTAMP() AS `createdDate` 
 				FROM dfl_scores_champs AS `champscores` 
 				INNER JOIN dfl_games AS `games` ON (games.gameId = champscores.gameId) 
@@ -282,30 +294,30 @@ class GameAggregationService extends Service {
 				)
 				INNER JOIN dfl_teams AS `teams` ON (teams.teamId = teamchamps.teamId) 
 				LEFT JOIN dfl_users_champs AS `userchamps` ON (userchamps.championId = champscores.championId AND userchamps.userId = teams.userId) 
-				WHERE userchamps.championId IS NULL AND champscores.gameId = \'{gameId}\' AND champs.championFree = 1
-			', array (
-				'gameId' => $gameId,
-				'scoreType' => $scoreType,
-				'penalty' => Config::$a ['fantasy'] ['team'] ['freeMultiplierPenalty'],
-				'maxPotentialChamps' => Config::$a ['fantasy'] ['team'] ['maxPotentialChamps'],
-				'teammateBonusModifier' => Config::$a ['fantasy'] ['team'] ['teammateBonusModifier'] 
-		) );
+				WHERE userchamps.championId IS NULL AND champscores.gameId = :gameId AND champs.championFree = 1
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'penalty', Config::$a ['fantasy'] ['team'] ['freeMultiplierPenalty'], \PDO::PARAM_STR );
+		$stmt->bindValue ( 'maxPotentialChamps', Config::$a ['fantasy'] ['team'] ['maxPotentialChamps'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'teammateBonusModifier', Config::$a ['fantasy'] ['team'] ['teammateBonusModifier'], \PDO::PARAM_STR );
+		$stmt->execute ();
 		
 		// Total team scores SCORES_TEAMS
-		$db->insert ( '
+		$stmt = $conn->prepare ( '
 			INSERT INTO dfl_scores_teams (`gameId`, `teamId`, `scoreValue`, `scoreType`, `createdDate`) 
 			SELECT 
 				teamchampscores.gameId AS `gameId`, 
 				teamchampscores.teamId AS `teamId`, 
 				SUM(teamchampscores.scoreValue) AS `scoreValue`, 
-				\'{scoreType}\' AS `scoreType`, 
+				:scoreType AS `scoreType`, 
 				UTC_TIMESTAMP() AS `createdDate` 
 				FROM dfl_scores_teams_champs AS `teamchampscores` 
-			WHERE teamchampscores.gameId = \'{gameId}\' 
-			GROUP BY teamchampscores.teamId, teamchampscores.gameId', array (
-				'gameId' => $gameId,
-				'scoreType' => $scoreType 
-		) );
+			WHERE teamchampscores.gameId = :gameId 
+			GROUP BY teamchampscores.teamId, teamchampscores.gameId	
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'scoreType', $scoreType, \PDO::PARAM_INT );
+		$stmt->execute ();
 	}
 
 	/**
@@ -313,44 +325,46 @@ class GameAggregationService extends Service {
 	 * Need to think of a way to reduce it
 	 */
 	public function calculateTeamScore($gameId = null) {
-		$db = Application::getInstance ()->getDb ();
+		$conn = Application::instance ()->getConnection ();
 		if ($gameId == null) {
-			$db->update ( '
-			UPDATE dfl_teams AS `teams`, ( 
-				SELECT a.teamId, SUM(a.scoreValue) AS `total` 
-				FROM dfl_scores_teams AS a
-				GROUP BY a.teamId  
-			) AS scoresteams 
-			SET teams.scoreValue = scoresteams.total, teams.modifiedDate = UTC_TIMESTAMP()
-			WHERE teams.teamId = scoresteams.teamId' );
+			$conn->executeQuery ( '
+				UPDATE dfl_teams AS `teams`, ( 
+					SELECT a.teamId, SUM(a.scoreValue) AS `total` 
+					FROM dfl_scores_teams AS a
+					GROUP BY a.teamId  
+				) AS scoresteams 
+				SET teams.scoreValue = scoresteams.total, teams.modifiedDate = UTC_TIMESTAMP()
+				WHERE teams.teamId = scoresteams.teamId
+			' );
 		} else {
 			// Quick dirty way when we have the game Id
-			$db->update ( '
+			$stmt = $conn->prepare ( '
 				UPDATE dfl_teams t 
 					INNER JOIN (
 					SELECT c.teamId, SUM(c.scoreValue) AS `total` 
 					FROM dfl_scores_teams AS c
-					WHERE c.gameId = \'{gameId}\'
+					WHERE c.gameId = :gameId
 					GROUP BY c.teamId 
 				) b ON b.teamId = t.teamId 
 				SET t.scoreValue = t.scoreValue + b.total, t.modifiedDate = UTC_TIMESTAMP()
-			', array (
-					'gameId' => $gameId 
-			) );
+			' );
+			$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+			$stmt->execute ();
 		}
 	}
 
 	public function calculateTeamRanks() {
-		$db = Application::getInstance ()->getDb ();
-		$db->query ( '
+		$conn = Application::instance ()->getConnection ();
+		$conn->executeQuery ( '
 			INSERT IGNORE INTO dfl_team_ranks ( 
 				SELECT 
 					teams.teamId, 
 					0 AS `rank` 
 				FROM dfl_teams AS `teams`
-			)' );
-		$db->query ( 'SET @rank=0' );
-		$db->update ( '
+			)
+		' );
+		$conn->executeQuery ( 'SET @rank=0' );
+		$conn->executeQuery ( '
 			UPDATE dfl_team_ranks AS `ranks`, ( 
 				SELECT 
 				@rank:=@rank+1 AS `teamRank`, 
@@ -360,46 +374,48 @@ class GameAggregationService extends Service {
 				ORDER BY teams.scoreValue DESC 
 			) AS `teamranks` 
 			SET ranks.teamRank = teamranks.teamRank 
-			WHERE ranks.teamId = teamranks.teamId' );
+			WHERE ranks.teamId = teamranks.teamId
+		' );
 	}
 
 	public function resetGame($gameId) {
-		$db = Application::getInstance ()->getDb ();
-		$db->query ( 'DELETE FROM dfl_scores_champs WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn = Application::instance ()->getConnection ();
+		$conn->delete ( 'dfl_scores_champs', array (
+				'gameId' => $gameId 
 		) );
-		$db->query ( 'DELETE FROM dfl_scores_teams WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn->delete ( 'dfl_scores_teams', array (
+				'gameId' => $gameId 
 		) );
-		$db->query ( 'DELETE FROM dfl_scores_teams_champs WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn->delete ( 'dfl_scores_teams_champs', array (
+				'gameId' => $gameId 
 		) );
-		$db->query ( 'UPDATE dfl_games SET aggregated=0 WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn->update ( 'dfl_games', array (
+				'aggregated' => false 
+		), array (
+				'gameId' => $gameId 
 		) );
-		$this->calculateTeamScore ();
-		$this->calculateTeamRanks ();
 	}
 
 	public function removeGame($gameId) {
-		$db = Application::getInstance ()->getDb ();
-		$db->query ( 'DELETE FROM dfl_games WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn = Application::instance ()->getConnection ();
+		$conn->delete ( 'dfl_games', array (
+				'gameId' => $gameId 
 		) );
-		$db->query ( 'DELETE FROM dfl_games_champs WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn->delete ( 'dfl_games_champs', array (
+				'gameId' => $gameId 
 		) );
-		$db->query ( 'DELETE FROM dfl_scores_champs WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn->delete ( 'dfl_scores_champs', array (
+				'gameId' => $gameId 
 		) );
-		$db->query ( 'DELETE FROM dfl_scores_teams WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn->delete ( 'dfl_scores_teams', array (
+				'gameId' => $gameId 
 		) );
-		$db->query ( 'DELETE FROM dfl_scores_teams_champs WHERE gameId = \'{gameId}\'', array (
-				'gameId' => ( int ) $gameId 
+		$conn->delete ( 'dfl_scores_teams_champs', array (
+				'gameId' => $gameId 
 		) );
-		$this->calculateTeamScore ();
-		$this->calculateTeamRanks ();
+		$conn->delete ( 'dfl_games_summoner_data', array (
+				'gameId' => $gameId 
+		) );
 	}
 
 	/**
@@ -407,68 +423,51 @@ class GameAggregationService extends Service {
 	 * gamesWin & gamesLost & gamesPlayed
 	 */
 	public function updateChampionStats() {
-		$db = Application::getInstance ()->getDb ();
-		$db->query ( '
-		UPDATE dfl_champs AS `champs`
-		INNER JOIN (
-			SELECT _champs.championId,
-			COALESCE((
-				SELECT COUNT(chgames.championId) FROM dfl_games_champs `chgames`
-				INNER JOIN dfl_games AS `_games` ON (_games.gameId = chgames.gameId)
-				WHERE chgames.championId = _champs.championId AND chgames.teamSideId = _games.gameWinSideId
-				GROUP BY championId
-			), 0) `_gamesWin`,
-			COALESCE((
-				SELECT COUNT(chgames.championId) FROM dfl_games_champs `chgames`
-				INNER JOIN dfl_games AS `_games` ON (_games.gameId = chgames.gameId)
-				WHERE chgames.championId = _champs.championId AND chgames.teamSideId = _games.gameLoseSideId
-				GROUP BY championId
-			), 0) `_gamesLost`,
-			COALESCE((
-				SELECT COUNT(chgames.championId) FROM dfl_games_champs `chgames`
-				INNER JOIN dfl_games AS `_games` ON (_games.gameId = chgames.gameId)
-				WHERE chgames.championId = _champs.championId
-				GROUP BY championId
-			), 0) `_gamesPlayed`
-			FROM dfl_champs `_champs`
-		) AS `champstats` ON (champstats.championId = champs.championId)
-		SET 
+		$conn = Application::instance ()->getConnection ();
+		$conn->executeQuery ( '
+			UPDATE dfl_champs AS `champs`
+			INNER JOIN (
+				SELECT _champs.championId,
+				COALESCE((
+					SELECT COUNT(chgames.championId) FROM dfl_games_champs `chgames`
+					INNER JOIN dfl_games AS `_games` ON (_games.gameId = chgames.gameId)
+					WHERE chgames.championId = _champs.championId AND chgames.teamSideId = _games.gameWinSideId
+					GROUP BY championId
+				), 0) `_gamesWin`,
+				COALESCE((
+					SELECT COUNT(chgames.championId) FROM dfl_games_champs `chgames`
+					INNER JOIN dfl_games AS `_games` ON (_games.gameId = chgames.gameId)
+					WHERE chgames.championId = _champs.championId AND chgames.teamSideId = _games.gameLoseSideId
+					GROUP BY championId
+				), 0) `_gamesLost`,
+				COALESCE((
+					SELECT COUNT(chgames.championId) FROM dfl_games_champs `chgames`
+					INNER JOIN dfl_games AS `_games` ON (_games.gameId = chgames.gameId)
+					WHERE chgames.championId = _champs.championId
+					GROUP BY championId
+				), 0) `_gamesPlayed`
+				FROM dfl_champs `_champs`
+			) AS `champstats` ON (champstats.championId = champs.championId)
+			SET 
 			champs.gamesWin = champstats._gamesWin, 
 			champs.gamesLost = champstats._gamesLost,
 			champs.gamesPlayed = champstats._gamesPlayed
 		' );
-		$db->query ( '
-		UPDATE dfl_champs AS `champs`
-		INNER JOIN (
-			SELECT
-				_champs.championId,
-				(_champs.gamesPlayed/(
-					SELECT MAX(gamesPlayed) FROM dfl_champs
-				)) `playedRatio`,
-				COALESCE((_champs.gamesWin/_champs.gamesPlayed),0) `WinRatio`,
-				COALESCE((_champs.gamesLost/_champs.gamesPlayed),0) `LossRatio`
-			FROM dfl_champs AS `_champs`
-		) AS `champstats` ON (champstats.championId = champs.championId)
-		SET champs.championMultiplier = ROUND(1-champstats.playedRatio*champstats.WinRatio, 3)
+		$conn->executeQuery ( '
+			UPDATE dfl_champs AS `champs`
+			INNER JOIN (
+				SELECT
+					_champs.championId,
+					(_champs.gamesPlayed/(
+						SELECT MAX(gamesPlayed) FROM dfl_champs
+					)) `playedRatio`,
+					COALESCE((_champs.gamesWin/_champs.gamesPlayed),0) `WinRatio`,
+					COALESCE((_champs.gamesLost/_champs.gamesPlayed),0) `LossRatio`
+				FROM dfl_champs AS `_champs`
+			) AS `champstats` ON (champstats.championId = champs.championId)
+			SET 
+			champs.championMultiplier = ROUND(1-champstats.playedRatio*champstats.WinRatio, 3)
 		' );
-	}
-
-	public function createTeamsSnapshot($gameId, $date) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( '
-			INSERT INTO dfl_team_champs_snapshot (`teamId`,`championId`,`gameId`,`createdDate`) 
-			SELECT 
-				teamchamps.teamId,
-				teamchamps.championId,
-				\'{gameId}\' AS `gameId`,
-				NOW() AS `createdDate`
-			FROM dfl_team_champs AS `teamchamps`
-			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = teamchamps.teamId)
-			WHERE teamchamps.createdDate < \'{date}\'
-		', array (
-				'gameId' => $gameId,
-				'date' => $date 
-		) );
 	}
 
 }

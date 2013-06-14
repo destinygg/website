@@ -12,11 +12,14 @@ class ResetGame {
 		if (! isset ( $params ['gameId'] ) || empty ( $params ['gameId'] )) {
 			throw new AppException ( 'gameId required.' );
 		}
-		$log = Application::getInstance ()->getLogger ();
+		$log = Application::instance ()->getLogger ();
 		$log->notice ( sprintf ( 'Game %s reset', $params ['gameId'] ) );
-		GameAggregationService::getInstance ()->resetGame ( $params ['gameId'] );
-		
+		GameAggregationService::instance ()->resetGame ( $params ['gameId'] );
+		GameAggregationService::instance ()->calculateTeamScore ();
+		GameAggregationService::instance ()->calculateTeamRanks ();
 		$task = new \Destiny\Scheduled\Leaderboards ();
+		$task->execute ( $log );
+		$task = new \Destiny\Scheduled\Champions ();
 		$task->execute ( $log );
 	}
 

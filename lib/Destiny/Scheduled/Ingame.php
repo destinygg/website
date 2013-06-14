@@ -12,9 +12,9 @@ class Ingame {
 
 	public function execute(LoggerInterface $log) {
 		$log->debug ( 'Tracking ingame progress' );
-		$ftrackService = GameTrackingService::getInstance ();
-		$leagueApiService = LeagueApiService::getInstance ();
-		$app = Application::getInstance ();
+		$ftrackService = GameTrackingService::instance ();
+		$leagueApiService = LeagueApiService::instance ();
+		$app = Application::instance ();
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == false) {
 				continue;

@@ -10,7 +10,7 @@ use Destiny\Config;
 class Twitter {
 
 	public function execute(array $params) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'twitter' );
 		Http::checkIfModifiedSince ( $cache->getLastModified (), true );
 		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $cache->getLastModified () ) );

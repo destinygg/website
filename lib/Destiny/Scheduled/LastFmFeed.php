@@ -10,8 +10,8 @@ use Destiny\Service\CommonApiService;
 class LastFmFeed {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::getInstance ();
-		$response = CommonApiService::getInstance ()->getLastFMTracks ()->getResponse ();
+		$app = Application::instance ();
+		$response = CommonApiService::instance ()->getLastFMTracks ()->getResponse ();
 		$cache = $app->getMemoryCache ( 'recenttracks' );
 		$cache->write ( $response );
 	}

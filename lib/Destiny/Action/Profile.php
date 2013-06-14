@@ -11,8 +11,8 @@ class Profile {
 
 	public function execute(array $params, ViewModel $model) {
 		$model->title = 'Profile';
-		$orderService = OrdersService::getInstance ();
-		$subsService = SubscriptionsService::getInstance ();
+		$orderService = OrdersService::instance ();
+		$subsService = SubscriptionsService::instance ();
 		$orders = $orderService->getCompletedOrdersByUserId ( Session::get ( 'userId' ), 5, 0, 'DESC' );
 		for($i = 0; $i < count ( $orders ); ++ $i) {
 			$orders [$i] ['orderReference'] = $orderService->buildOrderRef ( $orders [$i] );

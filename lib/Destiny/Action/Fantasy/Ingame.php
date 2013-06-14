@@ -12,8 +12,8 @@ use Destiny\Config;
 class Ingame {
 
 	public function execute(array $params) {
-		$status = LeagueApiService::getInstance ()->getStatus ();
-		$app = Application::getInstance ();
+		$status = LeagueApiService::instance ()->getStatus ();
+		$app = Application::instance ();
 		$ingame = null;
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == false) {

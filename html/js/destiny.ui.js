@@ -150,7 +150,7 @@ $(function(){
 	});
 	
 	// Summoner details
-	var summonerFeed = new DestinyFeedConsumer({
+	new DestinyFeedConsumer({
 		url: destiny.urls.summonerstats,
 		polling: destiny.polling.summonerstats,
 		ifModified: true,
@@ -170,9 +170,6 @@ $(function(){
 				ui.append(
 					'<div class="summoner-info pull-left">'+
 						'<div class="summoner-info-stub pull-left">'+
-							'<div class="summoner-icon">'+
-								'<img src="'+destiny.cdn+'/img/64x64.gif" style="width:45px; height:45px;"'+ ((summoner['profileIconId'] != undefined) ? ' data-src="'+destiny.cdn+'/img/lol/summoner/profileIcon'+summoner.profileIconId+'.jpg"' : '' ) +'" />' +
-							'</div>'+
 							'<h3 class="summoner-title">'+ 
 								htmlEncode(summoner.name) + ' <small><a title="LOLKING profile" href="http://www.lolking.net/summoner/'+ summoner.region.id +'/'+ summoner.summonerId +'">lolking.com</a></small> ' +
 							'</h3>'+

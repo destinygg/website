@@ -22,7 +22,7 @@ class Decline {
 				'data' => array (),
 				'message' => '' 
 		);
-		$response ['response'] = ChallengeService::getInstance ()->declineChallenge ( intval ( $params ['teamId'] ), intval ( Session::get ( 'teamId' ) ) );
+		$response ['response'] = ChallengeService::instance ()->declineChallenge ( intval ( $params ['teamId'] ), intval ( Session::get ( 'teamId' ) ) );
 		$response ['message'] = ($response ['response']) ? 'Declined' : 'Failed!';
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );

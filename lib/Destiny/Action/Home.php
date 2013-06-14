@@ -12,10 +12,10 @@ use Destiny\Service\Fantasy\TeamService;
 class Home {
 
 	public function execute(array $params, ViewModel $model) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		if (Session::authorized () && Settings::get ( 'teambar_homepage' )) {
-			$model->team = TeamService::getInstance ()->getTeamByUserId ( Session::get ( 'userId' ) );
-			$model->teamChamps = TeamService::getInstance ()->getTeamChamps ( $model->team ['teamId'] );
+			$model->team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );
+			$model->teamChamps = TeamService::instance ()->getTeamChamps ( $model->team ['teamId'] );
 			
 			$cache = $app->getMemoryCache ( 'champions' );
 			$model->champions = $cache->read ();

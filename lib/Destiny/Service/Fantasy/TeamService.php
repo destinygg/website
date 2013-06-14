@@ -6,6 +6,7 @@ use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\Cache;
+use Destiny\Utils\Date;
 
 class TeamService extends Service {
 	
@@ -21,8 +22,8 @@ class TeamService extends Service {
 	 *
 	 * @return TeamService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -32,23 +33,18 @@ class TeamService extends Service {
 	 * @return array
 	 */
 	public function addTeam($userId, $credits, $transfers) {
-		$db = Application::getInstance ()->getDb ();
 		$team = array (
-				'teamId' => null,
 				'userId' => $userId,
 				'credits' => Config::$a ['fantasy'] ['team'] ['startCredit'],
 				'transfersRemaining' => Config::$a ['fantasy'] ['team'] ['startTransfers'],
-				'scoreValue' => 0 
+				'scoreValue' => false,
+				'teamActive' => true,
+				'modifiedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ),
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
 		);
-		$team ['teamId'] = $db->insert ( '
-			INSERT INTO dfl_teams SET 
-				userId = \'{userId}\',
-				credits = \'{credits}\',
-				scoreValue = \'{scoreValue}\',
-				transfersRemaining = \'{transfersRemaining}\',
-				teamActive = 1,
-				modifiedDate = UTC_TIMESTAMP(),
-				createdDate = UTC_TIMESTAMP()', $team );
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_teams', $team );
+		$team ['teamId'] = $conn->lastInsertId ();
 		return $team;
 	}
 
@@ -58,15 +54,11 @@ class TeamService extends Service {
 	 * @param string $teamId
 	 */
 	public function getTeamById($teamId) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
-			SELECT * FROM dfl_teams AS `teams` 
-				WHERE teams.teamId = \'{teamId}\' 
-				LIMIT {offset},{limit}', array (
-				'teamId' => ( int ) $teamId,
-				'offset' => 0,
-				'limit' => 1 
-		) )->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_teams AS `teams` WHERE teams.teamId = :teamId LIMIT 0,1' );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -77,23 +69,24 @@ class TeamService extends Service {
 	 * @param int $offset
 	 */
 	public function getTeamsByUsername($username, $limit = 1, $offset = 0) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
-				SELECT 
-					teams.*, 
-					users.username, 
-					ranks.teamRank 
-				FROM dfl_teams AS `teams` 
-				INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
-				WHERE users.username = \'{username}\' 
-				ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
-				LIMIT {offset},{limit} 
-				', array (
-				'username' => $username,
-				'offset' => ( int ) $offset,
-				'limit' => ( int ) $limit 
-		) )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT 
+				teams.*, 
+				users.username, 
+				ranks.teamRank 
+			FROM dfl_teams AS `teams` 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
+			WHERE users.username = :username 
+			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
+			LIMIT :offset,:limit 
+		' );
+		$stmt->bindValue ( 'username', $username, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -116,19 +109,21 @@ class TeamService extends Service {
 	 * @return array
 	 */
 	public function getTeamsByUserId($userId, $limit = 1, $offset = 0) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
-				SELECT teams.*, users.username, ranks.teamRank 
-					FROM dfl_teams AS `teams` 
-					INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-					LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
-					WHERE teams.userId = \'{userId}\' 
-					ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
-					LIMIT {offset},{limit} ', array (
-				'userId' => ( int ) $userId,
-				'offset' => ( int ) $offset,
-				'limit' => ( int ) $limit 
-		) )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT teams.*, users.username, ranks.teamRank 
+			FROM dfl_teams AS `teams` 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
+			WHERE teams.userId = :userId 
+			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -139,17 +134,19 @@ class TeamService extends Service {
 	 * @param int $offset
 	 */
 	public function getTeamTransfers($teamId, $limit = 1, $offset = 0) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			SELECT * FROM dfl_team_transfers AS `transfers` 
-				INNER JOIN dfl_champs AS `champs` ON (champs.championId = transfers.championId) 
-				WHERE transfers.teamId = \'{teamId}\' 
-				ORDER BY transfers.createdDate DESC, FIELD(transferType, \'OUT\', \'IN\') 
-				LIMIT {offset},{limit} ', array (
-				'teamId' => $teamId,
-				'offset' => $offset,
-				'limit' => $limit 
-		) )->fetchRows ();
+			INNER JOIN dfl_champs AS `champs` ON (champs.championId = transfers.championId) 
+			WHERE transfers.teamId = :teamId 
+			ORDER BY transfers.createdDate DESC, FIELD(transferType, \'OUT\', \'IN\') 
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -159,23 +156,25 @@ class TeamService extends Service {
 	 * @param int $offset
 	 */
 	public function getTeams($limit = 1, $offset = 0) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
-				SELECT 
-					teams.*, 
-					users.userId, 
-					users.username, 
-					users.displayName, 
-					IF(subs.userId IS NULL,0,1) AS `subscriber` 
-				FROM dfl_teams AS `teams` 
-				INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
-				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
-				ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
-				LIMIT {offset},{limit} ', array (
-				'offset' => $offset,
-				'limit' => $limit 
-		) )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT 
+				teams.*, 
+				users.userId, 
+				users.username, 
+				users.displayName, 
+				IF(subs.userId IS NULL,0,1) AS `subscriber` 
+			FROM dfl_teams AS `teams` 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
+			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -189,18 +188,21 @@ class TeamService extends Service {
 		if ($limit == null) {
 			$limit = Config::$a ['fantasy'] ['team'] ['maxChampions'];
 		}
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
-				SELECT teamchamps.*, champs.*, userchamps.championId IS NOT NULL AS `unlocked` FROM dfl_team_champs AS `teamchamps` 
-				INNER JOIN `dfl_teams` AS `teams` ON (teams.teamId = teamchamps.teamId) 
-				INNER JOIN `dfl_champs` AS `champs` ON (teamchamps.championId = champs.championId) 
-				LEFT JOIN `dfl_users_champs` AS `userchamps` ON (userchamps.userId = teams.userId AND userchamps.championId = champs.championId) 
-				WHERE teams.teamId = \'{teamId}\' 
-				ORDER BY teamchamps.displayOrder, champs.championName DESC, teamchamps.createdDate LIMIT {offset},{limit}', array (
-				'teamId' => $teamId,
-				'offset' => $offset,
-				'limit' => $limit 
-		) )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT teamchamps.*, champs.*, userchamps.championId IS NOT NULL AS `unlocked` FROM dfl_team_champs AS `teamchamps` 
+			INNER JOIN `dfl_teams` AS `teams` ON (teams.teamId = teamchamps.teamId) 
+			INNER JOIN `dfl_champs` AS `champs` ON (teamchamps.championId = champs.championId) 
+			LEFT JOIN `dfl_users_champs` AS `userchamps` ON (userchamps.userId = teams.userId AND userchamps.championId = champs.championId) 
+			WHERE teams.teamId = :teamId
+			ORDER BY teamchamps.displayOrder, champs.championName DESC, teamchamps.createdDate 
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -209,28 +211,31 @@ class TeamService extends Service {
 	 * @param array $team
 	 */
 	public function resetTeam(array $team) {
-		$db = Application::getInstance ()->getDb ();
+		// Update the team stats
 		$team ['credits'] = Config::$a ['fantasy'] ['team'] ['startCredit'];
 		$team ['transfersRemaining'] = Config::$a ['fantasy'] ['team'] ['startTransfers'];
 		$team ['scoreValue'] = 0;
 		$this->updateTeam ( $team );
-		$db->query ( 'DELETE FROM dfl_team_ranks WHERE teamId = \'{teamId}\'', array (
-				'teamId' => ( int ) $team ['teamId'] 
+		
+		// Clear the team ranks, champs etc
+		$conn = Application::instance ()->getConnection ();
+		$conn->delete ( 'dfl_team_ranks', array (
+				'teamId' => $team ['teamId'] 
 		) );
-		$db->query ( 'DELETE FROM dfl_users_champs WHERE userId = \'{userId}\'', array (
-				'userId' => ( int ) $team ['userId'] 
+		$conn->delete ( 'dfl_users_champs', array (
+				'userId' => $team ['userId'] 
 		) );
-		$db->query ( 'DELETE FROM dfl_team_champs WHERE teamId = \'{teamId}\'', array (
-				'teamId' => ( int ) $team ['teamId'] 
+		$conn->delete ( 'dfl_team_champs', array (
+				'teamId' => $team ['teamId'] 
 		) );
-		$db->query ( 'DELETE FROM dfl_team_milestones WHERE teamId = \'{teamId}\'', array (
-				'teamId' => ( int ) $team ['teamId'] 
+		$conn->delete ( 'dfl_team_milestones', array (
+				'teamId' => $team ['teamId'] 
 		) );
-		$db->query ( 'DELETE FROM dfl_scores_teams WHERE teamId = \'{teamId}\'', array (
-				'teamId' => ( int ) $team ['teamId'] 
+		$conn->delete ( 'dfl_scores_teams', array (
+				'teamId' => $team ['teamId'] 
 		) );
-		$db->query ( 'DELETE FROM dfl_scores_teams_champs WHERE teamId = \'{teamId}\'', array (
-				'teamId' => ( int ) $team ['teamId'] 
+		$conn->delete ( 'dfl_scores_teams_champs', array (
+				'teamId' => $team ['teamId'] 
 		) );
 	}
 
@@ -240,14 +245,15 @@ class TeamService extends Service {
 	 * @param array $team
 	 */
 	public function updateTeam(array $team) {
-		$db = Application::getInstance ()->getDb ();
-		$db->update ( '
-			UPDATE dfl_teams SET 
-				credits = \'{credits}\', 
-				transfersRemaining = \'{transfersRemaining}\', 
-				scoreValue = \'{scoreValue}\',
-				modifiedDate = UTC_TIMESTAMP()  
-				WHERE teamId = \'{teamId}\'', $team );
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_teams', array (
+				'credits' => $team ['credits'],
+				'transfersRemaining' => $team ['transfersRemaining'],
+				'scoreValue' => $team ['scoreValue'],
+				'modifiedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+		), array (
+				'teamId' => $team ['teamId'] 
+		) );
 	}
 
 	/**
@@ -257,14 +263,13 @@ class TeamService extends Service {
 	 * @param array $champions
 	 */
 	public function updateChampionOrders($teamId, array $champions) {
-		$db = Application::getInstance ()->getDb ();
+		$conn = Application::instance ()->getConnection ();
 		foreach ( $champions as $order => $id ) {
-			$db->update ( '
-					UPDATE dfl_team_champs SET displayOrder = \'{displayOrder}\'
-					WHERE teamId = \'{teamId}\' AND championId = \'{championId}\'', array (
-					'teamId' => $teamId,
-					'championId' => $id,
+			$conn->update ( 'dfl_team_champs', array (
 					'displayOrder' => ($order + 1) 
+			), array (
+					'teamId' => $teamId,
+					'championId' => $id 
 			) );
 		}
 	}
@@ -275,18 +280,19 @@ class TeamService extends Service {
 	 * @param array $team
 	 */
 	public function updateTeamResources(array $team) {
-		$db = Application::getInstance ()->getDb ();
-		$db->update ( '
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			UPDATE dfl_teams SET 
-				credits = \'{credits}\', 
-				transfersRemaining = LEAST({transfersRemaining},{maxTransfers}), 
+				credits = :credits, 
+				transfersRemaining = LEAST(:transfersRemaining,:maxTransfers), 
 				modifiedDate = UTC_TIMESTAMP()  
-			WHERE teamId = \'{teamId}\'', array (
-				'maxTransfers' => Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'],
-				'transfersRemaining' => $team ['transfersRemaining'],
-				'credits' => $team ['credits'],
-				'teamId' => $team ['teamId'] 
-		) );
+			WHERE teamId = :teamId
+		' );
+		$stmt->bindValue ( 'credits', $team ['credits'], \PDO::PARAM_STR );
+		$stmt->bindValue ( 'teamId', $team ['teamId'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'transfersRemaining', $team ['transfersRemaining'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'maxTransfers', Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'], \PDO::PARAM_INT );
+		$stmt->execute ();
 	}
 
 	/**
@@ -296,19 +302,15 @@ class TeamService extends Service {
 	 * @param array $champ
 	 */
 	public function transferOut(array $team, array $champ) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( '
-				INSERT INTO dfl_team_transfers SET 
-				teamId = \'{teamId}\',
-				championId = \'{championId}\',
-				championValue = \'{championValue}\',
-				transferType = \'OUT\',
-				createdDate = UTC_TIMESTAMP()', array (
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_team_transfers', array (
 				'teamId' => $team ['teamId'],
 				'championId' => $champ ['championId'],
-				'championValue' => $champ ['championValue'] 
+				'championValue' => $champ ['championValue'],
+				'transferType' => 'OUT',
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
 		) );
-		$db->query ( 'DELETE FROM dfl_team_champs WHERE teamId = \'{teamId}\' AND championId = \'{championId}\'', array (
+		$conn->delete ( 'dfl_team_champs', array (
 				'teamId' => $team ['teamId'],
 				'championId' => $champ ['championId'] 
 		) );
@@ -321,27 +323,19 @@ class TeamService extends Service {
 	 * @param array $champ
 	 */
 	public function transferIn(array $team, array $champ) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( '
-				INSERT INTO dfl_team_transfers SET 
-				teamId = \'{teamId}\',
-				championId = \'{championId}\',
-				championValue = \'{championValue}\',
-				transferType = \'IN\',
-				createdDate = UTC_TIMESTAMP()', array (
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_team_transfers', array (
 				'teamId' => $team ['teamId'],
 				'championId' => $champ ['championId'],
-				'championValue' => $champ ['championValue'] 
+				'championValue' => $champ ['championValue'],
+				'transferType' => 'IN',
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
 		) );
-		$db->insert ( '
-				INSERT INTO dfl_team_champs SET 
-				teamId = \'{teamId}\',
-				championId = \'{championId}\',
-				displayOrder = 0,
-				createdDate = UTC_TIMESTAMP()', array (
+		$conn->insert ( 'dfl_team_champs', array (
 				'teamId' => $team ['teamId'],
 				'championId' => $champ ['championId'],
-				'championValue' => $champ ['championValue'] 
+				'displayOrder' => 0,
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
 		) );
 	}
 

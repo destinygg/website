@@ -16,18 +16,20 @@ class Subscriptions {
 		$i = 0;
 		$total = 1;
 		$increments = 50;
-		$db = Application::getInstance ()->getDb ();
+		$conn = Application::instance ()->getConnection ();
 		$isSubsCleared = false;
 		while ( $i < $total ) {
 			set_time_limit ( 20 );
-			$subscriptions = TwitchApiService::getInstance ()->getChannelSubscriptions ( Config::$a ['twitch'] ['broadcaster'] ['user'], $increments, $i );
+			$subscriptions = TwitchApiService::instance ()->getChannelSubscriptions ( Config::$a ['twitch'] ['broadcaster'] ['user'], $increments, $i );
 			if ($subscriptions == null) {
 				throw new AppException ( 'Error requesting subscriptions' );
 				break;
 			}
 			if ($isSubsCleared == false) {
 				$isSubsCleared = true;
-				$db->update ( 'UPDATE dfl_users_twitch_subscribers SET validated = 0' );
+				$conn->update ( 'dfl_users_twitch_subscribers', array (
+						'validated' => false 
+				) );
 			}
 			if (! isset ( $subscriptions ['_total'] ) || ! is_numeric ( $subscriptions ['_total'] )) {
 				throw new AppException ( 'Error requesting subscriptions. Total: 0' );
@@ -39,23 +41,25 @@ class Subscriptions {
 			}
 			$log->info ( 'Checked subscriptions [' . $i . ' out of ' . $total . ']' );
 			foreach ( $subscriptions ['subscriptions'] as $sub ) {
-				$db->insert ( '
+				$stmt = $conn->prepare ( '
 					INSERT INTO dfl_users_twitch_subscribers SET 
-						externalId = \'{externalId}\',
-						username = \'{username}\',
-						displayName = \'{displayName}\',
-						staff = {staff},
-						subscribeDate = \'{subscribeDate}\',
-						createdDate = NOW(),
-						validated = 1
-					ON DUPLICATE KEY UPDATE displayName=\'{displayName}\', validated = 1;
-					', array (
-						'externalId' => $sub->user->_id,
-						'username' => $sub->user->name,
-						'displayName' => $sub->user->display_name,
-						'staff' => (! empty ( $sub->user->staff ) && $sub->user->staff == 1) ? '1' : '0',
-						'subscribeDate' => Date::getDateTime ( $sub->created_at, 'Y-m-d H:i:s' ) 
-				) );
+						externalId = :externalId,
+						username = :username,
+						displayName = :displayName,
+						staff = :staff,
+						subscribeDate = :subscribeDate,
+						createdDate = :createdDate,
+						validated = :validated
+					ON DUPLICATE KEY UPDATE displayName=:displayName, validated = :validated
+				' );
+				$stmt->bindValue ( 'externalId', $sub->user->_id, \PDO::PARAM_STR );
+				$stmt->bindValue ( 'username', $sub->user->name, \PDO::PARAM_STR );
+				$stmt->bindValue ( 'displayName', $sub->user->display_name, \PDO::PARAM_STR );
+				$stmt->bindValue ( 'staff', (! empty ( $sub->user->staff ) && $sub->user->staff == 1), \PDO::PARAM_BOOL );
+				$stmt->bindValue ( 'subscribeDate', Date::getDateTime ( $sub->created_at, 'Y-m-d H:i:s' ), \PDO::PARAM_STR );
+				$stmt->bindValue ( 'createdDate', Date::getDateTime ( time (), 'Y-m-d H:i:s' ), \PDO::PARAM_STR );
+				$stmt->bindValue ( 'validated', true, \PDO::PARAM_BOOL );
+				$stmt->execute ();
 				$i ++;
 			}
 			sleep ( 3 );

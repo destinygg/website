@@ -10,7 +10,7 @@ use Destiny\Config;
 class Broadcasts {
 
 	public function execute(array $params) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'pastbroadcasts' );
 		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $cache->getLastModified () ) );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );

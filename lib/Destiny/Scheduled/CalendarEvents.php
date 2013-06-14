@@ -16,13 +16,13 @@ class CalendarEvents {
 		$end = new \DateTime ();
 		$end->setDate ( date ( 'Y', strtotime ( '+1 year' ) ), 1, 1 );
 		$end->setTime ( date ( 'H' ), 0, 0 );
-		$response = CalendarService::getInstance ()->getEventsInRange ( array (
+		$response = CalendarService::instance ()->getEventsInRange ( array (
 				'start' => $start->format ( DATE_RFC3339 ),
 				'end' => $end->format ( DATE_RFC3339 ),
 				'limit' => 3,
 				'tz' => 'UTC' 
 		) )->getResponse ();
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'calendarevents' );
 		$cache->write ( $response );
 	}

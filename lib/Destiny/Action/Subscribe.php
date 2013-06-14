@@ -23,7 +23,7 @@ class Subscribe {
 	 * @param array $params
 	 */
 	public function execute(array $params, ViewModel $model) {
-		$subsService = SubscriptionsService::getInstance ();
+		$subsService = SubscriptionsService::instance ();
 		$subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		
 		// Setup the initial checkout token, the value is checked in each step, to make sure the user actually used the checkout process

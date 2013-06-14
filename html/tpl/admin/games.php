@@ -23,6 +23,7 @@ use Destiny\Utils\Lol;
 							<td>End</td>
 							<td>Length</td>
 							<td>Aggregated</td>
+							<td>&nbsp;</td>
 						</tr>
 					</thead>
 					<tbody>
@@ -34,21 +35,22 @@ use Destiny\Utils\Lol;
 						?>
 						<tr>
 							<td><?=$game['gameId']?></td>
-							<td rel="<?=$game['gameType']?>">
-								<?if($game['aggregated'] == '1'):?>
-								<a rel="<?=$game['gameId']?>"
-								class="btn btn-mini btn-warning btn-reset">Reset</a>
-								<?endif;?>
-								<?=Lol::$gameTypes[$game['gameType']]?>
-							</td>
+							<td rel="<?=$game['gameType']?>"><?=Lol::$gameTypes[$game['gameType']]?></td>
 							<td><?=Date::getDateTime($game['gameCreatedDate'], 'H:i:s d-m-Y')?></td>
 							<td><?=Date::getDateTime($game['gameEndDate'], 'H:i:s d-m-Y')?></td>
 							<td><?=($length>0) ? $length .' minutes':'<span class="subtle">Unknown</span>'?></td>
 							<td><?=($game['aggregated'] == '1')? Date::getDateTime($game['aggregatedDate'], Date::STRING_FORMAT):'False'?></td>
+							<td>
+								<a rel="<?=$game['gameId']?>" title="Delete game" class="btn btn-mini btn-danger btn-delete"><i class="icon-fire icon-white"></i></a>
+								<?if($game['aggregated'] == '1'):?>
+								<a rel="<?=$game['gameId']?>" title="Reset game" class="btn btn-mini btn-warning btn-reset"><i class="icon-remove icon-white"></i></a>
+								<?endif;?>
+							</td>
 						</tr>
 						<?endforeach;?>
 						<?for($s=0;$s<10-count($model->games);$s++):?>
 						<tr>
+							<td>-</td>
 							<td>-</td>
 							<td>-</td>
 							<td>-</td>
@@ -86,13 +88,7 @@ use Destiny\Utils\Lol;
 						<?endfor;?>
 					</tbody>
 				</table>
-			</div>			
-				
-			<ul style="margin-top: 20px;" class="inline">
-				<li><a href="#" rel="Aggregate" class="btn-cron-action">Aggregate recent game(s)</a></li>
-				<li><a href="#" rel="Recentgames" class="btn-cron-action">Check recent games</a></li>
-				<li><a href="#" rel="Ingame" class="btn-cron-action">Check ingame progress</a></li>
-			</ul>
+			</div>
 				
 		</div>
 		

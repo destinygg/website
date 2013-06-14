@@ -11,7 +11,7 @@ use Destiny\Service\SubscriptionsService;
 class SubscriptionExpire {
 
 	public function execute(LoggerInterface $log) {
-		$expiredSubscriptionCount = SubscriptionsService::getInstance ()->expiredSubscriptions ();
+		$expiredSubscriptionCount = SubscriptionsService::instance ()->expiredSubscriptions ();
 		$log->info ( sprintf ( 'Expired (%s)', $expiredSubscriptionCount ) );
 	}
 

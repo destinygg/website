@@ -12,7 +12,7 @@ class Invoice {
 
 	public function execute(array $params, ViewModel $model) {
 		if (isset ( $params ['orderId'] )) {
-			$ordersService = OrdersService::getInstance ();
+			$ordersService = OrdersService::instance ();
 			$order = $ordersService->getOrderById ( $params ['orderId'] );
 			
 			if (empty ( $order )) {

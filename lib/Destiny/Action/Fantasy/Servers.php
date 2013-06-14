@@ -3,7 +3,6 @@
 namespace Destiny\Action\Fantasy;
 
 use Destiny\Application;
-use Destiny\Service\Leagueapi;
 use Destiny\Utils\Http;
 use Destiny\Utils\Date;
 use Destiny\Mimetype;
@@ -13,7 +12,7 @@ use Destiny\Config;
 class Servers {
 
 	public function execute(array $params) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'leaguestatus' );
 		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $cache->getLastModified () ) );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );

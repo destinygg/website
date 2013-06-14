@@ -666,14 +666,6 @@ margin: 10px 10px 10px 20px;
 position: relative;
 }
 
-#lolpanel .summoner-info .summoner-icon {
-display: none;
-opacity: 0.75;
-position: absolute;
-top: 0;
-left: 0;
-}
-
 #lolpanel .summoner-info .summoner-title {
 font-weight: normal;
 margin: 0;

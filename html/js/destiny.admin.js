@@ -26,7 +26,7 @@ $(function(){
 	});
 	
 	adminTabs.find('#Games .btn-reset').on('click', function(){
-		if(!confirm('Are you sure?')){
+		if(!confirm('Are you sure? - this cannot be undone')){
 			return false;
 		}
 		var btn = $(this), gameId = btn.attr('rel');
@@ -34,7 +34,24 @@ $(function(){
 		$.ajax($.extend({}, ajaxSettings, {
 			type: 'get',
 			data: {'gameId':gameId},
-			url: destiny.baseUrl + 'Admin/ResetGame',
+			url: destiny.baseUrl + 'admin/resetgame',
+			success: function(data){
+				window.location.reload();
+			}
+		}));
+		return false;
+	});
+	
+	adminTabs.find('#Games .btn-delete').on('click', function(){
+		if(!confirm('Are you sure? - this cannot be undone')){
+			return false;
+		}
+		var btn = $(this), gameId = btn.attr('rel');
+		btn.attr('disabled','disabled');
+		$.ajax($.extend({}, ajaxSettings, {
+			type: 'get',
+			data: {'gameId':gameId},
+			url: destiny.baseUrl + 'admin/deletegame',
 			success: function(data){
 				window.location.reload();
 			}

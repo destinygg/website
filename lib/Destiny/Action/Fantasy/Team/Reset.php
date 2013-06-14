@@ -17,7 +17,7 @@ class Reset {
 				'message' => '' 
 		);
 		// Get team - Make sure this is one of the users teams
-		$team = TeamService::getInstance ()->getTeamByUserId ( Session::get ( 'userId' ) );
+		$team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );
 		if (empty ( $team )) {
 			throw new AppException ( 'User team not found' );
 		}
@@ -26,7 +26,7 @@ class Reset {
 			throw new AppException ( 'Reset team failed user does not have rights to this team.' );
 		}
 		// Reset team vars
-		TeamService::getInstance ()->resetTeam ( $team );
+		TeamService::instance ()->resetTeam ( $team );
 		$response ['data'] = $team;
 		$response ['success'] = true;
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );

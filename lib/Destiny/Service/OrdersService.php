@@ -7,7 +7,6 @@ use Destiny\Application;
 use Destiny\Utils\Date;
 
 class OrdersService extends Service {
-	
 	protected static $instance = null;
 
 	/**
@@ -15,8 +14,8 @@ class OrdersService extends Service {
 	 *
 	 * @return OrdersService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -26,11 +25,16 @@ class OrdersService extends Service {
 	 * @return int
 	 */
 	public function addOrder(array $order) {
-		$db = Application::getInstance ()->getDb ();
-		$order ['orderId'] = $db->insert ( "
-			INSERT INTO dfl_orders(userId, state, amount, currency, description, createdDate)
-			VALUES('{userId}', 'New', '{amount}', '{currency}', '{description}', NOW())
-		", $order );
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_orders', array (
+				'userId' => $order ['userId'],
+				'amount' => $order ['amount'],
+				'currency' => $order ['currency'],
+				'description' => $order ['description'],
+				'state' => 'New',
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+		) );
+		$order ['orderId'] = $conn->lastInsertId ();
 		return $order ['orderId'];
 	}
 
@@ -41,10 +45,11 @@ class OrdersService extends Service {
 	 * @param string $state
 	 */
 	public function updateOrderState($id, $state) {
-		$db = Application::getInstance ()->getDb ();
-		$db->update ( 'UPDATE dfl_orders SET state = \'{state}\' WHERE orderId={orderId}', array (
-				'orderId' => $id,
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_orders', array (
 				'state' => $state 
+		), array (
+				'orderId' => $id 
 		) );
 	}
 
@@ -54,11 +59,11 @@ class OrdersService extends Service {
 	 * @param int $orderId
 	 */
 	public function getOrderById($orderId) {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( 'SELECT * FROM dfl_orders WHERE orderId = \'{orderId}\'', array (
-				'orderId' => $orderId 
-		) );
-		return $result->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders WHERE orderId = :orderId LIMIT 0,1' );
+		$stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -69,16 +74,16 @@ class OrdersService extends Service {
 	 * @param int $start
 	 */
 	public function getOrderItems($orderId, $limit = 10, $start = 0) {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( '
-			SELECT * FROM dfl_orders_items WHERE orderId = \'{orderId}\'
-			LIMIT {start},{limit}		
-		', array (
-				'orderId' => $orderId,
-				'start' => $start,
-				'limit' => $limit 
-		) );
-		return $result->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT * FROM dfl_orders_items WHERE orderId = :orderId
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -89,14 +94,20 @@ class OrdersService extends Service {
 	 * @param int $start
 	 */
 	public function getOrdersByUserId($userId, $limit = 10, $start = 0, $order = 'ASC') {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( 'SELECT * FROM dfl_orders WHERE userId = \'{userId}\' ORDER BY createdDate {order}  LIMIT {start},{limit}', array (
-				'userId' => $userId,
-				'start' => $start,
-				'limit' => $limit,
-				'order' => $order 
-		) );
-		return $result->fetchRows ();
+		if ($order != 'ASC' && $order != 'DESC') {
+			$order = 'ASC';
+		}
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT * FROM dfl_orders WHERE userId = :userId 
+			ORDER BY createdDate ' . $order . '
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -107,14 +118,20 @@ class OrdersService extends Service {
 	 * @param int $start
 	 */
 	public function getCompletedOrdersByUserId($userId, $limit = 10, $start = 0, $order = 'ASC') {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( 'SELECT * FROM dfl_orders WHERE userId = \'{userId}\' AND state != \'New\' ORDER BY createdDate {order}  LIMIT {start},{limit}', array (
-				'userId' => $userId,
-				'start' => $start,
-				'limit' => $limit,
-				'order' => $order 
-		) );
-		return $result->fetchRows ();
+		if ($order != 'ASC' && $order != 'DESC') {
+			$order = 'ASC';
+		}
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT * FROM dfl_orders WHERE userId = :userId AND state != \'New\'
+			ORDER BY createdDate ' . $order . '
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -123,9 +140,13 @@ class OrdersService extends Service {
 	 * @param array $items
 	 */
 	public function addOrderItems(array $items) {
-		$db = Application::getInstance ()->getDb ();
+		$conn = Application::instance ()->getConnection ();
 		foreach ( $items as $item ) {
-			$db->insert ( "INSERT INTO dfl_orders_items(orderId, itemSku, itemPrice) VALUES ('{orderId}', '{itemSku}', '{itemPrice}')", $item );
+			$conn->insert ( 'dfl_orders_items', array (
+					'orderId' => $item ['orderId'],
+					'itemSku' => $item ['itemSku'],
+					'itemPrice' => $item ['itemPrice'] 
+			) );
 		}
 	}
 
@@ -136,12 +157,20 @@ class OrdersService extends Service {
 	 * @return int
 	 */
 	public function addPaymentProfile(array $profile) {
-		$db = Application::getInstance ()->getDb ();
-		$profileId = $db->insert ( "
-			INSERT INTO dfl_orders_payment_profiles (userId, orderId, paymentProfileId, state, amount, currency, billingFrequency, billingPeriod, billingStartDate, billingNextDate)
-			VALUES('{userId}', '{orderId}', '{paymentProfileId}', '{state}', '{amount}', '{currency}', '{billingFrequency}', '{billingPeriod}', '{billingStartDate}', '{billingNextDate}')
-		", $profile );
-		return $profileId;
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_orders_payment_profiles', array (
+				'userId' => $profile ['userId'],
+				'orderId' => $profile ['orderId'],
+				'paymentProfileId' => $profile ['paymentProfileId'],
+				'state' => $profile ['state'],
+				'amount' => $profile ['amount'],
+				'currency' => $profile ['currency'],
+				'billingFrequency' => $profile ['billingFrequency'],
+				'billingPeriod' => $profile ['billingPeriod'],
+				'billingStartDate' => $profile ['billingStartDate'],
+				'billingNextDate' => $profile ['billingNextDate'] 
+		) );
+		return $conn->lastInsertId ();
 	}
 
 	/**
@@ -150,8 +179,13 @@ class OrdersService extends Service {
 	 * @return void
 	 */
 	public function addIpnRecord($ipn) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "INSERT INTO dfl_orders_ipn (ipnTrackId, ipnTransactionId, ipnTransactionType, ipnData)VALUES('{ipnTrackId}', '{ipnTransactionId}', '{ipnTransactionType}', '{ipnData}')", $ipn );
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_orders_ipn', array (
+				'ipnTrackId' => $ipn ['ipnTrackId'],
+				'ipnTransactionId' => $ipn ['ipnTransactionId'],
+				'ipnTransactionType' => $ipn ['ipnTransactionType'],
+				'ipnData' => $ipn ['ipnData'] 
+		) );
 	}
 
 	/**
@@ -162,11 +196,10 @@ class OrdersService extends Service {
 	 * @param int $orderId
 	 */
 	public function getPaymentProfileByOrderId($orderId) {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( "SELECT * FROM dfl_orders_payment_profiles WHERE orderId = '{orderId}' LIMIT 0,1", array (
-				'orderId' => $orderId 
-		) );
-		return $result->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payment_profiles WHERE orderId = :orderId LIMIT 0,1' );
+		$stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -176,11 +209,10 @@ class OrdersService extends Service {
 	 * @param int $orderId
 	 */
 	public function getPaymentProfileByPaymentProfileId($paymentProfileId) {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( "SELECT * FROM dfl_orders_payment_profiles WHERE paymentProfileId = '{paymentProfileId}' LIMIT 0,1", array (
-				'paymentProfileId' => $paymentProfileId 
-		) );
-		return $result->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payment_profiles WHERE paymentProfileId = :paymentProfileId LIMIT 0,1' );
+		$stmt->bindValue ( 'paymentProfileId', $paymentProfileId, \PDO::PARAM_STR );
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -190,11 +222,10 @@ class OrdersService extends Service {
 	 * @param int $orderId
 	 */
 	public function getPaymentProfileById($profileId) {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( "SELECT * FROM dfl_orders_payment_profiles WHERE profileId = '{profileId}' LIMIT 0,1", array (
-				'profileId' => $profileId 
-		) );
-		return $result->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payment_profiles WHERE profileId = :profileId LIMIT 0,1' );
+		$stmt->bindValue ( 'profileId', $profileId, \PDO::PARAM_INT );
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -204,10 +235,11 @@ class OrdersService extends Service {
 	 * @param string $state
 	 */
 	public function updatePaymentProfileState($paymentProfileId, $state) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "UPDATE dfl_orders_payment_profiles SET state = '{state}' WHERE profileId = '{profileId}'", array (
-				'profileId' => $paymentProfileId,
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_orders_payment_profiles', array (
 				'state' => $state 
+		), array (
+				'profileId' => $paymentProfileId 
 		) );
 	}
 
@@ -217,11 +249,12 @@ class OrdersService extends Service {
 	 * @param int $paymentProfileId
 	 * @param \DateTime $billingNextDate
 	 */
-	public function updatePaymentProfileNextPayment($paymentProfileId,\DateTime $billingNextDate) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "UPDATE dfl_orders_payment_profiles SET billingNextDate = '{billingNextDate}' WHERE profileId = '{profileId}'", array (
-				'profileId' => $paymentProfileId,
+	public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_orders_payment_profiles', array (
 				'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 
+		), array (
+				'profileId' => $paymentProfileId 
 		) );
 	}
 
@@ -233,16 +266,13 @@ class OrdersService extends Service {
 	 * @param int $paymentProfileId
 	 * @param string $status
 	 */
-	public function updatePaymentProfileStatus($profileId, $paymentProfileId, $status) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "
-			UPDATE dfl_orders_payment_profiles
-			SET paymentProfileId = '{paymentProfileId}', state = '{state}'
-			WHERE profileId = '{profileId}'
-		", array (
-				'profileId' => $profileId,
+	public function updatePaymentProfileStatus($profileId, $paymentProfileId, $state) {
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_orders_payment_profiles', array (
 				'paymentProfileId' => $paymentProfileId,
-				'state' => $status 
+				'state' => $state 
+		), array (
+				'profileId' => $profileId 
 		) );
 	}
 
@@ -252,11 +282,10 @@ class OrdersService extends Service {
 	 * @param string $transactionId
 	 */
 	public function getPaymentByTransactionId($transactionId) {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( 'SELECT * FROM dfl_orders_payments WHERE transactionId = \'{transactionId}\' LIMIT 0,1', array (
-				'transactionId' => $transactionId 
-		) );
-		return $result->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payments WHERE transactionId = :transactionId LIMIT 0,1' );
+		$stmt->bindValue ( 'transactionId', $transactionId, \PDO::PARAM_STR );
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -267,18 +296,19 @@ class OrdersService extends Service {
 	 * @param int $start
 	 */
 	public function getPaymentsByUser($userId, $limit = 10, $start = 0) {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( '
-				SELECT payments.* FROM dfl_orders_payments AS `payments`
-				INNER JOIN dfl_orders AS `orders` ON (orders.orderId = payments.orderId)
-				WHERE orders.userId = \'{userId}\'
-				ORDER BY payments.paymentDate DESC
-				LIMIT {start},{limit}', array (
-				'userId' => $userId,
-				'limit' => $limit,
-				'start' => $start 
-		) );
-		return $result->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT payments.* FROM dfl_orders_payments AS `payments`
+			INNER JOIN dfl_orders AS `orders` ON (orders.orderId = payments.orderId)
+			WHERE orders.userId = :userId
+			ORDER BY payments.paymentDate DESC
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -291,19 +321,22 @@ class OrdersService extends Service {
 	 * @param int $start
 	 */
 	public function getPaymentsByOrderId($orderId, $limit = 1, $start = 0, $order = 'ASC') {
-		$db = Application::getInstance ()->getDb ();
-		$result = $db->select ( '
-				SELECT payments.* FROM dfl_orders_payments AS `payments`
-				INNER JOIN dfl_orders AS `orders` ON (orders.orderId = payments.orderId)
-				WHERE orders.orderId = \'{orderId}\'
-				ORDER BY payments.paymentDate {sortOrder}
-				LIMIT {start},{limit}', array (
-				'orderId' => $orderId,
-				'limit' => $limit,
-				'start' => $start,
-				'sortOrder' => $order 
-		) );
-		return $result->fetchRows ();
+		if ($order != 'ASC' && $order != 'DESC') {
+			$order = 'ASC';
+		}
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT payments.* FROM dfl_orders_payments AS `payments`
+			INNER JOIN dfl_orders AS `orders` ON (orders.orderId = payments.orderId)
+			WHERE orders.orderId = :orderId
+			ORDER BY payments.paymentDate ' . $order . '
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -313,12 +346,20 @@ class OrdersService extends Service {
 	 * @return int paymentId
 	 */
 	public function addOrderPayment(array $payment) {
-		$db = Application::getInstance ()->getDb ();
-		$paymentId = $db->insert ( "
-				INSERT INTO dfl_orders_payments (orderId,amount,currency,transactionId,transactionType,paymentType,payerId,paymentStatus,paymentDate,createdDate)
-				VALUES('{orderId}','{amount}','{currency}','{transactionId}','{transactionType}','{paymentType}','{payerId}','{paymentStatus}','{paymentDate}',NOW())
-		", $payment );
-		return $paymentId;
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_orders_payments', array (
+				'orderId' => $payment ['orderId'],
+				'amount' => $payment ['amount'],
+				'currency' => $payment ['currency'],
+				'transactionId' => $payment ['transactionId'],
+				'transactionType' => $payment ['transactionType'],
+				'paymentType' => $payment ['paymentType'],
+				'payerId' => $payment ['payerId'],
+				'paymentStatus' => $payment ['paymentStatus'],
+				'paymentDate' => $payment ['paymentDate'],
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+		) );
+		return $conn->lastInsertId ();
 	}
 
 	/**
@@ -328,10 +369,11 @@ class OrdersService extends Service {
 	 * @param string $state
 	 */
 	public function updatePaymentStatus(array $payment, $state) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "UPDATE dfl_orders_payments SET state = '{state}' WHERE profileId = '{profileId}'", array (
-				'paymentId' => $payment ['paymentId'],
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_orders_payments', array (
 				'state' => $state 
+		), array (
+				'profileId' => $payment ['paymentId'] 
 		) );
 	}
 

@@ -30,8 +30,8 @@ class Purchase {
 	}
 
 	private function updateTeam(array $params) {
-		$teamService = TeamService::getInstance ();
-		$champService = ChampionService::getInstance ();
+		$teamService = TeamService::instance ();
+		$champService = ChampionService::instance ();
 		// Get team - Make sure this is one of the users teams
 		$team = $teamService->getTeamById ( ( int ) $params ['teamId'] );
 		if (empty ( $team )) {

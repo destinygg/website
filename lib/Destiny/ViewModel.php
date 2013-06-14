@@ -25,6 +25,15 @@ class ViewModel {
 	}
 
 	/**
+	 * Return all the views data
+	 *
+	 * @return array
+	 */
+	public function getData() {
+		return $this->vars;
+	}
+
+	/**
 	 * Set a variable value
 	 *
 	 * @param string $name

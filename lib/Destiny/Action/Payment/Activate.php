@@ -36,8 +36,8 @@ use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 class Activate {
 
 	public function execute(array $params, ViewModel $model) {
-		$subService = SubscriptionsService::getInstance ();
-		$orderService = OrdersService::getInstance ();
+		$subService = SubscriptionsService::instance ();
+		$orderService = OrdersService::instance ();
 		
 		$subscription = $subService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		// This can only be done on active subscriptions, else the user must resub

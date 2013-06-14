@@ -39,7 +39,7 @@ class Create {
 		$this->checkoutId = Session::get ( 'checkoutId' );
 		
 		// Make sure the user hasnt somehow started the process with an active subscription
-		$subsService = SubscriptionsService::getInstance ();
+		$subsService = SubscriptionsService::instance ();
 		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		if (! empty ( $subscription )) {
 			$model->error = new AppException ( 'User already has a valid subscription' );
@@ -57,7 +57,7 @@ class Create {
 		}
 		
 		$subscription = $subsService->getSubscriptionType ( $params ['subscription'] );
-		$ordersService = OrdersService::getInstance ();
+		$ordersService = OrdersService::instance ();
 		$order = $this->createOrder ( $subscription );
 		
 		if (isset ( $params ['renew'] ) && $params ['renew'] == '1') {
@@ -73,7 +73,7 @@ class Create {
 		}
 		
 		$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-		$log = Application::getInstance ()->getLogger ();
+		$log = Application::instance ()->getLogger ();
 		$log->error ( $setECResponse->Errors->ShortMessage );
 		
 		$model->error = new AppException ( sprintf ( 'A order error has occurred. The order reference is: %s', $order ['orderId'] ) );
@@ -141,7 +141,7 @@ class Create {
 	 * @return array
 	 */
 	private function createOrder(array $subscription) {
-		$ordersService = OrdersService::getInstance ();
+		$ordersService = OrdersService::instance ();
 		$order = array ();
 		$order ['userId'] = Session::get ( 'userId' );
 		$order ['description'] = $subscription ['label'];
@@ -166,7 +166,7 @@ class Create {
 	 * @return array
 	 */
 	private function createPaymentProfile(array $order, array $subscription) {
-		$ordersService = OrdersService::getInstance ();
+		$ordersService = OrdersService::instance ();
 		// @TODO this should be set in the payment profile
 		$billingStartDate = new \DateTime ( date ( 'm/d/y' ) );
 		// @TODO this is dangerous, using strtotime format - there is not solid link between them to prevent it from breaking

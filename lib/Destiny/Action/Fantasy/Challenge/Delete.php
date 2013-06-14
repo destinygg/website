@@ -22,7 +22,7 @@ class Delete {
 				'data' => array (),
 				'message' => '' 
 		);
-		$response ['response'] = ChallengeService::getInstance ()->deleteChallenge ( intval ( Session::get ( 'teamId' ) ), intval ( $params ['teamId'] ) );
+		$response ['response'] = ChallengeService::instance ()->deleteChallenge ( intval ( Session::get ( 'teamId' ) ), intval ( $params ['teamId'] ) );
 		$response ['message'] = ($response ['response']) ? 'Deleted' : 'Failed!';
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );

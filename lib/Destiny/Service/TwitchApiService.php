@@ -6,7 +6,7 @@ use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Mimetype;
-use Destiny\Api\Consumer;
+use Destiny\HttpApiConsumer;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
 use Destiny\Service\TwitchApiService;
@@ -26,8 +26,8 @@ class TwitchApiService extends Service {
 	 *
 	 * @return TwitchApiService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -48,7 +48,7 @@ class TwitchApiService extends Service {
 	 * @return ApiConsumer
 	 */
 	public function getPastBroadcasts(array $options = array()) {
-		return new Consumer ( array_merge ( array (
+		return new HttpApiConsumer ( array_merge ( array (
 				'timeout' => 25,
 				'url' => new String ( 'https://api.twitch.tv/kraken/channels/{user}/videos?broadcasts=true&limit={limit}', array (
 						'user' => Config::$a ['twitch'] ['user'],
@@ -63,7 +63,7 @@ class TwitchApiService extends Service {
 	 * @return ApiConsumer
 	 */
 	public function getStreamInfo(array $options = array()) {
-		return new Consumer ( array_merge ( array (
+		return new HttpApiConsumer ( array_merge ( array (
 				'url' => new String ( 'https://api.twitch.tv/kraken/streams/{user}/', array (
 						'user' => Config::$a ['twitch'] ['user'] 
 				) ),
@@ -75,7 +75,8 @@ class TwitchApiService extends Service {
 					// Last broadcast if the stream is offline
 					$json ['lastbroadcast'] = null;
 					if ($json ['stream'] == null) {
-						$channel = self::getInstance ()->getChannel ()->getResponse ();
+						// Called via static method, because we are in a closure
+						$channel = TwitchApiService::instance ()->getChannel ()->getResponse ();
 						$json ['lastbroadcast'] = Date::getDateTime ( $channel ['updated_at'], Date::FORMAT );
 					}
 					// Just some clean up
@@ -93,7 +94,7 @@ class TwitchApiService extends Service {
 	 * @return ApiConsumer
 	 */
 	public function getChannel(array $options = array()) {
-		return new Consumer ( array_merge ( array (
+		return new HttpApiConsumer ( array_merge ( array (
 				'url' => new String ( 'https://api.twitch.tv/kraken/channels/{user}', array (
 						'user' => Config::$a ['twitch'] ['user'] 
 				) ),

@@ -5,9 +5,6 @@ use Destiny\SessionAuthenticationCredentials;
 use Destiny\SessionCookieInterface;
 use Destiny\SessionInstance;
 use Destiny\Session;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Monolog\Processor\WebProcessor;
 use Destiny\Config;
 
 $base = realpath ( __DIR__ . '/../' );
@@ -15,12 +12,17 @@ $loader = require $base . '/vendor/autoload.php';
 $loader->add ( 'Destiny', $base . '/lib/' );
 Config::load ( $base . '/lib/config.php' );
 
-$log = new Logger ( 'http' );
-$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . '/events.log', Logger::DEBUG ) );
-$log->pushProcessor ( new WebProcessor () );
+$log = new \Monolog\Logger ( 'http' );
+$log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['path'] . '/events.log', \Monolog\Logger::DEBUG ) );
+$log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
 
-$app = Application::getInstance ();
+$dbConfig = new \Doctrine\DBAL\Configuration ();
+//$dbConfig->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+$db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], $dbConfig );
+
+$app = Application::instance ();
 $app->setLogger ( $log );
+$app->setConnection ( $db );
 
 $session = Session::setInstance ( new SessionInstance () );
 $session->setSessionCookieInterface ( new SessionCookieInterface ( Config::$a ['cookie'] ) );

@@ -22,7 +22,7 @@ class Accept {
 				'data' => array (),
 				'message' => '' 
 		);
-		$response ['response'] = ChallengeService::getInstance ()->acceptChallenge ( intval ( $params ['teamId'] ), intval ( Session::get ( 'teamId' ) ) );
+		$response ['response'] = ChallengeService::instance ()->acceptChallenge ( intval ( $params ['teamId'] ), intval ( Session::get ( 'teamId' ) ) );
 		$response ['message'] = ($response ['response']) ? 'Accepted!' : 'Failed!';
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );

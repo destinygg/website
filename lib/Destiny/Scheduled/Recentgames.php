@@ -11,8 +11,8 @@ class Recentgames {
 
 	public function execute(LoggerInterface $log) {
 		$log->info ( 'Tracking recent games' );
-		$ftrackService = GameTrackingService::getInstance ();
-		$leagueApiService = LeagueApiService::getInstance ();
+		$ftrackService = GameTrackingService::instance ();
+		$leagueApiService = LeagueApiService::instance ();
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == false) {
 				continue;

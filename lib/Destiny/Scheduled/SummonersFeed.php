@@ -10,9 +10,9 @@ use Destiny\Application;
 class SummonersFeed {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'summoners' );
-		$response = LeagueApiService::getInstance ()->getSummoners ();
+		$response = LeagueApiService::instance ()->getSummoners ();
 		$cache->write ( $response );
 	}
 

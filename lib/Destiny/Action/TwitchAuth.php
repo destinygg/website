@@ -49,15 +49,15 @@ class TwitchAuth {
 		$broadcaster = Config::$a ['twitch'] ['broadcaster'] ['user'];
 		$broadcastPerms = Config::$a ['twitch'] ['broadcaster'] ['request_perms'];
 		if (strcasecmp ( $user ['username'], $broadcaster ) === 0 && $scope != $broadcastPerms) {
-			$log = Application::getInstance ()->getLogger ();
+			$log = Application::instance ()->getLogger ();
 			$log->notice ( 'Requested broadcaster permissions ['. $broadcaster . ']' );
 			Http::header ( Http::HEADER_LOCATION, 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=' . Config::$a ['twitch'] ['client_id'] . '&redirect_uri=' . urlencode ( Config::$a ['twitch'] ['redirect_uri'] ) . '&scope=' . Config::$a ['twitch'] ['broadcaster'] ['request_perms'] );
 			exit ();
 		}
 		
-		$teamsService = TeamService::getInstance ();
-		$usersService = UsersService::getInstance ();
-		$subsService = SubscriptionsService::getInstance ();
+		$teamsService = TeamService::instance ();
+		$usersService = UsersService::instance ();
+		$subsService = SubscriptionsService::instance ();
 		// See if there is already a user with the TwitchId as the externalId
 		$existingUser = $usersService->getUserByExternalId ( $user ['externalId'] );
 		if (! empty ( $existingUser )) {
@@ -105,7 +105,7 @@ class TwitchAuth {
 		Session::setAuthCreds ( $authCreds );
 		
 		// Setup user preferences - must be done after the session has been created
-		$settingsService = Settings::getInstance ();
+		$settingsService = Settings::instance ();
 		$settings = $settingsService->getUserSettings ( $user ['userId'] );
 		$settingsService->setSettings ( $settings );
 		

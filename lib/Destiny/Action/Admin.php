@@ -9,9 +9,8 @@ class Admin {
 
 	public function execute(array $params, ViewModel $model) {
 		$model->title = 'Administration';
-		$gameService = GameService::getInstance ();
-		$model->games = $gameService->getGames ( 10, 0 );
-		$model->tracks = $gameService->getTrackedProgress ( 10, 0 );
+		$model->games = GameService::instance ()->getGames ( 10, 0 );
+		$model->tracks = GameService::instance ()->getTrackedProgress ( 10, 0 );
 		return 'admin';
 	}
 

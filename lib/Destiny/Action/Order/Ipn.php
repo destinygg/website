@@ -18,7 +18,7 @@ class Ipn {
 	 * @param array $params
 	 */
 	public function execute(array $params) {
-		$log = Application::getInstance ()->getLogger ();
+		$log = Application::instance ()->getLogger ();
 		$ipnMessage = new PPIPNMessage ();
 		if (! $ipnMessage->validate ()) {
 			$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
@@ -26,7 +26,7 @@ class Ipn {
 		}
 		$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $ipnMessage->getTransactionType () ) );
 		$data = $ipnMessage->getRawData ();
-		$orderService = OrdersService::getInstance ();
+		$orderService = OrdersService::instance ();
 		$orderService->addIPNRecord ( array (
 				'ipnTrackId' => $data ['ipn_track_id'],
 				'ipnTransactionId' => $ipnMessage->getTransactionId (),
@@ -46,7 +46,7 @@ class Ipn {
 		if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {
 			throw new AppException ( 'Invalid recurring_payment_id' );
 		}
-		$orderService = OrdersService::getInstance ();
+		$orderService = OrdersService::instance ();
 		$paymentProfile = $orderService->getPaymentProfileByPaymentProfileId ( $data ['recurring_payment_id'] );
 		if (empty ( $paymentProfile )) {
 			throw new AppException ( 'Invalid payment profile' );
@@ -60,11 +60,11 @@ class Ipn {
 	 * @param PPIPNMessage $ipnMessage
 	 */
 	protected function handleIPN(PPIPNMessage $ipnMessage) {
-		$log = Application::getInstance ()->getLogger ();
+		$log = Application::instance ()->getLogger ();
 		$transactionId = $ipnMessage->getTransactionId ();
 		$transactionType = $ipnMessage->getTransactionType ();
 		$data = $ipnMessage->getRawData ();
-		$orderService = OrdersService::getInstance ();
+		$orderService = OrdersService::instance ();
 		
 		// Make sure this IPN is for the merchant
 		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
@@ -111,10 +111,10 @@ class Ipn {
 					$orderService->addOrderPayment ( $payment );
 					
 					// Extend the subscription if the payment was successful
-					SubscriptionsService::getInstance ()->updateUserSubscriptionDateEnd ( $paymentProfile ['userId'], $nextPaymentDate );
+					SubscriptionsService::instance ()->updateUserSubscriptionDateEnd ( $paymentProfile ['userId'], $nextPaymentDate );
 					$log->notice ( sprintf ( 'Renewed profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				} else {
-					SubscriptionsService::getInstance ()->updateUserSubscriptionState ( $paymentProfile ['userId'], $data ['payment_status'] );
+					SubscriptionsService::instance ()->updateUserSubscriptionState ( $paymentProfile ['userId'], $data ['payment_status'] );
 					$log->notice ( sprintf ( 'Failed to renew profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				}
 				

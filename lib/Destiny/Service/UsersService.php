@@ -4,9 +4,9 @@ namespace Destiny\Service;
 
 use Destiny\Service;
 use Destiny\Application;
+use Destiny\Utils\Date;
 
 class UsersService extends Service {
-	
 	protected static $instance = null;
 
 	/**
@@ -14,8 +14,8 @@ class UsersService extends Service {
 	 *
 	 * @return UsersService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -24,10 +24,11 @@ class UsersService extends Service {
 	 * @param string $externalId
 	 */
 	public function getUserById($userId) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( 'SELECT * FROM `dfl_users` WHERE userId = \'{userId}\'', array (
-				'userId' => $userId 
-		) )->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM `dfl_users` WHERE userId = :userId LIMIT 0,1' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -36,10 +37,11 @@ class UsersService extends Service {
 	 * @param string $externalId
 	 */
 	public function getUserByExternalId($externalId) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( 'SELECT * FROM `dfl_users` WHERE externalId = \'{externalId}\'', array (
-				'externalId' => $externalId 
-		) )->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM `dfl_users` WHERE externalId = :externalId LIMIT 0,1' );
+		$stmt->bindValue ( 'externalId', $externalId, \PDO::PARAM_STR );
+		$stmt->execute ();
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -48,24 +50,17 @@ class UsersService extends Service {
 	 * @param array $user
 	 */
 	public function addUser(array $user) {
-		$db = Application::getInstance ()->getDb ();
-		$user ['userId'] = $db->insert ( '
-			INSERT INTO dfl_users SET
-				externalId = \'{externalId}\',
-				username = \'{username}\',
-				displayName = \'{displayName}\',
-				country = \'{country}\',
-				email = \'{email}\',
-				admin = \'{admin}\',
-				createdDate = UTC_TIMESTAMP()
-		', array (
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_users', array (
 				'externalId' => $user ['externalId'],
 				'username' => $user ['username'],
 				'displayName' => $user ['displayName'],
 				'country' => $user ['country'],
 				'email' => $user ['email'],
-				'admin' => ((( boolean ) $user ['admin']) ? '1' : '0') 
+				'admin' => $user ['admin'],
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
 		) );
+		$user ['userId'] = $conn->lastInsertId ();
 		return $user;
 	}
 
@@ -75,25 +70,16 @@ class UsersService extends Service {
 	 * @param array $user
 	 */
 	public function updateUser(array $user) {
-		$db = Application::getInstance ()->getDb ();
-		$db->query ( '
-			UPDATE dfl_users SET
-				externalId = \'{externalId}\',
-				displayName = \'{displayName}\',
-				username = \'{username}\',
-				email = \'{email}\',
-				country = \'{country}\',
-				admin = \'{admin}\'
-			WHERE
-				userId = \'{userId}\'
-		', array (
-				'userId' => $user ['userId'],
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_users', array (
 				'externalId' => $user ['externalId'],
-				'displayName' => $user ['displayName'],
 				'username' => $user ['username'],
-				'email' => $user ['email'],
+				'displayName' => $user ['displayName'],
 				'country' => $user ['country'],
+				'email' => $user ['email'],
 				'admin' => $user ['admin'] 
+		), array (
+				'userId' => $user ['userId'] 
 		) );
 		return $user;
 	}

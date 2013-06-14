@@ -16,7 +16,7 @@ class Champions {
 				'message' => '' 
 		);
 		$response ['success'] = true;
-		$response ['data'] = ChampionService::getInstance ()->getUserChampions ( Session::get ( 'userId' ) );
+		$response ['data'] = ChampionService::instance ()->getUserChampions ( Session::get ( 'userId' ) );
 		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}

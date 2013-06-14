@@ -21,8 +21,12 @@ $log->pushProcessor ( new WebProcessor () );
 $log->pushProcessor ( new ProcessIdProcessor () );
 $log->pushProcessor ( new MemoryPeakUsageProcessor () );
 
-$app = Application::getInstance ();
+$dbConfig = new \Doctrine\DBAL\Configuration ();
+$db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], $dbConfig );
+
+$app = Application::instance ();
 $app->setLogger ( $log );
+$app->setConnection ( $db );
 
 // Cron is run every 60 seconds.
 // There can be a time where actions are executed before they have ended

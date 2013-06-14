@@ -11,7 +11,7 @@ use Destiny\Utils\Tpl;
 class TwitterFeed {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'twitter' );
 		
 		$curl = new \Buzz\Client\Curl ();
@@ -39,6 +39,7 @@ class TwitterFeed {
 					$html = str_replace ( $url ['url'], $l, $html );
 				}
 			}
+			$tweet ['user']['screen_name'] = Config::$a ['twitter'] ['user'];
 			$tweet ['html'] = $html;
 			$tweets [] = $tweet;
 		}

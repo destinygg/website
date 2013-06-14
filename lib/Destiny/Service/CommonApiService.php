@@ -3,7 +3,7 @@
 namespace Destiny\Service;
 
 use Destiny\Service;
-use Destiny\Api\Consumer;
+use Destiny\HttpApiConsumer;
 use Destiny\Utils\Date;
 use Destiny\Utils\String;
 use Destiny\Config;
@@ -18,18 +18,18 @@ class CommonApiService extends Service {
 	 *
 	 * @return CommonApiService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
 	 * Get the most recent blog posts
 	 *
 	 * @param array $options
-	 * @return \Destiny\Api\Consumer multitype:
+	 * @return \Destiny\HttpApiConsumer
 	 */
 	public function getBlogPosts(array $options = array()) {
-		return new Consumer ( array_merge ( array (
+		return new HttpApiConsumer ( array_merge ( array (
 				'timeout' => 25,
 				'url' => new String ( 'http://www.destiny.gg/n/?feed=json&limit={limit}', array (
 						'limit' => 3 
@@ -51,7 +51,7 @@ class CommonApiService extends Service {
 	 * @return \Destiny\ApiConsumer
 	 */
 	public function getLastFMTracks(array $options = array()) {
-		return new Consumer ( array_merge ( array (
+		return new HttpApiConsumer ( array_merge ( array (
 				'url' => new String ( 'http://ws.audioscrobbler.com/2.0/?api_key={apikey}&user={user}&method=user.getrecenttracks&limit=3&format=json', Config::$a ['lastfm'] ),
 				'contentType' => Mimetype::JSON,
 				'onfetch' => function ($json) {
@@ -81,11 +81,11 @@ class CommonApiService extends Service {
 	 * @param array $options
 	 * @param array $params
 	 * @throws AppException
-	 * @return \Destiny\Api\Consumer unknown
+	 * @return \Destiny\HttpApiConsumer
 	 */
 	public function getYoutubePlaylist(array $options = array(), array $params = array()) {
 		$params ['limit'] = (isset ( $params ['limit'] )) ? intval ( $params ['limit'] ) : 4;
-		return new Consumer ( array_merge ( array (
+		return new HttpApiConsumer ( array_merge ( array (
 				'url' => new String ( 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlistId}&key={apikey}&maxResults={limit}', array (
 						'playlistId' => Config::$a ['youtube'] ['playlistId'],
 						'apikey' => Config::$a ['youtube'] ['apikey'],

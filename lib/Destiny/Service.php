@@ -14,7 +14,7 @@ abstract class Service {
 	 *
 	 * @return $instance
 	 */
-	public static function getInstance() {
+	public static function instance() {
 		if (static::$instance === null) {
 			static::$instance = new static ();
 		}

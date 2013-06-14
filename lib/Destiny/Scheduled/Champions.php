@@ -9,8 +9,8 @@ use Destiny\Service\Fantasy\ChampionService;
 class Champions {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::getInstance ();
-		$champions = ChampionService::getInstance ()->getChampions ();
+		$app = Application::instance ();
+		$champions = ChampionService::instance ()->getChampions ();
 		$cache = $app->getMemoryCache ( 'champions' );
 		$cache->write ( $champions );
 	}

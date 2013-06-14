@@ -39,7 +39,6 @@ class Scheduler {
 	 * @return void
 	 */
 	public function loadSchedule() {
-		$db = Application::getInstance ()->getDb ();
 		foreach ( $this->schedule as $i => $action ) {
 			$task = $this->getTask ( $this->schedule [$i] ['action'] );
 			if (empty ( $task )) {
@@ -58,8 +57,11 @@ class Scheduler {
 	 * @param string $name
 	 */
 	protected function getTask($name) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( 'SELECT * FROM dfl_scheduled_tasks WHERE action=\'' . $name . '\' LIMIT 0,1' )->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_scheduled_tasks WHERE action = :action LIMIT 0,1' );
+		$stmt->bindValue ( 'action', $name, \PDO::PARAM_STR );
+		$stmt->execute ();
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -68,8 +70,17 @@ class Scheduler {
 	 * @param array $schedule
 	 */
 	protected function updateTask(array $task) {
-		$db = Application::getInstance ()->getDb ();
-		$db->select ( 'UPDATE dfl_scheduled_tasks SET lastExecuted=\'{lastExecuted}\',executeCount=\'{executeCount}\' WHERE action=\'{action}\'', $task )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_scheduled_tasks', array (
+				'lastExecuted' => $task ['lastExecuted'],
+				'executeCount' => $task ['executeCount'] 
+		), array (
+				'action' => $task ['action'] 
+		), array (
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR 
+		) );
 	}
 
 	/**
@@ -78,8 +89,22 @@ class Scheduler {
 	 * @param array $schedule
 	 */
 	protected function insertTask(array $task) {
-		$db = Application::getInstance ()->getDb ();
-		$db->select ( 'INSERT INTO dfl_scheduled_tasks SET action=\'{action}\',lastExecuted=\'{lastExecuted}\',frequency=\'{frequency}\',period=\'{period}\',executeOnStart=\'{executeOnStart}\',executeCount=\'{executeCount}\'', $task )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_scheduled_tasks', array (
+				'action' => $task ['action'],
+				'lastExecuted' => $task ['lastExecuted'],
+				'frequency' => $task ['frequency'],
+				'period' => $task ['period'],
+				'executeOnStart' => $task ['executeOnStart'],
+				'executeCount' => $task ['executeCount'] 
+		), array (
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_INT,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_INT 
+		) );
 	}
 
 	/**

@@ -2,7 +2,6 @@
 
 namespace Destiny;
 
-use Destiny\Db\Mysql;
 use Destiny\ViewModel;
 use Destiny\Utils\Http;
 use Destiny\Utils\Options;
@@ -26,13 +25,6 @@ class Application extends Service {
 	public $path = '';
 	
 	/**
-	 * The global db object
-	 *
-	 * @var Destiny\Db\Mysql
-	 */
-	public $db = null;
-	
-	/**
 	 * _REQUEST variables, as well as mapped request variables
 	 *
 	 * @var array
@@ -52,14 +44,21 @@ class Application extends Service {
 	 * @var Application
 	 */
 	protected static $instance = null;
+	
+	/**
+	 * DB Connection
+	 *
+	 * @var \Doctrine\DBAL\Connection
+	 */
+	protected $connection;
 
 	/**
 	 * Return the application
 	 *
 	 * @return Application
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -73,9 +72,6 @@ class Application extends Service {
 		}
 		if (! isset ( $args ['path'] ) || empty ( $args ['path'] )) {
 			$args ['path'] = parse_url ( $args ['uri'], PHP_URL_PATH );
-		}
-		if (! isset ( $args ['db'] ) || empty ( $args ['db'] )) {
-			$args ['db'] = new Mysql ( Config::$a ['db'] );
 		}
 		$this->params = array_merge ( $_GET, $_POST );
 		Options::setOptions ( $this, $args );
@@ -118,7 +114,7 @@ class Application extends Service {
 				$this->error ( 500, $e );
 			} catch ( \Exception $e ) {
 				$this->logger->critical ( $e->getMessage () );
-				$this->error ( 500, new \Exception('Something went real wrong..') );
+				$this->error ( 500, new \Exception ( 'Something went real wrong..' ) );
 			}
 		}
 	}
@@ -181,22 +177,6 @@ class Application extends Service {
 	 */
 	public function error($code, $e = null) {
 		Http::status ( $code );
-		
-		// Check if accept type is JSON
-		if (isset ( $_SERVER ['HTTP_ACCEPT'] )) {
-			$accept = new \HTTP_Accept ( $_SERVER ['HTTP_ACCEPT'] );
-			if (! in_array ( Mimetype::HTML, $accept->getTypes () )) {
-				if (in_array ( Mimetype::JSON, $accept->getTypes () )) {
-					Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-					Http::sendString ( json_encode ( array (
-							'success' => false,
-							'data' => null,
-							'message' => $e->getMessage () 
-					) ) );
-				}
-			}
-		}
-		
 		$this->template ( './errors/' . $code . '.php', new ViewModel ( array (
 				'error' => $e,
 				'code' => $code 
@@ -240,21 +220,21 @@ class Application extends Service {
 	}
 
 	/**
-	 * Get the DBL
+	 * Get the active connection
 	 *
-	 * @return Mysql
+	 * @return \Doctrine\DBAL\Connection
 	 */
-	public function getDb() {
-		return $this->db;
+	public function getConnection() {
+		return $this->connection;
 	}
 
 	/**
-	 * Set the DBL
+	 * Set the active connection
 	 *
-	 * @param Mysql $db
+	 * @param \Doctrine\DBAL\Connection $connection
 	 */
-	public function setDb($db) {
-		$this->db = $db;
+	public function setConnection(\Doctrine\DBAL\Connection $connection) {
+		$this->connection = $connection;
 	}
 
 	/**
@@ -281,6 +261,20 @@ class Application extends Service {
 	 * @param string $filename
 	 */
 	public function template($filename, ViewModel $model) {
+		
+		// @todo this needs to be refactored
+		// Check if accept type is JSON
+		if (isset ( $_SERVER ['HTTP_ACCEPT'] )) {
+			$accept = new \HTTP_Accept ( $_SERVER ['HTTP_ACCEPT'] );
+			$acceptTypes = $accept->getTypes ();
+			if (! empty ( $acceptTypes ) && ! in_array ( Mimetype::HTML, $acceptTypes )) {
+				if (in_array ( Mimetype::JSON, $acceptTypes )) {
+					Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+					Http::sendString ( json_encode ( $model->getData () ) );
+				}
+			}
+		}
+		
 		$this->logger->debug ( 'Template: ' . $filename );
 		ob_clean ();
 		ob_start ();

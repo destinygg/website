@@ -35,8 +35,8 @@ class Settings extends Service {
 	 *
 	 * @return \Destiny\Service\Settings
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -67,10 +67,11 @@ class Settings extends Service {
 	 * @param int $userId
 	 */
 	public function getUserSettings($userId) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( 'SELECT userId, settingName, settingValue FROM dfl_users_settings WHERE userId = \'{userId}\'', array (
-				'userId' => Session::get ( 'userId' ) 
-		) )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT userId, settingName, settingValue FROM dfl_users_settings WHERE userId = :userId' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	/**
@@ -80,16 +81,16 @@ class Settings extends Service {
 	 * @param string $value
 	 */
 	public function setSetting($name, $value) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( '
-			INSERT INTO dfl_users_settings  (userId,settingName,settingValue)
-			VALUES (\'{userId}\',\'{settingName}\',\'{settingValue}\')
-			ON DUPLICATE KEY UPDATE settingValue = \'{settingValue}\'
-		', array (
-				'userId' => Session::get ( 'userId' ),
-				'settingName' => $name,
-				'settingValue' => $value 
-		) );
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '			
+			INSERT INTO dfl_users_settings 
+			(userId, settingName, settingValue) VALUES (:userId, :settingName, :settingValue)
+			ON DUPLICATE KEY UPDATE settingValue = :settingValue
+		' );
+		$stmt->bindValue ( 'userId', Session::get ( 'userId' ), \PDO::PARAM_INT );
+		$stmt->bindValue ( 'settingName', $name, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'settingValue', $value, \PDO::PARAM_STR );
+		$stmt->execute ();
 		$this->settings [$name] = $value;
 		Session::set ( 'settings', $this->settings );
 	}
@@ -114,7 +115,7 @@ class Settings extends Service {
 	 * @return string null
 	 */
 	public static function get($name) {
-		return self::getInstance ()->getSetting ( $name );
+		return self::instance ()->getSetting ( $name );
 	}
 
 	/**
@@ -124,7 +125,7 @@ class Settings extends Service {
 	 * @param string $value
 	 */
 	public static function set($name, $value) {
-		return self::getInstance ()->setSetting ( $name, $value );
+		return self::instance ()->setSetting ( $name, $value );
 	}
 
 }

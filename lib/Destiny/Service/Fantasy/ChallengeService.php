@@ -5,11 +5,13 @@ namespace Destiny\Service\Fantasy;
 use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
+use Destiny\Utils\Date;
 use Destiny\Utils\Cache;
 
 class ChallengeService extends Service {
 	
 	/**
+	 *
 	 * @var ChallengeService
 	 */
 	protected static $instance = null;
@@ -18,55 +20,56 @@ class ChallengeService extends Service {
 	 *
 	 * @return Destiny\Service\Fantasy\ChallengeService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	public function getTeamChallengers($teamId, $limit = 1, $offset = 0) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
-				SELECT 
-					users.displayName,
-					users.country,
-					IF(subs.userId IS NULL,0,1) AS `subscriber`,
-					teams.teamId,
-					teams.credits,
-					teams.scoreValue,
-					teams.transfersRemaining,
-					teams.teamActive,
-					teams.createdDate,
-					( 
-						SELECT COALESCE(SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',{maxChampions}))
-						FROM dfl_team_champs AS `champs`  
-						WHERE champs.teamId = challengers.challengeTeamId
-					) AS `champions` 
-				FROM dfl_teams AS `teams`
-				LEFT JOIN dfl_challengers AS `challengers` ON (challengers.challengeTeamId = teams.teamId)
-				INNER JOIN dfl_users AS `users` ON (users.userId = challengers.challengeTeamId)
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
-				LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = challengers.challengeTeamId)  
-				WHERE ((challengers.ownerTeamId = {teamId} AND challengers.status = \'ACCEPTED\') OR teams.teamId = {teamId}) AND teams.teamActive = 1
-				GROUP BY teams.teamId
-				ORDER BY teams.scoreValue DESC, ranks.teamRank ASC
-				LIMIT {offset},{limit}
-				', array (
-				'offset' => $offset,
-				'limit' => $limit,
-				'teamId' => $teamId,
-				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
-		) )->fetchRows ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT 
+				users.displayName,
+				users.country,
+				IF(subs.userId IS NULL,0,1) AS `subscriber`,
+				teams.teamId,
+				teams.credits,
+				teams.scoreValue,
+				teams.transfersRemaining,
+				teams.teamActive,
+				teams.createdDate,
+				( 
+					SELECT COALESCE(SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',:maxChampions))
+					FROM dfl_team_champs AS `champs`  
+					WHERE champs.teamId = challengers.challengeTeamId
+				) AS `champions` 
+			FROM dfl_teams AS `teams`
+			LEFT JOIN dfl_challengers AS `challengers` ON (challengers.challengeTeamId = teams.teamId)
+			INNER JOIN dfl_users AS `users` ON (users.userId = challengers.challengeTeamId)
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = challengers.challengeTeamId)  
+			WHERE ((challengers.ownerTeamId = :teamId AND challengers.status = \'ACCEPTED\') OR teams.teamId = :teamId) AND teams.teamActive = 1
+			GROUP BY teams.teamId
+			ORDER BY teams.scoreValue DESC, ranks.teamRank ASC
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'maxChampions', Config::$a ['fantasy'] ['team'] ['maxChampions'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
-	public function getInvites($teamId, $limit = 1, $offset = 0) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
+	public function getInvites($teamId, $limit = 50, $offset = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			SELECT 
 				users.displayName,
 				users.country,
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				teams.*, 
 				( 
-					SELECT COALESCE(SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',{maxChampions}))
+					SELECT COALESCE(SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',:maxChampions))
 					FROM dfl_team_champs AS `champs`  
 					WHERE champs.teamId = challengers.challengeTeamId
 				) AS `champions` 
@@ -74,24 +77,28 @@ class ChallengeService extends Service {
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.ownerTeamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
-			WHERE challengers.challengeTeamId = {teamId} AND challengers.status = \'SENT\'
+			WHERE challengers.challengeTeamId = :teamId AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC
-			', array (
-				'teamId' => $teamId,
-				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
-		) )->fetchRows ();
+			LIMIT :offset,:limit	
+		' );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'maxChampions', Config::$a ['fantasy'] ['team'] ['maxChampions'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
-	public function getSentInvites($teamId, $limit = 1, $offset = 0) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( '
+	public function getSentInvites($teamId, $limit = 50, $offset = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			SELECT 
 				users.displayName,
 				users.country,
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				teams.*, 
 				( 
-					SELECT COALESCE(SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',{maxChampions}))
+					SELECT COALESCE(SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',:maxChampions))
 					FROM dfl_team_champs AS `champs`  
 					WHERE champs.teamId = challengers.challengeTeamId
 				) AS `champions` 
@@ -99,37 +106,43 @@ class ChallengeService extends Service {
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.challengeTeamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
-			WHERE challengers.ownerTeamId = {teamId} AND challengers.status = \'SENT\'
+			WHERE challengers.ownerTeamId = :teamId AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC
-			', array (
-				'teamId' => $teamId,
-				'maxChampions' => Config::$a ['fantasy'] ['team'] ['maxChampions'] 
-		) )->fetchRows ();
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'maxChampions', Config::$a ['fantasy'] ['team'] ['maxChampions'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	public function getChallengeExists($ownerTeamId, $teamId) {
-		$db = Application::getInstance ()->getDb ();
-		return (intval ( $db->select ( '
-				SELECT 
-					COUNT(ownerTeamId) AS `challengeCount` 
-				FROM dfl_challengers WHERE ownerTeamId = \'{ownerTeamId}\' AND challengeTeamId = \'{challengeTeamId}\'', array (
-				'ownerTeamId' => $ownerTeamId,
-				'challengeTeamId' => $teamId 
-		) )->fetchValue ( 'challengeCount' ) ) > 0) ? true : false;
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT COUNT(ownerTeamId) AS `challengeCount` FROM dfl_challengers 
+			WHERE ownerTeamId = :ownerTeamId AND challengeTeamId = :challengeTeamId		
+		' );
+		$stmt->bindValue ( 'ownerTeamId', $ownerTeamId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'challengeTeamId', $teamId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return (intval ( $stmt->fetchColumn () ) > 0);
 	}
 
 	public function challengeTeam($ownerTeamId, $teamId) {
-		$db = Application::getInstance ()->getDb ();
 		if (! $this->getChallengeExists ( $ownerTeamId, $teamId )) {
-			$db->insert ( '
-				INSERT INTO dfl_challengers SET 
-					ownerTeamId = \'{ownerTeamId}\', 
-					challengeTeamId = \'{challengeTeamId}\', 
-					status = \'SENT\', 
-					createdDate = NOW()
-				', array (
+			$conn = Application::instance ()->getConnection ();
+			$conn->insert ( 'dfl_challengers', array (
 					'ownerTeamId' => $ownerTeamId,
-					'challengeTeamId' => $teamId 
+					'challengeTeamId' => $teamId,
+					'status' => 'SENT',
+					'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+			), array (
+					\PDO::PARAM_INT,
+					\PDO::PARAM_INT,
+					\PDO::PARAM_STR,
+					\PDO::PARAM_STR 
 			) );
 			return true;
 		}
@@ -137,54 +150,60 @@ class ChallengeService extends Service {
 	}
 
 	public function acceptChallenge($challengerId, $teamId) {
-		$db = Application::getInstance ()->getDb ();
+		$conn = Application::instance ()->getConnection ();
 		if ($this->getChallengeExists ( $challengerId, $teamId )) {
-			$db->update ( '
-				UPDATE dfl_challengers SET 
-					status = \'ACCEPTED\' 
-				WHERE ownerTeamId = \'{ownerTeamId}\' AND challengeTeamId = \'{challengeTeamId}\'
-				', array (
+			$conn->update ( 'dfl_challengers', array (
+					'status' => 'ACCEPTED' 
+			), array (
 					'ownerTeamId' => $challengerId,
 					'challengeTeamId' => $teamId 
+			), array (
+					\PDO::PARAM_STR,
+					\PDO::PARAM_INT,
+					\PDO::PARAM_INT 
 			) );
 			// Automatically add the team to the person group that accepted the invite
 			if (! $this->getChallengeExists ( $teamId, $challengerId )) {
-				$db->insert ( '
-					INSERT INTO dfl_challengers SET 
-						ownerTeamId = \'{ownerTeamId}\', 
-						challengeTeamId = \'{challengeTeamId}\', 
-						status = \'ACCEPTED\', 
-						createdDate = NOW()
-					', array (
+				$conn->insert ( 'dfl_challengers', array (
 						'ownerTeamId' => $teamId,
-						'challengeTeamId' => $challengerId 
+						'challengeTeamId' => $challengerId,
+						'status' => 'ACCEPTED',
+						'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				), array (
+						\PDO::PARAM_INT,
+						\PDO::PARAM_INT,
+						\PDO::PARAM_STR,
+						\PDO::PARAM_STR 
 				) );
 			} else {
-				$db->insert ( '
-					UPDATE dfl_challengers SET 
-						status = \'ACCEPTED\' 
-					WHERE ownerTeamId = \'{ownerTeamId}\' AND challengeTeamId = \'{challengeTeamId}\'
-					', array (
+				$conn->update ( 'dfl_challengers', array (
+						'status' => 'ACCEPTED' 
+				), array (
 						'ownerTeamId' => $teamId,
 						'challengeTeamId' => $challengerId 
+				), array (
+						\PDO::PARAM_STR,
+						\PDO::PARAM_INT,
+						\PDO::PARAM_INT 
 				) );
 			}
-			//
 			return true;
 		}
 		return false;
 	}
 
 	public function declineChallenge($challengerId, $teamId) {
-		$db = Application::getInstance ()->getDb ();
 		if ($this->getChallengeExists ( $challengerId, $teamId )) {
-			$db->update ( '
-				UPDATE dfl_challengers SET 
-					status = \'DECLINED\' 
-				WHERE ownerTeamId = \'{ownerTeamId}\' AND challengeTeamId = \'{challengeTeamId}\'
-				', array (
+			$conn = Application::instance ()->getConnection ();
+			$conn->update ( 'dfl_challengers', array (
+					'status' => 'DECLINED' 
+			), array (
 					'ownerTeamId' => $challengerId,
 					'challengeTeamId' => $teamId 
+			), array (
+					\PDO::PARAM_STR,
+					\PDO::PARAM_INT,
+					\PDO::PARAM_INT 
 			) );
 			return true;
 		}
@@ -192,14 +211,15 @@ class ChallengeService extends Service {
 	}
 
 	public function deleteChallenge($challengerId, $teamId) {
-		$db = Application::getInstance ()->getDb ();
 		if ($this->getChallengeExists ( $challengerId, $teamId )) {
-			$db->query ( '
-				DELETE FROM dfl_challengers 
-				WHERE (ownerTeamId = \'{ownerTeamId}\' AND challengeTeamId = \'{challengeTeamId}\') OR (ownerTeamId = \'{challengeTeamId}\' AND challengeTeamId = \'{ownerTeamId}\')
-				', array (
+			$conn = Application::instance ()->getConnection ();
+			$conn->delete ( 'dfl_challengers', array (
 					'ownerTeamId' => $challengerId,
 					'challengeTeamId' => $teamId 
+			) );
+			$conn->delete ( 'dfl_challengers', array (
+					'ownerTeamId' => $teamId,
+					'challengeTeamId' => $challengerId 
 			) );
 			return true;
 		}

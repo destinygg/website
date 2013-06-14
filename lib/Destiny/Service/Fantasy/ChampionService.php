@@ -5,11 +5,13 @@ namespace Destiny\Service\Fantasy;
 use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
+use Destiny\Utils\Date;
 use Destiny\Utils\Cache;
 
 class ChampionService extends Service {
 	
 	/**
+	 *
 	 * @var ChampionService
 	 */
 	protected static $instance = null;
@@ -20,14 +22,16 @@ class ChampionService extends Service {
 	 *
 	 * @return ChampionService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	public function getChampions() {
 		if (empty ( $this->champions )) {
-			$db = Application::getInstance ()->getDb ();
-			$this->champions = $db->select ( 'SELECT * FROM dfl_champs AS `champs` ORDER BY champs.championName ASC ' )->fetchRows ();
+			$conn = Application::instance ()->getConnection ();
+			$stmt = $conn->prepare ( 'SELECT * FROM dfl_champs AS `champs` ORDER BY champs.championName ASC' );
+			$stmt->execute ();
+			$this->champions = $stmt->fetchAll ();
 		}
 		return $this->champions;
 	}
@@ -59,43 +63,63 @@ class ChampionService extends Service {
 	}
 
 	public function unlockChampion($userId, $championId) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( 'INSERT INTO dfl_users_champs SET userId=\'{userId}\',championId=\'{championId}\',createdDate=UTC_TIMESTAMP()', array (
-				'userId' => ( int ) $userId,
-				'championId' => ( int ) $championId 
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_users_champs', array (
+				'userId' => $userId,
+				'championId' => $championId,
+				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+		), array (
+				\PDO::PARAM_INT,
+				\PDO::PARAM_INT,
+				\PDO::PARAM_STR 
 		) );
-		return true;
 	}
 
 	public function getUserChampions($userId) {
-		$db = Application::getInstance ()->getDb ();
-		$champions = $db->select ( 'SELECT champs.* FROM dfl_users_champs AS `userchamps` ' . 'INNER JOIN dfl_champs AS `champs` ON (champs.championId = userchamps.championId) ' . 'WHERE userchamps.userId = \'{userId}\' ' . 'ORDER BY champs.championName ASC ', array (
-				'userId' => $userId 
-		) )->fetchRows ();
-		return $champions;
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT champs.* 
+			FROM dfl_users_champs AS `userchamps` 
+			INNER JOIN dfl_champs AS `champs` ON (champs.championId = userchamps.championId) 
+			WHERE userchamps.userId = :userId 
+			ORDER BY champs.championName ASC 
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	public function updateFreeChampions() {
-		$db = Application::getInstance ()->getDb ();
-		$champs = $db->select ( '
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
 			SELECT champs.championId 
 			FROM dfl_champs AS `champs` 
 			WHERE champs.championFree = 0
-			AND champs.championId NOT IN (
-				SELECT _champs.championId FROM dfl_champs AS `_champs` WHERE _champs.championFree = 1
-			)
 			ORDER BY RAND() 
-			LIMIT 0,{limit}', array (
-				'limit' => Config::$a ['fantasy'] ['maxFreeChamps'] 
-		) )->fetchRows ();
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'limit', Config::$a ['fantasy'] ['maxFreeChamps'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'offset', 0, \PDO::PARAM_INT );
+		$stmt->execute ();
+		$champs = $stmt->fetchAll ();
 		$ids = array ();
 		foreach ( $champs as $champ ) {
 			$ids [] = $champ ['championId'];
 		}
-		$db->query ( 'UPDATE dfl_champs SET championFree = \'0\' WHERE championFree = \'1\'' );
-		$db->query ( 'UPDATE dfl_champs SET championFree = \'1\' WHERE championId IN ({freeChamps}) ', array (
-				'freeChamps' => join ( ',', $ids ) 
+		
+		// Set all the existing free champs to not free
+		$conn->update ( 'dfl_champs', array (
+				'championFree' => false 
+		), array (
+				'championFree' => true 
+		), array (
+				\PDO::PARAM_BOOL,
+				\PDO::PARAM_BOOL 
 		) );
+		// Update the selected champs to free
+		$stmt = $conn->prepare ( 'UPDATE dfl_champs SET championFree = :championFree WHERE championId IN (' . join ( ',', $ids ) . ')' );
+		$stmt->bindValue ( 'championFree', true, \PDO::PARAM_BOOL );
+		$stmt->execute ();
 	}
 
 }

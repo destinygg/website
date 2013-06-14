@@ -10,8 +10,8 @@ use Destiny\Service\CommonApiService;
 class BlogFeed {
 
 	public function execute(LoggerInterface $log) {
-		$response = CommonApiService::getInstance ()->getBlogPosts ()->getResponse ();
-		$app = Application::getInstance ();
+		$response = CommonApiService::instance ()->getBlogPosts ()->getResponse ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'recentblog' );
 		$cache->write ( $response );
 	}

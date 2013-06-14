@@ -11,7 +11,7 @@ use Destiny\Config;
 class Lastfm {
 
 	public function execute(array $params) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'recenttracks' );
 		Http::checkIfModifiedSince ( $cache->getLastModified (), true );
 		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $cache->getLastModified () ) );

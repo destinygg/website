@@ -17,7 +17,7 @@ class Cron {
 			throw new AppException ( 'Action id required.' );
 		}
 		set_time_limit ( 180 );
-		$log = Application::getInstance ()->getLogger ();
+		$log = Application::instance ()->getLogger ();
 		
 		$response = array ();
 		$scheduler = new Scheduler ( Config::$a ['scheduler'] );

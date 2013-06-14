@@ -13,9 +13,9 @@ use Destiny\Service\Fantasy\TeamService;
 class Team {
 
 	public function execute(array $params) {
-		$ftService = TeamService::getInstance ();
+		$ftService = TeamService::instance ();
 		// Get team - Make sure this is one of the users teams
-		$team = $ftService->getTeamById ( ( int ) $params ['teamId'] );
+		$team = $ftService->getTeamById ( intval ( $params ['teamId'] ) );
 		if (empty ( $team )) {
 			throw new AppException ( 'Team not found' );
 		}
@@ -32,7 +32,7 @@ class Team {
 		$team ['transfersRemaining'] = intval ( $team ['transfersRemaining'] );
 		$team ['createdDate'] = Date::getDateTime ( $createdTime, Date::FORMAT );
 		$team ['modifiedDate'] = Date::getDateTime ( $modifiedTime, Date::FORMAT );
-		$team ['champions'] = Team::getInstance ()->getTeamChamps ( $team ['teamId'] );
+		$team ['champions'] = Team::instance ()->getTeamChamps ( $team ['teamId'] );
 		
 		Http::checkIfModifiedSince ( $modifiedTime, true );
 		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $modifiedTime ) );

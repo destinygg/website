@@ -3,10 +3,8 @@ namespace Destiny;
 use Destiny\Utils\Tpl;
 use Destiny\Utils\Lol;
 use Destiny\Utils\Date;
-use Destiny\Service\Fantasy\GameService;
 ?>
 <?if(!empty($model->games) && count($model->games) >= 3):?>
-<?$userScores = GameService::getInstance()->getTeamGameChampionsScores ($model->games, Session::get('teamId'));?>
 <div class="content content-dark clearfix">
 
 	<div class="games clearfix" style="margin-top: 20px;">
@@ -40,7 +38,7 @@ use Destiny\Service\Fantasy\GameService;
 								<div class="name">
 									<a class="subtle-link" title="<?=Tpl::out($champ1['summonerName'])?>" href="http://www.lolking.net/summoner/<?=$game['gameRegion']?>/<?=(int) $champ1['summonerId']?>"><?=Tpl::out($champ1['summonerName'])?></a>
 								</div>
-								<div class="points"><?=Lol::getGameChampionPoints($game, $champ1, $userScores)?></div>
+								<div class="points"><?=Lol::getGameChampionPoints($game, $champ1, $model->userScores)?></div>
 							</div>
 						</div>
 						<?endforeach;?>
@@ -70,7 +68,7 @@ use Destiny\Service\Fantasy\GameService;
 								<div class="name">
 									<a class="subtle-link" title="<?=Tpl::out($champ2['summonerName'])?>" href="http://www.lolking.net/summoner/<?=$game['gameRegion']?>/<?=(int) $champ2['summonerId']?>"><?=Tpl::out($champ2['summonerName'])?></a>
 								</div>
-								<div class="points"><?=Lol::getGameChampionPoints($game, $champ2, $userScores)?></div>
+								<div class="points"><?=Lol::getGameChampionPoints($game, $champ2, $model->userScores)?></div>
 							</div>
 						</div>
 						<?endforeach;?>

@@ -6,7 +6,6 @@ use Destiny\Application;
 use Destiny\Config;
 use Destiny\Utils\String;
 use Psr\Log\LoggerInterface;
-use Destiny\Service\Leagueapi;
 use Destiny\Service\Fantasy\LeaderboardService;
 use Destiny\Service\Fantasy\ChampionService;
 use Destiny\Service\Fantasy\GameService;
@@ -14,9 +13,9 @@ use Destiny\Service\Fantasy\GameService;
 class Leaderboards {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::getInstance ();
-		$champService = ChampionService::getInstance ();
-		$leadersService = LeaderboardService::getInstance ();
+		$app = Application::instance ();
+		$champService = ChampionService::instance ();
+		$leadersService = LeaderboardService::instance ();
 		
 		// Subs leaderboard
 		$teams = $leadersService->getSubscriberTeamLeaderboard ( 10 );
@@ -36,7 +35,7 @@ class Leaderboards {
 		$cache->write ( $summoners );
 		
 		// Recent games
-		$gameService = GameService::getInstance ();
+		$gameService = GameService::instance ();
 		$games = $gameService->getRecentGames ( 3 );
 		foreach ( $games as $i => $game ) {
 			$games [$i] ['champions'] = $gameService->getGameChampions ( $game ['gameId'] );
@@ -48,8 +47,8 @@ class Leaderboards {
 		$cache->write ( $games );
 		
 		// Recent game leaderboard
-		$champService = ChampionService::getInstance ();
-		$leaders = LeaderboardService::getInstance ()->getRecentGameLeaderboard ( 10 );
+		$champService = ChampionService::instance ();
+		$leaders = LeaderboardService::instance ()->getRecentGameLeaderboard ( 10 );
 		foreach ( $leaders as $i => $leader ) {
 			$leaders [$i] ['champions'] = $champService->getChampionsById ( explode ( ',', $leader ['champions'] ) );
 		}
@@ -57,8 +56,8 @@ class Leaderboards {
 		$cache->write ( $leaders );
 		
 		// Team Leaderboard
-		$champService = ChampionService::getInstance ();
-		$teams = LeaderboardService::getInstance ()->getTeamLeaderboard ( 10 );
+		$champService = ChampionService::instance ();
+		$teams = LeaderboardService::instance ()->getTeamLeaderboard ( 10 );
 		foreach ( $teams as $i => $team ) {
 			$teams [$i] ['champions'] = $champService->getChampionsById ( explode ( ',', $team ['champions'] ) );
 		}
@@ -66,9 +65,11 @@ class Leaderboards {
 		$cache->write ( $teams );
 		
 		// Top team champion scores
-		$topScorers = LeaderboardService::getInstance ()->getTopTeamChampionScores ( 5 );
+		$topScorers = LeaderboardService::instance ()->getTopTeamChampionScores ( 5 );
 		$cache = $app->getMemoryCache ( 'topteamchampionscores' );
 		$cache->write ( $topScorers );
+		
+		$log->info ( 'Reset leaderboards' );
 	}
 
 }

@@ -524,7 +524,7 @@ abstract class Session {
 	 * @return string
 	 */
 	public static function getSessionId() {
-		return self::getInstance ()->getSessionId ();
+		return self::instance ()->getSessionId ();
 	}
 
 	/**
@@ -532,7 +532,7 @@ abstract class Session {
 	 *
 	 * @return \Destiny\SessionInstance
 	 */
-	public static function getInstance() {
+	public static function instance() {
 		return self::$instance;
 	}
 
@@ -552,7 +552,7 @@ abstract class Session {
 	 * @return \Destiny\SessionAuthenticationCredentials
 	 */
 	public static function getAuthCreds() {
-		return self::getInstance ()->getAuthenticationCredentials ();
+		return self::instance ()->getAuthenticationCredentials ();
 	}
 
 	/**
@@ -561,7 +561,7 @@ abstract class Session {
 	 * @param SessionAuthenticationCredentials $authenticationCredentials
 	 */
 	public static function setAuthCreds(SessionAuthenticationCredentials $authCreds) {
-		$session = self::getInstance ();
+		$session = self::instance ();
 		$session->setAuthenticationCredentials ( $authCreds );
 		$params = $session->getAuthenticationCredentials ()->getCredentials ();
 		foreach ( $params as $name => $value ) {
@@ -575,7 +575,7 @@ abstract class Session {
 	 * @return void
 	 */
 	public static function destroy() {
-		$session = self::getInstance ();
+		$session = self::instance ();
 		$session->destroy ();
 	}
 
@@ -586,7 +586,7 @@ abstract class Session {
 	 * @return mix
 	 */
 	public static function get($name) {
-		return self::getInstance ()->get ( $name );
+		return self::instance ()->get ( $name );
 	}
 
 	/**
@@ -596,7 +596,7 @@ abstract class Session {
 	 * @param string $value
 	 */
 	public static function set($name, $value = null) {
-		self::getInstance ()->set ( $name, $value );
+		self::instance ()->set ( $name, $value );
 	}
 
 	/**

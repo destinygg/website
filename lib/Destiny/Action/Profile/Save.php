@@ -16,7 +16,7 @@ class Save {
 
 	public function execute(array $params) {
 		// Get user
-		$user = UsersService::getInstance ()->getUserById ( Session::get ( 'userId' ) );
+		$user = UsersService::instance ()->getUserById ( Session::get ( 'userId' ) );
 		if (empty ( $user )) {
 			throw new AppException ( 'Invalid user' );
 		}

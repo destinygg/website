@@ -10,8 +10,8 @@ use Destiny\Application;
 class BroadcastsFeed {
 
 	public function execute(LoggerInterface $log) {
-		$response = TwitchApiService::getInstance ()->getPastBroadcasts ()->getResponse ();
-		$app = Application::getInstance ();
+		$response = TwitchApiService::instance ()->getPastBroadcasts ()->getResponse ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'pastbroadcasts' );
 		$cache->write ( $response );
 	}

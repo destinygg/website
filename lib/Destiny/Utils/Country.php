@@ -33,7 +33,7 @@ abstract class Country {
 	 */
 	public static function getCountries() {
 		if (self::$countries == null) {
-			$cache = Application::getInstance ()->getMemoryCache ( array (
+			$cache = Application::instance ()->getMemoryCache ( array (
 					'filename' => 'geodata',
 					'life' => 1 * 30 * 24 * 60 * 60 
 			) );

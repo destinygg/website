@@ -22,8 +22,8 @@ class Challenge {
 			if (! isset ( $params ['name'] ) || empty ( $params ['name'] )) {
 				throw new AppException ( 'Name required.' );
 			}
-			$teamService = TeamService::getInstance ();
-			$teams = $teamService->getTeamsByUsername ( mysql_real_escape_string ( $params ['name'] ) );
+			$teamService = TeamService::instance ();
+			$teams = $teamService->getTeamsByUsername ( $params ['name'] );
 			if (empty ( $teams )) {
 				throw new AppException ( 'User not found' );
 			}
@@ -31,7 +31,7 @@ class Challenge {
 			if (intval ( $team ['teamId'] ) == intval ( Session::get ( 'teamId' ) )) {
 				throw new AppException ( 'Play with yourself?' );
 			}
-			$response ['success'] = ChallengeService::getInstance ()->challengeTeam ( Session::get ( 'teamId' ), $team ['teamId'] );
+			$response ['success'] = ChallengeService::instance ()->challengeTeam ( Session::get ( 'teamId' ), $team ['teamId'] );
 			$response ['message'] = ($response ['success']) ? 'Challenge sent.' : 'Challenge already exists';
 		} catch ( \Exception $e ) {
 			$response ['success'] = false;

@@ -34,7 +34,7 @@ abstract class Date {
 	 * @param DateTime|null $end
 	 * @return string
 	 */
-	public function getRemainingTime($start, $end = null) {
+	public static function getRemainingTime($start, $end = null) {
 		if (! ($start instanceof \DateTime)) {
 			$start = new \DateTime ( $start );
 		}
@@ -88,7 +88,7 @@ abstract class Date {
 	 * @param \DateTime $compareTo
 	 * @return string
 	 */
-	public static function getElapsedTime(\DateTime $date, \DateTime $compareTo = NULL) {
+	public static function getElapsedTime(\DateTime $date,\DateTime $compareTo = NULL) {
 		if (is_null ( $compareTo )) {
 			$compareTo = new \DateTime ( 'now' );
 		}

@@ -10,9 +10,9 @@ use Destiny\Service\CommonApiService;
 class YoutubeFeed {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::getInstance ();
+		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'youtubeplaylist' );
-		$response = CommonApiService::getInstance ()->getYoutubePlaylist ()->getResponse ();
+		$response = CommonApiService::instance ()->getYoutubePlaylist ()->getResponse ();
 		$cache->write ( $response );
 	}
 

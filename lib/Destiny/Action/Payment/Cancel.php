@@ -17,10 +17,10 @@ use PayPal\Service\PayPalAPIInterfaceServiceService;
 class Cancel {
 
 	public function execute(array $params, ViewModel $model) {
-		$subService = SubscriptionsService::getInstance ();
-		$orderService = OrdersService::getInstance ();
+		$subService = SubscriptionsService::instance ();
+		$orderService = OrdersService::instance ();
 		
-		$subscription = SubscriptionsService::getInstance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		$paymentProfile = null;
 		if (! empty ( $subscription ['paymentProfileId'] )) {
 			$paymentProfile = $orderService->getPaymentProfileById ( $subscription ['paymentProfileId'] );

@@ -12,9 +12,6 @@ use Destiny\Utils\Tpl;
 
 			<div class="summoner-info pull-left">
 				<div class="summoner-info-stub pull-left">
-					<div class="summoner-icon">
-						<img src="<?=Config::cdn()?>/img/64x64.gif" style="width:45px; height:45px;"<?=((!empty($summoner['profileIconId'])) ? ' data-src="'.Config::cdn().'/img/lol/summoner/profileIcon'. $summoner['profileIconId'] .'.jpg"' : '' )?> />
-					</div>
 					<h3 class="summoner-title">
 						<?=Tpl::out($summoner['name'])?> 
 						<small><a title="LOLKING profile" href="http://www.lolking.net/summoner/<?=$summoner['region']['id']?>/<?=$summoner['summonerId']?>">lolking.com</a></small>

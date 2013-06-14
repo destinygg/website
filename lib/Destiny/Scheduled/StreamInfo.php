@@ -11,8 +11,8 @@ use Destiny\Cache\Apc;
 class StreamInfo {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::getInstance ();
-		$response = TwitchApiService::getInstance ()->getStreamInfo ()->getResponse ();
+		$app = Application::instance ();
+		$response = TwitchApiService::instance ()->getStreamInfo ()->getResponse ();
 		$cache = $app->getMemoryCache ( 'streaminfo' );
 		$cache->write ( $response );
 	}

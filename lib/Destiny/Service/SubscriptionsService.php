@@ -9,16 +9,15 @@ use Destiny\Utils\Date;
 use Destiny\AppException;
 
 class SubscriptionsService extends Service {
-	
 	protected static $instance = null;
 
 	/**
 	 * Singleton
-	 * 
+	 *
 	 * @return SubscriptionsService
 	 */
-	public static function getInstance() {
-		return parent::getInstance ();
+	public static function instance() {
+		return parent::instance ();
 	}
 
 	/**
@@ -43,20 +42,15 @@ class SubscriptionsService extends Service {
 	 * @param array $subscription
 	 */
 	public function addUserSubscription($userId, $subscription, $status, $paymentProfile) {
-		$db = Application::getInstance ()->getDb ();
 		$now = time ();
 		$end = strtotime ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ), $now );
-		$db->insert ( "
-				INSERT INTO dfl_users_subscriptions
-					(subscriptionId, userId, createdDate, endDate, status, recurring, paymentProfileId)
-				VALUES
-					(NULL, '{userId}', '{createdDate}', '{endDate}', '{status}', '{recurring}', '{paymentProfileId}')
-		", array (
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_users_subscriptions', array (
 				'userId' => $userId,
 				'createdDate' => Date::getDateTime ( $now, 'Y-m-d H:i:s' ),
 				'endDate' => Date::getDateTime ( $end, 'Y-m-d H:i:s' ),
 				'status' => $status,
-				'recurring' => (empty ( $paymentProfile )) ? 0 : 1,
+				'recurring' => (empty ( $paymentProfile )),
 				'paymentProfileId' => $paymentProfile ['profileId'] 
 		) );
 	}
@@ -69,10 +63,11 @@ class SubscriptionsService extends Service {
 	 * @return array
 	 */
 	public function getUserActiveSubscription($userId) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->select ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = \'{userId}\' AND status = \'Active\' ORDER BY createdDate DESC LIMIT 0,1', array (
-				'userId' => $userId 
-		) )->fetchRow ();
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND status = \'Active\' ORDER BY createdDate DESC LIMIT 0,1' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
 	}
 
 	/**
@@ -81,11 +76,12 @@ class SubscriptionsService extends Service {
 	 * @param int $userId
 	 * @param \DateTime $endDate
 	 */
-	public function updateUserSubscriptionDateEnd($userId,\DateTime $endDate) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "UPDATE dfl_users_subscriptions SET endDate = '{billingNextDate}' WHERE userId = '{userId}'", array (
-				'userId' => $userId,
+	public function updateUserSubscriptionDateEnd($userId, \DateTime $endDate) {
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_users_subscriptions', array (
 				'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
+		), array (
+				'userId' => $userId 
 		) );
 	}
 
@@ -96,10 +92,11 @@ class SubscriptionsService extends Service {
 	 * @param \DateTime $endDate
 	 */
 	public function updateUserSubscriptionRecurring($userId, $recurring) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "UPDATE dfl_users_subscriptions SET recurring = '{recurring}' WHERE userId = '{userId}'", array (
-				'userId' => $userId,
-				'recurring' => ($recurring) ? 1 : 0 
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_users_subscriptions', array (
+				'recurring' => $recurring 
+		), array (
+				'userId' => $userId 
 		) );
 	}
 
@@ -110,10 +107,11 @@ class SubscriptionsService extends Service {
 	 * @param \DateTime $endDate
 	 */
 	public function updateUserSubscriptionState($userId, $status) {
-		$db = Application::getInstance ()->getDb ();
-		$db->insert ( "UPDATE dfl_users_subscriptions SET status = '{status}' WHERE userId = '{userId}'", array (
-				'userId' => $userId,
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_users_subscriptions', array (
 				'status' => $status 
+		), array (
+				'userId' => $userId 
 		) );
 	}
 
@@ -123,11 +121,12 @@ class SubscriptionsService extends Service {
 	 * @return int the number of expired subscriptions
 	 */
 	public function expiredSubscriptions() {
-		$db = Application::getInstance ()->getDb ();
-		return $db->update ( "
-			UPDATE dfl_users_subscriptions SET `status` = 'Expired'
-			WHERE status = 'Active' AND endDate + INTERVAL 24 HOUR <= NOW()
-		" );
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			UPDATE dfl_users_subscriptions SET `status` = \'Expired\'
+			WHERE status = \'Active\' AND endDate + INTERVAL 24 HOUR <= NOW()
+		' );
+		$stmt->execute ();
 	}
 
 	/**
@@ -139,15 +138,12 @@ class SubscriptionsService extends Service {
 	 * @return int
 	 */
 	public function updateSubscriptionPaymentProfile($subscriptionId, $profileId, $recurring) {
-		$db = Application::getInstance ()->getDb ();
-		return $db->update ( "
-			UPDATE dfl_users_subscriptions 
-			SET `paymentProfileId` = '{paymentProfileId}', `recurring` = '{recurring}'
-			WHERE subscriptionId = '{subscriptionId}'
-		", array (
-				'subscriptionId' => $subscriptionId,
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_users_subscriptions', array (
 				'paymentProfileId' => $profileId,
-				'recurring' => ($recurring) ? '1' : '0' 
+				'recurring' => $recurring 
+		), array (
+				'subscriptionId' => $subscriptionId 
 		) );
 	}
 

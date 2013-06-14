@@ -7,8 +7,9 @@
 		"ext-openssl" : "*",
 		"paypal/merchant-sdk-php" : "3.4.*",
 		"nervo/yuicompressor" : "2.4.7",
-		"monolog/monolog" : "1.6.*@dev",
-		"nixilla/twitter-api-consumer": "dev-master"
+		"monolog/monolog" : "1.5.0",
+		"nixilla/twitter-api-consumer": "dev-master",
+		"doctrine/dbal": "2.3.4"
 	},
 	"autoload": {
 		"files": ["lib/HttpAccept/HTTP_Accept.php"]
