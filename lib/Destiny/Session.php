@@ -435,7 +435,7 @@ class SessionAuthenticationCredentials {
 					$this->roles [] = $role [$i];
 				}
 			}
-		} elseif (! in_array ( $role, $this->roles )) {
+		} elseif (is_string ( $role ) && ! in_array ( $role, $this->roles )) {
 			$this->roles [] = $role;
 		}
 	}

@@ -423,33 +423,6 @@ border: 0;
 background: none;
 }
 
-#fantasycalltoaction {
-background: url(../img/fantasyleaguebanner.png) no-repeat top left;
-height: 101px;
-padding-left: 380px;
-}
-
-#fantasycalltoaction h3 {
-display: none;
-}
-
-#fantasycalltoaction p {
-color: #efefef;
-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-padding: 8px;
-background: rgba(0, 0, 0, 0.4);
-border-radius: 8px;
-margin-right: 25px;
-}
-
-#fantasycalltoaction>div {
-margin-top: 14px;
-}
-
-#fantasycalltoaction .btn-large {
-margin-top: 15px;
-}
-
 .challengeForm {
 text-align: center;
 margin: 20px 0;

@@ -37,7 +37,7 @@ class TwitchApiService extends Service {
 	 */
 	private function getBroadcasterToken() {
 		if (empty ( $this->token )) {
-			$this->token = trim ( file_get_contents ( 'BROADCASTERTOKEN' ) );
+			$this->token = trim ( file_get_contents ( Config::$a ['cache'] ['path'] . 'BROADCASTERTOKEN.tmp' ) );
 		}
 		return $this->token;
 	}

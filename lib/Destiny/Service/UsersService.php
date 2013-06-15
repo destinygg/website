@@ -57,7 +57,6 @@ class UsersService extends Service {
 				'displayName' => $user ['displayName'],
 				'country' => $user ['country'],
 				'email' => $user ['email'],
-				'admin' => $user ['admin'],
 				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
 		) );
 		return $conn->lastInsertId ();
@@ -75,12 +74,28 @@ class UsersService extends Service {
 				'username' => $user ['username'],
 				'displayName' => $user ['displayName'],
 				'country' => $user ['country'],
-				'email' => $user ['email'],
-				'admin' => $user ['admin'] 
+				'email' => $user ['email'] 
 		), array (
 				'userId' => $user ['userId'] 
 		) );
-		return $user;
+	}
+
+	/**
+	 * Return a list of the users roles
+	 *
+	 * @param int $userId
+	 * @return array
+	 */
+	public function getUserRoles($userId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT userRole FROM dfl_users_roles WHERE userId = :userId' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		$roles = array ();
+		while ( $userRole = $stmt->fetchColumn () ) {
+			$roles [] = $userRole;
+		}
+		return $roles;
 	}
 
 }

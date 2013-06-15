@@ -41,14 +41,13 @@ class SubscriptionsService extends Service {
 	 * @param int $userId
 	 * @param array $subscription
 	 */
-	public function addSubscription($userId, $subscription, $status) {
-		$now = time ();
-		$end = strtotime ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ), $now );
+	public function addSubscription($userId, $startDate, $endDate, $status, $source = '') {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_subscriptions', array (
 				'userId' => $userId,
-				'createdDate' => Date::getDateTime ( $now, 'Y-m-d H:i:s' ),
-				'endDate' => Date::getDateTime ( $end, 'Y-m-d H:i:s' ),
+				'subscriptionSource' => $source,
+				'createdDate' => $startDate,
+				'endDate' => $endDate,
 				'status' => $status 
 		), array (
 				\PDO::PARAM_INT,

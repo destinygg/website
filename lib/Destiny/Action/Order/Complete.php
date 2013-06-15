@@ -200,7 +200,9 @@ class Complete {
 		}
 		
 		// Create / adjust subscription
-		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], $subscription, 'Active' );
+		$start = time ();
+		$end = strtotime ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ), $start );
+		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], Date::getDateTime ( $start, 'Y-m-d H:i:s' ), Date::getDateTime ( $end, 'Y-m-d H:i:s' ), 'Active', 'destiny.gg' );
 		if (! empty ( $paymentProfile )) {
 			SubscriptionsService::instance ()->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
 		}

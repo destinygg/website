@@ -45,13 +45,18 @@ class TwitchAuth {
 		// So we redirect again, with the correct permissions
 		$broadcaster = Config::$a ['twitch'] ['broadcaster'] ['user'];
 		$broadcastPerms = Config::$a ['twitch'] ['broadcaster'] ['request_perms'];
-		if (strcasecmp ( $data ['name'], $broadcaster ) === 0 && $scope != $broadcastPerms) {
-			$log = Application::instance ()->getLogger ();
-			$log->notice ( 'Requested broadcaster permissions [' . $broadcaster . ']' );
-			Http::header ( Http::HEADER_LOCATION, 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=' . Config::$a ['twitch'] ['client_id'] . '&redirect_uri=' . urlencode ( Config::$a ['twitch'] ['redirect_uri'] ) . '&scope=' . Config::$a ['twitch'] ['broadcaster'] ['request_perms'] );
-			exit ();
-		}
 		
+		if (strcasecmp ( $data ['name'], $broadcaster ) === 0) {
+			if ($scope != $broadcastPerms) {
+				$log = Application::instance ()->getLogger ();
+				$log->notice ( 'Requested broadcaster permissions [' . $broadcaster . ']' );
+				Http::header ( Http::HEADER_LOCATION, 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=' . Config::$a ['twitch'] ['client_id'] . '&redirect_uri=' . urlencode ( Config::$a ['twitch'] ['redirect_uri'] ) . '&scope=' . Config::$a ['twitch'] ['broadcaster'] ['request_perms'] );
+				exit ();
+			}
+			$fp = fopen ( Config::$a ['cache'] ['path'] . 'BROADCASTERTOKEN.tmp', 'w' );
+			fwrite ( $fp, $accessToken );
+			fclose ( $fp );
+		}
 		$teamsService = TeamService::instance ();
 		$usersService = UsersService::instance ();
 		$subsService = SubscriptionsService::instance ();
@@ -59,18 +64,20 @@ class TwitchAuth {
 		$existingUser = $usersService->getUserByExternalId ( $data ['_id'] );
 		if (! empty ( $existingUser )) {
 			// Since someone might change their user via twitch we update after each auth
-			$existingUser ['displayName'] = $data ['display_name'];
-			$existingUser ['email'] = $data ['email'];
-			$user = $usersService->updateUser ( $existingUser );
+			if ($existingUser ['displayName'] != $data ['display_name'] || $existingUser ['email'] != $data ['email']) {
+				$existingUser ['displayName'] = $data ['display_name'];
+				$existingUser ['email'] = $data ['email'];
+				$usersService->updateUser ( $existingUser );
+			}
+			$user = $existingUser;
 		} else {
-			// Create a user array from the twitch response
+			// Create a user from the twitch response
 			$user = array ();
 			$user ['externalId'] = $data ['_id'];
 			$user ['username'] = $data ['name'];
 			$user ['displayName'] = $data ['display_name'];
 			$user ['email'] = $data ['email'];
 			$user ['country'] = '';
-			$user ['admin'] = false;
 			$user ['userId'] = $usersService->addUser ( $user );
 		}
 		
@@ -86,7 +93,7 @@ class TwitchAuth {
 			$team ['teamId'] = $teamsService->addTeam ( $user ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
 		}
 		
-		// This variable is important to set, but we dont have much error checking
+		// Set the users team id
 		Session::set ( 'teamId', $team ['teamId'] );
 		
 		// Get the users active subscriptions
@@ -104,9 +111,7 @@ class TwitchAuth {
 		if (! empty ( $subscription )) {
 			$authCreds->addRoles ( 'subscriber' );
 		}
-		if (isset ( $user ['admin'] ) && $user ['admin'] == '1') {
-			$authCreds->addRoles ( 'admin' );
-		}
+		$authCreds->addRoles ( $usersService->getUserRoles ( $user ['userId'] ) );
 		Session::setAuthCreds ( $authCreds );
 		
 		// Setup user preferences - must be done after the session has been created
@@ -114,7 +119,7 @@ class TwitchAuth {
 		$settings = $settingsService->getUserSettings ( $user ['userId'] );
 		$settingsService->setSettings ( $settings );
 		
-		// Redirect to... league page.. weird
+		// Redirect to... league page.. weird!
 		Http::header ( Http::HEADER_LOCATION, '/league' );
 		exit ();
 	}
