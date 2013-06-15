@@ -122,17 +122,17 @@ class SubscriptionsService extends Service {
 	}
 
 	/**
-	 * Sets subscription status to 'Expired' where the end date is smaller than NOW + 1 DAY
+	 * Sets subscription status to 'Expired' where the end date is smaller than NOW +72 HOUR
+	 * Since paypal says it takes up to 72 hours for recurring payments to occur
 	 *
 	 * @return int the number of expired subscriptions
 	 */
 	public function expiredSubscriptions() {
 		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( '
+		$conn->executeQuery ( '
 			UPDATE dfl_users_subscriptions SET `status` = \'Expired\'
-			WHERE status = \'Active\' AND endDate + INTERVAL 24 HOUR <= NOW()
+			WHERE status = \'Active\' AND endDate + INTERVAL 72 HOUR <= NOW()
 		' );
-		$stmt->execute ();
 	}
 
 	/**

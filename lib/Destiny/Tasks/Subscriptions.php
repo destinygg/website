@@ -19,17 +19,13 @@ class Subscriptions {
 		$conn = Application::instance ()->getConnection ();
 		$isSubsCleared = false;
 		while ( $i < $total ) {
+			
 			set_time_limit ( 20 );
 			$subscriptions = TwitchApiService::instance ()->getChannelSubscriptions ( Config::$a ['twitch'] ['broadcaster'] ['user'], $increments, $i );
-			if ($subscriptions == null) {
+			
+			if (empty ( $subscriptions )) {
 				throw new AppException ( 'Error requesting subscriptions' );
 				break;
-			}
-			if ($isSubsCleared == false) {
-				$isSubsCleared = true;
-				$conn->update ( 'dfl_users_twitch_subscribers', array (
-						'validated' => false 
-				) );
 			}
 			if (! isset ( $subscriptions ['_total'] ) || ! is_numeric ( $subscriptions ['_total'] )) {
 				throw new AppException ( 'Error requesting subscriptions. Total: 0' );
@@ -39,6 +35,15 @@ class Subscriptions {
 				throw new AppException ( 'Error requesting subscriptions. Total: 0' );
 				break;
 			}
+			
+			// Invalidate all existing subs, once
+			if (! $isSubsCleared) {
+				$isSubsCleared = true;
+				$conn->update ( 'dfl_users_twitch_subscribers', array (
+						'validated' => false 
+				) );
+			}
+			
 			$log->info ( 'Checked subscriptions [' . $i . ' out of ' . $total . ']' );
 			foreach ( $subscriptions ['subscriptions'] as $sub ) {
 				$stmt = $conn->prepare ( '
@@ -65,6 +70,10 @@ class Subscriptions {
 			sleep ( 3 );
 			continue;
 		}
+		
+		// Make sure the twitch subscribers have an active subscription
+		
+		
 		$log->info ( 'Subscription check complete' );
 	}
 

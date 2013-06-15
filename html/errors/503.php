@@ -18,12 +18,14 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 </head>
 <body class="error maintenance">
 
+	<?include'top.php'?>
+
 	<section id="header-band">
 		<div class="container">
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
 					<h1><strong><?=$word?>!</strong> Down for maintenance</h1>
-					<p>Hamster #<?=rand(1000, 9999)?> is being replaced. The site will be back up in about <strong>5</strong> minutes</p>
+					<p><?=$e->message?></p>
 				</div>
 				<div id="destiny-illustration"></div>
 			</header>

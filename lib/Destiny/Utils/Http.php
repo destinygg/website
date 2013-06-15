@@ -2,6 +2,8 @@
 
 namespace Destiny\Utils;
 
+use Destiny\AppException;
+
 abstract class Http {
 	const HEADER_ETAG = 'Etag';
 	const HEADER_STATUS = 'Status';
@@ -21,10 +23,10 @@ abstract class Http {
 	const STATUS_ERROR = 500;
 	const STATUS_OK = 200;
 	public static $HEADER_STATUSES = array (
-			304 => 'Not Modified',
 			500 => 'Error',
 			404 => 'Not Found',
 			401 => 'Unauthorized',
+			304 => 'Not Modified',
 			200 => 'OK' 
 	);
 
@@ -33,6 +35,9 @@ abstract class Http {
 	}
 
 	public static function status($status) {
+		if (! isset ( self::$HEADER_STATUSES [intval ( $status )] )) {
+			throw new AppException ( sprintf ( 'HTTP status not supported %s', $status ) );
+		}
 		header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
 	}
 

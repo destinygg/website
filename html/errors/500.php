@@ -1,6 +1,4 @@
 <?
-namespace Destiny;
-use Destiny\Utils\Tpl;
 $words = include 'words.php';
 $word = $words [array_rand ( $words, 1 )];
 if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
@@ -20,20 +18,14 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 </head>
 <body class="error logicerror">
 
+	<?include'top.php'?>
+
 	<section id="header-band">
 		<div class="container">
 			<div id="overview">
 				<div class="clearfix">
 					<h1><strong><?=$word?>!</strong> An error occurred</h1>
-					<?if(preg_match('/^local[.*]+/i', $_SERVER['HTTP_HOST']) > 0):?>
-					<div class="alert alert-error">
-						<h4>Error!</h4>
-						<?=nl2br($model->error->getMessage())?>
-					</div>
-					<pre><?=$model->error->getTraceAsString()?></pre>
-					<?else:?>
 					<p>The hamster jimmies have been rustled. <br />Would you like to <a href="/">return to the start</a>?</p>
-					<?endif;?>
 				</div>
 				<div id="destiny-illustration"></div>
 			</div>

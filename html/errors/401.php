@@ -1,5 +1,4 @@
 <?
-namespace Destiny;
 $words = include 'words.php';
 $word = $words [array_rand ( $words, 1 )];
 if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
@@ -19,12 +18,14 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 </head>
 <body class="error forbidden">
 
+	<?include'top.php'?>
+
 	<section id="header-band">
 		<div class="container">
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
 					<h1><strong><?=$word?>!</strong> Authentication required</h1>
-					<p>Are you looking for the <strong>fantasy league?</strong>. <br />Click here to <a title="Login with your twitch account" href="#" rel="twitchlogin" data-request-perms="<?=Config::$a['twitch']['request_perms']?>" data-redirect-uri="<?=urlencode(Config::$a['twitch']['redirect_uri'])?>" data-client-id="<?=Config::$a['twitch']['client_id']?>"><i class="icon-user icon-white subtle"></i> Login</a></p>
+					<p>This request requires authentication. <br />Would you like to <a href="/">return to the start</a>?</p>
 				</div>
 				<div id="destiny-illustration"></div>
 			</header>
@@ -35,14 +36,6 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 
 	<script src="<?=$cdn?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=$cdn?>/js/vendor/bootstrap.js"></script>
-	<script>
-	// Twitch Connect button
-	$('a[rel="twitchlogin"]').on('click', function(){
-		var url = 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id='+$(this).data('client-id')+'&redirect_uri='+$(this).data('redirect-uri')+'&scope='+$(this).data('request-perms');
-		window.location.href = url;
-		return false;
-	});
-	</script>
 
 </body>
 </html>

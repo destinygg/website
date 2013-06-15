@@ -450,32 +450,6 @@ margin-top: 14px;
 margin-top: 15px;
 }
 
-#fantasycalltoactionblock {
-position: absolute;
-width: 100%;
-z-index: 48;
-}
-
-#fantasycalltoactionblock h3 {
-display: none;
-}
-
-#fantasycalltoactionblock>div {
-margin: 0 340px 0 340px;
-}
-
-#fantasycalltoactionblock .content-dark {
-height: 224px;
-width: 100%;
-text-align: center;
-background: url(../img/fantasyleagueblock.png) no-repeat top center;
-}
-
-#fantasycalltoactionblock .btn-primary {
-margin-top: 130px;
-text-align: center;
-}
-
 .challengeForm {
 text-align: center;
 margin: 20px 0;

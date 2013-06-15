@@ -60,8 +60,7 @@ class UsersService extends Service {
 				'admin' => $user ['admin'],
 				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
 		) );
-		$user ['userId'] = $conn->lastInsertId ();
-		return $user;
+		return $conn->lastInsertId ();
 	}
 
 	/**

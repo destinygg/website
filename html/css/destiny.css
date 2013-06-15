@@ -16,6 +16,7 @@
 50% { text-shadow: 0 0 4px rgba(0,136,204,1); color: white; }
 100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
 }
+
 body {
 background: #111 url("../img/bodybg.png") repeat top center;
 position: relative;
@@ -132,48 +133,44 @@ color: #999;
 }
 
 #header-band {
-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x center -50px;
+overflow: hidden;
+border-bottom: 1px solid #191919;
+background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x -400px -50px;
 margin: 0;
 }
 
-#overview {
-height: 120px;
+#overview,
+#overview h1 {
+height: 110px;	
+margin:0;
 padding: 0;
+background: none;
+}
+#overview {
 color: white;
-background: url("../img/destinylogoblue.png") no-repeat -10px 5px;
-margin-bottom: 0;
-margin-top: 0;
-border-radius: 0;
 position: relative;
 }
-
 #overview h1 {
-display: none;
-}
-
-#overview .bio {
-color: #797979;
-font-size: 14px;
-line-height: 18px;
-padding-top: 1px;
-padding: 8px 0;
-margin: 0;
+left:0;
+top:0;
+background: url("../img/destinylogotop.png") no-repeat -25px center;
+width: 400px;
 position: absolute;
-width: 500px;
-left: 0;
-top: 110px;
-z-index: 102;
+text-indent: -999em;
 }
 
 #destiny-illustration {
 background: url(../img/destinybannerhead.small.png) no-repeat top left;
 width: 500px;
-height: 120px;
+height: 109px;
 position: absolute;
 top: 0;
-right: 30px;
+right: 0;
 z-index: 101;
+}
+
+#main-nav .navbar-inner {
+border-bottom: 1px solid #000;
 }
 
 .content-dark {
@@ -243,7 +240,6 @@ margin-top: 0;
 -o-transition: all 0.2s ease-in-out;
 transition: all 0.2s ease-in-out;
 }
-
 a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
 -moz-animation: spin 3s infinite linear;
 -webkit-animation: spin 3s infinite linear;
@@ -273,13 +269,14 @@ color: #ececec;
 font-weight: normal;
 }
 
-#twitchpanel.split-view>.content,#twitchpanel.single-view>.content {
+#twitchpanel.split-view>.content,
+#twitchpanel.single-view>.content {
 border-bottom-left-radius: 0;
 border-bottom-right-radius: 0;
 }
 
-#twitchpanel.split-view .panelheader .toolgroup,#twitchpanel.single-view .panelheader .toolgroup
-{
+#twitchpanel.split-view .panelheader .toolgroup,
+#twitchpanel.single-view .panelheader .toolgroup {
 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -305,8 +302,8 @@ width: 32%;
 background: white;
 }
 
-#twitchpanel.single-view .twitch-element,#twitchpanel.single-view .twitch-element-wrap
-{
+#twitchpanel.single-view .twitch-element,
+#twitchpanel.single-view .twitch-element-wrap {
 width: 100%;
 height: 559px;
 }
@@ -316,36 +313,31 @@ height: 560px;
 }
 
 @media ( min-width : 1200px) {
-#twitchpanel.single-view .twitch-element,#twitchpanel.single-view .twitch-element-wrap
-{
-width: 100%;
-height: 689px;
-}
-#twitchpanel.single-view #twitch-player object {
-height: 690px;
-}
+	#twitchpanel.single-view .twitch-element,
+	#twitchpanel.single-view .twitch-element-wrap{
+	width: 100%;
+	height: 689px;
+	}
+	#twitchpanel.single-view #twitch-player object {
+	height: 690px;
+	}
 }
 
 #twitchpanel #twitch-player.defocus {
 position: relative;
-background: rgb(43, 43, 43);
-background: -moz-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(43, 43, 43, 1) ), color-stop(100%, rgba(0, 0, 0, 1) ) );
-background: -webkit-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-background: -o-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-background: -ms-linear-gradient(top, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
-background: linear-gradient(to bottom, rgba(43, 43, 43, 1) 0%, rgba(0, 0, 0, 1) 100% );
 }
 
 #twitchpanel #twitch-player.defocus object {
 display: none;
 }
 
-#twitchpanel a#popoutvideo,#twitchpanel a#popoutchat {
+#twitchpanel a#popoutvideo,
+#twitchpanel a#popoutchat {
 text-shadow: none;
 }
 
-#twitchpanel a#popoutvideo.btn-down,#twitchpanel a#popoutchat.btn-down {
+#twitchpanel a#popoutvideo.btn-down,
+#twitchpanel a#popoutchat.btn-down {
 color: #ccc;
 }
 
@@ -375,12 +367,12 @@ height: 500px;
 }
 
 @media ( min-width : 1200px) {
-#player-ads-video iframe {
-height: 415px;
-}
-#twitchpanel.single-view #player-ads-video iframe {
-height: 630px;
-}
+	#player-ads-video iframe {
+	height: 415px;
+	}
+	#twitchpanel.single-view #player-ads-video iframe {
+	height: 630px;
+	}
 }
 
 .stream {

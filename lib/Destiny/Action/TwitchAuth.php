@@ -40,17 +40,14 @@ class TwitchAuth {
 			throw new AppException ( 'Twitch authentication user request failed.' );
 		}
 		
-		// Create a user array from the twitch response
-		$user = $this->getUserFromData ( $data );
-		
 		// If the username is the broadcaster, and the permissions are NOT the same
 		// the broadcaster tried to login, but we need additional permissions from that user.
 		// So we redirect again, with the correct permissions
 		$broadcaster = Config::$a ['twitch'] ['broadcaster'] ['user'];
 		$broadcastPerms = Config::$a ['twitch'] ['broadcaster'] ['request_perms'];
-		if (strcasecmp ( $user ['username'], $broadcaster ) === 0 && $scope != $broadcastPerms) {
+		if (strcasecmp ( $data ['name'], $broadcaster ) === 0 && $scope != $broadcastPerms) {
 			$log = Application::instance ()->getLogger ();
-			$log->notice ( 'Requested broadcaster permissions ['. $broadcaster . ']' );
+			$log->notice ( 'Requested broadcaster permissions [' . $broadcaster . ']' );
 			Http::header ( Http::HEADER_LOCATION, 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=' . Config::$a ['twitch'] ['client_id'] . '&redirect_uri=' . urlencode ( Config::$a ['twitch'] ['redirect_uri'] ) . '&scope=' . Config::$a ['twitch'] ['broadcaster'] ['request_perms'] );
 			exit ();
 		}
@@ -59,16 +56,22 @@ class TwitchAuth {
 		$usersService = UsersService::instance ();
 		$subsService = SubscriptionsService::instance ();
 		// See if there is already a user with the TwitchId as the externalId
-		$existingUser = $usersService->getUserByExternalId ( $user ['externalId'] );
+		$existingUser = $usersService->getUserByExternalId ( $data ['_id'] );
 		if (! empty ( $existingUser )) {
 			// Since someone might change their user via twitch we update after each auth
-			$existingUser ['username'] = $user ['username'];
-			$existingUser ['displayName'] = $user ['displayName'];
-			$existingUser ['email'] = $user ['email'];
+			$existingUser ['displayName'] = $data ['display_name'];
+			$existingUser ['email'] = $data ['email'];
 			$user = $usersService->updateUser ( $existingUser );
 		} else {
-			// If not user already exists, add the new one
-			$user = $usersService->addUser ( $user );
+			// Create a user array from the twitch response
+			$user = array ();
+			$user ['externalId'] = $data ['_id'];
+			$user ['username'] = $data ['name'];
+			$user ['displayName'] = $data ['display_name'];
+			$user ['email'] = $data ['email'];
+			$user ['country'] = '';
+			$user ['admin'] = false;
+			$user ['userId'] = $usersService->addUser ( $user );
 		}
 		
 		// We should have a user with a ID by now
@@ -79,8 +82,10 @@ class TwitchAuth {
 		// If this user has no team, create a new one
 		$team = $teamsService->getTeamByUserId ( $user ['userId'] );
 		if (empty ( $team )) {
-			$team = $teamsService->addTeam ( $user ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
+			$team = array ();
+			$team ['teamId'] = $teamsService->addTeam ( $user ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
 		}
+		
 		// This variable is important to set, but we dont have much error checking
 		Session::set ( 'teamId', $team ['teamId'] );
 		
@@ -112,21 +117,6 @@ class TwitchAuth {
 		// Redirect to... league page.. weird
 		Http::header ( Http::HEADER_LOCATION, '/league' );
 		exit ();
-	}
-
-	/**
-	 * Return a standar user array from the data return from twitch
-	 *
-	 * @param object $data
-	 * @return array
-	 */
-	private function getUserFromData(array $data) {
-		$user = array ();
-		$user ['externalId'] = $data ['_id'];
-		$user ['username'] = $data ['name'];
-		$user ['displayName'] = $data ['display_name'];
-		$user ['email'] = $data ['email'];
-		return $user;
 	}
 
 	/**

@@ -169,7 +169,7 @@ class Application extends Service {
 
 	/**
 	 * Log and throw a response error
-	 * Valid responses are 401,403,404,500,503
+	 * Valid responses are 401,403,404,500
 	 *
 	 * @param string $code
 	 * @param function $fn

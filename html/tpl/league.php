@@ -56,8 +56,8 @@ use Destiny\Utils\Tpl;
 		</div>
 		<div class="tab-content">
 			<div id="RecentGames" class="tab-pane active clearfix">
-				<?include'seg/fantasy/ingame.php'?>
 				<?include'seg/fantasy/teamgamescores.php'?>
+				<?include'seg/fantasy/ingame.php'?>
 				<?include'seg/fantasy/topsummoners.php'?>
 				<?include'seg/fantasy/teamchampcores.php'?>
 			</div>

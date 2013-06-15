@@ -17,7 +17,7 @@ $log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['pa
 $log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
 
 $dbConfig = new \Doctrine\DBAL\Configuration ();
-//$dbConfig->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+// $dbConfig->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
 $db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], $dbConfig );
 
 $app = Application::instance ();
@@ -28,6 +28,7 @@ $session = Session::setInstance ( new SessionInstance () );
 $session->setSessionCookieInterface ( new SessionCookieInterface ( Config::$a ['cookie'] ) );
 $session->setAuthenticationCredentials ( new SessionAuthenticationCredentials () );
 $session->start ();
+
 
 // Admins only
 $app->bind ( '/^\/(admin)/i', function (Application $app) {

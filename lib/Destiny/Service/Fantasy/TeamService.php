@@ -29,7 +29,7 @@ class TeamService extends Service {
 	/**
 	 * Setup a new team for a user
 	 *
-	 * @param string $userId
+	 * @param nit $userId
 	 * @return array
 	 */
 	public function addTeam($userId, $credits, $transfers) {
@@ -44,8 +44,7 @@ class TeamService extends Service {
 		);
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_teams', $team );
-		$team ['teamId'] = $conn->lastInsertId ();
-		return $team;
+		return $conn->lastInsertId ();
 	}
 
 	/**

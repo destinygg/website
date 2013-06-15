@@ -18,6 +18,8 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 </head>
 <body class="error forbidden">
 
+	<?include'top.php'?>
+
 	<section id="header-band">
 		<div class="container">
 			<header class="hero-unit" id="overview">
