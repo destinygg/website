@@ -25,8 +25,8 @@ use Destiny\Session;
 	
 	<section class="container">
 		<h1 class="page-title">
-			Profile <small>(<a title="Mailto: <?=Tpl::out(Session::get('email'))?>" href="mailto:<?=Tpl::out(Session::get('email'))?>"><?=Tpl::out(Session::get('displayName'))?></a>)
-			</small>
+			Profile 
+			<small>(<a title="Mailto: <?=Tpl::out(Session::get('email'))?>" href="mailto:<?=Tpl::out(Session::get('email'))?>"><?=Tpl::out(Session::get('displayName'))?></a>)</small>
 		</h1>
 		<div class="content content-dark clearfix">
 
@@ -103,44 +103,38 @@ use Destiny\Session;
 			</div>
 
 		</div>
-		
-		<?php if(!empty($model->orders)): ?>
-		<hr size="1" />
-		
+		 
+		<?php if(!empty($model->payments)): ?>
+		<br>
+		<h2>Payments</h2>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
-				<h3 class="title">Transactions</h3>
-				<div class="control-group" style="margin:0; padding: 20px; border-top: 1px solid #222;">
-					<table class="grid" style="width: 100%;">
-						<tbody>
-							<?php foreach($model->orders as $order): ?>
-							<tr class="on">
-								<td style="width: 100%;"><a title="See this order invoice" href="/order/invoice?orderId=<?=$order['orderId']?>" style="display: block"><?=Tpl::out($order['orderReference'])?></a></td>
-								<td style="text-align: right;"><small class="subtle"><?=Tpl::out($order['description'])?></small></td>
-								<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($order['state'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($order['state'])?></span></td>
-							</tr>
-							<?php foreach($order['payments'] as $payment): ?>
-							<tr class="off">
-								<td style="width: 100%;"><?=Tpl::currency($payment['currency'], $payment['amount'])?> - <?=Date::getDateTime($payment['paymentDate'], Date::STRING_FORMAT)?></td>
-								<td style="text-align: right;"><small class="subtle">Payment</small></td>
-								<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($payment['paymentStatus'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($payment['paymentStatus'])?></span></td>
-							</tr>
-							<?php endforeach; ?>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-					
-				</div>
+				<table class="grid" style="width: 100%;">
+					<tbody>
+						<?php foreach($model->payments as $payment): ?>
+						<tr>
+							<td style="width: 100%;">
+								<a title="Payment details" href="/payment/details/?id=<?=$payment['paymentId']?>"><?=Tpl::out(substr($payment['transactionId'], 0, 8))?></a>
+								<span> - </span>
+								<span><?=Tpl::currency($payment['currency'], $payment['amount'])?></span>
+								<small class="subtle">on <?=Date::getDateTime($payment['paymentDate'], Date::STRING_FORMAT)?></small>
+							</td>
+							<td style="text-align: right;"><small class="subtle">Payment</small></td>
+							<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($payment['paymentStatus'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($payment['paymentStatus'])?></span></td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
 			</div>
 		</div>
 		<?endif;?>
 		
-		<hr size="1" />
+		<br>
+		<h2>Preferences</h2>
 		<div class="content content-dark clearfix">
 
 			<div style="width: 100%;" class="clearfix stream">
-				<h3 class="title">Preferences</h3>
-				<form id="profileSaveForm" action="/profile/save" method="post" style="margin: 0; border-top: 1px solid #222;">
+				<form id="profileSaveForm" action="/profile/save" method="post" style="margin: 0;">
 					<input type="hidden" name="url" value="/league" />
 					<fieldset>
 						<div class="control-group" style="margin: 10px 20px;">

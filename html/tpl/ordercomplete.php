@@ -38,9 +38,7 @@ use Destiny\Utils\Tpl;
 				<form action="/" method="GET" style="margin: 0;">
 					<fieldset>
 						<div class="control-group" style="margin: 10px 20px;">
-							<p>
-								Your order was successful, The order reference is <span class="label label-inverse"><?=$model->orderReference?></span><br />Please email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for any queries or issues.
-							</p>
+							<p>Your order was successful, The order reference is <span class="label label-inverse">#<?=$model->order['orderId']?></span><br />Please email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for any queries or issues.</p>
 							<div id="subscriptions">
 								<?php $subscription = $model->subscription?>
 								<div class="subscription active">

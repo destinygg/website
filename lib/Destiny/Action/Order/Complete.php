@@ -52,12 +52,13 @@ class Complete {
 		// Make sure our checkoutId is valid
 		if (! isset ( $params ['checkoutId'] ) || empty ( $this->checkoutId ) || $this->checkoutId != $params ['checkoutId']) {
 			// If we have an invalid checkout token.
-			// Find the order, if its Complete, forward the user to the invoice page
+			// Find the order, if its Complete, forward the user to the profile page
 			if (isset ( $params ['orderId'] )) {
 				$order = $ordersService->getOrderById ( $params ['orderId'] );
 				// Make sure the order is for this user
 				if (! empty ( $order ) && $order ['userId'] == Session::get ( 'userId' ) && strcasecmp ( $order ['state'], 'Completed' ) === 0) {
-					Http::header ( Http::HEADER_LOCATION, '/order/invoice?orderId=' . urlencode ( $params ['orderId'] ) );
+					// @TODO this should be done better
+					Http::header ( Http::HEADER_LOCATION, '/profile' );
 					die ();
 				}
 			}
@@ -210,7 +211,6 @@ class Complete {
 		
 		// Show the order complete screen
 		$model->order = $order;
-		$model->orderReference = $ordersService->buildOrderRef ( $order );
 		$model->subscription = $subscription;
 		$model->paymentProfile = $paymentProfile;
 		return 'ordercomplete';

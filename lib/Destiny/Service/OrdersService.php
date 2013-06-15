@@ -252,7 +252,7 @@ class OrdersService extends Service {
 	 * @param int $paymentProfileId
 	 * @param \DateTime $billingNextDate
 	 */
-	public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
+	public function updatePaymentProfileNextPayment($paymentProfileId,\DateTime $billingNextDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_orders_payment_profiles', array (
 				'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 
@@ -344,6 +344,24 @@ class OrdersService extends Service {
 	}
 
 	/**
+	 * Return a payment by paymentId
+	 * 
+	 * @param int $paymentId
+	 * @return array
+	 */
+	public function getPaymentById($paymentId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT payments.* FROM dfl_orders_payments AS `payments`
+			WHERE payments.paymentId = :paymentId
+			LIMIT 0,1
+		' );
+		$stmt->bindValue ( 'paymentId', $paymentId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
+	}
+
+	/**
 	 * Add an order payment
 	 *
 	 * @param array $payment
@@ -379,16 +397,6 @@ class OrdersService extends Service {
 		), array (
 				'profileId' => $payment ['paymentId'] 
 		) );
-	}
-
-	/**
-	 * Build an order reference string
-	 *
-	 * @param array $order
-	 * @return string
-	 */
-	public function buildOrderRef(array $order) {
-		return strtoupper ( base_convert ( strtotime ( $order ['createdDate'] ), 10, 36 ) ) . '-' . strlen ( $order ['userId'] ) . $order ['userId'] . strlen ( $order ['orderId'] ) . $order ['orderId'];
 	}
 
 	/**
