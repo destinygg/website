@@ -35,38 +35,35 @@ use Destiny\Utils\Tpl;
 				</div>
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
-				<form action="/order/create" method="post" style="margin: 0;">
+				<form action="/order/create" method="post">
 					<input type="hidden" name="renew" value="<?=$model->renew?>"> <input type="hidden" name="subscription" value="<?=$model->subscription['id']?>">
 					<input type="hidden" name="checkoutId" value="<?=$model->checkoutId?>">
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px;">
-							<p>
-								Please confirm your order by pressing the 'Pay subscription'
-								button below. <br />Payments are processed and secured by
-								PayPal.
-							</p>
-							<div id="subscriptions">
-								<div class="subscription active">
-									<strong class="sub-amount">$<?=$model->subscription['amount']?></strong>
-									<span class="sub-label"><?=$model->subscription['label']?></span>
-									<div>
-									<?php if($model->renew): ?>
-									<?=$model->subscription['agreement']?>
-									<?php else: ?>
-									<?=$model->subscription['billingFrequency']?> <?=strtolower($model->subscription['billingPeriod'])?> - once-off payment
-									<?php endif; ?>
-									</div>
+					<div class="control-group">
+						<p>
+							Please confirm your order by pressing the 'Pay subscription'
+							button below. <br />Payments are processed and secured by
+							PayPal.
+						</p>
+						<div id="subscriptions">
+							<div class="subscription active">
+								<strong class="sub-amount">$<?=$model->subscription['amount']?></strong>
+								<span class="sub-label"><?=$model->subscription['label']?></span>
+								<div>
+								<?php if($model->renew): ?>
+								<?=$model->subscription['agreement']?>
+								<?php else: ?>
+								<?=$model->subscription['billingFrequency']?> <?=strtolower($model->subscription['billingPeriod'])?> - once-off payment
+								<?php endif; ?>
 								</div>
-								<p>By clicking the 'Pay subscription' button below, you are confirming that this purchase is what you wanted.</p>
 							</div>
+							<p>By clicking the 'Pay subscription' button below, you are confirming that this purchase is what you wanted.</p>
 						</div>
-						<div class="form-actions"
-							style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-							<button type="submit" class="btn btn-primary"><i class="icon-shopping-cart icon-white"></i> Pay subscription</button>
-							<a href="/subscribe" class="btn">Cancel</a>
-						</div>
-					</fieldset>
+					</div>
+					<div class="form-actions block-foot">
+						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<button type="submit" class="btn btn-primary"><i class="icon-shopping-cart icon-white"></i> Pay subscription</button>
+						<a href="/subscribe" class="btn">Cancel</a>
+					</div>
 				</form>
 			</div>
 		</div>

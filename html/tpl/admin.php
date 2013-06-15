@@ -22,9 +22,7 @@ use Destiny\Utils\Tpl;
 			</small>
 		</h1>
 		<hr size="1">
-		
 		<?php include'admin/games.php'?>
-		<?php include'admin/logs.php'?>
 
 	</section>
 	

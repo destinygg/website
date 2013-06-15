@@ -19,17 +19,18 @@ if (! empty ( $model->champions )) {
 		<div class="team-maker-console pull-right"></div>
 	</div>
 	<div class="clearfix champ-sorting">
-		<div class="btn-group clearfix pull-right" style="margin-left: 10px;">
-			<a class="btn btn-mini btn-inverse dropdown-toggle"
-				data-toggle="dropdown"> Sort by <span class="caret"></span>
-			</a>
+		<div class="btn-group">
+			<a class="btn btn-mini btn-inverse dropdown-toggle" data-toggle="dropdown"> Sort by <span class="caret"></span></a>
 			<ul class="dropdown-menu">
 				<li><a data-by="name">Label</a></li>
 				<li><a data-by="value">Price</a></li>
 			</ul>
 		</div>
-		<div class="btn-group clearfix pull-right">
-			<button class="btn btn-mini btn-inverse pull-left champ-free-filter" data-toggle="buttons-radio">Free champions only</button>
+		<div class="btn-group">
+			<button class="btn btn-mini btn-inverse champ-filter" data-filterby="free" data-toggle="buttons-radio">Free</button>
+		</div>
+		<div class="btn-group">
+			<button class="btn btn-mini btn-inverse champ-filter" data-filterby="owned" data-toggle="buttons-radio">Purchased</button>
 		</div>
 	</div>
 	<div class="team-maker-selection" id="champSelector">

@@ -26,7 +26,7 @@ use Destiny\Utils\Date;
 		</h1>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
-				<div class="control-group" style="margin: 10px 20px;">
+				<div class="control-group">
 					<p>An error has occurred during the activation process.
 					<br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. </p>
 					<div class="alert alert-error">
@@ -34,7 +34,7 @@ use Destiny\Utils\Date;
 						<?=Tpl::out($model->error->getMessage())?>
 					</div>
 				</div>
-				<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+				<div class="form-actions block-foot">
 					<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
 					<a href="/profile" class="btn">Back to profile</a>
 				</div>

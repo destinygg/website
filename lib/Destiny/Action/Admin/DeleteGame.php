@@ -18,9 +18,9 @@ class DeleteGame {
 		GameAggregationService::instance ()->removeGame ( $params ['gameId'] );
 		GameAggregationService::instance ()->calculateTeamScore ();
 		GameAggregationService::instance ()->calculateTeamRanks ();
-		$task = new \Destiny\Scheduled\Leaderboards ();
+		$task = new \Destiny\Tasks\Leaderboards ();
 		$task->execute ( $log );
-		$task = new \Destiny\Scheduled\Champions ();
+		$task = new \Destiny\Tasks\Champions ();
 		$task->execute ( $log );
 	}
 

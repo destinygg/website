@@ -39,9 +39,8 @@ use Destiny\Utils\Tpl;
 	<?include'seg/fantasy/teammaker.php'?>
 	
 	<section class="container">
-		<div class="navbar navbar-inverse" style="margin-bottom: 0;">
+		<div style="margin:0;" class="navbar navbar-inverse">
 			<div class="navbar-inner">
-				<a class="brand">League</a>
 				<ul class="nav">
 					<li class="active"><a href="#RecentGames" data-toggle="tab" title="Recent games">Games</a></li>
 					<li><a href="#Challengers" data-toggle="tab" title="Your challenge group">Group</a></li>
@@ -55,26 +54,24 @@ use Destiny\Utils\Tpl;
 				</ul>
 			</div>
 		</div>
+		<div class="tab-content">
+			<div id="RecentGames" class="tab-pane active clearfix">
+				<?include'seg/fantasy/ingame.php'?>
+				<?include'seg/fantasy/teamgamescores.php'?>
+				<?include'seg/fantasy/topsummoners.php'?>
+				<?include'seg/fantasy/teamchampcores.php'?>
+			</div>
+			<div id="Challengers" class="tab-pane clearfix">
+				<?include'seg/fantasy/challengers.php'?>
+			</div>
+			<div id="Invites" class="tab-pane clearfix">
+				<?include'seg/fantasy/invites.php'?>
+			</div>
+			<div id="Help" class="tab-pane clearfix">
+				<?include'seg/fantasy/score.legend.php'?>
+			</div>
+		</div>
 	</section>
-
-	<section class="container tab-content" style="margin-top: 0;">
-		<div id="RecentGames" class="tab-pane active clearfix">
-			<?include'seg/fantasy/ingame.php'?>
-			<?include'seg/fantasy/teamgamescores.php'?>
-			<?include'seg/fantasy/topsummoners.php'?>
-			<?include'seg/fantasy/teamchampcores.php'?>
-		</div>
-		<div id="Challengers" class="tab-pane clearfix">
-			<?include'seg/fantasy/challengers.php'?>
-		</div>
-		<div id="Invites" class="tab-pane clearfix">
-			<?include'seg/fantasy/invites.php'?>
-		</div>
-		<div id="Help" class="tab-pane clearfix">
-			<?include'seg/fantasy/score.legend.php'?>
-		</div>
-	</section>
-	<hr class="container" size="1" />
 	<?endif;?>
 	
 	<?include'seg/fantasy/teamleaders.php'?>

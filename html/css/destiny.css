@@ -76,6 +76,13 @@ h1 .label, h2 .label, h3 .label, h4 .label {
 vertical-align: middle;
 }
 
+.control-group {
+margin: 20px;
+}
+form { 
+margin:0;
+}
+
 .nav-tabs {
 border-bottom: 1px solid #222;
 margin: 0;
@@ -218,6 +225,12 @@ background: #111;
 border-bottom: 1px solid #000;
 border-bottom-left-radius: 6px;
 border-bottom-right-radius: 6px;
+}
+.content-dark .block-foot {
+margin: 15px 0 0 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+border-bottom-right-radius: 0;
 }
 
 i.icon-bobross {

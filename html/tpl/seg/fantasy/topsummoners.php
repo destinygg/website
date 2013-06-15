@@ -9,7 +9,7 @@ use Destiny\Utils\Lol;
 <div class="content content-dark stream-grids clearfix">
 
 	<div class="stream stream-grid">
-		<table class="grid" style="width: 100%;">
+		<table class="grid">
 			<thead>
 				<tr>
 					<td style="width: 100%">Top subscribers</td>
@@ -62,7 +62,7 @@ use Destiny\Utils\Lol;
 	</div>
 
 	<div class="stream stream-grid">
-		<table class="grid" style="width: 100%;">
+		<table class="grid">
 			<thead>
 				<tr>
 					<td style="width: 100%">Popular summoners</td>

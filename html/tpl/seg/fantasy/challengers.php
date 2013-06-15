@@ -6,7 +6,7 @@ use Destiny\Service\Fantasy\ChampionService;
 ?>
 <div class="content content-dark clearfix">
 
-	<table id="challengerGrid" class="grid" style="width: 100%;">
+	<table id="challengerGrid" class="grid">
 		<thead>
 			<tr>
 				<td style="width: 100%">Leaders</td>

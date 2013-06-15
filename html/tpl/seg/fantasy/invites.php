@@ -5,7 +5,7 @@ use Destiny\Utils\Lol;
 ?>
 <div id="challengeInvites" class="content content-dark clearfix">
 
-	<table class="grid pull-left" style="width: 100%;">
+	<table class="grid pull-left">
 		<thead>
 			<tr>
 				<td>Recieved</td>
@@ -32,7 +32,7 @@ use Destiny\Utils\Lol;
 		</tbody>
 	</table>
 
-	<table class="grid pull-right" style="width: 100%;">
+	<table class="grid pull-right">
 		<thead>
 			<tr>
 				<td>Sent</td>

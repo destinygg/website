@@ -35,74 +35,72 @@ use Destiny\Utils\Tpl;
 				</div>
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
-				<form action="/order/confirm" method="post" style="margin: 0;">
+				<form action="/order/confirm" method="post">
 					<input type="hidden" name="checkoutId" value="<?=$model->checkoutId?>" />
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px;">
-							<?php if(!empty($model->subscription)): ?>
-							<p>
-								<span class="label label-inverse">HMMM</span> You already have
-								an active subscription. <br />Click the button below to go to
-								your profile.
-							</p>
-							<?php endif; ?>
-							
-							<?php if(empty($model->subscription)): ?>
-							<p>
-								Choose a subscription from the selection below. <br />Payments
-								are processed and secured by PayPal.
-							</p>
-							<div id="subscriptions">
-								<?php $sub = $model->subscriptions['1-MONTH-SUB']?>
-								<div class="subscription active">
+					<div class="control-group">
+						<?php if(!empty($model->subscription)): ?>
+						<p>
+							<span class="label label-inverse">HMMM</span> You already have
+							an active subscription. <br />Click the button below to go to
+							your profile.
+						</p>
+						<?php endif; ?>
+						
+						<?php if(empty($model->subscription)): ?>
+						<p>
+							Choose a subscription from the selection below. <br />Payments
+							are processed and secured by PayPal.
+						</p>
+						<div id="subscriptions">
+							<?php $sub = $model->subscriptions['1-MONTH-SUB']?>
+							<div class="subscription active">
+								<label class="radio">
+									<input type="radio" name="subscription" value="<?=$sub['id']?>" checked="checked">
+									<strong class="sub-amount">$<?=$sub['amount']?></strong>
+									<span class="sub-label"><?=$sub['label']?></span>
+								</label>
+								<div class="payment-options">
 									<label class="radio">
-										<input type="radio" name="subscription" value="<?=$sub['id']?>" checked="checked">
-										<strong class="sub-amount">$<?=$sub['amount']?></strong>
-										<span class="sub-label"><?=$sub['label']?></span>
-									</label>
-									<div class="payment-options">
-										<label class="radio">
-											<input type="radio" name="renew" value="1" checked>
-											Renew each month
-										</label> 
-										<label class="radio">
-											<input type="radio" name="renew" value="0">
-											Once-off payment
-										</label>
-									</div>
-								</div>
-								<?php $sub = $model->subscriptions['3-MONTH-SUB']?>
-								<div class="subscription">
+										<input type="radio" name="renew" value="1" checked>
+										Renew each month
+									</label> 
 									<label class="radio">
-										<input type="radio" name="subscription" value="<?=$sub['id']?>">
-										<strong class="sub-amount">$<?=$sub['amount']?></strong>
-										<span class="sub-label"><?=$sub['label']?></span>
+										<input type="radio" name="renew" value="0">
+										Once-off payment
 									</label>
-									<div class="payment-options">
-										<label class="radio">
-											<input type="radio" name="renew" value="1">
-											Renew every 3 months
-										</label>
-										<label class="radio">
-											<input type="radio" name="renew" value="0">
-											Once-off payment
-										</label>
-									</div>
 								</div>
 							</div>
-							<?php endif; ?>
-							
+							<?php $sub = $model->subscriptions['3-MONTH-SUB']?>
+							<div class="subscription">
+								<label class="radio">
+									<input type="radio" name="subscription" value="<?=$sub['id']?>">
+									<strong class="sub-amount">$<?=$sub['amount']?></strong>
+									<span class="sub-label"><?=$sub['label']?></span>
+								</label>
+								<div class="payment-options">
+									<label class="radio">
+										<input type="radio" name="renew" value="1">
+										Renew every 3 months
+									</label>
+									<label class="radio">
+										<input type="radio" name="renew" value="0">
+										Once-off payment
+									</label>
+								</div>
+							</div>
 						</div>
-						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-							<?php if(empty($model->subscription)): ?>
-							<button type="submit" class="btn btn-primary"><i class="icon-check icon-white"></i> Confirm selection</button>
-							<a href="/profile" class="btn">Back to profile</a>
-							<?php else: ?>
-							<a href="/profile" class="btn">Back to profile</a>
-							<?php endif; ?>
-						</div>
-					</fieldset>
+						<?php endif; ?>
+						
+					</div>
+					<div class="form-actions block-foot">
+						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<?php if(empty($model->subscription)): ?>
+						<button type="submit" class="btn btn-primary"><i class="icon-check icon-white"></i> Confirm selection</button>
+						<a href="/profile" class="btn">Back to profile</a>
+						<?php else: ?>
+						<a href="/profile" class="btn">Back to profile</a>
+						<?php endif; ?>
+					</div>
 				</form>
 			</div>
 		</div>

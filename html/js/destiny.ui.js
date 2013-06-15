@@ -366,10 +366,11 @@ $(function(){
 			iframe = calendarFrame.find('iframe'),
 			tzNote = $('#scheduleCalendarTimezone'),
 			timezoneSelect = tzNote.find('select'),
-			timezoneBtn = tzNote.find('button.timezone');
+			timezoneBtn = tzNote.find('button.change-timezone'),
+			timezoneLbl = tzNote.find('span.timezone');
 		var loadGoogleCalendar = function(){
 			iframe.attr('src', iframe.data('src') + '&ctz=' + encodeURIComponent(timezone));
-			timezoneBtn.html(timezone);
+			timezoneLbl.html(timezone);
 		};
 		timezoneBtn.on('click', function(){
 			$('#scheduleCalendarForm').toggle('hide');

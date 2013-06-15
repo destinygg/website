@@ -13,7 +13,7 @@ $loader->add ( 'Destiny', $base . '/lib/' );
 Config::load ( $base . '/lib/config.php' );
 
 $log = new \Monolog\Logger ( 'http' );
-$log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['path'] . '/events.log', \Monolog\Logger::DEBUG ) );
+$log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['path'] . '/events.log', \Monolog\Logger::INFO ) );
 $log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
 
 $dbConfig = new \Doctrine\DBAL\Configuration ();

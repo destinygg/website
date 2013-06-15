@@ -25,88 +25,37 @@ use Destiny\Utils\Date;
 		<h1 class="title">
 			<span>Payment</span> <small><?=Tpl::out(substr($model->payment['transactionId'], 0,8))?></small>
 		</h1>
-
 		<div class="content content-dark clearfix">
-			
-			<div style="width: 100%; clear: both;" class="clearfix stream">
-				<div style="padding:10px; margin: 0;">
-					<dl class="dl-horizontal">
-						<dt>Status:</dt>
-						<dd><span class="label label-<?=($model->payment['paymentStatus'] == 'Completed') ? 'success':'warning'?>"><?=Tpl::out($model->payment['paymentStatus'])?></span></dd>
-						<dt>Amount:</dt>
-						<dd><?=Tpl::currency($model->payment['currency'], $model->payment['amount'])?></dd>
-						<dt>Reference:</dt>
-						<dd><?=Tpl::out($model->payment['transactionId'])?></dd>
-						<dt>Type:</dt>
-						<dd><?=Tpl::out($model->payment['transactionType'])?></dd>
-						<dt>Payer:</dt>
-						<dd><?=Tpl::out($model->payment['payerId'])?></dd>
-						<dt>Payment:</dt>
-						<dd><?=Tpl::out($model->payment['paymentType'])?></dd>
-						<dt>Payed on:</dt>
-						<dd><?=Date::getDateTime($model->payment['paymentDate'], Date::STRING_FORMAT_YEAR)?></dd>
-						<br>
-						<dt title="This is the related order description">Description:</dt>
-						<dd><?=Tpl::out($model->order['description'])?></dd>
-						<dt>Order:</dt>
-						<dd>#<?=Tpl::out($model->order['orderId'])?></dd>
-						<dt>Recurring:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'], 'none')?></dd>
-					</dl>
-				</div>
+			<div class="control-group clearfix">
+				<dl class="dl-horizontal">
+					<dt>Status:</dt>
+					<dd><span class="label label-<?=($model->payment['paymentStatus'] == 'Completed') ? 'success':'warning'?>"><?=Tpl::out($model->payment['paymentStatus'])?></span></dd>
+					<dt>Amount:</dt>
+					<dd><?=Tpl::currency($model->payment['currency'], $model->payment['amount'])?></dd>
+					<dt>Reference:</dt>
+					<dd><?=Tpl::out($model->payment['transactionId'])?></dd>
+					<dt>Type:</dt>
+					<dd><?=Tpl::out($model->payment['transactionType'])?></dd>
+					<dt>Payer:</dt>
+					<dd><?=Tpl::out($model->payment['payerId'])?></dd>
+					<dt>Payment:</dt>
+					<dd><?=Tpl::out($model->payment['paymentType'])?></dd>
+					<dt>Payed on:</dt>
+					<dd><?=Date::getDateTime($model->payment['paymentDate'], Date::STRING_FORMAT_YEAR)?></dd>
+					<br>
+					<dt title="This is the related order description">Description:</dt>
+					<dd><?=Tpl::out($model->order['description'])?></dd>
+					<dt>Order:</dt>
+					<dd>#<?=Tpl::out($model->order['orderId'])?></dd>
+					<dt>Recurring:</dt>
+					<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'], 'none')?></dd>
+				</dl>
 			</div>
-
-			<?php /* 
-			<div style="width: 100%; clear: both;" class="clearfix stream">
-				<h3 class="title">Related order</h3>
-				<div style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
-					<dl class="dl-horizontal">
-						<dt>Status:</dt>
-						<dd><span class="label label-<?=($model->order['state'] == 'Completed') ? 'success':'warning'?>"><?=Tpl::out($model->order['state'])?></span></dd>
-						<dt>Amount:</dt>
-						<dd><?=Tpl::currency($model->order['currency'], $model->order['amount'])?></dd>
-						<dt>Description:</dt>
-						<dd><?=Tpl::out($model->order['description'])?></dd>
-						<dt>Created on:</dt>
-						<dd><?=Date::getDateTime($model->order['createdDate'], Date::STRING_FORMAT_YEAR)?></dd>
-					</dl>
-				</div>
-			</div>
-			*/?>
-		
-			<?php /* if(!empty($model->paymentProfile)):
-			<div style="width: 100%; clear: both;" class="clearfix stream">
-				<h3 class="title">Related recurring</h3>
-				<div style="padding: 10px 20px; margin: 0; border-top: 1px solid #222;">
-					<dl class="dl-horizontal">
-						<dt>Status:</dt>
-						<dd><span class="label label-<?=($model->paymentProfile['state'] == 'ActiveProfile') ? 'success':'warning'?>"><?=Tpl::out($model->paymentProfile['state'])?></span></dd>
-						<dt>Amount:</dt>
-						<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
-						<dt>Profile:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'], 'none')?></dd>
-						<dt>Billing period:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['billingPeriod'], 'none')?></dd>
-						<dt>Billing frequency:</dt>
-						<dd><?=Tpl::out($model->paymentProfile['billingFrequency'], 'none')?></dd>
-						<dt>Billing start date:</dt>
-						<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
-						<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
-						<dt>Billing next date:</dt>
-						<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
-						<?php endif; ?>
-					</dl>
-				</div>
-			</div>
-			endif; */?>
-			
-			<div class="form-actions clearfix" style="clear: both; margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+			<div class="form-actions block-foot">
 				<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
 				<a class="btn" href="/profile">Back to profile</a>
 			</div>
-
 		</div>
-
 	</section>
 	
 	<?include'seg/foot.php'?>

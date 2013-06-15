@@ -35,23 +35,21 @@ use Destiny\Utils\Tpl;
 				</div>
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
-				<form action="/order/confirm" method="post" style="margin: 0;">
+				<form action="/order/confirm" method="post">
 					<input type="hidden" name="checkoutId" value="<?=$model->checkoutId?>" />
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px;">
-							<p>An error has occurred during the subscription process.
-							<br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. </p>
-							<div class="alert alert-error">
-								<h4>Error!</h4>
-								<?=Tpl::out($model->error->getMessage())?>
-							</div>
+					<div class="control-group">
+						<p>An error has occurred during the subscription process.
+						<br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. </p>
+						<div class="alert alert-error">
+							<h4>Error!</h4>
+							<?=Tpl::out($model->error->getMessage())?>
 						</div>
-						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-							<a href="/subscribe" class="btn btn-primary"><i class="icon-chevron-left"></i> Subscriptions</a>
-							<a href="/profile" class="btn">Back to profile</a>
-						</div>
-					</fieldset>
+					</div>
+					<div class="form-actions block-foot">
+						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<a href="/subscribe" class="btn btn-primary"><i class="icon-chevron-left"></i> Subscriptions</a>
+						<a href="/profile" class="btn">Back to profile</a>
+					</div>
 				</form>
 			</div>
 		</div>

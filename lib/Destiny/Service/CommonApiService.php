@@ -84,6 +84,8 @@ class CommonApiService extends Service {
 	 * @return \Destiny\HttpApiConsumer
 	 */
 	public function getYoutubePlaylist(array $options = array(), array $params = array()) {
+		// Get the channel ID's from a specific person
+		// GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=StevenBonnell&key={YOUR_API_KEY}
 		$params ['limit'] = (isset ( $params ['limit'] )) ? intval ( $params ['limit'] ) : 4;
 		return new HttpApiConsumer ( array_merge ( array (
 				'url' => new String ( 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlistId}&key={apikey}&maxResults={limit}', array (

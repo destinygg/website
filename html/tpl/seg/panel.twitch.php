@@ -1,11 +1,11 @@
 <? namespace Destiny; ?>
 <?if((bool) Config::$a['blocks']['twitch']):?>
-<section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&popout_chat=true">
+<section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&popout_chat=true">
 	<div class="content content-dark">
 		<div class="panelheader clearfix">
 			<div class="toolgroup clearfix">
 				<div class="pull-left channel-stat game" style="display: none;"></div>
-				<div class="btn-group pull-right" style="margin-left: 10px;">
+				<div class="btn-group pull-right">
 					<a id="popoutvideo" title="Pop-out video" class="btn btn-mini btn-link">Pop-out player</a>
 					<a id="popoutchat" title="Pop-out chat" class="btn btn-mini btn-link">Pop-out chat</a>
 				</div>

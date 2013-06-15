@@ -12,8 +12,7 @@
 							contributions are welcome and appreciated, but not required.
 						</p>
 						<div id="paypal-form">
-							<form action="https://www.paypal.com/cgi-bin/webscr"
-								method="post" disabled="disabled">
+							<form action="https://www.paypal.com/cgi-bin/webscr" method="post" disabled="disabled">
 								<input type="hidden" name="cmd" value="_donations">
 								<input type="hidden" name="business" value="<?=Config::$a['paypal']['email']?>">
 								<input type="hidden" name="lc" value="US">

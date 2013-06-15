@@ -9,7 +9,7 @@ use Destiny\Utils\Lol;
 <section class="container">
 	<div class="content content-dark stream-grids clearfix">
 		<div class="stream stream-grid">
-			<table class="grid" style="width: 100%;">
+			<table class="grid">
 				<thead>
 					<tr>
 						<td style="width: 100%">Leaders</td>
@@ -58,7 +58,7 @@ use Destiny\Utils\Lol;
 		</div>
 
 		<div class="stream stream-grid">
-			<table class="grid" style="width: 100%;">
+			<table class="grid">
 				<thead>
 					<tr>
 						<td style="width: 100%">Recent match leaders</td>

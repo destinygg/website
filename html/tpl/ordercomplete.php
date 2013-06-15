@@ -35,31 +35,29 @@ use Destiny\Utils\Tpl;
 				</div>
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
-				<form action="/" method="GET" style="margin: 0;">
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px;">
-							<p>Your order was successful, The order reference is <span class="label label-inverse">#<?=$model->order['orderId']?></span><br />Please email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for any queries or issues.</p>
-							<div id="subscriptions">
-								<?php $subscription = $model->subscription?>
-								<div class="subscription active">
-									<strong class="sub-amount">$<?=$subscription['amount']?></strong>
-									<span class="sub-label"><?=$subscription['label']?></span>
-									<div>
-										<?php if(!empty($model->paymentProfile)): ?>
-										<?=$subscription['agreement']?>
-										<?php else: ?>
-										<?=$subscription['billingFrequency']?> <?=strtolower($subscription['billingPeriod'])?> - once-off payment
-										<?php endif; ?>
-									</div>
+				<form action="/" method="GET">
+					<div class="control-group">
+						<p>Your order was successful, The order reference is <span class="label label-inverse">#<?=$model->order['orderId']?></span><br />Please email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for any queries or issues.</p>
+						<div id="subscriptions">
+							<?php $subscription = $model->subscription?>
+							<div class="subscription active">
+								<strong class="sub-amount">$<?=$subscription['amount']?></strong>
+								<span class="sub-label"><?=$subscription['label']?></span>
+								<div>
+									<?php if(!empty($model->paymentProfile)): ?>
+									<?=$subscription['agreement']?>
+									<?php else: ?>
+									<?=$subscription['billingFrequency']?> <?=strtolower($subscription['billingPeriod'])?> - once-off payment
+									<?php endif; ?>
 								</div>
-								<p>Thank you for your support!</p>
 							</div>
+							<p>Thank you for your support!</p>
 						</div>
-						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-							<a href="/profile" class="btn">Back to profile</a>
-						</div>
-					</fieldset>
+					</div>
+					<div class="form-actions block-foot">
+						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<a href="/profile" class="btn">Back to profile</a>
+					</div>
 				</form>
 			</div>
 		</div>

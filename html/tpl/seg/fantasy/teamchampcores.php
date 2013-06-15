@@ -1,16 +1,13 @@
 <?
-
 namespace Destiny;
-
 use Destiny\Utils\Tpl;
 use Destiny\Utils\Lol;
-
 ?>
 <?if(!empty($model->userChampScores) || !empty($model->topChampions)):?>
 <div class="content content-dark clearfix">
 	<div class="stream">
-		<h3 class="title" style="border: none">Top league champions</h3>
-		<div style="margin: 0 15px 5px 15px;" class="clearfix">
+		<div class="control-group clearfix">
+			<h4>Top league champions</h4>
 			<?php if(!empty($model->topChampions)): ?>
 			<?foreach($model->topChampions as $topChamp):?>
 			<?$title = Tpl::out($topChamp['championName'])?>
@@ -40,14 +37,12 @@ use Destiny\Utils\Lol;
 
 	</div>
 	<div class="stream">
-		<h3 class="title" style="border: none">Your top champions</h3>
-		<div style="margin: 0 15px 5px 15px;" class="clearfix">
+		<div class="control-group clearfix">
+			<h4>Your top champions</h4>
 			<?php if(!empty($model->userChampScores)): ?>
 			<?foreach($model->userChampScores as $champScore):?>
 			<?$title = Tpl::out($champScore['championName'])?>
-			<div data-id="<?=(int) $champScore['championId']?>"
-				data-name="<?=$title?>" class="champion"
-				style="float: left; width: 20%;">
+			<div data-id="<?=(int) $champScore['championId']?>" data-name="<?=$title?>" class="champion" style="float: left; width: 20%;">
 				<div class="clearfix">
 					<div title="<?=$title?>">
 						<img style="max-width: 100%;" title="<?=Tpl::out($champScore['championName'])?>" src="<?=Config::cdn()?>/img/320x320.gif" data-src="<?=Lol::getIcon($champScore['championName'])?>" />

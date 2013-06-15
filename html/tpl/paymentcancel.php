@@ -28,61 +28,55 @@ use Destiny\Utils\Date;
 			<div style="width: 100%;" class="clearfix stream">
 			
 				<?php if(!$model->unsubscribed): ?>
-				<form action="/payment/cancel" method="post" style="margin: 0;">
+				<form action="/payment/cancel" method="post">
 					<input type="hidden" name="confirmationId" value="<?=$model->confirmationId?>" />
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px;">
-							<p>
-								You are about to cancel the scheduled payments for your active subscription.
-								<br>This can be re-activated from your profile at any time.
-							</p>
-							
-							<dl class="dl-horizontal">
-								<dt>Status:</dt>
-								<dd><span class="label label-<?=($model->paymentProfile['state'] == 'ActiveProfile') ? 'success':'warning'?>"><?=Tpl::out($model->paymentProfile['state'])?></span></dd>
-								<dt>Amount:</dt>
-								<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
-								<dt>Profile:</dt>
-								<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'], 'none')?></dd>
-								<dt>Billing Cycle:</dt>
-								<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
-								<dt>Billing start date:</dt>
-								<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
-								<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
-								<dt>Billing next date:</dt>
-								<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
-								<?php endif; ?>
-							</dl>
-							
-							<p>
-								<span class="label label-inverse">NOTE</span> This does not affect your current subscription status. 
-								<br>Your subscription will expire at the end of its duration. 
-							</p>
-						</div>
-						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-							<button type="submit" class="btn btn-danger">Cancel scheduled payments</button>
-							<a href="/profile" class="btn">Back to profile</a>
-						</div>
-					</fieldset>
+					<div class="control-group">
+						<p>
+							You are about to cancel the scheduled payments for your active subscription.
+							<br>This can be re-activated from your profile at any time.
+						</p>
+						
+						<dl class="dl-horizontal">
+							<dt>Status:</dt>
+							<dd><span class="label label-<?=($model->paymentProfile['state'] == 'ActiveProfile') ? 'success':'warning'?>"><?=Tpl::out($model->paymentProfile['state'])?></span></dd>
+							<dt>Amount:</dt>
+							<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
+							<dt>Profile:</dt>
+							<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'], 'none')?></dd>
+							<dt>Billing Cycle:</dt>
+							<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
+							<dt>Billing start date:</dt>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
+							<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
+							<dt>Billing next date:</dt>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
+							<?php endif; ?>
+						</dl>
+						
+						<p>
+							<span class="label label-inverse">NOTE</span> This does not affect your current subscription status. 
+							<br>Your subscription will expire at the end of its duration. 
+						</p>
+					</div>
+					<div class="form-actions block-foot">
+						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<button type="submit" class="btn btn-danger">Cancel scheduled payments</button>
+						<a href="/profile" class="btn">Back to profile</a>
+					</div>
 				</form>
 				<?php endif; ?>
 				
 				<?php if($model->unsubscribed): ?>
-				<form style="margin: 0;">
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px;">
-							<p>
-								Your scheduled payment has been cancelled.
-								<br>Thank you for your support!
-							</p>
-						</div>
-						<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-							<a href="/profile" class="btn">Go back to profile</a>
-						</div>
-					</fieldset>
-				</form>
+				<div class="control-group">
+					<p>
+						Your scheduled payment has been cancelled.
+						<br>Thank you for your support!
+					</p>
+				</div>
+				<div class="form-actions block-foot">
+					<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+					<a href="/profile" class="btn">Go back to profile</a>
+				</div>
 				<?php endif; ?>
 				
 			</div>

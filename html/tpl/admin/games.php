@@ -6,7 +6,7 @@ use Destiny\Utils\Lol;
 <h3>Fantasy League</h3>
 <div class="content content-dark clearfix">
 	<div style="width: 100%;" class="clearfix stream">
-		<div class="tab-content" style="padding: 20px; margin:0;">
+		<div class="tab-content control-group">
 			
 			<ul class="nav nav-pills">
 				<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>
@@ -14,7 +14,7 @@ use Destiny\Utils\Lol;
 			</ul>
 			
 			<div class="tab-pane active clearfix" id="Games">
-				<table class="grid" style="width: 100%;">
+				<table class="grid">
 					<thead>
 						<tr>
 							<td>Id</td>
@@ -63,7 +63,7 @@ use Destiny\Utils\Lol;
 			</div>
 			
 			<div class="tab-pane clearfix" id="Tracking">
-				<table class="grid" style="width: 100%;">
+				<table class="grid">
 					<thead>
 						<tr>
 							<td>Id</td>

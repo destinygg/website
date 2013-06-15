@@ -34,8 +34,8 @@ use Destiny\Session;
 		<div class="content content-dark clearfix">
 
 			<div style="width: 100%;" class="clearfix stream">
-				<form action="/subscribe" method="post" style="margin: 0; border-top: 1px solid #222;">
-					<div class="control-group" style="margin: 10px 20px 20px 20px;">
+				<form action="/subscribe" method="post">
+					<div class="control-group">
 
 						<?if(empty($model->subscription)):?>
 						<p>You have no active subscriptions. Click the 'Subscribe' button below to get one!</p>
@@ -95,7 +95,7 @@ use Destiny\Session;
 					</div>
 
 					<?if(empty($model->subscription) && empty($model->paymentProfile)):?>
-					<div class="form-actions" style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+					<div class="form-actions block-foot">
 						<a href="/subscribe" class="btn btn-primary"><i class="icon-heart icon-white"></i> Subscribe</a>
 					</div>
 					<?endif;?>
@@ -106,11 +106,10 @@ use Destiny\Session;
 		</div>
 		 
 		<?php if(!empty($model->payments)): ?>
-		<br>
 		<h3>Payments</h3>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
-				<table class="grid" style="width: 100%;">
+				<table class="grid">
 					<tbody>
 						<?php foreach($model->payments as $payment): ?>
 						<tr>
@@ -130,56 +129,52 @@ use Destiny\Session;
 		</div>
 		<?endif;?>
 		
-		<br>
 		<h3>Preferences</h3>
 		<div class="content content-dark clearfix">
 
 			<div style="width: 100%;" class="clearfix stream">
-				<form id="profileSaveForm" action="/profile/save" method="post" style="margin: 0;">
+				<form id="profileSaveForm" action="/profile/save" method="post">
 					<input type="hidden" name="url" value="/league" />
-					<fieldset>
-						<div class="control-group" style="margin: 10px 20px;">
-							<label>Country:</label> 
-							<select name="country">
-								<option>Select your country</option>
-								<?$countries = Utils\Country::getCountries();?>
-								
-								<option value="">&nbsp;</option>
-								<option value="US" <?if(Session::get('country') == 'US'):?>
-									selected="selected" <?endif;?>>United States</option>
-								<option value="GB" <?if(Session::get('country') == 'GB'):?>
-									selected="selected" <?endif;?>>United Kingdom</option>
-								<option value="">&nbsp;</option>
-								
-								<?foreach($countries as $country):?>
-								<option value="<?=$country['alpha-2']?>"
-									<?if(Session::get('country') != 'US' && Session::get('country') != 'GB' && Session::get('country') == $country['alpha-2']):?>
-									selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
-								<?endforeach;?>
-							</select>
-						</div>
+					<div class="control-group">
+						<label>Country:</label> 
+						<select name="country">
+							<option>Select your country</option>
+							<?$countries = Utils\Country::getCountries();?>
+							
+							<option value="">&nbsp;</option>
+							<option value="US" <?if(Session::get('country') == 'US'):?>
+								selected="selected" <?endif;?>>United States</option>
+							<option value="GB" <?if(Session::get('country') == 'GB'):?>
+								selected="selected" <?endif;?>>United Kingdom</option>
+							<option value="">&nbsp;</option>
+							
+							<?foreach($countries as $country):?>
+							<option value="<?=$country['alpha-2']?>"
+								<?if(Session::get('country') != 'US' && Session::get('country') != 'GB' && Session::get('country') == $country['alpha-2']):?>
+								selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
+							<?endforeach;?>
+						</select>
+					</div>
 
-						<div class="control-group" style="margin: 10px 20px;">
-							<label>Fantasy team:</label>
-							<label class="radio">
-								<input type="radio" name="teambar_homepage" value="0" <?=(!Service\Settings::get('teambar_homepage')) ? 'checked':''?>>
-								Show <u>only</u> on league page
-							</label>
-							<label class="radio">
-								<input type="radio" name="teambar_homepage" value="1" <?=(Service\Settings::get('teambar_homepage')) ? 'checked':''?>>
-								Show on home page &amp; league page
-							</label>
-						</div>
+					<div class="control-group">
+						<label>Fantasy team:</label>
+						<label class="radio">
+							<input type="radio" name="teambar_homepage" value="0" <?=(!Service\Settings::get('teambar_homepage')) ? 'checked':''?>>
+							Show <u>only</u> on league page
+						</label>
+						<label class="radio">
+							<input type="radio" name="teambar_homepage" value="1" <?=(Service\Settings::get('teambar_homepage')) ? 'checked':''?>>
+							Show on home page &amp; league page
+						</label>
+					</div>
 
-						<div class="control-group" style="margin: 10px 20px;">
-							<a href="#" rel="resetteam">Reset team</a>
-						</div>
+					<div class="control-group">
+						<a href="#" rel="resetteam">Reset team</a>
+					</div>
 
-						<div class="form-actions"
-							style="margin: 15px 0 0 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-							<button class="btn" type="submit">Save changes</button>
-						</div>
-					</fieldset>
+					<div class="form-actions block-foot">
+						<button class="btn" type="submit">Save changes</button>
+					</div>
 				</form>
 			</div>
 

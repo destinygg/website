@@ -112,7 +112,8 @@
 				teamChampionSelector.append(champUi);
 			};
 			DestinyTMI.ui.find('.champ-search > input').removeAttr('disabled').val('');
-			DestinyTMI.ui.find('.champ-free-filter.active').removeClass('active');
+			DestinyTMI.ui.find('.champ-filter.active').removeClass('active').addClass('btn-inverse');
+			DestinyTMI.ui.removeClass('filter-owned filter-free');
 		},
 		
 		setUnlockedChampions: function(champions){
@@ -552,16 +553,16 @@
 		});
 	});
 	
-	DestinyTMI.ui.find('.champ-free-filter').on('click',  function(){
-		if(false == $(this).hasClass('active')){
-			DestinyTMI.champSearch.attr('disabled','disabled');
-			DestinyTMI.ui.find('.champion').addClass('hidden');
-			DestinyTMI.ui.find('.champion.champion-free').removeClass('hidden');
+	DestinyTMI.ui.find('.champ-filter').on('click',  function(){
+		if(!$(this).hasClass('active')){
+			$(this).removeClass('btn-inverse');
+			DestinyTMI.ui.addClass('filter-' + $(this).data('filterby'));
 		}else{
-			DestinyTMI.ui.find('.champion.hidden').removeClass('hidden');
-			DestinyTMI.champSearch.removeAttr('disabled','disabled');
+			$(this).addClass('btn-inverse');
+			DestinyTMI.ui.removeClass('filter-' + $(this).data('filterby'));
 		}
 	});
+	
 	DestinyTMI.champSearch.on('keyup', function(){
 		if($(this).val() == ''){
 			DestinyTMI.ui.find('.champion').removeClass('hidden');
