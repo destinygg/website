@@ -200,7 +200,10 @@ class Complete {
 		}
 		
 		// Create / adjust subscription
-		SubscriptionsService::instance ()->addUserSubscription ( $order ['userId'], $subscription, 'Active', $paymentProfile );
+		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], $subscription, 'Active' );
+		if (! empty ( $paymentProfile )) {
+			SubscriptionsService::instance ()->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
+		}
 		
 		// Add the subscriber role, this is just for UI
 		$authCreds = Session::getAuthCreds ();

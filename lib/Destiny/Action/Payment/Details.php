@@ -31,7 +31,6 @@ class Details {
 			$model->order = $order;
 			$model->orderItems = $ordersService->getOrderItems ( $order ['orderId'] );
 			$model->paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
-			$model->payments = $ordersService->getPaymentsByOrderId ( $order ['orderId'] );
 			$model->payment = $payment;
 		} else {
 			throw new AppException ( 'Invalid paymentId' );

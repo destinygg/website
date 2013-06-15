@@ -28,11 +28,12 @@ use Destiny\Session;
 			Profile 
 			<small>(<a title="Mailto: <?=Tpl::out(Session::get('email'))?>" href="mailto:<?=Tpl::out(Session::get('email'))?>"><?=Tpl::out(Session::get('displayName'))?></a>)</small>
 		</h1>
+		<hr size="1">
+		
+		<h3>Subscription</h3>
 		<div class="content content-dark clearfix">
 
 			<div style="width: 100%;" class="clearfix stream">
-				<h3 class="title">Subscription</h3>
-				
 				<form action="/subscribe" method="post" style="margin: 0; border-top: 1px solid #222;">
 					<div class="control-group" style="margin: 10px 20px 20px 20px;">
 
@@ -106,7 +107,7 @@ use Destiny\Session;
 		 
 		<?php if(!empty($model->payments)): ?>
 		<br>
-		<h2>Payments</h2>
+		<h3>Payments</h3>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<table class="grid" style="width: 100%;">
@@ -130,7 +131,7 @@ use Destiny\Session;
 		<?endif;?>
 		
 		<br>
-		<h2>Preferences</h2>
+		<h3>Preferences</h3>
 		<div class="content content-dark clearfix">
 
 			<div style="width: 100%;" class="clearfix stream">

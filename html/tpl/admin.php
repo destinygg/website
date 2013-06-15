@@ -17,16 +17,17 @@ use Destiny\Utils\Tpl;
 	<?include'seg/top.php'?>
 	
 	<section class="container" id="admintabs">
-
 		<h1 class="page-title">
 			<span>Administration</span> <small>(<a title="<?=Tpl::out(Session::get('email'))?>" href="mailto:<?=Tpl::out(Session::get('email'))?>"><?=Tpl::out(Session::get('displayName'))?></a>)
 			</small>
 		</h1>
+		<hr size="1">
 		
 		<?php include'admin/games.php'?>
-		<hr size="1" />
 		<?php include'admin/logs.php'?>
 
+	</section>
+	
 	</section>
 	
 	<?include'seg/foot.php'?>

@@ -3,10 +3,10 @@ namespace Destiny;
 use Destiny\Utils\Date;
 use Destiny\Utils\Lol;
 ?>
+<h3>Fantasy League</h3>
 <div class="content content-dark clearfix">
 	<div style="width: 100%;" class="clearfix stream">
-		<h3 class="title">Fantasy League</h3>
-		<div class="tab-content" style="padding: 10px 20px 20px 20px; border-top: 1px solid #222;">
+		<div class="tab-content" style="padding: 20px; margin:0;">
 			
 			<ul class="nav nav-pills">
 				<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>

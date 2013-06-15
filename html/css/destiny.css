@@ -32,6 +32,9 @@ font-family: "HelveticaNeue-CondensedBold", "ArialNarrow-Bold", "Helvetica Neue"
 font-weight: normal;
 color: #d4d4d4;
 }
+h2, h3, h4 {
+color: #888;
+}
 
 h1 small,h2 small,h3 small,h4 small,h5 small,h6 small {
 color: #666;

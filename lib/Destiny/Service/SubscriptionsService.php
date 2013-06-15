@@ -41,7 +41,7 @@ class SubscriptionsService extends Service {
 	 * @param int $userId
 	 * @param array $subscription
 	 */
-	public function addUserSubscription($userId, $subscription, $status, $paymentProfile) {
+	public function addSubscription($userId, $subscription, $status) {
 		$now = time ();
 		$end = strtotime ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ), $now );
 		$conn = Application::instance ()->getConnection ();
@@ -49,10 +49,16 @@ class SubscriptionsService extends Service {
 				'userId' => $userId,
 				'createdDate' => Date::getDateTime ( $now, 'Y-m-d H:i:s' ),
 				'endDate' => Date::getDateTime ( $end, 'Y-m-d H:i:s' ),
-				'status' => $status,
-				'recurring' => (empty ( $paymentProfile )),
-				'paymentProfileId' => $paymentProfile ['profileId'] 
+				'status' => $status 
+		), array (
+				\PDO::PARAM_INT,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_BOOL,
+				\PDO::PARAM_STR 
 		) );
+		return $conn->lastInsertId ();
 	}
 
 	/**
@@ -144,6 +150,10 @@ class SubscriptionsService extends Service {
 				'recurring' => $recurring 
 		), array (
 				'subscriptionId' => $subscriptionId 
+		), array (
+				\PDO::PARAM_STR,
+				\PDO::PARAM_BOOL,
+				\PDO::PARAM_INT 
 		) );
 	}
 

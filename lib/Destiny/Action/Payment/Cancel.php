@@ -77,8 +77,7 @@ class Cancel {
 				throw new AppException ( $manageRPPStatusResponse->Errors [0]->LongMessage );
 			}
 			// Cancel subscription status
-			$subscription ['recurring'] = 0;
-			$subService->updateUserSubscriptionRecurring ( Session::get ( 'userId' ), 0 );
+			$subService->updateUserSubscriptionRecurring ( Session::get ( 'userId' ), false );
 			
 			// Show unsubscribed screen
 			$model->unsubscribed = true;

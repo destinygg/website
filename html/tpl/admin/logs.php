@@ -3,10 +3,10 @@ namespace Destiny;
 use Destiny\Utils\Tpl;
 use Destiny\Utils\String;
 ?>
+<h3>Logs</h3>
 <div class="content content-dark clearfix">
 	<div style="width: 100%;" class="clearfix stream">
-		<h3 class="title">Logs</h3>
-		<div class="tab-content" style="padding: 10px 20px 20px 20px; border-top: 1px solid #222;">
+		<div class="tab-content" style="padding: 20px; margin:0;">
 		
 			<ul class="nav nav-pills">
 				<li class="active"><a href="#LogInfo" data-toggle="tab">Details</a></li>
