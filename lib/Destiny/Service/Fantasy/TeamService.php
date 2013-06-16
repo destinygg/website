@@ -37,7 +37,7 @@ class TeamService extends Service {
 				'userId' => $userId,
 				'credits' => Config::$a ['fantasy'] ['team'] ['startCredit'],
 				'transfersRemaining' => Config::$a ['fantasy'] ['team'] ['startTransfers'],
-				'scoreValue' => false,
+				'scoreValue' => 0,
 				'teamActive' => true,
 				'modifiedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ),
 				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
@@ -165,7 +165,7 @@ class TeamService extends Service {
 				IF(subs.userId IS NULL,0,1) AS `subscriber` 
 			FROM dfl_teams AS `teams` 
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
 			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
 			LIMIT :offset,:limit

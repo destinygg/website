@@ -4,7 +4,7 @@ namespace Destiny\Action\Fantasy\Team;
 
 use Destiny\Service\Fantasy\TeamService;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\AppException;
 
@@ -29,7 +29,7 @@ class Reset {
 		TeamService::instance ()->resetTeam ( $team );
 		$response ['data'] = $team;
 		$response ['success'] = true;
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 

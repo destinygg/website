@@ -1,4 +1,9 @@
 <?php
+// function exception_handler($exception) {
+// error_log ("Uncaught exception: " . $exception->getMessage(), 3, 'PATH_TO_LOG_FILE');
+// }
+// set_exception_handler('exception_handler');
+
 use Destiny\Application;
 use Destiny\AppException;
 use Destiny\Session;
@@ -13,10 +18,10 @@ use Monolog\Processor\MemoryPeakUsageProcessor;
 $base = realpath ( __DIR__ . '/../' );
 $loader = require $base . '/vendor/autoload.php';
 $loader->add ( 'Destiny', $base . '/lib/' );
-Config::load ( $base . '/lib/config.php' );
+Config::load ( $base . '/config/config.php', parse_ini_file ( $base . '/lib/.version' ) );
 
 $log = new Logger ( 'cron' );
-$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . '/cron.log', Logger::DEBUG ) );
+$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . 'cron.log', Logger::DEBUG ) );
 $log->pushProcessor ( new WebProcessor () );
 $log->pushProcessor ( new ProcessIdProcessor () );
 $log->pushProcessor ( new MemoryPeakUsageProcessor () );

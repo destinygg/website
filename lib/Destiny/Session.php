@@ -50,9 +50,6 @@ class SessionInstance {
 		session_name ( $sessionCookie->getName () );
 		session_start ();
 		$this->setSessionId ( session_id () );
-		// weird
-		$authCreds = $this->getAuthenticationCredentials ();
-		$authCreds->setCredentials ( $this->getData () );
 	}
 
 	/**
@@ -63,6 +60,8 @@ class SessionInstance {
 	public function destroy() {
 		session_destroy ();
 		session_regenerate_id ();
+		$_SESSION = array ();
+		$this->setSessionId ( session_id () );
 	}
 
 	/**
@@ -126,6 +125,17 @@ class SessionInstance {
 	 */
 	public function getData() {
 		return $_SESSION;
+	}
+
+	/**
+	 * Check if a variable is empty
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public function isEmpty($name) {
+		$value = (isset ( $_SESSION [$name] )) ? $_SESSION [$name] : null;
+		return empty ( $value );
 	}
 
 	/**
@@ -232,13 +242,6 @@ class SessionCookieInterface {
 class SessionAuthenticationCredentials {
 	
 	/**
-	 * Whether or not these credentials have been authorized
-	 *
-	 * @var boolean
-	 */
-	protected $authorized = false;
-	
-	/**
 	 * The authed creds email
 	 *
 	 * @var string
@@ -319,9 +322,6 @@ class SessionAuthenticationCredentials {
 				}
 				$this->setRoles ( array_unique ( $params ['roles'] ) );
 			}
-			if (isset ( $params ['authorized'] ) && ! empty ( $params ['authorized'] ) && $params ['authorized'] == '1') {
-				$this->setAuthorized ( true );
-			}
 		}
 	}
 
@@ -337,18 +337,17 @@ class SessionAuthenticationCredentials {
 				'username' => $this->getUserName (),
 				'userId' => $this->getUserId (),
 				'country' => $this->getCountry (),
-				'roles' => $this->getRoles (),
-				'authorized' => $this->getAuthorized () 
+				'roles' => $this->getRoles () 
 		);
 	}
 
 	/**
-	 * Validate these credentials are valid
+	 * Return the credentials hash
 	 *
-	 * @return boolean
+	 * @return string
 	 */
-	public function valid() {
-		return true;
+	public function getHash() {
+		return sprintf ( "%u", crc32 ( serialize ( $this->getCredentials () ) ) );
 	}
 
 	/**
@@ -432,11 +431,11 @@ class SessionAuthenticationCredentials {
 		if (is_array ( $role )) {
 			for($i = 0; $i < count ( $role ); ++ $i) {
 				if (! in_array ( $role [$i], $this->roles )) {
-					$this->roles [] = $role [$i];
+					$this->roles [] = strtolower ( $role [$i] );
 				}
 			}
 		} elseif (is_string ( $role ) && ! in_array ( $role, $this->roles )) {
-			$this->roles [] = $role;
+			$this->roles [] = strtolower ( $role );
 		}
 	}
 
@@ -452,24 +451,6 @@ class SessionAuthenticationCredentials {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Get authorized
-	 *
-	 * @return boolean
-	 */
-	public function getAuthorized() {
-		return $this->authorized;
-	}
-
-	/**
-	 * Set authorized
-	 *
-	 * @param bool $authorized
-	 */
-	public function setAuthorized($authorized) {
-		$this->authorized = $authorized;
 	}
 
 	/**
@@ -560,13 +541,24 @@ abstract class Session {
 	 *
 	 * @param SessionAuthenticationCredentials $authenticationCredentials
 	 */
-	public static function setAuthCreds(SessionAuthenticationCredentials $authCreds) {
+	public static function updateAuthCreds(SessionAuthenticationCredentials $authCreds) {
 		$session = self::instance ();
 		$session->setAuthenticationCredentials ( $authCreds );
-		$params = $session->getAuthenticationCredentials ()->getCredentials ();
+		$params = $authCreds->getCredentials ();
 		foreach ( $params as $name => $value ) {
 			$session->set ( $name, $value );
 		}
+		$session->set ( 'authhash', $authCreds->getHash () );
+	}
+
+	/**
+	 * Checks if the has of the current credentials is the same as the sessions
+	 *
+	 * @return boolean
+	 */
+	public static function valid() {
+		$session = self::instance ();
+		return ($session->getAuthenticationCredentials ()->getHash () == $session->get ( 'authhash' ));
 	}
 
 	/**
@@ -611,16 +603,6 @@ abstract class Session {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Return if the creds have been authorized
-	 *
-	 * @return boolean
-	 */
-	public static function authorized() {
-		$authCreds = self::getAuthCreds ();
-		return $authCreds->getAuthorized ();
 	}
 
 }

@@ -8,9 +8,10 @@ use Destiny\Utils\Date;
 use Destiny\Utils\String;
 use Destiny\Config;
 use Destiny\AppException;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 
 class CommonApiService extends Service {
+	
 	protected static $instance = null;
 
 	/**
@@ -34,7 +35,7 @@ class CommonApiService extends Service {
 				'url' => new String ( 'http://www.destiny.gg/n/?feed=json&limit={limit}', array (
 						'limit' => 3 
 				) ),
-				'contentType' => Mimetype::JSON,
+				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
 					if ($json != null) {
 						$json = array_slice ( $json, 0, 3 );
@@ -53,7 +54,7 @@ class CommonApiService extends Service {
 	public function getLastFMTracks(array $options = array()) {
 		return new HttpApiConsumer ( array_merge ( array (
 				'url' => new String ( 'http://ws.audioscrobbler.com/2.0/?api_key={apikey}&user={user}&method=user.getrecenttracks&limit=3&format=json', Config::$a ['lastfm'] ),
-				'contentType' => Mimetype::JSON,
+				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
 					if (! $json || isset ( $json ['error'] ) && $json ['error'] > 0 || count ( $json ['recenttracks'] ['track'] ) <= 0) {
 						throw new AppException ( 'Error fetching tracks' );
@@ -93,7 +94,7 @@ class CommonApiService extends Service {
 						'apikey' => Config::$a ['youtube'] ['apikey'],
 						'limit' => $params ['limit'] 
 				) ),
-				'contentType' => Mimetype::JSON,
+				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
 					if (is_array ( $json ['items'] )) {
 						foreach ( $json ['items'] as $i => $item ) {

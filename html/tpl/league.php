@@ -30,11 +30,11 @@ use Destiny\Utils\Tpl;
 <body id="league">
 	<?include'seg/top.php'?>
 	
-	<?if(!Session::authorized()):?>
+	<?if(!Session::hasRole('user')):?>
 	<?include'seg/fantasy/calltoaction.php'?>
 	<?endif;?>
 	
-	<?if(Session::authorized()):?>
+	<?if(Session::hasRole('user')):?>
 	<?include'seg/fantasy/teambar.php'?>
 	<?include'seg/fantasy/teammaker.php'?>
 	

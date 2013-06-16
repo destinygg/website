@@ -3,13 +3,19 @@
 namespace Destiny;
 
 abstract class Config {
-	public static $a = null;
+	public static $a = array ();
 
-	public static function load($filename) {
+	public static function load($filename, $version) {
 		ob_start ();
 		self::$a = require $filename;
 		ob_end_clean ();
-		self::setEnv ( self::$a ['env'] );
+		if (! is_array ( self::$a )) {
+			self::$a = array ();
+		}
+		self::$a = array_merge_recursive ( self::$a, $version );
+		if (isset ( self::$a ['env'] ) && ! empty ( self::$a ['env'] )) {
+			self::setEnv ( self::$a ['env'] );
+		}
 	}
 
 	protected static function setEnv(array $args) {

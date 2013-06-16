@@ -7,7 +7,7 @@ use Destiny\Application;
 use Destiny\Scheduler;
 use Destiny\Utils\Http;
 use Destiny\Config;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Psr\Log\LoggerInterface;
 
 class Cron {
@@ -25,7 +25,7 @@ class Cron {
 		$scheduler->loadSchedule ();
 		$scheduler->executeTaskByName ( $params ['id'] );
 		$response ['message'] = sprintf ( 'Execute %s', $params ['id'] );
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 

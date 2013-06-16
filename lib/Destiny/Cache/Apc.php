@@ -3,6 +3,7 @@
 namespace Destiny\Cache;
 
 use Destiny\Config;
+use Destiny\Config;
 use Destiny\Utils\Options;
 
 /**

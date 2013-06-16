@@ -39,7 +39,7 @@ class LeaderboardService extends Service {
 				) AS `champions` 
 			FROM dfl_teams AS `teams` 
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
 			WHERE teams.teamActive = 1
 			GROUP BY teams.teamId 
@@ -73,7 +73,7 @@ class LeaderboardService extends Service {
 				) AS `champions` 
 			FROM dfl_teams AS `teams` 
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			INNER JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
 			WHERE teams.teamActive = 1
 			GROUP BY teams.teamId 
@@ -174,7 +174,7 @@ class LeaderboardService extends Service {
 			FROM dfl_scores_teams AS `scoreteams`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = scoreteams.teamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
 			WHERE teams.teamActive = 1 AND scoreteams.gameId = :gameId
 			GROUP BY scoreteams.teamId

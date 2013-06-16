@@ -31,14 +31,20 @@ class File {
 	public function read() {
 		$c = null;
 		if ($this->exists ()) {
-			$c = unserialize ( file_get_contents ( $this->filename ) );
+			$c = file_get_contents ( $this->filename );
+			if (! empty ( $c )) {
+				$c = @unserialize ( file_get_contents ( $this->filename ) );
+			}
 		}
 		return $c;
 	}
 
 	public function write($out) {
 		$fp = fopen ( $this->filename . '.tmp', 'w' );
-		fwrite ( $fp, serialize ( $out ) );
+		if (! empty ( $out )) {
+			$out = @serialize ( $out );
+		}
+		fwrite ( $fp, $out );
 		fclose ( $fp );
 		$this->exists = rename ( $this->filename . '.tmp', $this->filename );
 	}

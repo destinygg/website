@@ -21,9 +21,9 @@
 		<antcall target="copysource" />
 		<antcall target="concatcss" />
 		<antcall target="concatjs" />
-		<!--
 		<antcall target="compresscss" />
 		<antcall target="compressjs" />
+		<!--
 		-->
 	</target>
 	
@@ -114,6 +114,9 @@
 		</copy>
 		<copy todir="${build.base}/cron">
 			<fileset dir="cron"/>
+		</copy>
+		<copy todir="${build.base}/config">
+			<fileset dir="config"/>
 		</copy>
 	</target>
 

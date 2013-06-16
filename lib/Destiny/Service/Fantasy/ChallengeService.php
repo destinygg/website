@@ -76,7 +76,7 @@ class ChallengeService extends Service {
 			FROM dfl_challengers AS `challengers`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.ownerTeamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			WHERE challengers.challengeTeamId = :teamId AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC
 			LIMIT :offset,:limit	
@@ -105,7 +105,7 @@ class ChallengeService extends Service {
 			FROM dfl_challengers AS `challengers`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.challengeTeamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			WHERE challengers.ownerTeamId = :teamId AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC
 			LIMIT :offset,:limit

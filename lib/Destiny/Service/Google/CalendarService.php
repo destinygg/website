@@ -6,7 +6,7 @@ use Destiny\Service;
 use Destiny\Config;
 use Destiny\HttpApiConsumer;
 use Destiny\Utils\String;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 
 class CalendarService extends Service {
 	
@@ -33,7 +33,7 @@ class CalendarService extends Service {
 						'end' => urlencode ( $options ['end'] ),
 						'tz' => urlencode ( $options ['tz'] ) 
 				) ),
-				'contentType' => Mimetype::JSON 
+				'contentType' => MimeType::JSON 
 		), $options ) );
 	}
 

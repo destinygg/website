@@ -21,7 +21,7 @@ use Destiny\Service\Fantasy\ChampionService;
 			<?$title = Tpl::out($topTeam['displayName'])?>
 			<tr>
 				<td style="text-align: left;">
-					<?if($topTeam['teamId'] != intval(Session::get('teamId'))):?>
+					<?if($topTeam['teamId'] != $model->team['teamId']):?>
 					<a href="#removechallenger" class="remove-challenger" title="Remove" data-teamid="<?=intval($topTeam['teamId'])?>"><i class="icon-remove icon-white subtle"></i></a>
 					<?endif;?>
 					<?=Tpl::flag($topTeam['country'])?>

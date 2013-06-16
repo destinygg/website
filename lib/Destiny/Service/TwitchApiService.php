@@ -5,7 +5,7 @@ namespace Destiny\Service;
 use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\HttpApiConsumer;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
@@ -54,7 +54,7 @@ class TwitchApiService extends Service {
 						'user' => Config::$a ['twitch'] ['user'],
 						'limit' => 4 
 				) ),
-				'contentType' => Mimetype::JSON 
+				'contentType' => MimeType::JSON 
 		), $options ) );
 	}
 
@@ -67,7 +67,7 @@ class TwitchApiService extends Service {
 				'url' => new String ( 'https://api.twitch.tv/kraken/streams/{user}/', array (
 						'user' => Config::$a ['twitch'] ['user'] 
 				) ),
-				'contentType' => Mimetype::JSON,
+				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
 					if (is_object ( $json ) && isset ( $json ['stream'] ) && $json ['stream'] != null) {
 						$json ['stream'] ['channel'] ['updated_at'] = Date::getDateTime ( $json ['stream'] ['channel'] ['updated_at'], Date::FORMAT );
@@ -98,7 +98,7 @@ class TwitchApiService extends Service {
 				'url' => new String ( 'https://api.twitch.tv/kraken/channels/{user}', array (
 						'user' => Config::$a ['twitch'] ['user'] 
 				) ),
-				'contentType' => Mimetype::JSON 
+				'contentType' => MimeType::JSON 
 		), $options ) );
 	}
 

@@ -5,7 +5,7 @@ namespace Destiny\Action\Fantasy;
 use Destiny\Service\Fantasy\GameService;
 use Destiny\Utils\Http;
 use Destiny\Utils\Date;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\Config;
 
@@ -19,7 +19,7 @@ class Recentgames {
 		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $aggregateDate->getTimestamp () ) );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
 		Http::header ( Http::HEADER_PRAGMA, 'public' );
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( array (
 				'date' => $aggregateDate->format ( Date::FORMAT ) 
 		) ) );

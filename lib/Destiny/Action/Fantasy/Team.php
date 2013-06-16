@@ -4,7 +4,7 @@ namespace Destiny\Action\Fantasy;
 
 use Destiny\Utils\Http;
 use Destiny\Utils\Date;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppException;
@@ -32,13 +32,13 @@ class Team {
 		$team ['transfersRemaining'] = intval ( $team ['transfersRemaining'] );
 		$team ['createdDate'] = Date::getDateTime ( $createdTime, Date::FORMAT );
 		$team ['modifiedDate'] = Date::getDateTime ( $modifiedTime, Date::FORMAT );
-		$team ['champions'] = Team::instance ()->getTeamChamps ( $team ['teamId'] );
+		$team ['champions'] = TeamService::instance ()->getTeamChamps ( $team ['teamId'] );
 		
 		Http::checkIfModifiedSince ( $modifiedTime, true );
 		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $modifiedTime ) );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
 		Http::header ( Http::HEADER_PRAGMA, 'public' );
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $team ) );
 	}
 

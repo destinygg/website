@@ -85,11 +85,35 @@ class Application extends Service {
 	 * @param array $pathinfo
 	 * @return string
 	 */
-	private function prepareActionPath($namespace, array $pathinfo) {
+	public function prepareActionPath($namespace, array $pathinfo) {
+		$arr = explode ( '/', $pathinfo ['dirname'] );
+		foreach ( $arr as $i => $v ) {
+			$arr [$i] = ucfirst ( $v );
+		}
 		return $namespace . str_replace ( array (
 				'/',
 				'\\\\' 
-		), '\\', $pathinfo ['dirname'] . '\\' ) . $pathinfo ['filename'];
+		), '\\', join ( '\\', $arr ) . '\\' ) . ucwords ( $pathinfo ['filename'] );
+	}
+
+	/**
+	 * Get the type of cache
+	 *
+	 * @todo seems out of place
+	 *      
+	 * @param array|string $params
+	 * @return \Destiny\Cache\Apc
+	 */
+	public function getMemoryCache($params = null) {
+		if ($params === null) {
+			throw new \InvalidArgumentException ( $params );
+		}
+		if (is_string ( $params )) {
+			$params = array (
+					'filename' => Config::$a ['cache'] ['path'] . $params . '.tmp' 
+			);
+		}
+		return new Config::$a ['cache'] ['memory'] ( $params );
 	}
 
 	/**
@@ -111,10 +135,10 @@ class Application extends Service {
 				}
 			} catch ( AppException $e ) {
 				$this->logger->error ( $e->getMessage () );
-				$this->error ( 500, $e );
+				$this->error ( Http::STATUS_ERROR, $e );
 			} catch ( \Exception $e ) {
 				$this->logger->critical ( $e->getMessage () );
-				$this->error ( 500, new \Exception ( 'Something went real wrong..' ) );
+				$this->error ( Http::STATUS_ERROR, new \Exception ( 'Something went real wrong..' ) );
 			}
 		}
 	}
@@ -152,7 +176,7 @@ class Application extends Service {
 				}
 			}
 			
-			// If the response is here, and we have not outputted data. the user would get a blank screen
+			// Can't send an empty reponse
 			throw new AppException ( 'Invalid action response' );
 			
 			// Else exit
@@ -160,10 +184,10 @@ class Application extends Service {
 			exit ();
 		} catch ( AppException $e ) {
 			$this->logger->error ( $e->getMessage () );
-			$this->error ( 500, $e );
+			$this->error ( Http::STATUS_ERROR, $e );
 		} catch ( \Exception $e ) {
 			$this->logger->critical ( $e->getMessage () );
-			$this->error ( 500, $e );
+			$this->error ( Http::STATUS_ERROR, new AppException ( 'Maximum over-rustle has been achieved' ) );
 		}
 	}
 
@@ -181,6 +205,34 @@ class Application extends Service {
 				'error' => $e,
 				'code' => $code 
 		) ) );
+	}
+
+	/**
+	 * Include a template and exit
+	 *
+	 * @param string $filename
+	 */
+	public function template($filename, ViewModel $model) {
+		
+		// @todo this needs to be refactored
+		// Check if accept type is JSON
+		if (isset ( $_SERVER ['HTTP_ACCEPT'] )) {
+			$accept = new \HTTP_Accept ( $_SERVER ['HTTP_ACCEPT'] );
+			$acceptTypes = $accept->getTypes ();
+			if (! empty ( $acceptTypes ) && ! in_array ( MimeType::HTML, $acceptTypes )) {
+				if (in_array ( MimeType::JSON, $acceptTypes )) {
+					Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+					Http::sendString ( json_encode ( $model->getData () ) );
+				}
+			}
+		}
+		
+		$this->logger->debug ( 'Template: ' . $filename );
+		ob_clean ();
+		ob_start ();
+		include $filename;
+		ob_flush ();
+		exit ();
 	}
 
 	/**
@@ -256,34 +308,6 @@ class Application extends Service {
 	}
 
 	/**
-	 * Include a template and exit
-	 *
-	 * @param string $filename
-	 */
-	public function template($filename, ViewModel $model) {
-		
-		// @todo this needs to be refactored
-		// Check if accept type is JSON
-		if (isset ( $_SERVER ['HTTP_ACCEPT'] )) {
-			$accept = new \HTTP_Accept ( $_SERVER ['HTTP_ACCEPT'] );
-			$acceptTypes = $accept->getTypes ();
-			if (! empty ( $acceptTypes ) && ! in_array ( Mimetype::HTML, $acceptTypes )) {
-				if (in_array ( Mimetype::JSON, $acceptTypes )) {
-					Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-					Http::sendString ( json_encode ( $model->getData () ) );
-				}
-			}
-		}
-		
-		$this->logger->debug ( 'Template: ' . $filename );
-		ob_clean ();
-		ob_start ();
-		include $filename;
-		ob_flush ();
-		exit ();
-	}
-
-	/**
 	 * Set logger
 	 *
 	 * @return LoggerInterface
@@ -299,26 +323,6 @@ class Application extends Service {
 	 */
 	public function setLogger(LoggerInterface $logger) {
 		$this->logger = $logger;
-	}
-
-	/**
-	 * Get the type of cache
-	 *
-	 * @todo seems out of place
-	 *      
-	 * @param array|string $params
-	 * @return \Destiny\Cache\Apc
-	 */
-	public function getMemoryCache($params = null) {
-		if ($params === null) {
-			throw new \InvalidArgumentException ( $params );
-		}
-		if (is_string ( $params )) {
-			$params = array (
-					'filename' => Config::$a ['cache'] ['path'] . $params . '.tmp' 
-			);
-		}
-		return new Config::$a ['cache'] ['memory'] ( $params );
 	}
 
 }

@@ -18,6 +18,7 @@ class League {
 		$app = Application::instance ();
 		
 		$model->title = 'Fantasy League';
+		$model->user = Session::getAuthCreds ()->getCredentials ();
 		
 		$cache = $app->getMemoryCache ( 'champions' );
 		$model->champions = $cache->read ();

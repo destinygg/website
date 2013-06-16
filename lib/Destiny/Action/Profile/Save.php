@@ -5,7 +5,7 @@ namespace Destiny\Action\Profile;
 use Destiny\Session;
 use Destiny\Utils\Country;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Service\Fantasy\Db\User;
 use Destiny\Service\Settings;
 use Destiny\Service\UsersService;
@@ -37,9 +37,9 @@ class Save {
 		// Update authentication credentials
 		$authCreds = Session::getAuthCreds ();
 		$authCreds->setCountry ( $user ['country'] );
-		Session::setAuthCreds ( $authCreds );
+		Session::updateAuthCreds ( $authCreds );
 		
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( array (
 				'success' => true 
 		) ) );

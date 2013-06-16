@@ -31,7 +31,7 @@ use Destiny\Utils\Tpl;
 <body id="home">
 	<?include'seg/top.php'?>
 	
-	<?if(Session::authorized() && Settings::get('teambar_homepage')):?>
+	<?if(Session::hasRole('user') && Settings::get('teambar_homepage')):?>
 	<?include'seg/fantasy/teambar.php'?>
 	<?include'seg/fantasy/teammaker.php'?>
 	<?endif;?>

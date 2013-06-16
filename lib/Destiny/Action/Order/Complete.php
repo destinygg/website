@@ -202,7 +202,7 @@ class Complete {
 		// Create / adjust subscription
 		$start = time ();
 		$end = strtotime ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ), $start );
-		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], Date::getDateTime ( $start, 'Y-m-d H:i:s' ), Date::getDateTime ( $end, 'Y-m-d H:i:s' ), 'Active', 'destiny.gg' );
+		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], Date::getDateTime ( $start, 'Y-m-d H:i:s' ), Date::getDateTime ( $end, 'Y-m-d H:i:s' ), 'Active', (! empty ( $paymentProfile )), 'destiny.gg' );
 		if (! empty ( $paymentProfile )) {
 			SubscriptionsService::instance ()->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
 		}
@@ -211,7 +211,7 @@ class Complete {
 		$authCreds = Session::getAuthCreds ();
 		if (! empty ( $authCreds )) {
 			$authCreds->addRoles ( 'subscriber' );
-			Session::setAuthCreds ( $authCreds );
+			Session::updateAuthCreds ( $authCreds );
 		}
 		
 		// Show the order complete screen

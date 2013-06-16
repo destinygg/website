@@ -4,7 +4,7 @@ namespace Destiny\Action\Fantasy\Team;
 
 use Destiny\Service\Fantasy\ChampionService;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 
 class Champions {
@@ -17,7 +17,7 @@ class Champions {
 		);
 		$response ['success'] = true;
 		$response ['data'] = ChampionService::instance ()->getUserChampions ( Session::get ( 'userId' ) );
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 

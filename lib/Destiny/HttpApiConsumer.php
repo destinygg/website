@@ -3,7 +3,7 @@
 namespace Destiny;
 
 use Destiny\Config;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Utils\Http;
 use Destiny\Utils\Options;
 use Destiny\Application;
@@ -48,7 +48,7 @@ class HttpApiConsumer {
 	 *
 	 * @var string
 	 */
-	public $contentType = Mimetype::TEXT;
+	public $contentType = MimeType::TEXT;
 	
 	/**
 	 * OnFetch method
@@ -137,7 +137,7 @@ class HttpApiConsumer {
 	private function stringToDataType($str) {
 		if (is_string ( $str )) {
 			switch ($this->contentType) {
-				case Mimetype::JSON :
+				case MimeType::JSON :
 					return json_decode ( $str, true );
 					break;
 			}
@@ -148,7 +148,7 @@ class HttpApiConsumer {
 	private function dataTypeToString($data) {
 		if (is_array ( $data ) || is_object ( $data )) {
 			switch ($this->contentType) {
-				case Mimetype::JSON :
+				case MimeType::JSON :
 					return json_encode ( $data );
 					break;
 			}

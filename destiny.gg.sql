@@ -1,3 +1,9 @@
+/*
+SQLyog Community v8.7 Beta3
+MySQL - 5.5.28-log : Database - destiny_gg_01062013
+*********************************************************************
+*/
+
 /*!40101 SET NAMES utf8 */;
 
 /*!40101 SET SQL_MODE=''*/;
@@ -71,9 +77,8 @@ CREATE TABLE `dfl_games_summoner_data` (
   `gameId` int(14) NOT NULL,
   `gameData` longtext COLLATE utf8_unicode_ci NOT NULL,
   `gameWin` tinyint(1) NOT NULL,
-  `acctId` int(14) NOT NULL,
   `summonerId` int(14) NOT NULL,
-  PRIMARY KEY (`gameId`)
+  PRIMARY KEY (`gameId`,`summonerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_ingame_progress` */
@@ -90,32 +95,81 @@ CREATE TABLE `dfl_ingame_progress` (
 CREATE TABLE `dfl_orders` (
   `orderId` int(14) NOT NULL AUTO_INCREMENT,
   `userId` int(14) DEFAULT NULL,
-  `paymentId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `state` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   `amount` float DEFAULT NULL,
   `currency` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`orderId`)
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  PRIMARY KEY (`orderId`),
+  KEY `userId` (`userId`),
+  KEY `userOrderState` (`userId`,`state`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+/*Table structure for table `dfl_orders_ipn` */
+
+CREATE TABLE `dfl_orders_ipn` (
+  `ipnTrackId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ipnTransactionType` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ipnTransactionId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ipnData` text COLLATE utf8_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_orders_items` */
 
 CREATE TABLE `dfl_orders_items` (
   `orderId` int(11) NOT NULL,
   `itemSku` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `itemPrice` float NOT NULL
+  `itemPrice` float NOT NULL,
+  KEY `orderId` (`orderId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-/*Table structure for table `dfl_polls_options` */
+/*Table structure for table `dfl_orders_payment_profiles` */
 
-CREATE TABLE `dfl_polls_options` (
-  `optionId` int(11) NOT NULL AUTO_INCREMENT,
-  `pollId` int(14) NOT NULL,
-  `optionText` mediumtext COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`optionId`),
-  KEY `optionPollId` (`pollId`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `dfl_orders_payment_profiles` (
+  `profileId` int(14) NOT NULL AUTO_INCREMENT,
+  `userId` int(14) DEFAULT NULL,
+  `orderId` int(14) DEFAULT NULL,
+  `paymentProfileId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `amount` float DEFAULT NULL,
+  `currency` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `billingFrequency` int(2) DEFAULT NULL,
+  `billingPeriod` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `billingStartDate` datetime DEFAULT NULL,
+  `billingNextDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`profileId`),
+  KEY `userId` (`userId`),
+  KEY `userOrderId` (`userId`,`orderId`),
+  KEY `paymentProfileId` (`paymentProfileId`)
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+/*Table structure for table `dfl_orders_payments` */
+
+CREATE TABLE `dfl_orders_payments` (
+  `paymentId` int(14) NOT NULL AUTO_INCREMENT,
+  `orderId` int(14) DEFAULT NULL,
+  `amount` float DEFAULT NULL,
+  `currency` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `transactionId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `transactionType` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `paymentType` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `payerId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `paymentStatus` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `paymentDate` datetime DEFAULT NULL,
+  `createdDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`paymentId`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+/*Table structure for table `dfl_scheduled_tasks` */
+
+CREATE TABLE `dfl_scheduled_tasks` (
+  `action` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastExecuted` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `frequency` int(14) DEFAULT NULL,
+  `period` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `executeOnStart` tinyint(1) DEFAULT NULL,
+  `executeCount` int(14) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_scores_champs` */
 
@@ -141,7 +195,8 @@ CREATE TABLE `dfl_scores_teams` (
   `createdDate` datetime NOT NULL,
   KEY `gameId` (`gameId`),
   KEY `teamId` (`teamId`),
-  KEY `createdDate` (`createdDate`)
+  KEY `createdDate` (`createdDate`),
+  KEY `teamScoreType` (`teamId`,`scoreType`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_scores_teams_champs` */
@@ -218,7 +273,7 @@ CREATE TABLE `dfl_teams` (
   PRIMARY KEY (`teamId`),
   KEY `userId` (`userId`),
   KEY `userTeamId` (`teamId`,`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4219 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4223 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_users` */
 
@@ -229,11 +284,10 @@ CREATE TABLE `dfl_users` (
   `displayName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `country` varchar(4) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `admin` tinyint(1) DEFAULT '0',
   `createdDate` datetime NOT NULL,
   PRIMARY KEY (`userId`),
   KEY `externalId` (`externalId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4219 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4221 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_users_champs` */
 
@@ -244,26 +298,19 @@ CREATE TABLE `dfl_users_champs` (
   PRIMARY KEY (`userId`,`championId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-/*Table structure for table `dfl_users_sessions` */
+/*Table structure for table `dfl_users_roles` */
 
-CREATE TABLE `dfl_users_sessions` (
-  `userId` int(14) DEFAULT NULL,
-  `sessionId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `authorized` tinyint(1) DEFAULT NULL,
-  `token` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `createdDate` datetime DEFAULT NULL,
-  `modifiedDate` datetime DEFAULT NULL,
-  `expireDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`sessionId`),
-  KEY `userId` (`userId`)
+CREATE TABLE `dfl_users_roles` (
+  `userId` int(14) NOT NULL,
+  `userRole` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_users_settings` */
 
 CREATE TABLE `dfl_users_settings` (
   `userId` int(14) NOT NULL,
-  `settingName` enum('teambar_homepage') COLLATE utf8_unicode_ci NOT NULL,
-  `settingValue` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `settingName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `settingValue` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY `userSetting` (`userId`,`settingName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -271,26 +318,16 @@ CREATE TABLE `dfl_users_settings` (
 
 CREATE TABLE `dfl_users_subscriptions` (
   `subscriptionId` int(14) NOT NULL AUTO_INCREMENT,
+  `subscriptionSource` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `userId` int(14) DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   `endDate` datetime DEFAULT NULL,
-  `active` tinyint(2) DEFAULT '1',
-  PRIMARY KEY (`subscriptionId`)
-) ENGINE=InnoDB AUTO_INCREMENT=514 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users_twitch_subscribers` */
-
-CREATE TABLE `dfl_users_twitch_subscribers` (
-  `externalId` int(14) DEFAULT NULL,
-  `username` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `displayName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `staff` tinyint(1) DEFAULT NULL,
-  `subscribeDate` datetime DEFAULT NULL,
-  `createdDate` datetime DEFAULT NULL,
-  `validated` tinyint(1) DEFAULT '0',
-  UNIQUE KEY `externalId` (`externalId`),
-  KEY `validated` (`validated`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `status` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `recurring` tinyint(4) DEFAULT NULL,
+  `paymentProfileId` int(14) DEFAULT NULL,
+  PRIMARY KEY (`subscriptionId`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=278 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

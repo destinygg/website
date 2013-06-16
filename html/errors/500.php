@@ -25,7 +25,10 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 			<div id="overview">
 				<div class="clearfix">
 					<h1><strong><?=$word?>!</strong> An error occurred</h1>
-					<p>The hamster jimmies have been rustled. <br />Would you like to <a href="/">return to the start</a>?</p>
+					<p>
+						<?=$model->error->getMessage()?>
+						<br>Would you like to <a href="/">return to the start</a>?
+					</p>
 				</div>
 				<div id="destiny-illustration"></div>
 			</div>

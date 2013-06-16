@@ -4,7 +4,7 @@ namespace Destiny\Action\Fantasy\Challenge;
 
 use Destiny\Service\Fantasy\ChallengeService;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\AppException;
 use Destiny\Session;
 
@@ -24,7 +24,7 @@ class Decline {
 		);
 		$response ['response'] = ChallengeService::instance ()->declineChallenge ( intval ( $params ['teamId'] ), intval ( Session::get ( 'teamId' ) ) );
 		$response ['message'] = ($response ['response']) ? 'Declined' : 'Failed!';
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 

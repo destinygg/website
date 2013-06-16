@@ -102,7 +102,7 @@ class Scheduler {
 				\PDO::PARAM_STR,
 				\PDO::PARAM_INT,
 				\PDO::PARAM_STR,
-				\PDO::PARAM_STR,
+				\PDO::PARAM_BOOL,
 				\PDO::PARAM_INT 
 		) );
 	}

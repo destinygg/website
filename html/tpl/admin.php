@@ -18,7 +18,7 @@ use Destiny\Utils\Tpl;
 	
 	<section class="container" id="admintabs">
 		<h1 class="page-title">
-			<span>Administration</span> <small>(<a title="<?=Tpl::out(Session::get('email'))?>" href="mailto:<?=Tpl::out(Session::get('email'))?>"><?=Tpl::out(Session::get('displayName'))?></a>)
+			<span>Administration</span> <small>(<a title="<?=Tpl::out($model->user['email'])?>" href="mailto:<?=Tpl::out($model->user['email'])?>"><?=Tpl::out($model->user['displayName'])?></a>)
 			</small>
 		</h1>
 		<hr size="1">

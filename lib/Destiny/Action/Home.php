@@ -13,7 +13,7 @@ class Home {
 
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();
-		if (Session::authorized () && Settings::get ( 'teambar_homepage' )) {
+		if (Session::hasRole('user') && Settings::get ( 'teambar_homepage' )) {
 			$model->team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );
 			$model->teamChamps = TeamService::instance ()->getTeamChamps ( $model->team ['teamId'] );
 			

@@ -16,7 +16,7 @@ abstract class Country {
 	 *
 	 * @var array
 	 */
-	public static $countries = null;
+	public static $countries = array ();
 	
 	/**
 	 * List of countries by code e.g.
@@ -34,14 +34,17 @@ abstract class Country {
 	public static function getCountries() {
 		if (self::$countries == null) {
 			$cache = Application::instance ()->getMemoryCache ( array (
-					'filename' => 'geodata',
+					'filename' => Config::$a ['cache'] ['path'] . 'geodata',
 					'life' => 1 * 30 * 24 * 60 * 60 
 			) );
 			if (! $cache->cached ()) {
-				self::$countries = json_decode ( file_get_contents ( Config::$a ['geodata'] ), true );
-				$cache->write ( self::$countries );
+				$countries = json_decode ( file_get_contents ( Config::$a ['geodata'] ), true );
+				$cache->write ( $countries );
 			} else {
-				self::$countries = $cache->read ();
+				$countries = $cache->read ();
+			}
+			if (is_array ( $countries )) {
+				self::$countries = $countries;
 			}
 		}
 		if (empty ( self::$codeIndex )) {

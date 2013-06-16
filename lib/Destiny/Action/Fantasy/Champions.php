@@ -3,7 +3,7 @@
 namespace Destiny\Action\Fantasy;
 
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\Application;
 use Destiny\Config;
@@ -14,7 +14,7 @@ class Champions {
 		$app = Application::instance ();
 		$cache = $app->getMemoryCache ( 'champions' );
 		$champions = $cache->read ();
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $champions ) );
 	}
 

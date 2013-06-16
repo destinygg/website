@@ -11,26 +11,10 @@ class Profile {
 
 	public function execute(array $params, ViewModel $model) {
 		$model->title = 'Profile';
+		$model->user = Session::getAuthCreds ()->getCredentials ();
 		$orderService = OrdersService::instance ();
 		$subsService = SubscriptionsService::instance ();
-		/*
-		$orders = $orderService->getCompletedOrdersByUserId ( Session::get ( 'userId' ), 5, 0, 'DESC' );
-		for($i = 0; $i < count ( $orders ); ++ $i) {
-			$payments = $orderService->getPaymentsByOrderId ( $orders [$i] ['orderId'], 10, 0, 'DESC' );
-			if (empty ( $payments )) {
-				$payments = array ();
-			}
-			$orders [$i] ['payments'] = $payments;
-		}
-		$model->orders = $orders;
-		*/
-		$payments = $orderService->getPaymentsByUser ( Session::get ( 'userId' ), 10, 0 );
-		for($i = 0; $i < count ( $payments ); ++ $i) {
-			
-		}
-		
-		$model->payments = $payments;
-		
+		$model->payments = $orderService->getPaymentsByUser ( Session::get ( 'userId' ), 10, 0 );
 		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		$paymentProfile = null;
 		if (! empty ( $subscription ) && ! empty ( $subscription ['paymentProfileId'] )) {

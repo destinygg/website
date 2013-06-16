@@ -5,7 +5,7 @@ namespace Destiny\Action\Fantasy\Champion;
 use Destiny\Service\Fantasy\TeamService;
 use Destiny\Service\Fantasy\ChampionService;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\AppException;
 
@@ -25,7 +25,7 @@ class Purchase {
 		}
 		$team = $this->updateTeam ( $params );
 		$response ['data'] = $team;
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 

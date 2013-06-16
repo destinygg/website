@@ -41,13 +41,14 @@ class SubscriptionsService extends Service {
 	 * @param int $userId
 	 * @param array $subscription
 	 */
-	public function addSubscription($userId, $startDate, $endDate, $status, $source = '') {
+	public function addSubscription($userId, $startDate, $endDate, $status, $recurring, $source) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_subscriptions', array (
 				'userId' => $userId,
 				'subscriptionSource' => $source,
 				'createdDate' => $startDate,
 				'endDate' => $endDate,
+				'recurring' => $recurring,
 				'status' => $status 
 		), array (
 				\PDO::PARAM_INT,
@@ -81,7 +82,7 @@ class SubscriptionsService extends Service {
 	 * @param int $userId
 	 * @param \DateTime $endDate
 	 */
-	public function updateUserSubscriptionDateEnd($userId, \DateTime $endDate) {
+	public function updateUserSubscriptionDateEnd($userId,\DateTime $endDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users_subscriptions', array (
 				'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
@@ -102,6 +103,9 @@ class SubscriptionsService extends Service {
 				'recurring' => $recurring 
 		), array (
 				'userId' => $userId 
+		), array (
+				\PDO::PARAM_BOOL,
+				\PDO::PARAM_INT 
 		) );
 	}
 
@@ -117,6 +121,9 @@ class SubscriptionsService extends Service {
 				'status' => $status 
 		), array (
 				'userId' => $userId 
+		), array (
+				\PDO::PARAM_STR,
+				\PDO::PARAM_INT 
 		) );
 	}
 

@@ -2,17 +2,15 @@
 
 namespace Destiny\Action;
 
-use Destiny\SessionAuthenticationCredentials;
+use Destiny\AuthenticationManager;
 use Destiny\Application;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Logger;
 use Destiny\Service\UsersService;
 use Destiny\Service\Fantasy\TeamService;
-use Destiny\Service\SubscriptionsService;
-use Destiny\Service\Settings;
 use Destiny\Utils\String\Params;
 use Destiny\AppException;
 
@@ -57,19 +55,17 @@ class TwitchAuth {
 			fwrite ( $fp, $accessToken );
 			fclose ( $fp );
 		}
-		$teamsService = TeamService::instance ();
+		
 		$usersService = UsersService::instance ();
-		$subsService = SubscriptionsService::instance ();
 		// See if there is already a user with the TwitchId as the externalId
-		$existingUser = $usersService->getUserByExternalId ( $data ['_id'] );
-		if (! empty ( $existingUser )) {
+		$user = $usersService->getUserByExternalId ( $data ['_id'] );
+		if (! empty ( $user )) {
 			// Since someone might change their user via twitch we update after each auth
-			if ($existingUser ['displayName'] != $data ['display_name'] || $existingUser ['email'] != $data ['email']) {
-				$existingUser ['displayName'] = $data ['display_name'];
-				$existingUser ['email'] = $data ['email'];
-				$usersService->updateUser ( $existingUser );
+			if ($user ['displayName'] != $data ['display_name'] || $user ['email'] != $data ['email']) {
+				$user ['displayName'] = $data ['display_name'];
+				$user ['email'] = $data ['email'];
+				$usersService->updateUser ( $user );
 			}
-			$user = $existingUser;
 		} else {
 			// Create a user from the twitch response
 			$user = array ();
@@ -86,38 +82,9 @@ class TwitchAuth {
 			throw new AppException ( 'Invalid userId' );
 		}
 		
-		// If this user has no team, create a new one
-		$team = $teamsService->getTeamByUserId ( $user ['userId'] );
-		if (empty ( $team )) {
-			$team = array ();
-			$team ['teamId'] = $teamsService->addTeam ( $user ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
-		}
-		
-		// Set the users team id
-		Session::set ( 'teamId', $team ['teamId'] );
-		
-		// Get the users active subscriptions
-		$subscription = $subsService->getUserActiveSubscription ( $user ['userId'] );
-		
-		// Complete full authentication
-		$authCreds = new SessionAuthenticationCredentials ();
-		$authCreds->setUserId ( $user ['userId'] );
-		$authCreds->setUserName ( $user ['username'] );
-		$authCreds->setEmail ( $user ['email'] );
-		$authCreds->setDisplayName ( $user ['displayName'] );
-		$authCreds->setCountry ( $user ['country'] );
-		$authCreds->setAuthorized ( true );
-		$authCreds->addRoles ( 'user' );
-		if (! empty ( $subscription )) {
-			$authCreds->addRoles ( 'subscriber' );
-		}
-		$authCreds->addRoles ( $usersService->getUserRoles ( $user ['userId'] ) );
-		Session::setAuthCreds ( $authCreds );
-		
-		// Setup user preferences - must be done after the session has been created
-		$settingsService = Settings::instance ();
-		$settings = $settingsService->getUserSettings ( $user ['userId'] );
-		$settingsService->setSettings ( $settings );
+		// Setup the users session
+		$authManager = AuthenticationManager::instance ();
+		$authManager->login ( $user );
 		
 		// Redirect to... league page.. weird!
 		Http::header ( Http::HEADER_LOCATION, '/league' );

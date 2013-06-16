@@ -1,10 +1,8 @@
 <?
 namespace Destiny;
-
 use Destiny\Utils\Tpl;
 use Destiny\Utils\Date;
 use Destiny\Session;
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -26,10 +24,11 @@ use Destiny\Session;
 	<section class="container">
 		<h1 class="page-title">
 			Profile 
-			<small>(<a title="Mailto: <?=Tpl::out(Session::get('email'))?>" href="mailto:<?=Tpl::out(Session::get('email'))?>"><?=Tpl::out(Session::get('displayName'))?></a>)</small>
+			<small>(<a title="Mailto: <?=Tpl::out($model->user['email'])?>" href="mailto:<?=Tpl::out($model->user['email'])?>"><?=Tpl::out($model->user['displayName'])?></a>)</small>
 		</h1>
 		<hr size="1">
 		
+		<?if(Session::hasRole('admin')):?>
 		<h3>Subscription</h3>
 		<div class="content content-dark clearfix">
 
@@ -51,15 +50,17 @@ use Destiny\Session;
 							<?php endif; ?>
 							</dd>
 							
+							<dt>Source:</dt>
+							<dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
 							<dt>Created date:</dt>
 							<dd><?=Tpl::out(Date::getDateTime($model->subscription['createdDate'],Date::STRING_FORMAT_YEAR))?></dd>
 							<dt>End date:</dt>
 							<dd><?=Tpl::out(Date::getDateTime($model->subscription['endDate'],Date::STRING_FORMAT_YEAR))?></dd>
 							<dt>Time left:</dt>
 							<dd><?=Date::getRemainingTime(new \DateTime($model->subscription['endDate']))?></dd>
-							<br />
 							
 							<?php if(!empty($model->paymentProfile)): ?>
+							<br />
 							<dt>Billing:</dt>
 							<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
 							<dt>Amount:</dt>
@@ -128,6 +129,7 @@ use Destiny\Session;
 			</div>
 		</div>
 		<?endif;?>
+		<?php endif; ?>
 		
 		<h3>Preferences</h3>
 		<div class="content content-dark clearfix">
@@ -142,15 +144,15 @@ use Destiny\Session;
 							<?$countries = Utils\Country::getCountries();?>
 							
 							<option value="">&nbsp;</option>
-							<option value="US" <?if(Session::get('country') == 'US'):?>
+							<option value="US" <?if($model->user['country'] == 'US'):?>
 								selected="selected" <?endif;?>>United States</option>
-							<option value="GB" <?if(Session::get('country') == 'GB'):?>
+							<option value="GB" <?if($model->user['country'] == 'GB'):?>
 								selected="selected" <?endif;?>>United Kingdom</option>
 							<option value="">&nbsp;</option>
 							
 							<?foreach($countries as $country):?>
 							<option value="<?=$country['alpha-2']?>"
-								<?if(Session::get('country') != 'US' && Session::get('country') != 'GB' && Session::get('country') == $country['alpha-2']):?>
+								<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>
 								selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
 							<?endforeach;?>
 						</select>

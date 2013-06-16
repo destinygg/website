@@ -5,7 +5,7 @@ namespace Destiny\Action\Fantasy\Team;
 use Destiny\Service\Fantasy\TeamService;
 use Destiny\Service\Fantasy\ChampionService;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppException;
@@ -26,7 +26,7 @@ class Update {
 		$response ['data'] ['team'] = $team;
 		$response ['data'] ['champions'] = TeamService::instance ()->getTeamChamps ( $team ['teamId'] );
 		$response ['success'] = true;
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 

@@ -4,7 +4,7 @@ namespace Destiny\Service;
 
 use Destiny\Service;
 use Destiny\Config;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\HttpApiConsumer;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
@@ -28,7 +28,7 @@ class LeagueApiService extends Service {
 	public function getStatus(array $options = array()) {
 		return new HttpApiConsumer ( array_merge ( array (
 				'url' => Config::$a ['lolapi'] ['url'],
-				'contentType' => Mimetype::JSON,
+				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
 					if (false == $json ['success'] && $json ['data'] != null) {
 						throw new AppException ( 'LoL API down.' );
@@ -45,7 +45,7 @@ class LeagueApiService extends Service {
 						'summoner.name' => utf8_decode ( $summoner ['name'] ),
 						'apikey' => Config::$a ['lolapi'] ['apikey'] 
 				) ),
-				'contentType' => Mimetype::JSON,
+				'contentType' => MimeType::JSON,
 				'params' => $summoner,
 				'onfetch' => function ($league, $summoner) {
 					if (false == $league ['success']) {
@@ -66,7 +66,7 @@ class LeagueApiService extends Service {
 						'apikey' => Config::$a ['lolapi'] ['apikey'],
 						'limit' => $limit 
 				) ),
-				'contentType' => Mimetype::JSON 
+				'contentType' => MimeType::JSON 
 		) );
 		return $games->getResponse ();
 	}
@@ -78,7 +78,7 @@ class LeagueApiService extends Service {
 						'summoner.name' => utf8_decode ( $summoner ['internalName'] ),
 						'apikey' => Config::$a ['lolapi'] ['apikey'] 
 				) ),
-				'contentType' => Mimetype::JSON 
+				'contentType' => MimeType::JSON 
 		) );
 		return $progress->getResponse ();
 	}
@@ -90,7 +90,7 @@ class LeagueApiService extends Service {
 						'summoner.name' => utf8_decode ( $summoner ['name'] ),
 						'apikey' => Config::$a ['lolapi'] ['apikey'] 
 				) ),
-				'contentType' => Mimetype::JSON,
+				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
 					if (false == $json ['success']) {
 						throw new AppException ( 'LoL API down.' );

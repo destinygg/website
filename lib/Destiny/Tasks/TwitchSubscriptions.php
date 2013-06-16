@@ -11,7 +11,7 @@ use Destiny\Utils\Date;
 use Psr\Log\LoggerInterface;
 use Destiny\AppException;
 
-class Subscriptions {
+class TwitchSubscriptions {
 
 	public function execute(LoggerInterface $log) {
 		set_time_limit ( 480 );
@@ -42,16 +42,19 @@ class Subscriptions {
 				// check if this a user
 				$user = $userService->getUserByExternalId ( $sub ['user'] ['_id'] );
 				if (empty ( $user )) {
+					$i ++;
 					continue;
 				}
 				// check if this user has a subscription
 				$subscription = $subService->getUserActiveSubscription ( $user ['userId'] );
 				if (empty ( $subscription )) {
-					$start = mktime ( 0, 0, 0, date ( 'm' ), 1, date ( 'y' ) );
-					$end = strtotime ( '+1 Month', $start );
-					SubscriptionsService::instance ()->addSubscription ( $user ['userId'], Date::getDateTime ( $start, 'Y-m-d H:i:s' ), Date::getDateTime ( $end, 'Y-m-d H:i:s' ), 'Active', 'twitch.tv' );
+					$start = Date::getDateTime ( $sub ['created_at'], 'Y-m-d H:i:s' );
+					$end = strtotime ( 'next month', mktime ( 0, 0, 0, date ( 'm' ), 1, date ( 'y' ) ) );
+					SubscriptionsService::instance ()->addSubscription ( $user ['userId'], Date::getDateTime ( $start, 'Y-m-d H:i:s' ), Date::getDateTime ( $end, 'Y-m-d H:i:s' ), 'Active', true, 'twitch.tv' );
+					$i ++;
 					continue;
 				}
+				$i ++;
 			}
 			sleep ( 1 );
 			continue;

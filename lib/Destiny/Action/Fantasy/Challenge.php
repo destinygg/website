@@ -5,7 +5,7 @@ namespace Destiny\Action\Fantasy;
 use Destiny\Service\Fantasy\TeamService;
 use Destiny\Service\Fantasy\ChallengeService;
 use Destiny\Utils\Http;
-use Destiny\Mimetype;
+use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppException;
@@ -37,7 +37,7 @@ class Challenge {
 			$response ['success'] = false;
 			$response ['message'] = $e->getMessage ();
 		}
-		Http::header ( Http::HEADER_CONTENTTYPE, Mimetype::JSON );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $response ) );
 	}
 
