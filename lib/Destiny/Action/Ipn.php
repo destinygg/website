@@ -24,34 +24,22 @@ class Ipn {
 			$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
 			return;
 		}
-		$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $ipnMessage->getTransactionType () ) );
+		$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId () ) );
 		$data = $ipnMessage->getRawData ();
 		$orderService = OrdersService::instance ();
 		$orderService->addIPNRecord ( array (
 				'ipnTrackId' => $data ['ipn_track_id'],
-				'ipnTransactionId' => $ipnMessage->getTransactionId (),
-				'ipnTransactionType' => $ipnMessage->getTransactionType (),
+				'ipnTransactionId' => $data ['txn_id'],
+				'ipnTransactionType' => $data ['txn_type'],
 				'ipnData' => json_encode ( $data ) 
 		) );
-		$this->handleIPN ( $ipnMessage );
-	}
-
-	/**
-	 * Get payment profile from IPN
-	 *
-	 * @param array $data
-	 * @return unknown
-	 */
-	protected function getPaymentProfile(array $data) {
-		if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {
-			throw new AppException ( 'Invalid recurring_payment_id' );
+		
+		// Make sure this IPN is for the merchant - not sure if this exists all the time
+		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
+			throw new AppException ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
 		}
-		$orderService = OrdersService::instance ();
-		$paymentProfile = $orderService->getPaymentProfileByPaymentProfileId ( $data ['recurring_payment_id'] );
-		if (empty ( $paymentProfile )) {
-			throw new AppException ( 'Invalid payment profile' );
-		}
-		return $paymentProfile;
+		
+		$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
 	}
 
 	/**
@@ -59,23 +47,15 @@ class Ipn {
 	 *
 	 * @param PPIPNMessage $ipnMessage
 	 */
-	protected function handleIPN(PPIPNMessage $ipnMessage) {
+	protected function handleIPNTransaction($txnId, $txnType, array $data) {
 		$log = Application::instance ()->getLogger ();
-		$transactionId = $ipnMessage->getTransactionId ();
-		$transactionType = $ipnMessage->getTransactionType ();
-		$data = $ipnMessage->getRawData ();
 		$orderService = OrdersService::instance ();
 		
-		// Make sure this IPN is for the merchant
-		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
-			throw new AppException ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
-		}
-		
-		switch (strtolower ( $transactionType )) {
+		switch (strtolower ( $txnType )) {
 			
 			// Post back from checkout, make sure the payment lines up
 			case 'express_checkout' :
-				$payment = $orderService->getPaymentByTransactionId ( $data ['txn_id'] );
+				$payment = $orderService->getPaymentByTransactionId ( $txnId );
 				if (! empty ( $payment )) {
 					if (number_format ( $payment ['amount'], 2 ) != number_format ( $data ['mc_gross'], 2 )) {
 						throw new AppException ( 'Amount for payment do not match' );
@@ -103,8 +83,8 @@ class Ipn {
 					$payment ['payerId'] = $data ['payer_id'];
 					$payment ['amount'] = $data ['mc_gross'];
 					$payment ['currency'] = $data ['mc_currency'];
-					$payment ['transactionId'] = $transactionId;
-					$payment ['transactionType'] = $transactionType;
+					$payment ['transactionId'] = $txnId;
+					$payment ['transactionType'] = $txnType;
 					$payment ['paymentType'] = $data ['payment_type'];
 					$payment ['paymentStatus'] = $data ['payment_status'];
 					$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'] )->format ( 'Y-m-d H:i:s' );
@@ -134,6 +114,24 @@ class Ipn {
 				$log->notice ( sprintf ( 'Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				break;
 		}
+	}
+
+	/**
+	 * Get payment profile from IPN
+	 *
+	 * @param array $data
+	 * @return unknown
+	 */
+	protected function getPaymentProfile(array $data) {
+		if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {
+			throw new AppException ( 'Invalid recurring_payment_id' );
+		}
+		$orderService = OrdersService::instance ();
+		$paymentProfile = $orderService->getPaymentProfileByPaymentProfileId ( $data ['recurring_payment_id'] );
+		if (empty ( $paymentProfile )) {
+			throw new AppException ( 'Invalid payment profile' );
+		}
+		return $paymentProfile;
 	}
 
 }
