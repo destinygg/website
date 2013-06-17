@@ -5,7 +5,8 @@ $(function(){
 		chat = twitchElements.find('#twitch-chat'), 
 		player = twitchElements.find('#twitch-player'),
 		popoutChatBtn = twitch.find('#popoutchat'),
-		popoutVideoBtn = twitch.find('#popoutvideo');
+		popoutVideoBtn = twitch.find('#popoutvideo'),
+		bigscreenmodeBtn = twitch.find('#bigscreenmode');
 
 	var twitchChat = {
 		popup: null,
@@ -70,6 +71,14 @@ $(function(){
 
 	popoutChatBtn.on('click', function(){ twitchChat.toggle(); });
 	popoutVideoBtn.on('click', function(){ twitchVideo.toggle(); });
+	bigscreenmodeBtn.on('click', function(){
+		var nw = window.open('/bigscreen', 'bigscreen');
+		var tw = twitch.detach();
+		$(nw).on('beforeunload', function(){
+			$('#header-band').after(tw);
+		});
+		return false;
+	});
 
 	// Periodically check if the stream is offline, ad show ads.
 	var offlineAdvert = {

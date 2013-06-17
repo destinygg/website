@@ -45,7 +45,7 @@ $app->bind ( '/^\/(admin|order|subscribe|payment)/i', function (Application $app
 } );
 
 // Logged in only
-$app->bind ( '/^\/(profile|order|subscribe|fantasy|payment)/i', function (Application $app) {
+$app->bind ( '/^\/(profile|order|subscribe|fantasy|payment|bigscreen)/i', function (Application $app) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [user] %s', $app->getPath () ) );
 	if (! Session::hasRole ( 'user' )) {
 		$app->error ( Http::STATUS_UNAUTHORIZED );

@@ -17,6 +17,10 @@
 100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
 }
 
+html,body{
+height:100%;
+}
+
 body {
 background: #111 url("../img/bodybg.png") repeat top center;
 position: relative;
@@ -67,6 +71,10 @@ color: #888;
 
 a.subtle-link:hover {
 color: #fafafa;
+}
+
+.btn-link, .btn-link:active, .btn-link[disabled] {
+text-shadow:none;
 }
 
 .nav,.nav a,.nav li {
@@ -158,7 +166,6 @@ width: 400px;
 position: absolute;
 text-indent: -999em;
 }
-
 #destiny-illustration {
 background: url(../img/destinybannerhead.small.png) no-repeat top left;
 width: 500px;
@@ -166,9 +173,7 @@ height: 109px;
 position: absolute;
 top: 0;
 right: 0;
-z-index: 101;
 }
-
 #main-nav .navbar-inner {
 border-bottom: 1px solid #000;
 }

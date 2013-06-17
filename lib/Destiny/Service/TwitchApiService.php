@@ -73,12 +73,12 @@ class TwitchApiService extends Service {
 						$json ['stream'] ['channel'] ['updated_at'] = Date::getDateTime ( $json ['stream'] ['channel'] ['updated_at'], Date::FORMAT );
 					}
 					// Last broadcast if the stream is offline
-					$json ['lastbroadcast'] = null;
-					if ($json ['stream'] == null) {
-						// Called via static method, because we are in a closure
-						$channel = TwitchApiService::instance ()->getChannel ()->getResponse ();
-						$json ['lastbroadcast'] = Date::getDateTime ( $channel ['updated_at'], Date::FORMAT );
-					}
+					// Called via static method, because we are in a closure
+					$channel = TwitchApiService::instance ()->getChannel ()->getResponse ();
+					$json ['lastbroadcast'] = Date::getDateTime ( $channel ['updated_at'], Date::FORMAT );
+					$json ['status'] = $channel ['status'];
+					$json ['game'] = $channel ['game'];
+					
 					// Just some clean up
 					if (isset ( $json ['_links'] )) {
 						unset ( $json ['_links'] );

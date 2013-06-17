@@ -25,7 +25,7 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
 					<h1><strong><?=$word?>!</strong> Authentication required</h1>
-					<p>This request requires authentication. <br />Would you like to <a href="/">return to the start</a>?</p>
+					<p>This request requires you to login. <br />Would you like to <a href="/">return to the start</a>?</p>
 				</div>
 				<div id="destiny-illustration"></div>
 			</header>

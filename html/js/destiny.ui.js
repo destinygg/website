@@ -429,6 +429,46 @@ $(function(){
 		});
 	});
 	
+	// Theater
+	$(function(){
+		$('body#bigscreen').each(function(){
+			
+			var offset = 81;
+			var pc = $('.page-content');
+			var _resize = function(){
+				var bh = $('body').height(); 
+				if(bh < 550){
+					bh = 550;
+				}
+				pc.height( bh - offset );
+				pc.find('#twitch-chat-wrap .twitch-element').height( pc.height()-20 );
+				pc.find('#twitch-stream-wrap .twitch-element').height( pc.height() - 20 - 30 );
+			};
+			$(window).on('resize', _resize);
+			_resize();
+
+			// Stream details
+			new DestinyFeedConsumer({
+				url: destiny.urls.stream,
+				polling: destiny.polling.stream,
+				ifModified: true,
+				success: function(data, textStatus){
+					if(textStatus == 'notmodified') return;
+					var ui = $('#twitch-stream-wrap .panelheader .game');
+					if(data != null && data.stream != null){
+						ui.html( '<i class="icon-time icon-white subtle"></i> <span>Started '+ moment(data.stream.channel.updated_at).fromNow() +'</span>' + ((data.stream.channel.delay > 0) ? ' - ' + parseInt((data.stream.channel.delay/60)) + 'm delay':'')).show();
+					}else{
+						try{
+							ui.html( '<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended '+ moment(data.lastbroadcast).fromNow() +'</span>').show();
+						}catch(e){
+							ui.html( '<i class="icon-time icon-white subtle"></i> <span>Broadcast has ended</span>').show();
+						}
+					}
+				}
+			});
+		});
+	});
+	
 	// Add collapses
 	$(".collapse").collapse();
 	

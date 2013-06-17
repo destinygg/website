@@ -1,5 +1,5 @@
 <? namespace Destiny; ?>
-<section class="container">
+<section id="footer" class="container">
 	<footer class="clearfix">
 		<p class="pull-left">
 			<span><?=Config::$a['meta']['shortName']?> &copy; <?=date('Y')?> </span>

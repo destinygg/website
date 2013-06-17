@@ -1,0 +1,116 @@
+
+body#bigscreen {
+padding-top:0;
+}
+body#bigscreen .page-wrap {
+height: auto !important;
+min-height: 100%;
+position: relative;
+/*margin-bottom:-60px;*/
+}
+body#bigscreen .page-content {
+/*padding-bottom:60px;*/
+height:100%;
+}
+body#bigscreen #footer {
+display:none;
+padding: 10px 10px 0 10px;
+margin:0;
+}
+body#bigscreen #header-band h1 {
+margin-left:10px;
+}
+body#bigscreen #header-band #overview,
+body#bigscreen #header-band #overview h1 {
+height: 80px;
+}
+body#bigscreen #header-band #destiny-illustration {
+background-position: 0 -20px;
+height: 79px;
+}
+
+body#bigscreen #twitch-stream-wrap {
+width:100%; 
+margin-left:-400px; 
+height: auto; 
+min-height: 100%;
+}
+body#bigscreen #twitch-stream-wrap > div {
+margin:0 0 0 400px;	
+padding:10px 0 10px 10px;
+overflow: hidden;
+}
+body#bigscreen #twitch-stream-wrap object {
+width:100%; 
+height:100%; 
+display: block;
+border-bottom-left-radius:4px;	
+border-bottom-right-radius:4px;
+}
+body#bigscreen #twitch-stream-wrap .panelheader {
+border-top-left-radius:4px;	
+border-top-right-radius:4px;
+background: rgba(0,0,0,0.5);
+line-height:30px;
+padding:0 15px;
+
+}
+body#bigscreen #twitch-stream-wrap .panelheader .channel-stat {
+width:50%;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+color: #444;
+font-size:12px;
+text-shadow:1px 1px 0 black;
+}
+body#bigscreen #twitch-chat-wrap {
+width:400px;
+height: auto;
+min-height: 100%;
+}
+body#bigscreen #twitch-chat-wrap > div {
+margin:10px; 
+background: white;
+border-radius:4px;
+overflow: hidden;
+}
+body#bigscreen #twitch-chat-wrap iframe {
+width:380px;
+display: block;
+}
+
+body#bigscreen .container {
+width: 900px;
+}
+
+@media ( min-width : 920px) {
+	body#bigscreen .container {
+		width: auto;
+		max-width: 100%; 
+		min-width: 900px;
+	}
+}
+
+
+body#bigscreen #main-nav {
+display: none;
+}
+body#bigscreen #header-band .nav-pills {
+font-size:12px;
+}
+body#bigscreen #header-band .nav-pills>li>a {
+color:#666;
+background-color:rgba(255,255,255,0.05);	
+}
+body#bigscreen #header-band .nav-pills>.active>a,
+body#bigscreen #header-band .nav-pills>.active>a:hover,
+body#bigscreen #header-band .nav-pills>.active>a:focus{
+color:#fafafa;
+background-color:rgba(255,255,255,0.05);
+}
+body#bigscreen #header-band .nav-pills>li>a:hover,
+body#bigscreen #header-band .nav-pills>li>a:focus {
+color:#fff;
+background-color:rgba(255,255,255,0.1);
+}

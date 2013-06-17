@@ -21,9 +21,9 @@
 		<antcall target="copysource" />
 		<antcall target="concatcss" />
 		<antcall target="concatjs" />
+		<!--
 		<antcall target="compresscss" />
 		<antcall target="compressjs" />
-		<!--
 		-->
 	</target>
 	
@@ -45,6 +45,7 @@
 			<file name="destiny.flags.css" />
 			<file name="destiny.teammaker.css" />
 			<file name="destiny.fantasy.css" />
+			<file name="destiny.bigscreen.css" />
 		</filelist>
 		<concat destfile="${build.base}/html/css/destiny.${version}.css">
 			<filelist refid="files"/> 
