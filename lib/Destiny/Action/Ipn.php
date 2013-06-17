@@ -2,6 +2,7 @@
 
 namespace Destiny\Action;
 
+use Destiny\Utils\Http;
 use PayPal\IPN\PPIPNMessage;
 use Destiny\Application;
 use Destiny\Service\OrdersService;
@@ -40,6 +41,10 @@ class Ipn {
 		}
 		
 		$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
+		
+		Http::status ( Http::STATUS_OK );
+		Http::header ( Http::HEADER_CONNECTION, 'close' );
+		exit ();
 	}
 
 	/**
