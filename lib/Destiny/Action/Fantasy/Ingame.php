@@ -12,16 +12,16 @@ use Destiny\Config;
 class Ingame {
 
 	public function execute(array $params) {
-		ini_set('display_errors', 1);
+		ini_set ( 'display_errors', 1 );
 		$app = Application::instance ();
+		$cacheDriver = $app->getCacheDriver ();
 		$ingame = null;
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == false) {
 				continue;
 			}
 			
-			$cache = $app->getMemoryCache ( 'ingame.' . $summoner ['id'] );
-			$ingame = $cache->read ();
+			$ingame = $cacheDriver->fetch ( 'ingame.' . $summoner ['id'] );
 			if ($ingame != null && $ingame ['success'] == true && $ingame ['data'] != null) {
 				$ingame = $ingame ['data'];
 				// Abililty to send the game id, if it is still ingame, send a not modified response

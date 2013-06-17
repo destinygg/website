@@ -48,9 +48,10 @@ class TwitchSubscriptions {
 				// check if this user has a subscription
 				$subscription = $subService->getUserActiveSubscription ( $user ['userId'] );
 				if (empty ( $subscription )) {
-					$start = Date::getDateTime ( $sub ['created_at'], 'Y-m-d H:i:s' );
-					$end = strtotime ( 'next month', mktime ( 0, 0, 0, date ( 'm' ), 1, date ( 'y' ) ) );
-					SubscriptionsService::instance ()->addSubscription ( $user ['userId'], Date::getDateTime ( $start, 'Y-m-d H:i:s' ), Date::getDateTime ( $end, 'Y-m-d H:i:s' ), 'Active', true, 'twitch.tv' );
+					$start = Date::getDateTime ( $sub ['created_at'] );
+					$end = Date::getDateTime ();
+					$end->modify ( 'first day of next month' );
+					SubscriptionsService::instance ()->addSubscription ( $user ['userId'], $start->format ( 'Y-m-d H:i:s' ), $end->format ( 'Y-m-d H:i:s' ), 'Active', true, 'twitch.tv' );
 					$i ++;
 					continue;
 				}

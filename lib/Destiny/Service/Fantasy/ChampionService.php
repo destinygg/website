@@ -67,7 +67,7 @@ class ChampionService extends Service {
 		$conn->insert ( 'dfl_users_champs', array (
 				'userId' => $userId,
 				'championId' => $championId,
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		), array (
 				\PDO::PARAM_INT,
 				\PDO::PARAM_INT,

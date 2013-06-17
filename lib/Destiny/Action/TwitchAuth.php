@@ -51,9 +51,7 @@ class TwitchAuth {
 				Http::header ( Http::HEADER_LOCATION, 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=' . Config::$a ['twitch'] ['client_id'] . '&redirect_uri=' . urlencode ( Config::$a ['twitch'] ['redirect_uri'] ) . '&scope=' . Config::$a ['twitch'] ['broadcaster'] ['request_perms'] );
 				exit ();
 			}
-			$fp = fopen ( Config::$a ['cache'] ['path'] . 'BROADCASTERTOKEN.tmp', 'w' );
-			fwrite ( $fp, $accessToken );
-			fclose ( $fp );
+			file_put_contents ( Config::$a ['cache'] ['path'] . 'BROADCASTERTOKEN.tmp', $accessToken );
 		}
 		
 		$usersService = UsersService::instance ();

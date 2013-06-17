@@ -7,6 +7,7 @@ use Destiny\Utils\Http;
 use Destiny\Utils\Options;
 use Destiny\Utils\String\Params;
 use Psr\Log\LoggerInterface;
+use Doctrine\Common\Cache\CacheProvider;
 
 class Application extends Service {
 	
@@ -37,6 +38,13 @@ class Application extends Service {
 	 * @var LoggerInterface
 	 */
 	public $logger = null;
+	
+	/**
+	 * Public logger
+	 *
+	 * @var \Doctrine\DBAL\Cache
+	 */
+	public $cacheDriver = null;
 	
 	/**
 	 * The application
@@ -94,26 +102,6 @@ class Application extends Service {
 				'/',
 				'\\\\' 
 		), '\\', join ( '\\', $arr ) . '\\' ) . ucwords ( $pathinfo ['filename'] );
-	}
-
-	/**
-	 * Get the type of cache
-	 *
-	 * @todo seems out of place
-	 *      
-	 * @param array|string $params
-	 * @return \Destiny\Cache\Apc
-	 */
-	public function getMemoryCache($params = null) {
-		if ($params === null) {
-			throw new \InvalidArgumentException ( $params );
-		}
-		if (is_string ( $params )) {
-			$params = array (
-					'filename' => Config::$a ['cache'] ['path'] . $params . '.tmp' 
-			);
-		}
-		return new Config::$a ['cache'] ['memory'] ( $params );
 	}
 
 	/**
@@ -287,6 +275,24 @@ class Application extends Service {
 	 */
 	public function setConnection(\Doctrine\DBAL\Connection $connection) {
 		$this->connection = $connection;
+	}
+
+	/**
+	 * Get the active connection
+	 *
+	 * @return \Doctrine\Common\Cache\CacheProvider
+	 */
+	public function getCacheDriver() {
+		return $this->cacheDriver;
+	}
+
+	/**
+	 * Set the active connection
+	 *
+	 * @param \Doctrine\Common\Cache\CacheProvider $cacheDriver
+	 */
+	public function setCacheDriver(\Doctrine\Common\Cache\CacheProvider $cacheDriver) {
+		$this->cacheDriver = $cacheDriver;
 	}
 
 	/**

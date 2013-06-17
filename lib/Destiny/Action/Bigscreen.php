@@ -9,8 +9,7 @@ class Bigscreen {
 
 	public function execute(array $params, ViewModel $model) {
 		$model->title = 'Theater';
-		$cache = Application::instance()->getMemoryCache ( 'streaminfo' );
-		$model->streamInfo = $cache->read ();
+		$model->streamInfo = Application::instance ()->getCacheDriver ()->fetch ( 'streaminfo' );
 		return 'bigscreen';
 	}
 

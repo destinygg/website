@@ -2,6 +2,7 @@
 
 namespace Destiny;
 
+use Destiny\Utils\Date;
 use Destiny\Utils\Options;
 use Psr\Log\LoggerInterface;
 
@@ -139,7 +140,7 @@ class Scheduler {
 				continue;
 			}
 			// Schedule run
-			$nextExecute = new \DateTime ( $this->schedule [$i] ['lastExecuted'] );
+			$nextExecute = Date::getDateTime ( $this->schedule [$i] ['lastExecuted'] );
 			$nextExecute->modify ( '+' . $this->schedule [$i] ['frequency'] . ' ' . $this->schedule [$i] ['period'] );
 			if (time () > $nextExecute->getTimestamp ()) {
 				$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;

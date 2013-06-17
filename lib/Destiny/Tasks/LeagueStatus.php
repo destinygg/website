@@ -13,8 +13,7 @@ class LeagueStatus {
 		$log->info ( 'Updated lol status' );
 		$response = LeagueApiService::instance ()->getStatus ()->getResponse ();
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'leaguestatus' );
-		$cache->write ( $response );
+		$app->getCacheDriver ()->save ( 'leaguestatus', $response );
 	}
 
 }

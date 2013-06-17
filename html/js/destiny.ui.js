@@ -22,12 +22,12 @@ $(function(){
 									'<img class="media-object" src="'+destiny.cdn+'/img/64x64.gif" data-src="'+ track.image[1]['#text'] +'">'+ 
 								'</a>'+ 
 								'<div class="media-body">'+ 
-									'<h4 class="media-heading trackname"><a title="'+ htmlEncode(track.name) +'" href="'+ track.url +'">'+ htmlEncode(track.name) +'</a></h4>'+ 
+									'<div class="media-heading trackname"><a title="'+ htmlEncode(track.name) +'" href="'+ track.url +'">'+ htmlEncode(track.name) +'</a></div>'+ 
 									'<div class="artist">'+ htmlEncode(track.artist['#text']) +'</div>'+ 
 									'<div class="details">'+
 										((i<3 && track.date_str != '') ? '<time class="pull-right" datetime="'+ track.date_str +'">'+ moment(track.date_str).fromNow() +'</time>' : '')+ 
 										((i==0 && track.date_str == '') ? '<time class="pull-right" datetime="'+ track.date_str +'">now playing</time>' : '')+ 
-										'<small class="album">'+ track.album['#text'] +'</small>'+ 
+										'<small class="album subtle">'+ track.album['#text'] +'</small>'+ 
 									'</div>'+ 
 								'</div>'+ 
 							'</div>'

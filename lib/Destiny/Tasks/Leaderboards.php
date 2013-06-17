@@ -16,14 +16,14 @@ class Leaderboards {
 		$app = Application::instance ();
 		$champService = ChampionService::instance ();
 		$leadersService = LeaderboardService::instance ();
+		$cacheDriver = $app->getCacheDriver ();
 		
 		// Subs leaderboard
 		$teams = $leadersService->getSubscriberTeamLeaderboard ( 10 );
 		foreach ( $teams as $i => $team ) {
 			$teams [$i] ['champions'] = $champService->getChampionsById ( explode ( ',', $teams [$i] ['champions'] ) );
 		}
-		$cache = $app->getMemoryCache ( 'subscriberteamleaderboard' );
-		$cache->write ( $teams );
+		$cacheDriver->save ( 'subscriberteamleaderboard', $teams );
 		
 		// Top summoners
 		$summoners = $leadersService->getTopSummoners ( 10 );
@@ -31,8 +31,7 @@ class Leaderboards {
 			$summoners [$i] ['summonerName'] = String::strictUTF8 ( $summoners [$i] ['summonerName'] );
 			$summoners [$i] ['mostPlayedChampion'] = $champService->getChampionById ( $summoners [$i] ['mostPlayedChampion'] );
 		}
-		$cache = $app->getMemoryCache ( 'topsummoners' );
-		$cache->write ( $summoners );
+		$cacheDriver->save ( 'topsummoners', $summoners );
 		
 		// Recent games
 		$gameService = GameService::instance ();
@@ -43,8 +42,7 @@ class Leaderboards {
 				$games [$i] ['champions'] [$x] ['summonerName'] = String::strictUTF8 ( $games [$i] ['champions'] [$x] ['summonerName'] );
 			}
 		}
-		$cache = $app->getMemoryCache ( 'recentgames' );
-		$cache->write ( $games );
+		$cacheDriver->save ( 'recentgames', $games );
 		
 		// Recent game leaderboard
 		$champService = ChampionService::instance ();
@@ -52,8 +50,7 @@ class Leaderboards {
 		foreach ( $leaders as $i => $leader ) {
 			$leaders [$i] ['champions'] = $champService->getChampionsById ( explode ( ',', $leader ['champions'] ) );
 		}
-		$cache = $app->getMemoryCache ( 'recentgameleaderboard' );
-		$cache->write ( $leaders );
+		$cacheDriver->save ( 'recentgameleaderboard', $leaders );
 		
 		// Team Leaderboard
 		$champService = ChampionService::instance ();
@@ -61,13 +58,11 @@ class Leaderboards {
 		foreach ( $teams as $i => $team ) {
 			$teams [$i] ['champions'] = $champService->getChampionsById ( explode ( ',', $team ['champions'] ) );
 		}
-		$cache = $app->getMemoryCache ( 'teamleaderboard' );
-		$cache->write ( $teams );
+		$cacheDriver->save ( 'teamleaderboard', $teams );
 		
 		// Top team champion scores
 		$topScorers = LeaderboardService::instance ()->getTopTeamChampionScores ( 5 );
-		$cache = $app->getMemoryCache ( 'topteamchampionscores' );
-		$cache->write ( $topScorers );
+		$cacheDriver->save ( 'topteamchampionscores', $topScorers );
 		
 		$log->info ( 'Reset leaderboards' );
 	}

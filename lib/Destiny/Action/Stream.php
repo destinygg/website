@@ -12,13 +12,11 @@ class Stream {
 
 	public function execute(array $params) {
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'streaminfo' );
-		Http::checkIfModifiedSince ( $cache->getLastModified (), true );
-		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $cache->getLastModified () ) );
+		$info = $app->getCacheDriver ()->fetch ( 'streaminfo' );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
 		Http::header ( Http::HEADER_PRAGMA, 'public' );
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $cache->read () ) );
+		Http::sendString ( json_encode ( $info ) );
 	}
 
 }

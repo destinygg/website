@@ -22,7 +22,7 @@ use Destiny\Utils\Date;
 							<a target="_blank" href="https://twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>"><i class="icon-share icon-white subtle"></i></a>
 							<?=$tweet['html']?>
 						</div>
-						<time datetime="<?=$tweet['created_at']?>" pubdate><?=Date::getElapsedTime(new \DateTime($tweet['created_at']))?></time>
+						<time datetime="<?=$tweet['created_at']?>" pubdate><?=Date::getElapsedTime(Date::getDateTime($tweet['created_at']))?></time>
 					</div>
 				</div>
 			<?endforeach;?>
@@ -44,9 +44,9 @@ use Destiny\Utils\Date;
 				<div class="media">
 					<a class="pull-left cover-image" href="<?=$track['url']?>"><img class="media-object" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=$track['image'][1]['#text']?>"></a>
 					<div class="media-body">
-						<h4 class="media-heading trackname">
+						<div class="media-heading trackname">
 							<a href="<?=$track['url']?>"><?=Tpl::out($track['name'])?></a>
-						</h4>
+						</div>
 						<div class="artist"><?=Tpl::out($track['artist']['#text'])?></div>
 						<div class="details">
 							<?if($track['date_str'] != ''):?>
@@ -55,7 +55,7 @@ use Destiny\Utils\Date;
 							<?if($trackIndex==0 && $track['date_str'] == ''):?>
 							<time class="pull-right" datetime="<?=date(\DateTime::W3C)?>">now playing</time>
 							<?endif;?>
-							<small class="album"><?=Tpl::out($track['album']['#text'])?></small>
+							<small class="album subtle"><?=Tpl::out($track['album']['#text'])?></small>
 						</div>
 					</div>
 				</div>

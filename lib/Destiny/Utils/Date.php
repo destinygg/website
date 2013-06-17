@@ -6,6 +6,7 @@ namespace Destiny\Utils;
  * This class is bad
  */
 abstract class Date {
+	
 	const STRING_FORMAT_YEAR = 'g:ia, D jS F Y e';
 	const STRING_FORMAT = 'D jS F, g:ia e';
 	const STRING_DATE_FORMAT = 'jS F, Y';
@@ -13,15 +14,20 @@ abstract class Date {
 	const FORMAT = DATE_ISO8601;
 
 	/**
-	 * Performs a strtotime on the $string || if you can pass in a timestamp, and returns a formatted date.
+	 * Get a DateTime object
 	 *
 	 * @param string|int $string
+	 * @return \DateTime
 	 */
-	public static function getDateTime($time, $format = '') {
-		$time = (! is_numeric ( $time )) ? strtotime ( $time ) : $time;
-		$date = new \DateTime ();
-		$date->setTimestamp ( $time );
-		return ($format != '') ? $date->format ( $format ) : $date;
+	public static function getDateTime($time = 'NOW') {
+		if (! is_numeric ( $time )) {
+			$date = new \DateTime ( $time );
+		} else {
+			$date = new \DateTime ();
+			$date->setTimestamp ( $time );
+		}
+		$date->setTimezone ( new \DateTimeZone ( 'UTC' ) );
+		return $date;
 	}
 
 	/**
@@ -83,7 +89,6 @@ abstract class Date {
 	}
 
 	/**
-	 *
 	 * @param \DateTime $date
 	 * @param \DateTime $compareTo
 	 * @return string
@@ -123,16 +128,6 @@ abstract class Date {
 			$years = round ( $dayDiff / 365 );
 			return $years . ' year' . ($years != 1 ? 's' : '') . ' ago';
 		}
-	}
-
-	public static function getWeekRange($ts) {
-		$start = (gmdate ( 'w', $ts ) == 0) ? $ts : strtotime ( 'last sunday', $ts );
-		$start_date = gmdate ( 'Y-m-d 00:00:01', $start );
-		$end_date = gmdate ( 'Y-m-d 23:59:59', strtotime ( 'next saturday', $start ) );
-		return array (
-				'start' => $start_date,
-				'end' => $end_date 
-		);
 	}
 
 }

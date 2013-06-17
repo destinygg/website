@@ -13,12 +13,11 @@ use Destiny\Utils\Http;
 use Destiny\AppException;
 
 class LeagueApiService extends Service {
-	
 	protected static $instance = null;
 
 	/**
 	 * Singleton
-	 * 
+	 *
 	 * @return LeagueApiService
 	 */
 	public static function instance() {
@@ -95,7 +94,7 @@ class LeagueApiService extends Service {
 					if (false == $json ['success']) {
 						throw new AppException ( 'LoL API down.' );
 					}
-					$json ['data'] ['revisionDate'] = Date::getDateTime ( floatval ( $json ['data'] ['revisionDate'] ) / 1000, Date::FORMAT );
+					$json ['data'] ['revisionDate'] = Date::getDateTime ( floatval ( $json ['data'] ['revisionDate'] ) / 1000 )->format ( Date::FORMAT );
 					return $json;
 				} 
 		) );
@@ -129,7 +128,9 @@ class LeagueApiService extends Service {
 			if (! isset ( $b ['revisionDate]'] )) {
 				return false;
 			}
-			return (strtotime ( $a ['revisionDate'] ) < strtotime ( $b ['revisionDate'] ));
+			$sD = Date::getDateTime ( $a ['revisionDate'] );
+			$eD = Date::getDateTime ( $b ['revisionDate'] );
+			return ($sD < $eD);
 		} );
 		$response = $summoners;
 		return $response;

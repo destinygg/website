@@ -12,7 +12,7 @@ use Destiny\Config;
 $base = realpath ( __DIR__ . '/../' );
 $loader = require $base . '/vendor/autoload.php';
 $loader->add ( 'Destiny', $base . '/lib/' );
-Config::load ( $base . '/config/config.php', parse_ini_file (  $base . '/lib/.version' ) );
+Config::load ( $base . '/config/config.php', parse_ini_file ( $base . '/lib/.version' ) );
 
 $log = new \Monolog\Logger ( 'http' );
 $log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['path'] . 'events.log', \Monolog\Logger::DEBUG ) );
@@ -21,20 +21,18 @@ $log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
 $dbConfig = new \Doctrine\DBAL\Configuration ();
 $db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], $dbConfig );
 
+// $cache = new \Doctrine\Common\Cache\FilesystemCache ( Config::$a ['cache'] ['path'] );
+$cache = new \Doctrine\Common\Cache\ZendDataCache ();
+
 $app = Application::instance ();
 $app->setLogger ( $log );
 $app->setConnection ( $db );
+$app->setCacheDriver ( $cache );
 
 $session = Session::setInstance ( new SessionInstance () );
 $session->setSessionCookieInterface ( new SessionCookieInterface ( Config::$a ['cookie'] ) );
 $session->start ();
 $session->setAuthenticationCredentials ( new SessionAuthenticationCredentials ( $session->getData () ) );
-
-// Make sure the session is valid?
-// if (Session::hasRole ( 'user' ) && ! Session::valid ()) {
-// $session->destroy ();
-// $app->error ( Http::STATUS_ERROR, new AppException ( 'Malformed session.' ) );
-// }
 
 // Admins only
 $app->bind ( '/^\/(admin|order|subscribe|payment)/i', function (Application $app) {

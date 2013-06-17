@@ -137,7 +137,7 @@ class ChallengeService extends Service {
 					'ownerTeamId' => $ownerTeamId,
 					'challengeTeamId' => $teamId,
 					'status' => 'SENT',
-					'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+					'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 			), array (
 					\PDO::PARAM_INT,
 					\PDO::PARAM_INT,
@@ -168,7 +168,7 @@ class ChallengeService extends Service {
 						'ownerTeamId' => $teamId,
 						'challengeTeamId' => $challengerId,
 						'status' => 'ACCEPTED',
-						'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+						'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 				), array (
 						\PDO::PARAM_INT,
 						\PDO::PARAM_INT,

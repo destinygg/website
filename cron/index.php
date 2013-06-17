@@ -29,9 +29,13 @@ $log->pushProcessor ( new MemoryPeakUsageProcessor () );
 $dbConfig = new \Doctrine\DBAL\Configuration ();
 $db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], $dbConfig );
 
+// $cache = new \Doctrine\Common\Cache\FilesystemCache ( Config::$a ['cache'] ['path'] );
+$cache = new \Doctrine\Common\Cache\ZendDataCache ();
+
 $app = Application::instance ();
 $app->setLogger ( $log );
 $app->setConnection ( $db );
+$app->setCacheDriver ( $cache );
 
 // Cron is run every 60 seconds.
 // There can be a time where actions are executed before they have ended

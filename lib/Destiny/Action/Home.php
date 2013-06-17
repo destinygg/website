@@ -13,34 +13,19 @@ class Home {
 
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();
-		if (Session::hasRole('user') && Settings::get ( 'teambar_homepage' )) {
+		$cacheDriver = $app->getCacheDriver ();
+		if (Session::hasRole ( 'user' ) && Settings::get ( 'teambar_homepage' )) {
 			$model->team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );
 			$model->teamChamps = TeamService::instance ()->getTeamChamps ( $model->team ['teamId'] );
-			
-			$cache = $app->getMemoryCache ( 'champions' );
-			$model->champions = $cache->read ();
+			$model->champions = $cacheDriver->fetch ( 'champions' );
 		}
-		$cache = $app->getMemoryCache ( 'calendarevents' );
-		$model->events = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'recentblog' );
-		$model->articles = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'summoners' );
-		$model->summoners = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'twitter' );
-		$model->tweets = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'recenttracks' );
-		$model->music = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'youtubeplaylist' );
-		$model->playlist = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'pastbroadcasts' );
-		$model->broadcasts = $cache->read ();
-		
+		$model->events = $cacheDriver->fetch ( 'calendarevents' );
+		$model->articles = $cacheDriver->fetch ( 'recentblog' );
+		$model->summoners = $cacheDriver->fetch ( 'summoners' );
+		$model->tweets = $cacheDriver->fetch ( 'twitter' );
+		$model->music = $cacheDriver->fetch ( 'recenttracks' );
+		$model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
+		$model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
 		return 'home';
 	}
 

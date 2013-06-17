@@ -12,7 +12,7 @@ class TwitterFeed {
 
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'twitter' );
+		$cacheDriver = $app->getCacheDriver ();
 		
 		$curl = new \Buzz\Client\Curl ();
 		$curl->setVerifyPeer ( false );
@@ -39,11 +39,11 @@ class TwitterFeed {
 					$html = str_replace ( $url ['url'], $l, $html );
 				}
 			}
-			$tweet ['user']['screen_name'] = Config::$a ['twitter'] ['user'];
+			$tweet ['user'] ['screen_name'] = Config::$a ['twitter'] ['user'];
 			$tweet ['html'] = $html;
 			$tweets [] = $tweet;
 		}
-		$cache->write ( $tweets );
+		$cacheDriver->save ( 'twitter', $tweets );
 	}
 
 }

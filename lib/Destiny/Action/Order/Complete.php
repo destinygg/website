@@ -179,7 +179,7 @@ class Complete {
 					$payment ['transactionType'] = $paymentInfo->TransactionType;
 					$payment ['paymentType'] = $paymentInfo->PaymentType;
 					$payment ['paymentStatus'] = $paymentInfo->PaymentStatus;
-					$payment ['paymentDate'] = Date::getDateTime ( $paymentInfo->PaymentDate, 'Y-m-d H:i:s' );
+					$payment ['paymentDate'] = Date::getDateTime ( $paymentInfo->PaymentDate )->format ( 'Y-m-d H:i:s' );
 					if ($paymentInfo->PaymentStatus != 'Completed') {
 						$orderStatus = 'Incomplete';
 					}
@@ -200,9 +200,10 @@ class Complete {
 		}
 		
 		// Create / adjust subscription
-		$start = time ();
-		$end = strtotime ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ), $start );
-		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], Date::getDateTime ( $start, 'Y-m-d H:i:s' ), Date::getDateTime ( $end, 'Y-m-d H:i:s' ), 'Active', (! empty ( $paymentProfile )), 'destiny.gg' );
+		$start = Date::getDateTime ( 'NOW' );
+		$end = Date::getDateTime ( 'NOW' );
+		$end->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
+		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], $start->format ( 'Y-m-d H:i:s' ), $end->format ( 'Y-m-d H:i:s' ), 'Active', (! empty ( $paymentProfile )), 'destiny.gg' );
 		if (! empty ( $paymentProfile )) {
 			SubscriptionsService::instance ()->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
 		}
@@ -242,7 +243,7 @@ class Complete {
 	 * @return \PayPalAPI\CreateRecurringPaymentsProfileResponseType
 	 */
 	protected function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscription) {
-		$billingStartDate = new \DateTime ( $paymentProfile ['billingStartDate'] );
+		$billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
 		
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
 		$RPProfileDetails->SubscriberName = Session::get ( 'displayName' ); // This should be passed in

@@ -11,12 +11,11 @@ class Youtube {
 
 	public function execute(array $params) {
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'youtubeplaylist' );
-		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $cache->getLastModified () ) );
+		$playlist = $app->getCacheDriver ()->fetch ( 'youtubeplaylist' );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
 		Http::header ( Http::HEADER_PRAGMA, 'public' );
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $cache->read () ) );
+		Http::sendString ( json_encode ( $playlist ) );
 	}
 
 }

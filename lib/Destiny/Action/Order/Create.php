@@ -14,6 +14,7 @@ use PayPal\PayPalAPI\GetExpressCheckoutDetailsReq;
 use PayPal\PayPalAPI\GetExpressCheckoutDetailsRequestType;
 use Destiny\Application;
 use Destiny\Session;
+use Destiny\Utils\Date;
 use Destiny\Utils\Http;
 use Destiny\Service\OrdersService;
 use Destiny\Service\SubscriptionsService;
@@ -169,7 +170,7 @@ class Create {
 	private function createPaymentProfile(array $order, array $subscription) {
 		$ordersService = OrdersService::instance ();
 		// @TODO this should be set in the payment profile
-		$billingStartDate = new \DateTime ( date ( 'm/d/y' ) );
+		$billingStartDate = Date::getDateTime ( date ( 'm/d/y' ) );
 		// @TODO this is dangerous, using strtotime format - there is not solid link between them to prevent it from breaking
 		// @TODO does paypal accept any timezones?
 		$billingStartDate->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );

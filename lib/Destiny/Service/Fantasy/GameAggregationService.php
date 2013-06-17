@@ -167,7 +167,7 @@ class GameAggregationService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_games', array (
 				'aggregated' => true,
-				'aggregatedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'aggregatedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		), array (
 				'gameId' => $gameId 
 		), array (

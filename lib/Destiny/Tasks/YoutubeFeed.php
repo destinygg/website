@@ -11,9 +11,8 @@ class YoutubeFeed {
 
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'youtubeplaylist' );
 		$response = CommonApiService::instance ()->getYoutubePlaylist ()->getResponse ();
-		$cache->write ( $response );
+		$app->getCacheDriver ()->save ( 'youtubeplaylist', $response );
 	}
 
 }

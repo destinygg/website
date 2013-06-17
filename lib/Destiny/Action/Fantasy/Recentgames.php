@@ -14,9 +14,9 @@ class Recentgames {
 	public function execute(array $params) {
 		$response = null;
 		$game = GameService::instance ()->getRecentGameData ();
-		$aggregateDate = new \DateTime ( $game ['aggregatedDate'] );
+		$aggregateDate = Date::getDateTime ( $game ['aggregatedDate'] );
 		Http::checkIfModifiedSince ( $aggregateDate->getTimestamp (), true );
-		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $aggregateDate->getTimestamp () ) );
+		Http::header ( Http::HEADER_LAST_MODIFIED, $aggregateDate->format ( 'r' ) );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
 		Http::header ( Http::HEADER_PRAGMA, 'public' );
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );

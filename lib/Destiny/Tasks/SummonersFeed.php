@@ -11,9 +11,8 @@ class SummonersFeed {
 
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'summoners' );
 		$response = LeagueApiService::instance ()->getSummoners ();
-		$cache->write ( $response );
+		$app->getCacheDriver ()->save ( 'summoners', $response );
 	}
 
 }

@@ -85,10 +85,10 @@ class GameTrackingService extends Service {
 		$gameStartTime = $stmt->fetchColumn ();
 		$gameEndTime = null;
 		if (empty ( $gameStartTime )) {
-			$gameEndTime = Date::getDateTime ( ($game ['createDate'] / 1000), 'Y-m-d H:i:s' );
+			$gameEndTime = Date::getDateTime ( ($game ['createDate'] / 1000) )->format ( 'Y-m-d H:i:s' );
 			$gameStartTime = $gameEndTime;
 		} else {
-			$gameEndTime = Date::getDateTime ( ($game ['createDate'] / 1000) + intval ( $game ['timeInQueue'] ), 'Y-m-d H:i:s' );
+			$gameEndTime = Date::getDateTime ( ($game ['createDate'] / 1000) + intval ( $game ['timeInQueue'] ) )->format ( 'Y-m-d H:i:s' );
 		}
 		$conn->insert ( 'dfl_games', array (
 				'gameId' => $game ['gameId'],
@@ -101,8 +101,8 @@ class GameTrackingService extends Service {
 				'gameSeason' => Config::$a ['fantasy'] ['season'],
 				'gameRegion' => $summoner ['region'],
 				'aggregated' => false,
-				'aggregatedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ),
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'aggregatedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 	}
 
@@ -120,16 +120,15 @@ class GameTrackingService extends Service {
 		if (intval ( $stmt->fetchColumn () ) == 1) {
 			$game ['gameStartTime'] = null;
 			// Weird way of getting the time the summoner started the que
-			// because there LOL servers refuse to send the start time of the actual game
+			// because the LOL servers refuse to send the start time of the actual game in any feed
 			for($i = 0; $i < count ( $game ['gameSummonerSelections'] ); ++ $i) {
 				if ($game ['gameSummonerSelections'] [$i] ['summonerId'] == $summoner ['id']) {
+					// Records the start time as the moment the game was found
+					$startTime = Date::getDateTime ();
 					if ($game ['gameSummonerSelections'] [$i] ['timeAddedToQueue'] != null) {
-						$time = $game ['gameSummonerSelections'] [$i] ['timeAddedToQueue'] / 1000;
-					} else {
-						// Records the start time as the moment the game was found
-						$time = time ();
+						$startTime->setTimestamp ( $game ['gameSummonerSelections'] [$i] ['timeAddedToQueue'] / 1000 );
 					}
-					$game ['gameStartTime'] = Date::getDateTime ( $time )->format ( 'Y-m-d H:i:s' );
+					$game ['gameStartTime'] = $startTime->format ( 'Y-m-d H:i:s' );
 				}
 			}
 			if ($game ['gameStartTime'] == null) {

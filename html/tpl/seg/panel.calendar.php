@@ -17,7 +17,7 @@ if (! empty ( $model->events ) && ! empty ( $model->articles )) :
 			</h3>
 			<div class="entries">
 				<?foreach ($model->events['data']['items'] as $event):?>
-				<?$date = new \DateTime($event['when'][0]['start']); $time = $date->getTimestamp();?>
+				<?$date = Date::getDateTime($event['when'][0]['start']); $time = $date->getTimestamp();?>
 				<div class="media">
 					<div class="media-body">
 						<div class="clearfix">
@@ -48,7 +48,7 @@ if (! empty ( $model->events ) && ! empty ( $model->articles )) :
 							<span><small>Posted in</small> <?=Tpl::out($categories['title'])?></span>
 							<?endforeach;?>
 						</div>
-						<time datetime="<?=$article['date']?>" pubdate><?=Date::getDateTime($article['date'], Date::STRING_DATE_FORMAT)?></time>
+						<time datetime="<?=$article['date']?>" pubdate><?=Date::getDateTime($article['date'])->format(Date::FORMAT)?></time>
 					</div>
 				</div>
 				<?endforeach;?>

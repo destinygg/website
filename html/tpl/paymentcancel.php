@@ -46,10 +46,10 @@ use Destiny\Utils\Date;
 							<dt>Billing Cycle:</dt>
 							<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
 							<dt>Billing start date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'])->format(Date::STRING_FORMAT_YEAR), 'none')?></dd>
 							<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
 							<dt>Billing next date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'],Date::STRING_FORMAT_YEAR), 'none')?></dd>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'])->format(Date::STRING_FORMAT_YEAR), 'none')?></dd>
 							<?php endif; ?>
 						</dl>
 						

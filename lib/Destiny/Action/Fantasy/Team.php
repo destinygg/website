@@ -23,19 +23,20 @@ class Team {
 		if (Session::get ( 'userId' ) != $team ['userId']) {
 			throw new AppException ( 'User does not have rights to this team.' );
 		}
-		$modifiedTime = strtotime ( $team ['modifiedDate'] );
-		$createdTime = strtotime ( $team ['modifiedDate'] );
+		$modifiedTime = Date::getDateTime ( $team ['modifiedDate'] );
+		$createdTime = Date::getDateTime ( $team ['modifiedDate'] );
+		
 		$team ['teamId'] = intval ( $team ['teamId'] );
 		$team ['userId'] = intval ( $team ['userId'] );
 		$team ['credits'] = floor ( $team ['credits'] );
 		$team ['scoreValue'] = intval ( $team ['scoreValue'] );
 		$team ['transfersRemaining'] = intval ( $team ['transfersRemaining'] );
-		$team ['createdDate'] = Date::getDateTime ( $createdTime, Date::FORMAT );
-		$team ['modifiedDate'] = Date::getDateTime ( $modifiedTime, Date::FORMAT );
+		$team ['createdDate'] = $createdTime->format ( Date::FORMAT );
+		$team ['modifiedDate'] = $modifiedTime->format ( Date::FORMAT );
 		$team ['champions'] = TeamService::instance ()->getTeamChamps ( $team ['teamId'] );
 		
-		Http::checkIfModifiedSince ( $modifiedTime, true );
-		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $modifiedTime ) );
+		Http::checkIfModifiedSince ( $modifiedTime->getTimestamp (), true );
+		Http::header ( Http::HEADER_LAST_MODIFIED, $modifiedTime->format ( 'r' ) );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
 		Http::header ( Http::HEADER_PRAGMA, 'public' );
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );

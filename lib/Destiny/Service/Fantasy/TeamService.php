@@ -39,8 +39,8 @@ class TeamService extends Service {
 				'transfersRemaining' => Config::$a ['fantasy'] ['team'] ['startTransfers'],
 				'scoreValue' => 0,
 				'teamActive' => true,
-				'modifiedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ),
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		);
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_teams', $team );
@@ -249,7 +249,7 @@ class TeamService extends Service {
 				'credits' => $team ['credits'],
 				'transfersRemaining' => $team ['transfersRemaining'],
 				'scoreValue' => $team ['scoreValue'],
-				'modifiedDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		), array (
 				'teamId' => $team ['teamId'] 
 		) );
@@ -307,7 +307,7 @@ class TeamService extends Service {
 				'championId' => $champ ['championId'],
 				'championValue' => $champ ['championValue'],
 				'transferType' => 'OUT',
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 		$conn->delete ( 'dfl_team_champs', array (
 				'teamId' => $team ['teamId'],
@@ -328,13 +328,13 @@ class TeamService extends Service {
 				'championId' => $champ ['championId'],
 				'championValue' => $champ ['championValue'],
 				'transferType' => 'IN',
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 		$conn->insert ( 'dfl_team_champs', array (
 				'teamId' => $team ['teamId'],
 				'championId' => $champ ['championId'],
 				'displayOrder' => 0,
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 	}
 

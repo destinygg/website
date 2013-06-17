@@ -83,11 +83,11 @@ use Destiny\Utils\Date;
 
 			</div>
 			<?
-			$createdDate = new \DateTime ( $game ['gameCreatedDate'] );
-			$endDate = new \DateTime ( $game ['gameEndDate'] );
+			$createdDate = Date::getDateTime ( $game ['gameCreatedDate'] );
+			$endDate = Date::getDateTime ( $game ['gameEndDate'] );
 			$length = round ( ($endDate->getTimestamp () - $createdDate->getTimestamp ()) / 60 );
 			?>
-			<small> <time class="pull-left" data-moment="true"><?=Date::getDateTime($game['gameCreatedDate'], Date::FORMAT)?></time>
+			<small> <time class="pull-left" data-moment="true"><?=Date::getDateTime($game['gameCreatedDate'])->format(Date::FORMAT)?></time>
 				<time class="pull-right"><?=($length>0) ? $length .' minutes':''?></time>
 			</small>
 		</div>

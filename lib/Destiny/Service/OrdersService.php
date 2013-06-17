@@ -32,7 +32,7 @@ class OrdersService extends Service {
 				'currency' => $order ['currency'],
 				'description' => $order ['description'],
 				'state' => 'New',
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 		$order ['orderId'] = $conn->lastInsertId ();
 		return $order ['orderId'];
@@ -252,7 +252,7 @@ class OrdersService extends Service {
 	 * @param int $paymentProfileId
 	 * @param \DateTime $billingNextDate
 	 */
-	public function updatePaymentProfileNextPayment($paymentProfileId,\DateTime $billingNextDate) {
+	public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_orders_payment_profiles', array (
 				'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 
@@ -345,7 +345,7 @@ class OrdersService extends Service {
 
 	/**
 	 * Return a payment by paymentId
-	 * 
+	 *
 	 * @param int $paymentId
 	 * @return array
 	 */
@@ -379,7 +379,7 @@ class OrdersService extends Service {
 				'payerId' => $payment ['payerId'],
 				'paymentStatus' => $payment ['paymentStatus'],
 				'paymentDate' => $payment ['paymentDate'],
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 		return $conn->lastInsertId ();
 	}

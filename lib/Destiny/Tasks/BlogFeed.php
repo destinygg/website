@@ -12,8 +12,7 @@ class BlogFeed {
 	public function execute(LoggerInterface $log) {
 		$response = CommonApiService::instance ()->getBlogPosts ()->getResponse ();
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'recentblog' );
-		$cache->write ( $response );
+		$app->getCacheDriver ()->save ( 'recentblog', $response );
 	}
 
 }

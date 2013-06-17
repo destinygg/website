@@ -53,11 +53,11 @@ use Destiny\Session;
 							<dt>Source:</dt>
 							<dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
 							<dt>Created date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->subscription['createdDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<dd><?=Tpl::out(Date::getDateTime($model->subscription['createdDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
 							<dt>End date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->subscription['endDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<dd><?=Tpl::out(Date::getDateTime($model->subscription['endDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
 							<dt>Time left:</dt>
-							<dd><?=Date::getRemainingTime(new \DateTime($model->subscription['endDate']))?></dd>
+							<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
 							
 							<?php if(!empty($model->paymentProfile)): ?>
 							<br />
@@ -73,10 +73,10 @@ use Destiny\Session;
 							<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
 							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
 							<dt>Billing start date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
 							<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
 							<dt>Billing next date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'],Date::STRING_FORMAT_YEAR))?></dd>
+							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
 							<?php endif; ?>
 							<?php endif; ?>
 							
@@ -118,7 +118,7 @@ use Destiny\Session;
 								<a title="Payment details" href="/payment/details/?id=<?=$payment['paymentId']?>"><?=Tpl::out(substr($payment['transactionId'], 0, 8))?></a>
 								<span> - </span>
 								<span><?=Tpl::currency($payment['currency'], $payment['amount'])?></span>
-								<small class="subtle">on <?=Date::getDateTime($payment['paymentDate'], Date::STRING_FORMAT)?></small>
+								<small class="subtle">on <?=Date::getDateTime($payment['paymentDate'])->format (Date::STRING_FORMAT)?></small>
 							</td>
 							<td style="text-align: right;"><small class="subtle">Payment</small></td>
 							<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($payment['paymentStatus'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($payment['paymentStatus'])?></span></td>

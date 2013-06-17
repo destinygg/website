@@ -29,17 +29,17 @@ use Destiny\Utils\Lol;
 					<tbody>
 						<?php foreach($model->games as $game):?>
 						<?php
-						$createdDate = new \DateTime ( $game ['gameCreatedDate'] );
-						$endDate = new \DateTime ( $game ['gameEndDate'] );
+						$createdDate = Date::getDateTime ( $game ['gameCreatedDate'] );
+						$endDate = Date::getDateTime ( $game ['gameEndDate'] );
 						$length = round ( ($endDate->getTimestamp () - $createdDate->getTimestamp ()) / 60 );
 						?>
 						<tr>
 							<td><?=$game['gameId']?></td>
 							<td rel="<?=$game['gameType']?>"><?=Lol::$gameTypes[$game['gameType']]?></td>
-							<td><?=Date::getDateTime($game['gameCreatedDate'], 'H:i:s d-m-Y')?></td>
-							<td><?=Date::getDateTime($game['gameEndDate'], 'H:i:s d-m-Y')?></td>
+							<td><?=Date::getDateTime($game['gameCreatedDate'])->format('H:i:s d-m-Y')?></td>
+							<td><?=Date::getDateTime($game['gameEndDate'])->format('H:i:s d-m-Y')?></td>
 							<td><?=($length>0) ? $length .' minutes':'<span class="subtle">Unknown</span>'?></td>
-							<td><?=($game['aggregated'] == '1')? Date::getDateTime($game['aggregatedDate'], Date::STRING_FORMAT):'False'?></td>
+							<td><?=($game['aggregated'] == '1')? Date::getDateTime($game['aggregatedDate'])->format(Date::STRING_FORMAT):'False'?></td>
 							<td>
 								<a rel="<?=$game['gameId']?>" title="Delete game" class="btn btn-mini btn-danger btn-delete"><i class="icon-fire icon-white"></i></a>
 								<?if($game['aggregated'] == '1'):?>
@@ -75,7 +75,7 @@ use Destiny\Utils\Lol;
 						<?foreach($model->tracks as $track):?>
 						<tr>
 							<td><?=$track['gameId']?></td>
-							<td><?=Date::getDateTime($track['gameStartTime'], Date::STRING_FORMAT)?></td>
+							<td><?=Date::getDateTime($track['gameStartTime'])->format(Date::STRING_FORMAT)?></td>
 							<td><?=strlen($track['gameData'])?> <span class="subtle">bytes</span></td>
 						</tr>
 						<?endforeach;?>

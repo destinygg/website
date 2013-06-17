@@ -107,7 +107,7 @@ class Ipn {
 					$payment ['transactionType'] = $transactionType;
 					$payment ['paymentType'] = $data ['payment_type'];
 					$payment ['paymentStatus'] = $data ['payment_status'];
-					$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'], 'Y-m-d H:i:s' );
+					$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'] )->format ( 'Y-m-d H:i:s' );
 					$orderService->addOrderPayment ( $payment );
 					
 					// Extend the subscription if the payment was successful

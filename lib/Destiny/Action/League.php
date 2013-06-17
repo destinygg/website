@@ -16,33 +16,18 @@ class League {
 	public function execute(array $params, ViewModel $model) {
 		$teamId = Session::get ( 'teamId' );
 		$app = Application::instance ();
+		$cacheDriver = $app->getCacheDriver ();
 		
 		$model->title = 'Fantasy League';
 		$model->user = Session::getAuthCreds ()->getCredentials ();
-		
-		$cache = $app->getMemoryCache ( 'champions' );
-		$model->champions = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'leaguestatus' );
-		$model->leagueServers = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'topteamchampionscores' );
-		$model->topChampions = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'teamleaderboard' );
-		$model->leaderboard = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'recentgameleaderboard' );
-		$model->gameLeaders = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'recentgames' );
-		$model->games = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'topsummoners' );
-		$model->topSummoners = $cache->read ();
-		
-		$cache = $app->getMemoryCache ( 'subscriberteamleaderboard' );
-		$model->topSubscribers = $cache->read ();
+		$model->champions = $cacheDriver->fetch ( 'champions' );
+		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
+		$model->topChampions = $cacheDriver->fetch ( 'topteamchampionscores' );
+		$model->leaderboard = $cacheDriver->fetch ( 'teamleaderboard' );
+		$model->gameLeaders = $cacheDriver->fetch ( 'recentgameleaderboard' );
+		$model->games = $cacheDriver->fetch ( 'recentgames' );
+		$model->topSummoners = $cacheDriver->fetch ( 'topsummoners' );
+		$model->topSubscribers = $cacheDriver->fetch ( 'subscriberteamleaderboard' );
 		
 		if (! empty ( $teamId )) {
 			$model->team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );

@@ -36,7 +36,7 @@ use Destiny\Utils\Date;
 			<ul class="thumbnails">
 			<?if(isset($model->broadcasts) && !empty($model->broadcasts['videos'])):?>
 			<?foreach( $model->broadcasts['videos'] as $broadcast ):?>
-				<?$time = Date::getElapsedTime(new \DateTime($broadcast['recorded_at']))?>
+				<?$time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" rel="tooltip" title="<?=$time?>">
 						<a href="<?=$broadcast['url']?>"> <img alt="<?=$time?>" src="<?=Config::cdn()?>/img/320x240.gif" data-src="<?=$broadcast['preview']?>" /></a>

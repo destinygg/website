@@ -33,15 +33,13 @@ abstract class Country {
 	 */
 	public static function getCountries() {
 		if (self::$countries == null) {
-			$cache = Application::instance ()->getMemoryCache ( array (
-					'filename' => Config::$a ['cache'] ['path'] . 'geodata',
-					'life' => 1 * 30 * 24 * 60 * 60 
-			) );
-			if (! $cache->cached ()) {
+			$cacheDriver = Application::instance ()->getCacheDriver ();
+			$cacheDriver->contains ( 'geodata' );
+			if (! $cacheDriver->contains ( 'geodata' )) {
 				$countries = json_decode ( file_get_contents ( Config::$a ['geodata'] ), true );
-				$cache->write ( $countries );
+				$cacheDriver->save ( 'geodata', $countries );
 			} else {
-				$countries = $cache->read ();
+				$countries = $cacheDriver->fetch ( 'geodata' );
 			}
 			if (is_array ( $countries )) {
 				self::$countries = $countries;

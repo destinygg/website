@@ -57,7 +57,7 @@ class UsersService extends Service {
 				'displayName' => $user ['displayName'],
 				'country' => $user ['country'],
 				'email' => $user ['email'],
-				'createdDate' => Date::getDateTime ( time (), 'Y-m-d H:i:s' ) 
+				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 		return $conn->lastInsertId ();
 	}

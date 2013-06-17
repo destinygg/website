@@ -11,13 +11,11 @@ class Twitter {
 
 	public function execute(array $params) {
 		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'twitter' );
-		Http::checkIfModifiedSince ( $cache->getLastModified (), true );
-		Http::header ( Http::HEADER_LAST_MODIFIED, gmdate ( 'r', $cache->getLastModified () ) );
+		$tweets = $app->getCacheDriver ()->fetch ( 'twitter' );
 		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
 		Http::header ( Http::HEADER_PRAGMA, 'public' );
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $cache->read () ) );
+		Http::sendString ( json_encode ( $tweets ) );
 	}
 
 }

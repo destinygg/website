@@ -11,9 +11,7 @@ use Destiny\Config;
 class Champions {
 
 	public function execute(array $params) {
-		$app = Application::instance ();
-		$cache = $app->getMemoryCache ( 'champions' );
-		$champions = $cache->read ();
+		$champions = Application::instance ()->getCacheDriver ()->fetch ( 'champions' );
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $champions ) );
 	}

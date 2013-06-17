@@ -6,6 +6,7 @@ use Destiny\Service\SubscriptionsService;
 use Destiny\ViewModel;
 use Destiny\Session;
 use Destiny\Service\OrdersService;
+use Destiny\Utils\Date;
 use Destiny\Utils\Http;
 use Destiny\Config;
 use Destiny\AppException;
@@ -208,7 +209,7 @@ class Activate {
 	 * @return \PayPalAPI\CreateRecurringPaymentsProfileResponseType
 	 */
 	protected function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscription) {
-		$billingStartDate = new \DateTime ( $paymentProfile ['billingStartDate'] );
+		$billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
 		
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
 		$RPProfileDetails->SubscriberName = Session::get ( 'displayName' ); // This should be passed in

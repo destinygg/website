@@ -15,15 +15,14 @@ class Ingame {
 		$ftrackService = GameTrackingService::instance ();
 		$leagueApiService = LeagueApiService::instance ();
 		$app = Application::instance ();
+		$cacheDriver = $app->getCacheDriver ();
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == false) {
 				continue;
 			}
 			$log->debug ( $summoner ['name'] . ' checking ingame' );
 			$ingame = $leagueApiService->getInGameProgress ( $summoner );
-			
-			$cache = $app->getMemoryCache ( 'ingame.' . $summoner ['id'] );
-			$cache->write ( $ingame );
+			$cacheDriver->save ( 'ingame.' . $summoner ['id'], $ingame );
 			
 			if ($ingame != null && $ingame ['success'] == true && $ingame ['data'] != null) {
 				$log->debug ( '' . $summoner ['name'] . ' game found ' . $ingame ['data'] ['gameId'] );

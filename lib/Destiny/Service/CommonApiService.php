@@ -11,7 +11,6 @@ use Destiny\AppException;
 use Destiny\MimeType;
 
 class CommonApiService extends Service {
-	
 	protected static $instance = null;
 
 	/**
@@ -65,7 +64,7 @@ class CommonApiService extends Service {
 							if (! empty ( $track ['date'] )) {
 								$track ['date'] ['uts'] = $track ['date'] ['uts'] + (Config::$a ['time'] ['DSTOffset'] * 60);
 								$json ['recenttracks'] ['track'] [$i] ['date'] ['uts]'] = $track ['date'] ['uts'];
-								$json ['recenttracks'] ['track'] [$i] ['date_str'] = Date::getDateTime ( $track ['date'] ['uts'], Date::FORMAT );
+								$json ['recenttracks'] ['track'] [$i] ['date_str'] = Date::getDateTime ( $track ['date'] ['uts'] )->format ( Date::FORMAT );
 							}
 						} else {
 							$json ['recenttracks'] ['track'] [$i] ['date_str'] = '';
