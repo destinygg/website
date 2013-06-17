@@ -11,8 +11,8 @@ $(function(){
 		ui: '#stream-lastfm',
 		success: function(data, textStatus){
 			if(textStatus == 'notmodified') return;
+			var entries = $('#stream-lastfm .entries:first').empty();
 			if(data != null && typeof data['recenttracks'] == 'object' && data.recenttracks.track.length > 0){
-				var entries = $('#stream-lastfm .entries:first').empty();
 				for(var i in data.recenttracks.track){
 					if(i == 3){ break; };
 					var track = data.recenttracks.track[i];

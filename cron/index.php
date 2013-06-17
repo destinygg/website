@@ -1,36 +1,23 @@
 <?php
-// function exception_handler($exception) {
-// error_log ("Uncaught exception: " . $exception->getMessage(), 3, 'PATH_TO_LOG_FILE');
-// }
-// set_exception_handler('exception_handler');
-
 use Destiny\Application;
 use Destiny\AppException;
 use Destiny\Session;
 use Destiny\Scheduler;
 use Destiny\Config;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Monolog\Processor\WebProcessor;
-use Monolog\Processor\ProcessIdProcessor;
-use Monolog\Processor\MemoryPeakUsageProcessor;
 
 $base = realpath ( __DIR__ . '/../' );
 $loader = require $base . '/vendor/autoload.php';
 $loader->add ( 'Destiny', $base . '/lib/' );
 Config::load ( $base . '/config/config.php', parse_ini_file ( $base . '/lib/.version' ) );
 
-$log = new Logger ( 'cron' );
-$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . 'cron.log', Logger::DEBUG ) );
-$log->pushProcessor ( new WebProcessor () );
-$log->pushProcessor ( new ProcessIdProcessor () );
-$log->pushProcessor ( new MemoryPeakUsageProcessor () );
+$log = new \Monolog\Logger ( 'cron' );
+$log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['path'] . 'cron.log', \Monolog\Logger::DEBUG ) );
+$log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
+$log->pushProcessor ( new \Monolog\Processor\ProcessIdProcessor () );
+$log->pushProcessor ( new \Monolog\Processor\MemoryPeakUsageProcessor () );
 
-$dbConfig = new \Doctrine\DBAL\Configuration ();
-$db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], $dbConfig );
-
-// $cache = new \Doctrine\Common\Cache\FilesystemCache ( Config::$a ['cache'] ['path'] );
-$cache = new \Doctrine\Common\Cache\ZendDataCache ();
+$db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], new \Doctrine\DBAL\Configuration () );
+$cache = new \Doctrine\Common\Cache\ApcCache ();
 
 $app = Application::instance ();
 $app->setLogger ( $log );
@@ -45,7 +32,7 @@ $scheduler->loadSchedule ();
 $stime = microtime ( true );
 
 try {
-	$scheduler->executeShedule ();
+	$scheduler->executeShedule ( true );
 	echo PHP_EOL . 'Scheduler completed';
 } catch ( AppException $e ) {
 	$log->error ( $e->getMessage () );

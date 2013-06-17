@@ -95,12 +95,12 @@ class GameTrackingService extends Service {
 				'gameCreatedDate' => $gameStartTime,
 				'gameEndDate' => $gameEndTime,
 				'gameType' => $game ['queue'],
-				'gameRanked' => true,
+				'gameRanked' => 1,
 				'gameLoseSideId' => $game ['gameLoseSideId'],
 				'gameWinSideId' => $game ['gameWinSideId'],
 				'gameSeason' => Config::$a ['fantasy'] ['season'],
 				'gameRegion' => $summoner ['region'],
-				'aggregated' => false,
+				'aggregated' => 0,
 				'aggregatedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
 				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
@@ -117,7 +117,7 @@ class GameTrackingService extends Service {
 		$stmt = $conn->prepare ( 'SELECT COUNT(*) FROM dfl_ingame_progress WHERE gameId = :gameId LIMIT 0,1' );
 		$stmt->bindValue ( 'gameId', $game ['gameId'], \PDO::PARAM_INT );
 		$stmt->execute ();
-		if (intval ( $stmt->fetchColumn () ) == 1) {
+		if (intval ( $stmt->fetchColumn () ) == 0) {
 			$game ['gameStartTime'] = null;
 			// Weird way of getting the time the summoner started the que
 			// because the LOL servers refuse to send the start time of the actual game in any feed

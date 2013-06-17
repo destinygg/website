@@ -115,7 +115,7 @@ abstract class Http {
 		$host = $_SERVER ['HTTP_HOST'];
 		$port = $_SERVER ['SERVER_PORT'];
 		$request = $_SERVER ['PHP_SELF'];
-		//return dirname ( $protocol . '://' . $host . ($port == $protocol_port ? '' : ':' . $port) . $request );
+		// return dirname ( $protocol . '://' . $host . ($port == $protocol_port ? '' : ':' . $port) . $request );
 		return dirname ( $protocol . '://' . $host . $request );
 	}
 

@@ -12,7 +12,6 @@ use Destiny\Config;
 class Ingame {
 
 	public function execute(array $params) {
-		ini_set ( 'display_errors', 1 );
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
 		$ingame = null;
@@ -20,7 +19,6 @@ class Ingame {
 			if ($summoner ['track'] == false) {
 				continue;
 			}
-			
 			$ingame = $cacheDriver->fetch ( 'ingame.' . $summoner ['id'] );
 			if ($ingame != null && $ingame ['success'] == true && $ingame ['data'] != null) {
 				$ingame = $ingame ['data'];

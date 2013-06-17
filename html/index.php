@@ -1,8 +1,7 @@
 <?php
-use Destiny\AppException;
-
-use Destiny\Utils\Http;
 use Destiny\Application;
+use Destiny\AppException;
+use Destiny\Utils\Http;
 use Destiny\SessionAuthenticationCredentials;
 use Destiny\SessionCookieInterface;
 use Destiny\SessionInstance;
@@ -18,11 +17,8 @@ $log = new \Monolog\Logger ( 'http' );
 $log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['path'] . 'events.log', \Monolog\Logger::DEBUG ) );
 $log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
 
-$dbConfig = new \Doctrine\DBAL\Configuration ();
-$db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], $dbConfig );
-
-// $cache = new \Doctrine\Common\Cache\FilesystemCache ( Config::$a ['cache'] ['path'] );
-$cache = new \Doctrine\Common\Cache\ZendDataCache ();
+$db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], new \Doctrine\DBAL\Configuration () );
+$cache = new \Doctrine\Common\Cache\ApcCache ();
 
 $app = Application::instance ();
 $app->setLogger ( $log );

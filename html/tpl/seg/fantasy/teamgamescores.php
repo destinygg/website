@@ -80,16 +80,17 @@ use Destiny\Utils\Date;
 					</div>
 					<?endfor;?>
 				</div>
+					
+				<?
+				$createdDate = Date::getDateTime ( $game ['gameCreatedDate'] );
+				$endDate = Date::getDateTime ( $game ['gameEndDate'] );
+				$length = round ( ($endDate->getTimestamp () - $createdDate->getTimestamp ()) / 60 );
+				?>
+				<small> <time class="pull-left" data-moment="true"><?=Date::getDateTime($game['gameCreatedDate'])->format(Date::FORMAT)?></time>
+					<time class="pull-right"><?=($length>0) ? $length .' minutes':''?></time>
+				</small>
 
 			</div>
-			<?
-			$createdDate = Date::getDateTime ( $game ['gameCreatedDate'] );
-			$endDate = Date::getDateTime ( $game ['gameEndDate'] );
-			$length = round ( ($endDate->getTimestamp () - $createdDate->getTimestamp ()) / 60 );
-			?>
-			<small> <time class="pull-left" data-moment="true"><?=Date::getDateTime($game['gameCreatedDate'])->format(Date::FORMAT)?></time>
-				<time class="pull-right"><?=($length>0) ? $length .' minutes':''?></time>
-			</small>
 		</div>
 		
 	<?endforeach;?>
