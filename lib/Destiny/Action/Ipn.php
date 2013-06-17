@@ -50,6 +50,7 @@ class Ipn {
 	protected function handleIPNTransaction($txnId, $txnType, array $data) {
 		$log = Application::instance ()->getLogger ();
 		$orderService = OrdersService::instance ();
+		$subService = SubscriptionsService::instance ();
 		
 		switch (strtolower ( $txnType )) {
 			
@@ -89,12 +90,20 @@ class Ipn {
 					$payment ['paymentStatus'] = $data ['payment_status'];
 					$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'] )->format ( 'Y-m-d H:i:s' );
 					$orderService->addOrderPayment ( $payment );
+					$log->notice ( sprintf ( 'Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 					
 					// Extend the subscription if the payment was successful
-					SubscriptionsService::instance ()->updateUserSubscriptionDateEnd ( $paymentProfile ['userId'], $nextPaymentDate );
-					$log->notice ( sprintf ( 'Renewed profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
+					$subscription = $subService->getUserActiveSubscription ( $paymentProfile ['userId'] );
+					if (! empty ( $subscription )) {
+						$subService->updateSubscriptionDateEnd ( $subscription ['subscriptionId'], $nextPaymentDate );
+						$log->notice ( sprintf ( 'Renewed profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
+					}
 				} else {
-					SubscriptionsService::instance ()->updateUserSubscriptionState ( $paymentProfile ['userId'], $data ['payment_status'] );
+					// Change the state of the profile
+					$subscription = $subService->getUserActiveSubscription ( $paymentProfile ['userId'] );
+					if (! empty ( $subscription )) {
+						$subService->updateSubscriptionState ( $subscription ['subscriptionId'], $nextPaymentDate );
+					}
 					$log->notice ( sprintf ( 'Failed to renew profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				}
 				

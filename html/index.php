@@ -18,7 +18,7 @@ $log->pushHandler ( new \Monolog\Handler\StreamHandler ( Config::$a ['log'] ['pa
 $log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
 
 $db = \Doctrine\DBAL\DriverManager::getConnection ( Config::$a ['db'], new \Doctrine\DBAL\Configuration () );
-$cache = new \Doctrine\Common\Cache\ApcCache ();
+$cache = new \Doctrine\Common\Cache\FilesystemCache ( Config::$a ['cache'] ['path'] );
 
 $app = Application::instance ();
 $app->setLogger ( $log );

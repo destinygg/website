@@ -9,6 +9,7 @@ use Destiny\Utils\Date;
 use Destiny\AppException;
 
 class SubscriptionsService extends Service {
+	
 	protected static $instance = null;
 
 	/**
@@ -18,6 +19,20 @@ class SubscriptionsService extends Service {
 	 */
 	public static function instance() {
 		return parent::instance ();
+	}
+
+	/**
+	 * Sets subscription status to 'Expired' where the end date is smaller than NOW +72 HOUR
+	 * Since paypal says it takes up to 72 hours for recurring payments to occur
+	 *
+	 * @return int the number of expired subscriptions
+	 */
+	public function expiredSubscriptions() {
+		$conn = Application::instance ()->getConnection ();
+		$conn->executeQuery ( '
+			UPDATE dfl_users_subscriptions SET `status` = \'Expired\'
+			WHERE status = \'Active\' AND endDate + INTERVAL 72 HOUR <= NOW()
+		' );
 	}
 
 	/**
@@ -79,30 +94,30 @@ class SubscriptionsService extends Service {
 	/**
 	 * Update a subscriptions end date
 	 *
-	 * @param int $userId
+	 * @param int $subscriptionId
 	 * @param \DateTime $endDate
 	 */
-	public function updateUserSubscriptionDateEnd($userId,\DateTime $endDate) {
+	public function updateSubscriptionDateEnd($subscriptionId, \DateTime $endDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users_subscriptions', array (
 				'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
 		), array (
-				'userId' => $userId 
+				'subscriptionId' => $subscriptionId 
 		) );
 	}
 
 	/**
 	 * Update a subscriptions recurring field
 	 *
-	 * @param int $userId
+	 * @param int $subscriptionId
 	 * @param \DateTime $endDate
 	 */
-	public function updateUserSubscriptionRecurring($userId, $recurring) {
+	public function updateSubscriptionRecurring($subscriptionId, $recurring) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users_subscriptions', array (
 				'recurring' => $recurring 
 		), array (
-				'userId' => $userId 
+				'subscriptionId' => $subscriptionId 
 		), array (
 				\PDO::PARAM_BOOL,
 				\PDO::PARAM_INT 
@@ -112,33 +127,19 @@ class SubscriptionsService extends Service {
 	/**
 	 * Update a subscriptions status
 	 *
-	 * @param int $userId
+	 * @param int $subscriptionId
 	 * @param \DateTime $endDate
 	 */
-	public function updateUserSubscriptionState($userId, $status) {
+	public function updateSubscriptionState($subscriptionId, $status) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users_subscriptions', array (
 				'status' => $status 
 		), array (
-				'userId' => $userId 
+				'subscriptionId' => $subscriptionId 
 		), array (
 				\PDO::PARAM_STR,
 				\PDO::PARAM_INT 
 		) );
-	}
-
-	/**
-	 * Sets subscription status to 'Expired' where the end date is smaller than NOW +72 HOUR
-	 * Since paypal says it takes up to 72 hours for recurring payments to occur
-	 *
-	 * @return int the number of expired subscriptions
-	 */
-	public function expiredSubscriptions() {
-		$conn = Application::instance ()->getConnection ();
-		$conn->executeQuery ( '
-			UPDATE dfl_users_subscriptions SET `status` = \'Expired\'
-			WHERE status = \'Active\' AND endDate + INTERVAL 72 HOUR <= NOW()
-		' );
 	}
 
 	/**

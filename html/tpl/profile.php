@@ -59,6 +59,11 @@ use Destiny\Session;
 							<dt>Time left:</dt>
 							<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
 							
+							<?php if(Session::hasRole('admin')): ?>
+							<dt>&nbsp;</dt>
+							<dd><a title="Cancel this subscription" onclick="if(confirm('Are you sure? this cannot be undone.')) window.location.href = '/subscription/cancel'; return;" href="#">Cancel subscription</a></dd>
+							<?php endif; ?>
+							
 							<?php if(!empty($model->paymentProfile)): ?>
 							<br />
 							<dt>Billing:</dt>
@@ -82,11 +87,11 @@ use Destiny\Session;
 							
 							<?if(strcasecmp($model->paymentProfile['state'], 'Cancelled')===0):?>
 							<dt>&nbsp;</dt>
-							<dd><a title="Re-activate this recurring payment" href="/payment/activate">Re-activate</a></dd>
+							<dd><a title="Re-activate this recurring payment" href="/payment/activate">Re-activate payment</a></dd>
 							<?php endif; ?>
 							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
 							<dt>&nbsp;</dt>
-							<dd><a title="Cancel this recurring payment" href="/payment/cancel">Cancel</a></dd>
+							<dd><a title="Cancel this recurring payment" href="/payment/cancel">Cancel payment</a></dd>
 							<?php endif; ?>
 							<?php endif; ?>
 			
@@ -105,6 +110,7 @@ use Destiny\Session;
 			</div>
 
 		</div>
+		<br>
 		 
 		<?php if(!empty($model->payments)): ?>
 		<h3>Payments</h3>
@@ -128,6 +134,7 @@ use Destiny\Session;
 				</table>
 			</div>
 		</div>
+		<br>
 		<?endif;?>
 		<?php endif; ?>
 		

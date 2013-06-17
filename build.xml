@@ -21,9 +21,9 @@
 		<antcall target="copysource" />
 		<antcall target="concatcss" />
 		<antcall target="concatjs" />
-		<!--
 		<antcall target="compresscss" />
 		<antcall target="compressjs" />
+		<!--
 		-->
 	</target>
 	
