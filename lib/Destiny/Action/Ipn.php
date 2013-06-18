@@ -45,6 +45,11 @@ class Ipn {
 		$this->niceExit ();
 	}
 
+	/**
+	 * Closes and sends an OK response
+	 *
+	 * @return void
+	 */
 	private function niceExit() {
 		Http::status ( Http::STATUS_OK );
 		Http::header ( Http::HEADER_CONNECTION, 'close' );
@@ -128,6 +133,9 @@ class Ipn {
 			// sent on first postback when the user first subscribes.
 			case 'recurring_payment_profile_created' :
 				$paymentProfile = $this->getPaymentProfile ( $data );
+				if (strcasecmp ( $data ['profile_status'], 'Active' ) === 0) {
+					$data ['profile_status'] = 'ActiveProfile';
+				}
 				$orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], $data ['profile_status'] );
 				$log->notice ( sprintf ( 'Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				break;
