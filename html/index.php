@@ -1,21 +1,53 @@
 <?php
 use Destiny\AppEvent;
-
 use Destiny\Service\UserService;
 use Destiny\Service\AuthenticationService;
 use Destiny\Application;
 use Destiny\AppException;
 use Destiny\Utils\Http;
-use Destiny\SessionAuthenticationCredentials;
+use Destiny\SessionCredentials;
+use Destiny\SessionCookie;
 use Destiny\SessionInstance;
 use Destiny\Session;
 use Destiny\Config;
 
 $context->log = 'http';
 require __DIR__ . '/../lib/boot.php';
-
 $app = Application::instance ();
+
+// Setup user session
 $app->setSession ( new SessionInstance () );
+$session = $app->getSession ();
+$session->setSessionCookie ( new SessionCookie ( Config::$a ['cookie'] ) );
+$session->setCredentials ( new SessionCredentials () );
+
+// Puts all the credentials on the session data
+$session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
+	$params = $credentials->getData ();
+	foreach ( $params as $name => $value ) {
+		$session->set ( $name, $value );
+	}
+} );
+
+// Puts the session into redis
+if (class_exists ( 'Redis' )) {
+	$session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
+		try {
+			if ($session->isStarted ()) {
+				$redis = new Redis ();
+				$redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );
+				$redisCache = new \Doctrine\Common\Cache\RedisCache ();
+				$redisCache->setRedis ( $redis );
+				$redisCache->save ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ) );
+			}
+		} catch ( \Exception $e ) {
+			$logger = Application::instance ()->getLogger ();
+			$logger->error ( 'Could not store the session data in redis' );
+		}
+	} );
+}
+
+// Start the session if a valid cookie is found
 Session::start ( Session::START_IFVALIDCOOKIE );
 
 // Remember me
@@ -32,7 +64,7 @@ if (! Session::isStarted ()) {
 			$app->addEvent ( new AppEvent ( array (
 					'type' => AppEvent::EVENT_DANGER,
 					'label' => 'We remember!',
-					'message' => sprintf ( 'Please logout if you are not "%s"', Session::getAuthCreds ()->getUsername () ) 
+					'message' => sprintf ( 'Please logout if you are not "%s"', Session::getCredentials ()->getUsername () ) 
 			) ) );
 		}
 	}

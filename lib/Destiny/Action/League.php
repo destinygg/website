@@ -26,7 +26,7 @@ class League {
 		$gameService = GameService::instance ();
 		
 		$model->title = 'Fantasy League';
-		$model->user = Session::getAuthCreds ()->getCredentials ();
+		$model->user = Session::getCredentials ()->getData ();
 		$model->champions = $cacheDriver->fetch ( 'champions' );
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
 		$model->leaderboard = $cacheDriver->fetch ( 'teamleaderboard' );

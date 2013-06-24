@@ -212,7 +212,7 @@ class Activate {
 		$billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
 
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
-		$RPProfileDetails->SubscriberName = Session::getAuthCreds()->getUsername(); // This should be passed in
+		$RPProfileDetails->SubscriberName = Session::getCredentials()->getUsername(); // This should be passed in
 		$RPProfileDetails->BillingStartDate = $billingStartDate->format ( \DateTime::ATOM );
 		$RPProfileDetails->ProfileReference = $paymentProfile ['userId'] . '-' . $paymentProfile ['orderId'];
 		

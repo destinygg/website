@@ -20,7 +20,7 @@ class Invites {
 		$challengeService = ChallengeService::instance ();
 		$cacheDriver = Application::instance ()->getCacheDriver ();
 		$model->title = 'Invites';
-		$model->user = Session::getAuthCreds ()->getCredentials ();
+		$model->user = Session::getCredentials ()->getData ();
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
 		$model->team = $teamService->getTeamByUserId ( Session::get ( 'userId' ) );
 		$model->teamChamps = $teamService->getTeamChamps ( $teamId );

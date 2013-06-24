@@ -209,11 +209,9 @@ class Complete {
 		}
 		
 		// Add the subscriber role, this is just for UI
-		$authCreds = Session::getAuthCreds ();
-		if (! empty ( $authCreds )) {
-			$authCreds->addRoles ( \Destiny\UserRole::SUBSCRIBER );
-			Session::updateAuthCreds ( $authCreds );
-		}
+		$credentials = Session::getCredentials ();
+		$credentials->addRoles ( \Destiny\UserRole::SUBSCRIBER );
+		Session::updateCredentials ( $credentials );
 		
 		// Show the order complete screen
 		$model->order = $order;
@@ -247,7 +245,7 @@ class Complete {
 		
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
 		
-		$RPProfileDetails->SubscriberName = Session::getAuthCreds ()->getUsername (); // This should be passed in
+		$RPProfileDetails->SubscriberName = Session::getCredentials ()->getUsername (); // This should be passed in
 		$RPProfileDetails->BillingStartDate = $billingStartDate->format ( \DateTime::ATOM );
 		$RPProfileDetails->ProfileReference = $paymentProfile ['userId'] . '-' . $paymentProfile ['orderId'];
 		

@@ -13,7 +13,7 @@ use Destiny\Service;
 use Destiny\Service\UserService;
 use Destiny\Service\SubscriptionsService;
 use Destiny\Service\Fantasy\TeamService;
-use Destiny\SessionAuthenticationCredentials;
+use Destiny\SessionCredentials;
 use Destiny\UserRole;
 
 class AuthenticationService extends Service {
@@ -112,7 +112,7 @@ class AuthenticationService extends Service {
 	 * Logout a user
 	 */
 	public function logout() {
-		$userId = Session::getAuthCreds ()->getUserId ();
+		$userId = Session::getCredentials ()->getUserId ();
 		if (! empty ( $userId )) {
 			$this->clearRememberMe ( $userId );
 		}
@@ -132,29 +132,29 @@ class AuthenticationService extends Service {
 			throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
 		}
 		
-		$authCreds = new SessionAuthenticationCredentials ();
-		$authCreds->setUserId ( $user ['userId'] );
-		$authCreds->setUserName ( $user ['username'] );
-		$authCreds->setEmail ( $user ['email'] );
-		$authCreds->setCountry ( $user ['country'] );
-		$authCreds->setAuthProvider ( $authProvider );
-		$authCreds->setUserStatus ( $user ['userStatus'] );
-		$authCreds->addRoles ( UserRole::USER );
+		$credentials = new SessionCredentials ();
+		$credentials->setUserId ( $user ['userId'] );
+		$credentials->setUserName ( $user ['username'] );
+		$credentials->setEmail ( $user ['email'] );
+		$credentials->setCountry ( $user ['country'] );
+		$credentials->setAuthProvider ( $authProvider );
+		$credentials->setUserStatus ( $user ['userStatus'] );
+		$credentials->addRoles ( UserRole::USER );
 		
 		// Get the users active subscriptions
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
 		if (! empty ( $subscription )) {
-			$authCreds->addRoles ( UserRole::SUBSCRIBER );
+			$credentials->addRoles ( UserRole::SUBSCRIBER );
 		}
 		
 		// Get the stored roles
-		$authCreds->addRoles ( UserService::instance ()->getUserRoles ( $user ['userId'] ) );
+		$credentials->addRoles ( UserService::instance ()->getUserRoles ( $user ['userId'] ) );
 		
 		// Add the user features
-		$authCreds->setFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
+		$credentials->setFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
 		
 		// Update the auth credentials
-		Session::updateAuthCreds ( $authCreds );
+		Session::updateCredentials ( $credentials );
 		
 		// @TODO find a better place for this
 		// If this user has no team, create a new one
@@ -196,7 +196,7 @@ class AuthenticationService extends Service {
 			if (! Session::hasRole ( \Destiny\UserRole::USER )) {
 				throw new AppException ( 'Authentication required' );
 			}
-			$sessAuth = Session::getAuthCreds ()->getCredentials ();
+			$sessAuth = Session::getCredentials ()->getData ();
 			// We need to merge the accounts if one exists
 			if (! empty ( $profileUser )) {
 				// If the profile userId is the same as the current one, the profiles are connceted, they shouldnt be here

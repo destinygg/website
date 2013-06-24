@@ -14,7 +14,7 @@ class Home {
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
 		if (Session::hasRole ( \Destiny\UserRole::USER ) && Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)) {
-			$model->user = Session::getAuthCreds ()->getCredentials ();
+			$model->user = Session::getCredentials ()->getData ();
 			$model->team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );
 			$model->teamChamps = TeamService::instance ()->getTeamChamps ( $model->team ['teamId'] );
 			$model->champions = $cacheDriver->fetch ( 'champions' );

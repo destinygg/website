@@ -7,12 +7,11 @@ use Destiny\Config;
 
 $context->log = 'cron';
 require __DIR__ . '/../lib/boot.php';
-
 $app = Application::instance ();
-$log = $app->getLogger ();
 
 // Cron is run every 60 seconds.
 // There can be a time where actions are executed before they have ended
+$log = $app->getLogger ();
 $scheduler = new Scheduler ( Config::$a ['scheduler'] );
 $scheduler->setLogger ( $log );
 $scheduler->loadSchedule ();

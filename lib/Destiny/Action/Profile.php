@@ -68,12 +68,12 @@ class Profile {
 		) );
 		
 		// Update authentication credentials
-		$authCreds = Session::getAuthCreds ();
-		$authCreds->setCountry ( $user ['country'] );
-		$authCreds->setEmail ( $email );
-		$authCreds->setUsername ( $username );
-		$authCreds->setFeatures ( $userFeaturesService->getUserFeatures ( $user ['userId'] ) );
-		Session::updateAuthCreds ( $authCreds );
+		$credentials = Session::getCredentials ();
+		$credentials->setCountry ( $user ['country'] );
+		$credentials->setEmail ( $email );
+		$credentials->setUsername ( $username );
+		$credentials->setFeatures ( $userFeaturesService->getUserFeatures ( $user ['userId'] ) );
+		Session::updateCredentials ( $credentials );
 		
 		$model->title = 'Profile';
 		$model->user = $userService->getUserById ( Session::get ( 'userId' ) );

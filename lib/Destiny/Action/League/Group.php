@@ -16,7 +16,7 @@ class Group {
 		$challengeService = ChallengeService::instance ();
 		$cacheDriver = Application::instance ()->getCacheDriver ();
 		$model->title = 'Group';
-		$model->user = Session::getAuthCreds ()->getCredentials ();
+		$model->user = Session::getCredentials ()->getData ();
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
 		$model->challengers = $challengeService->getTeamChallengers ( $teamId, 10 );
 		if (! empty ( $teamId )) {

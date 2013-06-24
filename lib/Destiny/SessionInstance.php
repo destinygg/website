@@ -28,11 +28,18 @@ class SessionInstance {
 	protected $sessionCookie = null;
 	
 	/**
-	 * The session authentication obj
+	 * The session authentication
 	 *
-	 * @var SessionAuthenticationCredentials
+	 * @var SessionCredentials
 	 */
-	protected $authenticationCredentials = null;
+	protected $credentials = null;
+	
+	/**
+	 * A list of callable credential handlers
+	 *
+	 * @var array
+	 */
+	protected $credentialHandlers = array ();
 
 	/**
 	 * Setup the session
@@ -40,8 +47,6 @@ class SessionInstance {
 	 * @param array $params
 	 */
 	public function __construct(array $params = null) {
-		$this->setSessionCookie ( new SessionCookie ( Config::$a ['cookie'] ) );
-		$this->setAuthenticationCredentials ( new SessionAuthenticationCredentials () );
 		if (! empty ( $params )) {
 			Options::setOptions ( $this, $params );
 		}
@@ -56,8 +61,8 @@ class SessionInstance {
 	public function start() {
 		$this->started = session_start ();
 		$this->setSessionId ( session_id () );
-		$authCredentials = $this->getAuthenticationCredentials ();
-		$authCredentials->setCredentials ( $this->getData () );
+		$credentials = $this->getCredentials ();
+		$credentials->setData ( $this->getData () );
 	}
 
 	/**
@@ -76,19 +81,19 @@ class SessionInstance {
 	/**
 	 * Get the authentication credentials if auth success
 	 *
-	 * @return \Destiny\SessionAuthenticationCredentials
+	 * @return \Destiny\SessionCredentials
 	 */
-	public function getAuthenticationCredentials() {
-		return $this->authenticationCredentials;
+	public function getCredentials() {
+		return $this->credentials;
 	}
 
 	/**
 	 * Set the auth credentials
 	 *
-	 * @param unknown_type $sessionAuthenticationCredentials
+	 * @param unknown_type $credentials
 	 */
-	public function setAuthenticationCredentials(SessionAuthenticationCredentials $authCreds) {
-		$this->authenticationCredentials = $authCreds;
+	public function setCredentials(SessionCredentials $credentials) {
+		$this->credentials = $credentials;
 	}
 
 	/**
@@ -184,6 +189,26 @@ class SessionInstance {
 	 */
 	public function isStarted() {
 		return $this->started;
+	}
+
+	/**
+	 * Prepends a handler to the handler stack
+	 *
+	 * @param callabel $fn
+	 */
+	public function addCredentialHandler($fn) {
+		array_unshift ( $this->credentialHandlers, $fn );
+	}
+
+	/**
+	 * Run all the credential managers
+	 *
+	 * @return void
+	 */
+	public function executeCredentialHandlers(SessionCredentials $credentials) {
+		foreach ( $this->credentialHandlers as $handler ) {
+			call_user_func ( $handler, $this, $credentials );
+		}
 	}
 
 }
@@ -283,7 +308,7 @@ class SessionCookie {
 	}
 
 }
-class SessionAuthenticationCredentials {
+class SessionCredentials {
 	
 	/**
 	 * The authentication provider used for this use
@@ -342,22 +367,11 @@ class SessionAuthenticationCredentials {
 	protected $features = array ();
 
 	/**
-	 * Set the creds
-	 *
-	 * @param array $params
-	 */
-	public function __construct(array $params = null) {
-		if (! empty ( $params )) {
-			$this->setCredentials ( $params );
-		}
-	}
-
-	/**
 	 * Set all the credentials at once
 	 *
 	 * @param array $params
 	 */
-	public function setCredentials(array $params) {
+	public function setData(array $params) {
 		if (! empty ( $params )) {
 			if (isset ( $params ['userId'] ) && ! empty ( $params ['userId'] )) {
 				$this->setUserId ( $params ['userId'] );
@@ -391,7 +405,7 @@ class SessionAuthenticationCredentials {
 	 *
 	 * @param array $params
 	 */
-	public function getCredentials() {
+	public function getData() {
 		return array (
 				'email' => $this->getEmail (),
 				'username' => $this->getUserName (),
@@ -410,7 +424,7 @@ class SessionAuthenticationCredentials {
 	 * @return string
 	 */
 	public function getHash() {
-		return sprintf ( "%u", crc32 ( serialize ( $this->getCredentials () ) ) );
+		return sprintf ( "%u", crc32 ( serialize ( $this->getData () ) ) );
 	}
 
 	public function getUsername() {
@@ -549,15 +563,6 @@ abstract class Session {
 	}
 
 	/**
-	 * Return true if the session has been started
-	 *
-	 * @return boolean
-	 */
-	public static function isStarted() {
-		return self::instance ()->isStarted ();
-	}
-
-	/**
 	 * Return true if there is a session cookie and its not empty
 	 *
 	 * @return boolean
@@ -580,6 +585,15 @@ abstract class Session {
 	}
 
 	/**
+	 * Return true if the session has been started
+	 *
+	 * @return boolean
+	 */
+	public static function isStarted() {
+		return self::instance ()->isStarted ();
+	}
+
+	/**
 	 * Return the instances unique session Id
 	 *
 	 * @return string
@@ -589,26 +603,23 @@ abstract class Session {
 	}
 
 	/**
-	 * Get the current authenticated session credentials
+	 * Set and validate authentication creditials
 	 *
-	 * @return SessionAuthenticationCredentials
+	 * @param SessionCredentials $credentials
 	 */
-	public static function getAuthCreds() {
-		return self::instance ()->getAuthenticationCredentials ();
+	public static function updateCredentials(SessionCredentials $credentials) {
+		$session = self::instance ();
+		$session->executeCredentialHandlers ( $credentials );
+		$session->setCredentials ( $credentials );
 	}
 
 	/**
-	 * Set and validate authentication creditials
+	 * Get the current authenticated session credentials
 	 *
-	 * @param SessionAuthenticationCredentials $authenticationCredentials
+	 * @return SessionCredentials
 	 */
-	public static function updateAuthCreds(SessionAuthenticationCredentials $authCreds) {
-		$session = self::instance ();
-		$session->setAuthenticationCredentials ( $authCreds );
-		$params = $authCreds->getCredentials ();
-		foreach ( $params as $name => $value ) {
-			$session->set ( $name, $value );
-		}
+	public static function getCredentials() {
+		return self::instance ()->getCredentials ();
 	}
 
 	/**
@@ -651,8 +662,8 @@ abstract class Session {
 	 * @return boolean
 	 */
 	public static function hasRole($roleId) {
-		$authCreds = self::getAuthCreds ();
-		if (! empty ( $authCreds ) && $authCreds->hasRole ( $roleId )) {
+		$credentials = self::getCredentials ();
+		if (! empty ( $credentials ) && $credentials->hasRole ( $roleId )) {
 			return true;
 		}
 		return false;
@@ -665,8 +676,8 @@ abstract class Session {
 	 * @return boolean
 	 */
 	public static function hasFeature($featureId) {
-		$authCreds = self::getAuthCreds ();
-		if (! empty ( $authCreds ) && $authCreds->hasFeature ( $featureId )) {
+		$credentials = self::getCredentials ();
+		if (! empty ( $credentials ) && $credentials->hasFeature ( $featureId )) {
 			return true;
 		}
 		return false;

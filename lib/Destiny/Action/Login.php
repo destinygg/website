@@ -42,7 +42,7 @@ class Login {
 		// If this user is already logged in
 		if (Session::hasRole ( 'user' )) {
 			// check if the auth provider you are trying to login with is not the same as the current
-			$currentAuthProvider = Session::getAuthCreds ()->getAuthProvider ();
+			$currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
 			if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
 				throw new AppException ( 'You are already logged in and authenticated using this provider.' );
 			}

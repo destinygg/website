@@ -14,7 +14,7 @@ class Help {
 		$teamService = TeamService::instance ();
 		$cacheDriver = Application::instance ()->getCacheDriver ();
 		$model->title = 'Help';
-		$model->user = Session::getAuthCreds ()->getCredentials ();
+		$model->user = Session::getCredentials ()->getData ();
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
 		if (! empty ( $teamId )) {
 			$model->team = $teamService->getTeamByUserId ( Session::get ( 'userId' ) );

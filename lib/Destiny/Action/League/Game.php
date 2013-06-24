@@ -36,7 +36,7 @@ class Game {
 		}
 		
 		$model->title = 'Game';
-		$model->user = Session::getAuthCreds ()->getCredentials ();
+		$model->user = Session::getCredentials ()->getData ();
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
 		
 		$model->team = $teamService->getTeamByUserId ( $userId );
