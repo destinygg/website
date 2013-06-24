@@ -1,9 +1,0 @@
-body {
-overflow: -moz-scrollbars-vertical;
-overflow-y: scroll;
-}
-.logtext {
-overflow: auto;
-word-wrap: normal;
-white-space: pre;
-}

@@ -32,8 +32,11 @@
 		<copy todir="${build.base}/vendor">
 			<fileset dir="vendor" excludes="/nervo/,**/.git/,**/tests/,**/samples/,**/examples/,**/doc/,**/bin/,**/.travis.yml,**/VERSION**,**/CHANGELOG.**,**/README.**,**/FAQ.**,**/CONTRIBUTING.**,**/LICENSE**,**/composer.json"/>
 		</copy>
-		<copy todir="${build.base}/html/">
-			<fileset dir="html"/>
+		<copy todir="${build.base}/public">
+			<fileset dir="public"/>
+		</copy>
+		<copy todir="${build.base}/static">
+			<fileset dir="static"/>
 		</copy>
 		<copy todir="${build.base}/cron">
 			<fileset dir="cron"/>
@@ -53,31 +56,31 @@
 	</target>
 
 	<target name="concatcss">
-		<filelist id="adminfiles" dir="${build.base}/html/css/">
+		<filelist id="adminfiles" dir="${build.base}/static/css/">
 			<file name="destiny.admin.css" />
 		</filelist>
-		<filelist id="files" dir="${build.base}/html/css/">
+		<concat destfile="${build.base}/static/css/destiny.admin.${version}.css">
+			<filelist refid="adminfiles"/> 
+		</concat>
+		<filelist id="files" dir="${build.base}/static/css/">
 			<file name="destiny.css" />
 			<file name="destiny.flags.css" />
 			<file name="destiny.teammaker.css" />
 			<file name="destiny.fantasy.css" />
 			<file name="destiny.bigscreen.css" />
 		</filelist>
-		<concat destfile="${build.base}/html/css/destiny.${version}.css">
+		<concat destfile="${build.base}/static/css/destiny.${version}.css">
 			<filelist refid="files"/> 
-		</concat>
-		<concat destfile="${build.base}/html/css/destiny.admin.${version}.css">
-			<filelist refid="adminfiles"/> 
 		</concat>
 		<delete><filelist refid="files"/></delete>
 		<delete><filelist refid="adminfiles"/></delete>
 	</target>
 	
 	<target name="concatjs">
-		<filelist id="adminfiles" dir="${build.base}/html/js/">
+		<filelist id="adminfiles" dir="${build.base}/static/js/">
 			<file name="destiny.admin.js" />
 		</filelist>
-		<filelist id="files" dir="${build.base}/html/js/">
+		<filelist id="files" dir="${build.base}/static/js/">
 			<file name="destiny.utils.js" />
 			<file name="destiny.js" />
 			<file name="destiny.feed.js" />
@@ -88,10 +91,10 @@
 			<file name="destiny.profile.js" />
 			<file name="destiny.challenger.js" />
 		</filelist>
-		<concat destfile="${build.base}/html/js/destiny.${version}.js">
+		<concat destfile="${build.base}/static/js/destiny.${version}.js">
 			<filelist refid="files"/> 
 		</concat>
-		<concat destfile="${build.base}/html/js/destiny.admin.${version}.js">
+		<concat destfile="${build.base}/static/js/destiny.admin.${version}.js">
 			<filelist refid="adminfiles"/> 
 		</concat>
 		<delete><filelist refid="files"/></delete>
@@ -100,22 +103,22 @@
 	
 	<target name="compresscss">
 		<antcall target="compress">
-			<param name="file" value="${build.base}/html/css/destiny.${version}.css" />
+			<param name="file" value="${build.base}/static/css/destiny.${version}.css" />
 		</antcall>
 		<antcall target="compress">
-			<param name="file" value="${build.base}/html/css/destiny.admin.${version}.css" />
+			<param name="file" value="${build.base}/static/css/destiny.admin.${version}.css" />
 		</antcall>
 		<antcall target="compress">
-			<param name="file" value="${build.base}/html/errors/errors.css" />
+			<param name="file" value="${build.base}/static/css/errors.css" />
 		</antcall>
 	</target>
 	
 	<target name="compressjs">
 		<antcall target="compress">
-			<param name="file" value="${build.base}/html/js/destiny.${version}.js" />
+			<param name="file" value="${build.base}/static/js/destiny.${version}.js" />
 		</antcall>
 		<antcall target="compress">
-			<param name="file" value="${build.base}/html/js/destiny.admin.${version}.js" />
+			<param name="file" value="${build.base}/static/js/destiny.admin.${version}.js" />
 		</antcall>
 	</target>
 
