@@ -5,7 +5,6 @@ use Destiny\Application;
 use Destiny\AppException;
 use Destiny\Utils\Http;
 use Destiny\SessionAuthenticationCredentials;
-use Destiny\SessionCookieInterface;
 use Destiny\SessionInstance;
 use Destiny\Session;
 use Destiny\Config;
@@ -14,21 +13,21 @@ $context->log = 'http';
 require __DIR__ . '/../lib/boot.php';
 
 $app = Application::instance ();
-
-$session = Session::setInstance ( new SessionInstance () );
-$session->setSessionCookieInterface ( new SessionCookieInterface ( Config::$a ['cookie'] ) );
-$session->start ();
-$session->setAuthenticationCredentials ( new SessionAuthenticationCredentials ( $session->getData () ) );
+$app->setSession ( new SessionInstance () );
+Session::start ( Session::START_COOKIE );
 
 // Remember me, when session expires
-if (! Session::hasRole ( \Destiny\UserRole::USER )) {
+if (! Session::isStarted ()) {
 	$authManager = AuthenticationService::instance ();
 	$userId = $authManager->getRememberMe ();
 	if ($userId !== false) {
 		$userManager = UserService::instance ();
 		$user = $userManager->getUserById ( $userId );
-		$authManager->login ( $user, 'rememberme' );
-		$authManager->setRememberMe ( $user );
+		if (! empty ( $user )) {
+			Session::start ( Session::START_NOCOOKIE );
+			$authManager->login ( $user, 'rememberme' );
+			$authManager->setRememberMe ( $user );
+		}
 	}
 }
 

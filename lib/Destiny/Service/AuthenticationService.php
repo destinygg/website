@@ -270,6 +270,7 @@ class AuthenticationService extends Service {
 	/**
 	 * Returns the current userId of the remember me cookie
 	 * Also performs validation on the cookie and the record in the Db
+	 * Does not touch the DB unless there is a valid remember me cookie
 	 *
 	 * @return int false
 	 */
@@ -322,7 +323,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
+	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
 		$value = json_encode ( array (
 				'expire' => $expireDate->getTimestamp (),
 				'created' => $createdDate->getTimestamp (),
@@ -347,8 +348,10 @@ class AuthenticationService extends Service {
 	 * Clear the current user remember me cookie
 	 */
 	private function clearRememberMeCookie() {
+		if (isset ( $_COOKIE [$this->remembermeId] )) {
+			unset ( $_COOKIE [$this->remembermeId] );
+		}
 		setcookie ( $this->remembermeId, '', time () - 3600, Config::$a ['cookie'] ['path'], Config::$a ['cookie'] ['domain'] );
-		unset ( $_COOKIE [$this->remembermeId] );
 	}
 
 }

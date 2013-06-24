@@ -31,6 +31,10 @@ class Login {
 			$model->error = new AppException ( 'Please select a authentication provider' );
 			return 'login';
 		}
+
+		// This is the only action that will create a new session cookie for a user
+		Session::start ( Session::START_NOCOOKIE );
+		
 		if ($rememberme) {
 			Session::set ( 'rememberme', 1 );
 		}

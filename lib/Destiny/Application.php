@@ -13,6 +13,13 @@ use \PHPMailer;
 class Application extends Service {
 	
 	/**
+	 * The application
+	 *
+	 * @var Application
+	 */
+	protected static $instance = null;
+	
+	/**
 	 * The current full url
 	 *
 	 * @var string
@@ -48,18 +55,18 @@ class Application extends Service {
 	public $cacheDriver = null;
 	
 	/**
-	 * The application
-	 *
-	 * @var Application
-	 */
-	protected static $instance = null;
-	
-	/**
 	 * DB Connection
 	 *
 	 * @var \Doctrine\DBAL\Connection
 	 */
 	protected $connection;
+	
+	/**
+	 * The current session api
+	 *
+	 * @var SessionInstance
+	 */
+	protected $session = null;
 
 	/**
 	 * Since this has to be created instance, only returns never creates
@@ -346,6 +353,24 @@ class Application extends Service {
 	 */
 	public function setLogger(LoggerInterface $logger) {
 		$this->logger = $logger;
+	}
+
+	/**
+	 * Get the session api
+	 *
+	 * @return \Destiny\SessionInstance
+	 */
+	public function getSession() {
+		return $this->session;
+	}
+
+	/**
+	 * Set the session api
+	 * 
+	 * @param SessionInstance $session
+	 */
+	public function setSession(SessionInstance $session) {
+		$this->session = $session;
 	}
 
 }

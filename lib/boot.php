@@ -23,6 +23,7 @@ $db->exec ( 'SET time_zone = \'+00:00\'' );
 
 $cache = new \Doctrine\Common\Cache\FilesystemCache ( \Destiny\Config::$a ['cache'] ['path'] );
 
+
 $app = new \Destiny\Application ();
 $app->setLogger ( $log );
 $app->setConnection ( $db );
