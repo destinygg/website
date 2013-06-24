@@ -41,7 +41,7 @@ class Twitch {
 		$arr ['authCode'] = $code;
 		$arr ['authId'] = $data ['_id'];
 		$arr ['username'] = (isset ( $data ['display_name'] ) && ! empty ( $data ['display_name'] )) ? $data ['display_name'] : $data ['username'];
-		$arr ['email'] = (isset ( $data ['email'] ) && ! empty ( $data ['email'] )) ? $data ['email'] : $data ['email'];
+		$arr ['email'] = (isset ( $data ['email'] ) && ! empty ( $data ['email'] )) ? $data ['email'] : '';
 		return $arr;
 	}
 

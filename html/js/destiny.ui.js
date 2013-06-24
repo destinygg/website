@@ -403,7 +403,6 @@ $(function(){
 		$('.navbar a[rel="'+$('body').attr('class')+'"]').closest('li').addClass('active');
 	});
 	
-	
 	// Change time on selected elements
 	$('time[data-moment="true"]').each(function(){
 		var ui = $(this),

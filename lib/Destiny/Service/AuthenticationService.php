@@ -174,6 +174,7 @@ class AuthenticationService extends Service {
 	 */
 	private function validateAuthCredentials(array $authCreds) {
 		if (! isset ( $authCreds ['authId'] ) || ! isset ( $authCreds ['username'] ) || ! isset ( $authCreds ['email'] ) || ! isset ( $authCreds ['authCode'] ) || ! isset ( $authCreds ['authProvider'] )) {
+			Application::instance ()->getLogger ()->error ( sprintf ( 'Error validating auth credentials %s', var_dump ( $authCreds ) ) );
 			throw new AppException ( 'Invalid auth credentials' );
 		}
 	}
@@ -321,7 +322,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
 				'expire' => $expireDate->getTimestamp (),
 				'created' => $createdDate->getTimestamp (),
