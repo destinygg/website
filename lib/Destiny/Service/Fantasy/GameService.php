@@ -151,7 +151,7 @@ class GameService extends Service {
 				SUM(teamchampscores.scoreValue) AS `scoreValue`
 			FROM dfl_scores_teams_champs AS `teamchampscores` 
 			INNER JOIN `dfl_champs` AS `champs` ON (champs.championId = teamchampscores.championId) 
-			WHERE teamchampscores.gameId = :gameId AND teamchampscores.teamId = :teamId AND scoreValue > 0
+			WHERE teamchampscores.gameId = :gameId AND teamchampscores.teamId = :teamId AND scoreValue != 0
 			GROUP BY teamchampscores.championId, teamchampscores.gameId
 		' );
 		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
