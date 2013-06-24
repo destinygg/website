@@ -128,7 +128,7 @@ use Destiny\Utils\Tpl;
 							</div>
 						</td>
 						<td style="text-align: right; width: 100%;">
-							<small><time title="<?=$createdDate->format(Date::FORMAT)?>"><?=Date::getElapsedTime($createdDate)?></time></small>
+							<small><?=Tpl::fromNow($createdDate, Date::FORMAT)?></small>
 						</td>
 						<td style="text-align: right;">
 							<span style="color: green;">+<?=$gameScore['scoreValue']?></span>

@@ -24,7 +24,7 @@ if (! empty ( $model->events ) && ! empty ( $model->articles )) :
 							<div class="media-heading">
 								<?=Tpl::out($event['title'])?> - <span style="color: #777;"><?=Tpl::out($event['details'])?></span>
 							</div>
-							<time data-moment="true" datetime="<?=$date->format(Date::FORMAT)?>"><?=$date->format(Date::FORMAT)?></time>
+							<?=Tpl::moment($date,Date::FORMAT)?>
 						</div>
 					</div>
 				</div>
@@ -48,7 +48,7 @@ if (! empty ( $model->events ) && ! empty ( $model->articles )) :
 							<span><small>Posted in</small> <?=Tpl::out($categories['title'])?></span>
 							<?endforeach;?>
 						</div>
-						<time datetime="<?=$article['date']?>" pubdate><?=Date::getDateTime($article['date'])->format(Date::FORMAT)?></time>
+						<?=Tpl::moment(Date::getDateTime($article['date']),Date::FORMAT)?>
 					</div>
 				</div>
 				<?endforeach;?>

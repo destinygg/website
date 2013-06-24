@@ -48,4 +48,12 @@ class Tpl {
 		return self::out ( str_pad ( $str, $pad, $padStr ) );
 	}
 
+	public static function moment(\DateTime $date, $format, $addon = '') {
+		return sprintf ( '<time title="%s" data-moment="true" datetime="%s" ' . $addon . '>%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $date->format ( $format ) );
+	}
+
+	public static function fromNow(\DateTime $date, $format, $addon = '') {
+		return sprintf ( '<time title="%s" data-moment="true" data-moment-elapsed="true" datetime="%s" ' . $addon . '>%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), Date::getElapsedTime ( $date ) );
+	}
+
 }

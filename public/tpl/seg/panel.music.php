@@ -22,7 +22,7 @@ use Destiny\Utils\Date;
 							<a target="_blank" href="https://twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>"><i class="icon-share icon-white subtle"></i></a>
 							<?=$tweet['html']?>
 						</div>
-						<time datetime="<?=$tweet['created_at']?>" pubdate><?=Date::getElapsedTime(Date::getDateTime($tweet['created_at']))?></time>
+						<?=Tpl::fromNow(Date::getDateTime($tweet['created_at']), Date::FORMAT)?>
 					</div>
 				</div>
 			<?endforeach;?>
@@ -50,10 +50,10 @@ use Destiny\Utils\Date;
 						<div class="artist"><?=Tpl::out($track['artist']['#text'])?></div>
 						<div class="details">
 							<?if($track['date_str'] != ''):?>
-							<time class="pull-right" datetime="<?=$track['date_str']?>"><?=Date::getElapsedTime(Date::getDateTime ($track['date']['uts']))?></time>
+							<?=Tpl::fromNow(Date::getDateTime($track['date_str']), Date::FORMAT, 'class="pull-right"')?>
 							<?endif;?>
 							<?if($trackIndex==0 && $track['date_str'] == ''):?>
-							<time class="pull-right" datetime="<?=date(\DateTime::W3C)?>">now playing</time>
+							<time class="pull-right">now playing</time>
 							<?endif;?>
 							<small class="album subtle"><?=Tpl::out($track['album']['#text'])?></small>
 						</div>

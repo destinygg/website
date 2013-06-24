@@ -31,14 +31,9 @@ $session->addCredentialHandler ( function (SessionInstance $session, SessionCred
 
 // Puts the session into the cache
 $session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
-	try {
-		if ($session->isStarted ()) {
-			$cache = Application::instance ()->getCacheDriver ();
-			$cache->save ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ) );
-		}
-	} catch ( \Exception $e ) {
-		$logger = Application::instance ()->getLogger ();
-		$logger->error ( 'Could not store the session data in redis' );
+	if ($session->isStarted ()) {
+		$cache = Application::instance ()->getCacheDriver ();
+		$cache->save ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ) );
 	}
 } );
 

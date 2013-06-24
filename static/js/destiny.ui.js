@@ -405,10 +405,13 @@ $(function(){
 	
 	// Change time on selected elements
 	$('time[data-moment="true"]').each(function(){
-		var ui = $(this),
-			datetime = ui.attr('datetime') || ui.text(),
-			str = moment(datetime).format('MMMM Do, h:mm:ss a');
-		ui.html(str);
+		var ui = $(this), datetime = ui.attr('datetime') || ui.text();
+		if(ui.data('moment-elapsed')){
+			ui.html(moment(datetime).fromNow());
+		}else{
+			ui.html(moment(datetime).format('MMMM Do, h:mm:ss a'));
+		}
+		
 	});
 	
 	// Lazy load images

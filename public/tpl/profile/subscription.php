@@ -76,9 +76,9 @@ use Destiny\Session;
 									<dt>Source:</dt>
 									<dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
 									<dt>Created date:</dt>
-									<dd><?=Tpl::out(Date::getDateTime($model->subscription['createdDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
+									<dd><?=Tpl::moment(Date::getDateTime($model->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
 									<dt>End date:</dt>
-									<dd><?=Tpl::out(Date::getDateTime($model->subscription['endDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
+									<dd><?=Tpl::moment(Date::getDateTime($model->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
 									<dt>Time left:</dt>
 									<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
 									
@@ -88,34 +88,45 @@ use Destiny\Session;
 									<?php endif; ?>
 									
 									<?php if(!empty($model->paymentProfile)): ?>
-									<br />
-									<dt>Billing:</dt>
-									<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
-									<dt>Amount:</dt>
-									<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
-									<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
-									<dt>Profile:</dt>
-									<dd><?=Tpl::mask($model->paymentProfile['paymentProfileId'])?></dd>
-									<?php endif; ?>
-									<dt>Billing Cycle:</dt>
-									<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
-									<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
-									<dt>Billing start date:</dt>
-									<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
-									<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
-									<dt>Billing next date:</dt>
-									<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
-									<?php endif; ?>
-									<?php endif; ?>
+										<br />
+										<dt>Billing:</dt>
+										<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
+										<dt>Amount:</dt>
+										<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
+										
+										<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+										<dt>Profile:</dt>
+										<dd><?=Tpl::mask($model->paymentProfile['paymentProfileId'])?></dd>
+										<?php endif; ?>
+										
+										<dt>Billing Cycle:</dt>
+										<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
+										
+										<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+										
+										<?php 
+										$billingNextDate = Date::getDateTime($model->paymentProfile['billingNextDate']);
+										$billingStartDate = Date::getDateTime($model->paymentProfile['billingStartDate']);
+										?>
 									
-									<?if(strcasecmp($model->paymentProfile['state'], 'Cancelled')===0):?>
-									<dt>&nbsp;</dt>
-									<dd><a title="Re-activate this recurring payment" href="/payment/activate">Re-activate payment</a></dd>
-									<?php endif; ?>
-									<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
-									<dt>&nbsp;</dt>
-									<dd><a title="Cancel this recurring payment" href="/payment/cancel">Cancel payment</a></dd>
-									<?php endif; ?>
+										<dt>Billing start date:</dt>
+										<dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
+										<?php if($billingNextDate != $billingNextDate): ?>
+										<dt>Billing next date:</dt>
+										<dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
+										<?php endif; ?>
+										<?php endif; ?>
+										
+										<?if(strcasecmp($model->paymentProfile['state'], 'Cancelled')===0):?>
+										<dt>&nbsp;</dt>
+										<dd><a title="Re-activate this recurring payment" href="/payment/activate">Re-activate payment</a></dd>
+										<?php endif; ?>
+										
+										<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+										<dt>&nbsp;</dt>
+										<dd><a title="Cancel this recurring payment" href="/payment/cancel">Cancel payment</a></dd>
+										<?php endif; ?>
+									
 									<?php endif; ?>
 								</dl>
 							</div>
@@ -137,7 +148,7 @@ use Destiny\Session;
 										<a title="Payment details" href="/payment/details/?id=<?=$payment['paymentId']?>"><?=substr($payment['transactionId'], 0, 8)?></a>
 										<span> - </span>
 										<span><?=Tpl::currency($payment['currency'], $payment['amount'])?></span>
-										<small class="subtle">on <?=Date::getDateTime($payment['paymentDate'])->format (Date::STRING_FORMAT)?></small>
+										<small class="subtle">on <?=Tpl::moment(Date::getDateTime($payment['paymentDate']),Date::STRING_FORMAT)?></small>
 									</td>
 									<td style="text-align: right;"><small class="subtle">Payment</small></td>
 									<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($payment['paymentStatus'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($payment['paymentStatus'])?></span></td>

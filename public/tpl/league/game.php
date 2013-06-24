@@ -47,7 +47,7 @@ use Destiny\Utils\Tpl;
 		
 		<h3>
 			<?=Lol::$gameTypes[$model->game['gameType']]?>
-			<small><time data-moment="true" datetime="<?=Date::getDateTime($model->game['gameCreatedDate'])->format(Date::FORMAT)?>"><?=Date::getDateTime($model->game['gameCreatedDate'])->format(Date::STRING_FORMAT)?></time></small>
+			<small><?=Tpl::moment(Date::getDateTime($model->game['gameCreatedDate']),Date::STRING_FORMAT)?></small>
 		</h3>
 		<div id="activeGame" data-gameid="<?=$model->game['gameId']?>" class="game-vertical clearfix" style="margin-top:0; position: relative; border:none;">
 			<div style="width:50%; float:left;">
