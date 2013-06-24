@@ -3,7 +3,6 @@
 namespace Destiny\Action\Auth;
 
 use Destiny\ViewModel;
-
 use Destiny\Utils\Http;
 use Destiny\Session;
 use Destiny\Application;
@@ -56,6 +55,7 @@ class Google {
 				throw new AppException ( 'Authentication failed, invalid or empty code.' );
 			}
 			$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] [$this->authProvider] );
+			$authClient->setHeaderTokenName ( 'Bearer' );
 			$accessToken = $authClient->fetchAccessToken ( $params ['code'], 'https://accounts.google.com/o/oauth2/token', sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ) );
 			$data = $authClient->fetchUserInfo ( $accessToken, 'https://www.googleapis.com/oauth2/v2/userinfo' );
 			$authCreds = $this->getAuthCredentials ( $params ['code'], $data );

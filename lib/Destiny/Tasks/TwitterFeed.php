@@ -13,12 +13,16 @@ class TwitterFeed {
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
-		$tmhOAuth = new \tmhOAuth ( Config::$a ['oauth'] ['providers'] ['twitter'] );
-		$tmhOAuth->reconfigure ( array_merge ( $tmhOAuth->config, array (
+		$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
+		$tmhOAuth = new \tmhOAuth ( array (
+				'consumer_key' => $twitterOAuthConf ['clientId'],
+				'consumer_secret' => $twitterOAuthConf ['clientSecret'],
+				'token' => $twitterOAuthConf ['token'],
+				'secret' => $twitterOAuthConf ['secret'],
 				'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
 				'curl_timeout' => Config::$a ['curl'] ['timeout'],
 				'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
-		) ) );
+		) );
 		$code = $tmhOAuth->user_request ( array (
 				'url' => $tmhOAuth->url ( '1.1/statuses/user_timeline.json' ),
 				'params' => array (

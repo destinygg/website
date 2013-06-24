@@ -62,14 +62,17 @@ class Twitter {
 			if ($params ['oauth_token'] !== $oauth ['oauth_token']) {
 				throw new AppException ( 'Invalid login session' );
 			}
-			$tmhOAuth = new \tmhOAuth ( Config::$a ['oauth'] ['providers'] ['twitter'] );
-			$tmhOAuth->reconfigure ( array_merge ( $tmhOAuth->config, array (
+			
+			$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
+			$tmhOAuth = new \tmhOAuth ( array (
+					'consumer_key' => $twitterOAuthConf ['clientId'],
+					'consumer_secret' => $twitterOAuthConf ['clientSecret'],
 					'token' => $oauth ['oauth_token'],
 					'secret' => $oauth ['oauth_token_secret'],
 					'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
 					'curl_timeout' => Config::$a ['curl'] ['timeout'],
 					'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
-			) ) );
+			) );
 			$code = $tmhOAuth->user_request ( array (
 					'method' => 'POST',
 					'url' => $tmhOAuth->url ( 'oauth/access_token', '' ),

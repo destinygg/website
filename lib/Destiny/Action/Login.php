@@ -55,23 +55,29 @@ class Login {
 		switch (strtoupper ( $authProvider )) {
 			case 'TWITCH' :
 				$authClient = new oAuthClient ( Config::$a ['oauth'] ['providers'] ['twitch'] );
+				$authClient->setHeaderTokenName ( 'OAuth' );
 				$authClient->sendAuthorisation ( 'https://api.twitch.tv/kraken/oauth2/authorize', $callback, 'user_read' );
 				exit ();
 			
 			case 'GOOGLE' :
 				$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] ['google'] );
+				$authClient->setHeaderTokenName ( 'Bearer' );
 				$authClient->sendAuthorisation ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid', array (
 						'state' => 'security_token=' . Session::getSessionId () 
 				) );
 				exit ();
 			
 			case 'TWITTER' :
-				$tmhOAuth = new \tmhOAuth ( Config::$a ['oauth'] ['providers'] ['twitter'] );
-				$tmhOAuth->reconfigure ( array_merge ( $tmhOAuth->config, array (
+				$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
+				$tmhOAuth = new \tmhOAuth ( array (
+						'consumer_key' => $twitterOAuthConf ['clientId'],
+						'consumer_secret' => $twitterOAuthConf ['clientSecret'],
+						'token' => $twitterOAuthConf ['token'],
+						'secret' => $twitterOAuthConf ['secret'],
 						'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
 						'curl_timeout' => Config::$a ['curl'] ['timeout'],
 						'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
-				) ) );
+				) );
 				$code = $tmhOAuth->apponly_request ( array (
 						'without_bearer' => true,
 						'method' => 'POST',

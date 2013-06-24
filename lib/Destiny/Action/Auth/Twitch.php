@@ -60,6 +60,7 @@ class Twitch {
 				return 'login';
 			}
 			$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] [$this->authProvider] );
+			$authClient->setHeaderTokenName ( 'OAuth' );
 			$accessToken = $authClient->fetchAccessToken ( $params ['code'], 'https://api.twitch.tv/kraken/oauth2/token', sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ) );
 			$data = $authClient->fetchUserInfo ( $accessToken, 'https://api.twitch.tv/kraken/user' );
 			$authCreds = $this->getAuthCredentials ( $params ['code'], $data );
