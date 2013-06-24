@@ -1,0 +1,942 @@
+@-moz-keyframes spin { 
+0% { -moz-transform: rotate(0deg); }
+100% { -moz-transform: rotate(-360deg); }
+}
+@-webkit-keyframes spin { 
+0% { -webkit-transform: rotate(0deg); }
+100%{ -webkit-transform: rotate(-360deg); }
+}
+@-webkit-keyframes whitetxtglow { 
+0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
+50% { text-shadow: 0 0 4px rgba(0,136,204,1); color: white; }
+100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
+}
+@-moz-keyframes whitetxtglow { 
+0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
+50% { text-shadow: 0 0 4px rgba(0,136,204,1); color: white; }
+100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
+}
+
+html,body{
+height:100%;
+}
+
+body {
+background: #111 url("../img/bodybg.png") repeat top center;
+position: relative;
+padding-top: 40px;
+color: #999;
+}
+
+section {
+margin-top: 15px;
+}
+
+h1,h2,h3,h4,h5,h6 {
+font-family: "HelveticaNeue-CondensedBold", "ArialNarrow-Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-weight: normal;
+color: #d4d4d4;
+}
+h2, h3, h4 {
+color: #888;
+}
+
+h1 small,h2 small,h3 small,h4 small,h5 small,h6 small {
+color: #666;
+}
+
+span.subtle {
+opacity: 0.25;
+}
+
+small.subtle {
+opacity: 0.4;
+}
+
+i.subtle {
+opacity: 0.4;
+}
+
+a:hover {
+color: #ffffff;
+text-decoration: none;
+}
+a:hover>.subtle {
+opacity: 1;
+}
+
+a.subtle-link {
+color: #888;
+}
+
+a.subtle-link:hover {
+color: #fafafa;
+}
+
+.btn-link, .btn-link:active, .btn-link[disabled] {
+text-shadow:none;
+}
+
+.nav,.nav a,.nav li {
+outline: none;
+}
+
+h1 .label, h2 .label, h3 .label, h4 .label {
+vertical-align: middle;
+}
+
+.control-group {
+margin: 20px;
+}
+form { 
+margin:0;
+}
+
+.nav-tabs {
+border-bottom: 1px solid #222;
+margin: 0;
+}
+
+.navbar {
+box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.form-actions {
+border-top-color: #222;
+background: rgba(255, 255, 255, 0.05);
+border-radius: 6px;
+}
+
+.loading {
+white-space: nowrap;
+color: #999;
+margin: 20px;
+text-shadow: 0 0 3px white;
+-webkit-animation: whitetxtglow 3s ease-in infinite;
+-moz-animation: whitetxtglow 3s ease-in infinite;
+}
+
+.tab-pane>.content {
+margin-top: 15px;
+}
+
+.navbar-subnav,
+.navbar-subnav .navbar-inner {
+margin:0;
+padding-left:0;
+}
+.navbar-subnav .navbar-inner ul > li:first-child a {
+border-radius:4px 0 0 4px;
+}
+
+body#home #top-left-nav li:first-child {
+opacity: 0.25;
+}
+
+body#home #top-left-nav li:first-child a:hover {
+opacity: 1;
+}
+
+.alert-subtle {
+text-align: center;
+color: #999;
+text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
+background: none;
+border: none;
+}
+
+.alert-subtle h4 {
+color: #999;
+}
+
+#header-band {
+overflow: hidden;
+border-bottom: 1px solid #191919;
+background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x -400px -50px;
+margin: 0;
+}
+
+#overview,
+#overview h1 {
+height: 110px;	
+margin:0;
+padding: 0;
+background: none;
+}
+#overview {
+color: white;
+position: relative;
+}
+#overview h1 {
+left:0;
+top:0;
+background: url("../img/destinylogotop.png") no-repeat -25px center;
+width: 400px;
+position: absolute;
+text-indent: -999em;
+}
+#destiny-illustration {
+background: url(../img/destinybannerhead.small.png) no-repeat top left;
+width: 500px;
+height: 109px;
+position: absolute;
+top: 0;
+right: 0;
+}
+#main-nav .navbar-inner {
+border-bottom: 1px solid #000;
+}
+
+.content-dark {
+box-shadow: 0 3px 1px rgba(0, 0, 0, 0.5);
+-webkit-border-radius: 6px;
+-moz-border-radius: 6px;
+border-radius: 6px;
+background-color: #111;
+background-color: rgba(0, 0, 0, 0.6);
+box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+border-top: 1px solid #333;
+border-left: 1px solid #333;
+border-right: 1px solid #222;
+border-bottom: 1px solid #222;
+}
+.content-dark h4 {
+color: #444;
+line-height: 20px;
+font-size: 18px;
+font-weight: normal;
+text-shadow: none;
+margin:0 0 10px 0;
+}
+
+.content-dark .thumbnail h3 {
+color: #cacaca;
+}
+
+.content-dark .title {
+font-size: 22px;
+font-weight: normal;
+color: #666;
+margin: 15px 20px;
+}
+
+.content-dark .thumbnail {
+border: none;
+background-color: #111;
+text-shadow: 1px 1px 0 black;
+}
+
+.content-dark .thumbnail p {
+color: #888;
+}
+
+.content-embed {
+padding: 5px;
+-webkit-border-radius: 6px;
+-moz-border-radius: 6px;
+border-radius: 6px;
+background: white;
+}
+
+.content-header {
+padding: 20px;
+background: #111;
+border-bottom: 1px solid #000;
+border-bottom-left-radius: 6px;
+border-bottom-right-radius: 6px;
+}
+.content-dark .block-foot {
+margin: 15px 0 0 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+border-bottom-right-radius: 0;
+}
+
+i.icon-bobross {
+background: url(../favicon.png) no-repeat center center;
+margin-bottom: 1px;
+margin-top: 0;
+-webkit-transform: rotate(0deg);
+-webkit-transition: all 0.2s ease-in-out;
+-moz-transition: all 0.2s ease-in-out;
+-o-transition: all 0.2s ease-in-out;
+transition: all 0.2s ease-in-out;
+}
+a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
+-moz-animation: spin 3s infinite linear;
+-webkit-animation: spin 3s infinite linear;
+}
+
+i.icon-twitch {
+width:16px;
+height:16px;
+background: url(../img/ico/twitch_16.png) no-repeat center center;
+}
+i.icon-twitter {
+width:16px;
+height:16px;	
+background: url(../img/ico/twitter_16.png) no-repeat center center;
+}
+i.icon-google {
+width:16px;
+height:16px;	
+background: url(../img/ico/google_16.png) no-repeat center center;
+}
+
+#twitchpanel .panelheader .game>div {
+padding: 0 0 0 10px;
+display: inline-block;
+}
+
+#twitchpanel .panelheader {
+border-top-left-radius: 6px;
+border-top-right-radius: 6px;
+border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+}
+
+#twitchpanel .panelheader .toolgroup {
+padding: 5px;
+color: #777;
+font-size: 12px;
+line-height: 22px;
+}
+
+#twitchpanel .panelheader .toolgroup strong {
+color: #ececec;
+font-weight: normal;
+}
+
+#twitchpanel.split-view>.content,
+#twitchpanel.single-view>.content {
+border-bottom-left-radius: 0;
+border-bottom-right-radius: 0;
+}
+
+#twitchpanel.split-view .panelheader .toolgroup,
+#twitchpanel.single-view .panelheader .toolgroup {
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#twitchpanel #twitch-elements {
+overflow: hidden;
+}
+
+#twitchpanel .twitch-element,#twitchpanel .twitch-element-wrap {
+width: 100%;
+height: 475px;
+}
+
+#twitchpanel #twitch-player object {
+height: 476px;
+}
+
+#twitchpanel.split-view #twitch-player {
+width: 68%;
+}
+
+#twitchpanel.split-view #twitch-chat {
+width: 32%;
+background: white;
+}
+
+#twitchpanel.single-view .twitch-element,
+#twitchpanel.single-view .twitch-element-wrap {
+width: 100%;
+height: 559px;
+}
+
+#twitchpanel.single-view #twitch-player object {
+height: 560px;
+}
+
+@media ( min-width : 1200px) {
+	#twitchpanel.single-view .twitch-element,
+	#twitchpanel.single-view .twitch-element-wrap{
+	width: 100%;
+	height: 689px;
+	}
+	#twitchpanel.single-view #twitch-player object {
+	height: 690px;
+	}
+}
+
+#twitchpanel #twitch-player.defocus {
+position: relative;
+}
+
+#twitchpanel #twitch-player.defocus object {
+display: none;
+}
+
+#twitchpanel a#popoutvideo,
+#twitchpanel a#popoutchat {
+text-shadow: none;
+}
+
+#twitchpanel a#popoutvideo.btn-down,
+#twitchpanel a#popoutchat.btn-down {
+color: #ccc;
+}
+
+#player-ads {
+margin: 0;
+}
+
+#player-ads-video {
+width: 100%;
+float: left;
+}
+
+#player-ads-video p {
+margin: 10px 0;
+text-align: center;
+color: #777;
+font-size: 12px;
+}
+
+#player-ads-video iframe {
+width: 100%;
+height: 415px;
+}
+
+#twitchpanel.single-view #player-ads-video iframe {
+height: 500px;
+}
+
+@media ( min-width : 1200px) {
+	#player-ads-video iframe {
+	height: 415px;
+	}
+	#twitchpanel.single-view #player-ads-video iframe {
+	height: 630px;
+	}
+}
+
+.stream {
+width: 50%;
+float: left;
+}
+
+.stream .thumbnails {
+margin: 0;
+padding-top: 20px;
+border-top: 1px solid #121212;
+}
+
+.stream .thumbnails .loading {
+margin-top: 0;
+}
+
+.stream .title {
+border-bottom: 1px solid black;
+padding-top: 5px;
+padding-bottom: 0;
+padding-left: 20px;
+margin: 0;
+}
+
+.stream .title a {
+font-size: 14px;
+text-decoration: none;
+}
+
+.stream:first-child .media {
+border-right: 1px solid #010101;
+}
+
+.stream:last-child .media {
+border-left: 1px solid #121212;
+}
+
+.stream .media:last-child {
+border-bottom: none;
+}
+
+.stream:first-child .media:last-child {
+border-bottom-left-radius: 6px;
+}
+
+.stream:last-child .media:last-child {
+border-bottom-right-radius: 6px;
+}
+
+.stream .media {
+text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+color: #a5a5a5;
+background: rgba(15, 15, 15, 0.5);
+border-top: 1px solid #121212;
+border-bottom: 1px solid #010101;
+margin: 0;
+padding: 10px 10px 10px 20px;
+height: 64px;
+overflow: hidden;
+}
+
+.stream .media:hover {
+text-shadow: none;
+color: #c9c9c9;
+background: none;
+background-color: rgba(255, 255, 255, 0.1);
+}
+
+.stream .thumbnails img {
+max-width: 100%;
+border-radius: 3px;
+}
+
+.stream .thumbnails li {
+margin: 0;
+width: 24.2%;
+}
+
+.stream .thumbnails .thumbnail {
+margin-left: 20px;
+margin-bottom: 20px;
+}
+
+.content-split .stream:first-child .thumbnails {
+border-right: 1px solid #010101;
+}
+
+.content-split .stream:last-child .thumbnails {
+border-left: 1px solid #121212;
+}
+
+.stream .thumbnails .thumbnail:hover {
+box-shadow: 0 0 8px rgba(0, 136, 204, 1);
+}
+
+.stream .thumbnails-loading {
+opacity: 0.25;
+}
+
+.stream .entries {
+min-height: 200px;
+}
+
+.stream time {
+font-size: 12px;
+color: #666;
+}
+
+.stream-grid {
+width: 50%;
+}
+
+.stream-grids .stream-grid:first-child {
+border-right: 1px solid rgba(0, 0, 0, 0.5);
+margin-left: -1px;
+}
+
+.stream-grids .stream-grid:first-child {
+border-left: 1px solid rgba(255, 255, 255, 0.1);
+margin-right: -1px;
+}
+
+#stream-lastfm .media-heading {
+color: #c9c9c9;
+font-weight: normal;
+}
+
+#stream-lastfm .media-heading,#stream-lastfm .album,#stream-lastfm .artist {
+overflow: ellipsis;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+
+#stream-lastfm .media-heading,#stream-lastfm .artist {
+height: 20px;
+}
+
+#stream-lastfm .album {
+height: 15px;
+display: block;
+max-width: 270px;
+line-height: 15px;
+}
+
+#stream-lastfm .cover-image {
+width: 64px;
+height: 64px;
+}
+
+#stream-lastfm .trackname,#stream-lastfm .artist {
+margin-bottom: 2px;
+}
+
+#stream-blog .media-heading {
+overflow: ellipsis;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+height: 20px;
+}
+
+#stream-twitter .media-heading {
+font-size: 85%;
+}
+
+.private-ads {
+margin-left: 20px;
+position: relative;
+}
+
+.private-ads,.private-ad>a {
+height: 250px;
+display: block;
+}
+
+.private-ad.active {
+z-index: 81;
+}
+
+.private-ad {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+}
+
+.private-ad>a {
+border-radius: 6px;
+border-top: 1px solid #333;
+border-left: 1px solid #333;
+border-right: 1px solid #222;
+border-bottom: 1px solid #222;
+}
+
+#open-broadcasters-software a {
+background: white url("../img/OBSbanner.jpg") no-repeat top center;
+}
+
+#feenix-nascita>a {
+background: black url("../img/feenixnascita.jpg") no-repeat top center;
+}
+
+.public-ads {
+width: 300px;
+position: absolute;
+top: 0;
+right: 0;
+}
+
+.public-ads,.donate-block {
+height: 250px;
+float: left;
+margin-left: 20px;
+background: rgba(0, 0, 0, 0.5);
+border-radius: 6px;
+border-top: 1px solid #333;
+border-left: 1px solid #333;
+border-right: 1px solid #222;
+border-bottom: 1px solid #222;
+}
+
+.public-ads:first-child,.donate-block:first-child {
+margin-left: 0;
+}
+
+.donate-block p {
+color: #cacaca;
+padding: 40px 30px;
+text-align: center;
+font-size: 14px;
+}
+
+#paypal-form {
+text-align: center;
+}
+
+#paypal-form #paypal-payment-methods {
+background: url("../img/payment.types.png") no-repeat top center;
+width: 211px;
+height: 28px;
+display: block;
+margin: 15px auto 0 auto;
+}
+
+#paypal-form .btn-paypal {
+font-weight: bold;
+font-size: 20px;
+color: #003366;
+border-radius: 22px;
+border: 1px solid #ff9933;
+background: rgb(252, 234, 187);
+background: -moz-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(252, 234, 187, 1) ), color-stop(50%, rgba(252, 205, 77, 1) ), color-stop(51%, rgba(248, 181, 0, 1) ), color-stop(100%, rgba(251, 223, 147, 1) ) );
+background: -webkit-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: -o-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: -ms-linear-gradient(top, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+background: linear-gradient(to bottom, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
+}
+
+#adblocker-message>a {
+text-indent: -999em;
+text-align: center;
+margin: 50px auto 10px auto;
+width: 90px;
+height: 90px;
+display: block;
+background: url("../img/adblocker.png") no-repeat top left;
+}
+
+#adblocker-message>p {
+color: #888;
+text-align: center;
+padding: 0 30px;
+}
+
+#lolpanel>.content {
+height: 65px;
+overflow: hidden;
+}
+
+#lolpanel .summoner-rank-info .summon-rank-stats {
+font-size: 12px;
+text-align: right;
+line-height: 16px;
+padding-right: 20px;
+margin: 16px 15px 16px 0;
+border-right: 1px solid #222;
+color: #444;
+}
+
+#lolpanel .summon-rank-display {
+margin: 10px 10px 10px 0;
+}
+
+#lolpanel .summoner-info .summoner-info-stub {
+margin: 10px 10px 10px 20px;
+position: relative;
+}
+
+#lolpanel .summoner-info .summoner-title {
+font-weight: normal;
+margin: 0;
+line-height: 25px;
+font-size: 25px;
+}
+
+#lolpanel .summoner-info .summoner-region {
+margin: 0;
+color: #444;
+}
+
+#lolpanel .summoner-rank-info .summoner-rank-thumbnail i {
+display: block;
+}
+
+#lolpanel .summoner-rank-info .summoner-rank {
+font-size: 24px;
+line-height: 45px;
+padding-right: 10px;
+}
+
+#lolpanel .summoner-rank-info .summoner-rank.unranked {
+font-size: 28px;
+opacity: 0.5;
+}
+
+#lolpanel .summoner-info .summoner-revision-date {
+text-shadow: none;
+font-size: 11px;
+color: #333;
+}
+
+#lolpanel i[class^="icon-"] {
+opacity: 0.3;
+}
+
+#lolpanel i[class^="icon-"]:hover {
+opacity: 1;
+}
+
+.icon-money {
+background: url(../img/ico/100.png) no-repeat center center;
+}
+
+.icon-multiplier {
+background: url(../img/ico/091.png) no-repeat center center;
+}
+
+.icon-transfers {
+background: url(../img/ico/124.png) no-repeat center center;
+}
+
+.icon-rating {
+background: url(../img/ico/092.png) no-repeat center center;
+}
+
+.icon-transfer-out {
+background: url(../img/ico/116.png) no-repeat center center;
+}
+
+.icon-transfer-in {
+background: url(../img/ico/113.png) no-repeat center center;
+}
+
+footer {
+position: relative;
+font-size: 12px;
+color: #555;
+text-shadow: 1px 1px 1px black;
+padding: 0;
+}
+footer p.pull-right {
+text-align: right;
+}
+
+/* Bootstrap overrides */
+.popover-title,.popover-content {
+color: #444;
+text-shadow: none;
+}
+
+.popover-title {
+color: #333;
+}
+
+.nav-tabs>.active>a,.nav-tabs>.active>a:hover {
+color: #ddd;
+text-shadow: -1px -1px 0 black;
+background: rgba(0, 0, 0, 0.5);
+border-top: 1px solid #444;
+border-left: 1px solid #444;
+border-right: 1px solid #222;
+border-bottom: 1px solid #222;
+}
+
+.nav-tabs>li>a {
+color: #999;
+}
+
+.nav.navbar-inverse>li>a:hover {
+color: #ccc;
+text-decoration: none;
+border-color: #444 #222 #222 #444;
+}
+
+.nav-tabs>li>a:hover {
+background: rgba(0, 0, 0, 0.25);
+}
+
+hr {
+margin: 20px 0;
+border: 0;
+border-top: 1px solid #000;
+border-bottom: 1px solid #222;
+}
+
+.subscription {
+margin-top: 20px;
+margin-bottom: 20px;
+}
+
+.subscription .sub-amount {
+font-size: 18px;
+}
+
+.subscription .payment-options {
+margin-left: 20px;
+opacity: 0.25;
+}
+
+.subscription.active .payment-options {
+opacity: 1;
+}
+
+.subscription.active .sub-amount {
+color: #f2f2f2;
+}
+
+.subscription.active .sub-label {
+color: #fff;	
+}
+
+.ui-step-legend {
+margin: 15px;
+}
+
+.ui-step-legend ul {
+margin: 0;
+padding: 0;
+width: 100%;
+list-style: none;
+}
+
+.ui-step-legend ul li {
+position: relative;
+float: left;
+margin: 0;
+background: #0088cc;
+background: -moz-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0099e6),
+color-stop(100%, #0088cc) ); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* Opera 11.10+ */
+background: -ms-linear-gradient(top, #0099e6 0%, #0088cc 100%);
+/* IE10+ */
+background: linear-gradient(to bottom, #0099e6 0%, #0088cc 100%);
+/* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient(  startColorstr='#0099e6',
+endColorstr='#0088cc', GradientType=0 ); /* IE6-9 */
+}
+
+.ui-step-legend ul li:first-child {
+border-top-left-radius: 6px;
+border-bottom-left-radius: 6px;
+}
+
+.ui-step-legend ul li:last-child {
+border-top-right-radius: 6px;
+border-bottom-right-radius: 6px;
+}
+
+.ui-step-legend ul li a {
+font-size: 16px;
+color: rgba(255, 255, 255, 0.95);
+text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+line-height: 60px;
+text-align: center;
+display: block;
+}
+
+.ui-step-legend ul li .arrow {
+display: block;
+width: 30px;
+height: 15px;
+background: url(../img/steplegendarrow.png) no-repeat top left;
+position: absolute;
+bottom: -15px;
+margin-left: -15px;
+left: 50%;
+}
+
+.alert-info a {
+color: #0097e1;
+border-bottom: 1px dashed rgba(0,0,0,0.25);
+}
+.alert-info a:hover {
+color: #00abff;
+}
+.alert-success a {
+color: #11b913;
+border-bottom: 1px dashed rgba(0,0,0,0.25);
+}
+.alert-success a:hover {
+color: #19d91c;
+}
+
+i.td-fill {
+opacity:0.5;
+height:23px;
+}
+
+#appEvents .alert {
+margin:15px 0 0 0;
+}

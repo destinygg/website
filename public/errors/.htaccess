@@ -1,0 +1,6 @@
+RewriteEngine on
+Options -indexes +FollowSymLinks
+
+<FilesMatch "\.php">
+  Order Allow,Deny
+</FilesMatch>
