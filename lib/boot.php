@@ -21,7 +21,14 @@ $db->exec ( 'SET NAMES utf8' );
 $db->exec ( 'SET CHARACTER SET utf8' );
 $db->exec ( 'SET time_zone = \'+00:00\'' );
 
-$cache = new \Doctrine\Common\Cache\FilesystemCache ( \Destiny\Config::$a ['cache'] ['path'] );
+if (class_exists ( 'Redis' )) {
+	$redis = new \Redis ();
+	$redis->connect ( \Destiny\Config::$a ['redis'] ['host'], \Destiny\Config::$a ['redis'] ['port'] );
+	$cache = new \Doctrine\Common\Cache\RedisCache ();
+	$cache->setRedis ( $redis );
+} else {
+	$cache = new \Doctrine\Common\Cache\FilesystemCache ( \Destiny\Config::$a ['cache'] ['path'] );
+}
 
 $app = new \Destiny\Application ();
 $app->setLogger ( $log );

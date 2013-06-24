@@ -29,23 +29,18 @@ $session->addCredentialHandler ( function (SessionInstance $session, SessionCred
 	}
 } );
 
-// Puts the session into redis
-if (class_exists ( 'Redis' )) {
-	$session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
-		try {
-			if ($session->isStarted ()) {
-				$redis = new Redis ();
-				$redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );
-				$redisCache = new \Doctrine\Common\Cache\RedisCache ();
-				$redisCache->setRedis ( $redis );
-				$redisCache->save ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ) );
-			}
-		} catch ( \Exception $e ) {
-			$logger = Application::instance ()->getLogger ();
-			$logger->error ( 'Could not store the session data in redis' );
+// Puts the session into the cache
+$session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
+	try {
+		if ($session->isStarted ()) {
+			$cache = Application::instance ()->getCacheDriver ();
+			$cache->save ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ) );
 		}
-	} );
-}
+	} catch ( \Exception $e ) {
+		$logger = Application::instance ()->getLogger ();
+		$logger->error ( 'Could not store the session data in redis' );
+	}
+} );
 
 // Start the session if a valid cookie is found
 Session::start ( Session::START_IFVALIDCOOKIE );
