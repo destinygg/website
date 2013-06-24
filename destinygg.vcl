@@ -25,7 +25,7 @@ sub vcl_recv {
 	}
 	
 	// cache the landing page if no session was started
-	if (req.url == "/" && req.http.Cookie !~ "sid=") {
+	if (req.url == "/" && req.http.Cookie !~ "sid=|rememberme=") {
 		unset req.http.cookie;
 	}
 	
@@ -75,7 +75,7 @@ sub vcl_fetch {
 	
 	// mainly to override the cache headers sent by php
 	if ( (req.url == "/" && req.http.Cookie !~ "sid=") || req.url ~ "^/[^/]\.json$") {
-		set beresp.ttl = 1m;
+		set beresp.ttl = 30s;
 	}
 	
 }

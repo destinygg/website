@@ -35,7 +35,7 @@ class Cancel {
 		}
 		// We always need an active profile
 		if (empty ( $paymentProfile ) || strcasecmp ( $paymentProfile ['state'], 'ActiveProfile' ) !== 0) {
-			throw new AppException ( sprintf ( 'Invalid payment profile' ) );
+			throw new AppException ( sprintf ( 'Payment profile is not active' ) );
 		}
 		
 		$model->title = 'Cancel scheduled payment';

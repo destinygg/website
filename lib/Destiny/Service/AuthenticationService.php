@@ -282,17 +282,17 @@ class AuthenticationService extends Service {
 			if (! empty ( $rememberMe )) {
 				try {
 					if (Date::getDateTime ( $rememberMe ['createdDate'] ) != Date::getDateTime ( $cookie ['created'] )) {
-						throw new AppException ( 'Remember-me token invalid [createdDate] does not match' );
+						throw new AppException ( 'Token invalid [createdDate] does not match' );
 					}
 					if (Date::getDateTime ( $rememberMe ['expireDate'] ) != Date::getDateTime ( $cookie ['expire'] )) {
-						throw new AppException ( 'Remember-me token invalid [expireDate] does not match' );
+						throw new AppException ( 'Token invalid [expireDate] does not match' );
 					}
 					if ($cookie ['token'] != md5 ( $rememberMe ['userId'] . Date::getDateTime ( $rememberMe ['createdDate'] )->getTimestamp () . Date::getDateTime ( $rememberMe ['expireDate'] )->getTimestamp () . $this->remembermeSalt )) {
-						throw new AppException ( 'Remember-me token invalid [token] does not match' );
+						throw new AppException ( 'Token invalid [token] does not match' );
 					}
 				} catch ( AppException $e ) {
 					$this->clearRememberMe ( $rememberMe ['userId'] );
-					Application::instance ()->getLogger ()->error ( $e->getMessage () );
+					Application::instance ()->getLogger ()->error ( sprintf ( 'Remember-me: %s', $e->getMessage () ) );
 					return false;
 				}
 				return $rememberMe ['userId'];
