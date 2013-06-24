@@ -50,7 +50,7 @@
 		setupPoll: function(){
 			var self = this;
 			if(self.polling != null){
-				clearInterval(self.polling);
+				self.stopPolling();
 			};
 			if(self.args.polling != null && typeof self.args.polling == 'number'){
 				self.polling = setInterval(function(){
@@ -60,6 +60,10 @@
 					self.load();
 				}, self.args.polling * 1000);
 			};
+		},
+		
+		stopPolling: function(){
+			clearInterval(this.polling);
 		},
 		
 		resetPoll: function(){

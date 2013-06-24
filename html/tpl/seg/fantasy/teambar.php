@@ -11,7 +11,7 @@ use Destiny\Utils\Lol;
 
 		<h3 class="title">
 			<span class="username">
-				<?=Tpl::flag($model->user['country'])?><?=Tpl::out($model->user['displayName'])?>
+				<?=Tpl::flag($model->user['country'])?><?=Tpl::out($model->user['username'])?>
 			</span><?if(!empty($team['teamRank'])):?><small class="subtle">Rank <?=Tpl::n($team['teamRank'])?></small><?endif;?>
 		</h3>
 

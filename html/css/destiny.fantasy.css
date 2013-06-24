@@ -301,99 +301,6 @@ margin: 0 12px;
 margin-left: 24px;
 }
 
-.game.ingame .gameLegend,.game.ingame .gameBans {
-opacity: 0.25;
-font-size: 18px;
-text-align: center;
-position: absolute;
-left: 50%;
-line-height: 65px;
-width: 150px;
-margin-left: -75px;
-}
-
-.game.ingame .gameLegend {
-top: 0;
-}
-
-.game.ingame .gameBans {
-bottom: 0;
-}
-
-.game.ingame .gameVersus {
-text-align: center;
-position: absolute;
-left: 50%;
-top: 50%;
-overflow: hidden;
-margin-left: -32px;
-margin-top: -24px;
-text-shadow: 0 0 5px rgba(0, 0, 0, 0.75);
-color: #8a1919;
-text-transform: uppercase;
-font-size: 48px;
-line-height: 48px;
-}
-
-.game.ingame {
-margin: 15px;
-position: relative;
-}
-
-.game.ingame .game-champion .summoner-detail .name a {
-font-size: 16px;
-}
-
-.game.ingame .game-champion .thumbnail {
-width: 64px;
-height: 64px;
-}
-
-.game.ingame .game-champion .summoner-detail {
-line-height: 64px;
-}
-
-.game.ingame .game-team1 .game-champion .summoner-detail {
-margin-left: 100px;
-}
-
-.game.ingame .game-team1 .game-champion .thumbnail {
-left: 34px;
-}
-
-.game.ingame .game-team2 .game-champion .summoner-detail {
-margin-right: 100px;
-}
-
-.game.ingame .game-team2 .game-champion .thumbnail {
-right: 34px;
-}
-
-.ingame .summoner-spells {
-top: 0;
-position: absolute;
-}
-
-.ingame .game-team1 .summoner-spells {
-left: 0;
-}
-
-.ingame .game-team2 .summoner-spells {
-right: 0;
-}
-
-.ingame .summoner-spells .spell img {
-width: 26px;
-height: 26px;
-}
-
-.ingame .summoner-spells .spell {
-padding: 3px;
-display: block;
-clear: both;
-border-radius: 4px;
-}
-
 .game .game-team-bans .champion {
 margin: 15px 5px 0 5px;
 float: left;
@@ -402,25 +309,6 @@ float: left;
 .game .game-team-bans .champion img {
 width: 55px;
 height: 55px;
-}
-
-.game.ingame .game-team1 .game-team-bans>div {
-margin-left: -5px;
-float: left;
-}
-
-.game.ingame .game-team2 .game-team-bans>div {
-margin-right: -5px;
-float: right;
-}
-
-.ingame .game-team1,.ingame .game-team2 {
-margin-left: 0;
-margin-right: 0;
-border-top-left-radius: 0;
-border-top-right-radius: 0;
-border: 0;
-background: none;
 }
 
 .challengeForm {
@@ -441,4 +329,110 @@ color: #1a6f00;
 
 .nav #serverStatus .offline {
 color: #8a1919;
+}
+
+
+.game-team-bar .game-team {	
+padding:3px;
+border-radius:4px;
+line-height:25px;
+}
+.game-team-bar img {
+display:block;
+float:left;
+}
+.game-team-bar-horizontal img {
+border-radius:4px;
+overflow: hidden;
+}
+#activeGame.game-vertical .game-team {
+margin-top: 3px;	
+}
+#activeGame.game-vertical .game-team-purple,
+#activeGame.game-horizontal .game-team-purple {
+background: #720072; /* Old browsers */
+background: -moz-linear-gradient(top,  #720072 0%, #220023 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#720072), color-stop(100%,#220023)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #720072 0%,#220023 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #720072 0%,#220023 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #720072 0%,#220023 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #720072 0%,#220023 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#720072', endColorstr='#220023',GradientType=0 ); /* IE6-9 */
+}
+#activeGame.game-vertical .game-team-blue,
+#activeGame.game-horizontal .game-team-blue {
+background: #003eba; /* Old browsers */
+background: -moz-linear-gradient(top,  #003eba 0%, #101d4c 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#003eba), color-stop(100%,#101d4c)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #003eba 0%,#101d4c 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #003eba 0%,#101d4c 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #003eba 0%,#101d4c 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #003eba 0%,#101d4c 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#003eba', endColorstr='#101d4c',GradientType=0 ); /* IE6-9 */
+}
+
+#activeGame .ingame-progress-text {
+position:absolute; left:50%; top:0;
+}
+#activeGame .ingame-progress-text > div {
+margin-left:-50%;
+margin-top:15px;
+width:250px;
+color: rgba(255,255,255,0.9);
+text-shadow: 1px 1px black;
+text-align: center;
+}
+#activeGame .game-team-purple {
+padding:15px 20px 15px 50px;
+border-radius:0 4px 4px 0;
+}
+#activeGame .game-team-blue {
+padding:15px 50px 15px 15px;
+border-radius:4px 0 0 4px;
+}
+
+#activeGame.game-horizontal .champion:hover img {
+box-shadow: 0 0 8px 1px rgba(0, 136, 204, 1);	
+}
+#activeGame.game-horizontal .champion {
+display: block;
+float:left;
+}
+#activeGame.game-horizontal .game-team-purple {
+margin-left:-5px;
+}
+#activeGame.game-horizontal .game-team-blue {
+margin-right:-5px;
+}
+#activeGame.game-horizontal .champion {
+margin-left:5px;	
+}
+
+#activeGame.game-vertical a {
+color: rgba(255,255,255,0.75);
+text-shadow:1px 1px rgba(0,0,0,0.5);
+}
+#activeGame.game-vertical a:hover {
+color: white;
+text-shadow:1px 1px rgba(0,0,0,0.8);
+}
+#activeGame.game-vertical .champion {
+display: block;	
+}
+#activeGame.game-vertical .game-team-purple .champion {
+text-align:right;
+}
+#activeGame.game-vertical .game-team-purple h4,
+#activeGame.game-vertical .game-team-blue h4 {
+color: white;
+text-shadow:1px 1px rgba(0,0,0,0.8);	
+margin-top:0;	
+line-height:24px;
+border-bottom:1px solid rgba(255,255,255,0.25);	
+}
+#activeGame.game-vertical .game-team-blue h4 {
+text-align:left;
+}
+#activeGame.game-vertical .game-team-purple h4 {
+text-align:right;
 }

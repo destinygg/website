@@ -1,6 +1,5 @@
 <?
 namespace Destiny;
-use Destiny\Service\Settings;
 use Destiny\Utils\Http;
 use Destiny\Utils\Tpl;
 ?>
@@ -26,24 +25,24 @@ use Destiny\Utils\Tpl;
 <link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
-<?include'seg/google.tracker.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="home">
-	<?include'seg/top.php'?>
+	<?include'./tpl/seg/top.php'?>
 	
-	<?if(Session::hasRole('user') && Settings::get('teambar_homepage')):?>
-	<?include'seg/fantasy/teambar.php'?>
-	<?include'seg/fantasy/teammaker.php'?>
+	<?if(Session::hasRole(\Destiny\UserRole::USER) && Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)):?>
+	<?include'./tpl/seg/fantasy/teambar.php'?>
+	<?include'./tpl/seg/fantasy/teammaker.php'?>
 	<?endif;?>
 	
-	<?include'seg/panel.twitch.php'?>
-	<?include'seg/panel.lol.php'?>
+	<?include'./tpl/seg/panel.twitch.php'?>
+	<?include'./tpl/seg/panel.lol.php'?>
 	
-	<?include'seg/panel.videos.php'?>
-	<?include'seg/panel.music.php'?>
-	<?include'seg/panel.calendar.php'?>
-	<?include'seg/panel.ads.php'?>
-	<?include'seg/foot.php'?>
+	<?include'./tpl/seg/panel.videos.php'?>
+	<?include'./tpl/seg/panel.music.php'?>
+	<?include'./tpl/seg/panel.calendar.php'?>
+	<?include'./tpl/seg/panel.ads.php'?>
+	<?include'./tpl/seg/foot.php'?>
 	
 	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>

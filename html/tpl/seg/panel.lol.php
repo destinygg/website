@@ -63,10 +63,7 @@ use Destiny\Utils\Tpl;
 				<div class="pull-left summon-rank-stats">
 					<div><?=Tpl::out($summoner['league']['leagueName'])?></div>
 					<div>
-						<span data-placement="left" rel="tooltip"
-							title="Previous day position <?=$summoner['league']['previousDayLeaguePosition']?>">
-							Position <i class="icon-arrow-<?=(($positionOffset > 0) ? 'down':'up')?> icon-white"></i>
-						</span>
+						<span data-placement="left" rel="tooltip" title="Previous day position <?=$summoner['league']['previousDayLeaguePosition']?>">Position <i class="icon-arrow-<?=(($positionOffset > 0) ? 'down':'up')?> icon-white"></i></span>
 						<span data-placement="left" rel="tooltip" title="Out of <?=$summoner['league']['totalEntries']?>" style="color:<?=($positionOffset > 0) ? '#8a1919':'#1a6f00'?>;"><?=$position?></span>
 						<?if(isset($summoner['league']['hotStreak']) && $summoner['league']['hotStreak'] == true):?>
 						<i data-placement="left" rel="tooltip" class="icon-fire icon-white" title="HOOOOOTTT STTTRRREEEAAAAAKKKKKK!"></i>
@@ -78,15 +75,8 @@ use Destiny\Utils\Tpl;
 				</div>
 
 				<div class="pull-left summon-rank-stats">
-					<div>
-						<span style="color: #b19e00;"><?=$summoner['league']['leaguePoints']?></span>
-						League Points
-					</div>
-					<div>
-						<span style="color: #1a6f00;"><?=$summoner['league']['wins']?></span>
-						/ <span style="color: #8a1919;"><?=$summoner['league']['losses']?></span>
-						Win Loss
-					</div>
+					<div><span style="color: #b19e00;"><?=$summoner['league']['leaguePoints']?></span> League Points</div>
+					<div><span style="color: #1a6f00;"><?=$summoner['league']['wins']?></span> / <span style="color: #8a1919;"><?=$summoner['league']['losses']?></span> Win Loss</div>
 				</div>
 				<div class="pull-left summon-rank-display">
 					<div class="summoner-rank ranked pull-left">

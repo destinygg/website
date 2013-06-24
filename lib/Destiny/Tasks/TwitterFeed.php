@@ -13,17 +13,25 @@ class TwitterFeed {
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
-		
-		$curl = new \Buzz\Client\Curl ();
-		$curl->setVerifyPeer ( false );
-		$client = new \Buzz\Browser ( $curl );
-		$consumer = new \Twitter\OAuth2\Consumer ( $client, Config::$a ['twitter'] ['consumer_key'], Config::$a ['twitter'] ['consumer_secret'] );
-		$query = $consumer->prepare ( '/1.1/statuses/user_timeline.json', 'GET', array (
-				'screen_name' => Config::$a ['twitter'] ['user'],
-				'count' => 3,
-				'trim_user' => true 
+		$tmhOAuth = new \tmhOAuth ( Config::$a ['oauth'] ['providers'] ['twitter'] );
+		$tmhOAuth->reconfigure ( array_merge ( $tmhOAuth->config, array (
+				'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
+				'curl_timeout' => Config::$a ['curl'] ['timeout'],
+				'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
+		) ) );
+		$code = $tmhOAuth->user_request ( array (
+				'url' => $tmhOAuth->url ( '1.1/statuses/user_timeline.json' ),
+				'params' => array (
+						'screen_name' => Config::$a ['twitter'] ['user'],
+						'count' => 3,
+						'trim_user' => true 
+				) 
 		) );
-		$result = $consumer->execute ( $query );
+		if ($code != 200) {
+			$log->error ( sprintf ( 'Twitter feed request failed %s', $code ) );
+			return;
+		}
+		$result = json_decode ( $tmhOAuth->response ['response'], true );
 		$tweets = array ();
 		foreach ( $result as $tweet ) {
 			$html = Tpl::out ( $tweet ['text'] );

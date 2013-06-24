@@ -28,14 +28,13 @@ class ChallengeService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT 
-				users.displayName,
+				users.username,
 				users.country,
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				teams.teamId,
 				teams.credits,
 				teams.scoreValue,
 				teams.transfersRemaining,
-				teams.teamActive,
 				teams.createdDate,
 				( 
 					SELECT COALESCE(SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',:maxChampions))
@@ -44,10 +43,10 @@ class ChallengeService extends Service {
 				) AS `champions` 
 			FROM dfl_teams AS `teams`
 			LEFT JOIN dfl_challengers AS `challengers` ON (challengers.challengeTeamId = teams.teamId)
-			INNER JOIN dfl_users AS `users` ON (users.userId = challengers.challengeTeamId)
+			INNER JOIN dfl_users AS `users` ON (users.userId = challengers.challengeTeamId AND users.userStatus = \'Active\')
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = challengers.challengeTeamId)  
-			WHERE ((challengers.ownerTeamId = :teamId AND challengers.status = \'ACCEPTED\') OR teams.teamId = :teamId) AND teams.teamActive = 1
+			WHERE ((challengers.ownerTeamId = :teamId AND challengers.status = \'ACCEPTED\') OR teams.teamId = :teamId)
 			GROUP BY teams.teamId
 			ORDER BY teams.scoreValue DESC, ranks.teamRank ASC
 			LIMIT :offset,:limit
@@ -64,7 +63,7 @@ class ChallengeService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT 
-				users.displayName,
+				users.username,
 				users.country,
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				teams.*, 
@@ -75,7 +74,7 @@ class ChallengeService extends Service {
 				) AS `champions` 
 			FROM dfl_challengers AS `challengers`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.ownerTeamId)
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\')
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			WHERE challengers.challengeTeamId = :teamId AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC
@@ -93,7 +92,7 @@ class ChallengeService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT 
-				users.displayName,
+				users.username,
 				users.country,
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				teams.*, 
@@ -104,7 +103,7 @@ class ChallengeService extends Service {
 				) AS `champions` 
 			FROM dfl_challengers AS `challengers`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = challengers.challengeTeamId)
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\')
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			WHERE challengers.ownerTeamId = :teamId AND challengers.status = \'SENT\'
 			ORDER BY challengers.createdDate DESC

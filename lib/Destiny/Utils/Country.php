@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Utils;
 
 use Destiny\Application;
@@ -36,7 +35,7 @@ abstract class Country {
 			$cacheDriver = Application::instance ()->getCacheDriver ();
 			$countries = $cacheDriver->fetch ( 'geodata' );
 			if (empty ( $countries )) {
-				$countries = json_decode ( file_get_contents ( Config::$a ['geodata'] ), true );
+				$countries = json_decode ( file_get_contents ( Config::$a ['geodata'] ['json'] ), true );
 				$cacheDriver->save ( 'geodata', $countries );
 			}
 			if (is_array ( $countries )) {

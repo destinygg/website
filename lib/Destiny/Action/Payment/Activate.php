@@ -210,9 +210,9 @@ class Activate {
 	 */
 	protected function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscription) {
 		$billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
-		
+
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
-		$RPProfileDetails->SubscriberName = Session::get ( 'displayName' ); // This should be passed in
+		$RPProfileDetails->SubscriberName = Session::getAuthCreds()->getUsername(); // This should be passed in
 		$RPProfileDetails->BillingStartDate = $billingStartDate->format ( \DateTime::ATOM );
 		$RPProfileDetails->ProfileReference = $paymentProfile ['userId'] . '-' . $paymentProfile ['orderId'];
 		

@@ -3,7 +3,7 @@
 namespace Destiny\Service;
 
 use Destiny\Service;
-use Destiny\HttpApiConsumer;
+use Destiny\CurlBrowser;
 use Destiny\Utils\Date;
 use Destiny\Utils\String;
 use Destiny\Config;
@@ -11,6 +11,12 @@ use Destiny\AppException;
 use Destiny\MimeType;
 
 class CommonApiService extends Service {
+
+	/**
+	 * Singleton
+	 *
+	 * @return CommonApiService
+	 */
 	protected static $instance = null;
 
 	/**
@@ -26,10 +32,10 @@ class CommonApiService extends Service {
 	 * Get the most recent blog posts
 	 *
 	 * @param array $options
-	 * @return \Destiny\HttpApiConsumer
+	 * @return \Destiny\CurlBrowser
 	 */
 	public function getBlogPosts(array $options = array()) {
-		return new HttpApiConsumer ( array_merge ( array (
+		return new CurlBrowser ( array_merge ( array (
 				'timeout' => 25,
 				'url' => new String ( 'http://www.destiny.gg/n/?feed=json&limit={limit}', array (
 						'limit' => 3 
@@ -51,7 +57,7 @@ class CommonApiService extends Service {
 	 * @return \Destiny\ApiConsumer
 	 */
 	public function getLastFMTracks(array $options = array()) {
-		return new HttpApiConsumer ( array_merge ( array (
+		return new CurlBrowser ( array_merge ( array (
 				'url' => new String ( 'http://ws.audioscrobbler.com/2.0/?api_key={apikey}&user={user}&method=user.getrecenttracks&limit=3&format=json', Config::$a ['lastfm'] ),
 				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
@@ -62,7 +68,7 @@ class CommonApiService extends Service {
 						// Timezone DST = -1
 						if (! isset ( $track ['@attr'] ) || $track ['@attr'] ['nowplaying'] != true) {
 							if (! empty ( $track ['date'] )) {
-								$track ['date'] ['uts'] = $track ['date'] ['uts'] + (Config::$a ['time'] ['DSTOffset'] * 60);
+								$track ['date'] ['uts'] = $track ['date'] ['uts'];
 								$json ['recenttracks'] ['track'] [$i] ['date'] ['uts]'] = $track ['date'] ['uts'];
 								$json ['recenttracks'] ['track'] [$i] ['date_str'] = Date::getDateTime ( $track ['date'] ['uts'] )->format ( Date::FORMAT );
 							}
@@ -81,13 +87,13 @@ class CommonApiService extends Service {
 	 * @param array $options
 	 * @param array $params
 	 * @throws AppException
-	 * @return \Destiny\HttpApiConsumer
+	 * @return \Destiny\CurlBrowser
 	 */
 	public function getYoutubePlaylist(array $options = array(), array $params = array()) {
 		// Get the channel ID's from a specific person
 		// GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=StevenBonnell&key={YOUR_API_KEY}
 		$params ['limit'] = (isset ( $params ['limit'] )) ? intval ( $params ['limit'] ) : 4;
-		return new HttpApiConsumer ( array_merge ( array (
+		return new CurlBrowser ( array_merge ( array (
 				'url' => new String ( 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlistId}&key={apikey}&maxResults={limit}', array (
 						'playlistId' => Config::$a ['youtube'] ['playlistId'],
 						'apikey' => Config::$a ['youtube'] ['apikey'],

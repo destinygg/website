@@ -33,17 +33,6 @@ class Leaderboards {
 		}
 		$cacheDriver->save ( 'topsummoners', $summoners );
 		
-		// Recent games
-		$gameService = GameService::instance ();
-		$games = $gameService->getRecentGames ( 3 );
-		foreach ( $games as $i => $game ) {
-			$games [$i] ['champions'] = $gameService->getGameChampions ( $game ['gameId'] );
-			for($x = 0; $x < count ( $games [$i] ['champions'] ); $x ++) {
-				$games [$i] ['champions'] [$x] ['summonerName'] = String::strictUTF8 ( $games [$i] ['champions'] [$x] ['summonerName'] );
-			}
-		}
-		$cacheDriver->save ( 'recentgames', $games );
-		
 		// Recent game leaderboard
 		$champService = ChampionService::instance ();
 		$leaders = LeaderboardService::instance ()->getRecentGameLeaderboard ( 10 );
@@ -61,7 +50,7 @@ class Leaderboards {
 		$cacheDriver->save ( 'teamleaderboard', $teams );
 		
 		// Top team champion scores
-		$topScorers = LeaderboardService::instance ()->getTopTeamChampionScores ( 5 );
+		$topScorers = LeaderboardService::instance ()->getTopTeamChampionScores ( 10 );
 		$cacheDriver->save ( 'topteamchampionscores', $topScorers );
 		
 		$log->info ( 'Reset leaderboards' );

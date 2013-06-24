@@ -11,7 +11,7 @@ use Destiny\AppException;
 class Cancel {
 
 	public function execute(array $params) {
-		if (! Session::hasRole ( 'admin' )) {
+		if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
 			throw new AppException ( 'Must be an admin' );
 		}
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
@@ -24,7 +24,7 @@ class Cancel {
 			}
 			SubscriptionsService::instance ()->updateSubscriptionState ( $subscription ['subscriptionId'], 'Cancelled' );
 		}
-		Http::header ( Http::HEADER_LOCATION, '/profile' );
+		Http::header ( Http::HEADER_LOCATION, '/profile/subscription' );
 		die ();
 	}
 

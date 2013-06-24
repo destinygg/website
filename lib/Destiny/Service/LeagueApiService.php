@@ -5,7 +5,7 @@ namespace Destiny\Service;
 use Destiny\Service;
 use Destiny\Config;
 use Destiny\MimeType;
-use Destiny\HttpApiConsumer;
+use Destiny\CurlBrowser;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
 use Destiny\Utils\Lol;
@@ -13,6 +13,12 @@ use Destiny\Utils\Http;
 use Destiny\AppException;
 
 class LeagueApiService extends Service {
+	
+	/**
+	 * Singleton
+	 *
+	 * var LeagueApiService
+	 */
 	protected static $instance = null;
 
 	/**
@@ -25,7 +31,7 @@ class LeagueApiService extends Service {
 	}
 
 	public function getStatus(array $options = array()) {
-		return new HttpApiConsumer ( array_merge ( array (
+		return new CurlBrowser ( array_merge ( array (
 				'url' => Config::$a ['lolapi'] ['url'],
 				'contentType' => MimeType::JSON,
 				'onfetch' => function ($json) {
@@ -38,7 +44,7 @@ class LeagueApiService extends Service {
 	}
 
 	public function getLeague(array $summoner) {
-		$playerLeague = new HttpApiConsumer ( array (
+		$playerLeague = new CurlBrowser ( array (
 				'url' => new String ( Config::$a ['lolapi'] ['url'] . '{summoner.region}/{summoner.name}/league?key={apikey}', array (
 						'summoner.region' => $summoner ['region'],
 						'summoner.name' => utf8_decode ( $summoner ['name'] ),
@@ -58,7 +64,7 @@ class LeagueApiService extends Service {
 	}
 
 	public function getRecentGames(array $summoner, $limit = 10) {
-		$games = new HttpApiConsumer ( array (
+		$games = new CurlBrowser ( array (
 				'url' => new String ( Config::$a ['lolapi'] ['url'] . '{summoner.region}/{summoner.name}/games?key={apikey}&limit={limit}', array (
 						'summoner.region' => $summoner ['region'],
 						'summoner.name' => utf8_decode ( $summoner ['name'] ),
@@ -71,7 +77,7 @@ class LeagueApiService extends Service {
 	}
 
 	public function getInGameProgress(array $summoner) {
-		$progress = new HttpApiConsumer ( array (
+		$progress = new CurlBrowser ( array (
 				'url' => new String ( Config::$a ['lolapi'] ['url'] . '{summoner.region}/{summoner.name}/ingame?key={apikey}', array (
 						'summoner.region' => $summoner ['region'],
 						'summoner.name' => utf8_decode ( $summoner ['internalName'] ),
@@ -83,7 +89,7 @@ class LeagueApiService extends Service {
 	}
 
 	public function getSummoner(array $summoner) {
-		$playerSummoner = new HttpApiConsumer ( array (
+		$playerSummoner = new CurlBrowser ( array (
 				'url' => new String ( Config::$a ['lolapi'] ['url'] . '{summoner.region}/{summoner.name}?key={apikey}', array (
 						'summoner.region' => $summoner ['region'],
 						'summoner.name' => utf8_decode ( $summoner ['name'] ),

@@ -41,4 +41,11 @@ class Tpl {
 		return $currencyCode . ' ' . $amount;
 	}
 
+	public static function mask($str, $padStr = '*', $show = 6, $pad = 10) {
+		if (strlen ( $str ) >= $show) {
+			$str = substr ( $str, 0, $show );
+		}
+		return self::out ( str_pad ( $str, $pad, $padStr ) );
+	}
+
 }

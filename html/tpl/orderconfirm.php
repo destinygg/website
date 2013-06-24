@@ -13,11 +13,11 @@ use Destiny\Utils\Tpl;
 <link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
-<?include'seg/google.tracker.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
-<body id="order-confirm">
+<body id="orderconfirm">
 
-	<?include'seg/top.php'?>
+	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
 		<h1 class="title">
@@ -69,7 +69,7 @@ use Destiny\Utils\Tpl;
 		</div>
 	</section>
 	
-	<?include'seg/foot.php'?>
+	<?include'./tpl/seg/foot.php'?>
 	
 	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>

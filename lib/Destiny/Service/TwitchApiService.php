@@ -6,7 +6,7 @@ use Destiny\Service;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\MimeType;
-use Destiny\HttpApiConsumer;
+use Destiny\CurlBrowser;
 use Destiny\Utils\String;
 use Destiny\Utils\Date;
 use Destiny\Service\TwitchApiService;
@@ -48,7 +48,7 @@ class TwitchApiService extends Service {
 	 * @return ApiConsumer
 	 */
 	public function getPastBroadcasts(array $options = array()) {
-		return new HttpApiConsumer ( array_merge ( array (
+		return new CurlBrowser ( array_merge ( array (
 				'timeout' => 25,
 				'url' => new String ( 'https://api.twitch.tv/kraken/channels/{user}/videos?broadcasts=true&limit={limit}', array (
 						'user' => Config::$a ['twitch'] ['user'],
@@ -63,7 +63,7 @@ class TwitchApiService extends Service {
 	 * @return ApiConsumer
 	 */
 	public function getStreamInfo(array $options = array()) {
-		return new HttpApiConsumer ( array_merge ( array (
+		return new CurlBrowser ( array_merge ( array (
 				'url' => new String ( 'https://api.twitch.tv/kraken/streams/{user}/', array (
 						'user' => Config::$a ['twitch'] ['user'] 
 				) ),
@@ -94,7 +94,7 @@ class TwitchApiService extends Service {
 	 * @return ApiConsumer
 	 */
 	public function getChannel(array $options = array()) {
-		return new HttpApiConsumer ( array_merge ( array (
+		return new CurlBrowser ( array_merge ( array (
 				'url' => new String ( 'https://api.twitch.tv/kraken/channels/{user}', array (
 						'user' => Config::$a ['twitch'] ['user'] 
 				) ),
@@ -113,16 +113,16 @@ class TwitchApiService extends Service {
 	public function getChannelSubscriptions($channel, $limit, $offset) {
 		$token = $this->getBroadcasterToken ();
 		if (! empty ( $token )) {
-			$curl = curl_init ();
-			curl_setopt ( $curl, CURLOPT_URL, 'https://api.twitch.tv/kraken/channels/' . urlencode ( $channel ) . '/subscriptions?limit=' . intval ( $limit ) . '&offset=' . intval ( $offset ) . '&oauth_token=' . $token );
-			curl_setopt ( $curl, CURLOPT_SSL_VERIFYPEER, false );
-			curl_setopt ( $curl, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt ( $curl, CURLOPT_TIMEOUT, 25 );
-			curl_setopt ( $curl, CURLOPT_CONNECTTIMEOUT, 10 );
-			$data = curl_exec ( $curl );
-			$info = curl_getinfo ( $curl );
-			$data = json_decode ( $data, true );
-			return $data;
+			$curlBrowser = new CurlBrowser ( array (
+					'url' => new String ( 'https://api.twitch.tv/kraken/channels/{channel}/subscriptions?limit={limit}&offset={offset}&oauth_token={oauth_token}', array (
+							'channel' => urlencode ( $channel ),
+							'limit' => intval ( $limit ),
+							'offset' => intval ( $offset ),
+							'oauth_token' => urlencode ( $token ) 
+					) ),
+					'contentType' => MimeType::JSON 
+			) );
+			return $curlBrowser->getResponse ();
 		}
 		return null;
 	}

@@ -8,6 +8,7 @@ use Destiny\Utils\Options;
 use Destiny\Utils\String\Params;
 use Psr\Log\LoggerInterface;
 use Doctrine\Common\Cache\CacheProvider;
+use \PHPMailer;
 
 class Application extends Service {
 	
@@ -61,12 +62,12 @@ class Application extends Service {
 	protected $connection;
 
 	/**
-	 * Return the application
+	 * Since this has to be created instance, only returns never creates
 	 *
 	 * @return Application
 	 */
 	public static function instance() {
-		return parent::instance ();
+		return static::$instance;
 	}
 
 	/**
@@ -75,6 +76,7 @@ class Application extends Service {
 	 * @param array $args
 	 */
 	public function __construct(array $args = null) {
+		self::$instance = $this;
 		if (! isset ( $args ['uri'] ) || empty ( $args ['uri'] )) {
 			$args ['uri'] = (isset ( $_SERVER ['REQUEST_URI'] )) ? $_SERVER ['REQUEST_URI'] : '';
 		}
@@ -108,19 +110,16 @@ class Application extends Service {
 	 * Bind to a pattern, execute if found, or include a template if $fn is a string
 	 *
 	 * @param string $pattern
-	 * @param callable|string $fn
+	 * @param callable $fn
 	 */
 	public function bind($pattern, $fn) {
-		if (preg_match ( $pattern, $this->path ) > 0) {
+		$pathParams = array ();
+		if (preg_match ( $pattern, $this->path, $pathParams ) > 0) {
 			try {
-				if (is_callable ( $fn )) {
-					$this->logger->debug ( 'Bind(Callable): ' . $this->path );
-					$fn ( $this, $this->params );
-				}
-				if (is_string ( $fn )) {
-					$this->logger->debug ( 'Bind(Template): ' . $this->path );
-					$this->template ( $fn, new ViewModel () );
-				}
+				array_shift ( $pathParams );
+				$params = array_merge ( $this->params, $pathParams );
+				$this->logger->debug ( 'Bind(Callable): ' . $this->path );
+				$fn ( $this, $params );
 			} catch ( AppException $e ) {
 				$this->logger->error ( $e->getMessage () );
 				$this->error ( Http::STATUS_ERROR, $e );
@@ -143,33 +142,48 @@ class Application extends Service {
 		if (empty ( $pathinfo ['filename'] ) && ! empty ( $default )) {
 			$pathinfo ['filename'] = $default;
 		}
-		$actionPath = $this->prepareActionPath ( $namespace, $pathinfo );
-		if (! class_exists ( $actionPath, true )) {
-			$this->logger->debug ( sprintf ( 'BindNamespace: Class not found %s', $actionPath ) );
+		$className = $this->prepareActionPath ( $namespace, $pathinfo );
+		if (! class_exists ( $className, true )) {
+			$this->logger->debug ( sprintf ( 'BindNamespace: Class not found %s', $className ) );
 			$this->error ( 404 );
 		}
+		$this->executeAction ( new $className (), $this->params );
+	}
+
+	/**
+	 * Execute an action
+	 *
+	 * @param obj $className
+	 * @param array $params
+	 * @throws AppException
+	 */
+	public function executeAction($class, array $params) {
 		try {
-			$this->logger->debug ( 'Action: ' . $actionPath );
-			$action = new $actionPath ();
-			ob_clean ();
-			ob_start ();
+			$this->logger->debug ( 'Action: ' . get_class ( $class ) );
+			$action = new $class ();
 			$model = new ViewModel ();
-			$response = $action->execute ( $this->params, $model );
+			
+			// Tries to run "executeGET | executePOST | execute" on action
+			if (method_exists ( $action, 'execute' . $_SERVER ['REQUEST_METHOD'] )) {
+				$response = $action->{'execute' . $_SERVER ['REQUEST_METHOD']} ( $params, $model );
+			} elseif (method_exists ( $action, 'execute' )) {
+				$response = $action->execute ( $params, $model );
+			} else {
+				throw new AppException ( 'Action method not found' );
+			}
 			
 			// if a action returns string, try to load it as a template
 			if (is_string ( $response )) {
 				$tpl = './tpl/' . $response . '.php';
-				if (is_file ( $tpl )) {
-					$this->template ( $tpl, $model );
+				if (! is_file ( $tpl )) {
+					throw new AppException ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
 				}
+				$this->template ( $tpl, $model );
 			}
 			
 			// Can't send an empty reponse
 			throw new AppException ( 'Invalid action response' );
-			
-			// Else exit
-			ob_flush ();
-			exit ();
+			//
 		} catch ( AppException $e ) {
 			$this->logger->error ( $e->getMessage () );
 			$this->error ( Http::STATUS_ERROR, $e );
@@ -201,26 +215,29 @@ class Application extends Service {
 	 * @param string $filename
 	 */
 	public function template($filename, ViewModel $model) {
-		
-		// @todo this needs to be refactored
-		// Check if accept type is JSON
-		if (isset ( $_SERVER ['HTTP_ACCEPT'] )) {
-			$accept = new \HTTP_Accept ( $_SERVER ['HTTP_ACCEPT'] );
-			$acceptTypes = $accept->getTypes ();
-			if (! empty ( $acceptTypes ) && ! in_array ( MimeType::HTML, $acceptTypes )) {
-				if (in_array ( MimeType::JSON, $acceptTypes )) {
-					Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-					Http::sendString ( json_encode ( $model->getData () ) );
-				}
-			}
-		}
-		
 		$this->logger->debug ( 'Template: ' . $filename );
-		ob_clean ();
+		@ob_clean ();
 		ob_start ();
 		include $filename;
 		ob_flush ();
 		exit ();
+	}
+
+	/**
+	 * Parse and return a template
+	 *
+	 * @param string $filename
+	 * @param ViewModel $model
+	 * @return string
+	 */
+	public function templateContent($filename, ViewModel $model) {
+		$this->logger->debug ( 'Template: ' . $filename );
+		@ob_clean ();
+		ob_start ();
+		include $filename;
+		$content = ob_get_contents ();
+		ob_end_clean ();
+		return $content;
 	}
 
 	/**

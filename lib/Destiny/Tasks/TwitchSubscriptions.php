@@ -2,7 +2,7 @@
 
 namespace Destiny\Tasks;
 
-use Destiny\Service\UsersService;
+use Destiny\Service\UserService;
 use Destiny\Application;
 use Destiny\Config;
 use Destiny\Service\TwitchApiService;
@@ -20,7 +20,7 @@ class TwitchSubscriptions {
 		$increments = 50;
 		$conn = Application::instance ()->getConnection ();
 		$subService = SubscriptionsService::instance ();
-		$userService = UsersService::instance ();
+		$userService = UserService::instance ();
 		while ( $i < $total ) {
 			set_time_limit ( 20 );
 			$subscriptions = TwitchApiService::instance ()->getChannelSubscriptions ( Config::$a ['twitch'] ['broadcaster'] ['user'], $increments, $i );
@@ -40,7 +40,7 @@ class TwitchSubscriptions {
 			foreach ( $subscriptions ['subscriptions'] as $sub ) {
 				
 				// check if this a user
-				$user = $userService->getUserByExternalId ( $sub ['user'] ['_id'] );
+				$user = $userService->getUserByAuthId ( $sub ['user'] ['_id'], 'twitch' );
 				if (empty ( $user )) {
 					$i ++;
 					continue;

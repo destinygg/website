@@ -9,9 +9,7 @@ use Destiny\Session;
 			<div class="toolgroup clearfix">
 				<div class="pull-left channel-stat game" style="display: none;"></div>
 				<div class="btn-group pull-right">
-					<?php if(Session::hasRole('user')): ?>
-					<a id="bigscreenmode" title="Big screen mode" class="btn btn-mini btn-link">Bigscreen mode!</a>
-					<?php endif; ?>
+					<a id="bigscreenmode" title="Big screen mode" class="btn btn-mini btn-link">[Bigscreen mode]</a>
 					<a id="popoutvideo" title="Pop-out video" class="btn btn-mini btn-link">Pop-out player</a>
 					<a id="popoutchat" title="Pop-out chat" class="btn btn-mini btn-link">Pop-out chat</a>
 				</div>

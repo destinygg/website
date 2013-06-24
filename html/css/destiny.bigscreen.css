@@ -101,7 +101,8 @@ font-size:12px;
 }
 body#bigscreen #header-band .nav-pills>li>a {
 color:#666;
-background-color:rgba(255,255,255,0.05);	
+background-color:rgba(255,255,255,0.05);
+margin-left:10px;
 }
 body#bigscreen #header-band .nav-pills>.active>a,
 body#bigscreen #header-band .nav-pills>.active>a:hover,

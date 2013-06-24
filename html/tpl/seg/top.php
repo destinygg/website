@@ -10,23 +10,19 @@
 					<li><a title="youtube.com" href="http://www.youtube.com/user/StevenBonnell">Youtube</a></li>
 					<li><a title="reddit.com" href="http://www.reddit.com/r/Destiny/">Reddit</a></li>
 					<li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
-					<?if(!Session::hasRole('subscriber')):?>
+					<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li><a href="http://www.twitch.tv/destiny/subscribe" rel="league">Subscribe</a></li>
+					<li><a href="http://www.twitch.tv/destiny/subscribe" rel="subscribe">Subscribe</a></li>
 					<?php endif; ?>
 				</ul>
-				<?if(!Session::hasRole('user')):?>
-				<form class="navbar-form pull-right">
-					<button title="Login with your twitch account" type="button" rel="twitchlogin" class="btn btn-inverse" data-request-perms="<?=Config::$a['twitch']['request_perms']?>" data-redirect-uri="<?=urlencode(Config::$a['twitch']['redirect_uri'])?>" data-client-id="<?=Config::$a['twitch']['client_id']?>"><i class="icon-check icon-white"></i> Login</button>
-				</form>
+				<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
+				<ul class="nav pull-right">
+					<li><a href="/login" rel="login">Login - Register</a></li>
+				</ul>
 				<?endif;?>
 				<ul class="nav pull-right">
 					<li><a href="/league" rel="league">Fantasy League</a></li>
-					<li class="divider-vertical"></li>
-					<?if(Session::hasRole('user')):?>
-					<?if(Session::hasRole('admin')):?>
-					<li><a href="/admin" rel="admin">Admin</i></a></li>
-					<?endif;?>
+					<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
 					<li><a href="/profile" rel="profile">Profile</span></a></li>
 					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
 					<?endif;?>

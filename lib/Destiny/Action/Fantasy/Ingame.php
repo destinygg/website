@@ -32,6 +32,7 @@ class Ingame {
 				$ingame = null;
 			}
 		}
+		
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $ingame ) );
 	}

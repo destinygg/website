@@ -14,11 +14,11 @@ use Destiny\Utils\Date;
 <link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
-<?include'seg/google.tracker.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
-<body id="unsubscribe">
+<body id="paymenterror">
 
-	<?include'seg/top.php'?>
+	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
 		<h1 class="title">
@@ -30,19 +30,19 @@ use Destiny\Utils\Date;
 					<p>An error has occurred during the activation process.
 					<br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. </p>
 					<div class="alert alert-error">
-						<h4>Error!</h4>
+						<strong>Error!</strong>
 						<?=Tpl::out($model->error->getMessage())?>
 					</div>
 				</div>
 				<div class="form-actions block-foot">
 					<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-					<a href="/profile" class="btn">Back to profile</a>
+					<a href="/profile/subscription" class="btn">Back to profile</a>
 				</div>
 			</div>
 		</div>
 	</section>
 	
-	<?include'seg/foot.php'?>
+	<?include'./tpl/seg/foot.php'?>
 	
 	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>

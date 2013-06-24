@@ -15,15 +15,15 @@ use Destiny\Utils\Date;
 <link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
-<?include'seg/google.tracker.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="payment">
 
-	<?include'seg/top.php'?>
+	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
 		<h1 class="title">
-			<span>Payment</span> <small><?=Tpl::out(substr($model->payment['transactionId'], 0,8))?></small>
+			<span>Payment</span> <small><?=Tpl::mask($model->payment['transactionId'])?></small>
 		</h1>
 		<div class="content content-dark clearfix">
 			<div class="control-group clearfix">
@@ -33,11 +33,11 @@ use Destiny\Utils\Date;
 					<dt>Amount:</dt>
 					<dd><?=Tpl::currency($model->payment['currency'], $model->payment['amount'])?></dd>
 					<dt>Reference:</dt>
-					<dd><?=Tpl::out($model->payment['transactionId'])?></dd>
+					<dd><?=Tpl::mask($model->payment['transactionId'])?></dd>
 					<dt>Type:</dt>
 					<dd><?=Tpl::out($model->payment['transactionType'])?></dd>
 					<dt>Payer:</dt>
-					<dd><?=Tpl::out($model->payment['payerId'])?></dd>
+					<dd><?=Tpl::mask($model->payment['payerId'])?></dd>
 					<dt>Payment:</dt>
 					<dd><?=Tpl::out($model->payment['paymentType'])?></dd>
 					<dt>Payed on:</dt>
@@ -48,17 +48,17 @@ use Destiny\Utils\Date;
 					<dt>Order:</dt>
 					<dd>#<?=Tpl::out($model->order['orderId'])?></dd>
 					<dt>Recurring:</dt>
-					<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'], 'none')?></dd>
+					<dd><?=Tpl::mask($model->paymentProfile['paymentProfileId'])?></dd>
 				</dl>
 			</div>
 			<div class="form-actions block-foot">
 				<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
-				<a class="btn" href="/profile">Back to profile</a>
+				<a class="btn" href="/profile/subscription">Back to profile</a>
 			</div>
 		</div>
 	</section>
 	
-	<?include'seg/foot.php'?>
+	<?include'./tpl/seg/foot.php'?>
 	
 	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>

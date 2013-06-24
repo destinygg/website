@@ -1,6 +1,5 @@
 <?
 namespace Destiny;
-use Destiny\Service\Settings;
 use Destiny\Utils\Http;
 use Destiny\Utils\Date;
 use Destiny\Utils\Tpl;
@@ -27,7 +26,7 @@ use Destiny\Utils\Tpl;
 <link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
-<?include'seg/google.tracker.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="bigscreen">
 	<div class="page-wrap">
@@ -37,12 +36,15 @@ use Destiny\Utils\Tpl;
 				<header class="hero-unit" id="overview">
 					<h1><?=Config::$a['meta']['title']?></h1>
 					<div id="destiny-illustration"></div>
+					<div style="top:25px; right:0; margin-right:312px; position: absolute;">
+						<ul class="nav nav-pills">
+							<?php if(!Session::hasRole(\Destiny\UserRole::USER)): ?>
+							<li><a href="/login"><i class="icon-heart icon-white subtle"></i> Register</a></li>
+							<?php endif; ?>
+							<li><a href="/"><i class="icon-home icon-white subtle"></i> Home</a></li>
+						</ul>
+					</div>
 				</header>
-				<div style="top:25px; right:0; margin-right:315px; position: absolute;">
-					<ul class="nav nav-pills">
-						<li><a href="/"><i class="icon-home icon-white subtle"></i> Home</a></li>
-					</ul>
-				</div>
 			</div>
 		</section>
 		
@@ -85,7 +87,7 @@ use Destiny\Utils\Tpl;
 	
 	</div>
 	
-	<?include'seg/foot.php'?>
+	<?include'./tpl/seg/foot.php'?>
 	
 	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>

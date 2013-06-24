@@ -10,7 +10,7 @@
 	
 	<target name="clean" depends="loadproperties">
 		<delete includeemptydirs="true" quiet="true">
-			<fileset dir="${build.base}" includes="**/*" excludes="**/tmp/*,**/log/*" />
+			<fileset dir="${build.base}" includes="**/*" excludes="**/tmp/**,**/log/**" />
 		</delete>
 	</target>
 	
@@ -23,8 +23,24 @@
 		<antcall target="concatjs" />
 		<antcall target="compresscss" />
 		<antcall target="compressjs" />
-		<!--
-		-->
+	</target>
+	
+	<target name="copysource">
+		<copy todir="${build.base}/lib">
+			<fileset dir="lib"/>
+		</copy>
+		<copy todir="${build.base}/vendor">
+			<fileset dir="vendor" excludes="/nervo/,**/.git/,**/tests/,**/samples/,**/examples/,**/doc/,**/bin/,**/.travis.yml,**/VERSION**,**/CHANGELOG.**,**/README.**,**/FAQ.**,**/CONTRIBUTING.**,**/LICENSE**,**/composer.json"/>
+		</copy>
+		<copy todir="${build.base}/html/">
+			<fileset dir="html"/>
+		</copy>
+		<copy todir="${build.base}/cron">
+			<fileset dir="cron"/>
+		</copy>
+		<copy todir="${build.base}/config">
+			<fileset dir="config"/>
+		</copy>
 	</target>
 	
 	<target name="compress">
@@ -101,24 +117,6 @@
 		<antcall target="compress">
 			<param name="file" value="${build.base}/html/js/destiny.admin.${version}.js" />
 		</antcall>
-	</target>
-	
-	<target name="copysource">
-		<copy todir="${build.base}/lib">
-			<fileset dir="lib"/>
-		</copy>
-		<copy todir="${build.base}/vendor">
-			<fileset dir="vendor" excludes="/nervo/,**/.git/,**/tests/,**/samples/,**/examples/,**/doc/,**/bin/,**/.travis.yml,**/VERSION**,**/CHANGELOG.**,**/README.**,**/FAQ.**,**/CONTRIBUTING.**,**/LICENSE**,**/composer.json"/>
-		</copy>
-		<copy todir="${build.base}/html/">
-			<fileset dir="html"/>
-		</copy>
-		<copy todir="${build.base}/cron">
-			<fileset dir="cron"/>
-		</copy>
-		<copy todir="${build.base}/config">
-			<fileset dir="config"/>
-		</copy>
 	</target>
 
 </project>

@@ -13,11 +13,11 @@ use Destiny\Utils\Tpl;
 <link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
-<?include'seg/google.tracker.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="subscribe">
 
-	<?include'seg/top.php'?>
+	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
 		<h1 class="title">
@@ -48,46 +48,96 @@ use Destiny\Utils\Tpl;
 						
 						<?php if(empty($model->subscription)): ?>
 						<p>
-							Choose a subscription from the selection below. <br />Payments
-							are processed and secured by PayPal.
+							Choose a subscription from the selection below. 
+							<br />Payments are processed and secured by PayPal.
 						</p>
-						<div id="subscriptions">
-							<?php $sub = $model->subscriptions['1-MONTH-SUB']?>
-							<div class="subscription active">
-								<label class="radio">
-									<input type="radio" name="subscription" value="<?=$sub['id']?>" checked="checked">
-									<strong class="sub-amount">$<?=$sub['amount']?></strong>
-									<span class="sub-label"><?=$sub['label']?></span>
-								</label>
-								<div class="payment-options">
+						
+						<br>
+						<div id="subscriptions" class="clearfix">
+							<h4>Teir I Subscriptions</h4>
+							<hr size="1" style="margin:10px 0;">
+							<div id="tier-one" class="clearfix">
+								<?php $sub = $model->subscriptions['1-MONTH-SUB']?>
+								<div class="subscription active pull-left" style="width:300px;">
 									<label class="radio">
-										<input type="radio" name="renew" value="1" checked>
-										Renew each month
-									</label> 
-									<label class="radio">
-										<input type="radio" name="renew" value="0">
-										Once-off payment
+										<input type="radio" name="subscription" value="<?=$sub['id']?>" checked="checked">
+										<strong class="sub-amount">$<?=$sub['amount']?></strong>
+										<span class="sub-label"><?=$sub['label']?></span>
 									</label>
+									<div class="payment-options">
+										<label class="radio">
+											<input type="radio" name="renew" value="1" checked>
+											Renew each month
+										</label> 
+										<label class="radio">
+											<input type="radio" name="renew" value="0">
+											Once-off payment for 1 month
+										</label>
+									</div>
+								</div>
+								<?php $sub = $model->subscriptions['3-MONTH-SUB']?>
+								<div class="subscription pull-left">
+									<label class="radio">
+										<input type="radio" name="subscription" value="<?=$sub['id']?>">
+										<strong class="sub-amount">$<?=$sub['amount']?></strong>
+										<span class="sub-label"><?=$sub['label']?></span>
+									</label>
+									<div class="payment-options">
+										<label class="radio">
+											<input type="radio" name="renew" value="1">
+											Renew every 3 months
+										</label>
+										<label class="radio">
+											<input type="radio" name="renew" value="0">
+											Once-off payment for 3 months
+										</label>
+									</div>
 								</div>
 							</div>
-							<?php $sub = $model->subscriptions['3-MONTH-SUB']?>
-							<div class="subscription">
-								<label class="radio">
-									<input type="radio" name="subscription" value="<?=$sub['id']?>">
-									<strong class="sub-amount">$<?=$sub['amount']?></strong>
-									<span class="sub-label"><?=$sub['label']?></span>
-								</label>
-								<div class="payment-options">
+							
+							<br>
+							<h4>Teir II Subscriptions</h4>
+							<hr size="1" style="margin:10px 0;">
+							<div id="tier-one" class="clearfix">
+								
+								<?php $sub = $model->subscriptions['1-MONTH-SUB2']?>
+								<div class="subscription pull-left" style="width:300px;">
 									<label class="radio">
-										<input type="radio" name="renew" value="1">
-										Renew every 3 months
+										<input type="radio" name="subscription" value="<?=$sub['id']?>">
+										<strong class="sub-amount">$<?=$sub['amount']?></strong>
+										<span class="sub-label"><?=$sub['label']?></span>
 									</label>
+									<div class="payment-options">
+										<label class="radio">
+											<input type="radio" name="renew" value="1">
+											Renew each months
+										</label>
+										<label class="radio">
+											<input type="radio" name="renew" value="0">
+											Once-off payment for 1 month
+										</label>
+									</div>
+								</div>
+								<?php $sub = $model->subscriptions['3-MONTH-SUB2']?>
+								<div class="subscription pull-left">
 									<label class="radio">
-										<input type="radio" name="renew" value="0">
-										Once-off payment
+										<input type="radio" name="subscription" value="<?=$sub['id']?>">
+										<strong class="sub-amount">$<?=$sub['amount']?></strong>
+										<span class="sub-label"><?=$sub['label']?></span>
 									</label>
+									<div class="payment-options">
+										<label class="radio">
+											<input type="radio" name="renew" value="1">
+											Renew every 3 months
+										</label>
+										<label class="radio">
+											<input type="radio" name="renew" value="0">
+											Once-off payment for 3 months
+										</label>
+									</div>
 								</div>
 							</div>
+							
 						</div>
 						<?php endif; ?>
 						
@@ -96,9 +146,9 @@ use Destiny\Utils\Tpl;
 						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
 						<?php if(empty($model->subscription)): ?>
 						<button type="submit" class="btn btn-primary"><i class="icon-check icon-white"></i> Confirm selection</button>
-						<a href="/profile" class="btn">Back to profile</a>
+						<a href="/profile/subscription" class="btn">Back to profile</a>
 						<?php else: ?>
-						<a href="/profile" class="btn">Back to profile</a>
+						<a href="/profile/subscription" class="btn">Back to profile</a>
 						<?php endif; ?>
 					</div>
 				</form>
@@ -106,7 +156,7 @@ use Destiny\Utils\Tpl;
 		</div>
 	</section>
 	
-	<?include'seg/foot.php'?>
+	<?include'./tpl/seg/foot.php'?>
 	
 	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>

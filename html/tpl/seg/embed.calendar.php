@@ -29,6 +29,6 @@ use Destiny\Utils\Tpl;
 
 <section class="container">
 	<div id="scheduleCalendar" class="content content-embed clearfix">
-		<iframe data-src="<?="https://www.google.com/calendar/embed?src=". urlencode(Config::$a['google']['calendar']['id'])?>" style="width: 100%; height: 640px; border: 0;"></iframe>
+		<iframe data-src="<?="https://www.google.com/calendar/embed?src=". urlencode(Config::$a['calendar'])?>" style="width: 100%; height: 640px; border: 0;"></iframe>
 	</div>
 </section>

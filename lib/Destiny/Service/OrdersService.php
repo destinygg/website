@@ -7,6 +7,12 @@ use Destiny\Application;
 use Destiny\Utils\Date;
 
 class OrdersService extends Service {
+	
+	/**
+	 * Singleton
+	 * 
+	 * @var OrdersService
+	 */
 	protected static $instance = null;
 
 	/**
@@ -252,7 +258,7 @@ class OrdersService extends Service {
 	 * @param int $paymentProfileId
 	 * @param \DateTime $billingNextDate
 	 */
-	public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
+	public function updatePaymentProfileNextPayment($paymentProfileId,\DateTime $billingNextDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_orders_payment_profiles', array (
 				'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 

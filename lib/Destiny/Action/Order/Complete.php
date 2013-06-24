@@ -58,7 +58,7 @@ class Complete {
 				// Make sure the order is for this user
 				if (! empty ( $order ) && $order ['userId'] == Session::get ( 'userId' ) && strcasecmp ( $order ['state'], 'Completed' ) === 0) {
 					// @TODO this should be done better
-					Http::header ( Http::HEADER_LOCATION, '/profile' );
+					Http::header ( Http::HEADER_LOCATION, '/profile/subscription' );
 					die ();
 				}
 			}
@@ -211,7 +211,7 @@ class Complete {
 		// Add the subscriber role, this is just for UI
 		$authCreds = Session::getAuthCreds ();
 		if (! empty ( $authCreds )) {
-			$authCreds->addRoles ( 'subscriber' );
+			$authCreds->addRoles ( \Destiny\UserRole::SUBSCRIBER );
 			Session::updateAuthCreds ( $authCreds );
 		}
 		
@@ -246,7 +246,8 @@ class Complete {
 		$billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
 		
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
-		$RPProfileDetails->SubscriberName = Session::get ( 'displayName' ); // This should be passed in
+		
+		$RPProfileDetails->SubscriberName = Session::getAuthCreds ()->getUsername (); // This should be passed in
 		$RPProfileDetails->BillingStartDate = $billingStartDate->format ( \DateTime::ATOM );
 		$RPProfileDetails->ProfileReference = $paymentProfile ['userId'] . '-' . $paymentProfile ['orderId'];
 		

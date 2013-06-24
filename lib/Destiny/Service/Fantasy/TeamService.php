@@ -38,7 +38,6 @@ class TeamService extends Service {
 				'credits' => Config::$a ['fantasy'] ['team'] ['startCredit'],
 				'transfersRemaining' => Config::$a ['fantasy'] ['team'] ['startTransfers'],
 				'scoreValue' => 0,
-				'teamActive' => true,
 				'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
 				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		);
@@ -75,7 +74,7 @@ class TeamService extends Service {
 				users.username, 
 				ranks.teamRank 
 			FROM dfl_teams AS `teams` 
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
 			WHERE users.username = :username 
 			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
@@ -112,7 +111,7 @@ class TeamService extends Service {
 		$stmt = $conn->prepare ( '
 			SELECT teams.*, users.username, ranks.teamRank 
 			FROM dfl_teams AS `teams` 
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
 			WHERE teams.userId = :userId 
 			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 
@@ -161,10 +160,9 @@ class TeamService extends Service {
 				teams.*, 
 				users.userId, 
 				users.username, 
-				users.displayName, 
 				IF(subs.userId IS NULL,0,1) AS `subscriber` 
 			FROM dfl_teams AS `teams` 
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\') 
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId) 
 			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 end, ranks.teamRank ASC, users.username DESC 

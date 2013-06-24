@@ -5,6 +5,12 @@ namespace Destiny\Utils;
 use Destiny\Config;
 
 abstract class Lol {
+	
+	/**
+	 * The various game types
+	 *
+	 * @var array
+	 */
 	public static $gameTypes = array (
 			'NONE' => 'None',
 			'BOT' => 'Bot',
@@ -17,8 +23,39 @@ abstract class Lol {
 			'RANKED_TEAM_5x5' => 'Ranked Team 5v5',
 			'ARAM_UNRANKED_5x5' => 'ARAM Unranked 5v5' 
 	);
+	
+	/**
+	 * The blue team side
+	 *
+	 * @var int
+	 */
+	const TEAMSIDE_BLUE = 100;
+	
+	/**
+	 * Purple side id
+	 *
+	 * @var int
+	 */
+	const TEAMSIDE_PURPLE = 200;
 
 	/**
+	 * Team side name
+	 *
+	 * @param int $teamSideId
+	 * @return string $teamSideId
+	 */
+	public static function getTeamSideName($teamSideId) {
+		if ($teamSideId == self::TEAMSIDE_BLUE) {
+			return 'BLUE';
+		}
+		if ($teamSideId == self::TEAMSIDE_PURPLE) {
+			return 'PURPLE';
+		}
+		return $teamSideId;
+	}
+
+	/**
+	 * Rank to int
 	 *
 	 * @param string $rank
 	 * @return number
@@ -43,6 +80,7 @@ abstract class Lol {
 	}
 
 	/**
+	 *
 	 * @param string $id
 	 * @return array
 	 */
@@ -79,6 +117,23 @@ abstract class Lol {
 	 */
 	public static function getIcon($name) {
 		return Config::cdn () . '/img/lol/champions/' . strtolower ( preg_replace ( '/([^\d\w\-]+)/i', '', str_replace ( ' ', '-', $name ) ) ) . '.png';
+	}
+
+	/**
+	 * Find and return the champion pick
+	 * Because of the strange way lol servers give back the data
+	 *
+	 * @param array $game
+	 * @param array $summoner
+	 * @return array || NULL
+	 */
+	public static function getChampPick(array $game, array $summoner) {
+		foreach ( $game ['gameSummonerSelections'] as $selection ) {
+			if ($selection ['summonerId'] == $summoner ['summonerId']) {
+				return $selection;
+			}
+		}
+		return null;
 	}
 
 }

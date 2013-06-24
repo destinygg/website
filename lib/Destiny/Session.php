@@ -155,13 +155,15 @@ class SessionInstance {
 	 * @param mix $value
 	 */
 	public function set($name, $value = null) {
-		if ($value == null) {
+		if ($value === null) {
 			if (isset ( $_SESSION [$name] )) {
+				$value = $_SESSION [$name];
 				unset ( $_SESSION [$name] );
 			}
 		} else {
 			$_SESSION [$name] = $value;
 		}
+		return $value;
 	}
 
 }
@@ -242,11 +244,11 @@ class SessionCookieInterface {
 class SessionAuthenticationCredentials {
 	
 	/**
-	 * The authed creds email
+	 * The authentication provider used for this use
 	 *
 	 * @var string
 	 */
-	protected $displayName = '';
+	protected $authProvider = '';
 	
 	/**
 	 * The authed creds Id
@@ -261,6 +263,13 @@ class SessionAuthenticationCredentials {
 	 * @var string
 	 */
 	protected $username = '';
+	
+	/**
+	 * The users status
+	 *
+	 * @var string
+	 */
+	protected $userStatus = '';
 	
 	/**
 	 * The authed creds email
@@ -282,6 +291,13 @@ class SessionAuthenticationCredentials {
 	 * @var string
 	 */
 	protected $roles = array ();
+	
+	/**
+	 * A list of features
+	 *
+	 * @var array
+	 */
+	protected $features = array ();
 
 	/**
 	 * Set the creds
@@ -304,9 +320,6 @@ class SessionAuthenticationCredentials {
 			if (isset ( $params ['userId'] ) && ! empty ( $params ['userId'] )) {
 				$this->setUserId ( $params ['userId'] );
 			}
-			if (isset ( $params ['displayName'] ) && ! empty ( $params ['displayName'] )) {
-				$this->setDisplayName ( $params ['displayName'] );
-			}
 			if (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) {
 				$this->setUsername ( $params ['username'] );
 			}
@@ -316,10 +329,16 @@ class SessionAuthenticationCredentials {
 			if (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) {
 				$this->setCountry ( $params ['country'] );
 			}
-			if (isset ( $params ['roles'] ) && ! empty ( $params ['roles'] )) {
-				if (! is_array ( $params ['roles'] )) {
-					$params ['roles'] = explode ( ',', $params ['roles'] );
-				}
+			if (isset ( $params ['authProvider'] ) && ! empty ( $params ['authProvider'] )) {
+				$this->setAuthProvider ( $params ['authProvider'] );
+			}
+			if (isset ( $params ['userStatus'] ) && ! empty ( $params ['userStatus'] )) {
+				$this->setUserStatus ( $params ['userStatus'] );
+			}
+			if (isset ( $params ['features'] ) && ! empty ( $params ['features'] ) && is_array ( $params ['features'] )) {
+				$this->setFeatures ( $params ['features'] );
+			}
+			if (isset ( $params ['roles'] ) && ! empty ( $params ['roles'] ) && is_array ( $params ['roles'] )) {
 				$this->setRoles ( array_unique ( $params ['roles'] ) );
 			}
 		}
@@ -333,11 +352,13 @@ class SessionAuthenticationCredentials {
 	public function getCredentials() {
 		return array (
 				'email' => $this->getEmail (),
-				'displayName' => $this->getDisplayName (),
 				'username' => $this->getUserName (),
 				'userId' => $this->getUserId (),
+				'userStatus' => $this->getUserStatus (),
 				'country' => $this->getCountry (),
-				'roles' => $this->getRoles () 
+				'roles' => $this->getRoles (),
+				'authProvider' => $this->getAuthProvider (),
+				'features' => $this->getFeatures () 
 		);
 	}
 
@@ -350,74 +371,26 @@ class SessionAuthenticationCredentials {
 		return sprintf ( "%u", crc32 ( serialize ( $this->getCredentials () ) ) );
 	}
 
-	/**
-	 * Get the screen name
-	 *
-	 * @return string
-	 */
-	public function getDisplayName() {
-		return $this->displayName;
-	}
-
-	/**
-	 * Set the display name
-	 *
-	 * @param string $displayName
-	 */
-	public function setDisplayName($displayName) {
-		$this->displayName = $displayName;
-	}
-
-	/**
-	 * Get the username
-	 *
-	 * @return string
-	 */
 	public function getUsername() {
 		return $this->username;
 	}
 
-	/**
-	 * Set the username
-	 *
-	 * @param string $username
-	 */
 	public function setUsername($username) {
 		$this->username = $username;
 	}
 
-	/**
-	 * Get the email
-	 *
-	 * @return string
-	 */
 	public function getEmail() {
 		return $this->email;
 	}
 
-	/**
-	 * Set the email
-	 *
-	 * @param string $email
-	 */
 	public function setEmail($email) {
 		$this->email = $email;
 	}
 
-	/**
-	 * Get the roles
-	 *
-	 * @return string
-	 */
 	public function getRoles() {
 		return $this->roles;
 	}
 
-	/**
-	 * Set the roles
-	 *
-	 * @param array $roles
-	 */
 	public function setRoles(array $roles) {
 		$this->roles = $roles;
 	}
@@ -431,62 +404,80 @@ class SessionAuthenticationCredentials {
 		if (is_array ( $role )) {
 			for($i = 0; $i < count ( $role ); ++ $i) {
 				if (! in_array ( $role [$i], $this->roles )) {
-					$this->roles [] = strtolower ( $role [$i] );
+					$this->roles [] = $role [$i];
 				}
 			}
-		} elseif (is_string ( $role ) && ! in_array ( $role, $this->roles )) {
-			$this->roles [] = strtolower ( $role );
+		} elseif (! in_array ( $role, $this->roles )) {
+			$this->roles [] = $role;
 		}
 	}
 
 	/**
 	 * Check if this auth has a specific role
 	 *
-	 * @param string $roleId
+	 * @param int $roleId
 	 */
 	public function hasRole($roleId) {
 		foreach ( $this->roles as $role ) {
-			if (strcasecmp ( $role, $roleId ) === 0) {
+			if ($role == $roleId) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	/**
-	 * Get the country code
-	 *
-	 * @return string
-	 */
 	public function getCountry() {
 		return $this->country;
 	}
 
-	/**
-	 * Set the country code
-	 *
-	 * @param unknown_type $country
-	 */
 	public function setCountry($country) {
 		$this->country = $country;
 	}
 
-	/**
-	 * Get the user id
-	 *
-	 * @return string
-	 */
 	public function getUserId() {
 		return $this->userId;
 	}
 
-	/**
-	 * Set the user Id
-	 *
-	 * @param string $userId
-	 */
 	public function setUserId($userId) {
 		$this->userId = $userId;
+	}
+
+	public function getAuthProvider() {
+		return $this->authProvider;
+	}
+
+	public function setAuthProvider($authProvider) {
+		$this->authProvider = $authProvider;
+	}
+
+	public function getUserStatus() {
+		return $this->userStatus;
+	}
+
+	public function setUserStatus($userStatus) {
+		$this->userStatus = $userStatus;
+	}
+
+	public function getFeatures() {
+		return $this->features;
+	}
+
+	public function setFeatures(array $features) {
+		$this->features = $features;
+	}
+
+	/**
+	 * Check if this auth has a specific feature
+	 *
+	 * @param int $roleId
+	 */
+	public function hasFeature($featureId) {
+		foreach ( $this->features as $feature ) {
+			if ($feature == $featureId) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
@@ -548,17 +539,6 @@ abstract class Session {
 		foreach ( $params as $name => $value ) {
 			$session->set ( $name, $value );
 		}
-		$session->set ( 'authhash', $authCreds->getHash () );
-	}
-
-	/**
-	 * Checks if the has of the current credentials is the same as the sessions
-	 *
-	 * @return boolean
-	 */
-	public static function valid() {
-		$session = self::instance ();
-		return ($session->getAuthenticationCredentials ()->getHash () == $session->get ( 'authhash' ));
 	}
 
 	/**
@@ -582,24 +562,40 @@ abstract class Session {
 	}
 
 	/**
-	 * Set a session variable
+	 * Set a session variable, if the value is NULL, unset the variable
+	 * Returns the variable like a getter, but does the setter stuff too
 	 *
 	 * @param string $name
 	 * @param string $value
+	 * @return mix
 	 */
 	public static function set($name, $value = null) {
-		self::instance ()->set ( $name, $value );
+		return self::instance ()->set ( $name, $value );
 	}
 
 	/**
 	 * Check if the creditials has a specific role
 	 *
-	 * @param string $roleId
+	 * @param int $roleId
 	 * @return boolean
 	 */
 	public static function hasRole($roleId) {
 		$authCreds = self::getAuthCreds ();
 		if (! empty ( $authCreds ) && $authCreds->hasRole ( $roleId )) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the creditials has a specific feature
+	 *
+	 * @param int $featureId
+	 * @return boolean
+	 */
+	public static function hasFeature($featureId) {
+		$authCreds = self::getAuthCreds ();
+		if (! empty ( $authCreds ) && $authCreds->hasFeature ( $featureId )) {
 			return true;
 		}
 		return false;

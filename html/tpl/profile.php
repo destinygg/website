@@ -15,182 +15,111 @@ use Destiny\Session;
 <link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
-<?include'seg/google.tracker.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="profile">
 
-	<?include'seg/top.php'?>
+	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
 		<h1 class="page-title">
 			Profile 
-			<small>(<a title="Mailto: <?=Tpl::out($model->user['email'])?>" href="mailto:<?=Tpl::out($model->user['email'])?>"><?=Tpl::out($model->user['displayName'])?></a>)</small>
+			<small><a><?=Tpl::out($model->user['username'])?></a></small>
 		</h1>
-		<hr size="1">
 		
-		<?if(Session::hasRole('admin')):?>
-		<h3>Subscription</h3>
-		<div class="content content-dark clearfix">
-
-			<div style="width: 100%;" class="clearfix stream">
-				<form action="/subscribe" method="post">
-					<div class="control-group">
-
-						<?if(empty($model->subscription)):?>
-						<p>You have no active subscriptions. Click the 'Subscribe' button below to get one!</p>
-						<?endif;?>
-						
-						<?if(!empty($model->subscription)):?>
-						<dl class="dl-horizontal">
-							<dt>Status:</dt>
-							<dd>
-							<span class="label label-<?=($model->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($model->subscription['status'])?></span>
-							<?php if($model->subscription['recurring']):?>
-							<span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
-							<?php endif; ?>
-							</dd>
-							
-							<dt>Source:</dt>
-							<dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
-							<dt>Created date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->subscription['createdDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
-							<dt>End date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->subscription['endDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
-							<dt>Time left:</dt>
-							<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
-							
-							<?php if(Session::hasRole('admin')): ?>
-							<dt>&nbsp;</dt>
-							<dd><a title="Cancel this subscription" onclick="if(confirm('Are you sure? this cannot be undone.')) window.location.href = '/subscription/cancel'; return;" href="#">Cancel subscription</a></dd>
-							<?php endif; ?>
-							
-							<?php if(!empty($model->paymentProfile)): ?>
-							<br />
-							<dt>Billing:</dt>
-							<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
-							<dt>Amount:</dt>
-							<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
-							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
-							<dt>Profile:</dt>
-							<dd><?=Tpl::out($model->paymentProfile['paymentProfileId'])?></dd>
-							<?php endif; ?>
-							<dt>Billing Cycle:</dt>
-							<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>
-							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
-							<dt>Billing start date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingStartDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
-							<?php if($model->paymentProfile['billingNextDate'] != $model->paymentProfile['billingStartDate']): ?>
-							<dt>Billing next date:</dt>
-							<dd><?=Tpl::out(Date::getDateTime($model->paymentProfile['billingNextDate'])->format(Date::STRING_FORMAT_YEAR))?></dd>
-							<?php endif; ?>
-							<?php endif; ?>
-							
-							<?if(strcasecmp($model->paymentProfile['state'], 'Cancelled')===0):?>
-							<dt>&nbsp;</dt>
-							<dd><a title="Re-activate this recurring payment" href="/payment/activate">Re-activate payment</a></dd>
-							<?php endif; ?>
-							<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
-							<dt>&nbsp;</dt>
-							<dd><a title="Cancel this recurring payment" href="/payment/cancel">Cancel payment</a></dd>
-							<?php endif; ?>
-							<?php endif; ?>
+		<div style="margin:20px 0 10px 0;" class="navbar navbar-inverse navbar-subnav">
+			<div class="navbar-inner">
+				<ul class="nav">
+					<li class="active"><a href="/profile" title="Your personal details">Details</a></li>
+					<?php if(Session::hasRole(\Destiny\UserRole::ADMIN)): ?>
+					<li><a href="/profile/subscription" title="Your subscriptions">Subscription</a></li>
+					<?php endif; ?>
+					<li><a href="/profile/authentication" title="Your login methods">Authentication</a></li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="tab-content">
+			<div class="tab-pane active clearfix">
 			
-						</dl>
-						<?php endif; ?>
-						
-					</div>
-
-					<?if(empty($model->subscription) && empty($model->paymentProfile)):?>
-					<div class="form-actions block-foot">
-						<a href="/subscribe" class="btn btn-primary"><i class="icon-heart icon-white"></i> Subscribe</a>
-					</div>
-					<?endif;?>
-
-				</form>
-			</div>
-
-		</div>
-		<br>
-		 
-		<?php if(!empty($model->payments)): ?>
-		<h3>Payments</h3>
-		<div class="content content-dark clearfix">
-			<div style="width: 100%;" class="clearfix stream">
-				<table class="grid">
-					<tbody>
-						<?php foreach($model->payments as $payment): ?>
-						<tr>
-							<td style="width: 100%;">
-								<a title="Payment details" href="/payment/details/?id=<?=$payment['paymentId']?>"><?=Tpl::out(substr($payment['transactionId'], 0, 8))?></a>
-								<span> - </span>
-								<span><?=Tpl::currency($payment['currency'], $payment['amount'])?></span>
-								<small class="subtle">on <?=Date::getDateTime($payment['paymentDate'])->format (Date::STRING_FORMAT)?></small>
-							</td>
-							<td style="text-align: right;"><small class="subtle">Payment</small></td>
-							<td style="text-align: right;"><span style="width: 60px; text-align: center;" class="badge badge-<?=($payment['paymentStatus'] == 'Completed') ? 'inverse':'warning'?>"><?=Tpl::out($payment['paymentStatus'])?></span></td>
-						</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<br>
-		<?endif;?>
-		<?php endif; ?>
+				<h3>Account</h3>
+				
+				<?php if(!empty($model->profileUpdated)): ?>
+				<div class="alert alert-info">
+					<strong>Success!</strong>
+					Your profile has been updated
+				</div>
+				<?php endif; ?>
+				
+				<?php if(!empty($model->error)): ?>
+				<div class="alert alert-error">
+					<strong>Error!</strong>
+					<?=Tpl::out($model->error->getMessage())?>
+				</div>
+				<?php endif; ?>
 		
-		<h3>Preferences</h3>
-		<div class="content content-dark clearfix">
-
-			<div style="width: 100%;" class="clearfix stream">
-				<form id="profileSaveForm" action="/profile/save" method="post">
-					<input type="hidden" name="url" value="/league" />
-					<div class="control-group">
-						<label>Country:</label> 
-						<select name="country">
-							<option>Select your country</option>
-							<?$countries = Utils\Country::getCountries();?>
+				<div class="content content-dark clearfix">
+					<div style="width: 100%;" class="clearfix stream">
+						<form id="profileSaveForm" action="/profile" method="post">
+							<input type="hidden" name="url" value="/league" />
 							
-							<option value="">&nbsp;</option>
-							<option value="US" <?if($model->user['country'] == 'US'):?>
-								selected="selected" <?endif;?>>United States</option>
-							<option value="GB" <?if($model->user['country'] == 'GB'):?>
-								selected="selected" <?endif;?>>United Kingdom</option>
-							<option value="">&nbsp;</option>
+							<div class="control-group">
+								<label>Username:</label> 
+								<input type="text" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
+								<span class="help-block">A-z 0-9 and underscores. Must contain at least 4 and at most 20 characters</span>
+							</div>
+							<div class="control-group">
+								<label>Email:</label> 
+								<input type="text" name="email" value="<?=Tpl::out($model->user['email'])?>" placeholder="Email" />
+								<span class="help-block">Be it valid or not, it will be safe with us.</span>
+							</div>
 							
-							<?foreach($countries as $country):?>
-							<option value="<?=$country['alpha-2']?>"
-								<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>
-								selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
-							<?endforeach;?>
-						</select>
+							<div class="control-group">
+								<label>Country:</label> 
+								<select name="country">
+									<option value="">Select your country</option>
+									<?$countries = Utils\Country::getCountries();?>
+									<option value="">&nbsp;</option>
+									<option value="US" <?if($model->user['country'] == 'US'):?>
+										selected="selected" <?endif;?>>United States</option>
+									<option value="GB" <?if($model->user['country'] == 'GB'):?>
+										selected="selected" <?endif;?>>United Kingdom</option>
+									<option value="">&nbsp;</option>
+									<?foreach($countries as $country):?>
+									<option value="<?=$country['alpha-2']?>"<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
+									<?endforeach;?>
+								</select>
+							</div>
+				
+							<div class="control-group">
+								<label>Fantasy team:</label>
+								<label class="radio">
+									<input type="radio" name="feature[<?=\Destiny\UserFeature::STICKY_TEAMBAR?>]" value="0" <?=(!Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)) ? 'checked':''?>>
+									Show <u>only</u> on league page
+								</label>
+								<label class="radio">
+									<input type="radio" name="feature[<?=\Destiny\UserFeature::STICKY_TEAMBAR?>]" value="1" <?=(Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)) ? 'checked':''?>>
+									Show on home page &amp; league page
+								</label>
+							</div>
+				
+							<div class="control-group">
+								<a href="#" rel="resetteam">Reset fantasy team</a>
+							</div>
+				
+							<div class="form-actions block-foot">
+								<button class="btn" type="submit">Save changes</button>
+							</div>
+						</form>
 					</div>
-
-					<div class="control-group">
-						<label>Fantasy team:</label>
-						<label class="radio">
-							<input type="radio" name="teambar_homepage" value="0" <?=(!Service\Settings::get('teambar_homepage')) ? 'checked':''?>>
-							Show <u>only</u> on league page
-						</label>
-						<label class="radio">
-							<input type="radio" name="teambar_homepage" value="1" <?=(Service\Settings::get('teambar_homepage')) ? 'checked':''?>>
-							Show on home page &amp; league page
-						</label>
-					</div>
-
-					<div class="control-group">
-						<a href="#" rel="resetteam">Reset team</a>
-					</div>
-
-					<div class="form-actions block-foot">
-						<button class="btn" type="submit">Save changes</button>
-					</div>
-				</form>
+				</div>
+				<br>
 			</div>
-
+			
 		</div>
 	</section>
 	
-	<?include'seg/foot.php'?>
+	<?include'./tpl/seg/foot.php'?>
 	
 	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
 	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>

@@ -8,8 +8,8 @@
 		"paypal/merchant-sdk-php" : "3.5.*",
 		"nervo/yuicompressor" : "2.4.7",
 		"monolog/monolog" : "1.5.0",
-		"nixilla/twitter-api-consumer": "dev-master",
-		"doctrine/dbal": "2.3.*"
+		"doctrine/dbal": "2.3.*",
+		"themattharris/tmhoauth": "dev-master"
 	},
 	"autoload": {
 		"files": ["lib/HttpAccept/HTTP_Accept.php"]

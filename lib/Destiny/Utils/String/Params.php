@@ -1,16 +1,17 @@
 <?php
+
 namespace Destiny\Utils\String;
 
 use Destiny\AppException;
 
 abstract class Params {
 
-	public static function params($params) {
+	public static function params($params, $join = '&', $wrap = '') {
 		$str = array ();
 		foreach ( $params as $n => $v ) {
-			$str [] = "$n=$v";
+			$str [] = "$n=". $wrap ."$v". $wrap;
 		}
-		return join ( '&', $str );
+		return join ( $join, $str );
 	}
 
 	public static function search($pattern, $string) {

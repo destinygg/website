@@ -9,14 +9,48 @@ use Destiny\Utils\Cache;
 use Destiny\Service\Fantasy\GameService;
 
 class LeaderboardService extends Service {
-	
 	protected static $instance = null;
 
 	/**
+	 *
 	 * @return LeaderboardService
 	 */
 	public static function instance() {
 		return parent::instance ();
+	}
+
+	public function getTeamLeaderboardByGame($gameId, $limit = 1, $offset = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT 
+				users.userId, 
+				users.username, 
+				IF(subs.userId IS NULL,0,1) AS `subscriber`,
+				users.country, 
+				ranks.teamRank, 
+				teams.*, 
+				SUM(scoreteams.scoreValue) AS `sumScore`, 
+				( 
+					SELECT SUBSTRING_INDEX(GROUP_CONCAT(champs.championId ORDER BY champs.displayOrder ASC),\',\',:maxChampions)
+					FROM dfl_team_champs AS `champs`  
+					WHERE champs.teamId = teams.teamId
+				) AS `champions` 
+			FROM dfl_scores_teams AS `scoreteams`
+			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = scoreteams.teamId)
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\')
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
+			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
+			WHERE scoreteams.gameId = :gameId
+			GROUP BY scoreteams.teamId
+			ORDER BY `sumScore` DESC, ranks.teamRank ASC
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'maxChampions', Config::$a ['fantasy'] ['team'] ['maxChampions'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 	public function getTeamLeaderboard($limit = 1, $offset = 0) {
@@ -25,10 +59,8 @@ class LeaderboardService extends Service {
 			SELECT 
 				users.userId, 
 				users.username, 
-				users.displayName, 
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				users.country, 
-				users.displayName, 
 				ranks.teamRank, 
 				teams.*, 
 				SUM(teams.scoreValue) AS `scoreValue`, 
@@ -38,10 +70,9 @@ class LeaderboardService extends Service {
 					WHERE champs.teamId = teams.teamId
 				) AS `champions` 
 			FROM dfl_teams AS `teams` 
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\') 
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
-			WHERE teams.teamActive = 1
 			GROUP BY teams.teamId 
 			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 END, ranks.teamRank ASC 
 			LIMIT :offset,:limit 
@@ -59,10 +90,8 @@ class LeaderboardService extends Service {
 			SELECT 
 				users.userId, 
 				users.username, 
-				users.displayName, 
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				users.country, 
-				users.displayName, 
 				ranks.teamRank, 
 				teams.*, 
 				SUM(teams.scoreValue) AS `scoreValue`, 
@@ -72,10 +101,9 @@ class LeaderboardService extends Service {
 					WHERE champs.teamId = teams.teamId
 				) AS `champions` 
 			FROM dfl_teams AS `teams` 
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId) 
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\') 
 			INNER JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
-			WHERE teams.teamActive = 1
 			GROUP BY teams.teamId 
 			ORDER BY CASE WHEN ranks.teamRank IS NULL THEN 1 ELSE 0 END, ranks.teamRank ASC 
 			LIMIT :offset,:limit 
@@ -88,6 +116,11 @@ class LeaderboardService extends Service {
 	}
 
 	public function getTopSummoners($limit, $offset = 0) {
+		$excludeId = array ();
+		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
+			$excludeId [] = $summoner ['id'];
+		}
+		
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT 
@@ -122,28 +155,12 @@ class LeaderboardService extends Service {
 				) AS `mostPlayedChampion`
 				
 			FROM dfl_games_champs AS `gameschamps`
+			WHERE summonerId NOT IN (' . join ( ',', $excludeId ) . ')
 			GROUP BY gameschamps.summonerId
 			ORDER BY `gamesPlayed` DESC, gameschamps.summonerId
 			LIMIT :offset,:limit
 		' );
-		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
-		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-		$stmt->execute ();
-		return $stmt->fetchAll ();
-	}
-
-	public function getTeamChampionScores($teamId, $limit, $offset = 0) {
-		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( '
-			SELECT champs.*,SUM(tchamps.scoreValue) AS `scoreValueSum`
-			FROM dfl_scores_teams_champs AS `tchamps`
-			INNER JOIN dfl_champs AS `champs` ON (champs.championId = tchamps.championId)
-			WHERE tchamps.teamId = :teamId
-			GROUP BY tchamps.championId
-			ORDER BY scoreValueSum DESC
-			LIMIT :offset,:limit
-		' );
-		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		
 		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();
@@ -160,7 +177,6 @@ class LeaderboardService extends Service {
 			SELECT 
 				users.userId, 
 				users.username, 
-				users.displayName, 
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				users.country, 
 				ranks.teamRank, 
@@ -173,10 +189,10 @@ class LeaderboardService extends Service {
 				) AS `champions` 
 			FROM dfl_scores_teams AS `scoreteams`
 			INNER JOIN dfl_teams AS `teams` ON (teams.teamId = scoreteams.teamId)
-			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId)
+			INNER JOIN dfl_users AS `users` ON (users.userId = teams.userId AND users.userStatus = \'Active\')
 			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = teams.teamId)  
-			WHERE teams.teamActive = 1 AND scoreteams.gameId = :gameId
+			WHERE scoreteams.gameId = :gameId
 			GROUP BY scoreteams.teamId
 			ORDER BY `sumScore` DESC, ranks.teamRank ASC
 			LIMIT :offset,:limit
@@ -202,6 +218,80 @@ class LeaderboardService extends Service {
 			ORDER BY scoreValueSum DESC
 			LIMIT :offset,:limit
 		' );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
+	}
+
+	/**
+	 * Get a list of team game scores, sorted by created date desc
+	 *
+	 * @param int $teamId
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
+	 */
+	public function getTeamGameScores($teamId, $limit = 10, $offset = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT 
+				ts.gameId,
+				ts.teamId,
+				SUM(ts.scoreValue) AS `scoreValue`,
+				g.gameCreatedDate,
+				g.gameEndDate
+			FROM dfl_scores_teams AS ts
+			INNER JOIN dfl_games AS g ON (g.gameId = ts.gameId)
+			WHERE teamId = :teamId
+			GROUP BY ts.gameId
+			ORDER BY g.gameCreatedDate DESC
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
+	}
+
+	/**
+	 * Get a list of team champ scores, sorted by created date desc
+	 *
+	 * @param int $teamId
+	 * @param array $games
+	 * @return array
+	 */
+	public function getTeamGameChampScores($games) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT a.*,c.championName FROM dfl_games_champs AS a
+			INNER JOIN dfl_champs AS c ON (c.championId = a.championId)
+			WHERE a.gameId IN (' . join ( ',', $games ) . ')
+			ORDER BY a.gameId DESC, a.teamSideId DESC, c.championName DESC
+		' );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
+	}
+
+	/**
+	 * Get a list of team champ scores, sorted by created date desc
+	 *
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
+	 */
+	public function getTeamTopChampions($teamId, $limit = 10, $offset = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT a.teamId,a.championId,SUM(a.scoreValue) `scoreValue`,COUNT(*) AS `gamesPlayed`,c.championName FROM dfl_scores_teams_champs AS a
+			INNER JOIN dfl_champs AS c ON (c.championId = a.championId)
+			WHERE a.teamId = :teamId
+			GROUP BY a.championId
+			ORDER BY scoreValue DESC
+			LIMIT :offset,:limit
+		' );
+		$stmt->bindValue ( 'teamId', $teamId, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();

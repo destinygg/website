@@ -234,94 +234,49 @@ $(function(){
 		}
 	});
 
-	// Ingame
 	(function(){
-		var ingameFeed = null, activeGameUi = $('#activeIngame').hide();
-		if(activeGameUi.get(0) == null){
-			return false;
-		};
-		var getChampPick = function(game, summoner){
-			for(var n in game.gameSummonerSelections){
-				var selection = game.gameSummonerSelections[n];
-				if(selection.summonerId == summoner.summonerId){
-					return selection;
-				}
-			}
-			return null;
-		};
-		var buildTeam = function(game, champions){
-			var str = '';
-			for(var n in champions){
-				var champ = champions[n], pick = getChampPick(game, champ);
-				str +=
-				'<div class="game-champion clearfix">'+
-					'<div class="summoner-spells">'+
-						'<span class="spell spell1"><img data-src="'+ destiny.cdn +'/img/lol/spell/'+ pick.spell1Id +'.png" src="'+ destiny.cdn +'/img/64x64.gif" /></span>'+
-						'<span class="spell spell2"><img data-src="'+ destiny.cdn +'/img/lol/spell/'+ pick.spell2Id +'.png" src="'+ destiny.cdn +'/img/64x64.gif" /></span>'+
-					'</div>'+
-					'<div class="thumbnail">'+
-						'<a href="http://www.lolking.net/summoner/'+ champ.region.toLowerCase() +'/'+ champ.summonerId +'"><img title="'+ htmlEncode(pick.championName) +'" src="'+ destiny.cdn +'/img/320x320.gif" data-src="'+ getChampIcon(pick.championName) +'" /></a>'+
-					'</div>'+
-					'<div class="summoner-detail">'+
-						'<div class="name"><a class="subtle-link" href="http://www.lolking.net/summoner/'+ champ.region.toLowerCase() +'/'+ champ.summonerId +'">'+ htmlEncode(champ.name) +'</a></div>'+
-					'</div>'+
-				'</div>';
-			};
-			return str;
-		};
-		var buildBans = function(bans){
-			var str = '';
-			if(bans.length > 0){
-				str +=
-				'<div class="game-team-bans clearfix">'+
-					'<div>';
-				for(var n in bans){
-					var ban = bans[n];
-					str += '<div class="champion champion-banned"><img title="'+ban.name+'" src="'+ destiny.cdn +'/img/320x320.gif" data-src="'+ getChampIcon(ban.name) +'" /></div>';
-				}
-				str +=
-					'</div>'+
-				'</div>';
-			};
-			return str;
-		};
-		ingameFeed = new DestinyFeedConsumer({
+		
+		// Ingame
+		var currentIngameId = $('#activeGame').data('gameid');
+		new DestinyFeedConsumer({
 			url: destiny.urls.ingame,
-			polling: destiny.polling.ingame,
+			polling: 30,
 			ifModified: true,
-			start: true,
+			start: false,
+			ui: '#newInGameAlert',
 			data: {},
 			success: function(game, textStatus){
 				// this doesnt actually support modified yet
 				if(textStatus == 'notmodified') return;
-				// Sends the gameId on the next request
 				if(game != null && game['gameId'] != null){
-					ingameFeed.args.data.gameId = game.gameId;
-					var ui = $(
-						'<div class="game ingame clearfix" data-gameId="'+ game.gameId +'">' +
-							'<div class="clearfix">' +
-								'<div class="game-champions clearfix">' +
-									'<div class="game-team game-team1 pull-left" style="width:50%;">' +
-										buildTeam(game, game.gameTeams['100']) +
-										buildBans(game.gameBannedChampions['100']) +
-									'</div>' +
-									'<div class="game-team game-team2 pull-right" style="width:50%;">' +
-										buildTeam(game, game.gameTeams['200']) +
-										buildBans(game.gameBannedChampions['200']) +
-									'</div>' +
-								'</div>' +
-								'<div class="gameVersus">Vs</div>' +
-								'<div class="gameLegend">Game in-progress</div>' +
-								'<div class="gameBans">Bans</div>' +
-							'</div>' +
-						'</div>'
-					);
-					activeGameUi.html(ui);
-					activeGameUi.loadImages();
-					activeGameUi.fadeIn(1000);
+					if(game['gameId'] != currentIngameId){
+						$('#newInGameAlert:hidden').fadeIn();
+						$('#activeGame:visible').fadeOut();
+					}else{
+						$('#newInGameAlert:visible').fadeOut();
+						$('#activeGame:hidden').fadeIn();
+					}
 				}else{
-					activeGameUi.hide();
-				};
+					$('#activeGame:visible').fadeOut();
+				}
+			}
+		});
+		
+		// Check recent games
+		var lastChecked =  new Date(); // set on the initial page load
+		new DestinyFeedConsumer({
+			url: destiny.baseUrl + 'Fantasy/Recentgames.json',
+			polling: 30,
+			ifModified: true,
+			start: false,
+			ui: '#newGameAlert',
+			success: function(data, textStatus){
+				var aggregateDate = (data != null) ? new Date(data.date) : null;
+				if(textStatus == 'notmodified' || !aggregateDate || aggregateDate <= lastChecked){
+					$('#newGameAlert:visible').fadeOut();
+				}else{
+					$('#newGameAlert:hidden').fadeIn();
+				}
 			}
 		});
 	})();
@@ -345,17 +300,10 @@ $(function(){
 		}
 	}, 8000);
 	
-	// Twitch Connect button
-	$('a[rel="twitchlogin"],button[rel="twitchlogin"]').on('click', function(){
-		var url = 'https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id='+$(this).data('client-id')+'&redirect_uri='+$(this).data('redirect-uri')+'&scope='+$(this).data('request-perms');
-		window.location.href = url;
-		return false;
-	});
-	
 	// Navigation
 	$('.nav a[rel="signout"]').click(function(){
 		if(confirm('Are you sure?')){
-			window.location.href = destiny.baseUrl + 'TwitchLogout';
+			window.location.href = destiny.baseUrl + 'Logout';
 		};
 	});
 
@@ -383,41 +331,8 @@ $(function(){
 		loadGoogleCalendar();
 	})();
 	
-	// The check games button
-	$(function(){
-		var btn = $('button[href="#checkRecentGames"]'), html = btn.html(), lastCheck = new Date(btn.data('lastcheck'));
-		btn.on('click', function(){
-			if(btn.hasClass('busy')){
-				return false;
-			}
-			btn.addClass('busy');
-			btn.html('<i class="icon-time"></i> Checking for new games....');
-			window.setTimeout(function(){
-				$.ajax({
-					ifModified: true,
-					url: destiny.baseUrl + 'Fantasy/Recentgames.json',
-					success: function(data, textStatus){
-						var aggregateDate = (data != null) ? new Date(data.date) : null;
-						if(textStatus == 'notmodified' || !aggregateDate || aggregateDate <= lastCheck){
-							btn.addClass('btn-danger');
-							btn.html('<i class="icon-remove icon-white"></i> No new games found');
-							window.setTimeout(function(){
-								btn.html(html).removeClass('btn-danger busy');
-							}, 3000);
-						}else{
-							btn.addClass('btn-success').html('<i class="icon-thumbs-up icon-white"></i> New game was found');
-							window.setTimeout(function(){window.location.reload(false)}, 1000);
-						};
-					}
-				});
-			}, 1000);
-			return false;
-		});
-		
-	});
-	
 	// Subscriptions
-	$(function(){
+	(function(){
 		var subscriptionsUi = $('#subscriptions');
 		subscriptionsUi.on('click', '.subscription:not(.active)', function(e){
 			subscriptionsUi.find('.subscription.active').each(function(){
@@ -427,10 +342,10 @@ $(function(){
 			$(this).find('.payment-options input[type="radio"]:first').prop('checked', true);
 			$(this).addClass('active');
 		});
-	});
+	})();
 	
 	// Theater
-	$(function(){
+	(function(){
 		$('body#bigscreen').each(function(){
 			
 			var offset = 81;
@@ -467,6 +382,13 @@ $(function(){
 				}
 			});
 		});
+	})();
+	
+	// refresh-form captcha
+	$('form .refresh-captcha').click(function(){
+		var img = $(this).prev(), src = img.attr('src');
+		img.removeAttr('str').attr('src', src);
+		return false;
 	});
 	
 	// Add collapses
@@ -476,7 +398,11 @@ $(function(){
 	if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
 
 	// Set the top nav selection
-	$('.navbar a[rel="'+$('body').attr('id')+'"]').closest('li').addClass('active');
+	$('body').each(function(){
+		$('.navbar a[rel="'+$('body').attr('id')+'"]').closest('li').addClass('active');
+		$('.navbar a[rel="'+$('body').attr('class')+'"]').closest('li').addClass('active');
+	});
+	
 	
 	// Change time on selected elements
 	$('time[data-moment="true"]').each(function(){

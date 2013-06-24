@@ -6,7 +6,6 @@ use Destiny\Utils\Http;
 use Destiny\ViewModel;
 use Destiny\Application;
 use Destiny\Session;
-use Destiny\Service\Settings;
 use Destiny\Service\Fantasy\TeamService;
 
 class Home {
@@ -14,7 +13,8 @@ class Home {
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
-		if (Session::hasRole ( 'user' ) && Settings::get ( 'teambar_homepage' )) {
+		if (Session::hasRole ( \Destiny\UserRole::USER ) && Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)) {
+			$model->user = Session::getAuthCreds ()->getCredentials ();
 			$model->team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );
 			$model->teamChamps = TeamService::instance ()->getTeamChamps ( $model->team ['teamId'] );
 			$model->champions = $cacheDriver->fetch ( 'champions' );

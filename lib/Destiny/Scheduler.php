@@ -129,7 +129,7 @@ class Scheduler {
 	 *
 	 * @return void
 	 */
-	public function executeShedule($proxyExecute = false) {
+	public function executeShedule() {
 		$this->logger->info ( 'Schedule starting' );
 		foreach ( $this->schedule as $i => $action ) {
 			// First run
@@ -137,11 +137,7 @@ class Scheduler {
 				$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
 				$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
 				$this->updateTask ( $this->schedule [$i] );
-				if ($proxyExecute) {
-					$this->executeProxyTask ( $this->schedule [$i] );
-				} else {
-					$this->executeTask ( $this->schedule [$i] );
-				}
+				$this->executeTask ( $this->schedule [$i] );
 				continue;
 			}
 			// Schedule run
@@ -151,47 +147,10 @@ class Scheduler {
 				$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
 				$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
 				$this->updateTask ( $this->schedule [$i] );
-				if ($proxyExecute) {
-					$this->executeProxyTask ( $this->schedule [$i] );
-				} else {
-					$this->executeTask ( $this->schedule [$i] );
-				}
+				$this->executeTask ( $this->schedule [$i] );
 			}
 		}
 		$this->logger->debug ( 'Schedule complete' );
-	}
-
-	/**
-	 * Execute the task via curl request
-	 * This does wait for the request to end, so it is not purely asyncronous
-	 *
-	 * @param string $name
-	 * @return mixed
-	 */
-	protected function executeProxyTask(array $task) {
-		$url = Config::$a ['cronproxy'] ['url'];
-		if (empty ( $url )) {
-			throw new AppException ( 'No proxy url' );
-		}
-		$token = md5 ( microtime ( true ) . 'proxy_salt' );
-		$conn = Application::instance ()->getConnection ();
-		$conn->insert ( 'dfl_scheduled_tasks_proxy', array (
-				'taskName' => $task ['action'],
-				'taskToken' => $token 
-		) );
-		$curl = curl_init ();
-		curl_setopt ( $curl, CURLOPT_URL, Config::$a ['cronproxy'] ['url'] );
-		curl_setopt ( $curl, CURLOPT_SSL_VERIFYPEER, false );
-		curl_setopt ( $curl, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt ( $curl, CURLOPT_TIMEOUT, 10 );
-		curl_setopt ( $curl, CURLOPT_CONNECTTIMEOUT, 5 );
-		curl_setopt ( $curl, CURLOPT_POST, true );
-		curl_setopt ( $curl, CURLOPT_POSTFIELDS, array_merge ( $task, array (
-				'token' => $token 
-		) ) );
-		$data = curl_exec ( $curl );
-		$info = curl_getinfo ( $curl );
-		$this->logger->info ( sprintf ( 'Proxy called %s', $task ['action'] ) );
 	}
 
 	/**

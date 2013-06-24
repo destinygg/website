@@ -15,15 +15,14 @@ destiny.urls = {
 	ingame:			destiny.baseUrl + 'Fantasy/Ingame.json',
 };
 destiny.polling = {
-	lastfm: 		15,
+	lastfm: 		40,
 	twitter: 		600,
-	stream: 		15,
+	stream: 		30,
 	adsRotate: 		6,
-	summonerstats: 	45,
-	fantasyteam: 	30,
+	summonerstats: 	70,
+	fantasyteam: 	60,
 	broadcasts: 	900,
-	polls: 			30,
-	ingame: 		30
+	ingame: 		60
 };
 destiny.init = function(args){
 	$.extend(destiny, args);
