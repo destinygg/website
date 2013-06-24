@@ -1,6 +1,13 @@
 backend default {
 	.host = "127.0.0.1";
 	.port = "8080";
+	.probe = { 
+		.url = "/healthcheck.php";
+		.timeout = 50 ms; 
+		.interval = 500ms; 
+		.window = 2;
+		.threshold = 2;
+  }
 }
 
 
@@ -56,7 +63,7 @@ sub vcl_recv {
 		
 	}
 	
-	// wordpress caching
+	// dont cache wordpress if the user is logged in
 	if ( req.url ~ "^/n/" && ( req.http.cookie ~ "wordpress_logged_in" || req.url ~ "vaultpress=true" ) ) {
 		return( pass );
 	}
