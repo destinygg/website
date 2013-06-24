@@ -1,8 +1,7 @@
 <?php
 // Used when the full path is needed to the base directory
 define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
-//define ( '_VENDORDIR', _BASEDIR . '/vendor' );
-define ( '_VENDORDIR', 'E:/work/destiny/vendor' );
+define ( '_VENDORDIR', _BASEDIR . '/vendor' );
 // Paypal configuration
 define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
 
@@ -23,7 +22,6 @@ $db->exec ( 'SET CHARACTER SET utf8' );
 $db->exec ( 'SET time_zone = \'+00:00\'' );
 
 $cache = new \Doctrine\Common\Cache\FilesystemCache ( \Destiny\Config::$a ['cache'] ['path'] );
-
 
 $app = new \Destiny\Application ();
 $app->setLogger ( $log );
