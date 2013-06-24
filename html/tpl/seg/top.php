@@ -1,4 +1,5 @@
 <? namespace Destiny; ?>
+
 <div id="main-nav" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
@@ -40,3 +41,16 @@
 		</header>
 	</div>
 </section>
+
+<?php $events = Application::instance()->getEvents(); ?>
+<?php if(!empty($events)): ?>
+<div id="appEvents" class="container">
+<?php foreach($events as $event): ?>
+	<div class="app-event alert alert-<?=$event->getType()?>">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<h4><?=$event->getLabel()?></h4>
+		<?=$event?>
+	</div>
+<?php endforeach; ?>
+<?php endif; ?>
+</div>

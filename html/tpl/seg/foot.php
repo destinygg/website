@@ -1,4 +1,6 @@
-<? namespace Destiny; ?>
+<?php
+namespace Destiny; 
+?>
 <section id="footer" class="container">
 	<footer class="clearfix">
 		<p class="pull-left">

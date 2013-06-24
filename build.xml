@@ -21,17 +21,21 @@
 		<antcall target="copysource" />
 		<antcall target="concatcss" />
 		<antcall target="concatjs" />
+		<!--
 		<antcall target="compresscss" />
 		<antcall target="compressjs" />
+		-->
 	</target>
 	
 	<target name="copysource">
 		<copy todir="${build.base}/lib">
 			<fileset dir="lib"/>
 		</copy>
+		<!--
 		<copy todir="${build.base}/vendor">
 			<fileset dir="vendor" excludes="/nervo/,**/.git/,**/tests/,**/samples/,**/examples/,**/doc/,**/bin/,**/.travis.yml,**/VERSION**,**/CHANGELOG.**,**/README.**,**/FAQ.**,**/CONTRIBUTING.**,**/LICENSE**,**/composer.json"/>
 		</copy>
+		-->
 		<copy todir="${build.base}/html/">
 			<fileset dir="html"/>
 		</copy>

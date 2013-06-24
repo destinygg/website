@@ -1,7 +1,8 @@
 <?php
 // Used when the full path is needed to the base directory
 define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
-define ( '_VENDORDIR', _BASEDIR . '/vendor' );
+//define ( '_VENDORDIR', _BASEDIR . '/vendor' );
+define ( '_VENDORDIR', 'E:/work/destiny/vendor' );
 // Paypal configuration
 define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
 

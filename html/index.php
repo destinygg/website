@@ -1,4 +1,6 @@
 <?php
+use Destiny\AppEvent;
+
 use Destiny\Service\UserService;
 use Destiny\Service\AuthenticationService;
 use Destiny\Application;
@@ -14,9 +16,9 @@ require __DIR__ . '/../lib/boot.php';
 
 $app = Application::instance ();
 $app->setSession ( new SessionInstance () );
-Session::start ( Session::START_COOKIE );
+Session::start ( Session::START_IFVALIDCOOKIE );
 
-// Remember me, when session expires
+// Remember me
 if (! Session::isStarted ()) {
 	$authManager = AuthenticationService::instance ();
 	$userId = $authManager->getRememberMe ();
@@ -27,6 +29,11 @@ if (! Session::isStarted ()) {
 			Session::start ( Session::START_NOCOOKIE );
 			$authManager->login ( $user, 'rememberme' );
 			$authManager->setRememberMe ( $user );
+			$app->addEvent ( new AppEvent ( array (
+					'type' => AppEvent::EVENT_DANGER,
+					'label' => 'We remember!',
+					'message' => sprintf ( 'Please logout if you are not "%s"', Session::getAuthCreds ()->getUsername () ) 
+			) ) );
 		}
 	}
 }
