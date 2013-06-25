@@ -404,17 +404,18 @@ $(function(){
 	// Change time on selected elements
 	(function(){
 		var applMomentTime = function(){
-			$('time[data-moment="true"]').each(function(){
+			$('time[data-moment="true"]:not(.moment-set)').each(function(){
 				var ui = $(this), datetime = ui.data('datetime') || ui.attr('datetime') || ui.text();
 				ui.data('datetime', datetime);
 				if(ui.data('moment-elapsed')){
 					ui.html(moment(datetime).fromNow());
 				}else{
+					ui.addClass('moment-set');
 					ui.html(moment(datetime).format('MMMM Do, h:mm:ss a'));
 				}
 			});
 		};
-		window.setInterval(applMomentTime, 60000);
+		window.setInterval(applMomentTime, 30000);
 		applMomentTime();
 	})();
 	
