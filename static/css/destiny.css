@@ -187,11 +187,8 @@ right: 0;
 border-bottom: 1px solid #000;
 }
 
-#main-nav .subscriber {
-}
-#main-nav .subscriber a {
-text-shadow:0 0 4px rgba(255,255,255,0.8);
-color: white;
+#main-nav .subscribed a {
+opacity:0.4;
 }
 
 .content-dark {

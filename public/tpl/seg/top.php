@@ -14,6 +14,10 @@
 					<li class="divider-vertical"></li>
 					<li><a href="http://www.twitch.tv/destiny/subscribe" rel="subscribe">Subscribe</a></li>
 					<?php endif; ?>
+					<?if(Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
+					<li class="divider-vertical"></li>
+					<li href="/profile" class="subscribed"><a title="You have an active subscription!">Subscribed</a></li>
+					<?php endif; ?>
 				</ul>
 				<ul class="nav pull-right">
 					<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
