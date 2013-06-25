@@ -4,9 +4,7 @@ define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
 define ( '_VENDORDIR', _BASEDIR . '/vendor' );
 // Paypal configuration
 define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
-
-$loader = require _VENDORDIR . '/autoload.php';
-$loader->add ( 'Destiny', _BASEDIR . '/lib/' );
+require _VENDORDIR . '/autoload.php';
 
 \Destiny\Config::load ( _BASEDIR . '/config/config.php', _BASEDIR . '/lib/.version' );
 
