@@ -81,9 +81,11 @@ $app->bind ( '/^\/(profile|order|subscribe|fantasy|payment|league\/[*]+)/i', fun
 	}
 } );
 
-// Friendly url to league game
 $app->bind ( '/^\/league\/game\/(?<gameId>[0-9]+)/i', function (Application $app, array $params) {
 	$app->executeAction ( new Destiny\Action\League\Game (), $params );
+} );
+$app->bind ( '/^\/payment\/details\/(?<id>[0-9]+)/i', function (Application $app, array $params) {
+	$app->executeAction ( new Destiny\Action\Payment\Details (), $params );
 } );
 
 // "Easy" way to invoke actions based on the URL, second param is the default action
