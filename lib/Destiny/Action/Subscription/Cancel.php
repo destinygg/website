@@ -23,6 +23,10 @@ class Cancel {
 				}
 			}
 			SubscriptionsService::instance ()->updateSubscriptionState ( $subscription ['subscriptionId'], 'Cancelled' );
+			
+			// Update the credentials
+			$credentials = Session::getCredentials ();
+			Session::updateCredentials ( $credentials );
 		}
 		Http::header ( Http::HEADER_LOCATION, '/profile/subscription' );
 		die ();

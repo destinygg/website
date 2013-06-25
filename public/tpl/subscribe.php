@@ -40,9 +40,9 @@ use Destiny\Utils\Tpl;
 					<div class="control-group">
 						<?php if(!empty($model->subscription)): ?>
 						<p>
-							<span class="label label-inverse">HMMM</span> You already have
-							an active subscription. <br />Click the button below to go to
-							your profile.
+							<span class="label label-inverse">HMMM</span> 
+							You already have an active subscription. 
+							<br>Click the button below to go to	your profile.
 						</p>
 						<?php endif; ?>
 						

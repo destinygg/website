@@ -27,7 +27,7 @@ use Destiny\Session;
 			<small><a><?=Tpl::out($model->user['username'])?></a></small>
 		</h1>
 		
-		<div style="margin:20px 0 10px 0;" class="navbar navbar-inverse navbar-subnav">
+		<div style="margin:20px 0 0 0;" class="navbar navbar-inverse navbar-subnav">
 			<div class="navbar-inner">
 				<ul class="nav">
 					<li><a href="/profile" title="Your personal details">Details</a></li>
@@ -38,53 +38,50 @@ use Destiny\Session;
 				</ul>
 			</div>
 		</div>
-		<div class="tab-content">
-			<div class="tab-pane active clearfix">
-			
-			<h3>Authentication</h3>
-			<div class="content content-dark clearfix">
-				<div style="width: 100%;" class="clearfix stream">
-					
-					<form action="/login" method="post">
-						<input type="hidden" id="inputAuthProvider" name="authProvider" value="" />
-						<input type="hidden" id="inputAccountMerge" name="accountMerge" value="1" />
-						<table class="grid" style="width:100%">
-							<thead>
-								<td>Profile</td>
-								<td>Status</td>
-							</thead>
-							<tbody>
-								<?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
-								<tr>
-									<td>
-										<i class="icon-<?=$profileType?>"></i> <?=ucwords($profileType)?>
-									</td>
-									<td style="width:100%;">
-										<?php if(in_array($profileType, $model->authProfileTypes)): ?>
-										<?php $model->requireConnections = true; ?>
-										<span class="subtle"><i class="icon-ok icon-white"></i> Connected</span>
-										<?php else: ?>
-										<a onclick="$('#inputAuthProvider').val('<?=$profileType?>'); $(this).closest('form').submit(); return false;" href="/login"><i class="icon-heart icon-white subtle"></i> Connect</a>
-										<?php endif; ?>
-									</td>
-								</tr>
-								<?php endforeach; ?>
-							</tbody>
-						</table>
-					</form>
-					
-					<?php if($model->requireConnections): ?>
-					<div class="control-group">
-						<p><span class="label label-inverse">Important!</span> Connecting profiles will merge destiny.gg accounts if duplicates are found.</p>
-					</div>
-					<?php endif; ?>
-					
+	</section>	
+	
+	<section class="container">
+		<h3>Authentication</h3>
+		<div class="content content-dark clearfix">
+			<div style="width: 100%;" class="clearfix stream">
+				
+				<form action="/login" method="post">
+					<input type="hidden" id="inputAuthProvider" name="authProvider" value="" />
+					<input type="hidden" id="inputAccountMerge" name="accountMerge" value="1" />
+					<table class="grid" style="width:100%">
+						<thead>
+							<td>Profile</td>
+							<td>Status</td>
+						</thead>
+						<tbody>
+							<?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
+							<tr>
+								<td>
+									<i class="icon-<?=$profileType?>"></i> <?=ucwords($profileType)?>
+								</td>
+								<td style="width:100%;">
+									<?php if(in_array($profileType, $model->authProfileTypes)): ?>
+									<?php $model->requireConnections = true; ?>
+									<span class="subtle"><i class="icon-ok icon-white"></i> Connected</span>
+									<?php else: ?>
+									<a onclick="$('#inputAuthProvider').val('<?=$profileType?>'); $(this).closest('form').submit(); return false;" href="/login"><i class="icon-heart icon-white subtle"></i> Connect</a>
+									<?php endif; ?>
+								</td>
+							</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</form>
+				
+				<?php if($model->requireConnections): ?>
+				<div class="control-group">
+					<p><span class="label label-inverse">Important!</span> Connecting profiles will merge destiny.gg accounts if duplicates are found.</p>
 				</div>
-			</div>
-			<br>
-			
+				<?php endif; ?>
+				
 			</div>
 		</div>
+			
 	</section>
 	
 	<?include'./tpl/seg/foot.php'?>

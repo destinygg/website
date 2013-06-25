@@ -6,9 +6,7 @@ namespace Destiny;
 		<p class="pull-left">
 			<span><?=Config::$a['meta']['shortName']?> &copy; <?=date('Y')?> </span>
 			<a><i title="There are no limits here" class="icon-bobross"></i></a>
-			<?if(Session::hasRole(\Destiny\UserRole::ADMIN)):?>
-			<span>- <a href="/admin" rel="admin">Admin</i></a></span>
-			<?endif;?>
+			<span>- <a href="/help/agreement">User Agreement</i></a></span>
 			<br>www.reddit.com<a title="www.reddit.com" href="http://www.reddit.com/r/Destiny">/r/Destiny</a>
 		</p>
 		<p class="pull-right" style="text-align: right;">

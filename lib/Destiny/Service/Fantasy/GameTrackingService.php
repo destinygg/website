@@ -57,25 +57,6 @@ class GameTrackingService extends Service {
 		}
 	}
 
-	public function getTrackedGames($limit = 1) {
-		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( '
-			SELECT ingame.* 
-			FROM dfl_ingame_progress AS `ingame`
-			ORDER BY ingame.gameStartTime DESC
-			LIMIT 0,:limit
-		' );
-		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-		$stmt->execute ();
-		$games = $stmt->fetchAll ();
-		for($i = 0; $i < count ( $games ); $i ++) {
-			if (! empty ( $games [$i] ['gameData'] )) {
-				$games [$i] ['gameData'] = json_decode ( $games [$i] ['gameData'], true );
-			}
-		}
-		return $games;
-	}
-
 	public function insertGame($game, $summoner) {
 		$conn = Application::instance ()->getConnection ();
 		// If the start time wasnt recorded with the inGame service, fall back to the weird record create date LOL servers sends us.
@@ -104,6 +85,42 @@ class GameTrackingService extends Service {
 				'aggregatedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
 				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
+	}
+
+	public function getTrackedGames($limit = 1) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT ingame.* 
+			FROM dfl_ingame_progress AS `ingame`
+			ORDER BY ingame.gameStartTime DESC
+			LIMIT 0,:limit
+		' );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		$games = $stmt->fetchAll ();
+		for($i = 0; $i < count ( $games ); $i ++) {
+			if (! empty ( $games [$i] ['gameData'] )) {
+				$games [$i] ['gameData'] = json_decode ( $games [$i] ['gameData'], true );
+			}
+		}
+		return $games;
+	}
+
+	public function getTrackedProgressById($gameId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT ingame.* 
+			FROM dfl_ingame_progress AS `ingame`
+			WHERE gameId = :gameId 
+			LIMIT 0,1
+		' );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		$game = $stmt->fetch ();
+		if (! empty ( $game ['gameData'] )) {
+			$game ['gameData'] = json_decode ( $game ['gameData'], true );
+		}
+		return $game;
 	}
 
 	/**
@@ -139,7 +156,9 @@ class GameTrackingService extends Service {
 					'gameStartTime' => $game ['gameStartTime'],
 					'gameData' => json_encode ( $game ) 
 			) );
+			return $conn->lastInsertId ();
 		}
+		return false;
 	}
 
 	public function insertSummonerGameData($game, $summoner) {

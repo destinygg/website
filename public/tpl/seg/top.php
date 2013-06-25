@@ -16,16 +16,21 @@
 					<li><a href="http://www.twitch.tv/destiny/subscribe" rel="subscribe">Subscribe</a></li>
 					<?php endif; ?>
 				</ul>
-				<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
 				<ul class="nav pull-right">
+					<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
 					<li><a href="/login" rel="login">Login - Register</a></li>
+					<?endif;?>
+					<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
+					<?php endif; ?>
 				</ul>
-				<?endif;?>
 				<ul class="nav pull-right">
 					<li><a href="/league" rel="league">Fantasy League</a></li>
-					<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+					<?if(Session::hasRole(\Destiny\UserRole::USER) && Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
+					<li class="subscriber"><a href="/profile" rel="profile">Profile <i title="You have an active subscription" class="icon-heart"></i></span></a></li>
+					<?endif;?>
+					<?if(Session::hasRole(\Destiny\UserRole::USER) && !Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
 					<li><a href="/profile" rel="profile">Profile</span></a></li>
-					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
 					<?endif;?>
 				</ul>
 			</div>

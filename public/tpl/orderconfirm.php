@@ -56,7 +56,7 @@ use Destiny\Utils\Tpl;
 								<?php endif; ?>
 								</div>
 							</div>
-							<p>By clicking the 'Pay subscription' button below, you are confirming that this purchase is what you wanted.</p>
+							<p>By clicking the 'Pay subscription' button below, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</p>
 						</div>
 					</div>
 					<div class="form-actions block-foot">

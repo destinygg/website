@@ -21,13 +21,13 @@ class Ingame {
 				continue;
 			}
 			$log->debug ( $summoner ['name'] . ' checking ingame' );
-			$ingame = $leagueApiService->getInGameProgress ( $summoner );
-			$cacheDriver->save ( 'ingame.' . $summoner ['id'], $ingame );
-			
-			if ($ingame != null && $ingame ['success'] == true && $ingame ['data'] != null) {
-				$log->debug ( '' . $summoner ['name'] . ' game found ' . $ingame ['data'] ['gameId'] );
-				$ftrackService->trackIngameProgress ( $summoner, $ingame ['data'] );
+			$ingameData = $leagueApiService->getInGameProgress ( $summoner );
+			if (! empty ( $ingameData ) && isset ( $ingameData ['success'] ) && $ingameData ['success'] == true && $ingameData ['data'] != null) {
+				$log->debug ( '' . $summoner ['name'] . ' game found ' . $ingameData ['data'] ['gameId'] );
+				$ftrackService->trackIngameProgress ( $summoner, $ingameData ['data'] );
 			}
+			$track = $ftrackService->getTrackedProgressById ( $ingameData ['data'] ['gameId'] );
+			$cacheDriver->save ( 'ingame.' . $summoner ['id'], $track );
 		}
 		$log->debug ( 'Ended ingame progress tracking' );
 	}

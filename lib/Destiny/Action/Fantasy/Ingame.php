@@ -20,8 +20,7 @@ class Ingame {
 				continue;
 			}
 			$ingame = $cacheDriver->fetch ( 'ingame.' . $summoner ['id'] );
-			if ($ingame != null && $ingame ['success'] == true && $ingame ['data'] != null) {
-				$ingame = $ingame ['data'];
+			if (! empty ( $ingame ) && ! empty ( $ingame ['gameData'] )) {
 				// Abililty to send the game id, if it is still ingame, send a not modified response
 				if (isset ( $params ['gameId'] ) && intval ( $params ['gameId'] ) == $ingame ['gameId']) {
 					Http::status ( Http::STATUS_NOT_MODIFIED );
@@ -32,7 +31,6 @@ class Ingame {
 				$ingame = null;
 			}
 		}
-		
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $ingame ) );
 	}

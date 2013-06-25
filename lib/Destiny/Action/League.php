@@ -39,8 +39,8 @@ class League {
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == true) {
 				$ingame = $cacheDriver->fetch ( 'ingame.' . $summoner ['id'] );
-				if ($ingame != null && $ingame ['success'] == true && $ingame ['data'] != null) {
-					$model->ingame = $ingame ['data'];
+				if ($ingame != null && $ingame ['gameData'] != null) {
+					$model->ingame = $ingame;
 					break;
 				}
 			}

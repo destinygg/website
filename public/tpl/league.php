@@ -59,8 +59,8 @@ use Destiny\Utils\Tpl;
 			<div style="width:50%; float:left;">
 				<div class="clearfix game-team-blue">
 					<div class="pull-left">
-					<?php foreach ($model->ingame['gameTeams'][\Destiny\Utils\Lol::TEAMSIDE_BLUE] as $bSummoner): ?>
-						<?php $bChamp = Lol::getChampPick($model->ingame, $bSummoner)?>
+					<?php foreach ($model->ingame['gameData']['gameTeams'][\Destiny\Utils\Lol::TEAMSIDE_BLUE] as $bSummoner): ?>
+						<?php $bChamp = Lol::getChampPick($model->ingame['gameData'], $bSummoner)?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$bSummoner['summonerId']?>" title="<?=Tpl::out($bSummoner['name'])?>" data-placement="bottom" rel="tooltip">
 							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($bChamp['championName'])?>" />
 						</a>
@@ -71,8 +71,8 @@ use Destiny\Utils\Tpl;
 			<div style="width:50%; float:right;">
 				<div class="clearfix game-team-purple">
 					<div class="pull-right">
-					<?php foreach ($model->ingame['gameTeams'][\Destiny\Utils\Lol::TEAMSIDE_PURPLE] as $pSummoner): ?>
-						<?php $pChamp = Lol::getChampPick($model->ingame, $pSummoner)?>
+					<?php foreach ($model->ingame['gameData']['gameTeams'][\Destiny\Utils\Lol::TEAMSIDE_PURPLE] as $pSummoner): ?>
+						<?php $pChamp = Lol::getChampPick($model->ingame['gameData'], $pSummoner)?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$pSummoner['summonerId']?>" title="<?=Tpl::out($pSummoner['name'])?>" data-placement="bottom" rel="tooltip">
 							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($pChamp['championName'])?>" />
 						</a>
@@ -81,7 +81,10 @@ use Destiny\Utils\Tpl;
 				</div>
 			</div>
 			<div class="ingame-progress-text" title="Game in progress">
-				<div>Game in progress!<br><small>started <?=(isset($model->ingame['gameStartTime'])) ? Date::getElapsedTime(Date::getDateTime($model->ingame['gameStartTime'])): 'just now'?></small></div>
+				<div>
+				Game in progress!
+				<br><small>started <?=(isset($model->ingame['gameStartTime'])) ? Tpl::fromNow(Date::getDateTime($model->ingame['gameStartTime']), Date::STRING_FORMAT): 'just now'?></small>
+				</div>
 			</div>
 		</div>
 		<?php endif; ?>

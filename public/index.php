@@ -36,6 +36,11 @@ $session->addCredentialHandler ( function (SessionInstance $session, SessionCred
 		$cache->save ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ) );
 	}
 } );
+// Removes session from cache
+$session->addCleanupHandler ( function (SessionInstance $session) {
+	$cache = Application::instance ()->getCacheDriver ();
+	$cache->delete ( sprintf ( 'CHAT:%s', $session->getSessionId () ) );
+} );
 
 // Start the session if a valid cookie is found
 Session::start ( Session::START_IFVALIDCOOKIE );

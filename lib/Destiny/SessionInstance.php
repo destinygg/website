@@ -40,6 +40,13 @@ class SessionInstance {
 	 * @var array
 	 */
 	protected $credentialHandlers = array ();
+	
+	/**
+	 * A list of callable cleanup handlers
+	 *
+	 * @var array
+	 */
+	protected $cleanupHandlers = array ();
 
 	/**
 	 * Setup the session
@@ -208,6 +215,26 @@ class SessionInstance {
 	public function executeCredentialHandlers(SessionCredentials $credentials) {
 		foreach ( $this->credentialHandlers as $handler ) {
 			call_user_func ( $handler, $this, $credentials );
+		}
+	}
+
+	/**
+	 * Prepends a handler to the handler stack
+	 *
+	 * @param callabel $fn
+	 */
+	public function addCleanupHandler($fn) {
+		array_unshift ( $this->cleanupHandlers, $fn );
+	}
+
+	/**
+	 * Run all the cleanup handlers
+	 *
+	 * @return void
+	 */
+	public function executeCleanupHandlers() {
+		foreach ( $this->cleanupHandlers as $handler ) {
+			call_user_func ( $handler, $this );
 		}
 	}
 
@@ -629,6 +656,7 @@ abstract class Session {
 	 */
 	public static function destroy() {
 		$session = self::instance ();
+		$session->executeCleanupHandlers ();
 		$session->destroy ();
 	}
 

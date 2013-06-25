@@ -46,7 +46,7 @@ use Destiny\Utils\Tpl;
 		<?php include'./tpl/seg/fantasy/fantasysubnav.php' ?>
 		
 		<h3>
-			<?=Lol::$gameTypes[$model->game['gameType']]?>
+			<?=($model->game['gameType']!='NONE') ? Lol::$gameTypes[$model->game['gameType']]:'Custom Game'?>
 			<small><?=Tpl::moment(Date::getDateTime($model->game['gameCreatedDate']),Date::STRING_FORMAT)?></small>
 		</h3>
 		<div id="activeGame" data-gameid="<?=$model->game['gameId']?>" class="game-vertical clearfix" style="margin-top:0; position: relative; border:none;">

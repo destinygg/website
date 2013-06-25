@@ -272,9 +272,7 @@ $(function(){
 			ui: '#newGameAlert',
 			success: function(data, textStatus){
 				var aggregateDate = (data != null) ? new Date(data.date) : null;
-				if(textStatus == 'notmodified' || !aggregateDate || aggregateDate <= lastChecked){
-					$('#newGameAlert:visible').fadeOut();
-				}else{
+				if(textStatus != 'notmodified' && aggregateDate != null && aggregateDate > lastChecked){
 					$('#newGameAlert:hidden').fadeIn();
 				}
 			}
