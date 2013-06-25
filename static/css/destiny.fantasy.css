@@ -361,14 +361,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#720072', end
 }
 #activeGame.game-vertical .game-team-blue,
 #activeGame.game-horizontal .game-team-blue {
-background: #003eba; /* Old browsers */
-background: -moz-linear-gradient(top,  #003eba 0%, #101d4c 100%); /* FF3.6+ */
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#003eba), color-stop(100%,#101d4c)); /* Chrome,Safari4+ */
-background: -webkit-linear-gradient(top,  #003eba 0%,#101d4c 100%); /* Chrome10+,Safari5.1+ */
-background: -o-linear-gradient(top,  #003eba 0%,#101d4c 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(top,  #003eba 0%,#101d4c 100%); /* IE10+ */
-background: linear-gradient(to bottom,  #003eba 0%,#101d4c 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#003eba', endColorstr='#101d4c',GradientType=0 ); /* IE6-9 */
+background: #003eba; 
+background: -moz-linear-gradient(top,  #003eba 0%, #101d4c 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#003eba), color-stop(100%,#101d4c)); 
+background: -webkit-linear-gradient(top,  #003eba 0%,#101d4c 100%); 
+background: -o-linear-gradient(top,  #003eba 0%,#101d4c 100%); 
+background: -ms-linear-gradient(top,  #003eba 0%,#101d4c 100%);
+background: linear-gradient(to bottom,  #003eba 0%,#101d4c 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#003eba', endColorstr='#101d4c',GradientType=0 );
 }
 
 #activeGame .ingame-progress-text {

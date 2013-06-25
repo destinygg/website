@@ -1,5 +1,4 @@
 <? namespace Destiny; ?>
-
 <div id="main-nav" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
@@ -26,11 +25,8 @@
 				</ul>
 				<ul class="nav pull-right">
 					<li><a href="/league" rel="league">Fantasy League</a></li>
-					<?if(Session::hasRole(\Destiny\UserRole::USER) && Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
-					<li class="subscriber"><a href="/profile" rel="profile">Profile <i title="You have an active subscription" class="icon-heart"></i></span></a></li>
-					<?endif;?>
-					<?if(Session::hasRole(\Destiny\UserRole::USER) && !Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
-					<li><a href="/profile" rel="profile">Profile</span></a></li>
+					<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+					<li><a href="/profile" rel="profile">Profile</a></li>
 					<?endif;?>
 				</ul>
 			</div>
