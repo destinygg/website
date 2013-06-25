@@ -74,6 +74,13 @@ class Application extends Service {
 	 * @array
 	 */
 	protected $events = array ();
+	
+	/**
+	 * A connected redis instance
+	 *
+	 * @var \Redis
+	 */
+	protected $redis = null;
 
 	/**
 	 * Since this has to be created instance, only returns never creates
@@ -405,6 +412,24 @@ class Application extends Service {
 	 */
 	public function setEvents($events) {
 		$this->events = $events;
+	}
+
+	/**
+	 * Get the redis instance
+	 *
+	 * @return Redis
+	 */
+	public function getRedis() {
+		return $this->redis;
+	}
+
+	/**
+	 * Set the redis instance
+	 *
+	 * @param Redis $redis
+	 */
+	public function setRedis(Redis $redis) {
+		$this->redis = $redis;
 	}
 
 }

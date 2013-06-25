@@ -31,15 +31,17 @@ $session->addCredentialHandler ( function (SessionInstance $session, SessionCred
 
 // Puts the session into the cache
 $session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
-	if ($session->isStarted ()) {
-		$cache = Application::instance ()->getCacheDriver ();
-		$cache->save ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ) );
+	$redis = Application::instance ()->getRedis ();
+	if (! empty ( $redis )) {
+		$redis->set ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ), 30 * 24 * 60 * 60 );
 	}
 } );
 // Removes session from cache
 $session->addCleanupHandler ( function (SessionInstance $session) {
-	$cache = Application::instance ()->getCacheDriver ();
-	$cache->delete ( sprintf ( 'CHAT:%s', $session->getSessionId () ) );
+	$redis = Application::instance ()->getRedis ();
+	if (! empty ( $redis )) {
+		$redis->delete ( sprintf ( 'CHAT:%s', $session->getSessionId () ) );
+	}
 } );
 
 // Start the session if a valid cookie is found

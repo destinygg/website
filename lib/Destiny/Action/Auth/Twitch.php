@@ -84,11 +84,10 @@ class Twitch {
 	 *
 	 * @param oAuthClient $authClient
 	 * @param string $accessToken
-	 * @param array $data
 	 * @param array $params
 	 * @throws AppException
 	 */
-	protected function handleBroadcasterLogin(OAuthClient $authClient, $accessToken, array $data, array $params) {
+	protected function handleBroadcasterLogin(OAuthClient $authClient, $accessToken, array $params) {
 		// If the username is the broadcaster, and the permissions are NOT the same
 		// the broadcaster tried to login, but we need additional permissions from that user.
 		// So we redirect again, with the correct permissions
@@ -100,7 +99,7 @@ class Twitch {
 			if ($scope != $broadcastPerms) {
 				$log = Application::instance ()->getLogger ();
 				$log->notice ( 'Requested broadcaster permissions [' . $broadcaster . ']' );
-				$authClient->sendAuthorisation ( 'https://api.twitch.tv/kraken/oauth2/authorize', sprintf ( Config::$a ['oauth'] ['callback'], 'twitch' ), $broadcastPerms );
+				$authClient->sendAuthorisation ( 'https://api.twitch.tv/kraken/oauth2/authorize', sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ), $broadcastPerms );
 				exit ();
 			}
 			file_put_contents ( Config::$a ['cache'] ['path'] . 'BROADCASTERTOKEN.tmp', $accessToken );
