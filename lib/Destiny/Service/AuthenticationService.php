@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Service;
 
 use Destiny\Config;
@@ -126,6 +125,8 @@ class AuthenticationService extends Service {
 	 */
 	public function login(array $user, $authProvider) {
 		$session = Session::instance ();
+		// Renew the session upon successful login, makes it slightly harder to hijack
+		$session->renew ( true );
 		
 		// Check the user status
 		if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
@@ -211,14 +212,14 @@ class AuthenticationService extends Service {
 				$userService->removeAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
 				// Set the user profile to Merged
 				$userService->updateUser ( $profileUser ['userId'], array (
-						'userStatus' => 'Merged' 
+					'userStatus' => 'Merged' 
 				) );
 			}
 			$userService->addUserAuthProfile ( array (
-					'userId' => $sessAuth ['userId'],
-					'authProvider' => $authCreds ['authProvider'],
-					'authId' => $authCreds ['authId'],
-					'authToken' => $authCreds ['authCode'] 
+				'userId' => $sessAuth ['userId'],
+				'authProvider' => $authCreds ['authProvider'],
+				'authId' => $authCreds ['authId'],
+				'authToken' => $authCreds ['authCode'] 
 			) );
 			Session::set ( 'accountMerge' );
 			Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
@@ -236,7 +237,7 @@ class AuthenticationService extends Service {
 		$authProfile = $userService->getUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
 		if (! empty ( $authProfile )) {
 			$userService->updateUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'], array (
-					'authToken' => $authCreds ['authCode'] 
+				'authToken' => $authCreds ['authCode'] 
 			) );
 		}
 		
@@ -323,11 +324,11 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
-				'expire' => $expireDate->getTimestamp (),
-				'created' => $createdDate->getTimestamp (),
-				'token' => $token 
+			'expire' => $expireDate->getTimestamp (),
+			'created' => $createdDate->getTimestamp (),
+			'token' => $token 
 		) );
 		setcookie ( $this->remembermeId, $value, $expireDate->getTimestamp (), Config::$a ['cookie'] ['path'], Config::$a ['cookie'] ['domain'] );
 	}

@@ -30,5 +30,5 @@ abstract class Options {
 		}
 		return $r;
 	}
-
+	
 }

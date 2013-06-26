@@ -32,7 +32,7 @@ class Login {
 			return 'login';
 		}
 
-		// This is the only action that will create a new session cookie for a user
+		// This is and rememberme are the only places that will create a new session cookie for a user
 		Session::start ( Session::START_NOCOOKIE );
 		
 		if ($rememberme) {

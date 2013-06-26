@@ -59,16 +59,32 @@ class SessionInstance {
 	}
 
 	/**
-	 * Start the session
+	 * Start the session, return true if the session was started otherwise false
 	 *
 	 * @todo this does a mix of things, need to clean-up
-	 * @return void
+	 * @return boolean
 	 */
 	public function start() {
 		$this->started = session_start ();
 		$this->setSessionId ( session_id () );
 		$credentials = $this->getCredentials ();
 		$credentials->setData ( $this->getData () );
+		return $this->started;
+	}
+
+	/**
+	 * Regenerates the session id
+	 *
+	 * @param boolean $delete Delete the old associated session file
+	 * @return boolean
+	 */
+	public function renew($delete = true) {
+		if ($this->isStarted () || $this->start ()) {
+			session_regenerate_id ( $delete );
+			$this->setSessionId ( session_id () );
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -80,8 +96,8 @@ class SessionInstance {
 		$cookie = $this->getSessionCookie ();
 		$cookie->clearCookie ();
 		session_destroy ();
-		session_regenerate_id ();
 		$_SESSION = array ();
+		session_regenerate_id ( false );
 	}
 
 	/**
@@ -445,12 +461,23 @@ class SessionCredentials {
 	}
 
 	/**
-	 * Return the credentials hash
+	 * Checks whether or not the credentials are populated and valid
+	 * username, userId and userStatus must be set and not empty
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getHash() {
-		return sprintf ( "%u", crc32 ( serialize ( $this->getData () ) ) );
+	public function isValid() {
+		$data = $this->getData ();
+		if (empty ( $data ['userId'] ) && intval ( $data ['userId'] ) > 0) {
+			return false;
+		}
+		if (empty ( $data ['username'] )) {
+			return false;
+		}
+		if (empty ( $data ['userStatus'] )) {
+			return false;
+		}
+		return true;
 	}
 
 	public function getUsername() {
@@ -577,7 +604,7 @@ abstract class Session {
 	 *
 	 * @var int
 	 */
-	const START_IFVALIDCOOKIE = 2;
+	const START_IFCOOKIE = 2;
 
 	/**
 	 * Get the session interface
@@ -591,25 +618,25 @@ abstract class Session {
 	/**
 	 * Return true if there is a session cookie and its not empty
 	 *
-	 * @param START_IFVALIDCOOKIE|START_NOCOOKIE $flag
-	 * @param boolean $restart default false
+	 * @param START_IFCOOKIE|START_NOCOOKIE $flag
 	 * @return boolean
 	 */
-	public static function start($flag = null) {
+	public static function start($flag) {
 		$session = self::instance ();
-		if (! $session->isStarted () || $restart) {
+		if (! $session->isStarted ()) {
 			switch ($flag) {
-				case self::START_IFVALIDCOOKIE :
+				case self::START_IFCOOKIE :
 					$sid = $session->getSessionCookie ()->getCookie ();
 					if (! empty ( $sid )) {
 						return $session->start ();
 					}
 					return false;
+				
 				case self::START_NOCOOKIE :
-				default :
 					return $session->start ();
 			}
 		}
+		return false;
 	}
 
 	/**

@@ -1,4 +1,6 @@
 <?php
+use Destiny\UserRole;
+
 use Destiny\AppEvent;
 use Destiny\Service\UserService;
 use Destiny\Service\AuthenticationService;
@@ -13,7 +15,7 @@ use Destiny\Config;
 
 ini_set ( 'max_execution_time', 10 );
 ini_set ( 'mysql.connect_timeout', 10 );
-ini_set ( 'session.gc_maxlifetime', 24 * 60 * 60 );
+ini_set ( 'session.gc_maxlifetime', 2 * 60 * 60 );
 
 $context->log = 'http';
 require __DIR__ . '/../lib/boot.php';
@@ -48,23 +50,23 @@ $session->addCleanupHandler ( function (SessionInstance $session) {
 	}
 } );
 
-// Start the session if a valid cookie is found
-Session::start ( Session::START_IFVALIDCOOKIE );
+// Start the session if a valid session cookie is found
+// The cookie may be there, but the session data may be empty
+Session::start ( Session::START_IFCOOKIE );
 
-// Remember me
-if (! Session::isStarted ()) {
+// If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie
+if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 	$authManager = AuthenticationService::instance ();
 	$userId = $authManager->getRememberMe ();
 	if ($userId !== false) {
 		$userManager = UserService::instance ();
 		$user = $userManager->getUserById ( $userId );
 		if (! empty ( $user )) {
-			Session::start ( Session::START_NOCOOKIE );
 			$authManager->login ( $user, 'rememberme' );
 			$authManager->setRememberMe ( $user );
 			$app->addEvent ( new AppEvent ( array (
 				'type' => AppEvent::EVENT_DANGER,
-				'label' => 'We remember!',
+				'label' => 'You have been automatically logged in',
 				'message' => sprintf ( 'Please logout if you are not "%s"', Session::getCredentials ()->getUsername () ) 
 			) ) );
 		}

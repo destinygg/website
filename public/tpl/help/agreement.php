@@ -1,5 +1,7 @@
 <?
 namespace Destiny;
+use Destiny\Utils\Date;
+
 use Destiny\Utils\Http;
 use Destiny\Utils\Tpl;
 ?>
@@ -17,9 +19,12 @@ use Destiny\Utils\Tpl;
 	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
-		<h1 class="title">User agreement:</h1>
+		<h1 class="title">
+		<small class="subtle pull-right" style="font-size:14px; margin-top:20px;">Last update: <?=Date::getDateTime(filemtime(__FILE__))->format(Date::STRING_FORMAT)?></small>
+		<span>User agreement</span>
+		</h1>
 		<hr size="1">
-		<p>There is no agreement.</p>
+		<p>There is no user agreement.</p>
 	</section>
 	
 	<?include'./tpl/seg/panel.ads.php'?>
