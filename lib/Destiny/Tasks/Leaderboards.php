@@ -53,7 +53,7 @@ class Leaderboards {
 		$topScorers = LeaderboardService::instance ()->getTopTeamChampionScores ( 10 );
 		$cacheDriver->save ( 'topteamchampionscores', $topScorers );
 		
-		$log->info ( 'Reset leaderboards' );
+		$log->debug ( 'Reset leaderboards' );
 	}
 
 }

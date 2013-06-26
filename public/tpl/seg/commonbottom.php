@@ -9,6 +9,8 @@ use Destiny\Config;
 <?php if(Config::$a['compressed']):?>
 <script src="<?=Config::cdn()?>/js/destiny.<?=Config::version()?>.js"></script>
 <?php else: ?>
-<?=Tpl::eachResource('/js/*.js', function($file){ return sprintf('<script src="%s/js/%s"></script>', Config::cdn (), basename ( $file )) . PHP_EOL; })?>
+<?=Tpl::eachResource('/js/*.js', function($file){ 
+	return sprintf('<script src="%s/js/%s"></script>', Config::cdn (), basename ( $file )) . PHP_EOL; 
+})?>
 <?php endif; ?>
 <script>destiny.init({cdn:'<?=Config::cdn()?>'});</script>

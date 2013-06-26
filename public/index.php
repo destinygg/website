@@ -11,6 +11,10 @@ use Destiny\SessionInstance;
 use Destiny\Session;
 use Destiny\Config;
 
+ini_set ( 'max_execution_time', 10 );
+ini_set ( 'mysql.connect_timeout', 10 );
+ini_set ( 'session.gc_maxlifetime', 24 * 60 * 60 );
+
 $context->log = 'http';
 require __DIR__ . '/../lib/boot.php';
 $app = Application::instance ();

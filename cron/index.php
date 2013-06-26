@@ -5,6 +5,9 @@ use Destiny\Session;
 use Destiny\Scheduler;
 use Destiny\Config;
 
+ini_set ( 'mysql.connect_timeout', 10 );
+ini_set ( 'max_execution_time', 60 );
+
 $context->log = 'cron';
 require __DIR__ . '/../lib/boot.php';
 $app = Application::instance ();

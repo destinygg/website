@@ -11,7 +11,7 @@ class Freechamps {
 		ChampionService::instance ()->updateFreeChampions ();
 		$cron = new \Destiny\Tasks\Champions ();
 		$cron->execute ( $log );
-		$log->info ( 'Rotated free champions' );
+		$log->debug ( 'Rotated free champions' );
 	}
 
 }

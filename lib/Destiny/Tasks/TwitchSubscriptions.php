@@ -36,7 +36,7 @@ class TwitchSubscriptions {
 				throw new AppException ( 'Error requesting subscriptions. Total: 0' );
 				break;
 			}
-			$log->info ( 'Checking subscriptions [' . $i . ' out of ' . $total . ']' );
+			$log->debug ( 'Checking subscriptions [' . $i . ' out of ' . $total . ']' );
 			foreach ( $subscriptions ['subscriptions'] as $sub ) {
 				
 				// check if this a user
@@ -60,7 +60,7 @@ class TwitchSubscriptions {
 			sleep ( 1 );
 			continue;
 		}
-		$log->info ( 'Subscription check complete' );
+		$log->debug ( 'Subscription check complete' );
 	}
 
 }

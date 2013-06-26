@@ -10,7 +10,7 @@ use Destiny\Service\LeagueApiService;
 class LeagueStatus {
 
 	public function execute(LoggerInterface $log) {
-		$log->info ( 'Updated lol status' );
+		$log->debug ( 'Updated lol status' );
 		$response = LeagueApiService::instance ()->getStatus ()->getResponse ();
 		$app = Application::instance ();
 		$app->getCacheDriver ()->save ( 'leaguestatus', $response );

@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny;
 
 use Destiny\Utils\Date;
@@ -74,14 +73,14 @@ class Scheduler {
 	protected function updateTask(array $task) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_scheduled_tasks', array (
-				'lastExecuted' => $task ['lastExecuted'],
-				'executeCount' => $task ['executeCount'] 
+			'lastExecuted' => $task ['lastExecuted'],
+			'executeCount' => $task ['executeCount'] 
 		), array (
-				'action' => $task ['action'] 
+			'action' => $task ['action'] 
 		), array (
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR 
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR 
 		) );
 	}
 
@@ -93,19 +92,19 @@ class Scheduler {
 	protected function insertTask(array $task) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_scheduled_tasks', array (
-				'action' => $task ['action'],
-				'lastExecuted' => $task ['lastExecuted'],
-				'frequency' => $task ['frequency'],
-				'period' => $task ['period'],
-				'executeOnStart' => $task ['executeOnStart'],
-				'executeCount' => $task ['executeCount'] 
+			'action' => $task ['action'],
+			'lastExecuted' => $task ['lastExecuted'],
+			'frequency' => $task ['frequency'],
+			'period' => $task ['period'],
+			'executeOnNextRun' => $task ['executeOnNextRun'],
+			'executeCount' => $task ['executeCount'] 
 		), array (
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_INT,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_BOOL,
-				\PDO::PARAM_INT 
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_INT,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_BOOL,
+			\PDO::PARAM_INT 
 		) );
 	}
 
@@ -130,12 +129,13 @@ class Scheduler {
 	 * @return void
 	 */
 	public function executeShedule() {
-		$this->logger->info ( 'Schedule starting' );
+		$this->logger->debug ( 'Schedule starting' );
 		foreach ( $this->schedule as $i => $action ) {
-			// First run
-			if ($this->schedule [$i] ['executeCount'] == 0 && $this->schedule [$i] ['executeOnStart']) {
+			// First run/ Execute on next run
+			if ($this->schedule [$i] ['executeOnNextRun']) {
 				$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
 				$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
+				$this->schedule [$i] ['executeOnNextRun'] = false;
 				$this->updateTask ( $this->schedule [$i] );
 				$this->executeTask ( $this->schedule [$i] );
 				continue;
@@ -159,7 +159,7 @@ class Scheduler {
 	 * @param string $name
 	 */
 	public function executeTaskByName($name) {
-		$this->logger->info ( sprintf ( 'Schedule task %s', $name ) );
+		$this->logger->debug ( sprintf ( 'Schedule task %s', $name ) );
 		$task = $this->getTaskByName ( $name );
 		if (! empty ( $task )) {
 			$task ['executeCount'] = intval ( $task ['executeCount'] ) + 1;
@@ -175,7 +175,7 @@ class Scheduler {
 	 * @param array $task
 	 */
 	protected function executeTask(array $task) {
-		$this->logger->info ( sprintf ( 'Execute start %s', $task ['action'] ) );
+		$this->logger->debug ( sprintf ( 'Execute start %s', $task ['action'] ) );
 		$actionClass = 'Destiny\\Tasks\\' . $task ['action'];
 		if (class_exists ( $actionClass, true )) {
 			$actionObj = new $actionClass ();
@@ -183,7 +183,7 @@ class Scheduler {
 		} else {
 			throw new AppException ( sprintf ( 'Action not found: %s', $task ['action'] ) );
 		}
-		$this->logger->info ( sprintf ( 'Execute end %s', $task ['action'] ) );
+		$this->logger->debug ( sprintf ( 'Execute end %s', $task ['action'] ) );
 	}
 
 	public function getLogger() {

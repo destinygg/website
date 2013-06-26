@@ -14,7 +14,7 @@ class SubscriptionExpire {
 	public function execute(LoggerInterface $log) {
 		RememberMeService::instance ()->clearExpiredRememberMe ();
 		$expiredSubscriptionCount = SubscriptionsService::instance ()->expiredSubscriptions ();
-		$log->info ( sprintf ( 'Expired (%s)', $expiredSubscriptionCount ) );
+		$log->debug ( sprintf ( 'Expired (%s)', $expiredSubscriptionCount ) );
 	}
 
 }

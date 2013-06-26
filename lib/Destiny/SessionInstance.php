@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny;
 
 use Destiny\Utils\Options;
@@ -434,14 +433,14 @@ class SessionCredentials {
 	 */
 	public function getData() {
 		return array (
-				'email' => $this->getEmail (),
-				'username' => $this->getUserName (),
-				'userId' => $this->getUserId (),
-				'userStatus' => $this->getUserStatus (),
-				'country' => $this->getCountry (),
-				'roles' => $this->getRoles (),
-				'authProvider' => $this->getAuthProvider (),
-				'features' => $this->getFeatures () 
+			'email' => $this->getEmail (),
+			'username' => $this->getUserName (),
+			'userId' => $this->getUserId (),
+			'userStatus' => $this->getUserStatus (),
+			'country' => $this->getCountry (),
+			'roles' => $this->getRoles (),
+			'authProvider' => $this->getAuthProvider (),
+			'features' => $this->getFeatures () 
 		);
 	}
 
@@ -592,11 +591,13 @@ abstract class Session {
 	/**
 	 * Return true if there is a session cookie and its not empty
 	 *
+	 * @param START_IFVALIDCOOKIE|START_NOCOOKIE $flag
+	 * @param boolean $restart default false
 	 * @return boolean
 	 */
 	public static function start($flag = null) {
 		$session = self::instance ();
-		if (! $session->isStarted ()) {
+		if (! $session->isStarted () || $restart) {
 			switch ($flag) {
 				case self::START_IFVALIDCOOKIE :
 					$sid = $session->getSessionCookie ()->getCookie ();
