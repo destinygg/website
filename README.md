@@ -25,6 +25,9 @@ All api requests and heavy tasks are done on a single cron task (currently runni
 This is controlled by "Tasks".
 
 If you are running the website locally, you can call this file manually, or setup a cron.
+
+/cron/index.php
+
 The table "[prefix_]scheduled_tasks" will show when specific tasks have been run.
 
 If you don't run this, you will get no data in the site.
