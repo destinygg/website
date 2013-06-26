@@ -9,10 +9,7 @@ use Destiny\Utils\Tpl;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<link href="<?=Config::cdn()?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/css/destiny.<?=Config::version()?>.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/css/destiny.admin.<?=Config::version()?>.css" rel="stylesheet" media="screen">
-<link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
+<?include'./tpl/seg/commontop.php'?>
 </head>
 <body id="admin">
 
@@ -119,16 +116,8 @@ use Destiny\Utils\Tpl;
 
 	</section>
 	
-	</section>
-	
 	<?include'./tpl/seg/foot.php'?>
+	<?include'./tpl/seg/commonbottom.php'?>
 	
-	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.9.1.min.js"></script>
-	<script src="<?=Config::cdn()?>/js/vendor/jquery.cookie.js"></script>
-	<script src="<?=Config::cdn()?>/js/vendor/bootstrap.js"></script>
-	<script src="<?=Config::cdn()?>/js/vendor/moment.js"></script>
-	<script src="<?=Config::cdn()?>/js/destiny.<?=Config::version()?>.js"></script>
-	<script src="<?=Config::cdn()?>/js/destiny.admin.<?=Config::version()?>.js"></script>
-	<script>destiny.init({cdn:'<?=Config::cdn()?>'});</script>
 </body>
 </html>

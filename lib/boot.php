@@ -1,12 +1,16 @@
 <?php
+ini_set ( 'date.timezone', 'UTC' );
+ini_set ( 'mysql.connect_timeout', 5 );
+ini_set ( 'max_execution_time', 30 );
+
 // Used when the full path is needed to the base directory
 define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
 define ( '_VENDORDIR', _BASEDIR . '/vendor' );
-// Paypal configuration
+define ( '_STATICDIR', _BASEDIR . '/static' );
 define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
 require _VENDORDIR . '/autoload.php';
 
-\Destiny\Config::load ( _BASEDIR . '/config/config.php', _BASEDIR . '/lib/.version' );
+\Destiny\Config::load ( array_merge_recursive ( require _BASEDIR . '/config/config.php', json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) ) );
 
 $log = new \Monolog\Logger ( $context->log );
 $log->pushHandler ( new \Monolog\Handler\StreamHandler ( \Destiny\Config::$a ['log'] ['path'] . $context->log . '.log', \Monolog\Logger::INFO ) );
@@ -21,9 +25,8 @@ $db->exec ( 'SET time_zone = \'+00:00\'' );
 
 $app = new \Destiny\Application ();
 
-$redis = 'Redis';
-if (class_exists ( $redis )) {
-	$redis = new $redis ();
+if (class_exists ( 'Redis' )) {
+	$redis = new \Redis ();
 	$redis->connect ( \Destiny\Config::$a ['redis'] ['host'], \Destiny\Config::$a ['redis'] ['port'] );
 	$app->setRedis ( $redis );
 	$cache = new \Doctrine\Common\Cache\RedisCache ();

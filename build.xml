@@ -1,125 +1,135 @@
 <?xml version="1.0"?>
-<project name="destiny.gg Project Deployment" default="init">
+<project name="destinygg" default="build">
 
-	<target name="loadproperties">
-		<property file="lib/.version" />
-		<property name="build.base" value="../destiny_build" />
-		<echo>Version ${version}</echo>
-		<echo>Exporting to ${build.base}</echo>
+	<property name="build.dir" value="${basedir}/../destiny_build" />
+	<property name="composer.file" value="${basedir}/composer.json" />
+		
+	<target name="install" depends="readcomposerproperties">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/tmp" />
+		<mkdir dir="${build.dir}/log" />
+		<antcall target="clean" />
+		<antcall target="copyvendor" />
+		<antcall target="copybuild" />
+		<antcall target="concatcss" />
+		<antcall target="concatjavascript" />
+		<antcall target="compresscss" />
+		<antcall target="compressjavascript" />
 	</target>
 	
-	<target name="clean" depends="loadproperties">
+	<target name="build" depends="readcomposerproperties">
+		<antcall target="clean" />
+		<antcall target="copybuild" />
+	</target>
+	
+	<target name="clean">
 		<delete includeemptydirs="true" quiet="true">
-			<fileset dir="${build.base}" includes="**/*" excludes="**/tmp/**,**/log/**" />
+			<fileset dir="${build.dir}" includes="**/**" excludes="tmp/**,log/**,vendor/**" />
 		</delete>
 	</target>
-	
-	<target name="init" depends="clean">
-		<mkdir dir="${build.base}/" />
-		<mkdir dir="${build.base}/tmp/" />
-		<mkdir dir="${build.base}/log/" />
-		<antcall target="copysource" />
-		<antcall target="concatcss" />
-		<antcall target="concatjs" />
-		<antcall target="compresscss" />
-		<antcall target="compressjs" />
-	</target>
-	
-	<target name="copysource">
-		<copy todir="${build.base}/lib">
-			<fileset dir="lib"/>
-		</copy>
-		<copy todir="${build.base}/vendor">
+
+	<target name="copyvendor">
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${build.dir}" includes="vendor/**" />
+		</delete>
+		<copy todir="${build.dir}/vendor" includeEmptyDirs="false">
 			<fileset dir="vendor" excludes="/nervo/,**/.git/,**/tests/,**/samples/,**/examples/,**/doc/,**/bin/,**/.travis.yml,**/VERSION**,**/CHANGELOG.**,**/README.**,**/FAQ.**,**/CONTRIBUTING.**,**/LICENSE**,**/composer.json"/>
 		</copy>
-		<copy todir="${build.base}/public">
-			<fileset dir="public"/>
+	</target>
+	
+	<target name="copybuild">
+		<copy todir="${build.dir}/lib">
+			<fileset dir="lib" />
 		</copy>
-		<copy todir="${build.base}/static">
-			<fileset dir="static"/>
+		<copy todir="${build.dir}/public">
+			<fileset dir="public" />
 		</copy>
-		<copy todir="${build.base}/cron">
-			<fileset dir="cron"/>
+		<copy todir="${build.dir}/static">
+			<fileset dir="static" />
 		</copy>
-		<copy todir="${build.base}/config">
-			<fileset dir="config"/>
+		<copy todir="${build.dir}/cron">
+			<fileset dir="cron" />
 		</copy>
+		<copy todir="${build.dir}/config">
+			<fileset dir="config" />
+		</copy>
+		<copy todir="${build.dir}/">
+			<fileset file="composer.json" />
+		</copy>
+	</target>
+	
+	<target name="concatcss">
+		<property name="destpath" value="${build.dir}/static/css/" />
+		<property name="file" value="destiny.${composer.version}.css" />
+		<concat destfile="${destpath}${file}">
+			<fileset dir="${destpath}" includes="*.css" />
+		</concat>
+		<delete><fileset dir="${destpath}" excludes="${file}" includes="*.css" /></delete>
+	</target>
+	
+	<target name="concatjavascript">
+		<property name="destpath" value="${build.dir}/static/js/" />
+		<property name="file" value="destiny.${composer.version}.js" />
+		<concat destfile="${destpath}${file}">
+			<fileset dir="${destpath}" includes="*.js" />
+		</concat>
+		<delete><fileset dir="${destpath}" excludes="${file}" includes="*.js" /></delete>
+	</target>
+	
+	<target name="compresscss">
+		<antcall target="compress">
+			<param name="file" value="${build.dir}/static/css/destiny.${composer.version}.css" />
+		</antcall>
+		<antcall target="compress">
+			<param name="file" value="${build.dir}/static/css/errors/errors.css" />
+		</antcall>
+	</target>
+	
+	<target name="compressjavascript">
+		<antcall target="compress">
+			<param name="file" value="${build.dir}/static/js/destiny.${composer.version}.js" />
+		</antcall>
 	</target>
 	
 	<target name="compress">
+		<description>Compresses/Minifies javascript and css</description>
 		<java jar="vendor/nervo/yuicompressor/yuicompressor.jar" fork="true">
 			<arg value="${file}" />
 			<arg value="-o" />
 			<arg value="${file}" />
 			<arg value="--nomunge" />
 		</java>
-	</target>
-
-	<target name="concatcss">
-		<filelist id="adminfiles" dir="${build.base}/static/css/">
-			<file name="destiny.admin.css" />
-		</filelist>
-		<concat destfile="${build.base}/static/css/destiny.admin.${version}.css">
-			<filelist refid="adminfiles"/> 
-		</concat>
-		<filelist id="files" dir="${build.base}/static/css/">
-			<file name="destiny.css" />
-			<file name="destiny.flags.css" />
-			<file name="destiny.teammaker.css" />
-			<file name="destiny.fantasy.css" />
-			<file name="destiny.bigscreen.css" />
-		</filelist>
-		<concat destfile="${build.base}/static/css/destiny.${version}.css">
-			<filelist refid="files"/> 
-		</concat>
-		<delete><filelist refid="files"/></delete>
-		<delete><filelist refid="adminfiles"/></delete>
+		<echo>Compressed... ${file}</echo>
 	</target>
 	
-	<target name="concatjs">
-		<filelist id="adminfiles" dir="${build.base}/static/js/">
-			<file name="destiny.admin.js" />
-		</filelist>
-		<filelist id="files" dir="${build.base}/static/js/">
-			<file name="destiny.utils.js" />
-			<file name="destiny.js" />
-			<file name="destiny.feed.js" />
-			<file name="destiny.twitch.js" />
-			<file name="destiny.teambar.js" />
-			<file name="destiny.teamcreator.js" />
-			<file name="destiny.ui.js" />
-			<file name="destiny.profile.js" />
-			<file name="destiny.challenger.js" />
-		</filelist>
-		<concat destfile="${build.base}/static/js/destiny.${version}.js">
-			<filelist refid="files"/> 
-		</concat>
-		<concat destfile="${build.base}/static/js/destiny.admin.${version}.js">
-			<filelist refid="adminfiles"/> 
-		</concat>
-		<delete><filelist refid="files"/></delete>
-		<delete><filelist refid="adminfiles"/></delete>
-	</target>
-	
-	<target name="compresscss">
-		<antcall target="compress">
-			<param name="file" value="${build.base}/static/css/destiny.${version}.css" />
-		</antcall>
-		<antcall target="compress">
-			<param name="file" value="${build.base}/static/css/destiny.admin.${version}.css" />
-		</antcall>
-		<antcall target="compress">
-			<param name="file" value="${build.base}/static/css/errors.css" />
-		</antcall>
-	</target>
-	
-	<target name="compressjs">
-		<antcall target="compress">
-			<param name="file" value="${build.base}/static/js/destiny.${version}.js" />
-		</antcall>
-		<antcall target="compress">
-			<param name="file" value="${build.base}/static/js/destiny.admin.${version}.js" />
-		</antcall>
+	<target name="readcomposerproperties">
+		<description>Reads a composer.json file and put the first level of the json array on the global ant properties</description>
+		<script language="javascript" setbeans="true">
+		<![CDATA[
+			importClass(java.io.File);
+			importClass(java.io.FileReader);
+			importClass(java.io.BufferedReader);
+			importClass(java.io.FileWriter);
+			importClass(java.io.BufferedWriter);
+			var composerfile = project.getProperty("composer.file");
+			var file = new File(composerfile);
+			var fr = new FileReader(file);
+			var br = new BufferedReader(fr);
+			var json = "";
+			while ((strLine = br.readLine()) != null){
+				json += strLine;
+			}
+			var struct = eval("("+json+")");
+			for (i in struct) {
+				if(struct[i] instanceof Object)
+					continue;
+				echo = project.createTask("echo");
+				echo.setMessage(i + "=" + struct[i]);
+				echo.perform();
+				project.setProperty("composer."+i, struct[i]);
+			}
+		]]>
+		</script>
 	</target>
 
 </project>

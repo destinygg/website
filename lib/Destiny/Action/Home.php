@@ -26,6 +26,7 @@ class Home {
 		$model->music = $cacheDriver->fetch ( 'recenttracks' );
 		$model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
 		$model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
+		$model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
 		return 'home';
 	}
 

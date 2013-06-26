@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny;
 
 use Destiny\Config;

@@ -104,7 +104,7 @@ abstract class Http {
 	 *
 	 * @return string
 	 */
-	public static function getBaseUrl() {
+	public static function getBaseUrl($includePort = false) {
 		$protocol = 'http';
 		if ($_SERVER ['SERVER_PORT'] == 443 || (! empty ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) == 'on')) {
 			$protocol .= 's';
@@ -113,9 +113,11 @@ abstract class Http {
 			$protocol_port = 80;
 		}
 		$host = $_SERVER ['HTTP_HOST'];
-		$port = $_SERVER ['SERVER_PORT'];
 		$request = $_SERVER ['PHP_SELF'];
-		// return dirname ( $protocol . '://' . $host . ($port == $protocol_port ? '' : ':' . $port) . $request );
+		if ($includePort) {
+			$port = $_SERVER ['SERVER_PORT'];
+			return dirname ( $protocol . '://' . $host . ($port == $protocol_port ? '' : ':' . $port) . $request );
+		}
 		return dirname ( $protocol . '://' . $host . $request );
 	}
 

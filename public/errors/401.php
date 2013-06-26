@@ -11,8 +11,9 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 <html>
 <head>
 <title>Error : Authentication required</title>
-<link href="<?=$cdn?>/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="<?=$cdn?>/css/errors.css" rel="stylesheet" media="screen">
+<meta charset="utf-8">
+<link href="<?=$cdn?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=$cdn?>/css/errors/errors.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=$cdn?>/favicon.png">
 <?include'ga.php'?>
 </head>

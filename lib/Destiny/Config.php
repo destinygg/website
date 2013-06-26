@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny;
 
 abstract class Config {
@@ -14,20 +13,10 @@ abstract class Config {
 	/**
 	 * Load the config stack
 	 *
-	 * @param string $base
-	 * @param string $filename
-	 * @param string $version
+	 * @param array $array
 	 */
-	public static function load($filename, $version) {
-		ob_start ();
-		self::$a = require $filename;
-		ob_end_clean ();
-		if (! is_array ( self::$a )) {
-			self::$a = array ();
-		}
-		// Add the version
-		$version = parse_ini_file ( $version );
-		self::$a ['version'] = $version ['version'];
+	public static function load(array $config) {
+		self::$a = $config;
 		// Set environment vars
 		if (isset ( self::$a ['env'] ) && ! empty ( self::$a ['env'] )) {
 			foreach ( self::$a ['env'] as $i => $v ) {

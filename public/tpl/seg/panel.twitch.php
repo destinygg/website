@@ -1,13 +1,23 @@
 <? 
-namespace Destiny; 
+use Destiny\Utils\Date;
 use Destiny\Session;
+use Destiny\Config;
 ?>
 <?if((bool) Config::$a['blocks']['twitch']):?>
 <section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&popout_chat=true">
 	<div class="content content-dark">
 		<div class="panelheader clearfix">
 			<div class="toolgroup clearfix">
-				<div class="pull-left channel-stat game" style="display: none;"></div>
+				<div class="pull-left channel-stat game">
+					<?php if($model->streamInfo['stream'] == null): ?>
+					<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
+					<?php else: ?>
+					<i class="icon-time icon-white subtle"></i> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['channel']['updated_at']))?></span>
+					<?php if(intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
+					- <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay
+					<?php endif; ?>
+					<?php endif; ?>
+				</div>
 				<div class="btn-group pull-right">
 					<a id="bigscreenmode" title="Big screen mode" class="btn btn-mini btn-link">[Bigscreen mode]</a>
 					<a id="popoutvideo" title="Pop-out video" class="btn btn-mini btn-link">Pop-out player</a>
