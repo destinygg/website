@@ -2,7 +2,7 @@ destiny = {
 	cdn:		'',
 	token:		'',
 	baseUrl: 	'/',
-	timout: 	15000	
+	timeout: 	15000	
 };
 destiny.urls = {
 	lastfm: 		destiny.baseUrl + 'Lastfm.json',
