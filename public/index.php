@@ -59,16 +59,24 @@ if (! Session::isStarted ()) {
 			$authManager->login ( $user, 'rememberme' );
 			$authManager->setRememberMe ( $user );
 			$app->addEvent ( new AppEvent ( array (
-					'type' => AppEvent::EVENT_DANGER,
-					'label' => 'We remember!',
-					'message' => sprintf ( 'Please logout if you are not "%s"', Session::getCredentials ()->getUsername () ) 
+				'type' => AppEvent::EVENT_DANGER,
+				'label' => 'We remember!',
+				'message' => sprintf ( 'Please logout if you are not "%s"', Session::getCredentials ()->getUsername () ) 
 			) ) );
 		}
 	}
 }
 
+// Dev/Admins only
+$app->bind ( '/^\/(subscribe|profile\/subscription|payment)/i', function (Application $app) {
+	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
+	if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
+		$app->error ( Http::STATUS_UNAUTHORIZED );
+	}
+} );
+
 // Admins only
-$app->bind ( '/^\/(admin|order|subscribe|profile\/subscribe|profile\/subscription|payment)/i', function (Application $app) {
+$app->bind ( '/^\/(admin|order|subscribe)/i', function (Application $app) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
 	if (! Session::hasRole ( \Destiny\UserRole::USER ) || ! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
 		$app->error ( Http::STATUS_UNAUTHORIZED );
@@ -83,9 +91,11 @@ $app->bind ( '/^\/(profile|order|subscribe|fantasy|payment|league\/[*]+)/i', fun
 	}
 } );
 
+// /league/game/9999
 $app->bind ( '/^\/league\/game\/(?<gameId>[0-9]+)/i', function (Application $app, array $params) {
 	$app->executeAction ( new Destiny\Action\League\Game (), $params );
 } );
+// /payment/details/9999
 $app->bind ( '/^\/payment\/details\/(?<id>[0-9]+)/i', function (Application $app, array $params) {
 	$app->executeAction ( new Destiny\Action\Payment\Details (), $params );
 } );

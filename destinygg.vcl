@@ -36,10 +36,10 @@ sub vcl_recv {
 		unset req.http.cookie;
 	}
 	
-	// cache the api requests
-	if (req.url ~ "^/[^/]+\.json$") {
-		unset req.http.cookie;
-	}
+	// cache the api requests - we need stateful json - until I clean it up
+	//if (req.url ~ "^/[^/]+\.json$") {
+	//	unset req.http.cookie;
+	//}
 	
 	// Handle compression correctly. Different browsers send different
 	// "Accept-Encoding" headers, even though they mostly all support the same
@@ -81,7 +81,7 @@ sub vcl_fetch {
 	set beresp.grace = 2m;
 	
 	// mainly to override the cache headers sent by php
-	if ( (req.url == "/" && req.http.Cookie !~ "sid=") || req.url ~ "^/[^/]\.json$") {
+	if ( (req.url == "/" && req.http.Cookie !~ "sid=|rememberme=") || req.url ~ "^/[^/]\.json$") {
 		set beresp.ttl = 30s;
 	}
 	
