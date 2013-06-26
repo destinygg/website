@@ -27,7 +27,7 @@ $session = $app->getSession ();
 $session->setSessionCookie ( new SessionCookie ( Config::$a ['cookie'] ) );
 $session->setCredentials ( new SessionCredentials () );
 
-// Puts all the credentials on the session data
+// Puts all the credentials on the session data - we dont need to remove this, because its removed with the session automatically
 $session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
 	$params = $credentials->getData ();
 	foreach ( $params as $name => $value ) {
@@ -51,7 +51,6 @@ $session->addCleanupHandler ( function (SessionInstance $session) {
 } );
 
 // Start the session if a valid session cookie is found
-// The cookie may be there, but the session data may be empty
 Session::start ( Session::START_IFCOOKIE );
 
 // If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie

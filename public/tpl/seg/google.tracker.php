@@ -1,9 +1,12 @@
-<? namespace Destiny; ?>
-<?if(preg_match('/^local[.*]+/i', $_SERVER['HTTP_HOST']) <= 0):?>
+<?php 
+use Destiny\Config; 
+?>
+<?if(!empty(Config::$a['analytics']['account']) && !empty(Config::$a['analytics']['domainName'])):?>
+
 <script type="text/javascript">
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-37443504-1']);
-_gaq.push(['_setDomainName', 'www.destiny.gg']);
+_gaq.push(['_setAccount', '<?=Config::$a['analytics']['account']?>']);
+_gaq.push(['_setDomainName', '<?=Config::$a['analytics']['domainName']?>']);
 _gaq.push(['_trackPageview']);
 (function() {
 	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;

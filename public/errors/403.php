@@ -15,7 +15,7 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 <link href="<?=$cdn?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="<?=$cdn?>/css/errors/errors.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=$cdn?>/favicon.png">
-<?include'ga.php'?>
+<?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body class="error forbidden">
 
