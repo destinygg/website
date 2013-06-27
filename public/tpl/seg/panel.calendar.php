@@ -32,7 +32,7 @@ if (! empty ( $model->events ) && ! empty ( $model->articles )) :
 
 		<div id="stream-blog" class="stream">
 			<h3 class="title">
-				<span>Blog</span> <a href="http://www.destiny.gg/n/">destiny.gg</a>
+				<span>Blog</span> <a href="http://blog.destiny.gg">destiny.gg</a>
 			</h3>
 			<div class="entries">
 				<?foreach ($model->articles as $article):?>
