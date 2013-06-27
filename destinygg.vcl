@@ -16,6 +16,11 @@ sub vcl_recv {
 	// allow varnish to serve stale content as needed
 	set req.grace = 2m;
 	
+	// do not do anything with the dev site
+	if (req.http.host ~ "dev\.destiny\.gg$") {
+		return (pass);
+	}
+	
 	// cache the cdn subdomain entirely
 	if (req.http.host ~ "^cdn\.") {
 		unset req.http.cookie;
