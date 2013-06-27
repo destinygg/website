@@ -64,12 +64,12 @@ sub vcl_recv {
 	}
 	
 	// dont cache wordpress if the user is logged in
-	if ( req.url ~ "^/n/" && ( req.http.cookie ~ "wordpress_logged_in" || req.url ~ "vaultpress=true" ) ) {
+	if ( req.http.host ~ "^blog\." && ( req.http.cookie ~ "wordpress_logged_in" || req.url ~ "vaultpress=true" ) ) {
 		return( pass );
 	}
 	
 	// drop any cookies sent to wordpress
-	if ( req.url ~ "^/n/" && req.url !~ "wp-(login|admin)" ) {
+	if ( req.http.host ~ "^blog\." && req.url !~ "wp-(login|admin)" ) {
 		unset req.http.cookie;
 	}
 	
