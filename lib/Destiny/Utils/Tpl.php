@@ -55,12 +55,4 @@ class Tpl {
 		return sprintf ( '<time title="%s" data-moment="true" data-moment-elapsed="true" datetime="%s" ' . $addon . '>%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), Date::getElapsedTime ( $date ) );
 	}
 
-	public static function eachResource($folder, $fn) {
-		$s = '';
-		foreach ( glob ( _STATICDIR . $folder ) as $file ) {
-			$s .= $fn($file);
-		}
-		return $s;
-	}
-
 }

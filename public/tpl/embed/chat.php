@@ -9,7 +9,7 @@ use Destiny\Utils\Tpl;
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
 <?include'./tpl/seg/commontop.php'?>
-<?php if(Config::$a['compressed']):?>
+<?php if(is_file(_STATICDIR .'/chat/css/style.'.Config::version().'.css')):?>
 <link href="<?=Config::cdn()?>/chat/css/style.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <?php else: ?>
 <link href="<?=Config::cdn()?>/chat/css/style.css" rel="stylesheet" media="screen">
@@ -37,7 +37,7 @@ use Destiny\Utils\Tpl;
 	
 <?include'./tpl/seg/commonbottom.php'?>
 
-<?php if(Config::$a['compressed']):?>
+<?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
