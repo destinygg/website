@@ -428,7 +428,7 @@ class Application extends Service {
 	 *
 	 * @param Redis $redis
 	 */
-	public function setRedis(Redis $redis) {
+	public function setRedis(\Redis $redis) {
 		$this->redis = $redis;
 	}
 
