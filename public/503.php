@@ -19,8 +19,8 @@ $e->message = 'Hamster #' . rand ( 1000, 9999 ) . ' is being replaced. The site 
 <head>
 <title>Maintenance</title>
 <meta charset="utf-8">
-<link href="<?=$cdn?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="<?=$cdn?>/css/errors/errors.css" rel="stylesheet" media="screen">
+<link href="<?=$cdn?>/vendor/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=$cdn?>/errors/css/style.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=$cdn?>/favicon.png">
 </head>
 <body class="error maintenance">
@@ -41,7 +41,7 @@ $e->message = 'Hamster #' . rand ( 1000, 9999 ) . ' is being replaced. The site 
 	
 	<?include'./errors/foot.php'?>
 	
-	<script src="<?=$cdn?>/js/vendor/jquery-1.9.1.min.js"></script>
+	<script src="<?=$cdn?>/js/vendor/jquery-1.10.1.min.js"></script>
 	<script src="<?=$cdn?>/js/vendor/bootstrap.js"></script>
 
 </body>

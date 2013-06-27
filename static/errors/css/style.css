@@ -22,7 +22,7 @@ height: 100%;
 }
 
 body {
-background: #111 url("../../img/bodybg.png") repeat top center;
+background: #111 url("../../web/img/bodybg.png") repeat top center;
 position: relative;
 padding-top: 40px;
 }
@@ -45,7 +45,7 @@ margin: auto 0;
 body.error #header-band {
 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 border-top: 1px solid rgba(255, 255, 255, 0.1);
-background: url("../../img/cloudbg.jpg") repeat-x top center;
+background: url("../../web/img/cloudbg.jpg") repeat-x top center;
 margin: 0;	
 }
 
@@ -74,7 +74,7 @@ line-height: 25px;
 }
 
 #destiny-illustration {
-background: url(../../img/destinybannerhead.large.png) no-repeat top left;
+background: url(../../web/img/destinybannerhead.large.png) no-repeat top left;
 top: 0;
 right: 0;
 z-index: 101;
@@ -84,7 +84,7 @@ position: absolute;
 }
 
 i.icon-bobross {
-background: url(../favicon.png) no-repeat center center;
+background: url(../../favicon.png) no-repeat center center;
 margin-bottom: 1px;
 margin-top: 0;
 -webkit-transform: rotate(0deg);

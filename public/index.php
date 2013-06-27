@@ -15,7 +15,7 @@ use Destiny\Config;
 
 ini_set ( 'max_execution_time', 10 );
 ini_set ( 'mysql.connect_timeout', 10 );
-ini_set ( 'session.gc_maxlifetime', 2 * 60 * 60 );
+ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
 
 $context->log = 'http';
 require __DIR__ . '/../lib/boot.php';
@@ -55,14 +55,14 @@ Session::start ( Session::START_IFCOOKIE );
 
 // If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie
 if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
-	$authManager = AuthenticationService::instance ();
-	$userId = $authManager->getRememberMe ();
+	$authService = AuthenticationService::instance ();
+	$userId = $authService->getRememberMe ();
 	if ($userId !== false) {
 		$userManager = UserService::instance ();
 		$user = $userManager->getUserById ( $userId );
 		if (! empty ( $user )) {
-			$authManager->login ( $user, 'rememberme' );
-			$authManager->setRememberMe ( $user );
+			$authService->login ( $user, 'rememberme' );
+			$authService->setRememberMe ( $user );
 			$app->addEvent ( new AppEvent ( array (
 				'type' => AppEvent::EVENT_DANGER,
 				'label' => 'You have been automatically logged in',
@@ -73,7 +73,7 @@ if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 }
 
 // Dev/Admins only
-$app->bind ( '/^\/(subscribe|profile\/subscription|payment)/i', function (Application $app) {
+$app->bind ( '/^\/(subscribe|profile\/subscription|payment|embed|chat)/i', function (Application $app) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
 	if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
 		$app->error ( Http::STATUS_UNAUTHORIZED );

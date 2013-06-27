@@ -53,7 +53,7 @@ class Twitter {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$UserService = UserService::instance ();
-		$authManager = AuthenticationService::instance ();
+		$authService = AuthenticationService::instance ();
 		try {
 			if ((! isset ( $params ['oauth_token'] ) || empty ( $params ['oauth_token'] )) || ! isset ( $params ['oauth_verifier'] ) || empty ( $params ['oauth_verifier'] )) {
 				throw new AppException ( 'Authentication failed' );
@@ -85,7 +85,7 @@ class Twitter {
 			}
 			$data = $tmhOAuth->extract_params ( $tmhOAuth->response ['response'] );
 			$authCreds = $this->getAuthCredentials ( $oauth ['oauth_token'], $data );
-			$authManager->handleAuthCredentials ( $authCreds );
+			$authService->handleAuthCredentials ( $authCreds );
 		} catch ( AppException $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;

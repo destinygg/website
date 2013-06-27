@@ -52,7 +52,7 @@ class Twitch {
 	 * @throws AppException
 	 */
 	public function execute(array $params, ViewModel $model) {
-		$authManager = AuthenticationService::instance ();
+		$authService = AuthenticationService::instance ();
 		try {
 			if (isset ( $params ['error'] ) && ! empty ( $params ['error'] )) {
 				$model->title = 'Login error';
@@ -71,7 +71,7 @@ class Twitch {
 				$this->handleBroadcasterLogin ( $authClient, $accessToken, $params );
 			}
 			
-			$authManager->handleAuthCredentials ( $authCreds );
+			$authService->handleAuthCredentials ( $authCreds );
 		} catch ( AppException $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;

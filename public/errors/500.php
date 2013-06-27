@@ -1,20 +1,16 @@
-<?
+<?php
+use Destiny\Config;
 $words = include 'words.php';
 $word = $words [array_rand ( $words, 1 )];
-if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
-	$cdn = '//local.destiny.cdn';
-} else {
-	$cdn = '//cdn.destiny.gg';
-}
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <title>Error</title>
 <meta charset="utf-8">
-<link href="<?=$cdn?>/css/vendor/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="<?=$cdn?>/css/errors/errors.css" rel="stylesheet" media="screen">
-<link rel="shortcut icon" href="<?=$cdn?>/favicon.png">
+<link href="<?=Config::cdn()?>/vendor/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/errors/css/style.css" rel="stylesheet" media="screen">
+<link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body class="error logicerror">
@@ -38,8 +34,8 @@ if (preg_match ( '/^local/i', $_SERVER ['HTTP_HOST'] ) > 0) {
 	
 	<?include'foot.php'?>
 	
-	<script src="<?=$cdn?>/js/vendor/jquery-1.9.1.min.js"></script>
-	<script src="<?=$cdn?>/js/vendor/bootstrap.js"></script>
+	<script src="<?=Config::cdn()?>/js/vendor/jquery-1.10.1.min.js"></script>
+	<script src="<?=Config::cdn()?>/js/vendor/bootstrap.js"></script>
 
 </body>
 </html>

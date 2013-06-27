@@ -5,7 +5,7 @@ use Destiny\Utils\Http;
 <meta property="og:site_name" content="<?=Config::$a['meta']['shortName']?>" />
 <meta property="og:title" content="<?=Config::$a['meta']['title']?>" />
 <meta property="og:description"	content="<?=Config::$a['meta']['description']?>" />
-<meta property="og:image" content="<?=Config::cdn()?>/img/destinyspash600x600.png" />
+<meta property="og:image" content="<?=Config::cdn()?>/web/img/destinyspash600x600.png" />
 <meta property="og:url" content="<?=Http::getBaseUrl()?>" />
 <meta property="og:type" content="video.other" />
 <meta property="og:video" content="<?=Config::$a['meta']['video']?>" />

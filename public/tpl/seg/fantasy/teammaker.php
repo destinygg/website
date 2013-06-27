@@ -51,7 +51,7 @@ if (! empty ( $model->champions )) {
 		<?for ($i=0;$i<Config::$a['fantasy']['team']['maxChampions']; $i++):?>
 			<div class="champion-slot champion-slot-empty" style="width:<?=(100/Config::$a['fantasy']['team']['maxChampions'])?>%; float:left;">
 				<div class="thumbnail" style="border: none;">
-					<img src="<?=Config::cdn()?>/img/320x320.gif" />
+					<img src="<?=Config::cdn()?>/web/img/320x320.gif" />
 				</div>
 			</div>
 		<?endfor;?>

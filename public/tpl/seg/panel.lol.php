@@ -33,7 +33,7 @@ use Destiny\Utils\Tpl;
 				<div class="pull-left summon-rank-display">
 					<div class="summoner-rank unranked pull-left">Unknown</div>
 					<div class="summoner-rank-thumbnail pull-left">
-						<i title="Unknown" style="width:45px; height:45px; background: url(<?=Config::cdn()?>/img/lol/rank/unknown.png) no-repeat center center; background-size: 60px 60px;"></i>
+						<i title="Unknown" style="width:45px; height:45px; background: url(<?=Config::cdn()?>/web/img/lol/rank/unknown.png) no-repeat center center; background-size: 60px 60px;"></i>
 					</div>
 				</div>
 			</div>
@@ -83,7 +83,7 @@ use Destiny\Utils\Tpl;
 						<span style="text-transform: capitalize;"><?=strtolower($summoner['league']['tier'])?></span> <?=$summoner['league']['rank']?>
 					</div>
 					<div class="summoner-rank-thumbnail pull-left">
-						<i data-placement="left" rel="tooltip" title="<?=$summoner['league']['tier']?> <?=$summoner['league']['rank']?>" style="width:45px; height:45px; background: url(<?=Config::cdn()?>/img/lol/rank/<?=strtolower($summoner['league']['tier'])?>_<?=$summoner['league']['rankInt']?>.png) no-repeat center center; background-size: 60px 60px;"></i>
+						<i data-placement="left" rel="tooltip" title="<?=$summoner['league']['tier']?> <?=$summoner['league']['rank']?>" style="width:45px; height:45px; background: url(<?=Config::cdn()?>/web/img/lol/rank/<?=strtolower($summoner['league']['tier'])?>_<?=$summoner['league']['rankInt']?>.png) no-repeat center center; background-size: 60px 60px;"></i>
 					</div>
 				</div>
 			</div>

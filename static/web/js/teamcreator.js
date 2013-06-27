@@ -99,7 +99,7 @@
 					'<div data-value="'+ champions[x].championValue +'" data-id="'+ champions[x].championId +'" data-name="'+ htmlEncode(champions[x].championName) +'" class="champion'+((champions[x].championFree == '1') ? ' champion-free':' champion-locked')+'" style="float:left; width: 10%;">'+
 						'<div class="clearfix">'+
 							'<div class="thumbnail" title="'+ htmlEncode(champions[x].championName) +'">'+
-								'<img style="max-width:100%;" src="'+ destiny.cdn +'/img/320x320.gif" data-src="'+ getChampIcon(champions[x].championName) +'" />'+
+								'<img style="max-width:100%;" src="'+ destiny.cdn +'/web/img/320x320.gif" data-src="'+ getChampIcon(champions[x].championName) +'" />'+
 								'<span class="championMultiplier" title="Score Multiplier"><i class="icon-star icon-white subtle"></i>'+Math.round(champions[x].championMultiplier*100)+'%</span>'+
 								'<div class="champion-values clearfix">'+
 									'<span class="championValue"><i class="icon-money"></i>'+ champions[x].championValue +'</span>'+
@@ -188,7 +188,7 @@
 			if(slot.hasClass('champion-transfer')){
 				img.attr('src', getChampIcon(slot.data('transferOut').championName));
 			}else{
-				img.attr('src', destiny.cdn+'/img/320x320.gif');
+				img.attr('src', destiny.cdn+'/web/img/320x320.gif');
 			}
 		},
 		

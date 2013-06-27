@@ -116,7 +116,7 @@ abstract class Lol {
 	 * @return string
 	 */
 	public static function getIcon($name) {
-		return Config::cdn () . '/img/lol/champions/' . strtolower ( preg_replace ( '/([^\d\w\-]+)/i', '', str_replace ( ' ', '-', $name ) ) ) . '.png';
+		return Config::cdn () . '/web/img/lol/champions/' . strtolower ( preg_replace ( '/([^\d\w\-]+)/i', '', str_replace ( ' ', '-', $name ) ) ) . '.png';
 	}
 
 	/**

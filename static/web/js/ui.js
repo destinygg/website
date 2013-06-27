@@ -4,8 +4,8 @@ $(function(){
 	
 	// Lastfm
 	new DestinyFeedConsumer({
-		url: destiny.urls.lastfm,
-		polling: destiny.polling.lastfm,
+		url: destiny.baseUrl + 'lastfm.json',
+		polling: 40,
 		ifModified: true,
 		start: true,
 		ui: '#stream-lastfm',
@@ -19,7 +19,7 @@ $(function(){
 					var entry = $(
 							'<div class="media">'+ 
 								'<a class="pull-left cover-image" href="'+ track.url +'">'+ 
-									'<img class="media-object" src="'+destiny.cdn+'/img/64x64.gif" data-src="'+ track.image[1]['#text'] +'">'+ 
+									'<img class="media-object" src="'+destiny.cdn+'/web/img/64x64.gif" data-src="'+ track.image[1]['#text'] +'">'+ 
 								'</a>'+ 
 								'<div class="media-body">'+ 
 									'<div class="media-heading trackname"><a title="'+ htmlEncode(track.name) +'" href="'+ track.url +'">'+ htmlEncode(track.name) +'</a></div>'+ 
@@ -41,8 +41,8 @@ $(function(){
 	
 	// Twitter
 	new DestinyFeedConsumer({
-		url: destiny.urls.twitter,
-		polling: destiny.polling.twitter,
+		url: destiny.baseUrl + 'twitter.json',
+		polling: 300,
 		ifModified: true,
 		start: true,
 		ui: '#stream-twitter',
@@ -68,7 +68,7 @@ $(function(){
 	
 	// Youtube
 	new DestinyFeedConsumer({
-		url: destiny.urls.youtube,
+		url: destiny.baseUrl + 'youtube.json',
 		ifModified: true,
 		start: true,
 		ui: '#youtube',
@@ -83,7 +83,7 @@ $(function(){
 						'<li>'+
 							'<div class="thumbnail" rel="tooltip" title="'+ title + '">'+
 								'<a href="'+ 'http://www.youtube.com/watch?v='+ data.items[i].snippet.resourceId.videoId +'">'+ 
-									'<img alt="'+ title +'" src="'+destiny.cdn+'/img/320x240.gif" data-src="https://i.ytimg.com/vi/'+ data.items[i].snippet.resourceId.videoId +'/default.jpg" />'+
+									'<img alt="'+ title +'" src="'+destiny.cdn+'/web/img/320x240.gif" data-src="https://i.ytimg.com/vi/'+ data.items[i].snippet.resourceId.videoId +'/default.jpg" />'+
 								'</a>'+
 							'</div>'+
 						'</li>'
@@ -97,8 +97,8 @@ $(function(){
 	
 	// Past Broadcasts
 	new DestinyFeedConsumer({
-		url: destiny.urls.broadcasts,
-		polling: destiny.polling.broadcasts,
+		url: destiny.baseUrl + 'broadcasts.json',
+		polling: 600,
 		ifModified: true,
 		start: true,
 		ui: '#broadcasts',
@@ -114,7 +114,7 @@ $(function(){
 						'<li>'+
 							'<div class="thumbnail" data-placement="bottom" rel="tooltip" title="'+ time +'">'+
 								'<a href="'+ data.videos[i].url +'">'+ 
-									'<img alt="'+ time +'" src="'+destiny.cdn+'/img/320x240.gif" data-src="'+ data.videos[i].preview +'">'+
+									'<img alt="'+ time +'" src="'+destiny.cdn+'/web/img/320x240.gif" data-src="'+ data.videos[i].preview +'">'+
 								'</a>'+
 							'</div>'+
 						'</li>'
@@ -128,8 +128,8 @@ $(function(){
 	
 	// Stream details
 	new DestinyFeedConsumer({
-		url: destiny.urls.stream,
-		polling: destiny.polling.stream,
+		url: destiny.baseUrl + 'stream.json',
+		polling: 30,
 		ifModified: true,
 		start: false,
 		ui: '#twitchpanel',
@@ -153,8 +153,8 @@ $(function(){
 	
 	// Summoner details
 	new DestinyFeedConsumer({
-		url: destiny.urls.summonerstats,
-		polling: destiny.polling.summonerstats,
+		url: destiny.baseUrl + 'summoners.json',
+		polling: 70,
 		ifModified: true,
 		start: false,
 		ui: '#lolpanel',
@@ -191,7 +191,7 @@ $(function(){
 						'<div class="summoner-rank-info unranked pull-right">'+
 							'<div class="pull-left summon-rank-display">'+
 								'<div class="summoner-rank unranked pull-left" style="">Unknown</div>' +
-								'<div class="summoner-rank-thumbnail pull-left"><i title="Unknown" style="width:45px; height:45px; background: url('+destiny.cdn+'/img/lol/rank/unknown.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
+								'<div class="summoner-rank-thumbnail pull-left"><i title="Unknown" style="width:45px; height:45px; background: url('+destiny.cdn+'/web/img/lol/rank/unknown.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
 							'</div>'+
 						'</div>'
 					);
@@ -224,7 +224,7 @@ $(function(){
 							'</div>'+
 							'<div class="pull-left summon-rank-display">'+
 								'<div class="summoner-rank ranked pull-left"><span style="text-transform: capitalize;">'+ summoner.league.tier.toLowerCase() +'</span> '+ summoner.league.rank +'</div>' +
-								'<div class="summoner-rank-thumbnail pull-left"><i data-placement="left" rel="tooltip" title="'+ summoner.league.tier +' '+ summoner.league.rank +'" style="width:45px; height:45px; background: url('+destiny.cdn+'/img/lol/rank/' + summoner.league.tier.toLowerCase() + '_' + summoner.league.rankInt + '.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
+								'<div class="summoner-rank-thumbnail pull-left"><i data-placement="left" rel="tooltip" title="'+ summoner.league.tier +' '+ summoner.league.rank +'" style="width:45px; height:45px; background: url('+destiny.cdn+'/web/img/lol/rank/' + summoner.league.tier.toLowerCase() + '_' + summoner.league.rankInt + '.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
 							'</div>'+
 						'</div>'
 					);
@@ -241,7 +241,7 @@ $(function(){
 		// Ingame
 		var currentIngameId = $('#activeGame').data('gameid');
 		new DestinyFeedConsumer({
-			url: destiny.urls.ingame,
+			url: destiny.baseUrl + 'fantasy/ingame.json',
 			polling: 30,
 			ifModified: true,
 			start: false,
@@ -289,7 +289,7 @@ $(function(){
 		});
 		if(adRotateIndex < pads.length-1) adRotateIndex++; else adRotateIndex = 0;
 		$(pads[adRotateIndex]).hide().addClass('active').fadeIn(500);
-	}, destiny.polling.adsRotate * 1000);
+	}, 6 * 1000);
 
 	
 	// Check if the ad has been blocked after X seconds
@@ -356,8 +356,8 @@ $(function(){
 		$(window).on('resize', _resize);
 		_resize();
 		new DestinyFeedConsumer({
-			url: destiny.urls.stream,
-			polling: destiny.polling.stream,
+			url: destiny.baseUrl + 'stream.json',
+			polling: 30,
 			ui: '#twitch-stream-wrap .panelheader .game',
 			ifModified: true,
 			success: function(data, textStatus){

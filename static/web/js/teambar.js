@@ -31,7 +31,7 @@ $(function(){
 				img.attr('src', getChampIcon(champion.championName));
 			}else{
 				img.attr('alt', '');
-				img.attr('src', destiny.cdn + '/img/320x320.gif');
+				img.attr('src', destiny.cdn + '/web/img/320x320.gif');
 				slot.removeClass('champion-slot-full champion-slot-empty champion-illegal champion-free');
 				slot.addClass('champion-slot-empty');
 				slot.attr('title', 'None');
@@ -109,8 +109,8 @@ $(function(){
 		};
 		
 		new DestinyFeedConsumer({
-			url: destiny.urls.fantasyteam,
-			polling: destiny.polling.fantasyteam,
+			url: destiny.baseUrl + 'fantasy/team.json',
+			polling: 60,
 			ui: '.fantasy-team-bar',
 			ifModified: true,
 			start: false,

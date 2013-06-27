@@ -1,12 +1,10 @@
 <?
-
 namespace Destiny;
-
 use Destiny\Utils\Tpl;
 use Destiny\Utils\Date;
 
 if (! empty ( $model->events ) && ! empty ( $model->articles )) :
-	?>
+?>
 <section class="container">
 	<div class="content content-dark content-split clearfix">
 

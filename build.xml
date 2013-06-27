@@ -4,15 +4,13 @@
 	<target name="package" depends="readcomposerproperties">
 		<property name="build.dir" value="${basedir}/../destiny_packages/${composer.version}" />
 		<mkdir dir="${build.dir}" />
-		<mkdir dir="${build.dir}/tmp" />
-		<mkdir dir="${build.dir}/log" />
 		<antcall target="clean" />
 		<antcall target="copybuild" />
-		<antcall target="compressstatic" />
-		<zip destfile="${basedir}/../destiny_packages/destiny.${composer.version}.zip" basedir="${build.dir}" />
+		<antcall target="packresources" />
+		<zip destfile="${build.dir}/../destiny.${composer.version}.zip" basedir="${build.dir}" />
 		<delete dir="${build.dir}"/>
 	</target>
-		
+	
 	<target name="install" depends="readcomposerproperties">
 		<property name="build.dir" value="${basedir}/../destiny_build" />
 		<mkdir dir="${build.dir}" />
@@ -21,8 +19,9 @@
 		<antcall target="clean" />
 		<antcall target="copybuild" />
 		<antcall target="copyvendor" />
-		<antcall target="compressstatic" />
+		<antcall target="packresources" />
 	</target>
+		
 	
 	<target name="build" depends="readcomposerproperties">
 		<property name="build.dir" value="${basedir}/../destiny_build" />
@@ -34,13 +33,6 @@
 		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${build.dir}" includes="**/**" excludes="tmp/**,log/**,vendor/**" />
 		</delete>
-	</target>
-
-	<target name="compressstatic">
-		<antcall target="concatcss" />
-		<antcall target="concatjavascript" />
-		<antcall target="compresscss" />
-		<antcall target="compressjavascript" />
 	</target>
 
 	<target name="copyvendor">
@@ -72,38 +64,57 @@
 			<fileset file="composer.json" />
 		</copy>
 	</target>
-	
-	<target name="concatcss">
-		<property name="destpath" value="${build.dir}/static/css/" />
-		<property name="file" value="destiny.${composer.version}.css" />
-		<concat destfile="${destpath}${file}">
-			<fileset dir="${destpath}" includes="*.css" />
+
+	<target name="packresources">
+
+		<!-- Errors concat and compress -->
+		<antcall target="compress">
+			<param name="file" value="${build.dir}/static/errors/css/style.css" />
+		</antcall>
+		
+		<!-- Chat concat and compress -->
+		<antcall target="compress">
+			<param name="file" value="${build.dir}/static/chat/css/style.css" />
+		</antcall>
+		<move file="${build.dir}/static/chat/css/style.css" tofile="${build.dir}/static/chat/css/style.${composer.version}.css" />
+		<concat destfile="${build.dir}/static/chat/js/engine.${composer.version}.js" fixlastline="yes" append="no">
+			<fileset file="${build.dir}/static/chat/js/gui.js" />
+			<fileset file="${build.dir}/static/chat/js/impl.js" />
 		</concat>
-		<delete><fileset dir="${destpath}" excludes="${file}" includes="*.css" /></delete>
-	</target>
-	
-	<target name="concatjavascript">
-		<property name="destpath" value="${build.dir}/static/js/" />
-		<property name="file" value="destiny.${composer.version}.js" />
-		<concat destfile="${destpath}${file}">
-			<fileset dir="${destpath}" includes="*.js" />
+		<antcall target="compress">
+			<param name="file" value="${build.dir}/static/chat/js/engine.${composer.version}.js" />
+		</antcall>
+
+		<!-- CSS concat and compress -->
+		<concat destfile="${build.dir}/static/web/css/style.${composer.version}.css" fixlastline="yes" append="no">
+			<fileset file="${build.dir}/static/web/css/style.css" />
+			<fileset file="${build.dir}/static/web/css/flags.css" />
+			<fileset file="${build.dir}/static/web/css/bigscreen.css" />
+			<fileset file="${build.dir}/static/web/css/fantasy.css" />
+			<fileset file="${build.dir}/static/web/css/teammaker.css" />
 		</concat>
-		<delete><fileset dir="${destpath}" excludes="${file}" includes="*.js" /></delete>
-	</target>
-	
-	<target name="compresscss">
 		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/css/destiny.${composer.version}.css" />
+			<param name="file" value="${build.dir}/static/web/css/style.${composer.version}.css" />
 		</antcall>
+		<delete><fileset dir="${build.dir}/static/web/css/" excludes="style.${composer.version}.css" includes="*.css" /></delete>
+		
+		<!-- Js concat and compress -->
+		<concat destfile="${build.dir}/static/web/js/destiny.${composer.version}.js" fixlastline="yes" append="no">
+			<fileset file="${build.dir}/static/web/js/utils.js" />
+			<fileset file="${build.dir}/static/web/js/destiny.js" />
+			<fileset file="${build.dir}/static/web/js/feed.js" />
+			<fileset file="${build.dir}/static/web/js/profile.js" />
+			<fileset file="${build.dir}/static/web/js/twitch.js" />
+			<fileset file="${build.dir}/static/web/js/teambar.js" />
+			<fileset file="${build.dir}/static/web/js/teamcreator.js" />
+			<fileset file="${build.dir}/static/web/js/challenger.js" />
+			<fileset file="${build.dir}/static/web/js/ui.js" />
+		</concat>
 		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/css/errors/errors.css" />
+			<param name="file" value="${build.dir}/static/web/js/destiny.${composer.version}.js" />
 		</antcall>
-	</target>
-	
-	<target name="compressjavascript">
-		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/js/destiny.${composer.version}.js" />
-		</antcall>
+		<delete><fileset dir="${build.dir}/static/web/js/" excludes="destiny.${composer.version}.js" includes="*.js" /></delete>
+		
 	</target>
 	
 	<target name="compress">

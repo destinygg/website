@@ -1,3 +1,6 @@
+<?php 
+use Destiny\Config;
+?>
 <div class="navbar navbar-inverse navbar-subnav">
 	<div class="navbar-inner">
 		<ul class="nav">
@@ -8,7 +11,21 @@
 		</ul>
 		<ul class="nav pull-right">
 			<li id="serverStatus">
-				<?include'./tpl/seg/fantasy/serverstatus.php'?>
+				<strong>Servers:</strong>
+				<?if(is_array($model->leagueServers)):?>
+				<?foreach ($model->leagueServers as $leagueServer):?>
+				<?if(in_array(strtolower($leagueServer['server']), Config::$a['lol']['trackedRegions'])):?>
+				<?if($leagueServer['status'] == 'OK'):?>
+				<span class="online"><?=$leagueServer['server']?></span>
+				<?endif;?>
+				<?if($leagueServer['status'] == 'OFFLINE'):?>
+				<span class="offline"><?=$leagueServer['server']?></span>
+				<?endif;?>
+				<?endif;?>
+				<?endforeach;?>
+				<?else:?>
+				<span class="offline">NONE</span>
+				<?endif;?>
 			</li>
 		</ul>
 	</div>

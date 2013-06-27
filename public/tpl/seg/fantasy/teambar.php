@@ -34,7 +34,7 @@ use Destiny\Utils\Lol;
 					<?$name = Tpl::out($champ['championName'])?>
 					<div title="<?=$name?>" data-champion="<?=Tpl::out(json_encode($champ))?>" class="champion-slot champion-slot-full<?=$champCss?>" style="width:<?=$w?>%; float:left;">
 					<div class="thumbnail">
-						<img alt="<?=$name?>" src="<?=Config::cdn()?>/img/320x320.gif" data-src="<?=Lol::getIcon($champ['championName'])?>" />
+						<img alt="<?=$name?>" src="<?=Config::cdn()?>/web/img/320x320.gif" data-src="<?=Lol::getIcon($champ['championName'])?>" />
 						<div class="th-overlay" title="Champion is no longer free!"></div>
 					</div>
 				</div>
@@ -42,7 +42,7 @@ use Destiny\Utils\Lol;
 				<?for ($i=0;$i<Config::$a['fantasy']['team']['maxChampions']-count($model->teamChamps); $i++):?>
 					<div class="champion-slot champion-slot-empty" style="width:<?=$w?>%; float:left;">
 					<div class="thumbnail">
-						<img src="<?=Config::cdn()?>/img/320x320.gif" />
+						<img src="<?=Config::cdn()?>/web/img/320x320.gif" />
 					</div>
 				</div>
 				<?endfor;?>

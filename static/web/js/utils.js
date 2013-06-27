@@ -1,22 +1,3 @@
-// Finds text urls and wraps them in a anchor
-String.prototype.linkify = function(){
-	return this.replace(/((https?|s?ftp|ssh)\:\/\/[^"\s\<\>]*[^.,;'">\:\s\<\>\)\]\!])/g, function(url) {
-		return '<a href="'+url+'">'+url+'</a>';
-	});
-};
-// finds text with @[twitterId] and replaces it with a twitter reply link
-String.prototype.twitterReply = function(){
-	return this.replace(/\B@([_a-z0-9]+)/ig, function(reply) {
-		return reply.charAt(0)+'<a href="http://twitter.com/'+reply.substring(1)+'">'+reply.substring(1)+'</a>';
-	});
-};
-
-jQuery.fn.replaceClass = function(toReplace,replaceWith){
-	return this.each(function(){
-		return $(this).removeClass(toReplace).addClass(replaceWith);
-	});
-};
-
 function htmlEncode(value){ return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
 
 $.fn.loadImages = function(options){
@@ -32,7 +13,7 @@ $.fn.loadImages = function(options){
 };
 
 function getChampIcon(name){
-	return destiny.cdn + '/img/lol/champions/'+name.replace(' ', '-').replace('\'','').replace('.','').toLowerCase()+'.png';
+	return destiny.cdn + '/web/img/lol/champions/'+name.replace(' ', '-').replace('\'','').replace('.','').toLowerCase()+'.png';
 };
 
 $.fn.sortElements = (function(){

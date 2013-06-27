@@ -60,12 +60,12 @@ use Destiny\Utils\Tpl;
 									<?$champions = ChampionService::instance ()->getChampionsById (explode(',', $topTeam['champions']));?>
 									<?foreach($champions as $champion):?>
 										<div class="thumbnail">
-											<img title="<?=Tpl::out($champion['championName'])?>" style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($champion['championName'])?>" />
+											<img title="<?=Tpl::out($champion['championName'])?>" style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($champion['championName'])?>" />
 										</div>
 									<?endforeach;?>
 									<?for($i=0;$i<Config::$a['fantasy']['team']['maxChampions']-count($champions);$i++):?>
 										<div class="thumbnail">
-											<img style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/img/64x64.gif" />
+											<img style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/web/img/64x64.gif" />
 										</div>
 									<?endfor;?>
 									</div>

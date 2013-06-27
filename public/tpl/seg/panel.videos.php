@@ -18,7 +18,7 @@ use Destiny\Utils\Date;
 					<div class="thumbnail" data-placement="bottom" rel="tooltip" title="<?=$title?>">
 						<a
 							href="http://www.youtube.com/watch?v=<?=$vid['snippet']['resourceId']['videoId']?>">
-							<img alt="<?=$title?>" src="<?=Config::cdn()?>/img/320x240.gif"
+							<img alt="<?=$title?>" src="<?=Config::cdn()?>/web/img/320x240.gif"
 							data-src="https://i.ytimg.com/vi/<?=$vid['snippet']['resourceId']['videoId']?>/default.jpg" />
 						</a>
 					</div>
@@ -39,7 +39,7 @@ use Destiny\Utils\Date;
 				<?$time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" rel="tooltip" title="<?=$time?>">
-						<a href="<?=$broadcast['url']?>"> <img alt="<?=$time?>" src="<?=Config::cdn()?>/img/320x240.gif" data-src="<?=$broadcast['preview']?>" /></a>
+						<a href="<?=$broadcast['url']?>"> <img alt="<?=$time?>" src="<?=Config::cdn()?>/web/img/320x240.gif" data-src="<?=$broadcast['preview']?>" /></a>
 					</div>
 				</li>
 			<?endforeach;?>

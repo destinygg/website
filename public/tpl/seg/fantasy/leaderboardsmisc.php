@@ -21,7 +21,7 @@ use Destiny\Utils\Lol;
 				<tr>
 					<td style="text-align: left;">
 					<a href="http://www.lolking.net/summoner/na/<?=$summoner['summonerId']?>" class="subtle-link">
-						<img title="<?=Tpl::out($champ['championName'])?>" style="width: 20px; height: 20px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($champ['championName'])?>" />
+						<img title="<?=Tpl::out($champ['championName'])?>" style="width: 20px; height: 20px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($champ['championName'])?>" />
 						<?=$title?>
 					</a>
 					</td>

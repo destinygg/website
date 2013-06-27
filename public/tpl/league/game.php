@@ -9,6 +9,7 @@ use Destiny\Utils\Tpl;
 <html>
 <head>
 <title><?=Tpl::title($model->title)?></title>
+<meta charset="utf-8">
 <?include'./tpl/seg/opengraph.php'?>
 <?include'./tpl/seg/commontop.php'?>
 <?include'./tpl/seg/google.tracker.php'?>
@@ -41,7 +42,7 @@ use Destiny\Utils\Tpl;
 					<?php foreach ($model->game['champions'] as $bSummoner): ?>
 					<?php if($bSummoner['teamSideId'] == \Destiny\Utils\Lol::TEAMSIDE_BLUE): ?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$bSummoner['summonerId']?>" title="<?=Tpl::out($bSummoner['championName'])?>">
-							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($bSummoner['championName'])?>" />
+							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($bSummoner['championName'])?>" />
 							<?=Tpl::out($bSummoner['summonerName'])?>
 						</a>
 					<?php endif; ?>
@@ -57,7 +58,7 @@ use Destiny\Utils\Tpl;
 					<?php if($pSummoner['teamSideId'] == \Destiny\Utils\Lol::TEAMSIDE_PURPLE): ?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$pSummoner['summonerId']?>" title="<?=Tpl::out($pSummoner['championName'])?>">
 							<?=Tpl::out($pSummoner['summonerName'])?>
-							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($pSummoner['championName'])?>" />
+							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($pSummoner['championName'])?>" />
 						</a>
 					<?php endif; ?>
 					<?php endforeach; ?>
@@ -85,7 +86,7 @@ use Destiny\Utils\Tpl;
 							<span style="color: green;">+<?=$champScore['scoreValue']?></span> <small class="subtle">points earned</small>
 						</td>
 						<td style="text-align: right;">
-							<img title="<?=Tpl::out($champScore['championName'])?>" style="width: 20px; height: 20px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($champScore['championName'])?>" />
+							<img title="<?=Tpl::out($champScore['championName'])?>" style="width: 20px; height: 20px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($champScore['championName'])?>" />
 							<small><?=$champScore['penalty']?></small> <small class="subtle">penalty</small>
 							<small><?=$champScore['championMultiplier']?></small> <small class="subtle">multiplier</small>
 						</td>
@@ -141,12 +142,12 @@ use Destiny\Utils\Tpl;
 								<?$champions = $topTeam['champions'];?>
 								<?foreach($champions as $champion):?>
 								<div class="thumbnail">
-									<img title="<?=Tpl::out($champion['championName'])?>" style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/img/64x64.gif" data-src="<?=Lol::getIcon($champion['championName'])?>" />
+									<img title="<?=Tpl::out($champion['championName'])?>" style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($champion['championName'])?>" />
 								</div>
 								<?endforeach;?>
 								<?for($i=0;$i<Config::$a['fantasy']['team']['maxChampions']-intval(count($champions));$i++):?>
 								<div class="thumbnail">
-									<img style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/img/64x64.gif" />
+									<img style="width: 25px; height: 25px;" src="<?=Config::cdn()?>/web/img/64x64.gif" />
 								</div>
 								<?endfor;?>
 							</div>

@@ -27,7 +27,7 @@ use Destiny\Utils\Lol;
 			<div class="champion" style="float: left; width: 10%;">
 				<div class="clearfix">
 					<div title="<?=$title?>">
-						<img style="max-width: 100%;" title="None" src="<?=Config::cdn()?>/img/320x320.gif" />
+						<img style="max-width: 100%;" title="None" src="<?=Config::cdn()?>/web/img/320x320.gif" />
 						<div title="Score" style="text-align: center;">None</div>
 					</div>
 				</div>

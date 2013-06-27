@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Service;
 
 use Destiny\Service;
@@ -56,6 +55,19 @@ class UserService extends Service {
 	}
 
 	/**
+	 * Get the user record by username
+	 *
+	 * @param string $userId
+	 */
+	public function getUserByUsername($username) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM `dfl_users` WHERE username = :username LIMIT 0,1' );
+		$stmt->bindValue ( 'username', $username, \PDO::PARAM_STR );
+		$stmt->execute ();
+		return $stmt->fetch ();
+	}
+
+	/**
 	 * Get the user record by userId
 	 *
 	 * @param string $userId
@@ -89,7 +101,7 @@ class UserService extends Service {
 	public function updateUser($userId, array $user) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users', $user, array (
-				'userId' => $userId 
+			'userId' => $userId 
 		) );
 	}
 
@@ -177,8 +189,8 @@ class UserService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$auth ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
 		$conn->update ( 'dfl_users_auth', $auth, array (
-				'userId' => $userId,
-				'authProvider' => $authProvider 
+			'userId' => $userId,
+			'authProvider' => $authProvider 
 		) );
 	}
 
@@ -191,19 +203,19 @@ class UserService extends Service {
 	public function addUserAuthProfile(array $auth) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_auth', array (
-				'userId' => $auth ['userId'],
-				'authProvider' => $auth ['authProvider'],
-				'authId' => $auth ['authId'],
-				'authToken' => $auth ['authToken'],
-				'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
-				'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
+			'userId' => $auth ['userId'],
+			'authProvider' => $auth ['authProvider'],
+			'authId' => $auth ['authId'],
+			'authToken' => $auth ['authToken'],
+			'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
+			'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		), array (
-				\PDO::PARAM_INT,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_INT,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR 
+			\PDO::PARAM_INT,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_INT,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR 
 		) );
 	}
 
@@ -216,8 +228,8 @@ class UserService extends Service {
 	public function removeAuthProfile($userId, $authProvider) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->delete ( 'dfl_users_auth', array (
-				'userId' => $userId,
-				'authProvider' => $authProvider 
+			'userId' => $userId,
+			'authProvider' => $authProvider 
 		) );
 	}
 
