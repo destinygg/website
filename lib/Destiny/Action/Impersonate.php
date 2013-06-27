@@ -29,6 +29,11 @@ class Impersonate {
 		} else if (! empty ( $username )) {
 			$user = $userService->getUserByUsername ( $username );
 		}
+		
+		if (empty ( $user )) {
+			throw new AppException ( 'User not found. Try a different userId or username' );
+		}
+		
 		$authService->login ( $user, 'impersonating' );
 		$app->addEvent ( new AppEvent ( array (
 			'type' => AppEvent::EVENT_DANGER,
