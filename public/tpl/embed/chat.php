@@ -9,6 +9,7 @@ use Destiny\Utils\Tpl;
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
 <?include'./tpl/seg/commontop.php'?>
+<link href="<?=Config::cdn()?>/vendor/css/jquery.mCustomScrollbar.css" rel="stylesheet" media="screen">
 <?php if(is_file(_STATICDIR .'/chat/css/style.'.Config::version().'.css')):?>
 <link href="<?=Config::cdn()?>/chat/css/style.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <?php else: ?>
@@ -36,11 +37,14 @@ use Destiny\Utils\Tpl;
 </div>
 	
 <?include'./tpl/seg/commonbottom.php'?>
-
+<script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
+<script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
 <?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
+<script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
+<script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/impl.js"></script>
 <?php endif; ?>
 

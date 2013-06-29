@@ -26,7 +26,7 @@ class Chat {
 	private function getChatOptionParams(array $params) {
 		$options = array ();
 		if (! isset ( $params ['theme'] ) || empty ( $params ['theme'] ) || $params ['theme'] != 'light' && $params ['theme'] != 'dark') {
-			$params ['theme'] = 'light';
+			$params ['theme'] = 'dark';
 		}
 		$options ['theme'] = $params ['theme'];
 		return $options;

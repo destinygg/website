@@ -4,7 +4,7 @@
 	destiny.fn.Chat = function(props){
 		props.ui = $(props.ui).get(0);
 		$.extend(this, props);
-		return this;
+		return this.init();
 	};
 	
 	// Base User
@@ -26,6 +26,9 @@
 			$(this).triggerHandler('status', [state]);
 			this.state = state;
 			return this;
+		};
+		self.wrap = function(){
+			return $('<li class="line"/>');
 		};
 		return this;
 	};
@@ -58,8 +61,14 @@
 			});
 			// Scrollbars and scroll locking
 			if(self.scrollPlugin == null){
-				self.scrollPlugin = new destiny.fn.ChatScrollPlugin(self);
+				//self.scrollPlugin = new destiny.fn.ChatScrollPlugin(self);
+				self.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(self);
+				self.scrollPlugin.lockScroll(true);
 			};
+			// Bind to window resize event
+			$(window).on('resize.chat',function(){
+				self.resize();
+			});
 			self.show();
 			self.resize();
 			return self;
@@ -67,10 +76,6 @@
 		
 		lineCount: function(){
 			return $(this.lines).find('.line').length;
-		},
-		
-		wrapMessage: function(message){
-			return $('<li class="line"/>').append(message.html());
 		},
 		
 		// API
@@ -81,15 +86,19 @@
 		},
 		
 		push: function(message){
-			var line = this.wrapMessage(message).appendTo(this.lines);
+			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
+			var line = message.html().appendTo(this.lines);
 			$(message).on('status', function(e, state){
 				line.removeClass(this.state).addClass(state);
 			});
 			if(this.lineCount() >= this.maxLines){
 				$(this.lines).find('.line:first').remove();
 			}
-			if(this.scrollPlugin.isScrollLocked){
+			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
+				this.scrollPlugin.update();
 				this.scrollPlugin.scrollBottom();
+			}else if(this.scrollPlugin.isScrollable()){
+				this.scrollPlugin.update()
 			}
 			$(this).triggerHandler('push', [message, line]);
 			return message;
@@ -108,6 +117,7 @@
 		resize: function(){
 			var bg = $(this.ui).height(), offset = $(this.inputwrap).outerHeight();
 			$(this.output).height(bg-offset);
+			//this.scrollPlugin.update();
 			$(this).triggerHandler('resize');
 			return this;
 		},
@@ -126,65 +136,5 @@
 		
 	});
 	
-	destiny.fn.ChatScrollPlugin = function(chat){
-		this.chat = chat;
-		return this.init();
-	};
-	$.extend(destiny.fn.ChatScrollPlugin.prototype, {
-		
-		isScrollLocked: true,
-		chat: null,
-		
-		init: function(){
-			var self = this;
-			$(self.chat.output).on({
-				mousewheel: function(e){
-					// If the user scrolls up at any time and we are locked, the lock is released
-					if(self.isScrollLocked && self.isScrollable() && self.isScrolledBottom()){
-						if(e['originalEvent'] != null && e.originalEvent['wheelDelta'] != undefined && e.originalEvent.wheelDelta/120 > 0){
-							self.lockScroll(false);
-						}
-					}
-				},
-				mousedown: function(e){
-					if(self.isScrollLocked && self.isScrolledBottom()){
-						self.lockScroll(false);
-					}
-				},
-				mouseup: function(e){
-					if(!self.isScrollLocked && self.isScrolledBottom()) {
-						self.lockScroll(true);
-					}
-				},
-				scroll: function(e){
-					if(!self.isScrollLocked && self.isScrolledBottom()) {
-						self.lockScroll(true);
-					};
-				}
-			});
-			self.lockScroll(true);
-			return self;
-		},
-		
-		lockScroll: function(lock){
-			this.isScrollLocked = lock; 
-			$(this).triggerHandler('lockScroll');
-			return this;
-		},
-		
-		scrollBottom: function(){
-			$(this.chat.output).scrollTop(this.chat.output.scrollHeight);
-			$(this).triggerHandler('scrollBottom');
-			return this;
-		},
-		
-		isScrolledBottom: function(){
-			return (!this.isScrollable() || ($(this.chat.output).scrollTop() + $(this.chat.output).height() == $(this.chat.lines).height()));
-		},
-		
-		isScrollable: function(){
-			return ($(this.chat.output).height() < $(this.chat.lines).height());
-		}
-	});
 	
 })(jQuery);

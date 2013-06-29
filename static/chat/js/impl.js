@@ -28,9 +28,6 @@
 		$.extend(this, new destiny.fn.ChatMessage(message));
 		var self = this;
 		self.timestamp = moment();
-		self.wrap = function(){
-			return $('<chat class="h-chat" />');
-		};
 		self.wrapTime = function(){
 			return $('<time class="p-time"/>').text(self.timestamp.format('HH:mm')+' ').attr('datetime', self.timestamp.format('MMMM Do YYYY, h:mm:ss a'));
 		};
@@ -100,12 +97,10 @@
 		// This currently logged in user - you need to set this
 		user: null
 	});
+	// End chat setup
 	
-	// Bind to window resize event
-	$(window).on('resize',function(){
-		chat.resize();
-	});
 	
+
 	// Demonstration binding to purge event
 	$(chat).on('purge', function(){
 		chat.push(new ChatMessage('Chat purged by ' + chat.user.username));
@@ -124,13 +119,10 @@
 		}, 300);
 	});
 	
-	// Gotta init meng
-	chat.init(); 
-	// End chat setup
-	
 	
 	
 	//--- COMMUNICATING ---
+	var RandomColor = {letters:'0123456789ABCDEF'.split(''), gen: function(){ for (var c='',i=0; i<6; i++) c += this.letters[Math.round(Math.random() * 15)]; return '#'+c;}};
 	
 	// Global messages
 	chat.push(new ChatMessage('Welcome to destiny.gg'));
@@ -142,12 +134,12 @@
 		async: false,
 		success: function(data){
 			chat.user = data;
+			chat.user.color = RandomColor.gen();
 			chat.push(new ChatMessage('User '+ data.username + ' entered the room'));
 		}
 	});
 	
 	// Mock users
-	var RandomColor = {letters:'0123456789ABCDEF'.split(''), gen: function(){ for (var c='',i=0; i<6; i++) c += this.letters[Math.round(Math.random() * 15)]; return '#'+c;}};
 	var StevenBonnell = new ChatUser({username: 'StevenBonnell', userId: 312, roles: [ChatUserRoles.USER,ChatUserRoles.BROADCASTER], color: 'red'});
 	var Thomas = new ChatUser({username: 'Thomas', userId: 5432, roles: [ChatUserRoles.USER,ChatUserRoles.ADMIN], color: 'red'});
 	var Jeff = new ChatUser({username: 'Jeff', userId: 12312, roles: [ChatUserRoles.USER,ChatUserRoles.SUBSCRIBER], color: RandomColor.gen()});
