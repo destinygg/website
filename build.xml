@@ -81,6 +81,8 @@
 		<move file="${build.dir}/static/chat/css/style.css" tofile="${build.dir}/static/chat/css/style.${composer.version}.css" />
 		<concat destfile="${build.dir}/static/chat/js/engine.${composer.version}.js" fixlastline="yes" append="no">
 			<fileset file="${build.dir}/static/chat/js/gui.js" />
+			<fileset file="${build.dir}/static/chat/js/scroll.mCustom.js" />
+			<fileset file="${build.dir}/static/chat/js/scroll.native.js" />
 			<fileset file="${build.dir}/static/chat/js/impl.js" />
 		</concat>
 		<antcall target="compress">
