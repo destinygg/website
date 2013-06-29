@@ -50,16 +50,16 @@
 		wrapUser: function(user){
 			var icon = '';
 			if($.inArray(ChatUserRoles.MODERATOR, user.roles)>-1){
-				icon = '<i class="icon-leaf" title="Moderator" />';
+				icon += '<i class="icon-leaf" title="Moderator" />';
 			}
 			if($.inArray(ChatUserRoles.ADMIN, user.roles)>-1){
-				icon = '<i class="icon-fire" title="Administrator" />';
+				icon += '<i class="icon-fire" title="Administrator" />';
 			}
 			if($.inArray(ChatUserRoles.SUBSCRIBER, user.roles)>-1){
-				icon = '<i class="icon-star" title="Subscriber" />';
+				icon += '<i class="icon-star" title="Subscriber" />';
 			}
 			if($.inArray(ChatUserRoles.BROADCASTER, user.roles)>-1){
-				icon = '<i class="icon-facetime-video" title="Broadcaster" />';
+				icon += '<i class="icon-facetime-video" title="Broadcaster" />';
 			};
 			return icon+' <a style="color:'+user.color+'">'+user.username+'</a>';
 		},

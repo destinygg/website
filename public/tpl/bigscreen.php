@@ -10,6 +10,7 @@ use Destiny\Utils\Tpl;
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
 <?include'./tpl/seg/opengraph.php'?>
+<link href="<?=Config::cdn()?>/web/css/bigscreen.css" rel="stylesheet" media="screen">
 <?include'./tpl/seg/commontop.php'?>
 <?include'./tpl/seg/google.tracker.php'?>
 </head>

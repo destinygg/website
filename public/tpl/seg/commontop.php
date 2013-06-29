@@ -9,7 +9,6 @@ use Destiny\Config;
 <?php else: ?>
 <link href="<?=Config::cdn()?>/web/css/style.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/web/css/flags.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/web/css/bigscreen.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/web/css/fantasy.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/web/css/teammaker.css" rel="stylesheet" media="screen">
 <?php endif; ?>

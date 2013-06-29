@@ -4,6 +4,10 @@ padding:0;
 height:100%;
 overflow: hidden;
 }
+/*.chat-output, .chat-output .mCSB_container {
+transform: scale(1) translate3d(0,0,0);	
+-webkit-transform: scale(1) translate3d(0,0,0);	
+}*/
 .chat-output, .chat-lines {
 -webkit-backface-visibility: hidden;
 -webkit-perspective: 1000;
@@ -22,16 +26,12 @@ width:100%;
 height:100%;
 }
 .chat-lines > div {
-text-shadow:none;
-margin:0;
-padding:0 0 0 3px;
-border:0;
-display: block;	
-/*transition: opacity 0.2s ease-in-out;*/
+padding: 0 0 0 3px;
+font-smoothing: none;
+-webkit-font-smoothing: none;
 }
 .chat-lines > div.pending, .chat-lines > div.failed {
 opacity:0.5;
-/*transition: opacity 0 ease-in-out;*/
 }
 .chat-lines > div.failed span {
 text-decoration:line-through;
@@ -81,15 +81,13 @@ box-shadow: none;
 .chat-lines {
 font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
 font-size: 12px;
+line-height: 16px;
 }
 .chat-lines > div .p-whisper {
 font-weight: bold;
 }
 .chat-lines > div time {
 font-size: 11px;
-}
-.chat-lines > div, .chat-lines > div span, .chat-lines > div time, .chat-lines > div span { 
-line-height: 16px;
 }
 
 /* Theme - Light */

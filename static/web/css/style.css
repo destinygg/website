@@ -64,25 +64,17 @@ text-decoration: none;
 a:hover>.subtle {
 opacity: 1;
 }
-
 a.subtle-link {
 color: #888;
 }
-
 a.subtle-link:hover {
 color: #fafafa;
 }
-
 .btn-link, .btn-link:active, .btn-link[disabled] {
 text-shadow:none;
 }
-
 .nav,.nav a,.nav li {
 outline: none;
-}
-
-h1 .label, h2 .label, h3 .label, h4 .label {
-vertical-align: middle;
 }
 
 .control-group {
@@ -92,10 +84,6 @@ form {
 margin:0;
 }
 
-.nav-tabs {
-border-bottom: 1px solid #222;
-margin: 0;
-}
 
 .navbar {
 box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
@@ -808,30 +796,11 @@ text-shadow: none;
 color: #333;
 }
 
-.nav-tabs>.active>a,.nav-tabs>.active>a:hover {
-color: #ddd;
-text-shadow: -1px -1px 0 black;
-background: rgba(0, 0, 0, 0.5);
-border-top: 1px solid #444;
-border-left: 1px solid #444;
-border-right: 1px solid #222;
-border-bottom: 1px solid #222;
-}
-
-.nav-tabs>li>a {
-color: #999;
-}
-
 .nav.navbar-inverse>li>a:hover {
 color: #ccc;
 text-decoration: none;
 border-color: #444 #222 #222 #444;
 }
-
-.nav-tabs>li>a:hover {
-background: rgba(0, 0, 0, 0.25);
-}
-
 hr {
 margin: 20px 0;
 border: 0;
