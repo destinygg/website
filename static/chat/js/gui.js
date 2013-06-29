@@ -1,11 +1,4 @@
 (function($){
-
-	// Base Chat
-	destiny.fn.Chat = function(props){
-		props.ui = $(props.ui).get(0);
-		$.extend(this, props);
-		return this.init();
-	};
 	
 	// Base User
 	destiny.fn.ChatUser = function(args){
@@ -18,24 +11,38 @@
 
 	// Base Message
 	destiny.fn.ChatMessage = function(message){
-		var self = this;
-		self.message = message;
-		self.timestamp = null;
-		self.state = '';
-		self.status = function(state){
+		return this.init(message);
+	};
+	$.extend(destiny.fn.ChatMessage.prototype, {
+		timestamp: null,
+		state: null,
+		init: function(message){
+			this.timestamp = moment();
+			this.message = message;
+			this.state = '';
+			return this;
+		},
+		status: function(state){
 			$(this).triggerHandler('status', [state]);
 			this.state = state;
 			return this;
-		};
-		self.wrap = function(){
-			return $('<li class="line"/>');
-		};
-		return this;
+		},
+		wrap: function(content){
+			return '<div>'+content+'</div>';
+		}
+	});
+
+
+	// Base Chat
+	destiny.fn.Chat = function(props){
+		$.extend(this, props);
+		this.ui = $(this.ui);
+		return this.init();
 	};
-	
 	$.extend(destiny.fn.Chat.prototype, {
 
 		maxLines: 50,
+		lineCount: 0,
 		scrollPlugin: null,
 		options: null,
 		ui: null,
@@ -44,92 +51,92 @@
 		input: null,
 		
 		init: function(){
-			var self = this;
 			// Optional params passed in via the data-options="{}" attribute
-			self.options = $(self.ui).data('options');
+			this.options = this.ui.data('options');
 			// local elements stored in vars to not have to get the elements via query each time
-			self.lines = $(self.ui).find('.chat-lines').get(0);
-			self.output = $(self.ui).find('.chat-output').get(0);
-			self.inputwrap = $(self.ui).find('.chat-input').get(0);
-			self.input = $(self.inputwrap).find('.input:first').get(0);
+			this.lines = $(this.ui.find('.chat-lines:first')[0]);
+			this.output = $(this.ui.find('.chat-output:first')[0]);
+			this.inputwrap = $(this.ui.find('.chat-input:first')[0]);
+			this.input = $(this.inputwrap.find('.input:first:first')[0]);
+			
 			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
-			$(self.ui).data('chat', self);
+			this.ui.data('chat', this);
+
 			// Bind to user input submit
-			$(self.ui).find('.chat-input form').on('submit', function(e){
-				self.send();
-				return false;
+			this.ui.on('submit', '.chat-input form', function(e){
+				e.preventDefault();
+				$(this).closest('.chat.chat-frame').data('chat').send();
 			});
+			
 			// Scrollbars and scroll locking
-			if(self.scrollPlugin == null){
-				//self.scrollPlugin = new destiny.fn.ChatScrollPlugin(self);
-				self.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(self);
-				self.scrollPlugin.lockScroll(true);
+			if(this.scrollPlugin == null){
+				//this.scrollPlugin = new destiny.fn.ChatScrollPlugin(this);
+				this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
+				this.scrollPlugin.lockScroll(true);
 			};
-			// Bind to window resize event
-			$(window).on('resize.chat',function(){
-				self.resize();
-			});
-			self.show();
-			self.resize();
-			return self;
+			this.show();
+			this.resize();
+			return this;
 		},
 		
 		lineCount: function(){
-			return $(this.lines).find('.line').length;
+			return this.lines.children().length;
 		},
 		
 		// API
 		purge: function(){
-			$(this.lines).empty();
+			this.lines.empty();
 			$(this).triggerHandler('purge');
 			return this;
 		},
 		
 		push: function(message){
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
-			var line = message.html().appendTo(this.lines);
+			message.ui = $(message.html()).appendTo(this.lines);
 			$(message).on('status', function(e, state){
-				line.removeClass(this.state).addClass(state);
+				if(state != undefined){
+					this.ui.attr('class', state);
+				}else{
+					this.ui.removeAttr('class');
+				}
 			});
 			if(this.lineCount() >= this.maxLines){
-				$(this.lines).find('.line:first').remove();
-			}
-			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
+				$(this.lines.children()[0]).remove();
+			}else if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
 				this.scrollPlugin.update();
 				this.scrollPlugin.scrollBottom();
 			}else if(this.scrollPlugin.isScrollable()){
 				this.scrollPlugin.update()
 			}
-			$(this).triggerHandler('push', [message, line]);
+			$(this).triggerHandler('push', [message]);
 			return message;
 		},
 		
 		send: function(){
-			var str = $(this.input).val();
+			var str = this.input.val();
 			if(str != ''){
-				$(this.input).focus().val('');
-				$(this).triggerHandler('send', [str, this.input]);
+				this.input.val('').focus();
+				$(this).triggerHandler('send', [str, this.input[0]]);
 			};
+			str = null;
 			return this;
 		},
 		
 		// UI
 		resize: function(){
-			var bg = $(this.ui).height(), offset = $(this.inputwrap).outerHeight();
-			$(this.output).height(bg-offset);
-			//this.scrollPlugin.update();
+			this.output.height(this.ui.height()-this.inputwrap.outerHeight());
 			$(this).triggerHandler('resize');
 			return this;
 		},
 		
 		show: function(){
-			$(this.ui).show();
+			this.ui.show();
 			$(this).triggerHandler('show');
 			return this;
 		},
 		
 		hide: function(){
-			$(this.ui).hide();
+			this.ui.hide();
 			$(this).triggerHandler('hide');
 			return this;
 		}

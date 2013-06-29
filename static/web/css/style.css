@@ -265,10 +265,10 @@ background: url(../../favicon.png) no-repeat center center;
 margin-bottom: 1px;
 margin-top: 0;
 -webkit-transform: rotate(0deg);
--webkit-transition: all 0.2s ease-in-out;
--moz-transition: all 0.2s ease-in-out;
--o-transition: all 0.2s ease-in-out;
-transition: all 0.2s ease-in-out;
+-webkit-transition: rotate 0.2s ease-in-out;
+-moz-transition: rotate 0.2s ease-in-out;
+-o-transition: rotate 0.2s ease-in-out;
+transition: rotate 0.2s ease-in-out;
 width:16px;
 height:16px;	
 }

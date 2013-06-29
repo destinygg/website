@@ -11,12 +11,12 @@
 		chat: null,
 		
 		update: function(){
-			$(this.chat.output).mCustomScrollbar('update');
+			this.chat.output.mCustomScrollbar('update');
 		},
 		
 		init: function(){
 			var self = this;
-			$(self.chat.output).mCustomScrollbar({
+			self.chat.output.mCustomScrollbar({
 				theme: ((self.chat.options.theme == 'dark') ? 'light-thin':'dark-thin'),
 				scrollInertia: 0,
 				horizontalScroll: false,
@@ -38,7 +38,7 @@
 					}
 				}
 			});
-			$(self.chat.ui).addClass('chat-custom-scroll');
+			self.chat.ui.addClass('chat-custom-scroll');
 			return true;
 		},
 		
@@ -49,7 +49,7 @@
 		},
 		
 		scrollBottom: function(){
-			$(this.chat.output).mCustomScrollbar('scrollTo','bottom');
+			this.chat.output.mCustomScrollbar('scrollTo','bottom');
 			$(this).triggerHandler('scrollBottom');
 			return this;
 		},
@@ -59,7 +59,7 @@
 		},
 		
 		isScrollable: function(){
-			return ($(this.chat.output).height() < $(this.chat.lines).height());
+			return (this.chat.output.height() < this.chat.lines.height());
 		},
 		
 		isScrollLocked: function(){

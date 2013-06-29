@@ -25,67 +25,64 @@
 
 	// Simple chat message
 	var ChatMessage = function(message){
-		$.extend(this, new destiny.fn.ChatMessage(message));
-		var self = this;
-		self.timestamp = moment();
-		self.wrapTime = function(){
-			return $('<time class="p-time"/>').text(self.timestamp.format('HH:mm')+' ').attr('datetime', self.timestamp.format('MMMM Do YYYY, h:mm:ss a'));
-		};
-		self.wrapMessage = function(){
-			return $('<span class="p-message"/>').text(' ' + this.message);
-		};
-		self.html = function(){
-			return this.wrap().append(this.wrapTime()).append(this.wrapMessage());
-		};
+		this.init(message);
 		return this;
 	};
+	$.extend(ChatMessage.prototype, destiny.fn.ChatMessage.prototype, {
+		wrapTime: function(){
+			return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
+		},
+		wrapMessage: function(css){
+			return '<span'+ ((css==undefined) ? '':' class="'+css+'"') +'>'+this.message+'</span>';
+		},
+		html: function(){
+			return this.wrap(this.wrapTime() + this.wrapMessage());
+		}
+	});
 
 	// Simple chat message with a user
 	var ChatUserMessage = function(message, user){
-		$.extend(this, new ChatMessage(message));
-		var self = this;
-		self.user = user;
-		self.wrapUser = function(user){
-			var usr = $('<span class="p-user"/>').text(' '+user.username).css('color', user.color);
-			if($.inArray(ChatUserRoles.MODERATOR, user.roles)>-1){
-				usr.prepend('<i class="icon-leaf" title="Moderator">[MODERATOR]</i>');
-			}
-			if($.inArray(ChatUserRoles.ADMIN, user.roles)>-1){
-				usr.prepend('<i class="icon-fire" title="Administrator">[ADMIN]</i>');
-			}
-			if($.inArray(ChatUserRoles.SUBSCRIBER, user.roles)>-1){
-				usr.prepend('<i class="icon-star" title="Subscriber">[SUBSCRIBER]</i>');
-			}
-			if($.inArray(ChatUserRoles.BROADCASTER, user.roles)>-1){
-				usr.prepend('<i class="icon-facetime-video" title="Broadcaster">[BROADCASTER]</i>');
-			}
-			return usr;
-		}
-		self.html = function(){
-			return this.wrap()
-				.append(this.wrapTime())
-				.append(this.wrapUser(this.user))
-				.append(': ')
-				.append(this.wrapMessage());
-		}
+		this.init(message);
+		this.user = user;
 		return this;
 	};
+	$.extend(ChatUserMessage.prototype, ChatMessage.prototype, {
+		wrapUser: function(user){
+			var icon = '';
+			if($.inArray(ChatUserRoles.MODERATOR, user.roles)>-1){
+				icon = '<i class="icon-leaf" title="Moderator" />';
+			}
+			if($.inArray(ChatUserRoles.ADMIN, user.roles)>-1){
+				icon = '<i class="icon-fire" title="Administrator" />';
+			}
+			if($.inArray(ChatUserRoles.SUBSCRIBER, user.roles)>-1){
+				icon = '<i class="icon-star" title="Subscriber" />';
+			}
+			if($.inArray(ChatUserRoles.BROADCASTER, user.roles)>-1){
+				icon = '<i class="icon-facetime-video" title="Broadcaster" />';
+			};
+			return icon+' <a style="color:'+user.color+'">'+user.username+'</a>';
+		},
+		wrapMessage: function(css){
+			return '<span'+ ((css==undefined) ? '':' class="'+css+'"') +'>: '+this.message+'</span>';
+		},
+		html: function(){
+			return this.wrap(this.wrapTime() + this.wrapUser(this.user) + this.wrapMessage());
+		}
+	});
 
 	// Whisper chat message
 	var ChatWhisperMessage = function(message, user, fromUser){
-		$.extend(this, new ChatUserMessage(message));
-		var self = this;
-		self.fromUser = fromUser;
-		self.html = function(){
-			return this.wrap()
-				.append(this.wrapTime())
-				.append(this.wrapUser(this.fromUser))
-				.append(' [w] ')
-				.append(this.wrapMessage().addClass('p-whisper'));
-		};
+		this.init(message);
+		this.fromUser = fromUser;
+		this.user = user;
 		return this;
 	};
-
+	$.extend(ChatWhisperMessage.prototype, ChatUserMessage.prototype, {
+		html: function(){
+			return this.wrap(this.wrapTime() + this.wrapUser(this.fromUser) + ' [w] ' + this.wrapMessage('p-whisper'));
+		}
+	});
 	
 	
 	//--- INITIALIZE ---
@@ -93,18 +90,17 @@
 		// The selector of the chat element $(selector)
 		ui: '#destinychat',
 		// Maximum chat lines to keep
-		maxLines: 100,
+		maxLines: 250,
 		// This currently logged in user - you need to set this
 		user: null
 	});
-	// End chat setup
-	
-	
-
-	// Demonstration binding to purge event
-	$(chat).on('purge', function(){
-		chat.push(new ChatMessage('Chat purged by ' + chat.user.username));
+	// Bind to window resize event - this will resize all chats
+	$(window).on('resize.chat',function(){
+		$('.chat.chat-frame').each(function(){
+			$(this).data('chat').resize();
+		});
 	});
+	
 	
 	// The ... send event, used when a person sends a message to the chat
 	// Probably will send an a request to the chat server
@@ -115,10 +111,16 @@
 		// Simulate 300ms ping
 		window.setTimeout(function(){ 
 			//message.status(ChatMessageStatus.FAILED);
-			message.status(ChatMessageStatus.SENT);
+			message.status();
+			message = null;
 		}, 300);
 	});
+	// End chat setup
 	
+	// Demonstration binding to purge event
+	$(chat).on('purge', function(){
+		chat.push(new ChatMessage('Chat purged by ' + chat.user.username));
+	});
 	
 	
 	//--- COMMUNICATING ---
@@ -128,6 +130,8 @@
 	chat.push(new ChatMessage('Welcome to destiny.gg'));
 	chat.push(new ChatMessage('Retrieving user info...'));
 	
+	var users = [];
+	
 	// Temp way of getting user info
 	$.ajax({
 		url: destiny.baseUrl + 'profile/info.json',
@@ -136,6 +140,7 @@
 			chat.user = data;
 			chat.user.color = RandomColor.gen();
 			chat.push(new ChatMessage('User '+ data.username + ' entered the room'));
+			users.push(chat.user);
 		}
 	});
 	
@@ -145,6 +150,12 @@
 	var Jeff = new ChatUser({username: 'Jeff', userId: 12312, roles: [ChatUserRoles.USER,ChatUserRoles.SUBSCRIBER], color: RandomColor.gen()});
 	var Pleb = new ChatUser({username: 'Pleb', userId: 323, roles: [ChatUserRoles.USER], color: RandomColor.gen()});
 	var Gay4Steve = new ChatUser({username: 'Gay4Steve', userId: 452, roles: [ChatUserRoles.USER,ChatUserRoles.SUBSCRIBER,ChatUserRoles.MODERATOR], color: RandomColor.gen()});
+	
+	users.push(StevenBonnell);
+	users.push(Thomas);
+	users.push(Jeff);
+	users.push(Pleb);
+	users.push(Gay4Steve);
 	
 	chat.push(new ChatWhisperMessage('This is what a whisper from ' + Pleb.username + ' to ' + chat.user.username + ' looks like', chat.user, Pleb));
 	chat.push(new ChatUserMessage('Hello '+Thomas.username+'....', Jeff));
@@ -161,27 +172,10 @@
 	chat.push(new ChatUserMessage('STFU!', Thomas));
 	chat.push(new ChatUserMessage('I TYPE IN ALL CAPS!', StevenBonnell));
 	
-	
-	// Socket stub
-	var ws = new WebSocket('ws://localhost:8000');
-	ws.onmessage = function(e) {
-		// standard
-		var data = {
-			type: 'push',
-			response: {time: 0},
-			message: {text: '',user: null}
-		};
-		// merge to socket message
-		$.extend(data, JSON.parse(e.data));
-		// Check the type, push the message
-		if(data.type == 'push'){
-			if(data.message.user != null){
-				chat.push(new ChatUserMessage(data.message.text, data.message.user));
-			}else{
-				chat.push(new ChatMessage(data.message.text));
-			}
-		}
-	};
-	//
+	/**
+	window.setInterval(function(){
+		var user = users[Math.floor(Math.random()*users.length)];
+		chat.push(new ChatUserMessage('IS STEBEN DONE?', user));
+	},1);**/
 	
 })(jQuery);

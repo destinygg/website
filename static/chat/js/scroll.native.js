@@ -32,7 +32,7 @@
 					}
 				}
 			});
-			$(self.chat.ui).addClass('chat-native-scroll');
+			self.chat.ui.addClass('chat-native-scroll');
 			return self;
 		},
 		
@@ -43,17 +43,17 @@
 		},
 		
 		scrollBottom: function(){
-			$(this.chat.output).scrollTop(this.chat.output.scrollHeight);
+			this.chat.output.scrollTop(this.chat.output.prop('scrollHeight'));
 			$(this).triggerHandler('scrollBottom');
 			return this;
 		},
 		
 		isScrolledBottom: function(){
-			return (!this.isScrollable() || $(this.chat.output).scrollTop() + $(this.chat.output).height() == $(this.chat.lines).height());
+			return (!this.isScrollable() || this.chat.output.scrollTop() + this.chat.output.height() == this.chat.lines.height());
 		},
 		
 		isScrollable: function(){
-			return ($(this.chat.output).height() < $(this.chat.lines).height());
+			return (this.chat.output.height() < this.chat.lines.height());
 		},
 		
 		isScrollLocked: function(){
