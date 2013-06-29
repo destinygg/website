@@ -1,6 +1,5 @@
 <?php
-
-namespace Destiny\Action\Fantasy;
+namespace Destiny\Action\Fantasy\Challenge;
 
 use Destiny\Service\Fantasy\TeamService;
 use Destiny\Service\Fantasy\ChallengeService;
@@ -10,13 +9,13 @@ use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppException;
 
-class Challenge {
+class Add {
 
 	public function execute(array $params) {
 		$response = array (
-				'success' => true,
-				'data' => array (),
-				'message' => '' 
+			'success' => true,
+			'data' => array (),
+			'message' => '' 
 		);
 		try {
 			if (! isset ( $params ['name'] ) || empty ( $params ['name'] )) {

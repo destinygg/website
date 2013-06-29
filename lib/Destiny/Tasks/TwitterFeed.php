@@ -38,7 +38,7 @@ class TwitterFeed {
 		$result = json_decode ( $tmhOAuth->response ['response'], true );
 		$tweets = array ();
 		foreach ( $result as $tweet ) {
-			$html = Tpl::out ( $tweet ['text'] );
+			$html = $tweet ['text'];
 			if (isset ( $tweet ['entities'] ['user_mentions'] )) {
 				foreach ( $tweet ['entities'] ['user_mentions'] as $ment ) {
 					$l = '<a href="http://twitter.com/' . $ment ['screen_name'] . '">' . $ment ['name'] . '</a>';

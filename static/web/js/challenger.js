@@ -14,7 +14,7 @@ $(function(){
 		$.ajax({
 			type: 'get',
 			data: {'name':name.val()},
-			url: destiny.baseUrl + 'fantasy/challenge',
+			url: destiny.baseUrl + 'fantasy/challenge/add',
 			success: function(data){
 				name.removeAttr('disabled');
 				btn.removeAttr('disabled');
