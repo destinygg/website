@@ -16,24 +16,24 @@ use Destiny\Utils\Tpl;
 <?php endif; ?>
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
-<body id="chat" class="embed">
+<body id="chat-embedded">
 
-	<div id="destinyChat" class="chat chat-frame">
-		<div class="chat-output clearfix">
-			<div class="chat-lines"></div>
-		</div>
-		<div class="chat-input">
-			<form class="chat-input-wrap clearfix">
-				<div class="chat-input-control">
-					<input type="text" placeholder="Enter a message..." class="input" autocomplete="off" />
-				</div>
-			</form>
-			<div class="chat-tools-wrap clearfix">
-				<button class="btn btn-mini btn-primary pull-left" onclick="$('#destinyChat').data('chat').send();">Send</button>
-				<button class="btn btn-mini btn-danger pull-right" onclick="$('#destinyChat').data('chat').purge();">Purge</button>
+<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
+	<div class="chat-output clearfix">
+		<div class="chat-lines"></div>
+	</div>
+	<div class="chat-input">
+		<form class="chat-input-wrap">
+			<div class="chat-input-control">
+				<input type="text" placeholder="Enter a message to chat..." class="input" autocomplete="off" />
 			</div>
+		</form>
+		<div class="chat-tools-wrap clearfix">
+			<button class="btn btn-mini btn-primary pull-left" onclick="$('#destinychat').data('chat').send();">Send</button>
+			<button class="btn btn-mini btn-danger pull-right" onclick="$('#destinychat').data('chat').purge();">Purge</button>
 		</div>
 	</div>
+</div>
 	
 <?include'./tpl/seg/commonbottom.php'?>
 

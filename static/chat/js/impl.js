@@ -4,29 +4,30 @@
 	// Then we initialize the chat
 	// Then we start communicating
 	
-	// Simple chat roles
 	var ChatUserRoles = {
-		USER		:0,
-		ADMIN		:1,
-		MODERATOR	:2,
-		SUBSCRIBER	:3,
-		BROADCASTER	:5
+		USER		: 0,
+		ADMIN		: 1,
+		MODERATOR	: 2,
+		SUBSCRIBER	: 3,
+		BROADCASTER	: 5
 	};
-	
+	var ChatMessageStatus = {
+		SENT		: 'sent',
+		PENDING		: 'pending',
+		FAILED		: 'failed'
+	};
+
 	// Simple chat user
 	var ChatUser = function(args){
-		this.username = args.username;
-		this.userId = args.userId;
-		this.roles = [];
-		$.extend(this, args);
+		$.extend(this, new destiny.fn.ChatUser(args));
 		return this;
-	};
+	}
 
 	// Simple chat message
 	var ChatMessage = function(message){
+		$.extend(this, new destiny.fn.ChatMessage(message));
 		var self = this;
 		self.timestamp = moment();
-		self.message = message;
 		self.wrap = function(){
 			return $('<chat class="h-chat" />');
 		};
@@ -37,9 +38,7 @@
 			return $('<span class="p-message"/>').text(' ' + this.message);
 		};
 		self.html = function(){
-			return this.wrap()
-				.append(this.wrapTime())
-				.append(this.wrapMessage());
+			return this.wrap().append(this.wrapTime()).append(this.wrapMessage());
 		};
 		return this;
 	};
@@ -93,10 +92,9 @@
 	
 	
 	//--- INITIALIZE ---
-	
-	var chat = new destiny.chat({
-		// The id of the chat element
-		ui: '#destinyChat',
+	var chat = new destiny.fn.Chat({
+		// The selector of the chat element $(selector)
+		ui: '#destinychat',
 		// Maximum chat lines to keep
 		maxLines: 100,
 		// This currently logged in user - you need to set this
@@ -115,11 +113,15 @@
 	
 	// The ... send event, used when a person sends a message to the chat
 	// Probably will send an a request to the chat server
-	$(chat).on('send', function(e, str, input){
-		// Push the message to the UI immediately, but add a pending class
-		var message = chat.push(new ChatUserMessage(str, chat.user)).addClass('pending');
+	$(chat).on('send', function(e, str){
+		// Push the message to the UI immediately, all new messages have the "pending" state
+		var message = chat.push(new ChatUserMessage(str, chat.user));
+		message.status(ChatMessageStatus.PENDING);
 		// Simulate 300ms ping
-		window.setTimeout(function(){ message.removeClass('pending').addClass('sent') }, 300);
+		window.setTimeout(function(){ 
+			//message.status(ChatMessageStatus.FAILED);
+			message.status(ChatMessageStatus.SENT);
+		}, 300);
 	});
 	
 	// Gotta init meng
@@ -146,7 +148,7 @@
 	
 	// Mock users
 	var RandomColor = {letters:'0123456789ABCDEF'.split(''), gen: function(){ for (var c='',i=0; i<6; i++) c += this.letters[Math.round(Math.random() * 15)]; return '#'+c;}};
-	var StevenBonnell = new ChatUser({username: 'StevenBonnell', userId: 312, roles: [ChatUserRoles.USER,ChatUserRoles.BROADCASTER], color: 'black'});
+	var StevenBonnell = new ChatUser({username: 'StevenBonnell', userId: 312, roles: [ChatUserRoles.USER,ChatUserRoles.BROADCASTER], color: 'red'});
 	var Thomas = new ChatUser({username: 'Thomas', userId: 5432, roles: [ChatUserRoles.USER,ChatUserRoles.ADMIN], color: 'red'});
 	var Jeff = new ChatUser({username: 'Jeff', userId: 12312, roles: [ChatUserRoles.USER,ChatUserRoles.SUBSCRIBER], color: RandomColor.gen()});
 	var Pleb = new ChatUser({username: 'Pleb', userId: 323, roles: [ChatUserRoles.USER], color: RandomColor.gen()});

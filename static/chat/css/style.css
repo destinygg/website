@@ -1,55 +1,8 @@
-.chat-lines {
-list-style: none;
-}
-.chat-lines .line {
-transition: opacity 0.2s ease-in-out;
-}
-.chat-lines .pending {
-opacity:0.5;
-transition: opacity 0 ease-in-out;
-}
-.chat-lines chat {
-margin:0;
-padding:0 0 0 3px;
-border:0;
-font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
-font-size: 12px;
-color: #010101;
-display: block;
-}
-.chat-lines chat,
-.chat-lines chat > span,
-.chat-lines chat > time,
-.chat-lines chat > p {
-line-height: 16px;	
-}
-.chat-lines chat .p-user {
-font-weight:bold;
-}
-.chat-lines chat .p-message {
-word-wrap:break-word;
-}
-.chat-lines chat .p-whisper {
-font-weight: bold;
-color: red;
-}
-.chat-lines chat time {
-font-size: 11px;
-color:#bbb;
-}
-.chat-lines chat time:hover{
-color:#333;
-}
-.chat-lines i {
-text-indent:-999em;
-}
-
-body#chat {
+body#chat-embedded {
 margin:0;
 padding:0;
 height:100%;
 overflow: hidden;
-background: white;	
 }
 
 .chat-frame {
@@ -65,6 +18,32 @@ overflow-x: hidden;
 overflow-y: scroll;
 width:100%;
 }
+.chat-lines {
+list-style: none;
+}
+.chat-lines .line {
+margin:0;
+padding:0 0 0 3px;
+border:0;
+display: block;	
+transition: opacity 0.2s ease-in-out;
+}
+.chat-lines .line.pending, .chat-lines .line.failed {
+opacity:0.5;
+transition: opacity 0 ease-in-out;
+}
+.chat-lines .line.failed .p-message {
+text-decoration:line-through;
+}
+.chat-lines .line .p-user {
+font-weight:bold;
+}
+.chat-lines .line .p-message {
+word-wrap:break-word;
+}
+.chat-lines i {
+text-indent:-999em;
+}
 
 .chat-input {
 width:100%;
@@ -77,27 +56,14 @@ padding:0;
 }
 .chat-tools-wrap {
 padding:5px;
-background: #fafafa;
 }
 .chat-input-wrap {
 border-radius:0;
-border-top:1px solid #cacaca;
-border-bottom:1px solid #cacaca;
-background: rgb(247,247,247);
-background: -moz-linear-gradient(top,  rgba(247,247,247,1) 0%, rgba(226,226,226,1) 100%);
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(247,247,247,1)), color-stop(100%,rgba(226,226,226,1)));
-background: -webkit-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(226,226,226,1) 100%);
-background: -o-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(226,226,226,1) 100%);
-background: -ms-linear-gradient(top,  rgba(247,247,247,1) 0%,rgba(226,226,226,1) 100%);
-background: linear-gradient(to bottom,  rgba(247,247,247,1) 0%,rgba(226,226,226,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#e2e2e2',GradientType=0 );	
 }
 .chat-input-control {
 margin:5px;
 padding:5px;
 border-radius:4px;
-background:white;
-border:1px solid #cacaca;
 }
 .chat-input-control .input {
 background: none;
@@ -112,4 +78,93 @@ box-sizing: border-box;
 }
 .chat-input-control .input:focus {
 box-shadow: none;	
+}
+
+
+/* Fonts / font-size */
+.chat-lines chat {
+font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+font-size: 12px;
+}
+.chat-lines .line .p-whisper {
+font-weight: bold;
+}
+.chat-lines .line .p-time {
+font-size: 11px;
+}
+.chat-lines .line:hover .p-time {
+opacity: 1 !important;
+}
+.chat-lines .line, .chat-lines .line > span, .chat-lines .line > time, .chat-lines .line > p { 
+line-height: 16px;	
+}
+
+
+/* Theme - Light */
+.chat-theme-light {
+background: white;	
+border-radius:4px;
+}
+.chat-theme-light .chat-tools-wrap {
+background: #fafafa;	
+border-radius:0 0 4px 4px;
+}
+.chat-theme-light .chat-input-wrap {
+border-radius:0;
+border-top:1px solid #cacaca;
+border-bottom:1px solid #cacaca;
+background: rgb(247,247,247);
+background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(226,226,226,1) 100%);
+}
+.chat-theme-light .chat-lines .line {
+color: #010101;
+}
+.chat-theme-light .chat-lines .line .p-time {
+color:#000;
+opacity:0.5;
+}
+.chat-theme-light .chat-lines .line .p-whisper {
+color: red;	
+}
+.chat-theme-light .chat-input-control {
+background:white;	
+border-color: #cacaca;
+border:1px solid #aeaeae;
+}
+.chat-theme-light .chat-input-control input {
+color: #555;
+background:white;
+}
+
+
+/* Theme - Dark */
+.chat-theme-dark {
+background: rgba(0,0,0,0.25);
+border-radius:4px;
+}
+.chat-theme-dark .chat-input-wrap {
+border:none;
+}
+.chat-theme-dark .chat-lines chat {
+color: #a5a5a5;
+}
+.chat-theme-dark .chat-lines .line .p-time {
+color:#fafafa;
+opacity:0.25;
+}
+.chat-theme-dark .chat-lines .line .p-whisper {
+color: #990000;	
+}
+.chat-theme-dark .chat-input-control {
+background: #010101;
+border-color: #cacaca;
+border:1px solid black;
+}
+.chat-theme-dark .chat-input-control input {
+color: #555;
+background: #010101;
+}
+.chat-theme-dark i[class^="icon-"] {
+opacity: 0.75;
+background-image: url("../../vendor/img/glyphicons-halflings-white.png") !important;
 }

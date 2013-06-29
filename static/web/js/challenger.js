@@ -14,7 +14,7 @@ $(function(){
 		$.ajax({
 			type: 'get',
 			data: {'name':name.val()},
-			url: destiny.baseUrl + 'Fantasy/Challenge',
+			url: destiny.baseUrl + 'fantasy/challenge',
 			success: function(data){
 				name.removeAttr('disabled');
 				btn.removeAttr('disabled');
@@ -51,7 +51,7 @@ $(function(){
 				$.ajax({
 					type: 'get',
 					data: {'teamId':btn.data('teamid')},
-					url: destiny.baseUrl + 'Fantasy/Challenge/Accept',
+					url: destiny.baseUrl + 'fantasy/challenge/accept',
 					success: function(data){
 						btn.closest('tr').replaceWith('<tr><td>-</td></tr>');
 					},
@@ -69,7 +69,7 @@ $(function(){
 				$.ajax({
 					type: 'get',
 					data: {'teamId':btn.data('teamid')},
-					url: destiny.baseUrl + 'Fantasy/Challenge/Decline',
+					url: destiny.baseUrl + 'fantasy/challenge/decline',
 					success: function(data){
 						btn.closest('tr').replaceWith('<tr><td>-</td></tr>');
 					},
@@ -87,7 +87,7 @@ $(function(){
 				$.ajax({
 					type: 'get',
 					data: {'teamId':btn.data('teamid')},
-					url: destiny.baseUrl + 'Fantasy/Challenge/Delete',
+					url: destiny.baseUrl + 'fantasy/challenge/delete',
 					success: function(data){
 						btn.closest('tr').replaceWith('<tr><td>-</td></tr>');
 					},
@@ -109,7 +109,7 @@ $(function(){
 				$.ajax({
 					type: 'get',
 					data: {'teamId':btn.data('teamid')},
-					url: destiny.baseUrl + 'Fantasy/Challenge/Delete',
+					url: destiny.baseUrl + 'fantasy/challenge/delete',
 					success: function(data){
 						btn.closest('tr').replaceWith('<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>');
 					},
