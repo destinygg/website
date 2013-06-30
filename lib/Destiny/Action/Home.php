@@ -26,9 +26,6 @@ class Home {
 		$model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
 		$model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
 		$model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
-		
-		$model->endTime = new \DateTime ( '2013-06-30T23:59:59+06:00' );
-		$model->leagueEnded = ($model->endTime < new \DateTime ());
 		return 'home';
 	}
 
