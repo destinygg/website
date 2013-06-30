@@ -60,7 +60,7 @@ $(function(){
 					DestinyTMI.lockedState = true;
 					DestinyTMI.setProgress('<span class="busy"><i class="icon-time icon-white subtle"></i> Loading your champions ...</span>');
 					new DestinyFeedConsumer({
-						url: destiny.baseUrl + 'Fantasy/Team/Champions.json',
+						url: destiny.baseUrl + 'fantasy/team/champions.json',
 						success: function(teamChampionResponse, textStatus){
 							if(teamChampionResponse != null && teamChampionResponse.success == true){
 								DestinyTMI.lockedState = false;
@@ -109,7 +109,7 @@ $(function(){
 		};
 		
 		new DestinyFeedConsumer({
-			url: destiny.baseUrl + 'fantasy/team.json',
+			url: destiny.baseUrl + 'fantasy/team/info.json',
 			polling: 60,
 			ui: '.fantasy-team-bar',
 			ifModified: true,

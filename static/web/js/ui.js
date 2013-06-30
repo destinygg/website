@@ -395,25 +395,25 @@ $(function(){
 		$('.navbar a[rel="'+$('body').attr('class')+'"]').closest('li').addClass('active');
 	});
 	
-	// Change time on selected elements
-	(function(){
-		var applMomentTime = function(){
-			$('time[data-moment="true"]:not(.moment-set)').each(function(){
-				var ui = $(this), datetime = ui.data('datetime') || ui.attr('datetime') || ui.text();
-				ui.data('datetime', datetime);
-				if(ui.data('moment-elapsed')){
-					ui.html(moment(datetime).fromNow());
-				}else{
-					ui.addClass('moment-set');
-					ui.html(moment(datetime).format('MMMM Do, h:mm:ss a'));
-				}
-			});
-		};
-		window.setInterval(applMomentTime, 30000);
-		applMomentTime();
-	})();
-	
 	// Lazy load images
 	$(this).loadImages();
 	$(this).find('[rel="tooltip"]').tooltip();
 });
+
+// Change time on selected elements
+(function(){
+	var applMomentTime = function(){
+		$('time[data-moment="true"]:not(.moment-set)').each(function(){
+			var ui = $(this), datetime = ui.data('datetime') || ui.attr('datetime') || ui.text();
+			ui.data('datetime', datetime);
+			if(ui.data('moment-fromnow')){
+				ui.html(moment(datetime).fromNow());
+			}else{
+				ui.addClass('moment-set');
+				ui.html(moment(datetime).format('MMMM Do, h:mm:ss a'));
+			}
+		});
+	};
+	window.setInterval(applMomentTime, 30000);
+	applMomentTime();
+})();

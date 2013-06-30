@@ -1,6 +1,5 @@
 <?php
-
-namespace Destiny\Action\Fantasy;
+namespace Destiny\Action\Fantasy\Team;
 
 use Destiny\Utils\Http;
 use Destiny\Utils\Date;
@@ -10,7 +9,7 @@ use Destiny\Config;
 use Destiny\AppException;
 use Destiny\Service\Fantasy\TeamService;
 
-class Team {
+class Info {
 
 	public function execute(array $params) {
 		$ftService = TeamService::instance ();

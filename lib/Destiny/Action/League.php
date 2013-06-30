@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action;
 
 use Destiny\Service\Fantasy\ChampionService;
@@ -24,7 +23,6 @@ class League {
 		$teamService = TeamService::instance ();
 		$challengeService = ChallengeService::instance ();
 		$gameService = GameService::instance ();
-		
 		$model->title = 'Fantasy League';
 		$model->user = Session::getCredentials ()->getData ();
 		$model->champions = $cacheDriver->fetch ( 'champions' );
@@ -34,7 +32,6 @@ class League {
 		$model->topSummoners = $cacheDriver->fetch ( 'topsummoners' );
 		$model->topSubscribers = $cacheDriver->fetch ( 'subscriberteamleaderboard' );
 		$model->topChampions = $cacheDriver->fetch ( 'topteamchampionscores' );
-		
 		$model->ingame = null;
 		foreach ( Config::$a ['lol'] ['summoners'] as $summoner ) {
 			if ($summoner ['track'] == true) {
@@ -45,7 +42,6 @@ class League {
 				}
 			}
 		}
-		
 		if (! empty ( $teamId )) {
 			$model->team = $teamService->getTeamByUserId ( $userId );
 			$model->teamChamps = $teamService->getTeamChamps ( $teamId );
@@ -61,6 +57,8 @@ class League {
 			$model->invites = $challengeService->getInvites ( $teamId, 5 );
 		}
 		
+		$model->endTime = new \DateTime ( '2013-06-30T23:59:59+06:00' );
+		$model->leagueEnded = ($model->endTime < new \DateTime ());
 		return 'league';
 	}
 

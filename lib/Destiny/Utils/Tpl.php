@@ -52,7 +52,7 @@ class Tpl {
 	}
 
 	public static function fromNow(\DateTime $date, $format, $addon = '') {
-		return sprintf ( '<time title="%s" data-moment="true" data-moment-elapsed="true" datetime="%s" ' . $addon . '>%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), Date::getElapsedTime ( $date ) );
+		return sprintf ( '<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s" ' . $addon . '>%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), Date::getElapsedTime ( $date ) );
 	}
 
 }

@@ -5,7 +5,7 @@ $(function(){
 				$.ajax({
 					type: 'POST',
 					async: false,
-					url: destiny.baseUrl + 'Fantasy/Team/Reset',
+					url: destiny.baseUrl + 'fantasy/team/reset',
 					complete: function(){ window.location.reload(); }
 				});
 			}

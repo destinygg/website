@@ -458,7 +458,7 @@
 			self.lockedState = true;
 			self.setProgress('<span class="busy"><i class="icon-hdd icon-white subtle"></i> Updating team...</span>');
 			$.ajax({
-				url: destiny.baseUrl + 'Fantasy/Team/Update.json',
+				url: destiny.baseUrl + 'fantasy/team/update.json',
 				type: 'POST',
 				data: {teamId: this.team.teamId, champions: this.getChampionIds().join(',')},
 				success: function(response){
