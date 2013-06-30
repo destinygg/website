@@ -48,7 +48,7 @@ class ChatlogService extends Service implements \Iterator {
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
 			ORDER BY l.id ASC
-			LIMIT ' . Config::$a['chatbacklog'],
+			LIMIT ' . Config::$a['chat']['backlog'],
 			array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY)
 		);
 		

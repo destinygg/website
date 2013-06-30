@@ -49,9 +49,10 @@ class Chat {
 	private function getChatOptionParams(array $params) {
 		$options = array ();
 		if (! isset ( $params ['theme'] ) || empty ( $params ['theme'] ) || $params ['theme'] != 'light' && $params ['theme'] != 'dark') {
-			$params ['theme'] = 'dark';
+			$params ['theme'] = Config::$a ['chat'] ['defaultTheme'];
 		}
 		$options ['theme'] = $params ['theme'];
+		$options ['maxlines'] = Config::$a ['chat'] ['maxlines'];
 		return $options;
 	}
 

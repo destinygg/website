@@ -35,10 +35,9 @@
 	};
 	$.extend(destiny.fn.Chat.prototype, {
 
-		maxLines: 50,
+		maxlines: 50,
 		lineCount: 0,
 		scrollPlugin: null,
-		options: null,
 		ui: null,
 		lines: null,
 		output: null,
@@ -47,7 +46,7 @@
 		
 		init: function(){
 			// Optional params passed in via the data-options="{}" attribute
-			this.options = this.ui.data('options');
+			$.extend(this, this.ui.data('options'));
 			// local elements stored in vars to not have to get the elements via query each time
 			this.lines = $(this.ui.find('.chat-lines:first')[0]);
 			this.output = $(this.ui.find('.chat-output:first')[0]);
@@ -95,7 +94,7 @@
 					this.ui.removeAttr('class');
 				}
 			});
-			if(this.lineCount() >= this.maxLines){
+			if(this.lineCount() >= this.maxlines){
 				$(this.lines.children()[0]).remove();
 			}else if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
 				this.scrollPlugin.update();

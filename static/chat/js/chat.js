@@ -17,7 +17,6 @@ function chat() {
 
 	this.gui = new destiny.fn.Chat({
 		ui: '#destinychat',
-		maxLines: 150,
 		user: null,
 		engine: this,
 		onSend: function(str, input){
@@ -27,7 +26,6 @@ function chat() {
 			//message.status();
 		}
 	});
-
 	this.init();
 }
 

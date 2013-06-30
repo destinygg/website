@@ -46,7 +46,7 @@ class AuthenticationService extends Service {
 	public static function instance() {
 		if (static::$instance === null) {
 			static::$instance = new static ();
-			static::$instance->remembermeId = Config::$a ['rememberme'] ['cookie_name'];
+			static::$instance->remembermeId = Config::$a ['rememberme'] ['cookieName'];
 		}
 		return static::$instance;
 	}

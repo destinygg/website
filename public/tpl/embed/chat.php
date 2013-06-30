@@ -49,7 +49,7 @@ use Destiny\Utils\Tpl;
 
 <?php if(!empty($model->chatlog)): ?>
 <script>
-var chatHistory = <?=json_encode($model->chatlog, true)?>;
+var chatHistory = <?=json_encode($model->chatlog)?>;
 </script>
 <?php endif; ?>
 
