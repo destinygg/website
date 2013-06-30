@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Tasks;
 
 use Destiny\Application;
@@ -34,10 +33,13 @@ class Leaderboards {
 		$cacheDriver->save ( 'topsummoners', $summoners );
 		
 		// Recent game leaderboard
-		$champService = ChampionService::instance ();
-		$leaders = LeaderboardService::instance ()->getRecentGameLeaderboard ( 10 );
-		foreach ( $leaders as $i => $leader ) {
-			$leaders [$i] ['champions'] = $champService->getChampionsById ( explode ( ',', $leader ['champions'] ) );
+		$leaders = array ();
+		$game = GameService::instance ()->getRecentGameData ();
+		if (! empty ( $game )) {
+			$leaders = LeaderboardService::instance ()->getGameLeaderboard ( $game ['gameId'], 10 );
+			foreach ( $leaders as $i => $leader ) {
+				$leaders [$i] ['champions'] = $champService->getChampionsById ( explode ( ',', $leader ['champions'] ) );
+			}
 		}
 		$cacheDriver->save ( 'recentgameleaderboard', $leaders );
 		

@@ -62,13 +62,14 @@ class LeagueApiService extends Service {
 		return $playerLeague->getResponse ();
 	}
 
-	public function getRecentGames(array $summoner, $limit = 10) {
+	public function getRecentGames(array $summoner, $limit = 10, array $fileGamesId = null) {
 		$games = new CurlBrowser ( array (
-			'url' => new String ( Config::$a ['lolapi'] ['url'] . '{summoner.region}/{summoner.name}/games?key={apikey}&limit={limit}', array (
+			'url' => new String ( Config::$a ['lolapi'] ['url'] . '{summoner.region}/{summoner.name}/games?key={apikey}&limit={limit}&gameIds={gameIds}', array (
 				'summoner.region' => $summoner ['region'],
 				'summoner.name' => utf8_decode ( $summoner ['name'] ),
 				'apikey' => Config::$a ['lolapi'] ['apikey'],
-				'limit' => $limit 
+				'limit' => $limit,
+				'gameIds' => join ( ',', $fileGamesId ) 
 			) ),
 			'contentType' => MimeType::JSON 
 		) );

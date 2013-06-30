@@ -2,6 +2,8 @@
 
 namespace Destiny\Tasks;
 
+use Destiny\Service\Fantasy\GameService;
+
 use Destiny\Config;
 use Psr\Log\LoggerInterface;
 use Destiny\Service\LeagueApiService;
@@ -18,7 +20,14 @@ class Recentgames {
 				continue;
 			}
 			$log->debug ( 'Summoner: ' . $summoner ['name'] );
-			$recentGames = $leagueApiService->getRecentGames ( $summoner, 5 );
+			
+			$recordedGames = GameService::instance ()->getRecentGames(10, 0);
+			$recordedGamesId = array();
+			foreach($recordedGames as $game){
+				$recordedGamesId[] =  $game['gameId'];
+			}
+			
+			$recentGames = $leagueApiService->getRecentGames ( $summoner, 5, $recordedGamesId );
 			if ($recentGames != null && $recentGames ['success'] == true) {
 				foreach ( $recentGames ['data'] as $i => $recentGame ) {
 					if (false == $ftrackService->isGameRecorded ( $recentGame ['gameId'] )) {

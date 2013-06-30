@@ -37,9 +37,8 @@ use Destiny\Utils\Tpl;
 			<span style="color:#eee;">Fantasy season 1 has ended!</span>
 		</h1>
 		<hr size="1">
-		<p>Well done to <a>kilpo7</a>, <a>Derpski</a>, <a>dmcredgrave</a> and <a>Zmsmms</a> as well as all that participated and watched the stream!
+		<p>Well done to the top 4 as well as all that participated and watched the stream!
 		<br>Prizes will be awarded to the top 4 more details on that will come soon. <a href="http://blog.destiny.gg/season-0-launch-on-april-22nd-2013/">Read more here</a>
-		<br>The fantasy league will continue to run, but season 2 will be a test run with no prizes, where we can experiment more.
 		<br><br>Thanks again, and we hope you join in for the next season
 		<br>
 		</p>
