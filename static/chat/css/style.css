@@ -80,7 +80,7 @@ box-shadow: none;
 /* Fonts / font-size */
 .chat-lines {
 font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-font-size: 12px;
+font-size: 14px;
 line-height: 16px;
 }
 .chat-lines > div .p-whisper {
