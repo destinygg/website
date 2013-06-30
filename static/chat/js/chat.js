@@ -12,19 +12,24 @@ function chat() {
 	}
 	
 	this.debug    = true;
-	this.maxlines = 150;
 	this.sock     = new WebSocket('ws://' + location.host + ':9998/ws');
 	this.users    = {};
-	this.features = {
-		'subscriber': '<i class="icon-star" title="Subscriber"/>',
-		'admin'     : '<i class="icon-fire" title="Administrator"/>',
-		'moderator' : '<i class="icon-leaf" title="Moderator"/>',
-		'protected' : '<i class="icon-leaf" title="Protected"/>',
-		'vip'       : '<i class="icon-leaf" title="VIP"/>'
-	}
+
+	this.gui = new destiny.fn.Chat({
+		ui: '#destinychat',
+		maxLines: 150,
+		user: null,
+		engine: this,
+		onSend: function(str){
+			//var message = chat.push(new ChatUserMessage(str, chat.user));
+			//message.status(ChatMessageStatus.PENDING);
+			this.engine.emit('MSG', {data: str});
+			//message.status();
+		}
+	});
 	
+	this.gui.push(new ChatMessage("Connecting..."));
 	this.init();
-	
 }
 
 chat.prototype.l = function() {
@@ -46,62 +51,6 @@ chat.prototype.init = function() {
 	
 	this.l = $.proxy(this.l, this);
 	this.emit = $.proxy(this.emit, this);
-	
-	this.setupUIHandlers();
-};
-chat.prototype.setupUIHandlers = function() {
-	
-	var self = this;
-	$('form.chat-input-wrap').submit(function(e) {
-		e.preventDefault();
-		var input = $('form.chat-input-wrap .input');
-		self.emit('MSG', {data: input.val()});
-		input.val('');
-	});
-	// TODO delete, mute needs a way to specify the length,
-	// ban needs a ui for entering a reason + specify a length
-};
-chat.prototype.writeMessage = function(timestamp, nick, message) {
-	var html = $('<div class="line">' +
-			'<time class="p-time" datetime=""></time>&nbsp;' +
-			'<span class="p-user"></span><span class="p-userpostfix">:&nbsp;</span>' +
-			'<span class="p-message"></span>' +
-		'</div>');
-	
-	var ts = html.find('.p-time'),
-	    u  = html.find('.p-user'),
-	    m  = html.find('.p-message');
-	
-	if (timestamp) {
-		var t = moment.utc(timestamp);
-		ts.attr('datetime', t.format('MMMM Do YYYY, h:mm:ss a') );
-		ts.attr('title', ts.attr('datetime') );
-		ts.text(t.format('HH:mm'));
-	} else
-		ts.remove();
-	
-	if (nick) {
-		var icons = '';
-		for (var i = this.users[nick].features.length - 1; i >= 0; i--) {
-			var feature = this.users[nick].features[i];
-			if (this.features[feature])
-				icons += this.features[feature];
-		};
-		u.text(nick);
-		html.addClass('nick-' + nick);
-	} else {
-		u.remove();
-		html.find('.p-userpostfix').remove();
-	}
-	
-	m.text(message);
-	
-	html.appendTo('.chat-lines');
-	var lines = $('.chat-lines .line');
-	if (lines.length > this.maxlines)
-		lines.eq(0).remove();
-	
-	// TODO scroll
 };
 
 // websocket stuff
@@ -123,10 +72,10 @@ chat.prototype.onPING = function(data) {
 	this.emit('PONG', data)
 };
 chat.prototype.onOPEN = function() {
-	this.writeMessage((new Date).getTime(), null, "Connected!")
+	this.gui.push(new ChatMessage("Connected"));
 };
 chat.prototype.onCLOSE = function() {
-	this.writeMessage((new Date).getTime(), null, 'Disconnected');
+	this.gui.push(new ChatMessage("Disconnected"));
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -137,9 +86,10 @@ chat.prototype.onNAMES = function(data) {
 	for (var i = data.users.length - 1; i >= 0; i--) {
 		var nick        = data.users[i].nick,
 		    features    = data.users[i].features || [],
-		    connections = data.users[i].connections;
+		    connections = data.users[i].connections,
+		    color		= '#efefef';
 		
-		this.users[nick] = {connections: connections, features: features};
+		this.users[nick] = {connections: connections, features: features, color: color};
 	};
 	
 };
@@ -155,30 +105,30 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	this.writeMessage(data.timestamp, data.nick, data.data);
+	this.gui.push(new ChatUserMessage(data.data, {username: data.nick, features: this.users[data.nick].features, color: data.color}, data.timestamp));
 };
 chat.prototype.onDELETE = function(data) {
 	// TODO handle this nicer, but definitely do not show "message deleted"
 	// maybe just collapse the lines?
-	$('.chat-lines nick-' + data.data).remove();
+	this.gui.removeUserLines(data.data);
 };
 chat.prototype.onMUTE = function(data) {
 	// TODO make these messages distinct along with ban
 	// data.data is the nick which has been muted, no info about duration
-	this.writeMessage(data.timestamp, data.nick, "MUTED: ")
+	this.gui.push(new ChatMessage(data.nick + " has been muted", data.timestamp));
 };
 chat.prototype.onUNMUTE = function(data) {
-	this.writeMessage(data.timestamp, data.nick, "UNMUTED: ")
+	this.gui.push(new ChatMessage(data.nick + " has been unmuted", data.timestamp));
 };
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
-	this.writeMessage(data.timestamp, data.nick, "BANNED: ")
+	this.gui.push(new ChatMessage(data.nick + " has been banned", data.timestamp));
 };
 chat.prototype.onUNBAN = function(data) {
-	this.writeMessage(data.timestamp, data.nick, "UNBANNED: ")
+	this.gui.push(new ChatMessage(data.nick + " has been unbanned", data.timestamp));
 };
 chat.prototype.onERROR = function(data) {
 	// data is a string now, TODO translate the raw error strings to something
 	// human readable
-	this.writeMessage((new Date).getTime(), null, "ERROR: " + data)
+	this.gui.push(new ChatMessage("Error: " + data));
 };

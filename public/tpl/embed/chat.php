@@ -22,6 +22,7 @@ use Destiny\Utils\Tpl;
 <div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
 	<div class="chat-output clearfix">
 		<div class="chat-lines">
+			<?php if(!empty($model->chatlog)): ?>
 			<?php foreach($model->chatlog as $k => $log):?>
 				<div class="line<?php if ($log['nick']) echo ' nick-', Tpl::out($log['nick']);?>">
 					<?php if ($log['timestamp']):?>
@@ -35,6 +36,7 @@ use Destiny\Utils\Tpl;
 					<?php endif; ?>
 				</div>
 			<?php endforeach;?>
+			<?php endif; ?>
 		</div>
 	</div>
 	<div class="chat-input">
@@ -55,6 +57,9 @@ use Destiny\Utils\Tpl;
 <?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
+<script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
+<script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
+<script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 

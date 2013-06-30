@@ -22,12 +22,7 @@ use Destiny\Config;
 	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
-		<h2 class="title">Dark theme</h2>
 		<iframe style="width: 100%; height: 500px; float:left;" frameborder="0" scrolling="no" src="/embed/chat?theme=dark"></iframe>
-	</section>
-	<section class="container">
-		<h2 class="title">Light theme</h2>
-		<iframe style="width: 100%; height: 500px; float:left;" frameborder="0" scrolling="no" src="/embed/chat?theme=light"></iframe>
 	</section>
 	
 	<?include'./tpl/seg/foot.php'?>
