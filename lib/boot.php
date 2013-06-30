@@ -25,8 +25,8 @@ $app = new \Destiny\Application ();
 
 if (class_exists ( 'Redis' )) {
 	$redis = new \Redis ();
-	$redis->select ( \Destiny\Config::$a ['redis'] ['database'] );
 	$redis->connect ( \Destiny\Config::$a ['redis'] ['host'], \Destiny\Config::$a ['redis'] ['port'] );
+	$redis->select ( \Destiny\Config::$a ['redis'] ['database'] );
 	$app->setRedis ( $redis );
 	$cache = new \Doctrine\Common\Cache\RedisCache ();
 	$cache->setRedis ( $app->getRedis () );
