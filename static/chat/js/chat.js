@@ -82,8 +82,8 @@ chat.prototype.writeMessage = function(timestamp, nick, message) {
 	
 	if (nick) {
 		var icons = '';
-		for (var i = this.users[nick].length - 1; i >= 0; i--) {
-			var feature = this.users[nick][i];
+		for (var i = this.users[nick].features.length - 1; i >= 0; i--) {
+			var feature = this.users[nick].features[i];
 			if (this.features[feature])
 				icons += this.features[feature];
 		};
@@ -135,20 +135,24 @@ chat.prototype.onNAMES = function(data) {
 	// TODO present the connection count in a nice way? is it too much info?
 	//this.connectioncount = data.connectioncount;
 	for (var i = data.users.length - 1; i >= 0; i--) {
-		var nick     = data.users[i].nick,
-				features = data.users[i].features || [];
+		var nick        = data.users[i].nick,
+		    features    = data.users[i].features || [],
+		    connections = data.users[i].connections;
 		
-		this.users[nick] = features;
+		this.users[nick] = {connections: connections, features: features};
 	};
 	
 };
 chat.prototype.onJOIN = function(data) {
-	delete(data.timestamp);
-	this.users[data.nick] = data.features || [];
+	var features    = data.features || [],
+	    connections = data.connections;
+	
+	this.users[data.nick] = {connections: connections, features: features};
 };
 chat.prototype.onQUIT = function(data) {
-	// TODO handle it when a user joins from multiple browsers, need info from the
-	// server side too
+	this.users[data.nick].connections--;
+	if (this.users[data.nick].connections <= 0)
+		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
 	this.writeMessage(data.timestamp, data.nick, data.data);
