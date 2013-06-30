@@ -75,6 +75,7 @@ chat.prototype.onPING = function(data) {
 chat.prototype.onOPEN = function() {
 	this.gui.push(new ChatMessage("You are now connected"));
 	if(chatHistory.length > 0){
+		chatHistory.reverse();
 		this.gui.push(new ChatMessage("Start of chat history ..."));
 		for(var i=0; i<chatHistory.length; ++i){
 			this.gui.push(new ChatUserMessage(chatHistory[i].data, ChatUser({username: chatHistory[i].username}), chatHistory[i].timestamp));
@@ -86,14 +87,6 @@ chat.prototype.onOPEN = function() {
 chat.prototype.onCLOSE = function() {
 	this.gui.push(new ChatMessage("You have been disconnected"));
 	this.gui.disableInput();
-	if(chatHistory.length > 0){
-		this.gui.push(new ChatMessage("Start of chat history ..."));
-		for(var i=0; i<chatHistory.length; ++i){
-			this.gui.push(new ChatUserMessage(chatHistory[i].data, ChatUser({username: chatHistory[i].username}), chatHistory[i].timestamp));
-		}
-		this.gui.push(new ChatMessage("End of chat history ..."));
-	}
-	this.gui.enableInput();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
