@@ -119,7 +119,7 @@
 			var str = this.input.val();
 			if(str != ''){
 				this.input.val('').focus();
-				$(this).triggerHandler('send', [str, this.input[0]]);
+				$(this).trigger('onSend', [str, this.input[0]]);
 			};
 			str = null;
 			return this;

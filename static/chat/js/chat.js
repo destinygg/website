@@ -89,7 +89,7 @@ chat.prototype.onNAMES = function(data) {
 		    connections = data.users[i].connections,
 		    color		= '#efefef';
 		
-		this.users[nick] = {connections: connections, features: features, color: color};
+		this.users[nick] = {username: nick, connections: connections, features: features, color: color};
 	};
 	
 };
@@ -105,7 +105,7 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	this.gui.push(new ChatUserMessage(data.data, {username: data.nick, features: this.users[data.nick].features, color: data.color}, data.timestamp));
+	this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
 };
 chat.prototype.onDELETE = function(data) {
 	// TODO handle this nicer, but definitely do not show "message deleted"
