@@ -8,15 +8,15 @@ use Destiny\Application;
 use Destiny\Session;
 use Destiny\Service\Fantasy\TeamService;
 use Destiny\Config;
+use Destiny\Service\ChatlogService;
 
 class Chat {
 
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		$model->chatOptions = $this->getChatOptionParams ( $params );
-		$cache = $app->getRedis();
 		
-		$chatlog = $cache->lrange('chatlog', 0, Config::$a['chatbacklog']);
+		$model->chatlog = ChatlogService::instance ();
 		// TODO parse the data, transform userids to nicks, cache it
 		// possibly not rely on the chat backend to generate all this shit
 		// but pull it out of the database events, would be more efficient

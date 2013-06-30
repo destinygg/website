@@ -21,7 +21,21 @@ use Destiny\Utils\Tpl;
 
 <div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
 	<div class="chat-output clearfix">
-		<div class="chat-lines"></div>
+		<div class="chat-lines">
+			<?php foreach($model->chatlog as $k => $log):?>
+				<div class="line<?php if ($log['nick']) echo ' nick-', Tpl::out($log['nick']);?>">
+					<?php if ($log['timestamp']):?>
+						<time class="p-time" datetime="TODO">TODO</time>&nbsp;
+					<?php endif; ?>
+					<?php if ($log['nick']):?>
+						<span class="p-user"><?=Tpl::out($log['nick'])?></span><span class="p-userpostfix">:&nbsp;</span>
+					<?php endif; ?>
+					<?php if ($log['data']):?>
+						<span class="p-message"><?=Tpl::out($log['data'])?></span>
+					<?php endif; ?>
+				</div>
+			<?php endforeach;?>
+		</div>
 	</div>
 	<div class="chat-input">
 		<form class="chat-input-wrap">
