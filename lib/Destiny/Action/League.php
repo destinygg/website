@@ -58,7 +58,7 @@ class League {
 		}
 		
 		$endTime = new \DateTime ( '2013-06-30T23:59:59' );
-		$endTime->setTimezone('CDT');
+		$endTime->setTimezone ( new \DateTimeZone ( 'CDT' ) );
 		$model->endTime = $endTime;
 		$model->leagueEnded = ($endTime < new \DateTime ());
 		return 'league';
