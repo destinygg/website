@@ -1,6 +1,9 @@
 RewriteEngine on
 Options -indexes +FollowSymLinks
 
+Order allow,deny
+Allow from all
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^.*$ /index.php
