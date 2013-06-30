@@ -127,7 +127,7 @@ chat.prototype.onBAN = function(data) {
 chat.prototype.onUNBAN = function(data) {
 	this.gui.push(new ChatMessage(data.nick + " has been unbanned", data.timestamp));
 };
-chat.prototype.onERROR = function(data) {
+chat.prototype.onERR = function(data) {
 	// data is a string now, TODO translate the raw error strings to something
 	// human readable
 	this.gui.push(new ChatMessage("Error: " + data));
