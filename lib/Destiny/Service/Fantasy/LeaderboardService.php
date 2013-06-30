@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Service\Fantasy;
 
 use Destiny\Service;
@@ -167,11 +166,7 @@ class LeaderboardService extends Service {
 		return $stmt->fetchAll ();
 	}
 
-	public function getRecentGameLeaderboard($limit, $offset = 0) {
-		$game = GameService::instance ()->getRecentGameData ();
-		if (empty ( $game )) {
-			return array ();
-		}
+	public function getGameLeaderboard($gameId, $limit, $offset = 0) {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT 
@@ -197,7 +192,7 @@ class LeaderboardService extends Service {
 			ORDER BY `sumScore` DESC, ranks.teamRank ASC
 			LIMIT :offset,:limit
 		' );
-		$stmt->bindValue ( 'gameId', $game ['gameId'], \PDO::PARAM_INT );
+		$stmt->bindValue ( 'gameId', $gameId, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'maxChampions', Config::$a ['fantasy'] ['team'] ['maxChampions'], \PDO::PARAM_INT );
 		$stmt->bindValue ( 'offset', $offset, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );

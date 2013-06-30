@@ -93,7 +93,6 @@
 		<concat destfile="${build.dir}/static/web/css/style.${composer.version}.css" fixlastline="yes" append="no">
 			<fileset file="${build.dir}/static/web/css/style.css" />
 			<fileset file="${build.dir}/static/web/css/flags.css" />
-			<fileset file="${build.dir}/static/web/css/bigscreen.css" />
 			<fileset file="${build.dir}/static/web/css/fantasy.css" />
 			<fileset file="${build.dir}/static/web/css/teammaker.css" />
 		</concat>

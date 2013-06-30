@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Tasks;
 
 use Destiny\Application;
@@ -21,13 +20,30 @@ class Ingame {
 				continue;
 			}
 			$log->debug ( $summoner ['name'] . ' checking ingame' );
-			$ingameData = $leagueApiService->getInGameProgress ( $summoner );
-			if (! empty ( $ingameData ) && isset ( $ingameData ['success'] ) && $ingameData ['success'] == true && $ingameData ['data'] != null) {
-				$log->debug ( '' . $summoner ['name'] . ' game found ' . $ingameData ['data'] ['gameId'] );
-				$ftrackService->trackIngameProgress ( $summoner, $ingameData ['data'] );
+			
+			// This just gets the latest game, which will break if we have multiple chars we track all playing diff games at the same time
+			// Since we dont have multiple, this will save bandwidth
+			$trackedGameId = 0;
+			$lastTrackedGames = $ftrackService->getTrackedGames ( 1 );
+			if (! empty ( $lastTrackedGames ) && isset ( $lastTrackedGames [0] )) {
+				$trackedGameId = $lastTrackedGames [0] ['gameId'];
 			}
-			$track = $ftrackService->getTrackedProgressById ( $ingameData ['data'] ['gameId'] );
-			$cacheDriver->save ( 'ingame.' . $summoner ['id'], $track );
+			
+			// Pass in the last game Id, if the current ingame is the same, the API doesnt send the data back
+			$ingameData = $leagueApiService->getInGameProgress ( $summoner, $trackedGameId );
+			
+			if (! empty ( $ingameData ) && isset ( $ingameData ['success'] ) && $ingameData ['success'] == true) {
+				// New game data, if the data is null, it means the game is in progress, but we have already tracked it
+				if (isset ( $ingameData ['data'] ) && ! empty ( $ingameData ['data'] )) {
+					$log->debug ( '' . $summoner ['name'] . ' game found ' . $ingameData ['data'] ['gameId'] );
+					$ftrackService->trackIngameProgress ( $summoner, $ingameData ['data'] );
+					$track = $ftrackService->getTrackedProgressById ( $ingameData ['data'] ['gameId'] );
+					$cacheDriver->save ( 'ingame.' . $summoner ['id'], $track );
+				}
+			} else {
+				// Not in game, clear the ingame data
+				$cacheDriver->save ( 'ingame.' . $summoner ['id'], null );
+			}
 		}
 		$log->debug ( 'Ended ingame progress tracking' );
 	}
