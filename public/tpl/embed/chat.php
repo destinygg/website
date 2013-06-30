@@ -46,6 +46,13 @@ use Destiny\Utils\Tpl;
 <script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/impl.js"></script>
+<script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
+<?php endif; ?>
+
+<?php if($model->user):?>
+<script>
+	var user = <?=json_encode($model->user, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE)?>
+</script>
 <?php endif; ?>
 
 </body>

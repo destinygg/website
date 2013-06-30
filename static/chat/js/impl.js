@@ -172,10 +172,26 @@
 	chat.push(new ChatUserMessage('STFU!', Thomas));
 	chat.push(new ChatUserMessage('I TYPE IN ALL CAPS!', StevenBonnell));
 	
-	/**
-	window.setInterval(function(){
-		var user = users[Math.floor(Math.random()*users.length)];
-		chat.push(new ChatUserMessage('IS STEBEN DONE?', user));
-	},1);**/
+	// Socket stub
+	var ws = new WebSocket('ws://' + location.host + ':9998/ws');
+	ws.onmessage = function(e) {
+		// standard
+		var data = {
+			type: 'push',
+			response: {time: 0},
+			message: {text: '',user: null}
+		};
+		// merge to socket message
+		$.extend(data, JSON.parse(e.data));
+		// Check the type, push the message
+		if(data.type == 'push'){
+			if(data.message.user != null){
+				chat.push(new ChatUserMessage(data.message.text, data.message.user));
+			}else{
+				chat.push(new ChatMessage(data.message.text));
+			}
+		}
+	};
+	//
 	
 })(jQuery);

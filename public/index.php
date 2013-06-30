@@ -73,7 +73,7 @@ if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 }
 
 // Dev/Admins only
-$app->bind ( '/^\/(subscribe|profile\/subscription|payment|embed|chat)/i', function (Application $app) {
+$app->bind ( '/^\/(subscribe|profile\/subscription|payment)/i', function (Application $app) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
 	if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
 		$app->error ( Http::STATUS_UNAUTHORIZED );
