@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Utils\Http;
 use Destiny\Utils\Tpl;
@@ -30,29 +30,18 @@ use Destiny\Utils\Tpl;
 			</div>
 		</form>
 		<div class="chat-tools-wrap clearfix">
-			<button class="btn btn-mini btn-primary pull-left" onclick="$('#destinychat').data('chat').send();">Send</button>
-			<button class="btn btn-mini btn-danger pull-right" onclick="$('#destinychat').data('chat').purge();">Purge</button>
+			<button class="btn btn-mini btn-primary pull-left">Send</button>
 		</div>
 	</div>
 </div>
-	
+
 <?include'./tpl/seg/commonbottom.php'?>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
 <?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
-<script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
-<script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
-<script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
-<script src="<?=Config::cdn()?>/chat/js/impl.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
-<?php endif; ?>
-
-<?php if($model->user):?>
-<script>
-	var user = <?=json_encode($model->user, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE)?>
-</script>
 <?php endif; ?>
 
 </body>
