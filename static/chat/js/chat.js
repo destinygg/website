@@ -27,8 +27,7 @@ function chat() {
 			//message.status();
 		}
 	});
-	
-	this.gui.push(new ChatMessage("Connecting..."));
+
 	this.init();
 }
 
@@ -48,6 +47,9 @@ chat.prototype.init = function() {
 		var event = {data: 'CLOSE ""'};
 		this.parseAndDispatch(event)
 	}, this);
+
+	this.gui.push(new ChatMessage("Connecting..."));
+	this.gui.disableInput();
 	
 	this.l = $.proxy(this.l, this);
 	this.emit = $.proxy(this.emit, this);
@@ -70,12 +72,21 @@ chat.prototype.emit = function(eventname, data) {
 // server events
 chat.prototype.onPING = function(data) {
 	this.emit('PONG', data)
+	this.gui.ping();
 };
 chat.prototype.onOPEN = function() {
-	this.gui.push(new ChatMessage("Connected"));
+	this.gui.push(new ChatMessage("You are now connected"));
+	if(chatHistory.length > 0){
+		this.gui.push(new ChatMessage("Chat history ..."));
+		for(var i=0; i<chatHistory.length; ++i){
+			this.gui.push(new ChatUserMessage(chatHistory[i].data, ChatUser({username: chatHistory[i].username}), chatHistory[i].timestamp));
+		}
+	}
+	this.gui.enableInput();
 };
 chat.prototype.onCLOSE = function() {
-	this.gui.push(new ChatMessage("Disconnected"));
+	this.gui.push(new ChatMessage("You have been disconnected"));
+	this.gui.disableInput();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -91,7 +102,6 @@ chat.prototype.onNAMES = function(data) {
 		
 		this.users[nick] = {username: nick, connections: connections, features: features, color: color};
 	};
-	
 };
 chat.prototype.onJOIN = function(data) {
 	var features    = data.features || [],
@@ -106,7 +116,7 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
+	this.gui.push(new ChatUserMessage(data.data, ChatUser(this.users[data.nick]), data.timestamp));
 };
 chat.prototype.onDELETE = function(data) {
 	// TODO handle this nicer, but definitely do not show "message deleted"

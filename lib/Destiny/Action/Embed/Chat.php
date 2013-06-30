@@ -16,7 +16,12 @@ class Chat {
 		$app = Application::instance ();
 		$model->chatOptions = $this->getChatOptionParams ( $params );
 		
-		//$model->chatlog = ChatlogService::instance ();
+		$chatlogService = ChatlogService::instance ();
+		$chatlog = array ();
+		foreach ( $chatlogService as $i => $log ) {
+			$chatlog [] = $log;
+		}
+		$model->chatlog = $chatlog;
 		// TODO parse the data, transform userids to nicks, cache it
 		// possibly not rely on the chat backend to generate all this shit
 		// but pull it out of the database events, would be more efficient
@@ -25,7 +30,6 @@ class Chat {
 		// it gets a signal, it regenerates the cache/invalidates varnish cache
 		// long-term, this should simply be done by the chat backend, but it cannot
 		// speak php serialized data yet
-		// $model->chatlog = $chatlog
 		
 		$user = Session::getCredentials ()->getData ();
 		if ($user ['userId']) $model->user = array (

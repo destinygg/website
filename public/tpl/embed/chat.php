@@ -21,23 +21,7 @@ use Destiny\Utils\Tpl;
 
 <div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
 	<div class="chat-output clearfix">
-		<div class="chat-lines">
-			<?php if(!empty($model->chatlog)): ?>
-			<?php foreach($model->chatlog as $k => $log):?>
-				<div class="line<?php if ($log['nick']) echo ' nick-', Tpl::out($log['nick']);?>">
-					<?php if ($log['timestamp']):?>
-						<time class="p-time" datetime="TODO">TODO</time>&nbsp;
-					<?php endif; ?>
-					<?php if ($log['nick']):?>
-						<span class="p-user"><?=Tpl::out($log['nick'])?></span><span class="p-userpostfix">:&nbsp;</span>
-					<?php endif; ?>
-					<?php if ($log['data']):?>
-						<span class="p-message"><?=Tpl::out($log['data'])?></span>
-					<?php endif; ?>
-				</div>
-			<?php endforeach;?>
-			<?php endif; ?>
-		</div>
+		<div class="chat-lines"></div>
 	</div>
 	<div class="chat-input">
 		<form class="chat-input-wrap">
@@ -61,6 +45,12 @@ use Destiny\Utils\Tpl;
 <script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
+<?php endif; ?>
+
+<?php if(!empty($model->chatlog)): ?>
+<script>
+var chatHistory = <?=json_encode($model->chatlog, true)?>;
+</script>
 <?php endif; ?>
 
 </body>

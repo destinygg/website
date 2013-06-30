@@ -1,16 +1,7 @@
 (function($){
 //https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Displaying_notifications
 //http://blog.teamtreehouse.com/adding-desktop-notifications-to-your-web-applications
-//
 	
-	// Base User
-	destiny.fn.ChatUser = function(args){
-		this.username = args.username;
-		this.userId = args.userId;
-		this.roles = [];
-		$.extend(this, args);
-		return this;
-	};
 	
 	// Base Message
 	destiny.fn.ChatMessage = function(message, timestamp){
@@ -147,6 +138,18 @@
 		
 		removeUserLines: function(user){
 			//
+		},
+		
+		enableInput: function(){
+			this.input.removeAttr('disabled', true);
+		},
+		
+		disableInput: function(){
+			this.input.attr('disabled', true);
+		},
+		
+		ping: function(){
+			
 		}
 		
 	});
@@ -161,6 +164,15 @@
 	
 })(jQuery);
 
+
+// Base User
+function ChatUser(args){
+	this.username = args.username;
+	this.userId = args.userId;
+	this.features = [];
+	$.extend(this, args);
+	return this;
+};
 
 function ChatMessage(message, timestamp){
 	this.init(message, timestamp);

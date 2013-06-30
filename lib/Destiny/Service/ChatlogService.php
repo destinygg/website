@@ -16,14 +16,14 @@ class ChatlogService extends Service implements \Iterator {
 	/**
 	 * Singleton
 	 *
-	 * @var RememberMeService
+	 * @var ChatlogService
 	 */
 	protected static $instance = null;
 
 	/**
 	 * Get the singleton instance
 	 *
-	 * @return RememberMeService
+	 * @return ChatlogService
 	 */
 	public static function instance() {
 		return parent::instance ();
@@ -36,7 +36,7 @@ class ChatlogService extends Service implements \Iterator {
 		// TODO get the users features for the icons
 		$this->stmt = $conn->prepare ( '
 			SELECT
-				u.username AS nick,
+				u.username,
 				u2.username AS target,
 				l.event,
 				l.data,
