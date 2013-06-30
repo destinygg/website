@@ -171,7 +171,7 @@ $.extend(ChatMessage.prototype, destiny.fn.ChatMessage.prototype, {
 		return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
 	},
 	wrapMessage: function(css){
-		return '<span'+ ((css==undefined) ? '':' class="'+css+'"') +'>'+this.message+'</span>';
+		return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(this.message).html();
 	},
 	html: function(){
 		return this.wrap(this.wrapTime() + this.wrapMessage());
