@@ -10,8 +10,20 @@ backend default {
   }
 }
 
+acl purge {
+	"localhost";
+	// also supports IP ranges
+}
 
 sub vcl_recv {
+	
+	// allow purging of single cache objects from localhost
+	if (req.request == "PURGE") {
+		if (!client.ip ~ purge) {
+			error 405 "Not allowed.";
+		}
+		return (lookup);
+	}
 	
 	// allow varnish to serve stale content as needed
 	set req.grace = 2m;
@@ -90,4 +102,18 @@ sub vcl_fetch {
 		set beresp.ttl = 30s;
 	}
 	
+}
+
+sub vcl_hit {
+	if (req.request == "PURGE") {
+		purge;
+		error 200 "Purged.";
+	}
+}
+
+sub vcl_miss {
+	if (req.request == "PURGE") {
+		purge;
+		error 200 "Purged.";
+	}
 }
