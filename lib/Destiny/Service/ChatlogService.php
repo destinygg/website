@@ -47,7 +47,7 @@ class ChatlogService extends Service implements \Iterator {
 				LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
-			ORDER BY l.id ASC
+			ORDER BY l.id DESC
 			LIMIT ' . Config::$a['chat']['backlog'],
 			array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY)
 		);
