@@ -20,7 +20,7 @@ function chat() {
 		maxLines: 150,
 		user: null,
 		engine: this,
-		onSend: function(e, str, input){
+		onSend: function(str, input){
 			//var message = chat.push(new ChatUserMessage(str, chat.user));
 			//message.status(ChatMessageStatus.PENDING);
 			this.engine.emit('MSG', {data: str});

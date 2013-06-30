@@ -52,6 +52,7 @@
 		lines: null,
 		output: null,
 		input: null,
+		onSend: $.noop,
 		
 		init: function(){
 			// Optional params passed in via the data-options="{}" attribute
@@ -119,7 +120,7 @@
 			var str = this.input.val();
 			if(str != ''){
 				this.input.val('').focus();
-				$(this).trigger('onSend', [str, this.input[0]]);
+				this.onSend(str, this.input[0]);
 			};
 			str = null;
 			return this;
