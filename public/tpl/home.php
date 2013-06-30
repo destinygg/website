@@ -27,6 +27,16 @@ use Destiny\Utils\Tpl;
 	<?include'./tpl/seg/panel.twitch.php'?>
 	<?include'./tpl/seg/panel.lol.php'?>
 	
+	<?php if(!$model->leagueEnded): ?>
+	<section class="container">
+		<div class="app-event alert alert-info" style="margin:0;">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<h4>Fantasy league season end!</h4>
+			The fantasy league is coming to an end <a href="/league"><time data-moment="true" data-moment-fromnow="true" style="border-bottom:1px dashed #cacaca;"><?=$model->endTime->format(Date::FORMAT)?></time></a>
+		</div>
+	</section>
+	<?php endif; ?>
+	
 	<?include'./tpl/seg/panel.videos.php'?>
 	<?include'./tpl/seg/panel.music.php'?>
 	<?include'./tpl/seg/panel.calendar.php'?>
