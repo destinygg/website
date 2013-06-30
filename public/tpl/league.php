@@ -19,10 +19,6 @@ use Destiny\Utils\Tpl;
 <body id="games" class="league">
 	<?include'./tpl/seg/top.php'?>
 	
-	<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
-	<?include'./tpl/seg/fantasy/calltoaction.php'?>
-	<?endif;?>
-	
 	<?php if(!$model->leagueEnded): ?>
 	<section id="fantasyendseason" class="container">
 		<h1 class="page-title">
@@ -58,6 +54,9 @@ use Destiny\Utils\Tpl;
 	</section>
 	<?php endif; ?>
 	
+	<?//if(!Session::hasRole(\Destiny\UserRole::USER)):?>
+	<?//include'./tpl/seg/fantasy/calltoaction.php'?>
+	<?//endif;?>
 	
 	<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
 	
