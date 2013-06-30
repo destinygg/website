@@ -200,7 +200,7 @@ $.extend(ChatUserMessage.prototype, ChatMessage.prototype, {
 		return icons+' <a style="color:'+user.color+'">'+user.username+'</a>';
 	},
 	wrapMessage: function(css){
-		return '<span'+ ((css==undefined) ? '':' class="'+css+'"') +'>: '+this.message+'</span>';
+		return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(': '+this.message).html();
 	},
 	html: function(){
 		return this.wrap(this.wrapTime() + this.wrapUser(this.user) + this.wrapMessage());
