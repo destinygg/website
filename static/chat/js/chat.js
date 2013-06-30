@@ -95,9 +95,10 @@ chat.prototype.onNAMES = function(data) {
 };
 chat.prototype.onJOIN = function(data) {
 	var features    = data.features || [],
-	    connections = data.connections;
+	    connections = data.connections,
+	    color		= '#efefef';
 	
-	this.users[data.nick] = {connections: connections, features: features};
+	this.users[data.nick] = {username: data.nick, connections: connections, features: features, color: color};
 };
 chat.prototype.onQUIT = function(data) {
 	this.users[data.nick].connections--;
