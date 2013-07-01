@@ -154,7 +154,7 @@ var ChatMessageStatus = {
 
 //CHAT USER
 function ChatUser(args){
-	this.username = 'Unknown';
+	this.username = '';
 	this.userId = '';
 	this.features = [];
 	this.connections = 0;

@@ -4,7 +4,10 @@ $(function() {
 
 function chat() {
 
-	this.user = new ChatUser($('#destinychat').data('user'));
+	var userData = $('#destinychat').data('user');
+	if(userData != null){
+		this.user = new ChatUser($('#destinychat').data('user'));
+	};
 
 	this.gui = new destiny.fn.Chat({
 		ui: '#destinychat',
