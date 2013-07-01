@@ -160,13 +160,7 @@ function ChatUser(args){
 	this.connections = 0;
 	this.color = '#efefef';
 	$.extend(this, args);
-	return this.init(args);
-};
-ChatUser.prototype.init = function(args){
-	if(args['username'])
-		this.username = args.username;
-	if(args['userId'])
-		this.username = args.userId;
+	return this;
 };
 ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
