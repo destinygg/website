@@ -163,9 +163,9 @@ function ChatUser(args){
 	return this.init(args);
 };
 ChatUser.prototype.init = function(args){
-	if(args.username)
+	if(args['username'])
 		this.username = args.username;
-	if(args.userId)
+	if(args['userId'])
 		this.username = args.userId;
 };
 ChatUser.prototype.getFeatureHTML = function(){
