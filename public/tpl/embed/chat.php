@@ -14,6 +14,7 @@ use Destiny\Utils\Tpl;
 <link href="<?=Config::cdn()?>/chat/css/style.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <?php else: ?>
 <link href="<?=Config::cdn()?>/chat/css/style.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/chat/css/twitch_sprite.css" rel="stylesheet" media="screen">
 <?php endif; ?>
 <?include'./tpl/seg/google.tracker.php'?>
 </head>

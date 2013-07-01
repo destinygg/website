@@ -225,7 +225,11 @@ ChatMessage.prototype.wrapTime = function(){
 	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
 };
 ChatMessage.prototype.wrapMessage = function(css){
-	return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(this.message).html();
+	var elem  = $('<span/>').text(this.message);
+	if (css)
+		elem.addClass(css);
+	
+	return elem.html();
 };
 ChatMessage.prototype.html = function(){
 	return this.wrap(this.wrapTime() + this.wrapMessage());
@@ -237,6 +241,7 @@ ChatMessage.prototype.wrap = function(content){
 function ChatUserMessage(message, user, timestamp){
 	this.init(message, timestamp);
 	this.user = user;
+	this.emoteregex = /ArsonNoSexy|AsianGlow|BCWarrior|BORT|BibleThump|BionicBunion|BlargNaut|BloodTrail|BrainSlug|BrokeBack|CougarHunt|DAESuppy|DBstyle|DansGame|DatSheffy|EagleEye|EvilFetus|FPSMarksman|FUNgineer|FailFish|FrankerZ|FreakinStinkin|FuzzyOtterOO|GingerPower|HassanChop|HotPokket|ItsBoshyTime|JKanStyle|Jebaited|JonCarnage|Kappa|KevinTurtle|Kreygasm|MVGame|MrDestructoid|NinjaTroll|NoNoSpot|OMGScoots|OneHand|OpieOP|OptimizePrime|PJSalt|PMSTwin|PazPazowitz|PicoMause|PogChamp|Poooound|PunchTrees|RedCoat|ResidentSleeper|RuleFive|SMOrc|SMSkull|SSSsss|ShazBotstix|SoBayed|SoonerLater|StoneLightning|StrawBeary|SuperVinlin|SwiftRage|TehFunrun|TheRinger|TheTarFu|TinyFace|TooSpicy|TriHard|UleetBackup|UnSane|Volcania|WinWaker/;
 	return this;
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
@@ -244,7 +249,21 @@ ChatUserMessage.prototype.wrapUser = function(user){
 	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(css){
-	return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(': '+this.message).html();
+	var elem  = $('<span/>').text(': '+this.message),
+	    emote = this.emoteregex.exec(elem.text());
+	
+	if (css)
+		elem.addClass(css);
+	
+	if (emote) {
+		var emoteelem = $('<div class="twitch-emote"/>');
+		emoteelem.addClass('twitch-emote-' + emote[0]);
+		emoteelem.attr('title', emote[0]);
+		
+		var html = elem.text().replace(emote[0], emoteelem.get(0).outerHTML);
+		elem.html(html);
+	}
+	return elem.html();
 };
 ChatUserMessage.prototype.html = function(){
 	return this.wrap(this.wrapTime() + this.wrapUser(this.user) + this.wrapMessage());

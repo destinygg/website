@@ -82,7 +82,7 @@ box-shadow: none;
 .chat-lines {
 font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 font-size: 14px;
-line-height: 16px;
+line-height: 20px;
 }
 .chat-lines > div .p-whisper {
 font-weight: bold;
