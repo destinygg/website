@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Service;
 
 use Destiny\Service;
@@ -8,10 +7,7 @@ use Destiny\Utils\Date;
 use Destiny\Config;
 use \PDO;
 
-class ChatlogService extends Service implements \Iterator {
-	protected $stmt;
-	protected $key = -1;
-	protected $value;
+class ChatlogService extends Service {
 	
 	/**
 	 * Singleton
@@ -28,11 +24,30 @@ class ChatlogService extends Service implements \Iterator {
 	public static function instance() {
 		return parent::instance ();
 	}
+
+	/**
+	 * Returns a new ChatLog
+	 *
+	 * @return \Destiny\Service\ChatLog
+	 */
+	public function getChatLog($limit) {
+		return new ChatLog ( $limit );
+	}
+
+}
+class ChatLog implements \Iterator {
 	
+	protected $stmt;
+	protected $key = - 1;
+	protected $value;
+	protected $limit = 0;
+
+	public function __construct($limit) {
+		$this->limit = $limit;
+	}
+
 	public function rewind() {
-		
 		$conn = Application::instance ()->getConnection ();
-		
 		// TODO get the users features for the icons
 		$this->stmt = $conn->prepare ( '
 			SELECT
@@ -48,29 +63,29 @@ class ChatlogService extends Service implements \Iterator {
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
 			ORDER BY l.id DESC
-			LIMIT ' . Config::$a['chat']['backlog'],
-			array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY)
-		);
+			LIMIT ' . $this->limit, array (
+			PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY 
+		) );
 		
 		$this->stmt->execute ();
-		$this->next();
+		$this->next ();
 	}
-	
+
 	public function current() {
 		return $this->value;
 	}
-	
+
 	public function key() {
 		return $this->key;
 	}
-	
+
 	public function next() {
-		$this->value = $this->stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT);
-		$this->key++;
+		$this->value = $this->stmt->fetch ( PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT );
+		$this->key ++;
 	}
-	
+
 	public function valid() {
 		return $this->value !== false;
 	}
-	
+
 }

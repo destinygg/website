@@ -30,7 +30,7 @@ use Destiny\Utils\Tpl;
 			</div>
 		</form>
 		<div class="chat-tools-wrap clearfix">
-			<button class="btn btn-mini btn-primary pull-left">Send</button>
+			<button class="btn btn-mini btn-inverse pull-left">Send</button>
 		</div>
 	</div>
 </div>
@@ -45,12 +45,6 @@ use Destiny\Utils\Tpl;
 <script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
-<?php endif; ?>
-
-<?php if(!empty($model->chatlog)): ?>
-<script>
-var chatHistory = <?=json_encode($model->chatlog, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)?>;
-</script>
 <?php endif; ?>
 
 </body>

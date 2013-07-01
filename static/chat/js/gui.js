@@ -2,32 +2,6 @@
 //https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Displaying_notifications
 //http://blog.teamtreehouse.com/adding-desktop-notifications-to-your-web-applications
 	
-	
-	// Base Message
-	destiny.fn.ChatMessage = function(message, timestamp){
-		return this.init(message, timestamp);
-	};
-	$.extend(destiny.fn.ChatMessage.prototype, {
-		timestamp: null,
-		state: null,
-		init: function(message, timestamp){
-			this.timestamp = moment(timestamp);
-			this.message = message;
-			this.state = '';
-			return this;
-		},
-		status: function(state){
-			$(this).triggerHandler('status', [state]);
-			this.state = state;
-			return this;
-		},
-		wrap: function(content){
-			return '<div>'+content+'</div>';
-		}
-	});
-
-
-	// Base Chat
 	destiny.fn.Chat = function(props){
 		$.extend(this, props);
 		this.ui = $(this.ui);
@@ -163,8 +137,16 @@
 	
 })(jQuery);
 
+// USER FEATURES
+var ChatUserFeatures = {
+	'subscriber': '<i class="icon-star" title="Subscriber"/>',
+	'admin'     : '<i class="icon-fire" title="Administrator"/>',
+	'moderator' : '<i class="icon-leaf" title="Moderator"/>',
+	'protected' : '<i class="icon-eye-close" title="Protected"/>',
+	'vip'       : '<i class="icon-film" title="VIP"/>'
+};
 
-// Base User
+//CHAT USER
 function ChatUser(args){
 	this.username = args.username;
 	this.userId = args.userId;
@@ -172,48 +154,77 @@ function ChatUser(args){
 	$.extend(this, args);
 	return this;
 };
+ChatUser.prototype.getFeatureHTML = function(){
+	var icons = '';
+	for (var i = this.features.length - 1; i >= 0; i--) {
+		var feature = this.features[i];
+		if (ChatUserFeatures[feature]){
+			icons += ChatUserFeatures[feature];
+		}
+	}
+	return icons;
+};
 
+//UI MESSAGE
+function ChatUIMessage(html){
+	this.init(html);
+	return this;
+};
+ChatUIMessage.prototype.init = function(html){
+	this.message = html;
+	return this;
+};
+ChatUIMessage.prototype.html = function(){
+	return this.wrap(this.wrapMessage());
+};
+ChatUIMessage.prototype.wrap = function(content){
+	return '<div>'+content+'</div>';
+};
+ChatUIMessage.prototype.wrapMessage = function(css){
+	return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').html(this.message).html();
+};
+
+//BASE MESSAGE
 function ChatMessage(message, timestamp){
 	this.init(message, timestamp);
 	return this;
 };
-$.extend(ChatMessage.prototype, destiny.fn.ChatMessage.prototype, {
-	wrapTime: function(){
-		return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
-	},
-	wrapMessage: function(css){
-		return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(this.message).html();
-	},
-	html: function(){
-		return this.wrap(this.wrapTime() + this.wrapMessage());
-	}
-});
+ChatMessage.prototype.init = function(message, timestamp){
+	this.message = message;
+	this.timestamp = moment(timestamp);
+	this.state = null;
+	return this;
+};
+ChatMessage.prototype.status = function(content){
+	$(this).triggerHandler('status', [state]);
+	this.state = state;
+	return this;
+};
+ChatMessage.prototype.wrapTime = function(){
+	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
+};
+ChatMessage.prototype.wrapMessage = function(css){
+	return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(this.message).html();
+};
+ChatMessage.prototype.html = function(){
+	return this.wrap(this.wrapTime() + this.wrapMessage());
+};
+ChatMessage.prototype.wrap = function(content){
+	return '<div>'+content+'</div>';
+};
+// USER MESSAGE
 function ChatUserMessage(message, user, timestamp){
 	this.init(message, timestamp);
 	this.user = user;
 	return this;
 };
-$.extend(ChatUserMessage.prototype, ChatMessage.prototype, {
-	wrapUser: function(user){
-		var features = {
-			'subscriber': '<i class="icon-star" title="Subscriber"/>',
-			'admin'     : '<i class="icon-fire" title="Administrator"/>',
-			'moderator' : '<i class="icon-leaf" title="Moderator"/>',
-			'protected' : '<i class="icon-eye-close" title="Protected"/>',
-			'vip'       : '<i class="icon-film" title="VIP"/>'
-		};
-		var icons = '';
-		for (var i = user.features.length - 1; i >= 0; i--) {
-			var feature = user.features[i];
-			if (features[feature])
-				icons += features[feature];
-		}
-		return icons+' <a style="color:'+user.color+'">'+user.username+'</a>';
-	},
-	wrapMessage: function(css){
-		return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(': '+this.message).html();
-	},
-	html: function(){
-		return this.wrap(this.wrapTime() + this.wrapUser(this.user) + this.wrapMessage());
-	}
-});
+$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
+ChatUserMessage.prototype.wrapUser = function(user){
+	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+user.username+'</a>';
+};
+ChatUserMessage.prototype.wrapMessage = function(css){
+	return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').text(': '+this.message).html();
+};
+ChatUserMessage.prototype.html = function(){
+	return this.wrap(this.wrapTime() + this.wrapUser(this.user) + this.wrapMessage());
+};

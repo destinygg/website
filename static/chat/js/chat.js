@@ -14,7 +14,6 @@ function chat() {
 	this.debug    = true;
 	this.sock     = new WebSocket('ws://' + location.host + ':9998/ws');
 	this.users    = {};
-
 	this.gui = new destiny.fn.Chat({
 		ui: '#destinychat',
 		user: null,
@@ -74,24 +73,17 @@ chat.prototype.onPING = function(data) {
 };
 chat.prototype.onOPEN = function() {
 	this.gui.push(new ChatMessage("You are now connected"));
-	if(chatHistory.length > 0){
-		chatHistory.reverse();
-		this.gui.push(new ChatMessage("Start of chat history ..."));
-		for(var i=0; i<chatHistory.length; ++i){
-			this.gui.push(new ChatUserMessage(chatHistory[i].data, ChatUser({username: chatHistory[i].username}), chatHistory[i].timestamp));
-		}
-		this.gui.push(new ChatMessage("End of chat history ..."));
-	}
 	this.gui.enableInput();
+	this.loadHistory();
 };
 chat.prototype.onCLOSE = function() {
 	this.gui.push(new ChatMessage("You have been disconnected"));
-	this.gui.disableInput();
+	this.gui.enableInput();
+	this.loadHistory();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
 		return;
-	
 	// TODO present the connection count in a nice way? is it too much info?
 	//this.connectioncount = data.connectioncount;
 	for (var i = data.users.length - 1; i >= 0; i--) {
@@ -100,7 +92,7 @@ chat.prototype.onNAMES = function(data) {
 		    connections = data.users[i].connections,
 		    color		= '#efefef';
 		
-		this.users[nick] = {username: nick, connections: connections, features: features, color: color};
+		this.users[nick] = new ChatUser({username: nick, connections: connections, features: features, color: color});
 	};
 };
 chat.prototype.onJOIN = function(data) {
@@ -108,7 +100,7 @@ chat.prototype.onJOIN = function(data) {
 	    connections = data.connections,
 	    color		= '#efefef';
 	
-	this.users[data.nick] = {username: data.nick, connections: connections, features: features, color: color};
+	this.users[data.nick] = new ChatUser({username: data.nick, connections: connections, features: features, color: color});
 };
 chat.prototype.onQUIT = function(data) {
 	this.users[data.nick].connections--;
@@ -116,7 +108,7 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	this.gui.push(new ChatUserMessage(data.data, ChatUser(this.users[data.nick]), data.timestamp));
+	this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
 };
 chat.prototype.onDELETE = function(data) {
 	// TODO handle this nicer, but definitely do not show "message deleted"
@@ -126,20 +118,43 @@ chat.prototype.onDELETE = function(data) {
 chat.prototype.onMUTE = function(data) {
 	// TODO make these messages distinct along with ban
 	// data.data is the nick which has been muted, no info about duration
-	this.gui.push(new ChatMessage(data.nick + " has been muted", data.timestamp));
+	this.gui.push(new ChatMessage(data.nick + " muted", data.timestamp));
 };
 chat.prototype.onUNMUTE = function(data) {
-	this.gui.push(new ChatMessage(data.nick + " has been unmuted", data.timestamp));
+	this.gui.push(new ChatMessage(data.nick + " unmuted", data.timestamp));
 };
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
-	this.gui.push(new ChatMessage(data.nick + " has been banned", data.timestamp));
+	this.gui.push(new ChatMessage(data.nick + " banned", data.timestamp));
 };
 chat.prototype.onUNBAN = function(data) {
-	this.gui.push(new ChatMessage(data.nick + " has been unbanned", data.timestamp));
+	this.gui.push(new ChatMessage(data.nick + " unbanned", data.timestamp));
 };
 chat.prototype.onERR = function(data) {
 	// data is a string now, TODO translate the raw error strings to something
 	// human readable
 	this.gui.push(new ChatMessage("Error: " + data));
+};
+chat.prototype.loadHistory = function() {
+	this.gui.push(new ChatMessage("Retrieving chat history..."));
+	var self = this;
+	$.ajax({
+		type: 'get',
+		url: destiny.baseUrl + 'chat/history.json',
+		success: function(data){
+			if(data.length > 0){
+				data.reverse();
+				self.gui.push(new ChatUIMessage('<hr>'));
+				for(var i=0; i<data.length; ++i){
+					self.gui.push(new ChatUserMessage(data[i].data, new ChatUser({username: data[i].username}), data[i].timestamp));
+				}
+				self.gui.push(new ChatUIMessage('<hr>'));
+			}
+			self = null;
+		},
+		error: function(){
+			self.gui.push(new ChatMessage("Error getting history"));
+			self = null;
+		}
+	});
 };
