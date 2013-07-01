@@ -19,7 +19,7 @@ function chat() {
 			//message.status();
 		},
 		updateMessageStatus: function(data){
-			for(var i=0; i<this.msgQueue.length; ++i){
+			for(var i in this.msgQueue){
 				if(this.msgQueue[i].message == data.data){
 					this.msgQueue[i].status();
 					this.msgQueue[i] = null;
