@@ -4,6 +4,8 @@ $cssonly = ( @$argv[1] == 'css');
 $html = file_get_contents('http://twitchemotes.com/');
 
 $destination = 'img/twitch/%s.png';
+mkdir('img/twitch', 0775, true);
+mkdir('css', 0775, true);
 preg_match_all('#<div class="span2">.*?<img src="([^"]*?)"/>.*>(.*?)</a></center><br/></div>#i', $html, $matches );
 
 $triggers = array();
@@ -16,7 +18,7 @@ $css      = '
 	display: inline-block;
 	position: relative;
 	top: 10px;
-	margin: 0 1px;
+	margin: 0 2px;
 }
 ';
 $emotecss = "
@@ -31,10 +33,6 @@ $emotecss = "
 foreach( $matches[1] as $key => $url ) {
 	
 	$trigger = $matches[2][ $key ];
-	if (preg_match('/^\d/', $trigger)) // starts with digit -> invalid classname
-		continue;
-	
-	$triggers[] = $trigger;
 	preg_match('/-(\d+)x(\d+)\.png$/', $url, $dimensions );
 	$filename = sprintf( $destination, $trigger );
 	
@@ -55,4 +53,4 @@ foreach( $matches[1] as $key => $url ) {
 }
 
 file_put_contents('css/twitch.css', $css );
-echo implode("|", $triggers), "\n\nRun spritemapper css/twitch.css --anneal=100\n";
+echo implode("|", $matches[2]), "\n\nRun spritemapper css/twitch.css --anneal=100\n";

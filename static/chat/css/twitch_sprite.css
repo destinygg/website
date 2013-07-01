@@ -9,499 +9,507 @@
 	top: 10px;
 	margin: 0 2px;
 }
+
+.twitch-emote.twitch-emote-4Head {
+	width: 20px;
+	height: 30px;
+	margin-top: -30px;
+	background: url('../img/twitch.png') no-repeat -30px -155px;
+}
+
 .twitch-emote.twitch-emote-ArsonNoSexy {
 	width: 18px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -113px 0;
+	background: url('../img/twitch.png') no-repeat -275px -31px;
 }
 
 .twitch-emote.twitch-emote-AsianGlow {
 	width: 24px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -78px -29px;
+	background: url('../img/twitch.png') no-repeat -75px -62px;
 }
 
 .twitch-emote.twitch-emote-BCWarrior {
 	width: 29px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -83px 0;
+	background: url('../img/twitch.png') no-repeat 0 0;
 }
 
 .twitch-emote.twitch-emote-BORT {
 	width: 19px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat 0 -91px;
+	background: url('../img/twitch.png') no-repeat -55px -62px;
 }
 
 .twitch-emote.twitch-emote-BibleThump {
 	width: 36px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -269px -91px;
+	background: url('../img/twitch.png') no-repeat -87px -122px;
 }
 
 .twitch-emote.twitch-emote-BionicBunion {
 	width: 30px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -88px -91px;
+	background: url('../img/twitch.png') no-repeat -151px -62px;
 }
 
 .twitch-emote.twitch-emote-BlargNaut {
 	width: 21px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -132px 0;
+	background: url('../img/twitch.png') no-repeat -167px 0;
 }
 
 .twitch-emote.twitch-emote-BloodTrail {
 	width: 41px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -155px -29px;
+	background: url('../img/twitch.png') no-repeat -184px -93px;
 }
 
 .twitch-emote.twitch-emote-BrainSlug {
 	width: 30px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -216px -91px;
+	background: url('../img/twitch.png') no-repeat -100px -62px;
 }
 
 .twitch-emote.twitch-emote-BrokeBack {
 	width: 22px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -390px -60px;
+	background: url('../img/twitch.png') no-repeat -323px -62px;
 }
 
 .twitch-emote.twitch-emote-CougarHunt {
 	width: 21px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -241px -29px;
+	background: url('../img/twitch.png') no-repeat -188px -31px;
 }
 
 .twitch-emote.twitch-emote-DAESuppy {
 	width: 28px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -131px -60px;
+	background: url('../img/twitch.png') no-repeat -106px -93px;
 }
 
 .twitch-emote.twitch-emote-DBstyle {
 	width: 21px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -42px -91px;
+	background: url('../img/twitch.png') no-repeat -182px -62px;
 }
 
 .twitch-emote.twitch-emote-DansGame {
 	width: 25px;
 	height: 32px;
 	margin-top: -32px;
-	background: url('../img/twitch.png') no-repeat 0 -122px;
+	background: url('../img/twitch.png') no-repeat -63px -153px;
 }
 
 .twitch-emote.twitch-emote-DatSheffy {
 	width: 24px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -24px -60px;
+	background: url('../img/twitch.png') no-repeat -30px -31px;
 }
 
 .twitch-emote.twitch-emote-EagleEye {
 	width: 18px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -44px 0;
+	background: url('../img/twitch.png') no-repeat -304px -62px;
 }
 
 .twitch-emote.twitch-emote-EvilFetus {
 	width: 29px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -367px -91px;
+	background: url('../img/twitch.png') no-repeat -124px -122px;
 }
 
 .twitch-emote.twitch-emote-FPSMarksman {
 	width: 20px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -215px 0;
+	background: url('../img/twitch.png') no-repeat -189px 0;
 }
 
 .twitch-emote.twitch-emote-FUNgineer {
 	width: 24px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -84px -122px;
+	background: url('../img/twitch.png') no-repeat -198px -122px;
 }
 
 .twitch-emote.twitch-emote-FailFish {
 	width: 22px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -144px -91px;
+	background: url('../img/twitch.png') no-repeat -301px -122px;
 }
 
 .twitch-emote.twitch-emote-FrankerZ {
 	width: 40px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -131px -122px;
+	background: url('../img/twitch.png') no-repeat -260px -122px;
 }
 
 .twitch-emote.twitch-emote-FreakinStinkin {
 	width: 19px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -287px -29px;
+	background: url('../img/twitch.png') no-repeat -210px -31px;
 }
 
 .twitch-emote.twitch-emote-FuzzyOtterOO {
 	width: 26px;
 	height: 26px;
 	margin-top: -26px;
-	background: url('../img/twitch.png') no-repeat -283px 0;
+	background: url('../img/twitch.png') no-repeat -294px -31px;
 }
 
 .twitch-emote.twitch-emote-GingerPower {
 	width: 21px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -265px -60px;
+	background: url('../img/twitch.png') no-repeat -234px 0;
 }
 
 .twitch-emote.twitch-emote-HassanChop {
 	width: 19px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -397px -91px;
+	background: url('../img/twitch.png') no-repeat -135px -93px;
 }
 
 .twitch-emote.twitch-emote-HotPokket {
 	width: 28px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -24px -29px;
+	background: url('../img/twitch.png') no-repeat -226px -62px;
 }
 
 .twitch-emote.twitch-emote-ItsBoshyTime {
 	width: 18px;
 	height: 18px;
 	margin-top: -18px;
-	background: url('../img/twitch.png') no-repeat -335px 0;
+	background: url('../img/twitch.png') no-repeat -391px 0;
 }
 
 .twitch-emote.twitch-emote-JKanStyle {
 	width: 21px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -175px 0;
+	background: url('../img/twitch.png') no-repeat -346px -62px;
 }
 
 .twitch-emote.twitch-emote-Jebaited {
 	width: 21px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -247px -91px;
+	background: url('../img/twitch.png') no-repeat -176px -122px;
 }
 
 .twitch-emote.twitch-emote-JonCarnage {
 	width: 20px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -197px -29px;
+	background: url('../img/twitch.png') no-repeat -82px 0;
 }
 
 .twitch-emote.twitch-emote-Kappa {
 	width: 25px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -103px -29px;
+	background: url('../img/twitch.png') no-repeat -52px -93px;
 }
 
 .twitch-emote.twitch-emote-KevinTurtle {
 	width: 21px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -22px 0;
+	background: url('../img/twitch.png') no-repeat -256px 0;
 }
 
 .twitch-emote.twitch-emote-Kreygasm {
 	width: 19px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -63px 0;
+	background: url('../img/twitch.png') no-repeat -126px 0;
 }
 
 .twitch-emote.twitch-emote-MVGame {
 	width: 24px;
 	height: 32px;
 	margin-top: -32px;
-	background: url('../img/twitch.png') no-repeat -26px -122px;
+	background: url('../img/twitch.png') no-repeat -89px -153px;
 }
 
 .twitch-emote.twitch-emote-MrDestructoid {
 	width: 39px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -206px -60px;
+	background: url('../img/twitch.png') no-repeat -301px 0;
 }
 
 .twitch-emote.twitch-emote-NinjaTroll {
 	width: 19px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -370px -60px;
+	background: url('../img/twitch.png') no-repeat -368px -62px;
 }
 
 .twitch-emote.twitch-emote-NoNoSpot {
 	width: 23px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -259px 0;
+	background: url('../img/twitch.png') no-repeat -230px -31px;
 }
 
 .twitch-emote.twitch-emote-OMGScoots {
 	width: 22px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -108px -60px;
+	background: url('../img/twitch.png') no-repeat -165px -31px;
 }
 
 .twitch-emote.twitch-emote-OneHand {
 	width: 20px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -154px 0;
+	background: url('../img/twitch.png') no-repeat -388px -62px;
 }
 
 .twitch-emote.twitch-emote-OpieOP {
 	width: 21px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -109px -122px;
+	background: url('../img/twitch.png') no-repeat -154px -122px;
 }
 
 .twitch-emote.twitch-emote-OptimizePrime {
 	width: 22px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -218px -29px;
+	background: url('../img/twitch.png') no-repeat -278px 0;
 }
 
 .twitch-emote.twitch-emote-PJSalt {
 	width: 36px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -330px -91px;
+	background: url('../img/twitch.png') no-repeat -223px -122px;
 }
 
 .twitch-emote.twitch-emote-PMSTwin {
 	width: 23px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -306px -91px;
+	background: url('../img/twitch.png') no-repeat -255px -62px;
 }
 
 .twitch-emote.twitch-emote-PazPazowitz {
 	width: 18px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -246px -60px;
+	background: url('../img/twitch.png') no-repeat 0 -87px;
 }
 
 .twitch-emote.twitch-emote-PicoMause {
 	width: 22px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -236px 0;
+	background: url('../img/twitch.png') no-repeat -103px 0;
 }
 
 .twitch-emote.twitch-emote-PogChamp {
 	width: 23px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -64px -91px;
+	background: url('../img/twitch.png') no-repeat -63px -122px;
 }
 
 .twitch-emote.twitch-emote-Poooound {
 	width: 21px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -20px -91px;
+	background: url('../img/twitch.png') no-repeat -204px -62px;
 }
 
 .twitch-emote.twitch-emote-PunchTrees {
 	width: 24px;
 	height: 24px;
 	margin-top: -24px;
-	background: url('../img/twitch.png') no-repeat -310px 0;
+	background: url('../img/twitch.png') no-repeat -321px -31px;
 }
 
 .twitch-emote.twitch-emote-RedCoat {
 	width: 19px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -308px -60px;
+	background: url('../img/twitch.png') no-repeat 0 -59px;
 }
 
 .twitch-emote.twitch-emote-ResidentSleeper {
 	width: 28px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -417px -91px;
+	background: url('../img/twitch.png') no-repeat -155px -93px;
 }
 
 .twitch-emote.twitch-emote-RuleFive {
 	width: 20px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -172px -122px;
+	background: url('../img/twitch.png') no-repeat 0 -28px;
 }
 
 .twitch-emote.twitch-emote-SMOrc {
 	width: 32px;
 	height: 32px;
 	margin-top: -32px;
-	background: url('../img/twitch.png') no-repeat -51px -122px;
+	background: url('../img/twitch.png') no-repeat -30px -122px;
 }
 
 .twitch-emote.twitch-emote-SMSkull {
 	width: 24px;
 	height: 24px;
 	margin-top: -24px;
-	background: url('../img/twitch.png') no-repeat -332px -29px;
+	background: url('../img/twitch.png') no-repeat -341px 0;
 }
 
 .twitch-emote.twitch-emote-SSSsss {
 	width: 24px;
 	height: 24px;
 	margin-top: -24px;
-	background: url('../img/twitch.png') no-repeat -307px -29px;
+	background: url('../img/twitch.png') no-repeat -366px 0;
 }
 
 .twitch-emote.twitch-emote-ShazBotstix {
 	width: 24px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -53px -29px;
+	background: url('../img/twitch.png') no-repeat -30px -62px;
 }
 
 .twitch-emote.twitch-emote-SoBayed {
 	width: 17px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -160px -60px;
+	background: url('../img/twitch.png') no-repeat 0 -143px;
 }
 
 .twitch-emote.twitch-emote-SoonerLater {
 	width: 23px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat 0 -60px;
+	background: url('../img/twitch.png') no-repeat -30px 0;
 }
 
 .twitch-emote.twitch-emote-StoneLightning {
 	width: 20px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -328px -60px;
+	background: url('../img/twitch.png') no-repeat -254px -31px;
 }
 
 .twitch-emote.twitch-emote-StrawBeary {
 	width: 20px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -287px -60px;
+	background: url('../img/twitch.png') no-repeat -409px -62px;
 }
 
 .twitch-emote.twitch-emote-SuperVinlin {
 	width: 23px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -263px -29px;
+	background: url('../img/twitch.png') no-repeat -210px 0;
 }
 
 .twitch-emote.twitch-emote-SwiftRage {
 	width: 21px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat 0 0;
+	background: url('../img/twitch.png') no-repeat -30px -93px;
 }
 
 .twitch-emote.twitch-emote-TehFunrun {
 	width: 27px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -178px -60px;
+	background: url('../img/twitch.png') no-repeat -54px 0;
 }
 
 .twitch-emote.twitch-emote-TheRinger {
 	width: 20px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -349px -60px;
+	background: url('../img/twitch.png') no-repeat -146px 0;
 }
 
 .twitch-emote.twitch-emote-TheTarFu {
 	width: 25px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -129px -29px;
+	background: url('../img/twitch.png') no-repeat -139px -31px;
 }
 
 .twitch-emote.twitch-emote-TinyFace {
 	width: 19px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -167px -91px;
+	background: url('../img/twitch.png') no-repeat -131px -62px;
 }
 
 .twitch-emote.twitch-emote-TooSpicy {
 	width: 23px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat 0 -29px;
+	background: url('../img/twitch.png') no-repeat -84px -31px;
 }
 
 .twitch-emote.twitch-emote-TriHard {
 	width: 24px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -119px -91px;
+	background: url('../img/twitch.png') no-repeat -279px -62px;
 }
 
 .twitch-emote.twitch-emote-UleetBackup {
 	width: 17px;
 	height: 27px;
 	margin-top: -27px;
-	background: url('../img/twitch.png') no-repeat -197px 0;
+	background: url('../img/twitch.png') no-repeat 0 -115px;
 }
 
 .twitch-emote.twitch-emote-UnSane {
 	width: 28px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -187px -91px;
+	background: url('../img/twitch.png') no-repeat -55px -31px;
 }
 
 .twitch-emote.twitch-emote-Volcania {
 	width: 27px;
 	height: 28px;
 	margin-top: -28px;
-	background: url('../img/twitch.png') no-repeat -80px -60px;
+	background: url('../img/twitch.png') no-repeat -78px -93px;
 }
 
 .twitch-emote.twitch-emote-WinWaker {
 	width: 30px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/twitch.png') no-repeat -49px -60px;
+	background: url('../img/twitch.png') no-repeat -108px -31px;
 }
