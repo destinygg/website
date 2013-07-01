@@ -19,15 +19,16 @@ function chat() {
 			//message.status();
 		},
 		updateMessageStatus: function(data){
+			var found = false;
 			for(var i in this.msgQueue){
 				if(this.msgQueue[i].message == data.data){
 					this.msgQueue[i].status();
 					this.msgQueue[i] = null;
 					delete(this.msgQueue[i]);
-					return true;
+					found = true;
 				}
 			}
-			return false;
+			return found;
 		}
 	});
 
