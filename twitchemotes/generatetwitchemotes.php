@@ -16,13 +16,14 @@ $css      = '
 	display: inline-block;
 	position: relative;
 	top: 10px;
+	margin: 0 1px;
 }
 ';
 $emotecss = "
 .twitch-emote.twitch-emote-%s {
 	width: %dpx;
 	height: %dpx;
-	margin: -%dpx 5px 0 5px;
+	margin-top: -%dpx;
 	background: url(../img/twitch/%s.png);
 }
 ";

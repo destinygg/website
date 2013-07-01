@@ -226,10 +226,7 @@ ChatMessage.prototype.wrapTime = function(){
 };
 ChatMessage.prototype.wrapMessage = function(css){
 	var elem  = $('<span/>').text(this.message);
-	if (css)
-		elem.addClass(css);
-	
-	return elem.html();
+	return elem.html(); // the class is never used, dont add it
 };
 ChatMessage.prototype.html = function(){
 	return this.wrap(this.wrapTime() + this.wrapMessage());
@@ -251,9 +248,6 @@ ChatUserMessage.prototype.wrapUser = function(user){
 ChatUserMessage.prototype.wrapMessage = function(css){
 	var elem  = $('<span/>').text(': '+this.message),
 	    emote = this.emoteregex.exec(elem.text());
-	
-	if (css)
-		elem.addClass(css);
 	
 	if (emote) {
 		var emoteelem = $('<div class="twitch-emote"/>');
