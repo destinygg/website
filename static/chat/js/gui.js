@@ -138,13 +138,14 @@
 })(jQuery);
 
 // USER FEATURES
-var ChatUserFeatures = {
-	'subscriber': '<i class="icon-star" title="Subscriber"/>',
-	'admin'     : '<i class="icon-fire" title="Administrator"/>',
-	'moderator' : '<i class="icon-leaf" title="Moderator"/>',
-	'protected' : '<i class="icon-eye-close" title="Protected"/>',
-	'vip'       : '<i class="icon-film" title="VIP"/>'
+var UserFeatures = {
+	PROTECTED 	: 1,
+	SUBSCRIBER	: 2,
+	VIP			: 3,
+	MODERATOR	: 4,
+	ADMIN		: 5
 };
+
 var ChatMessageStatus = {
 	SENT		: 'sent',
 	PENDING		: 'pending',
@@ -164,9 +165,22 @@ function ChatUser(args){
 ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
 	for (var i = this.features.length - 1; i >= 0; i--) {
-		var feature = this.features[i];
-		if (ChatUserFeatures[feature]){
-			icons += ChatUserFeatures[feature];
+		switch(parseInt(this.features[i])){
+			case UserFeatures.PROTECTED :
+				icons += '<i class="icon-eye-close" title="Protected"/>';
+				break;
+			case UserFeatures.SUBSCRIBER :
+				icons += '<i class="icon-star" title="Subscriber"/>';
+				break;
+			case UserFeatures.VIP :
+				icons += '<i class="icon-film" title="VIP"/>';
+				break;
+			case UserFeatures.MODERATOR :
+				icons += '<i class="icon-leaf" title="Moderator"/>';
+				break;
+			case UserFeatures.ADMIN :
+				icons += '<i class="icon-fire" title="Administrator"/>';
+				break;
 		}
 	}
 	return icons;
@@ -202,7 +216,7 @@ ChatMessage.prototype.init = function(message, timestamp){
 	this.state = null;
 	return this;
 };
-ChatMessage.prototype.status = function(content){
+ChatMessage.prototype.status = function(state){
 	$(this).triggerHandler('status', [state]);
 	this.state = state;
 	return this;

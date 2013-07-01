@@ -4,14 +4,30 @@ $(function() {
 
 function chat() {
 
+	this.user = new ChatUser($('#destinychat').data('user'));
+
 	this.gui = new destiny.fn.Chat({
 		ui: '#destinychat',
 		engine: this,
+		msgQueue: [],
 		onSend: function(str){
-			var message = chat.push(new ChatUserMessage(str, chat.user));
+			var message = new ChatUserMessage(str, this.engine.user);
+			this.msgQueue.push(message);
+			this.push(message);
 			message.status(ChatMessageStatus.PENDING);
 			this.engine.emit('MSG', {data: str});
 			//message.status();
+		},
+		updateMessageStatus: function(data){
+			for(var i=0; i<this.msgQueue.length; ++i){
+				if(this.msgQueue[i].message == data.data){
+					this.msgQueue[i].status();
+					this.msgQueue[i] = null;
+					delete(this.msgQueue[i]);
+					return true;
+				}
+			}
+			return false;
 		}
 	});
 
@@ -102,7 +118,9 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
+	if(this.user.username != data.nick || !this.gui.updateMessageStatus(data)){
+		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
+	}
 };
 chat.prototype.onDELETE = function(data) {
 	// TODO handle this nicer, but definitely do not show "message deleted"
