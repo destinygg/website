@@ -109,13 +109,11 @@ chat.prototype.onNAMES = function(data) {
 	// TODO present the connection count in a nice way? is it too much info?
 	//this.connectioncount = data.connectioncount;
 	for (var i = data.users.length - 1; i >= 0; i--) {
-		data.users[i].username = data.users[i].nick;
-		this.users[nick] = new ChatUser(data.users[i]);
+		this.users[data.users[i].username] = new ChatUser(data.users[i]);
 	};
 };
 chat.prototype.onJOIN = function(data) {
-	data.username = data.nick;
-	this.users[data.nick] = new ChatUser(data);
+	this.users[data.username] = new ChatUser(data);
 };
 chat.prototype.onQUIT = function(data) {
 	this.users[data.nick].connections--;
