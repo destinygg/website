@@ -154,13 +154,19 @@ var ChatMessageStatus = {
 
 //CHAT USER
 function ChatUser(args){
-	this.username = args.username;
-	this.userId = args.userId;
+	this.username = 'Unknown';
+	this.userId = '';
 	this.features = [];
 	this.connections = 0;
 	this.color = '#efefef';
 	$.extend(this, args);
 	return this;
+};
+ChatUser.prototype.init = function(args){
+	if(args.username)
+		this.username = args.username;
+	if(args.userId)
+		this.username = args.userId;
 };
 ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
