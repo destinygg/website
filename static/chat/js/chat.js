@@ -121,7 +121,7 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	if(this.user.username != data.nick || !this.gui.updateMessageStatus(data)){
+	if(this.user != null && this.user.username != data.nick || !this.gui.updateMessageStatus(data)){
 		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
 	}
 };
