@@ -160,7 +160,7 @@ function ChatUser(args){
 	this.connections = 0;
 	this.color = '#efefef';
 	$.extend(this, args);
-	return this;
+	return this.init(args);
 };
 ChatUser.prototype.init = function(args){
 	if(args.username)
