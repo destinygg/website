@@ -11,6 +11,10 @@ function chat() {
 		engine: this,
 		msgQueue: [],
 		onSend: function(str){
+			if(this.engine.user == null){
+				this.push(new ChatMessage("You must be logged in to send messages"));
+				return;
+			}
 			var message = new ChatUserMessage(str, this.engine.user);
 			this.msgQueue.push(message);
 			this.push(message);
