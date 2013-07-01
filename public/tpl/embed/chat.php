@@ -19,7 +19,7 @@ use Destiny\Utils\Tpl;
 </head>
 <body id="chat-embedded">
 
-<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
+<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-user="<?=Tpl::out(json_encode($model->user))?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
 	</div>

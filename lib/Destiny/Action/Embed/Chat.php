@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Embed;
 
+use Destiny\UserRole;
 use Destiny\AppException;
 use Destiny\Utils\Http;
 use Destiny\ViewModel;
@@ -15,11 +16,14 @@ class Chat {
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		$model->chatOptions = $this->getChatOptionParams ( $params );
-		$user = Session::getCredentials ()->getData ();
-		if ($user ['userId']) $model->user = array (
-			'nick' => $user ['username'],
-			'features' => $user ['features'] 
-		);
+		if (Session::hasRole ( UserRole::USER )) {
+			$user = Session::getCredentials ()->getData ();
+			$model->user = array (
+				'username' => $user ['username'],
+				'features' => $user ['features'],
+				'color' => '#efefef' 
+			);
+		}
 		return 'embed/chat';
 	}
 

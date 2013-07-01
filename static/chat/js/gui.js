@@ -145,12 +145,19 @@ var ChatUserFeatures = {
 	'protected' : '<i class="icon-eye-close" title="Protected"/>',
 	'vip'       : '<i class="icon-film" title="VIP"/>'
 };
+var ChatMessageStatus = {
+	SENT		: 'sent',
+	PENDING		: 'pending',
+	FAILED		: 'failed'
+};
 
 //CHAT USER
 function ChatUser(args){
 	this.username = args.username;
 	this.userId = args.userId;
 	this.features = [];
+	this.connections = 0;
+	this.color = '#efefef';
 	$.extend(this, args);
 	return this;
 };

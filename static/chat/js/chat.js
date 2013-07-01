@@ -3,28 +3,29 @@ $(function() {
 });
 
 function chat() {
-	if (window.MozWebSocket)
-		window.WebSocket = MozWebSocket;
-	
-	if ( !window.WebSocket ) {
-		// TODO print warning
-		return
-	}
-	
-	this.debug    = true;
-	this.sock     = new WebSocket('ws://' + location.host + ':9998/ws');
-	this.users    = {};
+
 	this.gui = new destiny.fn.Chat({
 		ui: '#destinychat',
-		user: null,
 		engine: this,
-		onSend: function(str, input){
-			//var message = chat.push(new ChatUserMessage(str, chat.user));
-			//message.status(ChatMessageStatus.PENDING);
+		onSend: function(str){
+			var message = chat.push(new ChatUserMessage(str, chat.user));
+			message.status(ChatMessageStatus.PENDING);
 			this.engine.emit('MSG', {data: str});
 			//message.status();
 		}
 	});
+
+	if (window.MozWebSocket)
+		window.WebSocket = MozWebSocket;
+	
+	if ( !window.WebSocket ) {
+		this.gui.push(new ChatMessage("This chat requires WebSockets."));
+		return;
+	}
+	
+	this.debug = true;
+	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
+	this.users = {};
 	this.init();
 }
 
@@ -87,20 +88,13 @@ chat.prototype.onNAMES = function(data) {
 	// TODO present the connection count in a nice way? is it too much info?
 	//this.connectioncount = data.connectioncount;
 	for (var i = data.users.length - 1; i >= 0; i--) {
-		var nick        = data.users[i].nick,
-		    features    = data.users[i].features || [],
-		    connections = data.users[i].connections,
-		    color		= '#efefef';
-		
-		this.users[nick] = new ChatUser({username: nick, connections: connections, features: features, color: color});
+		data.users[i].username = data.users[i].nick;
+		this.users[nick] = new ChatUser(data.users[i]);
 	};
 };
 chat.prototype.onJOIN = function(data) {
-	var features    = data.features || [],
-	    connections = data.connections,
-	    color		= '#efefef';
-	
-	this.users[data.nick] = new ChatUser({username: data.nick, connections: connections, features: features, color: color});
+	data.username = data.nick;
+	this.users[data.nick] = new ChatUser(data);
 };
 chat.prototype.onQUIT = function(data) {
 	this.users[data.nick].connections--;
@@ -136,25 +130,28 @@ chat.prototype.onERR = function(data) {
 	this.gui.push(new ChatMessage("Error: " + data));
 };
 chat.prototype.loadHistory = function() {
-	this.gui.push(new ChatMessage("Retrieving chat history..."));
-	var self = this;
-	$.ajax({
-		type: 'get',
-		url: destiny.baseUrl + 'chat/history.json',
-		success: function(data){
-			if(data.length > 0){
-				data.reverse();
-				self.gui.push(new ChatUIMessage('<hr>'));
-				for(var i=0; i<data.length; ++i){
-					self.gui.push(new ChatUserMessage(data[i].data, new ChatUser({username: data[i].username}), data[i].timestamp));
+	if(!this.historyLoaded){
+		this.historyLoaded = true;
+		this.gui.push(new ChatMessage("Retrieving chat history..."));
+		var self = this;
+		$.ajax({
+			type: 'get',
+			url: destiny.baseUrl + 'chat/history.json',
+			success: function(data){
+				if(data.length > 0){
+					data.reverse();
+					self.gui.push(new ChatUIMessage('<hr>'));
+					for(var i=0; i<data.length; ++i){
+						self.gui.push(new ChatUserMessage(data[i].data, new ChatUser({username: data[i].username}), data[i].timestamp));
+					}
+					self.gui.push(new ChatUIMessage('<hr>'));
 				}
-				self.gui.push(new ChatUIMessage('<hr>'));
+				self = null;
+			},
+			error: function(){
+				self.gui.push(new ChatMessage("Error getting history"));
+				self = null;
 			}
-			self = null;
-		},
-		error: function(){
-			self.gui.push(new ChatMessage("Error getting history"));
-			self = null;
-		}
-	});
+		});
+	};
 };
