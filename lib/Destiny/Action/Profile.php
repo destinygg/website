@@ -52,19 +52,16 @@ class Profile {
 		// Preferences
 		if (isset ( $params ['feature'] ) && ! empty ( $params ['feature'] )) {
 			$userFeatures = Session::getCredentials ()->getFeatures ();
-			if (isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 1) {
-				if (isset ( $userFeatures [UserFeature::STICKY_TEAMBAR] ) && $userFeatures [UserFeature::STICKY_TEAMBAR] == 0) {
-					$userFeaturesService->addUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
-				}
+			if (! in_array ( UserFeature::STICKY_TEAMBAR, $userFeatures ) && isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 1) {
+				$userFeaturesService->addUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
 			}
-			if (isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 0) {
-				if (isset ( $userFeatures [UserFeature::STICKY_TEAMBAR] ) && $userFeatures [UserFeature::STICKY_TEAMBAR] == 1) {
-					$userFeaturesService->removeUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
-				}
+			if (in_array ( UserFeature::STICKY_TEAMBAR, $userFeatures ) && isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 0) {
+				$userFeaturesService->removeUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
 			}
 		}
 		
 		// Update user
+		
 		$userService->updateUser ( $user ['userId'], array (
 			'username' => $username,
 			'country' => $country,
