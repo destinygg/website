@@ -39,7 +39,9 @@ $session->addCredentialHandler ( function (SessionInstance $session, SessionCred
 $session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
 	$redis = Application::instance ()->getRedis ();
 	if (! empty ( $redis )) {
+		$redis->setOption ( Redis::OPT_SERIALIZER, Redis::SERIALIZER_NONE );
 		$redis->set ( sprintf ( 'CHAT:%s', $session->getSessionId () ), json_encode ( $credentials->getData () ), 30 * 24 * 60 * 60 );
+		$redis->setOption ( Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP );
 	}
 } );
 // Removes session from cache
@@ -70,6 +72,16 @@ if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 			) ) );
 		}
 	}
+}
+
+// TEMP chatFeature
+if (! Config::$a ['chatFeature']) {
+	$app->bind ( '/^\/(embed|chat)/i', function (Application $app) {
+		$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
+		if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
+			$app->error ( Http::STATUS_UNAUTHORIZED );
+		}
+	} );
 }
 
 // Dev/Admins only

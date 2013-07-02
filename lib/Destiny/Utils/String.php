@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Utils;
 
 use Destiny\Utils\String\Params;
@@ -11,7 +10,6 @@ use Destiny\Utils\Options;
 class String {
 	
 	protected $value = '';
-	
 	protected $params = array ();
 
 	public function __construct($value, array $args = null) {
@@ -41,29 +39,6 @@ class String {
 		} else {
 			return iconv ( 'CP1252', 'UTF-8', $string );
 		}
-	}
-
-	public static function fileTail($file, $numLines = 100) {
-		if (! is_file ( $file )) {
-			return '';
-		}
-		$fp = fopen ( $file, "r" );
-		$chunk = 4096;
-		$fs = sprintf ( "%u", filesize ( $file ) );
-		$max = (intval ( $fs ) == PHP_INT_MAX) ? PHP_INT_MAX : filesize ( $file );
-		$data = '';
-		for($len = 0; $len < $max; $len += $chunk) {
-			$seekSize = ($max - $len > $chunk) ? $chunk : $max - $len;
-			fseek ( $fp, ($len + $seekSize) * - 1, SEEK_END );
-			$data = fread ( $fp, $seekSize ) . $data;
-			if (substr_count ( $data, "\n" ) >= $numLines + 1) {
-				preg_match ( "!(.*?\n){" . ($numLines) . "}$!", $data, $match );
-				fclose ( $fp );
-				return $match [0];
-			}
-		}
-		fclose ( $fp );
-		return trim ( $data );
 	}
 
 }

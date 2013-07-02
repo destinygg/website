@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Service;
 
+use Destiny\Utils\Color;
 use Destiny\Config;
 use Destiny\Application;
 use Destiny\Service\RememberMeService;
@@ -46,7 +47,7 @@ class AuthenticationService extends Service {
 	public static function instance() {
 		if (static::$instance === null) {
 			static::$instance = new static ();
-			static::$instance->remembermeId = Config::$a ['rememberme'] ['cookie_name'];
+			static::$instance->remembermeId = Config::$a ['rememberme'] ['cookieName'];
 		}
 		return static::$instance;
 	}
@@ -153,6 +154,9 @@ class AuthenticationService extends Service {
 		
 		// Add the user features
 		$credentials->setFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
+		
+		// Generate the user color
+		$credentials->setColor ( Color::getUserColor ( $credentials->getData () ) );
 		
 		// Update the auth credentials
 		Session::updateCredentials ( $credentials );

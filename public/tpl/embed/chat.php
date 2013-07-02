@@ -14,12 +14,13 @@ use Destiny\Utils\Tpl;
 <link href="<?=Config::cdn()?>/chat/css/style.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <?php else: ?>
 <link href="<?=Config::cdn()?>/chat/css/style.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/chat/css/twitch_sprite.css" rel="stylesheet" media="screen">
 <?php endif; ?>
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="chat-embedded">
 
-<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
+<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-user="<?=Tpl::out(json_encode($model->user))?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
 	</div>
@@ -30,7 +31,8 @@ use Destiny\Utils\Tpl;
 			</div>
 		</form>
 		<div class="chat-tools-wrap clearfix">
-			<button class="btn btn-mini btn-primary pull-left">Send</button>
+			<button type="submit" class="chat-send-btn btn btn-mini btn-inverse pull-left">Send</button>
+			<button type="button" class="chat-users-btn btn btn-mini btn-inverse pull-right">Users</button>
 		</div>
 	</div>
 </div>
@@ -41,6 +43,9 @@ use Destiny\Utils\Tpl;
 <?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
+<script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
+<script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
+<script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 

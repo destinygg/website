@@ -57,8 +57,8 @@ class League {
 			$model->invites = $challengeService->getInvites ( $teamId, 5 );
 		}
 		
-		$endTime = new \DateTime ( '2013-06-30T23:59:59' );
-		$endTime->setTimezone ( new \DateTimeZone ( 'CDT' ) );
+		$endTime = new \DateTime ( '2013-06-30T23:59:59 America/Chicago' );
+		$endTime->setTimezone ( new \DateTimeZone ( 'America/Chicago' ) );
 		$model->endTime = $endTime;
 		$model->leagueEnded = ($endTime < new \DateTime ());
 		return 'league';

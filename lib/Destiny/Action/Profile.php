@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action;
 
 use Destiny\Service\AuthenticationService;
@@ -52,19 +51,21 @@ class Profile {
 		
 		// Preferences
 		if (isset ( $params ['feature'] ) && ! empty ( $params ['feature'] )) {
-			if (isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 1) {
+			$userFeatures = Session::getCredentials ()->getFeatures ();
+			if (! in_array ( UserFeature::STICKY_TEAMBAR, $userFeatures ) && isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 1) {
 				$userFeaturesService->addUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
 			}
-			if (isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 0) {
+			if (in_array ( UserFeature::STICKY_TEAMBAR, $userFeatures ) && isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 0) {
 				$userFeaturesService->removeUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
 			}
 		}
 		
 		// Update user
+		
 		$userService->updateUser ( $user ['userId'], array (
-				'username' => $username,
-				'country' => $country,
-				'email' => $email 
+			'username' => $username,
+			'country' => $country,
+			'email' => $email 
 		) );
 		
 		// Update authentication credentials

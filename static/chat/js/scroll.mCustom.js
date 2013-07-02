@@ -17,7 +17,7 @@
 		init: function(){
 			var self = this;
 			self.chat.output.mCustomScrollbar({
-				theme: ((self.chat.options.theme == 'dark') ? 'light-thin':'dark-thin'),
+				theme: ((self.chat.theme == 'dark') ? 'light-thin':'dark-thin'),
 				scrollInertia: 0,
 				horizontalScroll: false,
 				autoHideScrollbar: false,

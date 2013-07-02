@@ -33,9 +33,10 @@ class UserFeaturesService extends Service {
 	public function getUserFeatures($userId) {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
-			SELECT a.featureId AS `id` FROM dfl_users_features AS a
+			SELECT b.featureName AS `id` FROM dfl_users_features AS a
 			INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
-			WHERE userId = :userId' );
+			WHERE userId = :userId
+			ORDER BY a.featureId DESC' );
 		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
 		$stmt->execute ();
 		$features = array ();

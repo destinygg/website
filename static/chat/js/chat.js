@@ -3,34 +3,39 @@ $(function() {
 });
 
 function chat() {
+
+	this.gui = new destiny.fn.Chat({ui: '#destinychat', engine: this});
+
+	// Need a better way or loading the user etc
+	this.user = new ChatUser(this.gui.ui.data('user'));
+	
+	this.gui.onSend = function(str){
+		if(this.engine.user == null)
+			return this.push(new ChatMessage("You must be logged in to send messages"));
+		
+		if (str.substring(0, 1) === '/')
+			return this.engine.handleCommand(str.substring(1));
+
+		this.push(new ChatUserMessage(str, this.engine.user), ChatMessageStatus.PENDING);
+		this.engine.emit('MSG', {data: str});
+	}
+
 	if (window.MozWebSocket)
 		window.WebSocket = MozWebSocket;
 	
-	if ( !window.WebSocket ) {
-		// TODO print warning
-		return
-	}
-	
-	this.debug    = true;
-	this.maxlines = 150;
-	this.sock     = new WebSocket('ws://' + location.host + ':9998/ws');
-	this.users    = {};
-	this.features = {
-		'subscriber': '<i class="icon-star" title="Subscriber"/>',
-		'admin'     : '<i class="icon-fire" title="Administrator"/>',
-		'moderator' : '<i class="icon-leaf" title="Moderator"/>',
-		'protected' : '<i class="icon-leaf" title="Protected"/>',
-		'vip'       : '<i class="icon-leaf" title="VIP"/>'
-	}
-	
+	if ( !window.WebSocket )
+		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
+
+	this.user = null;
+	this.debug = true;
+	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
+	this.users = {};
 	this.init();
-	
 }
 
 chat.prototype.l = function() {
 	if (!this.debug)
 		return;
-	
 	console.log(arguments);
 };
 chat.prototype.init = function() {
@@ -43,65 +48,16 @@ chat.prototype.init = function() {
 		var event = {data: 'CLOSE ""'};
 		this.parseAndDispatch(event)
 	}, this);
+
+	if(this.user){
+		this.gui.push(new ChatMessage("Connecting as "+this.user.username+"..."));
+	}else{
+		this.gui.push(new ChatMessage("Connecting..."));
+	}
+	this.gui.disableInput();
 	
 	this.l = $.proxy(this.l, this);
 	this.emit = $.proxy(this.emit, this);
-	
-	this.setupUIHandlers();
-};
-chat.prototype.setupUIHandlers = function() {
-	
-	var self = this;
-	$('form.chat-input-wrap').submit(function(e) {
-		e.preventDefault();
-		var input = $('form.chat-input-wrap .input');
-		self.emit('MSG', {data: input.val()});
-		input.val('');
-	});
-	// TODO delete, mute needs a way to specify the length,
-	// ban needs a ui for entering a reason + specify a length
-};
-chat.prototype.writeMessage = function(timestamp, nick, message) {
-	var html = $('<div class="line">' +
-			'<time class="p-time" datetime=""></time>&nbsp;' +
-			'<span class="p-user"></span><span class="p-userpostfix">:&nbsp;</span>' +
-			'<span class="p-message"></span>' +
-		'</div>');
-	
-	var ts = html.find('.p-time'),
-	    u  = html.find('.p-user'),
-	    m  = html.find('.p-message');
-	
-	if (timestamp) {
-		var t = moment.utc(timestamp);
-		ts.attr('datetime', t.format('MMMM Do YYYY, h:mm:ss a') );
-		ts.attr('title', ts.attr('datetime') );
-		ts.text(t.format('HH:mm'));
-	} else
-		ts.remove();
-	
-	if (nick) {
-		var icons = '';
-		for (var i = this.users[nick].features.length - 1; i >= 0; i--) {
-			var feature = this.users[nick].features[i];
-			if (this.features[feature])
-				icons += this.features[feature];
-		};
-		u.text(nick);
-		html.addClass('nick-' + nick);
-	} else {
-		u.remove();
-		html.find('.p-userpostfix').remove();
-	}
-	
-	m.text(message);
-	
-	html.appendTo('.chat-lines');
-	var lines = $('.chat-lines .line');
-	if (lines.length > this.maxlines)
-		lines.eq(0).remove();
-	
-	// TODO scroll
 };
 
 // websocket stuff
@@ -121,33 +77,27 @@ chat.prototype.emit = function(eventname, data) {
 // server events
 chat.prototype.onPING = function(data) {
 	this.emit('PONG', data)
+	this.gui.ping();
 };
 chat.prototype.onOPEN = function() {
-	this.writeMessage((new Date).getTime(), null, "Connected!")
+	this.gui.push(new ChatMessage("You are now connected"));
+	this.gui.enableInput();
 };
 chat.prototype.onCLOSE = function() {
-	this.writeMessage((new Date).getTime(), null, 'Disconnected');
+	this.gui.push(new ChatMessage("You have been disconnected"));
+	this.gui.enableInput();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
 		return;
-	
 	// TODO present the connection count in a nice way? is it too much info?
 	//this.connectioncount = data.connectioncount;
 	for (var i = data.users.length - 1; i >= 0; i--) {
-		var nick        = data.users[i].nick,
-		    features    = data.users[i].features || [],
-		    connections = data.users[i].connections;
-		
-		this.users[nick] = {connections: connections, features: features};
+		this.users[data.users[i].username] = new ChatUser(data.users[i]);
 	};
-	
 };
 chat.prototype.onJOIN = function(data) {
-	var features    = data.features || [],
-	    connections = data.connections;
-	
-	this.users[data.nick] = {connections: connections, features: features};
+	this.users[data.username] = new ChatUser(data);
 };
 chat.prototype.onQUIT = function(data) {
 	this.users[data.nick].connections--;
@@ -155,30 +105,140 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	this.writeMessage(data.timestamp, data.nick, data.data);
+	if(this.user == null || this.user.username != data.nick || !this.gui.resolveMessage(data)){
+		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
+	}
 };
 chat.prototype.onDELETE = function(data) {
 	// TODO handle this nicer, but definitely do not show "message deleted"
 	// maybe just collapse the lines?
-	$('.chat-lines nick-' + data.data).remove();
+	this.gui.removeUserLines(data.data);
 };
 chat.prototype.onMUTE = function(data) {
 	// TODO make these messages distinct along with ban
 	// data.data is the nick which has been muted, no info about duration
-	this.writeMessage(data.timestamp, data.nick, "MUTED: ")
+	this.gui.push(new ChatMessage(data.nick + " muted", data.timestamp));
 };
 chat.prototype.onUNMUTE = function(data) {
-	this.writeMessage(data.timestamp, data.nick, "UNMUTED: ")
+	this.gui.push(new ChatMessage(data.nick + " unmuted", data.timestamp));
 };
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
-	this.writeMessage(data.timestamp, data.nick, "BANNED: ")
+	this.gui.push(new ChatMessage(data.nick + " banned", data.timestamp));
 };
 chat.prototype.onUNBAN = function(data) {
-	this.writeMessage(data.timestamp, data.nick, "UNBANNED: ")
+	this.gui.push(new ChatMessage(data.nick + " unbanned", data.timestamp));
 };
-chat.prototype.onERROR = function(data) {
+chat.prototype.onERR = function(data) {
 	// data is a string now, TODO translate the raw error strings to something
 	// human readable
-	this.writeMessage((new Date).getTime(), null, "ERROR: " + data)
+	this.gui.push(new ChatMessage("Error: " + data));
+};
+chat.prototype.loadHistory = function() {
+	if(!this.historyLoaded){
+		this.historyLoaded = true;
+		this.gui.push(new ChatMessage("Retrieving chat history..."));
+		var self = this;
+		$.ajax({
+			type: 'get',
+			url: destiny.baseUrl + 'chat/history.json',
+			success: function(data){
+				if(data.length > 0){
+					data.reverse();
+					self.gui.push(new ChatUIMessage('<hr>'));
+					for(var i=0; i<data.length; ++i){
+						self.gui.push(new ChatUserMessage(data[i].data, new ChatUser({username: data[i].username}), data[i].timestamp));
+					}
+					self.gui.push(new ChatUIMessage('<hr>'));
+				}
+				self = null;
+			},
+			error: function(){
+				self.gui.push(new ChatMessage("Error getting history"));
+				self = null;
+			}
+		});
+	};
+};
+chat.prototype.handleCommand = function(str) {
+	
+	var parts     = str.split(" ");
+	    command   = parts[0].toLowerCase(),
+	    nickregex = /^[a-zA-Z0-9]{4,20}$/,
+	    payload   = {};
+	
+	switch(command) {
+		
+		default:
+			this.gui.push(new ChatMessage("Error: unknown command"));
+			break;
+		case "mute":
+		case "ban":
+			if (!nickregex.test(parts[1])) {
+				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick [time]"));
+				return;
+			}
+			
+			var duration = null;
+			if (parts[2])
+				duration = this.parseTimeInterval(parts[2])
+			
+			payload.data = parts[1];
+			if (duration && duration > 0)
+				payload.duration = duration;
+			
+			this.emit(command.toUpperCase(), payload);
+			break;
+		case "unmute":
+		case "unban":
+		case "delete":
+			if (!nickregex.test(parts[1])) {
+				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick"));
+				return;
+			}
+			
+			payload.data = parts[1];
+			this.emit(command.toUpperCase(), payload);
+			break;
+		
+		case "subonly":
+			if (parts[1] != 'on' && parts[2] != 'off') {
+				this.gui.push(new ChatMessage("Error: Invalid argument - /" + command + " on/off"));
+				return;
+			}
+			
+			payload.data = parts[1];
+			this.emit(command.toUpperCase(), payload);
+			break;
+	};
+	
+};
+chat.prototype.parseTimeInterval = function(str) {
+	var nanoseconds = 0,
+	    units   = {
+		s: 1000000000,
+		sec: 1000000000, secs: 1000000000,
+		second: 1000000000, seconds: 1000000000,
+		
+		m: 60000000000,
+		min: 60000000000, mins: 60000000000,
+		minute: 60000000000, minutes: 60000000000,
+
+		h: 3600000000000,
+		hr: 3600000000000, hrs: 3600000000000,
+		hour: 3600000000000, hours: 3600000000000,
+
+		d: 86400000000000,
+		day: 86400000000000, days: 86400000000000,
+	};
+	str.replace(/(\d+(?:\.\d*)?)([a-z]+)?/ig, function($0, number, unit) {
+		if (unit)
+			number *= units[unit.toLowerCase()] || units.s;
+		else
+			number *= units.s;
+		
+		nanoseconds += +number;
+	});
+	
+	return nanoseconds;
 };
