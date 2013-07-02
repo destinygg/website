@@ -249,6 +249,8 @@ ChatUserMessage.prototype.wrapMessage = function(){
 	var elem  = $('<span/>').text(': '+this.message),
 	    emote = this.emoteregex.exec(elem.text());
 	
+	elem.html(elem.text().replace(this.linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
+	
 	if (emote) {
 		var emoteelem = $('<div class="twitch-emote"/>');
 		emoteelem.addClass('twitch-emote-' + emote[0]);
@@ -257,7 +259,7 @@ ChatUserMessage.prototype.wrapMessage = function(){
 		var html = elem.text().replace(emote[0], emoteelem.get(0).outerHTML);
 		elem.html(html);
 	}
-	elem.html(elem.text().replace(this.linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
+	
 	return elem.html();
 };
 ChatUserMessage.prototype.html = function(){
