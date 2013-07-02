@@ -139,11 +139,11 @@
 
 // USER FEATURES
 var UserFeatures = {
-	PROTECTED 	: 1,
-	SUBSCRIBER	: 2,
-	VIP			: 3,
-	MODERATOR	: 4,
-	ADMIN		: 5
+	PROTECTED 	: 'protected',
+	SUBSCRIBER	: 'subscriber',
+	VIP			: 'vip',
+	MODERATOR	: 'moderator',
+	ADMIN		: 'admin'
 };
 
 var ChatMessageStatus = {
@@ -165,7 +165,7 @@ function ChatUser(args){
 ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
 	for (var i = this.features.length - 1; i >= 0; i--) {
-		switch(parseInt(this.features[i])){
+		switch(this.features[i]){
 			case UserFeatures.PROTECTED :
 				icons += '<i class="icon-eye-close" title="Protected"/>';
 				break;

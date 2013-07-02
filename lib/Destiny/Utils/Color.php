@@ -1,28 +1,38 @@
 <?php
 namespace Destiny\Utils;
 
+use Destiny\UserFeature;
+
 abstract class Color {
-	
+
 	/**
-	 * A list of colors that look decent on a dark background
-	 * @var array
+	 * Builds colors depending on the user features
+	 * @param array $user
+	 * @param string $color Default color
 	 */
-	public static $palette = array (
-		'#e947e7',
-		'#9747e9',
-		'#6247e9',
-		'#4784e9',
-		'#47bde9',
-		'#47e9d4',
-		'#47e984',
-		'#47e947',
-		'#7de947',
-		'#b6e947',
-		'#e9d047',
-		'#008edf',
-		'#4642ff',
-		'#9f42ff',
-		'#56a45f' 
-	);
+	public static function getUserColor($user, $color = '#0088CC') {
+		if (isset ( $user ['features'] )) {
+			foreach ( $user ['features'] as $feature ) {
+				switch ($feature) {
+					case UserFeature::ADMIN :
+						$color = '#EE0000';
+						break 2;
+					case UserFeature::MODERATOR :
+						$color = '#FF8A00';
+						break 2;
+					case UserFeature::SUBSCRIBER :
+						$color = '#54AAD2';
+						break 2;
+					case UserFeature::VIP :
+						$color = '#CF31E2';
+						break 2;
+					case UserFeature::PROTECT :
+						$color = '#CCCCCC';
+						break 2;
+				}
+			}
+		}
+		return $color;
+	}
 
 }

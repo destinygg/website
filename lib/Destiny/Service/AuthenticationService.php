@@ -134,10 +134,6 @@ class AuthenticationService extends Service {
 			throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
 		}
 		
-		if (! isset ( $user ['color'] ) || empty ( $user ['color'] )) {
-			$user ['color'] = Color::$palette [rand ( 0, count ( Color::$palette ) )];
-		}
-		
 		$credentials = new SessionCredentials ();
 		$credentials->setUserId ( $user ['userId'] );
 		$credentials->setUserName ( $user ['username'] );
@@ -145,7 +141,6 @@ class AuthenticationService extends Service {
 		$credentials->setCountry ( $user ['country'] );
 		$credentials->setAuthProvider ( $authProvider );
 		$credentials->setUserStatus ( $user ['userStatus'] );
-		$credentials->setColor ( $user ['color'] );
 		$credentials->addRoles ( UserRole::USER );
 		
 		// Get the users active subscriptions
@@ -159,6 +154,9 @@ class AuthenticationService extends Service {
 		
 		// Add the user features
 		$credentials->setFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
+		
+		// Generate the user color
+		$credentials->setColor ( Color::getUserColor ( $credentials->getData () ) );
 		
 		// Update the auth credentials
 		Session::updateCredentials ( $credentials );
@@ -330,7 +328,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),

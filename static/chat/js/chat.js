@@ -75,7 +75,11 @@ chat.prototype.init = function() {
 		this.parseAndDispatch(event)
 	}, this);
 
-	this.gui.push(new ChatMessage("Connecting..."));
+	if(this.user){
+		this.gui.push(new ChatMessage("Connecting as "+this.user.username+"..."));
+	}else{
+		this.gui.push(new ChatMessage("Connecting..."));
+	}
 	this.gui.disableInput();
 	
 	this.l = $.proxy(this.l, this);
