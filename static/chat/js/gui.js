@@ -142,12 +142,13 @@
 				
 				// if uparrow and we are not currently showing any lines from the history
 				if (self.currenthistoryline < 0 && e.keyCode == 38) {
+					// set the current line to the end if the history, do not subtract 1
+					// thats done later
+					self.currenthistoryline = self.getInputHistory().length;
 					var message = $(self.input).val();
 					if (message) // store the typed in message so that we can go back to it
 						self.insertInputHistory(message);
 					
-					// set the current line to the end if the history, do not subtract 1
-					self.currenthistoryline = self.getInputHistory().length;
 					if (self.currenthistoryline <= 0) // nothing in the history, bail out
 						return;
 					
