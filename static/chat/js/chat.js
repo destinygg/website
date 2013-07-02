@@ -4,55 +4,29 @@ $(function() {
 
 function chat() {
 
-	// Need a better way or loading the user etc
-	var userData = $('#destinychat').data('user');
-	this.user = null;
-	if(userData != null){
-		this.user = new ChatUser(userData);
-	};
-	//
+	this.gui = new destiny.fn.Chat({ui: '#destinychat', engine: this});
 
-	this.gui = new destiny.fn.Chat({
-		ui: '#destinychat',
-		engine: this,
-		msgQueue: [],
-		onSend: function(str){
-			if(this.engine.user == null){
-				this.push(new ChatMessage("You must be logged in to send messages"));
-				return;
-			}
-			
-			if (str.substring(0, 1) === '/')
-				return this.engine.handleCommand(str.substring(1));
-			
-			var message = new ChatUserMessage(str, this.engine.user);
-			this.msgQueue.push(message);
-			this.push(message);
-			message.status(ChatMessageStatus.PENDING);
-			this.engine.emit('MSG', {data: str});
-		},
-		updateMessageStatus: function(data){
-			var found = false;
-			for(var i in this.msgQueue){
-				if(this.msgQueue[i].message == data.data){
-					this.msgQueue[i].status();
-					this.msgQueue[i] = null;
-					delete(this.msgQueue[i]);
-					found = true;
-				}
-			}
-			return found;
-		}
-	});
+	// Need a better way or loading the user etc
+	this.user = new ChatUser(this.gui.ui.data('user'));
+	
+	this.gui.onSend = function(str){
+		if(this.engine.user == null)
+			return this.push(new ChatMessage("You must be logged in to send messages"));
+		
+		if (str.substring(0, 1) === '/')
+			return this.engine.handleCommand(str.substring(1));
+
+		this.push(new ChatUserMessage(str, this.engine.user), ChatMessageStatus.PENDING);
+		this.engine.emit('MSG', {data: str});
+	}
 
 	if (window.MozWebSocket)
 		window.WebSocket = MozWebSocket;
 	
-	if ( !window.WebSocket ) {
-		this.gui.push(new ChatMessage("This chat requires WebSockets."));
-		return;
-	}
-	
+	if ( !window.WebSocket )
+		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
+
+	this.user = null;
 	this.debug = true;
 	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
 	this.users = {};
@@ -108,12 +82,10 @@ chat.prototype.onPING = function(data) {
 chat.prototype.onOPEN = function() {
 	this.gui.push(new ChatMessage("You are now connected"));
 	this.gui.enableInput();
-	this.loadHistory();
 };
 chat.prototype.onCLOSE = function() {
 	this.gui.push(new ChatMessage("You have been disconnected"));
 	this.gui.enableInput();
-	this.loadHistory();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -133,7 +105,7 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	if(this.user != null && this.user.username != data.nick || !this.gui.updateMessageStatus(data)){
+	if(this.user == null || this.user.username != data.nick || !this.gui.resolveMessage(data)){
 		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
 	}
 };

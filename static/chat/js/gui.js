@@ -17,6 +17,7 @@
 		output: null,
 		input: null,
 		onSend: $.noop,
+		userMessages: [],
 		
 		init: function(){
 			// Optional params passed in via the data-options="{}" attribute
@@ -63,16 +64,17 @@
 			return this;
 		},
 		
-		push: function(message){
+		push: function(message, state){
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
+			
+			// Attach message ui
 			message.ui = $(message.html()).appendTo(this.lines);
-			$(message).on('status', function(e, state){
-				if(state != undefined){
-					this.ui.attr('class', state);
-				}else{
-					this.ui.removeAttr('class');
-				}
-			});
+			if(state != undefined){
+				message.status(state);
+			}
+			this.userMessages.push(message);
+			//
+			
 			if(this.lineCount() >= this.maxlines){
 				$(this.lines.children()[0]).remove();
 			}else if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
@@ -177,9 +179,11 @@
 		getInputHistory: function(){
 			return JSON.parse(localStorage['inputhistory'] || '[]');
 		},
+		
 		setInputHistory: function(arr){
 			localStorage['inputhistory'] = JSON.stringify(arr);
 		},
+		
 		insertInputHistory: function(message){
 			if (!window.localStorage)
 				return;
@@ -190,6 +194,19 @@
 				history.shift();
 			
 			this.setInputHistory(history);
+		},
+		
+		resolveMessage: function(data){
+			var found = false;
+			for(var i in this.userMessages){
+				if(this.userMessages[i].message == data.data){
+					this.userMessages[i].status();
+					this.userMessages[i] = null;
+					delete(this.userMessages[i]);
+					found = true;
+				}
+			}
+			return found;
 		}
 	});
 	
@@ -283,7 +300,13 @@ ChatMessage.prototype.init = function(message, timestamp){
 	return this;
 };
 ChatMessage.prototype.status = function(state){
-	$(this).triggerHandler('status', [state]);
+	if(this.ui){
+		if(state){
+			this.ui.attr('class', state);
+		}else{
+			this.ui.removeAttr('class');
+		}
+	}
 	this.state = state;
 	return this;
 };
