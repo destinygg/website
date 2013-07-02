@@ -90,6 +90,15 @@ font-weight: bold;
 .chat-lines > div time {
 font-size: 11px;
 }
+.chat-lines a.externallink {
+	color: #02C2FF;
+}
+.chat-lines a.externallink:visited {
+	color: #0088cc;
+}
+.chat-lines a.externallink:hover, .chat-lines a.externallink:focus {
+	color: #004D74;
+}
 
 /* Theme - Light */
 .chat-theme-light {

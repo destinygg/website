@@ -238,6 +238,7 @@ function ChatUserMessage(message, user, timestamp){
 	this.init(message, timestamp);
 	this.user = user;
 	this.emoteregex = /ArsonNoSexy|AsianGlow|BCWarrior|BORT|BibleThump|BionicBunion|BlargNaut|BloodTrail|BrainSlug|BrokeBack|CougarHunt|DAESuppy|DBstyle|DansGame|DatSheffy|EagleEye|EvilFetus|FPSMarksman|FUNgineer|FailFish|FrankerZ|FreakinStinkin|FuzzyOtterOO|GingerPower|HassanChop|HotPokket|ItsBoshyTime|JKanStyle|Jebaited|JonCarnage|Kappa|KevinTurtle|Kreygasm|MVGame|MrDestructoid|NinjaTroll|NoNoSpot|OMGScoots|OneHand|OpieOP|OptimizePrime|PJSalt|PMSTwin|PazPazowitz|PicoMause|PogChamp|Poooound|PunchTrees|RedCoat|ResidentSleeper|RuleFive|SMOrc|SMSkull|SSSsss|ShazBotstix|SoBayed|SoonerLater|StoneLightning|StrawBeary|SuperVinlin|SwiftRage|TehFunrun|TheRinger|TheTarFu|TinyFace|TooSpicy|TriHard|UleetBackup|UnSane|Volcania|WinWaker/;
+	this.linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 	return this;
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
@@ -256,6 +257,7 @@ ChatUserMessage.prototype.wrapMessage = function(){
 		var html = elem.text().replace(emote[0], emoteelem.get(0).outerHTML);
 		elem.html(html);
 	}
+	elem.html(elem.text().replace(this.linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
 	return elem.html();
 };
 ChatUserMessage.prototype.html = function(){
