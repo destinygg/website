@@ -27,6 +27,10 @@
 			this.inputwrap = $(this.ui.find('.chat-input:first')[0]);
 			this.input = $(this.inputwrap.find('.input:first:first')[0]);
 			
+			this.currenthistoryline = -1;
+			if (window.localStorage)
+				this.setupInputHistory();
+			
 			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
 			this.ui.data('chat', this);
 
@@ -85,6 +89,8 @@
 			if(str != ''){
 				this.input.val('').focus();
 				this.onSend(str, this.input[0]);
+				this.insertInputHistory(str);
+				this.currenthistoryline = -1;
 			};
 			str = null;
 			return this;
@@ -123,8 +129,59 @@
 		
 		removeUserLines: function(user){
 			// stub
-		}
+		},
 		
+		setupInputHistory: function(){
+			$(this.input).on('keyup', function(e) {
+				
+				if (e.keyCode != 38 && e.keyCode != 40)
+					return;
+				
+				var self = $(this).closest('.chat.chat-frame').data('chat'),
+				    num  = e.keyCode == 38? -1: 1; // if uparrow we subtract otherwise add
+				
+				// if uparrow and we are not currently showing any lines from the history
+				if (self.currenthistoryline < 0 && e.keyCode == 38) {
+					var message = $(self.input).val();
+					if (message) // store the typed in message so that we can go back to it
+						self.insertInputHistory(message);
+					
+					// set the current line to the end if the history, do not subtract 1
+					self.currenthistoryline = self.getInputHistory().length;
+					if (self.currenthistoryline <= 0) // nothing in the history, bail out
+						return;
+					
+				}
+				
+				var index = self.currenthistoryline + num;
+				// out of bounds
+				if (index >= self.getInputHistory().length || index < 0) {
+					return;
+				}
+				
+				self.currenthistoryline = index;
+				$(self.input).val(self.getInputHistory()[index]);
+				
+			});
+		},
+		
+		getInputHistory: function(){
+			return JSON.parse(localStorage['inputhistory'] || '[]');
+		},
+		setInputHistory: function(arr){
+			localStorage['inputhistory'] = JSON.stringify(arr);
+		},
+		insertInputHistory: function(message){
+			if (!window.localStorage)
+				return;
+			
+			var history = this.getInputHistory();
+			history.push(message);
+			if (history.length > 20)
+				history.shift();
+			
+			this.setInputHistory(history);
+		}
 	});
 	
 	// should be moved somewhere better
