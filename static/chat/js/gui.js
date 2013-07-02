@@ -28,6 +28,7 @@
 			this.input = $(this.inputwrap.find('.input:first:first')[0]);
 			
 			this.currenthistoryline = -1;
+			this.storedinputline = null;
 			if (window.localStorage)
 				this.setupInputHistory();
 			
@@ -145,18 +146,25 @@
 					// set the current line to the end if the history, do not subtract 1
 					// thats done later
 					self.currenthistoryline = self.getInputHistory().length;
-					var message = $(self.input).val();
-					if (message) // store the typed in message so that we can go back to it
-						self.insertInputHistory(message);
+					// store the typed in message so that we can go back to it
+					self.storedinputline = $(self.input).val();
 					
 					if (self.currenthistoryline <= 0) // nothing in the history, bail out
 						return;
 					
-				}
+				} else if (self.currenthistoryline < 0 && e.keyCode == 40)
+					return; // down arrow, but nothing to show
 				
 				var index = self.currenthistoryline + num;
 				// out of bounds
 				if (index >= self.getInputHistory().length || index < 0) {
+					
+					// down arrow was pressed to get back to the original line, reset
+					if (index >= self.getInputHistory().length) {
+						$(self.input).val(self.storedinputline);
+						self.currenthistoryline = -1;
+					}
+					
 					return;
 				}
 				
