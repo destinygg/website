@@ -21,6 +21,10 @@ function chat() {
 				this.push(new ChatMessage("You must be logged in to send messages"));
 				return;
 			}
+			
+			if (str.substring(0, 1) === '/')
+				return this.engine.handleCommand(str.substring(1));
+			
 			var message = new ChatUserMessage(str, this.engine.user);
 			this.msgQueue.push(message);
 			this.push(message);
@@ -179,4 +183,86 @@ chat.prototype.loadHistory = function() {
 			}
 		});
 	};
+};
+chat.prototype.handleCommand = function(str) {
+	
+	var parts     = str.split(" ");
+	    command   = parts[0].toLowerCase(),
+	    nickregex = /^[a-zA-Z0-9]{4,20}$/,
+	    payload   = {};
+	
+	switch(command) {
+		
+		default:
+			this.gui.push(new ChatMessage("Error: unknown command"));
+			break;
+		case "mute":
+		case "ban":
+			if (!nickregex.test(parts[1])) {
+				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick [time]"));
+				return;
+			}
+			
+			var duration = null;
+			if (parts[2])
+				duration = this.parseTimeInterval(parts[2])
+			
+			payload.data = parts[1];
+			if (duration && duration > 0)
+				payload.duration = duration;
+			
+			this.emit(command.toUpperCase(), payload);
+			break;
+		case "unmute":
+		case "unban":
+		case "delete":
+			if (!nickregex.test(parts[1])) {
+				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick"));
+				return;
+			}
+			
+			payload.data = parts[1];
+			this.emit(command.toUpperCase(), payload);
+			break;
+		
+		case "subonly":
+			if (parts[1] != 'on' && parts[2] != 'off') {
+				this.gui.push(new ChatMessage("Error: Invalid argument - /" + command + " on/off"));
+				return;
+			}
+			
+			payload.data = parts[1];
+			this.emit(command.toUpperCase(), payload);
+			break;
+	};
+	
+};
+chat.prototype.parseTimeInterval = function(str) {
+	var nanoseconds = 0,
+	    units   = {
+		s: 1000000000,
+		sec: 1000000000, secs: 1000000000,
+		second: 1000000000, seconds: 1000000000,
+		
+		m: 60000000000,
+		min: 60000000000, mins: 60000000000,
+		minute: 60000000000, minutes: 60000000000,
+
+		h: 3600000000000,
+		hr: 3600000000000, hrs: 3600000000000,
+		hour: 3600000000000, hours: 3600000000000,
+
+		d: 86400000000000,
+		day: 86400000000000, days: 86400000000000,
+	};
+	str.replace(/(\d+(?:\.\d*)?)([a-z]+)?/ig, function($0, number, unit) {
+		if (unit)
+			number *= units[unit.toLowerCase()] || units.s;
+		else
+			number *= units.s;
+		
+		nanoseconds += +number;
+	});
+	
+	return nanoseconds;
 };
