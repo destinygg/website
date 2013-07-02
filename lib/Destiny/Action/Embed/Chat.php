@@ -21,7 +21,7 @@ class Chat {
 			$model->user = array (
 				'username' => $user ['username'],
 				'features' => $user ['features'],
-				'color' => '#efefef' 
+				'color' => $user ['color']
 			);
 		}
 		return 'embed/chat';

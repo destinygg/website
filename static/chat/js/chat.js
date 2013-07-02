@@ -4,10 +4,13 @@ $(function() {
 
 function chat() {
 
+	// Need a better way or loading the user etc
 	var userData = $('#destinychat').data('user');
+	this.user = null;
 	if(userData != null){
-		this.user = new ChatUser($('#destinychat').data('user'));
+		this.user = new ChatUser(userData);
 	};
+	//
 
 	this.gui = new destiny.fn.Chat({
 		ui: '#destinychat',
@@ -23,7 +26,6 @@ function chat() {
 			this.push(message);
 			message.status(ChatMessageStatus.PENDING);
 			this.engine.emit('MSG', {data: str});
-			//message.status();
 		},
 		updateMessageStatus: function(data){
 			var found = false;
@@ -56,7 +58,6 @@ function chat() {
 chat.prototype.l = function() {
 	if (!this.debug)
 		return;
-	
 	console.log(arguments);
 };
 chat.prototype.init = function() {

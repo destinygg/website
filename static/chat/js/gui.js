@@ -109,10 +109,6 @@
 			return this;
 		},
 		
-		removeUserLines: function(user){
-			//
-		},
-		
 		enableInput: function(){
 			this.input.removeAttr('disabled', true);
 		},
@@ -122,7 +118,11 @@
 		},
 		
 		ping: function(){
-			
+			//  stub
+		},
+		
+		removeUserLines: function(user){
+			// stub
 		}
 		
 	});
@@ -224,9 +224,8 @@ ChatMessage.prototype.status = function(state){
 ChatMessage.prototype.wrapTime = function(){
 	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
 };
-ChatMessage.prototype.wrapMessage = function(css){
-	var elem  = $('<span/>').text(this.message);
-	return elem.html(); // the class is never used, dont add it
+ChatMessage.prototype.wrapMessage = function(){
+	return $('<span/>').text(this.message).html();
 };
 ChatMessage.prototype.html = function(){
 	return this.wrap(this.wrapTime() + this.wrapMessage());
@@ -245,7 +244,7 @@ $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrapUser = function(user){
 	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+user.username+'</a>';
 };
-ChatUserMessage.prototype.wrapMessage = function(css){
+ChatUserMessage.prototype.wrapMessage = function(){
 	var elem  = $('<span/>').text(': '+this.message),
 	    emote = this.emoteregex.exec(elem.text());
 	

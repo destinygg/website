@@ -111,8 +111,7 @@ background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(226,226,226,1
 color: #010101;
 }
 .chat-theme-light .chat-lines > div time {
-color:#000;
-opacity:0.5;
+color:#999;
 }
 .chat-theme-light .chat-lines > div .p-whisper {
 color: red;	
@@ -139,8 +138,7 @@ border:none;
 color: #ddd;
 }
 .chat-theme-dark .chat-lines > div time {
-color:#fafafa;
-opacity:0.25;
+color:#414141;
 }
 .chat-theme-dark .chat-lines > div .p-whisper {
 color: #990000;	
