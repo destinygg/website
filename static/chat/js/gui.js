@@ -237,7 +237,7 @@ var ChatMessageStatus = {
 
 //CHAT USER
 function ChatUser(args){
-	this.username = '';
+	this.username = args.nick || '';
 	this.userId = '';
 	this.features = [];
 	this.connections = 0;
