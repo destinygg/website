@@ -108,18 +108,16 @@ chat.prototype.onQUIT = function(data) {
 };
 chat.prototype.onMSG = function(data) {
 	if(this.user == null || this.user.username != data.nick || !this.gui.resolveMessage(data)){
+		// handle hilights, maybe color the message differently? or add a class that flashes it with some css3 transform?
+		this.gui.handleHilight(data.data, this.users[data.nick])
 		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
 	}
-};
-chat.prototype.onDELETE = function(data) {
-	// TODO handle this nicer, but definitely do not show "message deleted"
-	// maybe just collapse the lines?
-	this.gui.removeUserLines(data.data);
 };
 chat.prototype.onMUTE = function(data) {
 	// TODO make these messages distinct along with ban
 	// data.data is the nick which has been muted, no info about duration
 	this.gui.push(new ChatMessage(data.nick + " muted", data.timestamp));
+	this.gui.removeUserLines(data.data);
 };
 chat.prototype.onUNMUTE = function(data) {
 	this.gui.push(new ChatMessage(data.nick + " unmuted", data.timestamp));
@@ -127,6 +125,7 @@ chat.prototype.onUNMUTE = function(data) {
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
 	this.gui.push(new ChatMessage(data.nick + " banned", data.timestamp));
+	this.gui.removeUserLines(data.data);
 };
 chat.prototype.onUNBAN = function(data) {
 	this.gui.push(new ChatMessage(data.nick + " unbanned", data.timestamp));
@@ -140,26 +139,15 @@ chat.prototype.loadHistory = function() {
 	if(!this.historyLoaded){
 		this.historyLoaded = true;
 		this.gui.push(new ChatMessage("Retrieving chat history..."));
-		var self = this;
-		$.ajax({
-			type: 'get',
-			url: destiny.baseUrl + 'chat/history.json',
-			success: function(data){
-				if(data.length > 0){
-					data.reverse();
-					self.gui.push(new ChatUIMessage('<hr>'));
-					for(var i=0; i<data.length; ++i){
-						self.gui.push(new ChatUserMessage(data[i].data, new ChatUser({username: data[i].username}), data[i].timestamp));
-					}
-					self.gui.push(new ChatUIMessage('<hr>'));
-				}
-				self = null;
-			},
-			error: function(){
-				self.gui.push(new ChatMessage("Error getting history"));
-				self = null;
+		var data = chatbacklog; // global chatbacklog from /chat/history.json
+		if(data.length > 0){
+			data.reverse();
+			this.gui.push(new ChatUIMessage('<hr>'));
+			for(var i=0; i<data.length; ++i){
+				this.gui.push(new ChatUserMessage(data[i].data, new ChatUser({username: data[i].username}), data[i].timestamp));
 			}
-		});
+			this.gui.push(new ChatUIMessage('<hr>'));
+		}
 	};
 };
 chat.prototype.handleCommand = function(str) {
@@ -179,9 +167,9 @@ chat.prototype.handleCommand = function(str) {
 			this.emit("MSG", payload);
 			break;
 		case "mute":
-		case "ban":
+			// TODO bans are a little more involved, requiring a reason + ip bans + permbans
 			if (!nickregex.test(parts[1])) {
-				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick [time]"));
+				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick[ time]"));
 				return;
 			}
 			
@@ -197,7 +185,6 @@ chat.prototype.handleCommand = function(str) {
 			break;
 		case "unmute":
 		case "unban":
-		case "delete":
 			if (!nickregex.test(parts[1])) {
 				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick"));
 				return;
@@ -217,7 +204,6 @@ chat.prototype.handleCommand = function(str) {
 			this.emit(command.toUpperCase(), payload);
 			break;
 	};
-	
 };
 chat.prototype.parseTimeInterval = function(str) {
 	var nanoseconds = 0,

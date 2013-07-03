@@ -33,6 +33,9 @@
 			if (window.localStorage)
 				this.setupInputHistory();
 			
+			// TODO make this optional so that the user can disable it
+			this.setupNotifications();
+			
 			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
 			this.ui.data('chat', this);
 
@@ -207,6 +210,49 @@
 				}
 			}
 			return found;
+		},
+		
+		setupNotifications: function() {
+			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
+			if (!notifications)
+				return;
+			
+			if (notifications.checkPermission() == 1) {
+				// not allowed but not denied, ask for permission, needs to be in a click handler
+				notifications.requestPermission(function(){})
+			}
+			
+		},
+		
+		showNotification: function(message, user) {
+			if (message.length >= 30)
+				message = message.substring(0, 30) + '...';
+			
+			var notif = notifications.createNotification('favicon.png', 'Highlight from: '+user, message);
+			// only ever show a single notification
+			if (this.currentnotification)
+				this.currentnotification.cancel();
+			
+			this.currentnotification = notif;
+			notif.show();
+			var self = this;
+			setTimeout(function() {
+				notif.cancel();
+				self.currentnotification = null;
+			}, 5*1000);
+		},
+		
+		handleHilight: function(message, user){
+			
+			if (!this.hilightregex) {
+				// TODO maybe let the user specify his own text to hilight on?
+				this.hilightregex = new RegExp("\\b"+this.ui.data('user').username+"\\b")
+			}
+			
+			if (!this.hilightregex.test(message))
+				return;
+			
+			this.showNotification(message, user);
 		}
 	});
 	
@@ -333,7 +379,7 @@ function ChatUserMessage(message, user, timestamp){
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrapUser = function(user){
 	var sep = '';
-	if (this.message.substring(0, 3) === '/me')
+	if (this.message.substring(0, 4) === '/me ')
 		sep = '*';
 	
 	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+sep+user.username+'</a>';

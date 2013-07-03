@@ -45,6 +45,7 @@ use Destiny\Utils\Tpl;
 <?php else: ?>
 <script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
+<script src="/chat/history.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>

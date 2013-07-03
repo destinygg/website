@@ -27,8 +27,8 @@ class History {
 			$log [] = $line;
 		}
 		
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $log ) );
+		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
+		Http::sendString ( 'var chatbacklog = ' . json_encode ( $log ) );
 		exit ();
 	}
 
