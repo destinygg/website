@@ -5,6 +5,7 @@ $(function() {
 function chat() {
 
 	this.gui = new destiny.fn.Chat({ui: '#destinychat', engine: this});
+	this.gui.backlog = backlog || [];
 
 	// Need a better way or loading the user etc
 	this.user = new ChatUser(this.gui.ui.data('user'));
@@ -18,7 +19,7 @@ function chat() {
 
 		this.push(new ChatUserMessage(str, this.engine.user), ChatMessageStatus.PENDING);
 		this.engine.emit('MSG', {data: str});
-	}
+	};
 
 	if (window.MozWebSocket)
 		window.WebSocket = MozWebSocket;
@@ -50,6 +51,17 @@ chat.prototype.init = function() {
 		this.parseAndDispatch(event)
 	}, this);
 
+
+	if(this.gui.history && this.gui.history.length > 0){
+		this.gui.history.reverse();
+		self.gui.push(new ChatUIMessage('<hr>'));
+		for(var i=0; i<this.gui.history.length; ++i){
+			self.gui.push(new ChatUserMessage(this.gui.history[i].data, new ChatUser({username: this.gui.history[i].username}), this.gui.history[i].timestamp));
+		}
+		self.gui.push(new ChatUIMessage('<hr>'));
+	};
+	
+	
 	if(this.user){
 		this.gui.push(new ChatMessage("Connecting as "+this.user.username+"..."));
 	}else{
@@ -83,11 +95,12 @@ chat.prototype.emit = function(eventname, data) {
 chat.prototype.onOPEN = function() {
 	this.gui.push(new ChatMessage("You are now connected"));
 	this.gui.enableInput();
-	this.loadHistory();
+	this.gui.showBacklog();
 };
 chat.prototype.onCLOSE = function() {
 	this.gui.push(new ChatMessage("You have been disconnected"));
 	this.gui.enableInput();
+	this.gui.showBacklog();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -134,21 +147,6 @@ chat.prototype.onERR = function(data) {
 	// data is a string now, TODO translate the raw error strings to something
 	// human readable
 	this.gui.push(new ChatMessage("Error: " + data));
-};
-chat.prototype.loadHistory = function() {
-	if(!this.historyLoaded){
-		this.historyLoaded = true;
-		this.gui.push(new ChatMessage("Retrieving chat history..."));
-		var data = chatbacklog; // global chatbacklog from /chat/history.json
-		if(data.length > 0){
-			data.reverse();
-			this.gui.push(new ChatUIMessage('<hr>'));
-			for(var i=0; i<data.length; ++i){
-				this.gui.push(new ChatUserMessage(data[i].data, new ChatUser({username: data[i].username}), data[i].timestamp));
-			}
-			this.gui.push(new ChatUIMessage('<hr>'));
-		}
-	};
 };
 chat.prototype.handleCommand = function(str) {
 	

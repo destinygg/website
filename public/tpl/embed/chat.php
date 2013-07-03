@@ -49,6 +49,8 @@ use Destiny\Utils\Tpl;
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>
-
+<?php if(!empty($model->backlog)): ?>
+<script>var backlog = <?=json_encode($model->backlog, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)?>;</script>
+<?php endif; ?>
 </body>
 </html>

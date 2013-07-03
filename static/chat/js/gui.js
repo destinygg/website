@@ -18,6 +18,7 @@
 		input: null,
 		onSend: $.noop,
 		userMessages: [],
+		backlog: [],
 		
 		init: function(){
 			// Optional params passed in via the data-options="{}" attribute
@@ -43,6 +44,9 @@
 			this.ui.on('submit', '.chat-input form', function(e){
 				e.preventDefault();
 				$(this).closest('.chat.chat-frame').data('chat').send();
+			});
+			this.ui.on('click', '.chat-users-btn', function(e){
+				console.log(this, e, this.engine.users);
 			});
 			
 			// Scrollbars and scroll locking
@@ -253,6 +257,19 @@
 				return;
 			
 			this.showNotification(message, user);
+		},
+		
+		setBacklog: function(backlog){
+			this.backlog = backlog;
+		},
+		
+		showBacklog: function(){
+			this.backlog.reverse();
+			this.push(new ChatUIMessage('<hr>'));
+			for(var i=0; i<this.backlog.length; ++i){
+				this.push(new ChatUserMessage(this.backlog[i].data, new ChatUser({username: this.backlog[i].username}), this.backlog[i].timestamp));
+			}
+			this.push(new ChatUIMessage('<hr>'));
 		}
 	});
 	

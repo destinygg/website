@@ -16,12 +16,20 @@ class Chat {
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		$model->chatOptions = $this->getChatOptionParams ( $params );
+		
+		$chatLog = ChatlogService::instance ()->getChatLog ( Config::$a ['chat'] ['backlog'] );
+		$log = array ();
+		foreach ( $chatLog as $i => $line ) {
+			$log [] = $line;
+		}
+		$model->backlog = $log;
+		
 		if (Session::hasRole ( UserRole::USER )) {
 			$user = Session::getCredentials ()->getData ();
 			$model->user = array (
 				'username' => $user ['username'],
 				'features' => $user ['features'],
-				'color' => $user ['color']
+				'color' => $user ['color'] 
 			);
 		}
 		return 'embed/chat';
