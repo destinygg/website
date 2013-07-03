@@ -2,6 +2,7 @@ function chat() {
 	
 	this.debug = true;
 	this.users = {};
+	this.ignorelist = {};
 
 	this.gui = new destiny.fn.Chat({ui: '#destinychat', engine: this});
 	this.user = new ChatUser(this.gui.ui.data('user'));
@@ -68,6 +69,12 @@ chat.prototype.init = function() {
 	this.l = $.proxy(this.l, this);
 	this.emit = $.proxy(this.emit, this);
 };
+chat.prototype.loadIgnoreList = function() {
+	if (!localStorage)
+		return;
+	
+	this.ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
+};
 
 // websocket stuff
 chat.prototype.parseAndDispatch = function(e) {
@@ -115,6 +122,11 @@ chat.prototype.onQUIT = function(data) {
 };
 chat.prototype.onMSG = function(data) {
 	if(this.user == null || this.user.username != data.nick || !this.gui.resolveMessage(data)){
+		
+		var lowernick = data.nick.toLowerCase();
+		if (this.ignorelist[lowernick]) // user ignored
+			return;
+		
 		// handle hilights, maybe color the message differently? or add a class that flashes it with some css3 transform?
 		this.gui.handleHilight(data.data, this.users[data.nick])
 		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
@@ -157,6 +169,43 @@ chat.prototype.handleCommand = function(str) {
 		case "me":
 			payload.data = "/" + str;
 			this.emit("MSG", payload);
+			break;
+		case "ignore":
+			if (!localStorage) {
+				this.gui.push(new ChatMessage("Error: ignore is unavailable, no localStorage"));
+				return;
+			}
+			var ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
+			
+			if (!parts[1]) {
+				var nicks = [];
+				$.each(ignorelist, function(key) {
+					nicks.push(key);
+				});
+				if (nicks.length == 0) {
+					this.gui.push(new ChatMessage("Ignore: ignore list is empty"));
+					return;
+				}
+				this.gui.push(new ChatMessage("Ignore: ignoring the following people: "+nicks.join(', ')));
+				return
+			}
+			
+			var nick = parts[1].toLowerCase();
+			if (!nickregex.test(nick)) {
+				this.gui.push(new ChatMessage("Error: Invalid nick - /ignore nick"));
+				return;
+			}
+			
+			if (ignorelist[nick]) {
+				delete(ignorelist[nick]);
+				this.gui.push(new ChatMessage("Ignore: "+nick+" has been removed from the ignore list"));
+			} else {
+				ignorelist[nick] = true;
+				this.gui.push(new ChatMessage("Ignore: "+nick+" has been ignored"));
+			}
+			
+			localStorage['chatignorelist'] = JSON.stringify(ignorelist);
+			this.gui.loadIgnoreList();
 			break;
 		case "mute":
 			// TODO bans are a little more involved, requiring a reason + ip bans + permbans

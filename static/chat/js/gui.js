@@ -31,8 +31,9 @@
 			
 			this.currenthistoryline = -1;
 			this.storedinputline = null;
-			if (window.localStorage)
+			if (window.localStorage) {
 				this.setupInputHistory();
+			}
 			
 			// TODO make this optional so that the user can disable it
 			this.setupNotifications();
@@ -271,6 +272,7 @@
 			}
 			this.push(new ChatUIMessage('<hr>'));
 		}
+		
 	});
 	
 	// should be moved somewhere better
