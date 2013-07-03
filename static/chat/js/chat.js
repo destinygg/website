@@ -36,7 +36,9 @@ function chat() {
 chat.prototype.l = function() {
 	if (!this.debug)
 		return;
-	console.log(arguments);
+	
+	var log = Function.prototype.bind.call(console.log, console);
+	log.apply(console, arguments);
 };
 chat.prototype.init = function() {
 	this.sock.onopen    = $.proxy(function() {
@@ -66,7 +68,11 @@ chat.prototype.parseAndDispatch = function(e) {
 			handler   = 'on' + eventname,
 			obj       = JSON.parse(e.data.substring(eventname.length+1));
 	
-	this.l(e, handler, obj);
+	this.l(handler, obj);
+	if (eventname == 'PING') { // handle pinging in-line, cant parse 64bit ints
+		return this.sock.send('PONG ' + e.data.substring(eventname.length+1));
+	}
+	
 	if (this[handler])
 		this[handler](obj, e);
 };
@@ -75,10 +81,6 @@ chat.prototype.emit = function(eventname, data) {
 };
 
 // server events
-chat.prototype.onPING = function(data) {
-	this.emit('PONG', data)
-	this.gui.ping();
-};
 chat.prototype.onOPEN = function() {
 	this.gui.push(new ChatMessage("You are now connected"));
 	this.gui.enableInput();
