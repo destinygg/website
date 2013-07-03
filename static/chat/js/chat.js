@@ -174,6 +174,10 @@ chat.prototype.handleCommand = function(str) {
 		default:
 			this.gui.push(new ChatMessage("Error: unknown command"));
 			break;
+		case "me":
+			payload.data = "/" + str;
+			this.emit("MSG", payload);
+			break;
 		case "mute":
 		case "ban":
 			if (!nickregex.test(parts[1])) {

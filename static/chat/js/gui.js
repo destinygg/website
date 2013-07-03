@@ -332,10 +332,20 @@ function ChatUserMessage(message, user, timestamp){
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrapUser = function(user){
-	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+user.username+'</a>';
+	var sep = '';
+	if (this.message.substring(0, 3) === '/me')
+		sep = '*';
+	
+	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+sep+user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
-	var elem  = $('<span/>').text(': '+this.message),
+	var sep = ': ';
+	if (this.message.substring(0, 4) === '/me ') {
+		sep = ' ';
+		this.message = this.message.substring(4); // strip the /me
+	}
+	
+	var elem  = $('<span/>').text(sep+this.message),
 	    emote = this.emoteregex.exec(elem.text());
 	
 	elem.html(elem.text().replace(this.linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
