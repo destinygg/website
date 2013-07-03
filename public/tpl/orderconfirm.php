@@ -55,7 +55,7 @@ use Destiny\Utils\Tpl;
 						</div>
 					</div>
 					<div class="form-actions block-foot">
-						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
 						<button type="submit" class="btn btn-primary"><i class="icon-shopping-cart icon-white"></i> Pay subscription</button>
 						<a href="/subscribe" class="btn">Cancel</a>
 					</div>

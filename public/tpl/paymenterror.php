@@ -30,7 +30,7 @@ use Destiny\Utils\Date;
 					</div>
 				</div>
 				<div class="form-actions block-foot">
-					<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+					<img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
 					<a href="/profile/subscription" class="btn">Back to profile</a>
 				</div>
 			</div>

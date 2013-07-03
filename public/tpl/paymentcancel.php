@@ -54,7 +54,7 @@ use Destiny\Utils\Date;
 						</p>
 					</div>
 					<div class="form-actions block-foot">
-						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
 						<button type="submit" class="btn btn-danger">Cancel scheduled payments</button>
 						<a href="/profile/subscription" class="btn">Back to profile</a>
 					</div>
@@ -69,7 +69,7 @@ use Destiny\Utils\Date;
 					</p>
 				</div>
 				<div class="form-actions block-foot">
-					<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+					<img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
 					<a href="/profile/subscription" class="btn">Go back to profile</a>
 				</div>
 				<?php endif; ?>

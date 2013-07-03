@@ -22,7 +22,7 @@ use Destiny\Config;
 	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
-		<iframe style="width: 100%; height: 740px; float:left; background: #111;" frameborder="0" scrolling="no" src="/embed/chat?theme=dark"></iframe>
+		<iframe style="width: 100%; height: 540px; float:left; background: #111;" frameborder="0" scrolling="no" src="/embed/chat?theme=dark"></iframe>
 	</section>
 	
 	<?include'./tpl/seg/foot.php'?>

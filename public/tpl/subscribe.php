@@ -138,7 +138,7 @@ use Destiny\Utils\Tpl;
 						
 					</div>
 					<div class="form-actions block-foot">
-						<img class="pull-right" src="<?=Config::cdn()?>/img/Paypal.logosml.png" />
+						<img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
 						<?php if(empty($model->subscription)): ?>
 						<button type="submit" class="btn btn-primary"><i class="icon-check icon-white"></i> Confirm selection</button>
 						<a href="/profile/subscription" class="btn">Back to profile</a>
