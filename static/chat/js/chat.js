@@ -26,7 +26,6 @@ function chat() {
 	if ( !window.WebSocket )
 		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
 
-	this.user = null;
 	this.debug = true;
 	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
 	this.users = {};
@@ -84,6 +83,7 @@ chat.prototype.emit = function(eventname, data) {
 chat.prototype.onOPEN = function() {
 	this.gui.push(new ChatMessage("You are now connected"));
 	this.gui.enableInput();
+	this.loadHistory();
 };
 chat.prototype.onCLOSE = function() {
 	this.gui.push(new ChatMessage("You have been disconnected"));
