@@ -5,10 +5,9 @@ $(function() {
 function chat() {
 
 	this.gui = new destiny.fn.Chat({ui: '#destinychat', engine: this});
-	this.gui.backlog = backlog || [];
-
-	// Need a better way or loading the user etc
 	this.user = new ChatUser(this.gui.ui.data('user'));
+	this.gui.backlog = backlog || [];
+	this.gui.showBacklog();
 	
 	this.gui.onSend = function(str){
 		if(this.engine.user == null || this.engine.user.username == '')
@@ -26,7 +25,7 @@ function chat() {
 	
 	if ( !window.WebSocket )
 		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
-
+	
 	this.debug = true;
 	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
 	this.users = {};
@@ -95,12 +94,10 @@ chat.prototype.emit = function(eventname, data) {
 chat.prototype.onOPEN = function() {
 	this.gui.push(new ChatMessage("You are now connected"));
 	this.gui.enableInput();
-	this.gui.showBacklog();
 };
 chat.prototype.onCLOSE = function() {
 	this.gui.push(new ChatMessage("You have been disconnected"));
 	this.gui.enableInput();
-	this.gui.showBacklog();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
