@@ -513,7 +513,7 @@ opacity: 0.25;
 min-height: 200px;
 }
 
-.stream time {
+.stream .media-body time {
 font-size: 12px;
 color: #666;
 }

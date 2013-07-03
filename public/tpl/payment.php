@@ -36,7 +36,7 @@ use Destiny\Utils\Date;
 					<dt>Payment:</dt>
 					<dd><?=Tpl::out($model->payment['paymentType'])?></dd>
 					<dt>Payed on:</dt>
-					<dd><?=Date::getDateTime($model->payment['paymentDate'])->format(Date::STRING_FORMAT_YEAR)?></dd>
+					<dd><?=Tpl::moment(Date::getDateTime($model->payment['paymentDate']), Date::STRING_FORMAT_YEAR)?></dd>
 					<br>
 					<dt title="This is the related order description">Description:</dt>
 					<dd><?=Tpl::out($model->order['description'])?></dd>

@@ -1,5 +1,7 @@
 <?
 namespace Destiny;
+use Destiny\Service\Fantasy\TeamService;
+
 use Destiny\Service\Fantasy\LeaderboardService;
 
 use Destiny\Utils\Date;
@@ -18,32 +20,16 @@ use Destiny\Utils\Tpl;
 </head>
 <body id="games" class="league">
 	<?include'./tpl/seg/top.php'?>
-	
-	<?php if(!$model->leagueEnded): ?>
-	<section id="fantasyendseason" class="container">
-		<h1 class="page-title">
-			<span style="color:#eee;">Fantasy season 1 ending</span>
-			<time style="color: white; border-bottom:1px dashed #cacaca;"><?=$model->endTime->format(Date::FORMAT)?></time>
-		</h1>
-		<hr size="1">
-		Prizes will be awarded to the top 4 more details on that will come soon. <a href="http://blog.destiny.gg/season-0-launch-on-april-22nd-2013/">Read more here</a>
-		<br>Thanks again, and we hope you join in for the next season
-		<br>
-		</p>
-	</section>
-	<?php else: ?>
+
 	<section class="container">
-		<h1 class="page-title">
-			<span style="color:#eee;">Fantasy season 1 has ended!</span>
-		</h1>
+		<h1 class="page-title">Fantasy season 1 has ended!</h1>
 		<hr size="1">
-		<p>Well done to the top 4 as well as all that participated and watched the stream!
-		<br>Prizes will be awarded to the top 4 more details on that will come soon. <a href="http://blog.destiny.gg/season-0-launch-on-april-22nd-2013/">Read more here</a>
-		<br><br>Thanks again, and we hope you join in for the next season
-		<br>
+		<p>Well done to <a title="kilpo7">kilpo7</a>, <a title="Derpski">Derpski</a>, <a title="&amp; Bronzer ...">DICEDLEMMING</a> and the ever soothing <a title="dmcredgrave">dmcredgrave</a>.
+			Thanks to all who participated and watched the stream. The next couple of weeks we'll be implementing some more drastic changes, expect things to get interesting.. if you're interesting in that kind of thing.
+			No prize money will be given out for this session but we'll come up with something.
+			<span class="label label-inverse">NOTE</span> Scores, champion purchases and leaderboards will be reset soon. All data will be kept for the mean time until we find a home for it.
 		</p>
 	</section>
-	<?php endif; ?>
 	
 	<?//if(!Session::hasRole(\Destiny\UserRole::USER)):?>
 	<?//include'./tpl/seg/fantasy/calltoaction.php'?>
