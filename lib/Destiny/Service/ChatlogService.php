@@ -48,7 +48,6 @@ class ChatLog implements \Iterator {
 
 	public function rewind() {
 		$conn = Application::instance ()->getConnection ();
-		// TODO get the users features for the icons
 		$this->stmt = $conn->prepare ( '
 			SELECT
 				u.userId,

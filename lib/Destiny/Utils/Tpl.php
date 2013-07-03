@@ -6,6 +6,10 @@ use Destiny\Config;
 
 class Tpl {
 
+	public static function jsout($var) {
+		return json_encode($var, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+	}
+
 	public static function out($var, $default = null) {
 		return htmlentities ( ((empty ( $var )) ? $default : $var), ENT_QUOTES, 'UTF-8' );
 	}

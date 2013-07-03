@@ -307,6 +307,7 @@ function ChatUser(args){
 	this.features = [];
 	this.connections = 0;
 	this.color = '#efefef';
+	args.features = args.features || [];
 	$.extend(this, args);
 	return this;
 };

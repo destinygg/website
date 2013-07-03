@@ -28,7 +28,7 @@ class History {
 		}
 		
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
-		Http::sendString ( 'var chatbacklog = ' . json_encode ( $log ) );
+		Http::sendString ( 'var backlog = ' . json_encode ( $log ) );
 		exit ();
 	}
 
