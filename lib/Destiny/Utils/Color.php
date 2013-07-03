@@ -12,25 +12,11 @@ abstract class Color {
 	 */
 	public static function getFeaturesColor($features, $color = '#0088CC') {
 		if (! empty ( $features )) {
-			foreach ( $features as $feature ) {
-				switch ($feature) {
-					case UserFeature::ADMIN :
-						$color = '#EE0000';
-						break 2;
-					case UserFeature::MODERATOR :
-						$color = '#FF8A00';
-						break 2;
-					case UserFeature::SUBSCRIBER :
-						$color = '#54AAD2';
-						break 2;
-					case UserFeature::VIP :
-						$color = '#CF31E2';
-						break 2;
-					case UserFeature::PROTECT :
-						$color = '#CCCCCC';
-						break 2;
-				}
-			}
+			if (in_array ( UserFeature::ADMIN, $features )) return '#EE0000';
+			if (in_array ( UserFeature::MODERATOR, $features )) return '#FF8A00';
+			if (in_array ( UserFeature::SUBSCRIBER, $features )) return '#54AAD2';
+			if (in_array ( UserFeature::VIP, $features )) return '#CF31E2';
+			if (in_array ( UserFeature::PROTECT, $features )) return '#CCCCCC';
 		}
 		return $color;
 	}
