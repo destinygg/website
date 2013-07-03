@@ -175,11 +175,10 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatMessage("Error: ignore is unavailable, no localStorage"));
 				return;
 			}
-			var ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
 			
 			if (!parts[1]) {
 				var nicks = [];
-				$.each(ignorelist, function(key) {
+				$.each(this.ignorelist, function(key) {
 					nicks.push(key);
 				});
 				if (nicks.length == 0) {
@@ -196,16 +195,16 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			
-			if (ignorelist[nick]) {
-				delete(ignorelist[nick]);
+			if (this.ignorelist[nick]) {
+				delete(this.ignorelist[nick]);
 				this.gui.push(new ChatMessage("Ignore: "+nick+" has been removed from the ignore list"));
 			} else {
-				ignorelist[nick] = true;
+				this.ignorelist[nick] = true;
 				this.gui.push(new ChatMessage("Ignore: "+nick+" has been ignored"));
 			}
 			
-			localStorage['chatignorelist'] = JSON.stringify(ignorelist);
-			this.gui.loadIgnoreList();
+			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
+			this.loadIgnoreList();
 			break;
 		case "mute":
 			// TODO bans are a little more involved, requiring a reason + ip bans + permbans

@@ -20,7 +20,7 @@ use Destiny\Utils\Tpl;
 </head>
 <body id="chat-embedded">
 
-<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-user="<?=Tpl::jsout($model->user)?>" data-options="<?=Tpl::jsout($model->chatOptions)?>">
+<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-user="<?=Tpl::out(json_encode($model->user))?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
 	</div>
@@ -52,6 +52,6 @@ use Destiny\Utils\Tpl;
 <?php if(!empty($model->backlog)): ?>
 <script>var backlog = <?=Tpl::jsout($model->backlog)?>;</script>
 <?php endif; ?>
-<script>new chat();</script>
+<script>var c = new chat();</script>
 </body>
 </html>
