@@ -1,13 +1,18 @@
-$(function() {
-	c = new chat();
-});
-
 function chat() {
+	
+	this.debug = true;
+	this.users = {};
 
 	this.gui = new destiny.fn.Chat({ui: '#destinychat', engine: this});
 	this.user = new ChatUser(this.gui.ui.data('user'));
 	this.gui.backlog = backlog || [];
 	this.gui.showBacklog();
+
+	if (window.MozWebSocket)
+		window.WebSocket = MozWebSocket;
+	
+	if ( !window.WebSocket )
+		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
 	
 	this.gui.onSend = function(str){
 		if(this.engine.user == null || this.engine.user.username == '')
@@ -19,16 +24,8 @@ function chat() {
 		this.push(new ChatUserMessage(str, this.engine.user), ChatMessageStatus.PENDING);
 		this.engine.emit('MSG', {data: str});
 	};
-
-	if (window.MozWebSocket)
-		window.WebSocket = MozWebSocket;
 	
-	if ( !window.WebSocket )
-		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
-	
-	this.debug = true;
 	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
-	this.users = {};
 	this.init();
 }
 
