@@ -38,6 +38,7 @@ chat.prototype.l = function() {
 	log.apply(console, arguments);
 };
 chat.prototype.init = function() {
+	this.loadIgnoreList();
 	this.sock.onopen    = $.proxy(function() {
 		var event = {data: 'OPEN ""'};
 		this.parseAndDispatch(event)
@@ -47,7 +48,6 @@ chat.prototype.init = function() {
 		var event = {data: 'CLOSE ""'};
 		this.parseAndDispatch(event)
 	}, this);
-
 
 	if(this.gui.history && this.gui.history.length > 0){
 		this.gui.history.reverse();
