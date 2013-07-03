@@ -51,11 +51,20 @@ class ChatLog implements \Iterator {
 		// TODO get the users features for the icons
 		$this->stmt = $conn->prepare ( '
 			SELECT
+				u.userId,
 				u.username,
 				u2.username AS target,
 				l.event,
 				l.data,
-				l.timestamp
+				l.timestamp,
+				(
+				
+					SELECT GROUP_CONCAT(fn.featureName)
+					FROM dfl_users_features AS uf
+					INNER JOIN dfl_features AS fn ON (fn.featureId = uf.featureId)
+					WHERE uf.userId = u.userId
+					
+				) AS `features`
 			FROM
 				chatlog AS l
 				LEFT JOIN dfl_users AS u ON u.userId = l.userid

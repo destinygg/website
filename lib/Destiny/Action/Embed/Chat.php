@@ -8,6 +8,7 @@ use Destiny\ViewModel;
 use Destiny\Application;
 use Destiny\Session;
 use Destiny\Service\Fantasy\TeamService;
+use Destiny\Utils\Color;
 use Destiny\Config;
 use Destiny\Service\ChatlogService;
 
@@ -20,8 +21,13 @@ class Chat {
 		$chatLog = ChatlogService::instance ()->getChatLog ( Config::$a ['chat'] ['backlog'] );
 		$log = array ();
 		foreach ( $chatLog as $i => $line ) {
-			$log [] = $line;
+			if (! empty ( $line ['features'] )) {
+				$line ['features'] = explode ( ',', $line ['features'] );
+				$line ['color'] = Color::getFeaturesColor ( $line ['features'] );
+				$log [] = $line;
+			}
 		}
+		
 		$model->backlog = $log;
 		
 		if (Session::hasRole ( UserRole::USER )) {

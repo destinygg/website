@@ -156,7 +156,7 @@ class AuthenticationService extends Service {
 		$credentials->setFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
 		
 		// Generate the user color
-		$credentials->setColor ( Color::getUserColor ( $credentials->getData () ) );
+		$credentials->setColor ( Color::getFeaturesColor ( $credentials->getData () ) );
 		
 		// Update the auth credentials
 		Session::updateCredentials ( $credentials );

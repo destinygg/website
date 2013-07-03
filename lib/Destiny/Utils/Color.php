@@ -10,9 +10,9 @@ abstract class Color {
 	 * @param array $user
 	 * @param string $color Default color
 	 */
-	public static function getUserColor($user, $color = '#0088CC') {
-		if (isset ( $user ['features'] )) {
-			foreach ( $user ['features'] as $feature ) {
+	public static function getFeaturesColor($features, $color = '#0088CC') {
+		if (! empty ( $features )) {
+			foreach ( $features as $feature ) {
 				switch ($feature) {
 					case UserFeature::ADMIN :
 						$color = '#EE0000';

@@ -267,7 +267,7 @@
 			this.backlog.reverse();
 			this.push(new ChatUIMessage('<hr>'));
 			for(var i=0; i<this.backlog.length; ++i){
-				this.push(new ChatUserMessage(this.backlog[i].data, new ChatUser({username: this.backlog[i].username}), this.backlog[i].timestamp));
+				this.push(new ChatUserMessage(this.backlog[i].data, new ChatUser(this.backlog[i]), this.backlog[i].timestamp));
 			}
 			this.push(new ChatUIMessage('<hr>'));
 		}
