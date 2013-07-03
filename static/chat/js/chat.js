@@ -1,13 +1,14 @@
-function chat() {
-	
+function chat(user, options) {
+
+	this.connected = false;
 	this.debug = true;
 	this.users = {};
 	this.ignorelist = {};
 
-	this.gui = new destiny.fn.Chat({ui: '#destinychat', engine: this});
-	this.user = new ChatUser(this.gui.ui.data('user'));
-	this.gui.backlog = backlog || [];
-	this.gui.showBacklog();
+	// TODO clean this up
+	this.user = new ChatUser(user);
+	this.gui = new destiny.fn.Chat(this, options);
+	//
 
 	if (window.MozWebSocket)
 		window.WebSocket = MozWebSocket;
@@ -22,12 +23,13 @@ function chat() {
 		if (str.substring(0, 1) === '/')
 			return this.engine.handleCommand(str.substring(1));
 
-		this.push(new ChatUserMessage(str, this.engine.user), ChatMessageStatus.PENDING);
+		this.push(new ChatUserMessage(str, this.engine.user), (!this.engine.connected) ? ChatMessageStatus.UNSENT : ChatMessageStatus.PENDING);
 		this.engine.emit('MSG', {data: str});
 	};
 	
 	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
 	this.init();
+	options = null;
 }
 
 chat.prototype.l = function() {
@@ -48,23 +50,12 @@ chat.prototype.init = function() {
 		var event = {data: 'CLOSE ""'};
 		this.parseAndDispatch(event)
 	}, this);
-
-	if(this.gui.history && this.gui.history.length > 0){
-		this.gui.history.reverse();
-		self.gui.push(new ChatUIMessage('<hr>'));
-		for(var i=0; i<this.gui.history.length; ++i){
-			self.gui.push(new ChatUserMessage(this.gui.history[i].data, new ChatUser({username: this.gui.history[i].username}), this.gui.history[i].timestamp));
-		}
-		self.gui.push(new ChatUIMessage('<hr>'));
-	};
-	
 	
 	if(this.user){
 		this.gui.push(new ChatMessage("Connecting as "+this.user.username+"..."));
 	}else{
 		this.gui.push(new ChatMessage("Connecting..."));
 	}
-	this.gui.disableInput();
 	
 	this.l = $.proxy(this.l, this);
 	this.emit = $.proxy(this.emit, this);
@@ -96,12 +87,12 @@ chat.prototype.emit = function(eventname, data) {
 
 // server events
 chat.prototype.onOPEN = function() {
+	this.connected = true;
 	this.gui.push(new ChatMessage("You are now connected"));
-	this.gui.enableInput();
 };
 chat.prototype.onCLOSE = function() {
+	this.connected = false;
 	this.gui.push(new ChatMessage("You have been disconnected"));
-	this.gui.enableInput();
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -122,13 +113,9 @@ chat.prototype.onQUIT = function(data) {
 };
 chat.prototype.onMSG = function(data) {
 	if(this.user == null || this.user.username != data.nick || !this.gui.resolveMessage(data)){
-		
 		var lowernick = data.nick.toLowerCase();
 		if (this.ignorelist[lowernick]) // user ignored
 			return;
-		
-		// handle hilights, maybe color the message differently? or add a class that flashes it with some css3 transform?
-		this.gui.handleHilight(data.data, this.users[data.nick])
 		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
 	}
 };
@@ -136,7 +123,7 @@ chat.prototype.onMUTE = function(data) {
 	// TODO make these messages distinct along with ban
 	// data.data is the nick which has been muted, no info about duration
 	this.gui.push(new ChatMessage(data.nick + " muted", data.timestamp));
-	this.gui.removeUserLines(data.data);
+	this.gui.removeUserLines(data);
 };
 chat.prototype.onUNMUTE = function(data) {
 	this.gui.push(new ChatMessage(data.nick + " unmuted", data.timestamp));
@@ -144,7 +131,7 @@ chat.prototype.onUNMUTE = function(data) {
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
 	this.gui.push(new ChatMessage(data.nick + " banned", data.timestamp));
-	this.gui.removeUserLines(data.data);
+	this.gui.removeUserLines(data);
 };
 chat.prototype.onUNBAN = function(data) {
 	this.gui.push(new ChatMessage(data.nick + " unbanned", data.timestamp));

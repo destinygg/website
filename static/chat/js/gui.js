@@ -2,9 +2,10 @@
 //https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Displaying_notifications
 //http://blog.teamtreehouse.com/adding-desktop-notifications-to-your-web-applications
 	
-	destiny.fn.Chat = function(props){
-		$.extend(this, props);
+	destiny.fn.Chat = function(engine, options){
+		$.extend(this, options);
 		this.ui = $(this.ui);
+		this.engine = engine;
 		return this.init();
 	};
 	$.extend(destiny.fn.Chat.prototype, {
@@ -19,27 +20,48 @@
 		onSend: $.noop,
 		userMessages: [],
 		backlog: [],
+		hilightregex: {},
+		notifications: true,
 		
 		init: function(){
-			// Optional params passed in via the data-options="{}" attribute
-			$.extend(this, this.ui.data('options'));
+			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
+			this.ui.data('chat', this);
+			
 			// local elements stored in vars to not have to get the elements via query each time
 			this.lines = $(this.ui.find('.chat-lines:first')[0]);
 			this.output = $(this.ui.find('.chat-output:first')[0]);
 			this.inputwrap = $(this.ui.find('.chat-input:first')[0]);
 			this.input = $(this.inputwrap.find('.input:first:first')[0]);
 			
+			// Scrollbars and scroll locking
+			if(this.scrollPlugin == null){
+				//this.scrollPlugin = new destiny.fn.ChatScrollPlugin(this);
+				this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
+				this.scrollPlugin.lockScroll(true);
+			};
+			
+			// Input history
 			this.currenthistoryline = -1;
 			this.storedinputline = null;
 			if (window.localStorage) {
 				this.setupInputHistory();
 			}
-			
-			// TODO make this optional so that the user can disable it
+
 			this.setupNotifications();
 			
-			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
-			this.ui.data('chat', this);
+			if(this.notifications && this.engine.user){
+				// TODO make this optional so that the user can disable it
+				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b");
+				
+				// Temp place to ask for perms
+				this.ui.on('click', '.chat-settings-btn', function(e){
+					// not allowed but not denied, ask for permission, needs to be in a click handler
+					if (notifications.checkPermission() == 1) {
+						notifications.requestPermission(function(){});
+					};
+					console.log('Permissions ok');
+				});
+			};
 
 			// Bind to user input submit
 			this.ui.on('submit', '.chat-input form', function(e){
@@ -49,15 +71,20 @@
 			this.ui.on('click', '.chat-users-btn', function(e){
 				console.log(this, e, this.engine.users);
 			});
-			
-			// Scrollbars and scroll locking
-			if(this.scrollPlugin == null){
-				//this.scrollPlugin = new destiny.fn.ChatScrollPlugin(this);
-				this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
-				this.scrollPlugin.lockScroll(true);
+
+			// Back log
+			if(this.backlog.length > 0){
+				this.backlog.reverse();
+				this.put(new ChatUIMessage('<hr>'));
+				for(var i=0; i<this.backlog.length; ++i){
+					this.put(new ChatUserMessage(this.backlog[i].data, new ChatUser(this.backlog[i]), this.backlog[i].timestamp));
+				}
+				this.put(new ChatUIMessage('<hr>'));
 			};
-			this.show();
+			
 			this.resize();
+			this.scrollPlugin.update();
+			this.scrollPlugin.scrollBottom();
 			return this;
 		},
 		
@@ -74,15 +101,8 @@
 		
 		push: function(message, state){
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
-			
-			// Attach message ui
-			message.ui = $(message.html()).appendTo(this.lines);
-			if(state != undefined){
-				message.status(state);
-			}
 			this.userMessages.push(message);
-			//
-			
+			this.put(message, state);
 			if(this.lineCount() >= this.maxlines){
 				$(this.lines.children()[0]).remove();
 			}else if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
@@ -91,8 +111,16 @@
 			}else if(this.scrollPlugin.isScrollable()){
 				this.scrollPlugin.update()
 			}
-			$(this).triggerHandler('push', [message]);
+			this.handleNotification(message);
 			return message;
+		},
+		
+		// bypass ui updates and notifications
+		// used to mass put history messages, and only update ui afterwards
+		put: function(message, state){
+			message.ui = $(message.html()).appendTo(this.lines);
+			if(state != undefined)
+				message.status(state);
 		},
 		
 		send: function(){
@@ -107,22 +135,9 @@
 			return this;
 		},
 		
-		// UI
 		resize: function(){
 			this.output.height(this.ui.height()-this.inputwrap.outerHeight());
 			$(this).triggerHandler('resize');
-			return this;
-		},
-		
-		show: function(){
-			this.ui.show();
-			$(this).triggerHandler('show');
-			return this;
-		},
-		
-		hide: function(){
-			this.ui.hide();
-			$(this).triggerHandler('hide');
 			return this;
 		},
 		
@@ -219,21 +234,18 @@
 		
 		setupNotifications: function() {
 			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
-			if (!notifications)
-				return;
-			
-			if (notifications.checkPermission() == 1) {
-				// not allowed but not denied, ask for permission, needs to be in a click handler
-				notifications.requestPermission(function(){})
+			if(!notifications){
+				this.notifications = false;
 			}
-			
 		},
 		
-		showNotification: function(message, user) {
-			if (message.length >= 30)
-				message = message.substring(0, 30) + '...';
+		showNotification: function(message) {
+			var msg = message.message, title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...';
+			if (msg.length >= 30)
+				msg = msg.substring(0, 30) + '...';
+
+			var notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
 			
-			var notif = notifications.createNotification('favicon.png', 'Highlight from: '+user, message);
 			// only ever show a single notification
 			if (this.currentnotification)
 				this.currentnotification.cancel();
@@ -244,33 +256,14 @@
 			setTimeout(function() {
 				notif.cancel();
 				self.currentnotification = null;
-			}, 5*1000);
+				self = null;
+			}, 5000);
 		},
 		
-		handleHilight: function(message, user){
-			
-			if (!this.hilightregex) {
-				// TODO maybe let the user specify his own text to hilight on?
-				this.hilightregex = new RegExp("\\b"+this.ui.data('user').username+"\\b")
+		handleNotification: function(message){
+			if(this.notifications && (message.user && message.user.username != this.engine.user.username && this.hilightregex.user.test(message.message))){
+				this.showNotification(message);
 			}
-			
-			if (!this.hilightregex.test(message))
-				return;
-			
-			this.showNotification(message, user);
-		},
-		
-		setBacklog: function(backlog){
-			this.backlog = backlog;
-		},
-		
-		showBacklog: function(){
-			this.backlog.reverse();
-			this.push(new ChatUIMessage('<hr>'));
-			for(var i=0; i<this.backlog.length; ++i){
-				this.push(new ChatUserMessage(this.backlog[i].data, new ChatUser(this.backlog[i]), this.backlog[i].timestamp));
-			}
-			this.push(new ChatUIMessage('<hr>'));
 		}
 		
 	});
@@ -296,6 +289,7 @@ var UserFeatures = {
 
 var ChatMessageStatus = {
 	SENT		: 'sent',
+	UNSENT		: 'unsent',
 	PENDING		: 'pending',
 	FAILED		: 'failed'
 };

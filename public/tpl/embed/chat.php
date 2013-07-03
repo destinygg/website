@@ -20,7 +20,7 @@ use Destiny\Utils\Tpl;
 </head>
 <body id="chat-embedded">
 
-<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->chatOptions['theme']?>" data-user="<?=Tpl::out(json_encode($model->user))?>" data-options="<?=Tpl::out(json_encode($model->chatOptions))?>">
+<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->options['theme']?>">
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
 	</div>
@@ -31,8 +31,13 @@ use Destiny\Utils\Tpl;
 			</div>
 		</form>
 		<div class="chat-tools-wrap clearfix">
-			<button type="submit" class="chat-send-btn btn btn-mini btn-inverse pull-left">Send</button>
-			<button type="button" class="chat-users-btn btn btn-mini btn-inverse pull-right">Users</button>
+			<div class="pull-left">
+				<button type="submit" class="chat-send-btn btn btn-mini btn-inverse">Send</button>
+			</div>
+			<div class="pull-right">
+				<button type="button" class="chat-settings-btn btn btn-mini btn-inverse"><i class="icon-cog"></i> Config</button>
+				<button type="button" class="chat-users-btn btn btn-mini btn-inverse"><i class="icon-user"></i> Users</button>
+			</div>
 		</div>
 	</div>
 </div>
@@ -49,9 +54,8 @@ use Destiny\Utils\Tpl;
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>
-<?php if(!empty($model->backlog)): ?>
-<script>var backlog = <?=Tpl::jsout($model->backlog)?>;</script>
-<?php endif; ?>
-<script>var c = new chat();</script>
+<script>
+new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat', 'backlog'=>$model->backlog), $model->options), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)?>);
+</script>
 </body>
 </html>

@@ -15,29 +15,28 @@ use Destiny\Service\ChatlogService;
 class Chat {
 
 	public function execute(array $params, ViewModel $model) {
-		$app = Application::instance ();
-		$model->chatOptions = $this->getChatOptionParams ( $params );
-		
 		$chatLog = ChatlogService::instance ()->getChatLog ( Config::$a ['chat'] ['backlog'] );
 		$log = array ();
 		foreach ( $chatLog as $i => $line ) {
 			if (! empty ( $line ['features'] )) {
-				$line ['features'] = explode ( ',', $line ['features'] );
+				$line ['features'] = (! empty ( $line ['features'] )) ? explode ( ',', $line ['features'] ) : array ();
 				$line ['color'] = Color::getFeaturesColor ( $line ['features'] );
 				$log [] = $line;
 			}
 		}
 		
-		$model->backlog = $log;
-		
+		$user = null;
 		if (Session::hasRole ( UserRole::USER )) {
-			$user = Session::getCredentials ()->getData ();
-			$model->user = array (
-				'username' => $user ['username'],
-				'features' => $user ['features'],
-				'color' => $user ['color'] 
-			);
+			$creds = Session::getCredentials ();
+			$user = array ();
+			$user ['username'] = $creds->getUsername ();
+			$user ['features'] = $creds->getFeatures ();
+			$user ['color'] = $creds->getColor ();
 		}
+		
+		$model->options = $this->getChatOptionParams ( $params );
+		$model->backlog = $log;
+		$model->user = $user;
 		return 'embed/chat';
 	}
 

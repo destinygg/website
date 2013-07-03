@@ -103,7 +103,7 @@ class SessionInstance {
 	/**
 	 * Get the authentication credentials if auth success
 	 *
-	 * @return \Destiny\SessionCredentials
+	 * @return SessionCredentials
 	 */
 	public function getCredentials() {
 		return $this->credentials;
