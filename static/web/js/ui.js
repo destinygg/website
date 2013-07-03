@@ -417,3 +417,14 @@ $(function(){
 	window.setInterval(applMomentTime, 30000);
 	applMomentTime();
 })();
+
+
+//Ping
+(function(){
+	window.setInterval(function(){
+		$.ajax({
+			url: '/ping',
+			method: 'get'
+		});
+	}, 10*60*1000);
+})();
