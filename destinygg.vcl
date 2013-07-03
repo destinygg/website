@@ -28,8 +28,8 @@ sub vcl_recv {
 	// allow varnish to serve stale content as needed
 	set req.grace = 2m;
 	
-	// do not do anything with the dev site
-	if (req.http.host ~ "dev\.destiny\.gg$") {
+	// do not do anything with the dev/phpma/dba site
+	if (req.http.host ~ "(dev|phpma|dba)\.destiny\.gg$") {
 		return (pass);
 	}
 	
