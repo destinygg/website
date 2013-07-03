@@ -99,7 +99,7 @@ chat.prototype.onNAMES = function(data) {
 	};
 };
 chat.prototype.onJOIN = function(data) {
-	this.users[data.username] = new ChatUser(data);
+	this.users[data.nick] = new ChatUser(data);
 };
 chat.prototype.onQUIT = function(data) {
 	this.users[data.nick].connections--;
