@@ -35,8 +35,8 @@ use Destiny\Utils\Tpl;
 				<button type="submit" class="chat-send-btn btn btn-mini btn-inverse">Send</button>
 			</div>
 			<div class="pull-right">
-				<button type="button" class="chat-settings-btn btn btn-mini btn-inverse"><i class="icon-cog"></i> Config</button>
-				<button type="button" class="chat-users-btn btn btn-mini btn-inverse"><i class="icon-user"></i> Users</button>
+				<button type="button" class="chat-settings-btn btn btn-mini btn-inverse"><i class="icon-cog icon-white"></i> Config</button>
+				<button type="button" class="chat-users-btn btn btn-mini btn-inverse"><i class="icon-user icon-white"></i> Users</button>
 			</div>
 		</div>
 	</div>

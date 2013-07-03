@@ -62,6 +62,7 @@ class ChatLog implements \Iterator {
 					FROM dfl_users_features AS uf
 					INNER JOIN dfl_features AS fn ON (fn.featureId = uf.featureId)
 					WHERE uf.userId = u.userId
+					ORDER BY fn.featureId ASC
 					
 				) AS `features`
 			FROM

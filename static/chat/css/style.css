@@ -173,10 +173,10 @@ color:#444;
 .chat-theme-dark input::-webkit-input-placeholder {
 color:#444;
 }
-.chat-theme-dark i[class^="icon-"] {
+.chat-theme-dark .chat-lines i[class^="icon-"] {
 opacity: 0.15;
 background-image: url("../../vendor/img/glyphicons-halflings-white.png") !important;
 }
-.chat-theme-dark i[class^="icon-"]:hover {
+.chat-theme-dark .chat-lines i[class^="icon-"]:hover {
 opacity:1;
 }
