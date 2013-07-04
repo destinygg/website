@@ -42,8 +42,10 @@ use Destiny\Utils\Date;
 					<dd><?=Tpl::out($model->order['description'])?></dd>
 					<dt>Order:</dt>
 					<dd>#<?=Tpl::out($model->order['orderId'])?></dd>
+					<?if(!empty($model->paymentProfile['paymentProfileId'])): ?>
 					<dt>Recurring:</dt>
 					<dd><?=Tpl::mask($model->paymentProfile['paymentProfileId'])?></dd>
+					<?php endif; ?>
 				</dl>
 			</div>
 			<div class="form-actions block-foot">
