@@ -1,6 +1,4 @@
 (function($){
-//https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Displaying_notifications
-//http://blog.teamtreehouse.com/adding-desktop-notifications-to-your-web-applications
 	
 	destiny.fn.Chat = function(engine, options){
 		$.extend(this, options);
