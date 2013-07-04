@@ -97,14 +97,14 @@ class Scheduler {
 			'lastExecuted' => $task ['lastExecuted'],
 			'frequency' => $task ['frequency'],
 			'period' => $task ['period'],
-			'executeOnNextRun' => $task ['executeOnNextRun'],
+			'executeOnNextRun' => ($task ['executeOnNextRun']) ? 1:0,
 			'executeCount' => $task ['executeCount'] 
 		), array (
 			\PDO::PARAM_STR,
 			\PDO::PARAM_STR,
 			\PDO::PARAM_INT,
 			\PDO::PARAM_STR,
-			\PDO::PARAM_BOOL,
+			\PDO::PARAM_INT,
 			\PDO::PARAM_INT 
 		) );
 	}
