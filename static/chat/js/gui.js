@@ -51,7 +51,7 @@
 			
 			if(this.notifications && this.engine.user){
 				// TODO make this optional so that the user can disable it
-				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b");
+				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 				
 				// Temp place to ask for perms
 				this.ui.on('click', '.chat-settings-btn', function(e){
