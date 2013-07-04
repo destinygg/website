@@ -180,3 +180,19 @@ background-image: url("../../vendor/img/glyphicons-halflings-white.png") !import
 .chat-theme-dark .chat-lines i[class^="icon-"]:hover {
 opacity:1;
 }
+
+.chat-lines > div .subscriber {
+color: #54AAD2;
+}
+.chat-lines > div .vip {
+color: #CF31E2;
+}
+.chat-lines > div .moderator {
+color: #FF8A00;	
+}
+.chat-lines > div .admin {
+color: #EE0000;	
+}
+.chat-lines > div .protect {
+color: #CCCCCC;
+}

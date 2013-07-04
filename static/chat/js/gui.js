@@ -299,7 +299,6 @@ function ChatUser(args){
 	this.userId = '';
 	this.features = [];
 	this.connections = 0;
-	this.color = '#efefef';
 	args.features = args.features || [];
 	$.extend(this, args);
 	return this;
@@ -395,7 +394,7 @@ ChatUserMessage.prototype.wrapUser = function(user){
 	if (this.message.substring(0, 4) === '/me ')
 		sep = '*';
 	
-	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+sep+user.username+'</a>';
+	return user.getFeatureHTML() +' <a class="'+ user.features.join(' ') +'">'+sep+user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
 	var sep = ': ';
