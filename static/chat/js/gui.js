@@ -17,7 +17,7 @@
 		input: null,
 		onSend: $.noop,
 		userMessages: [],
-		backlog: [],
+		backlog: backlog,
 		hilightregex: {},
 		notifications: true,
 		
@@ -47,7 +47,7 @@
 
 			this.setupNotifications();
 			
-			if(this.notifications && this.engine.user){
+			if(this.notifications && this.engine.user.username){
 				// TODO make this optional so that the user can disable it
 				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 				
@@ -232,7 +232,7 @@
 		
 		setupNotifications: function() {
 			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
-			if(!notifications){
+			if(!notifications || !this.engine.user.username){
 				this.notifications = false;
 			}
 		},

@@ -17,7 +17,7 @@ function chat(user, options) {
 		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
 	
 	this.gui.onSend = function(str){
-		if(this.engine.user == null || this.engine.user.username == '')
+		if(this.engine.user == null || !this.engine.user.username)
 			return this.push(new ChatMessage("You must be logged in to send messages"));
 		
 		if (str.substring(0, 1) === '/')
@@ -51,7 +51,7 @@ chat.prototype.init = function() {
 		this.parseAndDispatch(event)
 	}, this);
 	
-	if(this.user){
+	if(this.user.username){
 		this.gui.push(new ChatMessage("Connecting as "+this.user.username+"..."));
 	}else{
 		this.gui.push(new ChatMessage("Connecting..."));
@@ -112,7 +112,7 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	if(this.user == null || this.user.username != data.nick || !this.gui.resolveMessage(data)){
+	if(this.user.username != data.nick || !this.gui.resolveMessage(data)){
 		var lowernick = data.nick.toLowerCase();
 		if (this.ignorelist[lowernick]) // user ignored
 			return;
@@ -122,19 +122,35 @@ chat.prototype.onMSG = function(data) {
 chat.prototype.onMUTE = function(data) {
 	// TODO make these messages distinct along with ban
 	// data.data is the nick which has been muted, no info about duration
-	this.gui.push(new ChatMessage(data.nick + " muted", data.timestamp));
+	var suppressednick = data.data;
+	if (this.user.username == data.data)
+		suppressednick = 'You have been';
+	
+	this.gui.push(new ChatMessage(suppressednick + " muted by " + data.nick, data.timestamp));
 	this.gui.removeUserLines(data);
 };
 chat.prototype.onUNMUTE = function(data) {
-	this.gui.push(new ChatMessage(data.nick + " unmuted", data.timestamp));
+	var suppressednick = data.data;
+	if (this.user.username == data.data)
+		suppressednick = 'You have been';
+	
+	this.gui.push(new ChatMessage(suppressednick + " unmuted by " + data.nick, data.timestamp));
 };
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
-	this.gui.push(new ChatMessage(data.nick + " banned", data.timestamp));
+	var suppressednick = data.data;
+	if (this.user.username == data.data)
+		suppressednick = 'You have been';
+	
+	this.gui.push(new ChatMessage(suppressednick + " banned by " + data.nick, data.timestamp));
 	this.gui.removeUserLines(data);
 };
 chat.prototype.onUNBAN = function(data) {
-	this.gui.push(new ChatMessage(data.nick + " unbanned", data.timestamp));
+	var suppressednick = data.data;
+	if (this.user.username == data.data)
+		suppressednick = 'You have been';
+	
+	this.gui.push(new ChatMessage(suppressednick + " unbanned by " + data.nick, data.timestamp));
 };
 chat.prototype.onERR = function(data) {
 	// data is a string now, TODO translate the raw error strings to something
