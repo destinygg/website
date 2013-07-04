@@ -20,7 +20,6 @@ class Chat {
 		foreach ( $chatLog as $i => $line ) {
 			if (! empty ( $line ['features'] )) {
 				$line ['features'] = (! empty ( $line ['features'] )) ? explode ( ',', $line ['features'] ) : array ();
-				$line ['color'] = Color::getFeaturesColor ( $line ['features'] );
 				$log [] = $line;
 			}
 		}
@@ -31,7 +30,6 @@ class Chat {
 			$user = array ();
 			$user ['username'] = $creds->getUsername ();
 			$user ['features'] = $creds->getFeatures ();
-			$user ['color'] = $creds->getColor ();
 		}
 		
 		$model->options = $this->getChatOptionParams ( $params );

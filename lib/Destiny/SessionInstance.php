@@ -409,13 +409,6 @@ class SessionCredentials {
 	protected $features = array ();
 	
 	/**
-	 * The user color
-	 *
-	 * @var string
-	 */
-	protected $color = '';
-
-	/**
 	 * Set all the credentials at once
 	 *
 	 * @param array $params
@@ -446,9 +439,6 @@ class SessionCredentials {
 			if (isset ( $params ['roles'] ) && ! empty ( $params ['roles'] ) && is_array ( $params ['roles'] )) {
 				$this->setRoles ( array_unique ( $params ['roles'] ) );
 			}
-			if (isset ( $params ['color'] ) && ! empty ( $params ['color'] )) {
-				$this->setColor ( $params ['color'] );
-			}
 		}
 	}
 
@@ -466,8 +456,7 @@ class SessionCredentials {
 			'country' => $this->getCountry (),
 			'roles' => $this->getRoles (),
 			'authProvider' => $this->getAuthProvider (),
-			'features' => $this->getFeatures (),
-			'color' => $this->getColor () 
+			'features' => $this->getFeatures ()
 		);
 	}
 
@@ -615,14 +604,6 @@ class SessionCredentials {
 		} elseif (! in_array ( $features, $this->features )) {
 			$this->features [] = $features;
 		}
-	}
-
-	public function getColor() {
-		return $this->color;
-	}
-
-	public function setColor($color) {
-		$this->color = $color;
 	}
 
 }
