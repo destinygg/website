@@ -73,13 +73,13 @@ class Scheduler {
 	protected function updateTask(array $task) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_scheduled_tasks', array (
-			'executeOnNextRun' => $task ['executeOnNextRun'],
+			'executeOnNextRun' => ($task ['executeOnNextRun']) ? 1:0,
 			'lastExecuted' => $task ['lastExecuted'],
 			'executeCount' => $task ['executeCount'] 
 		), array (
 			'action' => $task ['action'] 
 		), array (
-			\PDO::PARAM_STR,
+			\PDO::PARAM_INT,
 			\PDO::PARAM_STR,
 			\PDO::PARAM_STR 
 		) );
