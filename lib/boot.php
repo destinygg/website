@@ -11,7 +11,7 @@ require _VENDORDIR . '/autoload.php';
 \Destiny\Config::load ( array_merge_recursive ( require _BASEDIR . '/config/config.php', json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) ) );
 
 $log = new \Monolog\Logger ( $context->log );
-$log->pushHandler ( new \Monolog\Handler\StreamHandler ( \Destiny\Config::$a ['log'] ['path'] . $context->log . '.log', \Monolog\Logger::INFO ) );
+$log->pushHandler ( new \Monolog\Handler\StreamHandler ( \Destiny\Config::$a ['log'] ['path'] . $context->log . '.log', \Monolog\Logger::DEBUG ) );
 $log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
 $log->pushProcessor ( new \Monolog\Processor\ProcessIdProcessor () );
 $log->pushProcessor ( new \Monolog\Processor\MemoryPeakUsageProcessor () );
