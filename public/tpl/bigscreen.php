@@ -66,7 +66,7 @@ use Destiny\Utils\Tpl;
 			</div>
 			<div id="twitch-chat-wrap" class="pull-right">
 				<div>
-					<iframe class="twitch-element" frameborder="0" scrolling="no" id="chat_embed" src="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&amp;popout_chat=true"></iframe>
+					<iframe class="twitch-element" frameborder="0" scrolling="no" id="chat_embed" src="/embed/chat"></iframe>
 				</div>
 			</div>
 		</div>

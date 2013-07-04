@@ -75,16 +75,6 @@ if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 	}
 }
 
-// TEMP chatFeature
-if (! Config::$a ['chatFeature']) {
-	$app->bind ( '/^\/(embed|chat)/i', function (Application $app) {
-		$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
-		if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
-			$app->error ( Http::STATUS_UNAUTHORIZED );
-		}
-	} );
-}
-
 // Admins only
 $app->bind ( '/^\/(admin)/i', function (Application $app) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );

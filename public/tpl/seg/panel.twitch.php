@@ -39,7 +39,7 @@ use Destiny\Config;
 			</div>
 			<div id="twitch-chat" class="twitch-element-wrap pull-left">
 				<?if((bool) Config::$a['blocks']['chat']):?>
-				<iframe class="twitch-element" frameborder="0" scrolling="no" id="chat_embed" src="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&amp;popout_chat=true"></iframe>
+				<iframe class="twitch-element" frameborder="0" scrolling="no" id="chat_embed" src="/embed/chat"></iframe>
 				<?endif;?>
 			</div>
 		</div>
