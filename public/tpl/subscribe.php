@@ -49,7 +49,7 @@ use Destiny\Utils\Tpl;
 						
 						<br>
 						<div id="subscriptions" class="clearfix">
-							<h4>Teir I Subscriptions</h4>
+							<h4>Tier I Subscriptions</h4>
 							<hr size="1" style="margin:10px 0;">
 							<div id="tier-one" class="clearfix">
 								<?php $sub = $model->subscriptions['1-MONTH-SUB']?>
@@ -91,7 +91,7 @@ use Destiny\Utils\Tpl;
 							</div>
 							
 							<br>
-							<h4>Teir II Subscriptions</h4>
+							<h4>Tier II Subscriptions</h4>
 							<hr size="1" style="margin:10px 0;">
 							<div id="tier-one" class="clearfix">
 								
