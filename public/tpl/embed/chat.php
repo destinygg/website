@@ -31,13 +31,9 @@ use Destiny\Utils\Tpl;
 			</div>
 		</form>
 		<div class="chat-tools-wrap clearfix">
-			<div class="pull-left">
-				<button type="submit" class="chat-send-btn btn btn-mini btn-inverse" disabled="disabled">Send</button>
-			</div>
-			<div class="pull-right">
-				<button type="button" class="chat-settings-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-cog icon-white"></i> Config</button>
-				<button type="button" class="chat-users-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-user icon-white"></i> Users</button>
-			</div>
+			<button type="submit" class="chat-send-btn btn btn-mini btn-inverse" disabled="disabled">Send</button>
+			<button type="button" class="chat-settings-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-cog icon-white"></i> Config</button>
+			<button type="button" class="chat-users-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-user icon-white"></i> Users</button>
 		</div>
 	</div>
 </div>
@@ -55,7 +51,7 @@ use Destiny\Utils\Tpl;
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 <script>
-new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat'), $model->options), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)?>);
+new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat'), $model->options))?>);
 </script>
 </body>
 </html>

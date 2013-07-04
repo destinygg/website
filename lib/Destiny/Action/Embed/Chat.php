@@ -8,7 +8,6 @@ use Destiny\ViewModel;
 use Destiny\Application;
 use Destiny\Session;
 use Destiny\Service\Fantasy\TeamService;
-use Destiny\Utils\Color;
 use Destiny\Config;
 use Destiny\Service\ChatlogService;
 

@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Service;
 
-use Destiny\Utils\Color;
 use Destiny\Config;
 use Destiny\Application;
 use Destiny\Service\RememberMeService;

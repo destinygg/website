@@ -3,7 +3,6 @@ namespace Destiny\Service;
 
 use Destiny\Service;
 use Destiny\Application;
-use Destiny\Utils\Color;
 use \PDO;
 
 class ChatlogService extends Service {
@@ -79,7 +78,6 @@ class ChatlogService extends Service {
 			
 			if (! empty ( $line ['features'] )) {
 				$line ['features'] = explode ( ',', $line ['features'] );
-				$line ['color'] = Color::getFeaturesColor ( $line ['features'] );
 			}
 			
 			$lines[] = $line;

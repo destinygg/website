@@ -50,25 +50,29 @@
 			if(this.notifications && this.engine.user.username){
 				// TODO make this optional so that the user can disable it
 				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
-				
-				// Temp place to ask for perms
-				this.ui.on('click', '.chat-settings-btn', function(e){
-					// not allowed but not denied, ask for permission, needs to be in a click handler
-					if (notifications.checkPermission() == 1) {
-						notifications.requestPermission(function(){});
-					};
-					console.log('Permissions ok');
-				});
 			};
+			
+			// Temp place to ask for perms
+			this.ui.on('click', '.chat-settings-btn', function(e){
+				// not allowed but not denied, ask for permission, needs to be in a click handler
+				if (notifications.checkPermission() == 1) {
+					notifications.requestPermission(function(){});
+				};
+				console.log('Permissions ok');
+			});
 
 			// Bind to user input submit
 			this.ui.on('submit', '.chat-input form', function(e){
 				e.preventDefault();
 				$(this).closest('.chat.chat-frame').data('chat').send();
 			});
+			
 			this.ui.on('click', '.chat-users-btn', function(e){
 				console.log(this, e, this.engine.users);
 			});
+			
+			// Enable toolbar
+			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
 
 			// Back log
 			if(this.backlog.length > 0){
@@ -149,10 +153,6 @@
 		
 		ping: function(){
 			//  stub
-		},
-		
-		removeUserLines: function(user){
-			// stub
 		},
 		
 		setupInputHistory: function(){
@@ -326,8 +326,7 @@ ChatUser.prototype.getFeatureHTML = function(){
 
 //UI MESSAGE
 function ChatUIMessage(html){
-	this.init(html);
-	return this;
+	return this.init(html);
 };
 ChatUIMessage.prototype.init = function(html){
 	this.message = html;
@@ -345,8 +344,7 @@ ChatUIMessage.prototype.wrapMessage = function(css){
 
 //BASE MESSAGE
 function ChatMessage(message, timestamp){
-	this.init(message, timestamp);
-	return this;
+	return this.init(message, timestamp);
 };
 ChatMessage.prototype.init = function(message, timestamp){
 	this.message = message;

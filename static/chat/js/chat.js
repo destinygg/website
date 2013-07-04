@@ -127,7 +127,6 @@ chat.prototype.onMUTE = function(data) {
 		suppressednick = 'You have been';
 	
 	this.gui.push(new ChatMessage(suppressednick + " muted by " + data.nick, data.timestamp));
-	this.gui.removeUserLines(data);
 };
 chat.prototype.onUNMUTE = function(data) {
 	var suppressednick = data.data;
@@ -143,7 +142,6 @@ chat.prototype.onBAN = function(data) {
 		suppressednick = 'You have been';
 	
 	this.gui.push(new ChatMessage(suppressednick + " banned by " + data.nick, data.timestamp));
-	this.gui.removeUserLines(data);
 };
 chat.prototype.onUNBAN = function(data) {
 	var suppressednick = data.data;
