@@ -3,7 +3,6 @@ namespace Destiny\Service;
 
 use Destiny\Service;
 use Destiny\Application;
-use Destiny\Utils\Color;
 use \PDO;
 
 class ChatlogService extends Service {
@@ -32,10 +31,6 @@ class ChatlogService extends Service {
 	public function getChatLog($limit) {
 		
 		$conn = Application::instance ()->getConnection ();
-		
-		//$logger = new \Doctrine\DBAL\Logging\EchoSQLLogger();
-		//$conn->getConfiguration()->setSQLLogger($logger);
-		
 		$stmt = $conn->prepare ( '
 			SELECT
 				u.username,
@@ -77,10 +72,8 @@ class ChatlogService extends Service {
 				continue;
 			}
 			
-			if (! empty ( $line ['features'] )) {
+			if (! empty ( $line ['features'] ))
 				$line ['features'] = explode ( ',', $line ['features'] );
-				$line ['color'] = Color::getFeaturesColor ( $line ['features'] );
-			}
 			
 			$lines[] = $line;
 			
