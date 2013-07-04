@@ -516,9 +516,9 @@ class SessionCredentials {
 	}
 
 	/**
-	 * Add a roles
+	 * Add roles
 	 *
-	 * @param string $role
+	 * @param array|string $role
 	 */
 	public function addRoles($role) {
 		if (is_array ( $role )) {
@@ -600,6 +600,23 @@ class SessionCredentials {
 		return false;
 	}
 
+	/**
+	 * Add user features
+	 *
+	 * @param array|string $features
+	 */
+	public function addFeatures($features) {
+		if (is_array ( $features )) {
+			for($i = 0; $i < count ( $features ); ++ $i) {
+				if (! in_array ( $features [$i], $this->features )) {
+					$this->features [] = $features [$i];
+				}
+			}
+		} elseif (! in_array ( $features, $this->features )) {
+			$this->features [] = $features;
+		}
+	}
+
 	public function getColor() {
 		return $this->color;
 	}
@@ -609,7 +626,6 @@ class SessionCredentials {
 	}
 
 }
-
 abstract class Session {
 	
 	/**

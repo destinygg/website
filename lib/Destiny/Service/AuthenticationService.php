@@ -147,6 +147,7 @@ class AuthenticationService extends Service {
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
 		if (! empty ( $subscription )) {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
+			$credentials->addFeatures ( \Destiny\UserFeature::SUBSCRIBER );
 		}
 		
 		// Get the stored roles
