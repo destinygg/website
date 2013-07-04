@@ -12,7 +12,7 @@
 					<li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
 					<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li><a href="http://www.twitch.tv/destiny/subscribe" rel="subscribe">Subscribe</a></li>
+					<li><a href="/subscribe" rel="subscribe">Subscribe</a></li>
 					<?php endif; ?>
 					<?if(Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>

@@ -3,6 +3,31 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*Table structure for table `bans` */
+
+CREATE TABLE `bans` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `userid` int(10) unsigned NOT NULL,
+  `targetuserid` int(10) unsigned NOT NULL,
+  `ipaddress` text,
+  `reason` text NOT NULL,
+  `starttimestamp` datetime NOT NULL,
+  `endtimestamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `chatlog` */
+
+CREATE TABLE `chatlog` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `userid` int(10) unsigned NOT NULL,
+  `targetuserid` int(10) unsigned DEFAULT NULL,
+  `event` varchar(15) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `data` text,
+  `timestamp` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*Table structure for table `dfl_challengers` */
 
 CREATE TABLE `dfl_challengers` (
@@ -177,7 +202,7 @@ CREATE TABLE `dfl_scheduled_tasks` (
   `lastExecuted` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `frequency` int(14) DEFAULT NULL,
   `period` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `executeOnStart` tinyint(1) DEFAULT NULL,
+  `executeOnNextRun` tinyint(1) DEFAULT NULL,
   `executeCount` int(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
