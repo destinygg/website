@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action;
 
 use Destiny\Utils\Http;
@@ -19,6 +18,9 @@ class Ipn {
 	 * @param array $params
 	 */
 	public function execute(array $params) {
+		// Send OK status immediately
+		Http::status ( Http::STATUS_OK );
+		
 		$log = Application::instance ()->getLogger ();
 		$ipnMessage = new PPIPNMessage ();
 		if (! $ipnMessage->validate ()) {
@@ -29,10 +31,10 @@ class Ipn {
 		$data = $ipnMessage->getRawData ();
 		$orderService = OrdersService::instance ();
 		$orderService->addIPNRecord ( array (
-				'ipnTrackId' => $data ['ipn_track_id'],
-				'ipnTransactionId' => $data ['txn_id'],
-				'ipnTransactionType' => $data ['txn_type'],
-				'ipnData' => json_encode ( $data ) 
+			'ipnTrackId' => $data ['ipn_track_id'],
+			'ipnTransactionId' => $data ['txn_id'],
+			'ipnTransactionType' => $data ['txn_type'],
+			'ipnData' => json_encode ( $data ) 
 		) );
 		
 		// Make sure this IPN is for the merchant - not sure if this exists all the time
@@ -52,7 +54,6 @@ class Ipn {
 	 */
 	private function niceExit() {
 		Http::status ( Http::STATUS_OK );
-		Http::header ( Http::HEADER_CONNECTION, 'close' );
 		exit ();
 	}
 
