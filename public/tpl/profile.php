@@ -25,9 +25,7 @@ use Destiny\Session;
 			<div class="navbar-inner">
 				<ul class="nav">
 					<li class="active"><a href="/profile" title="Your personal details">Details</a></li>
-					<?php if(Session::hasRole(\Destiny\UserRole::ADMIN)): ?>
 					<li><a href="/profile/subscription" title="Your subscriptions">Subscription</a></li>
-					<?php endif; ?>
 					<li><a href="/profile/authentication" title="Your login methods">Authentication</a></li>
 				</ul>
 			</div>

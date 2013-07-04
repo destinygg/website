@@ -252,7 +252,7 @@ class AuthenticationService extends Service {
 		}
 		
 		Session::set ( 'authSession' );
-		Http::header ( Http::HEADER_LOCATION, '/' );
+		Http::header ( Http::HEADER_LOCATION, '/profile' );
 		exit ();
 	}
 

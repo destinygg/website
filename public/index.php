@@ -17,7 +17,7 @@ ini_set ( 'max_execution_time', 30 );
 ini_set ( 'mysql.connect_timeout', 10 );
 ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
 
-$context = new stdClass();
+$context = new stdClass ();
 $context->log = 'http';
 require __DIR__ . '/../lib/boot.php';
 $app = Application::instance ();
@@ -85,16 +85,8 @@ if (! Config::$a ['chatFeature']) {
 	} );
 }
 
-// Dev/Admins only
-$app->bind ( '/^\/(subscribe|profile\/subscription|payment)/i', function (Application $app) {
-	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
-	if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
-		$app->error ( Http::STATUS_UNAUTHORIZED );
-	}
-} );
-
 // Admins only
-$app->bind ( '/^\/(admin|order|subscribe)/i', function (Application $app) {
+$app->bind ( '/^\/(admin)/i', function (Application $app) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
 	if (! Session::hasRole ( \Destiny\UserRole::USER ) || ! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
 		$app->error ( Http::STATUS_UNAUTHORIZED );
@@ -102,7 +94,7 @@ $app->bind ( '/^\/(admin|order|subscribe)/i', function (Application $app) {
 } );
 
 // Logged in only
-$app->bind ( '/^\/(profile|order|subscribe|fantasy|payment|league\/[*]+)/i', function (Application $app, array $params) {
+$app->bind ( '/^\/(profile|order|subscribe|payment|fantasy|league\/[*]+)/i', function (Application $app, array $params) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [user] %s', $app->getPath () ) );
 	if (! Session::hasRole ( \Destiny\UserRole::USER )) {
 		$app->error ( Http::STATUS_UNAUTHORIZED );

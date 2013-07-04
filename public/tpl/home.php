@@ -19,6 +19,19 @@ use Destiny\Utils\Tpl;
 <body id="home">
 	<?include'./tpl/seg/top.php'?>
 	
+	<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
+	<section class="container">
+		<div id="subscription-cta" class="alert alert-info" style="margin:0;">
+			<h4>Subscriptions now available!</h4>
+			<?php if(Session::hasRole(\Destiny\UserRole::USER)): ?>
+			<div><a href="/subscribe"><i class="icon-bobross" title="There are no limits here!"></i> Want to contribute?</a> well now you can! become an owner of your own Destiny subscription.</div>
+			<?php else: ?>
+			<div><a href="/login"><i class="icon-bobross" title="There are no limits here!"></i> Want to contribute?</a> well now you can! create an account and become an owner of your own Destiny subscription.</div>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php endif; ?>
+	
 	<?if(Session::hasRole(\Destiny\UserRole::USER) && Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)):?>
 	<?include'./tpl/seg/fantasy/teambar.php'?>
 	<?include'./tpl/seg/fantasy/teammaker.php'?>
@@ -26,7 +39,6 @@ use Destiny\Utils\Tpl;
 	
 	<?include'./tpl/seg/panel.twitch.php'?>
 	<?include'./tpl/seg/panel.lol.php'?>
-	
 	<?include'./tpl/seg/panel.videos.php'?>
 	<?include'./tpl/seg/panel.music.php'?>
 	<?include'./tpl/seg/panel.calendar.php'?>
