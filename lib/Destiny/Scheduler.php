@@ -73,6 +73,7 @@ class Scheduler {
 	protected function updateTask(array $task) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_scheduled_tasks', array (
+			'executeOnNextRun' => $task ['executeOnNextRun'],
 			'lastExecuted' => $task ['lastExecuted'],
 			'executeCount' => $task ['executeCount'] 
 		), array (
@@ -146,6 +147,7 @@ class Scheduler {
 			if (time () > $nextExecute->getTimestamp ()) {
 				$this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
 				$this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
+				$this->schedule [$i] ['executeOnNextRun'] = false;
 				$this->updateTask ( $this->schedule [$i] );
 				$this->executeTask ( $this->schedule [$i] );
 			}
