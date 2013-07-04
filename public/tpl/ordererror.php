@@ -42,7 +42,7 @@ use Destiny\Utils\Tpl;
 					</div>
 					<div class="form-actions block-foot">
 						<img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
-						<a href="/subscribe" class="btn btn-primary"><i class="icon-chevron-left"></i> Subscriptions</a>
+						<a href="/subscribe" class="btn btn-primary">Subscriptions</a>
 						<a href="/profile/subscription" class="btn">Back to profile</a>
 					</div>
 				</form>

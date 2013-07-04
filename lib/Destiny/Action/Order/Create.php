@@ -118,7 +118,8 @@ class Create {
 		$itemDetails->Name = $subscription ['label'];
 		$itemDetails->Amount = new BasicAmountType ( $order ['currency'], $order ['amount'] );
 		$itemDetails->Quantity = 1;
-		$itemDetails->ItemCategory = 'Digital';
+		// TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
+		$itemDetails->ItemCategory = 'Physical';
 		$itemDetails->Number = $subscription ['id'];
 		$paymentDetails->PaymentDetailsItem [0] = $itemDetails;
 		$setECReqDetails->PaymentDetails [0] = $paymentDetails;

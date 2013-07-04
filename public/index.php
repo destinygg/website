@@ -13,7 +13,7 @@ use Destiny\SessionInstance;
 use Destiny\Session;
 use Destiny\Config;
 
-ini_set ( 'max_execution_time', 10 );
+ini_set ( 'max_execution_time', 30 );
 ini_set ( 'mysql.connect_timeout', 10 );
 ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
 
