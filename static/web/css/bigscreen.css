@@ -115,3 +115,10 @@ body#bigscreen #header-band .nav-pills>li>a:focus {
 color:#fff;
 background-color:rgba(255,255,255,0.1);
 }
+
+body#bigscreen #header-band .nav-pills li a {
+padding: 0 5px;
+}
+body#bigscreen #header-band .nav-pills li {
+float:left;
+}

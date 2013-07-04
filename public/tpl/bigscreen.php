@@ -10,8 +10,8 @@ use Destiny\Utils\Tpl;
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
 <?include'./tpl/seg/opengraph.php'?>
-<link href="<?=Config::cdn()?>/web/css/bigscreen.css" rel="stylesheet" media="screen">
 <?include'./tpl/seg/commontop.php'?>
+<link href="<?=Config::cdn()?>/web/css/bigscreen.css" rel="stylesheet" media="screen">
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="bigscreen">
@@ -22,10 +22,12 @@ use Destiny\Utils\Tpl;
 				<header class="hero-unit" id="overview">
 					<h1><?=Config::$a['meta']['title']?></h1>
 					<div id="destiny-illustration"></div>
-					<div style="top:25px; right:0; margin-right:312px; position: absolute;">
+					<div style="top:25px; right:0; width:400px; position: absolute;">
 						<ul class="nav nav-pills">
 							<?php if(!Session::hasRole(\Destiny\UserRole::USER)): ?>
 							<li><a href="/login"><i class="icon-heart icon-white subtle"></i> Register</a></li>
+							<?php elseif(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)): ?>
+							<li><a href="/subscribe"><i class="icon-heart icon-white subtle"></i> Subscribe</a></li>
 							<?php endif; ?>
 							<li><a href="/"><i class="icon-home icon-white subtle"></i> Home</a></li>
 						</ul>
