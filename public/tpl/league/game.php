@@ -157,7 +157,7 @@ use Destiny\Utils\Tpl;
 						<?endif;?>
 						<?for($s=0;$s<10-count($model->gameLeaderboard);$s++):?>
 						<tr>
-							<td style="text-align: left;">-</td>
+							<td style="text-align: left;"><i class="icon-minus td-fill"></i></td>
 							<td style="text-align: right;">&nbsp;</td>
 							<td style="text-align: right;">&nbsp;</td>
 						</tr>

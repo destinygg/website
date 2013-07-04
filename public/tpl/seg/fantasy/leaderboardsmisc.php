@@ -36,7 +36,7 @@ use Destiny\Utils\Lol;
 				<?endif;?>
 				<?for($s=0;$s<10-count($model->topSummoners);$s++):?>
 				<tr>
-					<td style="text-align: left;">-</td>
+					<td style="text-align: left;"><i class="icon-minus td-fill"></i></td>
 					<td style="text-align: right;">&nbsp;</td>
 				</tr>
 				<?endfor;?>
@@ -68,7 +68,7 @@ use Destiny\Utils\Lol;
 				<?endif;?>
 				<?for($s=0;$s<10-count($model->gameLeaders);$s++):?>
 				<tr>
-					<td style="text-align: left;">-</td>
+					<td style="text-align: left;"><i class="icon-minus td-fill"></i></td>
 					<td style="text-align: right;">&nbsp;</td>
 				</tr>
 				<?endfor;?>

@@ -45,7 +45,7 @@ use Destiny\Utils\Lol;
 				<?endif;?>
 				<?for($s=0;$s<10-count($model->leaderboard);$s++):?>
 				<tr>
-					<td style="text-align: left;">-</td>
+					<td style="text-align: left;"><i class="icon-minus td-fill"></i></td>
 					<td style="text-align: right;">&nbsp;</td>
 					<td style="text-align: right;">&nbsp;</td>
 				</tr>
@@ -94,7 +94,7 @@ use Destiny\Utils\Lol;
 				<?endif;?>
 				<?for($s=0;$s<10-count($model->topSubscribers);$s++):?>
 				<tr>
-					<td style="text-align: left;">-</td>
+					<td style="text-align: left;"><i class="icon-minus td-fill"></i></td>
 					<td style="text-align: right;">&nbsp;</td>
 					<td style="text-align: right;">&nbsp;</td>
 				</tr>
