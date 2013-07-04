@@ -109,28 +109,5 @@ use Destiny\Utils\Tpl;
 	<?include'./tpl/seg/foot.php'?>
 	<?include'./tpl/seg/commonbottom.php'?>
 	
-	<?php if(!$model->leagueEnded): ?>
-	<script>
-	(function(){
-		$('#fantasyendseason').each(function(){
-			var timeId = null, fantasySeasonEnd = $('#fantasyendseason time:first'), endTime = moment(fantasySeasonEnd.text());
-			var seasonEndMomentTime = function(){
-				if(endTime.valueOf() > moment().valueOf()){
-					fantasySeasonEnd.html(endTime.fromNow());
-				}else{
-					fantasySeasonEnd.html('Now!');
-					window.clearInterval(timeId);
-					$('#fantasyendseason').fadeOut(5000, function(){
-						window.location.reload();
-					});
-				}
-			};
-			timeId = window.setInterval(seasonEndMomentTime, 1000);
-			seasonEndMomentTime();
-		});
-	})();
-	</script>
-	<?php endif; ?>
-	
 </body>
 </html>
