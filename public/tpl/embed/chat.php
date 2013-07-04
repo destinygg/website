@@ -32,11 +32,11 @@ use Destiny\Utils\Tpl;
 		</form>
 		<div class="chat-tools-wrap clearfix">
 			<div class="pull-left">
-				<button type="submit" class="chat-send-btn btn btn-mini btn-inverse">Send</button>
+				<button type="submit" class="chat-send-btn btn btn-mini btn-inverse" disabled="disabled">Send</button>
 			</div>
 			<div class="pull-right">
-				<button type="button" class="chat-settings-btn btn btn-mini btn-inverse"><i class="icon-cog icon-white"></i> Config</button>
-				<button type="button" class="chat-users-btn btn btn-mini btn-inverse"><i class="icon-user icon-white"></i> Users</button>
+				<button type="button" class="chat-settings-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-cog icon-white"></i> Config</button>
+				<button type="button" class="chat-users-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-user icon-white"></i> Users</button>
 			</div>
 		</div>
 	</div>

@@ -307,9 +307,6 @@ ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
 	for (var i = this.features.length - 1; i >= 0; i--) {
 		switch(this.features[i]){
-			case UserFeatures.PROTECTED :
-				icons += '<i class="icon-eye-close" title="Protected"/>';
-				break;
 			case UserFeatures.SUBSCRIBER :
 				icons += '<i class="icon-star" title="Subscriber"/>';
 				break;
@@ -369,13 +366,13 @@ ChatMessage.prototype.status = function(state){
 	return this;
 };
 ChatMessage.prototype.wrapTime = function(){
-	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
+	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+'</time>';
 };
 ChatMessage.prototype.wrapMessage = function(){
 	return $('<span/>').text(this.message).html();
 };
 ChatMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + this.wrapMessage());
+	return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
 };
 ChatMessage.prototype.wrap = function(content){
 	return '<div>'+content+'</div>';
@@ -420,5 +417,5 @@ ChatUserMessage.prototype.wrapMessage = function(){
 	return elem.html();
 };
 ChatUserMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + this.wrapUser(this.user) + this.wrapMessage());
+	return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + this.wrapMessage());
 };
