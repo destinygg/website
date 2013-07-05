@@ -146,20 +146,22 @@
 				switch(name){
 				
 					case 'showtime':
-						if(checked)
+						if(checked){
 							chat.ui.addClass('chat-time');
-						else
+						}else{
 							chat.ui.removeClass('chat-time');
+						}
+						chat.saveChatOption(name, checked);
 						chat.resize();
 						break;
 						
 					case 'showicon':
-						
-						chat.saveChatOption(name, checked);
-						if(checked)
+						if(checked){
 							chat.ui.addClass('chat-icons');
-						else
+						}else{
 							chat.ui.removeClass('chat-icons');
+						}
+						chat.saveChatOption(name, checked);
 						chat.resize();
 						break;
 						
@@ -178,6 +180,11 @@
 				}
 				chat = null;
 			});
+
+			if(this.getChatOption('showtime'))
+				this.ui.addClass('chat-time');
+			if(this.getChatOption('showicon'))
+				this.ui.addClass('chat-icons');
 			
 			// User list
 			this.userslist = this.ui.find('#chat-user-list:first').eq(0);
