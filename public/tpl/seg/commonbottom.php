@@ -5,6 +5,7 @@ use Destiny\Config;
 <script src="<?=Config::cdn()?>/vendor/js/jquery-1.10.1.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/bootstrap.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/moment.js"></script>
+<script src="<?=Config::cdn()?>/vendor/js/jquery.cookie.js"></script>
 <?php if(is_file(_STATICDIR .'/web/js/destiny.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/web/js/destiny.<?=Config::version()?>.js"></script>
 <?php else: ?>

@@ -22,6 +22,7 @@ use Destiny\Utils\Tpl;
 	<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
 	<section class="container">
 		<div id="subscription-cta" class="alert alert-info" style="margin:0;">
+			<button type="button" class="close persist" data-dismiss="alert">&times;</button>
 			<h4>Subscriptions now available!</h4>
 			<?php if(Session::hasRole(\Destiny\UserRole::USER)): ?>
 			<div><a href="/subscribe"><i class="icon-bobross" title="There are no limits here!"></i> Want to contribute?</a> Well now you can! Become the owner of your own Destiny subscription. <a target="_blank" href="http://www.reddit.com/r/Destiny/comments/1hn15x/new_subscription_system_launched/">Feedback and FAQ</a></div>
