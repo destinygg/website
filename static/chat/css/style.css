@@ -168,7 +168,31 @@ color: #ddd;
 color:#414141;
 }
 .chat-theme-dark .chat-lines > div .p-whisper {
-color: #990000;	
+color: #990000;
+}
+.chat-theme-dark .chat-lines > div.hilight {
+	color: #AE6A04;
+}
+.chat-theme-dark .chat-lines > div.control {
+	color: #fff;
+}
+.chat-theme-dark .chat-lines > div > a {
+	color: #999; /* default pleb color */
+}
+.chat-theme-dark .chat-lines > div > a.subscriber {
+color: #54AAD2;
+}
+.chat-theme-dark .chat-lines > div > a.vip {
+color: #CF31E2;
+}
+.chat-theme-dark .chat-lines > div > a.moderator {
+color: #FF8A00;
+}
+.chat-theme-dark .chat-lines > div > a.admin {
+color: #EE0000;
+}
+.chat-theme-dark .chat-lines > div > a.protect {
+color: #CCCCCC;
 }
 .chat-theme-dark .chat-input-control {
 background: #040404;
@@ -205,10 +229,10 @@ color: #54AAD2;
 color: #CF31E2;
 }
 .chat-frame a.moderator {
-color: #FF8A00;	
+color: #FF8A00;
 }
 .chat-frame a.admin {
-color: #EE0000;	
+color: #EE0000;
 }
 .chat-frame a.protect {
 color: #CCCCCC;
