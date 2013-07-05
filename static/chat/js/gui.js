@@ -195,10 +195,14 @@
 				}
 				chat.menu.closeMenus(chat);
 				chat.userslist.list.empty();
-				if(chat.engine.user)
+				if(chat.engine.user){
 					chat.userslist.list.append($('<li><a class="'+ chat.engine.user.features.join(' ') +'">'+chat.engine.user.username+'</a></li>'));
-				for(var username in chat.engine.users)
-					chat.userslist.list.append($('<li><a class="'+ chat.engine.users[username].features.join(' ') +'">'+chat.engine.users[username].username+'</a></li>'));
+				}
+				for(var username in chat.engine.users){
+					if(!chat.engine.user || username != chat.engine.user.username){
+						chat.userslist.list.append($('<li><a class="'+ chat.engine.users[username].features.join(' ') +'">'+chat.engine.users[username].username+'</a></li>'));
+					}
+				}
 				chat.userslist.appendTo(chat.ui);
 				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
 			});
