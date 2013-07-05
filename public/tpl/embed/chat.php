@@ -34,7 +34,7 @@ use Destiny\Utils\Tpl;
 			</div>
 		</div>
 		<div class="chat-tools-wrap">
-			<a class="iconbtn chat-send-btn" title="Send"><i class="icon-play icon-white subtle"></i></a>
+			<a class="iconbtn chat-send-btn" title="Send"><i class="icon-bullhorn icon-white subtle"></i></a>
 			<a class="iconbtn chat-settings-btn" title="Settings"><i class="icon-cog icon-white subtle"></i></a>
 			<a class="iconbtn chat-users-btn" title="Users"><i class="icon-user icon-white subtle"></i></a>
 		</div>
