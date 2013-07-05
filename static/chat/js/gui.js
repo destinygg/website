@@ -485,7 +485,8 @@ var UserFeatures = {
 	SUBSCRIBER	: 'subscriber',
 	VIP			: 'vip',
 	MODERATOR	: 'moderator',
-	ADMIN		: 'admin'
+	ADMIN		: 'admin',
+	BOT			: 'bot',
 };
 
 var ChatMessageStatus = {
@@ -520,6 +521,9 @@ ChatUser.prototype.getFeatureHTML = function(){
 				break;
 			case UserFeatures.ADMIN :
 				icons += '<i class="icon-administrator" title="Administrator"/>';
+				break;
+			case UserFeatures.BOT :
+				icons += '<i class="icon-bot" title="Bot"/>';
 				break;
 		}
 	}
