@@ -448,7 +448,7 @@ $(function(){
 		});
 		
 		if ($.cookie(id))
-			parent.hide();
+			parent.remove();
 		
 	})
 	

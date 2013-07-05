@@ -31,20 +31,17 @@ use Destiny\Utils\Tpl;
 			</div>
 		</div>
 		<div class="chat-tools-wrap">
-			<div>
-				<button type="submit" class="chat-send-btn btn btn-mini btn-inverse" disabled="disabled">Send</button>
-				<a class="iconbtn chat-settings-btn" title="Settings"><i class="icon-cog icon-white subtle"></i></a>
-				<a class="iconbtn chat-users-btn" title="Users"><i class="icon-user icon-white subtle"></i></a>
-			</div>
+			<a class="iconbtn chat-send-btn" title="Send"><i class="icon-play icon-white subtle"></i></a>
+			<a class="iconbtn chat-settings-btn" title="Settings"><i class="icon-cog icon-white subtle"></i></a>
+			<a class="iconbtn chat-users-btn" title="Users"><i class="icon-user icon-white subtle"></i></a>
 		</div>
 	</form>
 	
 	<div id="chat-user-list" class="chat-menu" style="display: none;">
 		<div class="list-wrap clearfix">
 			<div class="scrollable">
-				<h5 style="border-bottom:1px solid #111; margin-top:0;">Users</h5>
-				<ul class="unstyled">
-				</ul>
+				<h5>Users</h5>
+				<ul class="unstyled"></ul>
 			</div>
 		</div>
 	</div>
@@ -52,7 +49,7 @@ use Destiny\Utils\Tpl;
 	<div id="chat-settings" class="chat-menu" style="display: none;">
 		<div class="list-wrap clearfix">
 			<div class="scrollable">
-				<h5 style="border-bottom:1px solid #111; margin-top:0;">Settings</h5>
+				<h5>Settings</h5>
 				<ul class="unstyled">
 					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time</label></li>
 					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show icons</label></li>

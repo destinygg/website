@@ -59,21 +59,56 @@
 				$(this).closest('.chat.chat-frame').data('chat').send();
 			});
 			
+			// Generic menus functions
+			this.menu = function(){
+				return this;
+			};
+			this.menu.menus = [];
+			this.menu.closeMenus = function(){
+				for(var i=0;i<this.menus.length; ++i){
+					this.prototype.hideMenu.apply(this.menus[i]);
+				}
+			};
+			this.menu.prototype.showMenu = function(btn){
+				this.stop().slideDown(50);
+				this.visible = true;
+				this.btn.addClass('active');
+			};
+			this.menu.prototype.hideMenu = function(btn){
+				this.stop().hide();
+				this.visible = false;
+				this.btn.removeClass('active');
+			};
+			this.menu.prototype.scrollable = function(){
+				this.scrollable.mCustomScrollbar({
+					theme: 'light-thin',
+					scrollInertia: 0,
+					horizontalScroll: false,
+					autoHideScrollbar: true,
+					scrollButtons:{enable:false},
+					callbacks: {onTotalScrollOffset: 1,onTotalScrollBackOffset: 1}
+				});
+			};
+			//
 			
 			// Chat settings
 			this.chatsettings = $(this.ui.find('#chat-settings:first')[0]);
+			this.chatsettings.btn = $(this.ui.find('.chat-settings-btn:first')[0]);
 			this.chatsettings.list = $(this.chatsettings.find('ul:first')[0]);
 			this.chatsettings.visible = false;
 			this.chatsettings.scrollable = this.chatsettings.find('.scrollable:first');
-			this.chatsettings.scrollable.mCustomScrollbar({
-				theme: 'light-thin',
-				scrollInertia: 0,
-				horizontalScroll: false,
-				autoHideScrollbar: true,
-				scrollButtons:{enable:false},
-				callbacks: {onTotalScrollOffset: 1,onTotalScrollBackOffset: 1}
+			this.menu.prototype.scrollable.apply(this.chatsettings);
+			this.chatsettings.btn.on('click', function(e){
+				e.preventDefault();
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				chat.chatsettings.detach();
+				if(chat.chatsettings.visible){
+					return chat.menu.prototype.hideMenu.apply(chat.chatsettings);
+				}
+				chat.menu.closeMenus();
+				chat.chatsettings.appendTo(chat.ui);
+				return chat.menu.prototype.showMenu.apply(chat.chatsettings);
 			});
-			
 			this.chatsettings.on('change', 'input[type="checkbox"]', function(){
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				switch($(this).attr('name')){
@@ -106,70 +141,42 @@
 				chat = null;
 			});
 			
-			// Temp place to ask for perms
-			this.ui.on('click', '.chat-settings-btn', function(e){
-				e.preventDefault();
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				chat.chatsettings.detach();
-				if(chat.chatsettings.visible){
-					chat.chatsettings.hide();
-					chat.chatsettings.visible = false;
-					return;
-				}
-				chat.chatsettings.appendTo(chat.ui);
-				chat.chatsettings.show();
-				chat.chatsettings.scrollable.mCustomScrollbar('update');
-				chat.chatsettings.visible = true;
-				return;
-			});
-			
-			
 			// User list
 			this.userslist = $(this.ui.find('#chat-user-list:first')[0]);
+			this.userslist.btn = $(this.ui.find('.chat-users-btn:first')[0]);
 			this.userslist.list = $(this.userslist.find('ul:first')[0]);
 			this.userslist.visible = false;
 			this.userslist.scrollable = this.userslist.find('.scrollable:first');
-			this.userslist.scrollable.mCustomScrollbar({
-				theme: 'light-thin',
-				scrollInertia: 0,
-				horizontalScroll: false,
-				autoHideScrollbar: true,
-				scrollButtons:{enable:false},
-				callbacks: {onTotalScrollOffset: 1,onTotalScrollBackOffset: 1}
-			});
-			this.ui.on('click', '.chat-users-btn', function(e){
+			this.menu.prototype.scrollable.apply(this.userslist);
+			this.userslist.btn.on('click', function(e){
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.userslist.detach();
 				if(chat.userslist.visible){
-					chat.userslist.hide();
-					chat.userslist.visible = false;
-					chat.userslist.list.empty();
-					return;
+					return chat.menu.prototype.hideMenu.apply(chat.userslist);
 				}
+				chat.menu.closeMenus();
+				chat.userslist.list.empty();
 				if(chat.engine.user)
 					chat.userslist.list.append($('<li><a class="'+ chat.engine.user.features.join(' ') +'">'+chat.engine.user.username+'</a></li>'));
 				for(var i=0; i<chat.engine.users.length; ++i)
 					chat.userslist.list.append($('<li><a class="'+ chat.engine.users[i].features.join(' ') +'">'+chat.engine.users[i].username+'</a></li>'));
 				chat.userslist.appendTo(chat.ui);
-				chat.userslist.show();
-				chat.userslist.scrollable.mCustomScrollbar('update');
-				chat.userslist.visible = true;
-				return;
+				return chat.menu.prototype.showMenu.apply(chat.userslist);
 			});
-			//
 			
-			// Enable toolbar
-			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
-
+			// Add the menus to a list
+			this.menu.menus.push(this.chatsettings);
+			this.menu.menus.push(this.userslist);
+			
 			// Back log
 			if(this.backlog.length > 0){
 				this.backlog.reverse();
-				this.put(new ChatUIMessage('<hr>'));
+				this.put(new ChatUIMessage('<span>...</span>'));
 				for(var i=0; i<this.backlog.length; ++i){
 					this.put(new ChatUserMessage(this.backlog[i].data, new ChatUser(this.backlog[i]), this.backlog[i].timestamp));
 				}
-				this.put(new ChatUIMessage('<hr>'));
+				this.put(new ChatUIMessage('<span>...</span>'));
 			};
 			
 			return this.resize();
@@ -201,7 +208,7 @@
 		},
 		
 		// bypass ui updates and notifications
-		// used to mass put history messages, and only update ui afterwards
+		// used to mass add history messages, ui MUST be update afterwards
 		put: function(message, state){
 			message.ui = $(message.html()).appendTo(this.lines);
 			if(state != undefined)
@@ -221,7 +228,7 @@
 		},
 		
 		resize: function(){
-			this.output.height(this.ui.outerHeight()-this.inputwrap.height());
+			this.output.height(this.ui.height()-(this.inputwrap.height() + parseInt(this.inputwrap.css('margin-top'))));
 			this.scrollPlugin.update();
 			this.scrollPlugin.scrollBottom();
 			return this;
