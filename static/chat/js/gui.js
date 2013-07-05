@@ -146,23 +146,14 @@
 				switch(name){
 				
 					case 'showtime':
-						if(checked){
-							chat.ui.addClass('chat-time');
-						}else{
-							chat.ui.removeClass('chat-time');
-						}
 						chat.saveChatOption(name, checked);
+						chat.ui.toggleClass('chat-time', checked);
 						chat.resize();
 						break;
 						
 					case 'showicon':
-						if(checked){
-							chat.ui.addClass('chat-icons');
-						}else{
-							chat.ui.removeClass('chat-icons');
-						}
 						chat.saveChatOption(name, checked);
-						chat.resize();
+						chat.ui.toggleClass('chat-icons', checked);						chat.resize();
 						break;
 						
 					case 'notifications':
@@ -235,6 +226,17 @@
 				    value = self.getChatOption(name, defaults[name]);
 				
 				$(this).attr('checked', value);
+				switch(name){
+					case 'showtime':
+						self.ui.toggleClass('chat-time', value);
+						self.resize();
+						break;
+						
+					case 'showicon':
+						self.ui.toggleClass('chat-icons', value);
+						self.resize();
+						break;
+				};
 			});
 		},
 		
