@@ -60,24 +60,46 @@
 			});
 			
 			// Generic menus functions
+			this.menus = [];
+			this.menuOpenCount = 0;
 			this.menu = function(){
 				return this;
 			};
-			this.menu.menus = [];
-			this.menu.closeMenus = function(){
-				for(var i=0;i<this.menus.length; ++i){
-					this.prototype.hideMenu.apply(this.menus[i]);
+			this.menu.addMenu = function(chat, e){
+				e.on('click', 'button.close', function(){
+					chat.menu.closeMenus(chat);
+				});
+				chat.menu.prototype.scrollable.apply(e);
+				chat.menus.push(e);
+				return this;
+			};
+			this.menu.update = function(chat){
+				if(chat.menuOpenCount > 0){
+					chat.ui.addClass('active-menu');
+				}else{
+					chat.ui.removeClass('active-menu');
 				}
 			};
-			this.menu.prototype.showMenu = function(btn){
+			this.menu.closeMenus = function(chat){
+				for(var i=0;i<chat.menus.length; ++i){
+					if(chat.menus[i].visible){
+						this.prototype.hideMenu.call(chat.menus[i], chat);
+					}
+				}
+			};
+			this.menu.prototype.showMenu = function(chat){
 				this.stop().slideDown(50);
 				this.visible = true;
 				this.btn.addClass('active');
+				++chat.menuOpenCount;
+				chat.menu.update(chat);
 			};
-			this.menu.prototype.hideMenu = function(btn){
+			this.menu.prototype.hideMenu = function(chat){
 				this.stop().hide();
 				this.visible = false;
 				this.btn.removeClass('active');
+				--chat.menuOpenCount;
+				chat.menu.update(chat);
 			};
 			this.menu.prototype.scrollable = function(){
 				this.scrollable.mCustomScrollbar({
@@ -97,17 +119,16 @@
 			this.chatsettings.list = $(this.chatsettings.find('ul:first')[0]);
 			this.chatsettings.visible = false;
 			this.chatsettings.scrollable = this.chatsettings.find('.scrollable:first');
-			this.menu.prototype.scrollable.apply(this.chatsettings);
 			this.chatsettings.btn.on('click', function(e){
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.chatsettings.detach();
 				if(chat.chatsettings.visible){
-					return chat.menu.prototype.hideMenu.apply(chat.chatsettings);
+					return chat.menu.prototype.hideMenu.call(chat.chatsettings, chat);
 				}
-				chat.menu.closeMenus();
+				chat.menu.closeMenus(chat);
 				chat.chatsettings.appendTo(chat.ui);
-				return chat.menu.prototype.showMenu.apply(chat.chatsettings);
+				return chat.menu.prototype.showMenu.call(chat.chatsettings, chat);
 			});
 			this.chatsettings.on('change', 'input[type="checkbox"]', function(){
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
@@ -147,27 +168,25 @@
 			this.userslist.list = $(this.userslist.find('ul:first')[0]);
 			this.userslist.visible = false;
 			this.userslist.scrollable = this.userslist.find('.scrollable:first');
-			this.menu.prototype.scrollable.apply(this.userslist);
 			this.userslist.btn.on('click', function(e){
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.userslist.detach();
 				if(chat.userslist.visible){
-					return chat.menu.prototype.hideMenu.apply(chat.userslist);
+					return chat.menu.prototype.hideMenu.call(chat.userslist, chat);
 				}
-				chat.menu.closeMenus();
+				chat.menu.closeMenus(chat);
 				chat.userslist.list.empty();
 				if(chat.engine.user)
 					chat.userslist.list.append($('<li><a class="'+ chat.engine.user.features.join(' ') +'">'+chat.engine.user.username+'</a></li>'));
 				for(var i=0; i<chat.engine.users.length; ++i)
 					chat.userslist.list.append($('<li><a class="'+ chat.engine.users[i].features.join(' ') +'">'+chat.engine.users[i].username+'</a></li>'));
 				chat.userslist.appendTo(chat.ui);
-				return chat.menu.prototype.showMenu.apply(chat.userslist);
+				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
 			});
-			
-			// Add the menus to a list
-			this.menu.menus.push(this.chatsettings);
-			this.menu.menus.push(this.userslist);
+
+			this.menu.addMenu(this, this.chatsettings);
+			this.menu.addMenu(this, this.userslist);
 			
 			// Back log
 			if(this.backlog.length > 0){

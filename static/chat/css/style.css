@@ -149,8 +149,6 @@ display: none !important;
 display: inline-block !important;	
 }
 
-
-
 /* Theme - Dark */
 .chat-theme-dark {
 background: #080808;
@@ -221,7 +219,9 @@ font-size:12px;
 z-index:19;
 }
 .chat-menu h5 {
-	
+user-select: none;
+-moz-user-select: none;
+-webkit-user-select: none;	
 background: rgb(79,79,79); /* Old browsers */
 background: -moz-linear-gradient(top,  rgba(79,79,79,1) 0%, rgba(46,46,46,1) 100%); /* FF3.6+ */
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(79,79,79,1)), color-stop(100%,rgba(46,46,46,1))); /* Chrome,Safari4+ */
@@ -230,7 +230,6 @@ background: -o-linear-gradient(top,  rgba(79,79,79,1) 0%,rgba(46,46,46,1) 100%);
 background: -ms-linear-gradient(top,  rgba(79,79,79,1) 0%,rgba(46,46,46,1) 100%); /* IE10+ */
 background: linear-gradient(to bottom,  rgba(79,79,79,1) 0%,rgba(46,46,46,1) 100%); /* W3C */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4f4f4f', endColorstr='#2e2e2e',GradientType=0 ); /* IE6-9 */
-
 border-bottom:1px solid #121212;
 margin-top:0;
 line-height:20px;
@@ -269,4 +268,8 @@ margin-top:0;
 .chat-menu ul li {
 text-overflow: ellipsis;
 overflow: hidden;
+}
+
+.chat-frame.active-menu .chat-output {
+opacity:0.3;
 }

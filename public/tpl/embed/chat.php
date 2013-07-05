@@ -21,9 +21,12 @@ use Destiny\Utils\Tpl;
 <body id="chat-embedded">
 
 <div id="destinychat" class="chat chat-frame chat-theme-dark">
+
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
 	</div>
+	<div class="chat-output-overlay"></div>
+	
 	<form class="chat-input clearfix">
 		<div class="chat-input-wrap clearfix">
 			<div class="chat-input-control">
@@ -40,7 +43,7 @@ use Destiny\Utils\Tpl;
 	<div id="chat-user-list" class="chat-menu" style="display: none;">
 		<div class="list-wrap clearfix">
 			<div class="scrollable">
-				<h5>Users</h5>
+				<h5>Users <button type="button" class="close">&times;</button></h5>
 				<ul class="unstyled"></ul>
 			</div>
 		</div>
@@ -49,7 +52,7 @@ use Destiny\Utils\Tpl;
 	<div id="chat-settings" class="chat-menu" style="display: none;">
 		<div class="list-wrap clearfix">
 			<div class="scrollable">
-				<h5>Settings</h5>
+				<h5>Settings <button type="button" class="close">&times;</button></h5>
 				<ul class="unstyled">
 					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time</label></li>
 					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show icons</label></li>
