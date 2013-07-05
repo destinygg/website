@@ -405,9 +405,8 @@
 		},
 		
 		handleHilight: function(message, skipnotify){
-			if (!this.getChatOption('hilight', true))
+			if (!this.hilightregex.user || !this.getChatOption('hilight', true))
 				return;
-			
 			if (message.user && message.user.username != this.engine.user.username && this.hilightregex.user.test(message.message)) {
 				message.ui.addClass('hilight');
 				if(!skipnotify && this.notifications){
@@ -496,11 +495,11 @@ ChatUIMessage.prototype.init = function(html){
 ChatUIMessage.prototype.html = function(){
 	return this.wrap(this.wrapMessage());
 };
-ChatUIMessage.prototype.wrap = function(content){
-	return '<div>'+content+'</div>';
+ChatUIMessage.prototype.wrap = function(html){
+	return '<div>'+html+'</div>';
 };
-ChatUIMessage.prototype.wrapMessage = function(css){
-	return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').html(this.message).html();
+ChatUIMessage.prototype.wrapMessage = function(){
+	return this.message;
 };
 
 //BASE MESSAGE
@@ -543,14 +542,12 @@ ChatMessage.prototype.wrap = function(content){
 // USER MESSAGE
 function ChatUserMessage(message, user, timestamp){
 	this.init(message, timestamp);
-	
 	// strip the /me
 	this.isEmote = false;
 	if (this.message.substring(0, 4) === '/me ') {
 		this.isEmote = true;
 		this.message = this.message.substring(4);
 	}
-	
 	this.user = user;
 	return this;
 };
@@ -559,18 +556,23 @@ ChatUserMessage.prototype.wrapUser = function(user){
 	return user.getFeatureHTML() +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
-	var elem  = $('<span/>').text(this.message),
+	var elem  = $('<msg/>').text(this.message),
 	    emote = emoteregex.exec(elem.text());
 	elem.html(elem.text().replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
 	if (emote) {
 		var emoteelem = '<div title="'+emote[0]+'" class="twitch-emote twitch-emote-' + emote[0] +'"></div>';
 		elem.html(elem.text().replace(emote[0], emoteelem));
 	}
-	return elem.html();
+	if(this.isEmote){
+		elem.addClass('emote');
+	}
+	return elem[0].outerHTML;
 };
 ChatUserMessage.prototype.html = function(){
 	return this.wrap(this.wrapTime() + ' ' + ((!this.isEmote) ? '' : '*') + this.wrapUser(this.user) + ((!this.isEmote) ? ': ' : ' ') + this.wrapMessage());
 };
 ChatUserMessage.prototype.addonHtml = function(){
+	if(this.isEmote)
+		return this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
 	return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage());
 };
