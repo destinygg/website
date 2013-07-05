@@ -8,6 +8,9 @@ overflow: hidden;
 transform: scale(1) translate3d(0,0,0);	
 -webkit-transform: scale(1) translate3d(0,0,0);	
 }*/
+.chat-output .mCSB_container {
+margin-right:20px;
+}
 .chat-output, .chat-lines {
 -webkit-backface-visibility: hidden;
 -webkit-perspective: 1000;
@@ -220,12 +223,24 @@ color:#222;
 .chat-theme-dark input::-webkit-input-placeholder {
 color:#222;
 }
-.chat-theme-dark .chat-lines i[class^="icon-"] {
-opacity: 0.15;
-background-image: url("../../vendor/img/glyphicons-halflings-white.png") !important;
+
+.chat .chat-lines i[class^="icon-"] {
+width: 16px;
+line-height: 16px;
+height: 16px;
+margin: 0 1px;
 }
-.chat-theme-dark .chat-lines i[class^="icon-"]:hover {
-opacity:1;
+.chat .chat-lines i.icon-subscriber {
+background: url("/web/img/ico/favicon.png") no-repeat center center;	
+}
+.chat .chat-lines i.icon-vip {
+background: url("/web/img/ico/cup.png") no-repeat center center;	
+}
+.chat .chat-lines i.icon-moderator {
+background: url("/web/img/ico/balance.png") no-repeat center center;
+}
+.chat .chat-lines i.icon-administrator {
+background: url("/web/img/ico/cross-shield.png") no-repeat center center;
 }
 
 .chat-frame a.subscriber {
@@ -306,7 +321,4 @@ margin-top:0;
 .chat-menu ul li {
 text-overflow: ellipsis;
 overflow: hidden;
-}
-
-.chat-frame.active-menu .chat-output {
 }

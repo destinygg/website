@@ -153,7 +153,8 @@
 						
 					case 'showicon':
 						chat.saveChatOption(name, checked);
-						chat.ui.toggleClass('chat-icons', checked);						chat.resize();
+						chat.ui.toggleClass('chat-icons', checked);
+						chat.resize();
 						break;
 						
 					case 'notifications':
@@ -509,16 +510,16 @@ ChatUser.prototype.getFeatureHTML = function(){
 	for (var i = this.features.length - 1; i >= 0; i--) {
 		switch(this.features[i]){
 			case UserFeatures.SUBSCRIBER :
-				icons += '<i class="icon-star" title="Subscriber"/>';
+				icons += '<i class="icon-subscriber" title="Subscriber"/>';
 				break;
 			case UserFeatures.VIP :
-				icons += '<i class="icon-film" title="VIP"/>';
+				icons += '<i class="icon-vip" title="VIP"/>';
 				break;
 			case UserFeatures.MODERATOR :
-				icons += '<i class="icon-leaf" title="Moderator"/>';
+				icons += '<i class="icon-moderator" title="Moderator"/>';
 				break;
 			case UserFeatures.ADMIN :
-				icons += '<i class="icon-fire" title="Administrator"/>';
+				icons += '<i class="icon-administrator" title="Administrator"/>';
 				break;
 		}
 	}
@@ -594,7 +595,7 @@ function ChatUserMessage(message, user, timestamp){
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrapUser = function(user){
-	return user.getFeatureHTML() +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
+	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
 	var elem  = $('<msg/>').text(this.message),
