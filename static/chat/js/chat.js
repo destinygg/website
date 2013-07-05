@@ -236,7 +236,7 @@ chat.prototype.handleCommand = function(str) {
 			break;
 		
 		case "subonly":
-			if (parts[1] != 'on' && parts[2] != 'off') {
+			if (parts[1] != 'on' && parts[1] != 'off') {
 				this.gui.push(new ChatMessage("Error: Invalid argument - /" + command + " on/off"));
 				return;
 			}
