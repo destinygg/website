@@ -226,12 +226,26 @@
 			return message;
 		},
 		
+		lastMessage: null,
+		
 		// bypass ui updates and notifications
 		// used to mass add history messages, ui MUST be update afterwards
 		put: function(message, state){
-			message.ui = $(message.html()).appendTo(this.lines);
+			if(message instanceof ChatUserMessage){
+				if(this.lastMessage && this.lastMessage.user && message.user && this.lastMessage.user.username == message.user.username){
+					//same person
+					message.ui = $(message.addonHtml());
+				}else{
+					//different person
+					message.ui = $(message.html());
+				}
+			}else{
+				message.ui = $(message.html());
+			};
+			message.ui.appendTo(this.lines);
 			if(state != undefined)
 				message.status(state);
+			this.lastMessage = message;
 		},
 		
 		send: function(){
@@ -453,6 +467,10 @@ ChatUIMessage.prototype.wrapMessage = function(css){
 };
 
 //BASE MESSAGE
+// will find a nice home for these
+var emoteregex = /ArsonNoSexy|AsianGlow|BCWarrior|BORT|BibleThump|BionicBunion|BlargNaut|BloodTrail|BrainSlug|BrokeBack|CougarHunt|DAESuppy|DBstyle|DansGame|DatSheffy|EagleEye|EvilFetus|FPSMarksman|FUNgineer|FailFish|FrankerZ|FreakinStinkin|FuzzyOtterOO|GingerPower|HassanChop|HotPokket|ItsBoshyTime|JKanStyle|Jebaited|JonCarnage|Kappa|KevinTurtle|Kreygasm|MVGame|MrDestructoid|NinjaTroll|NoNoSpot|OMGScoots|OneHand|OpieOP|OptimizePrime|PJSalt|PMSTwin|PazPazowitz|PicoMause|PogChamp|Poooound|PunchTrees|RedCoat|ResidentSleeper|RuleFive|SMOrc|SMSkull|SSSsss|ShazBotstix|SoBayed|SoonerLater|StoneLightning|StrawBeary|SuperVinlin|SwiftRage|TehFunrun|TheRinger|TheTarFu|TinyFace|TooSpicy|TriHard|UleetBackup|UnSane|Volcania|WinWaker/;
+var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+
 function ChatMessage(message, timestamp){
 	return this.init(message, timestamp);
 };
@@ -488,42 +506,34 @@ ChatMessage.prototype.wrap = function(content){
 // USER MESSAGE
 function ChatUserMessage(message, user, timestamp){
 	this.init(message, timestamp);
+	
+	// strip the /me
+	this.isEmote = false;
+	if (this.message.substring(0, 4) === '/me ') {
+		this.isEmote = true;
+		this.message = this.message.substring(4);
+	}
+	
 	this.user = user;
-	this.emoteregex = /ArsonNoSexy|AsianGlow|BCWarrior|BORT|BibleThump|BionicBunion|BlargNaut|BloodTrail|BrainSlug|BrokeBack|CougarHunt|DAESuppy|DBstyle|DansGame|DatSheffy|EagleEye|EvilFetus|FPSMarksman|FUNgineer|FailFish|FrankerZ|FreakinStinkin|FuzzyOtterOO|GingerPower|HassanChop|HotPokket|ItsBoshyTime|JKanStyle|Jebaited|JonCarnage|Kappa|KevinTurtle|Kreygasm|MVGame|MrDestructoid|NinjaTroll|NoNoSpot|OMGScoots|OneHand|OpieOP|OptimizePrime|PJSalt|PMSTwin|PazPazowitz|PicoMause|PogChamp|Poooound|PunchTrees|RedCoat|ResidentSleeper|RuleFive|SMOrc|SMSkull|SSSsss|ShazBotstix|SoBayed|SoonerLater|StoneLightning|StrawBeary|SuperVinlin|SwiftRage|TehFunrun|TheRinger|TheTarFu|TinyFace|TooSpicy|TriHard|UleetBackup|UnSane|Volcania|WinWaker/;
-	this.linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 	return this;
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrapUser = function(user){
-	var sep = '';
-	if (this.message.substring(0, 4) === '/me ')
-		sep = '*';
-	
-	return user.getFeatureHTML() +' <a class="'+ user.features.join(' ') +'">'+sep+user.username+'</a>';
+	return user.getFeatureHTML() +' <a class="'+ user.features.join(' ') +'">' +user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
-	var sep = ': ';
-	if (this.message.substring(0, 4) === '/me ') {
-		sep = ' ';
-		this.message = this.message.substring(4); // strip the /me
-	}
-	
-	var elem  = $('<span/>').text(sep+this.message),
-	    emote = this.emoteregex.exec(elem.text());
-	
-	elem.html(elem.text().replace(this.linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
-	
+	var elem  = $('<span/>').text(this.message),
+	    emote = emoteregex.exec(elem.text());
+	elem.html(elem.text().replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
 	if (emote) {
-		var emoteelem = $('<div class="twitch-emote"/>');
-		emoteelem.addClass('twitch-emote-' + emote[0]);
-		emoteelem.attr('title', emote[0]);
-		
-		var html = elem.text().replace(emote[0], emoteelem.get(0).outerHTML);
-		elem.html(html);
+		var emoteelem = '<div title="'+emote[0]+'" class="twitch-emote twitch-emote-' + emote[0] +'"></div>';
+		elem.html(elem.text().replace(emote[0], emoteelem));
 	}
-	
 	return elem.html();
 };
 ChatUserMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + this.wrapMessage());
+	return this.wrap(this.wrapTime() + ' ' + ((!this.isEmote) ? '' : '*') + this.wrapUser(this.user) + ((!this.isEmote) ? ': ' : ' ') + this.wrapMessage());
+};
+ChatUserMessage.prototype.addonHtml = function(){
+	return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage());
 };

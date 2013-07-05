@@ -34,8 +34,12 @@ font-smoothing: none;
 -webkit-font-smoothing: none;
 padding-left:5px;
 }
-.chat-lines > div.pending, .chat-lines > div.failed {
+.chat-lines > div.pending, 
+.chat-lines > div.failed {
 opacity:0.5;
+}
+.chat-lines .continue {
+opacity:0.25;
 }
 .chat-lines > div.failed span {
 text-decoration:line-through;
