@@ -428,3 +428,28 @@ $(function(){
 		});
 	}, 10*60*1000);
 })();
+
+//Remember dismissed permanent alert boxes
+(function() {
+	
+	$.cookie.json = true;
+	$('.alert .close.persist').each(function() {
+		
+		var parent = $(this).parent('.alert'),
+		    id     = parent.attr('id');
+		
+		if (!id)
+			return;
+		
+		id = 'alert-dismissed-' + id;
+		
+		$(this).click(function() {
+			$.cookie(id, true, {expires: 365})
+		});
+		
+		if ($.cookie(id))
+			parent.hide();
+		
+	})
+	
+})();
