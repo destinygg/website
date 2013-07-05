@@ -47,9 +47,7 @@
 			}
 
 			this.setupNotifications();
-			
-			if(this.notifications && this.engine.user.username){
-				// TODO make this optional so that the user can disable it
+			if(this.engine.user.username){
 				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 			};
 
@@ -184,21 +182,33 @@
 				chat.userslist.appendTo(chat.ui);
 				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
 			});
-
+			
 			this.menu.addMenu(this, this.chatsettings);
 			this.menu.addMenu(this, this.userslist);
 			
-			// Back log
+			// Enable toolbar
+			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
+			return this.resize();
+		},
+		
+		loadBacklog: function() {
 			if(this.backlog.length > 0){
-				this.backlog.reverse();
-				this.put(new ChatUIMessage('<span>...</span>'));
-				for(var i=0; i<this.backlog.length; ++i){
-					this.put(new ChatUserMessage(this.backlog[i].data, new ChatUser(this.backlog[i]), this.backlog[i].timestamp));
+				for (var i = this.backlog.length - 1; i >= 0; i--) {
+					var line    = this.backlog[i],
+					    message = this.engine.dispatchBacklog(line);
+					
+					if (!message)
+						continue;
+					
+					if ($.inArray(line.event, this.engine.controlevents) >= 0)
+						this.put(message, 'control');
+					else {
+						var m = this.put(message);
+						this.handleHilight(m, true);
+					}
 				}
 				this.put(new ChatUIMessage('<span>...</span>'));
 			};
-			
-			return this.resize();
 		},
 		
 		lineCount: function(){
@@ -210,28 +220,36 @@
 			this.lines.empty();
 			return this;
 		},
-		
+		pushControlMessage: function(message) {
+			var m = this.push(message);
+			m.ui.addClass('control');
+		},
 		push: function(message, state){
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
 			this.userMessages.push(message);
 			this.put(message, state);
 			this.scrollPlugin.update();
 			if(this.lineCount() >= this.maxlines){
-				$(this.lines.children()[0]).remove();
+				this.lines.children().eq(0).remove();
 			}
 			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
 				this.scrollPlugin.scrollBottom();
 			}
-			this.handleNotification(message);
+			this.handleHilight(message);
 			return message;
 		},
 		
 		// bypass ui updates and notifications
-		// used to mass add history messages, ui MUST be update afterwards
-		put: function(message, state){
+		// used to mass put history messages, and only update ui afterwards
+		put: function(message, state, klass){
 			message.ui = $(message.html()).appendTo(this.lines);
+			if (klass)
+				message.ui.addClass(klass);
+			
 			if(state != undefined)
 				message.status(state);
+			
+			return message;
 		},
 		
 		send: function(){
@@ -259,10 +277,6 @@
 		
 		disableInput: function(){
 			this.input.attr('disabled', true);
-		},
-		
-		ping: function(){
-			//  stub
 		},
 		
 		setupInputHistory: function(){
@@ -342,7 +356,7 @@
 		
 		setupNotifications: function() {
 			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
-			if(!notifications || !this.engine.user.username){
+			if(!notifications || !this.engine.user.username || !this.getChatOption('hilightnotification', false)){
 				this.notifications = false;
 			}
 		},
@@ -368,10 +382,26 @@
 			}, 5000);
 		},
 		
-		handleNotification: function(message){
-			if(this.notifications && (message.user && message.user.username != this.engine.user.username && this.hilightregex.user.test(message.message))){
-				this.showNotification(message);
+		handleHilight: function(message, skipnotify){
+			if (!this.getChatOption('hilight', true))
+				return;
+			
+			if (message.user && message.user.username != this.engine.user.username && this.hilightregex.user.test(message.message)) {
+				message.ui.addClass('hilight');
+				if(!skipnotify && this.notifications){
+					this.showNotification(message);
+				}
 			}
+		},
+		
+		getChatOption: function(option, defaultvalue) {
+			var options = JSON.parse(localStorage['chatoptions'] || '{}');
+			return (options[option] == undefined)? defaultvalue: options[option];
+		},
+		
+		saveChatOption: function(option, value) {
+			var options     = JSON.parse(localStorage['chatoptions'] || '{}');
+			options[option] = value;
 		}
 		
 	});
@@ -406,7 +436,6 @@ var ChatMessageStatus = {
 function ChatUser(args){
 	args = args || {};
 	this.username = args.nick || '';
-	this.userId = '';
 	this.features = [];
 	this.connections = 0;
 	args.features = args.features || [];
@@ -458,7 +487,7 @@ function ChatMessage(message, timestamp){
 };
 ChatMessage.prototype.init = function(message, timestamp){
 	this.message = message;
-	this.timestamp = moment(timestamp);
+	this.timestamp = moment.utc(timestamp).local();
 	this.state = null;
 	return this;
 };

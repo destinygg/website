@@ -77,7 +77,7 @@ use Destiny\Utils\Tpl;
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 <script>
-new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat'), $model->options))?>);
+var c = new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat'), $model->options))?>);
 </script>
 </body>
 </html>
