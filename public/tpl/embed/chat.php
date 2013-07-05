@@ -54,9 +54,9 @@ use Destiny\Utils\Tpl;
 			<div class="scrollable">
 				<h5>Settings <button type="button" class="close">&times;</button></h5>
 				<ul class="unstyled">
-					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time</label></li>
+					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show timestamps</label></li>
 					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show icons</label></li>
-					<li><label class="checkbox"><input name="notifications" type="checkbox" /> Allow notifications</label></li>
+					<li><label class="checkbox"><input name="notifications" type="checkbox" /> Desktop notifications on hilight</label></li>
 				</ul>
 			</div>
 		</div>
