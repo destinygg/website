@@ -14,7 +14,6 @@ use Destiny\Service\ChatlogService;
 class Chat {
 
 	public function execute(array $params, ViewModel $model) {
-		
 		$user = null;
 		if (Session::hasRole ( UserRole::USER )) {
 			$creds = Session::getCredentials ();
@@ -22,7 +21,6 @@ class Chat {
 			$user ['username'] = $creds->getUsername ();
 			$user ['features'] = $creds->getFeatures ();
 		}
-		
 		$model->options = $this->getChatOptionParams ( $params );
 		$model->user = $user;
 		return 'embed/chat';
@@ -35,13 +33,9 @@ class Chat {
 	 * @param array $params
 	 */
 	private function getChatOptionParams(array $params) {
-		$options = array ();
-		if (! isset ( $params ['theme'] ) || empty ( $params ['theme'] ) || $params ['theme'] != 'light' && $params ['theme'] != 'dark') {
-			$params ['theme'] = Config::$a ['chat'] ['defaultTheme'];
-		}
-		$options ['theme'] = $params ['theme'];
-		$options ['maxlines'] = Config::$a ['chat'] ['maxlines'];
-		return $options;
+		return array (
+			'maxlines' => Config::$a ['chat'] ['maxlines'] 
+		);
 	}
 
 }

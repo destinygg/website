@@ -11,7 +11,8 @@ transform: scale(1) translate3d(0,0,0);
 .chat-output, .chat-lines {
 -webkit-backface-visibility: hidden;
 -webkit-perspective: 1000;
-padding: 5px;
+padding:0;
+margin:0;
 }
 .chat-native-scroll .chat-output {
 position: absolute;	
@@ -27,9 +28,11 @@ width:100%;
 height:100%;
 }
 .chat-lines > div {
-padding: 0 5px;
+clear:both;
+word-wrap:break-word;	
 font-smoothing: none;
 -webkit-font-smoothing: none;
+padding-left:1px;
 }
 .chat-lines > div.pending, .chat-lines > div.failed {
 opacity:0.5;
@@ -40,27 +43,42 @@ text-decoration:line-through;
 .chat-lines > div > a {
 font-weight:bold;
 }
-.chat-lines > div {
-word-wrap:break-word;
-}
 .chat-lines hr {
 margin:5px 0;
 }
 
-
+.chat-input, .chat-input-wrap, .chat-tools-wrap {
+height:40px;
+}
 .chat-input {
 width:100%;
 position: absolute;
 bottom:0;
+margin:0;
 }
-.chat-tools-wrap, .chat-input-wrap {
-margin: 10px;
+.chat-tools-wrap {
+position: absolute;
+right:0;
+top:0;
+margin:0;
+user-select: none;
+-moz-user-select: none;
+-webkit-user-select: none;
+}
+.chat-input-wrap {
+margin:0;
+margin-right:85px;
+margin-left:3px; 
 border-radius:0;
 }
 .chat-input-control {
 margin:0;
+margin-top:5px;
 padding: 5px;
 border-radius:4px;
+}
+.chat-input-control, .chat-tools-wrap > div {
+margin-top:5px;	
 }
 .chat-input-control .input {
 background: none;
@@ -76,6 +94,17 @@ box-sizing: border-box;
 .chat-input-control .input:focus {
 box-shadow: none;	
 }
+.chat-send-btn {
+height: 30px;
+border-radius: 0 4px 4px 0;
+width: 50px;
+}
+.chat-tools-wrap .iconbtn {
+cursor: pointer;	
+width:15px;
+height:30px;
+display: inline-block;
+}
 
 
 /* Fonts / font-size */
@@ -90,50 +119,27 @@ font-weight: bold;
 .chat-lines > div time {
 font-size: 11px;
 }
+
 .chat-lines a.externallink {
-	color: #02C2FF;
+color: #02C2FF;
 }
 .chat-lines a.externallink:visited {
-	color: #0088cc;
+color: #0088cc;
 }
 .chat-lines a.externallink:hover, .chat-lines a.externallink:focus {
-	color: #004D74;
+color: #004D74;
 }
 
-/* Theme - Light */
-.chat-theme-light {
-background: white;	
-border-radius:4px;
+.chat .chat-lines time, 
+.chat .chat-lines i {
+display: none !important;	
 }
-.chat-theme-light .chat-tools-wrap {
-background: #fafafa;	
-border-radius:0 0 4px 4px;
+.chat.chat-time .chat-lines time, 
+.chat.chat-icons .chat-lines i {
+display: inline-block !important;	
 }
-.chat-theme-light .chat-input-wrap {
-border-radius:0;
-border-top:1px solid #cacaca;
-border-bottom:1px solid #cacaca;
-background: rgb(247,247,247);
-background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(226,226,226,1) 100%);
-}
-.chat-theme-light .chat-lines > div {
-color: #010101;
-}
-.chat-theme-light .chat-lines > div time {
-color:#999;
-}
-.chat-theme-light .chat-lines > div .p-whisper {
-color: red;	
-}
-.chat-theme-light .chat-input-control {
-background:white;	
-border-color: #cacaca;
-border:1px solid #aeaeae;
-}
-.chat-theme-light .chat-input-control input {
-color: #555;
-background:white;
-}
+
+
 
 /* Theme - Dark */
 .chat-theme-dark {
@@ -154,8 +160,7 @@ color: #990000;
 }
 .chat-theme-dark .chat-input-control {
 background: #010101;
-border-color: #cacaca;
-border:1px solid black;
+border:none;
 }
 .chat-theme-dark .chat-input-control input {
 color: #a5a5a5;
@@ -181,18 +186,53 @@ background-image: url("../../vendor/img/glyphicons-halflings-white.png") !import
 opacity:1;
 }
 
-.chat-lines > div .subscriber {
+.chat-frame a.subscriber {
 color: #54AAD2;
 }
-.chat-lines > div .vip {
+.chat-frame a.vip {
 color: #CF31E2;
 }
-.chat-lines > div .moderator {
+.chat-frame a.moderator {
 color: #FF8A00;	
 }
-.chat-lines > div .admin {
+.chat-frame a.admin {
 color: #EE0000;	
 }
-.chat-lines > div .protect {
+.chat-frame a.protect {
 color: #CCCCCC;
+}
+
+.chat-menu {
+position: absolute;
+right:20px;
+bottom:40px;
+width:180px;
+font-size:12px;
+z-index:19;
+}
+.chat-menu-active {
+z-index:20;
+}
+.chat-menu .list-wrap, 
+.chat-menu .list-wrap .scrollable {
+max-height:330px;	
+}
+.chat-menu .list-wrap {
+background: rgba(0,0,0,0.8);
+border-radius:4px;
+padding:10px;
+margin-top:auto;
+}
+.chat-menu .list-wrap .scrollable {
+overflow: hidden;
+}
+.chat-menu ul {
+margin-bottom:0;
+}
+.chat-menu ul > li:first-child h5 {
+margin-top:0;
+}
+.chat-menu ul li {
+text-overflow: ellipsis;
+overflow: hidden;
 }

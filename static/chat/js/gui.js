@@ -8,6 +8,7 @@
 	};
 	$.extend(destiny.fn.Chat.prototype, {
 
+		theme: 'dark',
 		maxlines: 50,
 		lineCount: 0,
 		scrollPlugin: null,
@@ -51,25 +52,112 @@
 				// TODO make this optional so that the user can disable it
 				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 			};
-			
-			// Temp place to ask for perms
-			this.ui.on('click', '.chat-settings-btn', function(e){
-				// not allowed but not denied, ask for permission, needs to be in a click handler
-				if (notifications.checkPermission() == 1) {
-					notifications.requestPermission(function(){});
-				};
-				console.log('Permissions ok');
-			});
 
 			// Bind to user input submit
-			this.ui.on('submit', '.chat-input form', function(e){
+			this.ui.on('submit', 'form.chat-input', function(e){
 				e.preventDefault();
 				$(this).closest('.chat.chat-frame').data('chat').send();
 			});
 			
-			this.ui.on('click', '.chat-users-btn', function(e){
-				console.log(this, e, this.engine.users);
+			
+			// Chat settings
+			this.chatsettings = $(this.ui.find('#chat-settings:first')[0]);
+			this.chatsettings.list = $(this.chatsettings.find('ul:first')[0]);
+			this.chatsettings.visible = false;
+			this.chatsettings.scrollable = this.chatsettings.find('.scrollable:first');
+			this.chatsettings.scrollable.mCustomScrollbar({
+				theme: 'light-thin',
+				scrollInertia: 0,
+				horizontalScroll: false,
+				autoHideScrollbar: true,
+				scrollButtons:{enable:false},
+				callbacks: {onTotalScrollOffset: 1,onTotalScrollBackOffset: 1}
 			});
+			
+			this.chatsettings.on('change', 'input[type="checkbox"]', function(){
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				switch($(this).attr('name')){
+				
+					case 'showtime':
+						if($(this).is(':checked'))
+							chat.ui.addClass('chat-time');
+						else
+							chat.ui.removeClass('chat-time');
+						chat.resize();
+						break;
+						
+					case 'showicon':
+						if($(this).is(':checked'))
+							chat.ui.addClass('chat-icons');
+						else
+							chat.ui.removeClass('chat-icons');
+						chat.resize();
+						break;
+						
+					case 'notifications':
+						if($(this).is(':checked') && notifications.checkPermission() == 1){
+							notifications.requestPermission(function(){});
+							chat.notifications = true;
+							break;
+						}
+						chat.notifications = false;
+						break;
+				}
+				chat = null;
+			});
+			
+			// Temp place to ask for perms
+			this.ui.on('click', '.chat-settings-btn', function(e){
+				e.preventDefault();
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				chat.chatsettings.detach();
+				if(chat.chatsettings.visible){
+					chat.chatsettings.hide();
+					chat.chatsettings.visible = false;
+					return;
+				}
+				chat.chatsettings.appendTo(chat.ui);
+				chat.chatsettings.show();
+				chat.chatsettings.scrollable.mCustomScrollbar('update');
+				chat.chatsettings.visible = true;
+				return;
+			});
+			
+			
+			// User list
+			this.userslist = $(this.ui.find('#chat-user-list:first')[0]);
+			this.userslist.list = $(this.userslist.find('ul:first')[0]);
+			this.userslist.visible = false;
+			this.userslist.scrollable = this.userslist.find('.scrollable:first');
+			this.userslist.scrollable.mCustomScrollbar({
+				theme: 'light-thin',
+				scrollInertia: 0,
+				horizontalScroll: false,
+				autoHideScrollbar: true,
+				scrollButtons:{enable:false},
+				callbacks: {onTotalScrollOffset: 1,onTotalScrollBackOffset: 1}
+			});
+			this.ui.on('click', '.chat-users-btn', function(e){
+				e.preventDefault();
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				chat.userslist.detach();
+				if(chat.userslist.visible){
+					chat.userslist.hide();
+					chat.userslist.visible = false;
+					chat.userslist.list.empty();
+					return;
+				}
+				if(chat.engine.user)
+					chat.userslist.list.append($('<li><a class="'+ chat.engine.user.features.join(' ') +'">'+chat.engine.user.username+'</a></li>'));
+				for(var i=0; i<chat.engine.users.length; ++i)
+					chat.userslist.list.append($('<li><a class="'+ chat.engine.users[i].features.join(' ') +'">'+chat.engine.users[i].username+'</a></li>'));
+				chat.userslist.appendTo(chat.ui);
+				chat.userslist.show();
+				chat.userslist.scrollable.mCustomScrollbar('update');
+				chat.userslist.visible = true;
+				return;
+			});
+			//
 			
 			// Enable toolbar
 			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
@@ -84,10 +172,7 @@
 				this.put(new ChatUIMessage('<hr>'));
 			};
 			
-			this.resize();
-			this.scrollPlugin.update();
-			this.scrollPlugin.scrollBottom();
-			return this;
+			return this.resize();
 		},
 		
 		lineCount: function(){
@@ -97,7 +182,6 @@
 		// API
 		purge: function(){
 			this.lines.empty();
-			$(this).triggerHandler('purge');
 			return this;
 		},
 		
@@ -105,13 +189,12 @@
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
 			this.userMessages.push(message);
 			this.put(message, state);
+			this.scrollPlugin.update();
 			if(this.lineCount() >= this.maxlines){
 				$(this.lines.children()[0]).remove();
-			}else if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
-				this.scrollPlugin.update();
+			}
+			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
 				this.scrollPlugin.scrollBottom();
-			}else if(this.scrollPlugin.isScrollable()){
-				this.scrollPlugin.update()
 			}
 			this.handleNotification(message);
 			return message;
@@ -138,8 +221,9 @@
 		},
 		
 		resize: function(){
-			this.output.height(this.ui.height()-this.inputwrap.outerHeight());
-			$(this).triggerHandler('resize');
+			this.output.height(this.ui.outerHeight()-this.inputwrap.height());
+			this.scrollPlugin.update();
+			this.scrollPlugin.scrollBottom();
 			return this;
 		},
 		

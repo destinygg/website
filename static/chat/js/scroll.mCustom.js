@@ -17,7 +17,7 @@
 		init: function(){
 			var self = this;
 			self.chat.output.mCustomScrollbar({
-				theme: ((self.chat.theme == 'dark') ? 'light-thin':'dark-thin'),
+				theme: 'light',
 				scrollInertia: 0,
 				horizontalScroll: false,
 				autoHideScrollbar: false,
@@ -44,14 +44,12 @@
 		
 		lockScroll: function(lock){
 			this.scrollLocked = lock;
-			$(this).triggerHandler('lockScroll');
 			return this;
 		},
 		
 		scrollBottom: function(){
-			this.chat.output.mCustomScrollbar('scrollTo','bottom');
-			$(this).triggerHandler('scrollBottom');
-			return this;
+			this.scrolledBottom = true;
+			return this.chat.output.mCustomScrollbar('scrollTo','bottom');
 		},
 		
 		isScrolledBottom: function(){

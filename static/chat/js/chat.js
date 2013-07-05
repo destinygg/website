@@ -2,7 +2,7 @@ function chat(user, options) {
 
 	this.connected = false;
 	this.debug = true;
-	this.users = {};
+	this.users = [];
 	this.ignorelist = {};
 
 	// TODO clean this up

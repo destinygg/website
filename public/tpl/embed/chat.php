@@ -20,22 +20,48 @@ use Destiny\Utils\Tpl;
 </head>
 <body id="chat-embedded">
 
-<div id="destinychat" class="chat chat-frame chat-theme-<?=$model->options['theme']?>">
+<div id="destinychat" class="chat chat-frame chat-theme-dark">
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
 	</div>
-	<div class="chat-input">
-		<form class="chat-input-wrap">
+	<form class="chat-input clearfix">
+		<div class="chat-input-wrap clearfix">
 			<div class="chat-input-control">
-				<input type="text" placeholder="Enter a message to chat..." class="input" autocomplete="off" />
+				<input type="text" placeholder="Enter a message to chat..." class="input" autocomplete="off" style="border-radius:0" />
 			</div>
-		</form>
-		<div class="chat-tools-wrap clearfix">
-			<button type="submit" class="chat-send-btn btn btn-mini btn-inverse" disabled="disabled">Send</button>
-			<button type="button" class="chat-settings-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-cog icon-white"></i> Config</button>
-			<button type="button" class="chat-users-btn btn btn-mini btn-inverse" disabled="disabled"><i class="icon-user icon-white"></i> Users</button>
+		</div>
+		<div class="chat-tools-wrap">
+			<div>
+				<button type="submit" class="chat-send-btn btn btn-mini btn-inverse" disabled="disabled">Send</button>
+				<a class="iconbtn chat-settings-btn" title="Settings"><i class="icon-cog icon-white subtle"></i></a>
+				<a class="iconbtn chat-users-btn" title="Users"><i class="icon-user icon-white subtle"></i></a>
+			</div>
+		</div>
+	</form>
+	
+	<div id="chat-user-list" class="chat-menu" style="display: none;">
+		<div class="list-wrap clearfix">
+			<div class="scrollable">
+				<h5 style="border-bottom:1px solid #111; margin-top:0;">Users</h5>
+				<ul class="unstyled">
+				</ul>
+			</div>
 		</div>
 	</div>
+	
+	<div id="chat-settings" class="chat-menu" style="display: none;">
+		<div class="list-wrap clearfix">
+			<div class="scrollable">
+				<h5 style="border-bottom:1px solid #111; margin-top:0;">Settings</h5>
+				<ul class="unstyled">
+					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time</label></li>
+					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show icons</label></li>
+					<li><label class="checkbox"><input name="notifications" type="checkbox" /> Allow notifications</label></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	
 </div>
 
 <?include'./tpl/seg/commonbottom.php'?>
