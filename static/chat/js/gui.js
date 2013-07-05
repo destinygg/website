@@ -109,6 +109,15 @@
 					callbacks: {onTotalScrollOffset: 1,onTotalScrollBackOffset: 1}
 				});
 			};
+			this.menu.prototype.clickAway = function(){
+				var chat = $(this).closest('.chat').data('chat');
+				if(chat.menuOpenCount > 0){
+					chat.menu.closeMenus(chat);
+				}
+			};
+			
+			this.output.on('click', this.menu.prototype.clickAway);
+			this.input.on('click', this.menu.prototype.clickAway);
 			//
 			
 			// Chat settings

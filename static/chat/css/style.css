@@ -123,8 +123,8 @@ opacity: 1;
 
 /* Fonts / font-size */
 .chat-lines {
-font-family: "Lucida Console", Monaco, monospace;
-font-size: 12px;
+font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+font-size: 14px;
 line-height: 20px;
 }
 .chat-lines > div .p-whisper {
@@ -299,5 +299,4 @@ overflow: hidden;
 }
 
 .chat-frame.active-menu .chat-output {
-opacity:0.3;
 }
