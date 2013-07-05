@@ -547,7 +547,7 @@ function ChatUserMessage(message, user, timestamp){
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrapUser = function(user){
-	return user.getFeatureHTML() +' <a class="'+ user.features.join(' ') +'">' +user.username+'</a>';
+	return user.getFeatureHTML() +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
 	var elem  = $('<span/>').text(this.message),

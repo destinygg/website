@@ -123,8 +123,8 @@ opacity: 1;
 
 /* Fonts / font-size */
 .chat-lines {
-font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-font-size: 14px;
+font-family: "Lucida Console", Monaco, monospace;
+font-size: 12px;
 line-height: 20px;
 }
 .chat-lines > div .p-whisper {
@@ -171,27 +171,27 @@ color:#414141;
 color: #990000;
 }
 .chat-theme-dark .chat-lines > div.hilight {
-	color: #AE6A04;
+color: #AE6A04;
 }
 .chat-theme-dark .chat-lines > div.control {
-	color: #fff;
+color: #fff;
 }
-.chat-theme-dark .chat-lines > div > a {
-	color: #999; /* default pleb color */
+.chat-theme-dark .chat-lines > div > a.user {
+color: #999; /* default pleb color */
 }
-.chat-theme-dark .chat-lines > div > a.subscriber {
+.chat-theme-dark .chat-lines > div > a.user.subscriber {
 color: #54AAD2;
 }
-.chat-theme-dark .chat-lines > div > a.vip {
+.chat-theme-dark .chat-lines > div > a.user.vip {
 color: #CF31E2;
 }
-.chat-theme-dark .chat-lines > div > a.moderator {
+.chat-theme-dark .chat-lines > div > a.user.moderator {
 color: #FF8A00;
 }
-.chat-theme-dark .chat-lines > div > a.admin {
+.chat-theme-dark .chat-lines > div > a.user.admin {
 color: #EE0000;
 }
-.chat-theme-dark .chat-lines > div > a.protect {
+.chat-theme-dark .chat-lines > div > a.user.protect {
 color: #CCCCCC;
 }
 .chat-theme-dark .chat-input-control {
