@@ -176,6 +176,7 @@
 			this.userslist.visible = false;
 			this.userslist.scrollable = this.userslist.find('.scrollable:first');
 			this.userslist.btn.on('click', function(e){
+				console.log(this);
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.userslist.detach();
@@ -186,8 +187,8 @@
 				chat.userslist.list.empty();
 				if(chat.engine.user)
 					chat.userslist.list.append($('<li><a class="'+ chat.engine.user.features.join(' ') +'">'+chat.engine.user.username+'</a></li>'));
-				for(var i=0; i<chat.engine.users.length; ++i)
-					chat.userslist.list.append($('<li><a class="'+ chat.engine.users[i].features.join(' ') +'">'+chat.engine.users[i].username+'</a></li>'));
+				for(var username in chat.engine.users)
+					chat.userslist.list.append($('<li><a class="'+ chat.engine.users[username].features.join(' ') +'">'+chat.engine.users[username].username+'</a></li>'));
 				chat.userslist.appendTo(chat.ui);
 				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
 			});
