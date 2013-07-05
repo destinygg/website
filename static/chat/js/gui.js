@@ -121,11 +121,13 @@
 			//
 			
 			// Chat settings
-			this.chatsettings = $(this.ui.find('#chat-settings:first')[0]);
-			this.chatsettings.btn = $(this.ui.find('.chat-settings-btn:first')[0]);
-			this.chatsettings.list = $(this.chatsettings.find('ul:first')[0]);
+			this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
+			this.chatsettings.btn = this.ui.find('.chat-settings-btn:first').eq(0);
+			this.chatsettings.list = this.chatsettings.find('ul:first').eq(0);
 			this.chatsettings.visible = false;
 			this.chatsettings.scrollable = this.chatsettings.find('.scrollable:first');
+			this.loadSettings();
+			
 			this.chatsettings.btn.on('click', function(e){
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
@@ -138,11 +140,13 @@
 				return chat.menu.prototype.showMenu.call(chat.chatsettings, chat);
 			});
 			this.chatsettings.on('change', 'input[type="checkbox"]', function(){
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				switch($(this).attr('name')){
+				var chat    = $(this).closest('.chat.chat-frame').data('chat'),
+				    name    = $(this).attr('name'),
+				    checked = $(this).is(':checked');
+				switch(name){
 				
 					case 'showtime':
-						if($(this).is(':checked'))
+						if(checked)
 							chat.ui.addClass('chat-time');
 						else
 							chat.ui.removeClass('chat-time');
@@ -150,7 +154,9 @@
 						break;
 						
 					case 'showicon':
-						if($(this).is(':checked'))
+						
+						chat.saveChatOption(name, checked);
+						if(checked)
 							chat.ui.addClass('chat-icons');
 						else
 							chat.ui.removeClass('chat-icons');
@@ -158,21 +164,25 @@
 						break;
 						
 					case 'notifications':
-						if($(this).is(':checked') && notifications.checkPermission() == 1){
+						var permission = notifications.checkPermission();
+						if (permission == 1) // not yet allowed
 							notifications.requestPermission(function(){});
-							chat.notifications = true;
+						else if (permission == 2) {
+							chat.notifications = false;
 							break;
 						}
-						chat.notifications = false;
+						
+						chat.notifications = checked;
+						chat.saveChatOption(name, checked);
 						break;
 				}
 				chat = null;
 			});
 			
 			// User list
-			this.userslist = $(this.ui.find('#chat-user-list:first')[0]);
-			this.userslist.btn = $(this.ui.find('.chat-users-btn:first')[0]);
-			this.userslist.list = $(this.userslist.find('ul:first')[0]);
+			this.userslist = this.ui.find('#chat-user-list:first').eq(0);
+			this.userslist.btn = this.ui.find('.chat-users-btn:first').eq(0);
+			this.userslist.list = this.userslist.find('ul:first').eq(0);
 			this.userslist.visible = false;
 			this.userslist.scrollable = this.userslist.find('.scrollable:first');
 			this.userslist.btn.on('click', function(e){
@@ -198,6 +208,22 @@
 			// Enable toolbar
 			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
 			return this.resize();
+		},
+		
+		loadSettings: function() {
+			var self     = this,
+			    defaults = {
+				showtime     : false,
+				showicon     : false,
+				notifications: false,
+			};
+			
+			this.chatsettings.find('input[type="checkbox"]').each(function() {
+				var name  = $(this).attr('name'),
+				    value = self.getChatOption(name, defaults[name]);
+				
+				$(this).attr('checked', value);
+			});
 		},
 		
 		loadBacklog: function() {
@@ -378,7 +404,7 @@
 		
 		setupNotifications: function() {
 			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
-			if(!notifications || !this.engine.user.username || !this.getChatOption('hilightnotification', false)){
+			if(!notifications || !this.engine.user.username || !this.getChatOption('notifications', false)){
 				this.notifications = false;
 			}
 		},
@@ -423,6 +449,7 @@
 		saveChatOption: function(option, value) {
 			var options     = JSON.parse(localStorage['chatoptions'] || '{}');
 			options[option] = value;
+			localStorage['chatoptions'] = JSON.stringify(options);
 		}
 		
 	});
