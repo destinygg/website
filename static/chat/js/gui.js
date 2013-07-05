@@ -216,7 +216,7 @@
 						this.handleHilight(m, true);
 					}
 				}
-				this.put(new ChatUIMessage('<span>...</span>'));
+				this.put(new ChatUIMessage('<hr/>'));
 			};
 		},
 		
