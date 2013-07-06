@@ -191,6 +191,7 @@
 				    admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
 				    elems  = {};
 				
+				chat.userslist.find('h5 span').text(chat.engine.users.length);
 				for(var username in chat.engine.users){
 					var u    = chat.engine.users[username],
 					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');

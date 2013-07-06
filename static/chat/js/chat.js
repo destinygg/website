@@ -134,8 +134,7 @@ chat.prototype.onCLOSE = function() {
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
 		return;
-	// TODO present the connection count in a nice way? is it too much info?
-	//this.connectioncount = data.connectioncount;
+	
 	for (var i = data.users.length - 1; i >= 0; i--) {
 		this.users[data.users[i].nick] = new ChatUser(data.users[i]);
 	};
