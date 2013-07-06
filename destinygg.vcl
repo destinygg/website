@@ -58,6 +58,11 @@ sub vcl_recv {
 	//	unset req.http.cookie;
 	//}
 	
+	// drop any cookies on the chat history file
+	if ( req.url == "/chat/history.js" ) {
+		unset req.http.cookie;
+	}
+	
 	// Handle compression correctly. Different browsers send different
 	// "Accept-Encoding" headers, even though they mostly all support the same
 	// compression mechanisms. By consolidating these compression headers into
@@ -100,6 +105,11 @@ sub vcl_fetch {
 	// mainly to override the cache headers sent by php
 	if ( (req.url == "/" && req.http.Cookie !~ "sid=|rememberme=") || req.url ~ "^/[^/]\.json$") {
 		set beresp.ttl = 30s;
+	}
+	
+	// do not cache the chat history for long
+	if ( req.url == "/chat/history.js" ) {
+		set beresp.ttl = 200ms;
 	}
 	
 }
