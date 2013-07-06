@@ -54,12 +54,12 @@ sub vcl_recv {
 	}
 	
 	// cache some of the api requests - we need stateful json for the others - until I clean it up
-	if (req.url ~ "^/(lastfm|broadcasts|twitter|youtube|stream|summoners)\.json$") {
+	if (req.url ~ "(?i)^/(lastfm|broadcasts|twitter|youtube|stream|summoners)\.json$") {
 		unset req.http.cookie;
 	}
 	
 	// drop any cookies on the chat history file
-	if ( req.url == "/chat/history.js" ) {
+	if ( req.url ~ "(?i)^/chat/history" ) {
 		unset req.http.cookie;
 	}
 	
@@ -108,7 +108,7 @@ sub vcl_fetch {
 	}
 	
 	// do not cache the chat history for long
-	if ( req.url == "/chat/history.js" ) {
+	if ( req.url ~ "(?i)^/chat/history" ) {
 		set beresp.ttl = 200ms;
 	}
 	
