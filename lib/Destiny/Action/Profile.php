@@ -65,12 +65,12 @@ class Profile {
 		$credentials->setUsername ( $username );
 		
 		// Get the users active subscriptions
-		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		if (! empty ( $subscription )) {
 			$credentials->addRoles ( \Destiny\UserRole::SUBSCRIBER );
 			$credentials->addFeatures ( \Destiny\UserFeature::SUBSCRIBER );
 		}
-		$credentials->setFeatures ( $userFeaturesService->getUserFeatures ( $user ['userId'] ) );
+		$credentials->addFeatures ( $userFeaturesService->getUserFeatures ( Session::get ( 'userId' ) ) );
 		
 		Session::updateCredentials ( $credentials );
 		

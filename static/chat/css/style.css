@@ -136,8 +136,7 @@ opacity: 1;
 
 /* Fonts / font-size */
 .chat-lines {
-font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-font-size: 14px;
+font-size: 12px;
 line-height: 20px;
 }
 .chat-lines > div .p-whisper {
