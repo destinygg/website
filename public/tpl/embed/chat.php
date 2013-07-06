@@ -42,8 +42,10 @@ use Destiny\Utils\Tpl;
 	
 	<div id="chat-user-list" class="chat-menu" style="display: none;">
 		<div class="list-wrap clearfix">
-			<div class="scrollable">
+			<div class="toolbar">
 				<h5>Users <button type="button" class="close">&times;</button></h5>
+			</div>
+			<div class="scrollable">
 				<h6>Admins</h6>
 				<ul class="unstyled admins"></ul>
 				<hr/>
@@ -64,8 +66,10 @@ use Destiny\Utils\Tpl;
 	
 	<div id="chat-settings" class="chat-menu" style="display: none;">
 		<div class="list-wrap clearfix">
-			<div class="scrollable">
+			<div class="toolbar">
 				<h5>Settings <button type="button" class="close">&times;</button></h5>
+			</div>
+			<div class="scrollable">
 				<ul class="unstyled">
 					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show user icons</label></li>
 					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time for each message</label></li>

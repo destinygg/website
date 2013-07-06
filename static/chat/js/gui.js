@@ -89,6 +89,7 @@
 				this.stop().slideDown(50);
 				this.visible = true;
 				this.btn.addClass('active');
+				this.scrollable.mCustomScrollbar('update');
 				++chat.menuOpenCount;
 				chat.menu.update(chat);
 			};
@@ -105,8 +106,7 @@
 					scrollInertia: 0,
 					horizontalScroll: false,
 					autoHideScrollbar: true,
-					scrollButtons:{enable:false},
-					callbacks: {onTotalScrollOffset: 1,onTotalScrollBackOffset: 1}
+					scrollButtons:{enable:true}
 				});
 			};
 			this.menu.prototype.clickAway = function(){
@@ -192,7 +192,7 @@
 				
 				for(var username in chat.engine.users){
 					var u    = chat.engine.users[username],
-					    elem = $('<li><a class="'+ u.features.join(' ') +'">'+u.username+'</a></li>');
+					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
 					
 					elems[username.toLowerCase()] = elem;
 					if ($.inArray('admin', u.features) >= 0)
