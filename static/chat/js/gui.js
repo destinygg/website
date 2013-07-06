@@ -644,17 +644,15 @@ ChatUserMessage.prototype.wrapUser = function(user){
 	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
-	var elem  = $('<msg/>').text(this.message),
-	    emote = emoteregex.exec(elem.text());
-	elem.html(elem.text().replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
-	if (emote) {
-		var emoteelem = '<div title="'+emote[0]+'" class="twitch-emote twitch-emote-' + emote[0] +'"></div>';
-		elem.html(elem.text().replace(emote[0], emoteelem));
-	}
-	if(this.isEmote){
+	var elem    = $('<msg/>').text(this.message), 
+		encoded = elem.html();
+	encoded = encoded.replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>');
+	var emoticon = emoteregex.exec(encoded);
+	if (emoticon)
+		encoded = encoded.replace(emoticon[0], '<div title="'+emoticon[0]+'" class="twitch-emote twitch-emote-' + emoticon[0] +'"></div>');
+	if(this.isEmote)
 		elem.addClass('emote');
-	}
-	return elem[0].outerHTML;
+	return elem.html(encoded)[0].outerHTML;
 };
 ChatUserMessage.prototype.html = function(){
 	return this.wrap(this.wrapTime() + ' ' + ((!this.isEmote) ? '' : '*') + this.wrapUser(this.user) + ((!this.isEmote) ? ': ' : ' ') + this.wrapMessage());
