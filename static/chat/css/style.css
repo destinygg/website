@@ -183,23 +183,23 @@ color: #fff371;
 .chat-theme-dark .chat-lines > div.control {
 color: #fff;
 }
-.chat-theme-dark .chat-lines > div > a.user {
+.chat-theme-dark .chat-lines > div > a.user, #chat-user-list a {
 color: #cccccc; /* default pleb color */
 }
-.chat-theme-dark .chat-lines > div > a.user.subscriber {
+.chat-theme-dark .chat-lines > div > a.user.subscriber, #chat-user-list a.subscriber {
 color: #488ce7;
 }
-.chat-theme-dark .chat-lines > div > a.user.vip {
+.chat-theme-dark .chat-lines > div > a.user.vip, #chat-user-list a.vip {
 color: #CF31E2;
 }
-.chat-theme-dark .chat-lines > div > a.user.moderator {
+.chat-theme-dark .chat-lines > div > a.user.moderator, #chat-user-list a.moderator {
 color: #429A2D;
 }
-.chat-theme-dark .chat-lines > div > a.user.admin {
+.chat-theme-dark .chat-lines > div > a.user.admin, #chat-user-list a.admin {
 color: #B91010;
 }
-.chat-theme-dark .chat-lines > div > a.user.protect {
-color: #CCCCCC;
+.chat-theme-dark .chat-lines > div > a.user.bot, #chat-user-list a.bot {
+color: #3636B2;
 }
 .chat-theme-dark .chat-input-control {
 background: #040404;
@@ -256,8 +256,8 @@ color: #FF8A00;
 .chat-frame a.admin {
 color: #EE0000;
 }
-.chat-frame a.protect {
-color: #CCCCCC;
+.chat-frame a.bot {
+color: #3636B2;
 }
 
 .chat-menu {
@@ -322,4 +322,15 @@ margin-top:0;
 .chat-menu ul li {
 text-overflow: ellipsis;
 overflow: hidden;
+}
+
+#chat-user-list h6 {
+	font-weight: bold;
+	margin: 0 0 5px 5px;
+}
+#chat-user-list hr {
+	margin: 5px 0;
+}
+#chat-user-list ul {
+	margin: 0;
 }
