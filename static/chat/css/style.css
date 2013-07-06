@@ -160,7 +160,9 @@ color: #004D74;
 display: none !important;	
 }
 .chat.chat-time .chat-lines time, 
-.chat.chat-icons .chat-lines i {
+.chat.chat-icons .chat-lines i, 
+.chat-lines i.icon-subscriber, 
+.chat-lines i.icon-administrator {
 display: inline-block !important;	
 }
 
