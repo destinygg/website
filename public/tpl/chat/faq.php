@@ -25,6 +25,17 @@ use Destiny\Utils\Tpl;
 		</h1>
 		<hr size="1">
 		
+		<a name="highlight"></a>
+		<h3>What is this yellow text?</h3>
+		<p>
+			So that is the color of the line when someone says your nick. It is called
+			a highlight, and you can also go into the settings menu and enable
+			desktop notifications.<br/>
+			With that you now get notified when somebody says your nick and the
+			browser is not in focus!<br/>
+			Being able to disable any kind of highlighting is on the TODO
+		</p>
+		
 		<a name="features"></a>
 		<h3>What are the features?</h3>
 		<p>
