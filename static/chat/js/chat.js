@@ -207,6 +207,12 @@ chat.prototype.handleCommand = function(str) {
 	    nickregex = /^[a-zA-Z0-9]{4,20}$/,
 	    payload   = {};
 	
+	if (str.substring(0, 1) === '/') {
+		payload.data = "/" + str;
+		this.emit("MSG", payload);
+		return;
+	}
+	
 	switch(command) {
 		default:
 			this.gui.push(new ChatMessage("Error: unknown command"));

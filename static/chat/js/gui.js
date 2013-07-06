@@ -613,7 +613,9 @@ function ChatUserMessage(message, user, timestamp){
 	if (this.message.substring(0, 4) === '/me ') {
 		this.isEmote = true;
 		this.message = this.message.substring(4);
-	}
+	} else if (this.message.substring(0, 2) === '//')
+		this.message = this.message.substring(1);
+	
 	this.user = user;
 	return this;
 };
