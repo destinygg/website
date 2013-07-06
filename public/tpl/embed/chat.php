@@ -62,6 +62,9 @@ use Destiny\UserRole;
 				<h6>Bots</h6>
 				<ul class="unstyled bots"></ul>
 				<hr/>
+				<h6>Subscribers</h6>
+				<ul class="unstyled subs"></ul>
+				<hr/>
 				<h6>Plebs</h6>
 				<ul class="unstyled plebs"></ul>
 			</div>
