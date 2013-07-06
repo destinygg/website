@@ -33,11 +33,6 @@ use Destiny\Utils\Tpl;
 	</div>
 	<?php endif; ?>
 	
-	<?if(Session::hasRole(\Destiny\UserRole::USER) && Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)):?>
-	<?include'./tpl/seg/fantasy/teambar.php'?>
-	<?include'./tpl/seg/fantasy/teammaker.php'?>
-	<?endif;?>
-	
 	<?include'./tpl/seg/panel.twitch.php'?>
 	<?include'./tpl/seg/panel.lol.php'?>
 	<?include'./tpl/seg/panel.videos.php'?>
