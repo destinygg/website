@@ -526,7 +526,7 @@ function ChatUser(args){
 };
 ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
-	for (var i = this.features.length - 1; i >= 0; i--) {
+	for (var i = 0; i < this.features.length; i++) {
 		switch(this.features[i]){
 			case UserFeatures.SUBSCRIBER :
 				icons += '<i class="icon-subscriber" title="Subscriber"/>';
