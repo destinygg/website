@@ -57,6 +57,11 @@
 				e.preventDefault();
 				$(this).closest('.chat.chat-frame').data('chat').send();
 			});
+			this.ui.on('click', '.chat-send-btn', function(e){
+				e.preventDefault();
+				$(this).closest('.chat.chat-frame').data('chat').send();
+			});
+			
 			
 			// Generic menus functions
 			this.menus = [];
