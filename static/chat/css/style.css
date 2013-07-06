@@ -59,7 +59,14 @@ margin:8px 0;
 height: 30px;
 }
 .chat-input {
-background: #222222;
+background: rgb(46,46,46); /* Old browsers */
+background: -moz-linear-gradient(top,  rgba(46,46,46,1) 0%, rgba(28,28,28,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(46,46,46,1)), color-stop(100%,rgba(28,28,28,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 100%); /* IE10+ */
+background: linear-gradient(to bottom,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2e2e2e', endColorstr='#1c1c1c',GradientType=0 ); /* IE6-9 */
 width:100%;
 position: absolute;
 bottom:0;
