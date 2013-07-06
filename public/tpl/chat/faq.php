@@ -30,10 +30,12 @@ use Destiny\Utils\Tpl;
 		<p>
 			So that is the color of the line when someone says your nick. It is called
 			a highlight, and you can also go into the settings menu and enable
-			desktop notifications.<br/>
+			<strong>desktop notifications</strong>.<br/>
 			With that you now get notified when somebody says your nick and the
 			browser is not in focus!<br/>
-			Being able to disable any kind of highlighting is on the TODO
+			Being able to disable any kind of highlighting is now completed, with
+			the added abbility of specifying custom words to highlight on.<br/>
+			See the settings menu.
 		</p>
 		
 		<a name="features"></a>
@@ -104,8 +106,8 @@ use Destiny\Utils\Tpl;
 		<h3>Got muted?</h3>
 		<p>
 			Mutes are ephemeral, never ever persistent. That said the user does not
-			see the duration of the mute (deliberately). Mutes have a maximum duration
-			of a week, and by default they are an hour long.<br/>
+			see the duration of the mute (deliberately, ask the mod to announce the duration).
+			Mutes have a maximum duration of a week, and by default they are a minute long.<br/>
 			There is no notification when the mute naturally expires (again, deliberately).<br/>
 			TLDR: Don't worry, they are never persistent, it will pass.
 		</p>
@@ -136,6 +138,10 @@ use Destiny\Utils\Tpl;
 			For the back-end side, yes: on <a href="https://github.com/sztanpet/destinychat">Github</a><br/>
 			For the front-end side: Soon&trade;
 		</p>
+		
+		<a name="tabcomp"></a>
+		<h3>Tab completion please?</h3>
+		<p>Working on it, quite high in priority.</p>
 	</section>
 	
 	<?include'./tpl/seg/panel.ads.php'?>
