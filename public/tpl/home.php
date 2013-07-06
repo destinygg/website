@@ -19,15 +19,9 @@ use Destiny\Utils\Tpl;
 <body id="home">
 	<?include'./tpl/seg/top.php'?>
 	
-<<<<<<< HEAD
-	<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
-	<section class="container">
-		<div id="subscription-cta" class="alert alert-info" style="margin:0;">
-=======
 	<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER) && (!isset($_COOKIE['alert-dismissed-subscription-cta']) || $_COOKIE['alert-dismissed-subscription-cta'] != true)):?>
 	<div class="container">
 		<div id="subscription-cta" class="alert alert-info" style="margin:10px 0 0 0;">
->>>>>>> master
 			<button type="button" class="close persist" data-dismiss="alert">&times;</button>
 			<h4>Subscriptions now available!</h4>
 			<?php if(Session::hasRole(\Destiny\UserRole::USER)): ?>
