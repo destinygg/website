@@ -88,7 +88,7 @@ use Destiny\UserRole;
 <?include'./tpl/seg/commonbottom.php'?>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
-<script src="/chat/history.js"></script>
+<script src="/chat/history"></script>
 <?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
