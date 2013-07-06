@@ -37,7 +37,7 @@ class UserFeaturesService extends Service {
 	public function getFeatureIdByName($featureName) {
 		if ($this->features == null) {
 			$conn = Application::instance ()->getConnection ();
-			$stmt = $conn->prepare ( 'SELECT featureId, featureName FROM dfl_features ORDER BY featureId DESC' );
+			$stmt = $conn->prepare ( 'SELECT featureId, featureName FROM dfl_features ORDER BY featureId ASC' );
 			$stmt->execute ();
 			$this->features = array ();
 			while ( $a = $stmt->fetch () ) {
@@ -59,10 +59,10 @@ class UserFeaturesService extends Service {
 	public function getUserFeatures($userId) {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
-			SELECT b.featureName AS `id` FROM dfl_users_features AS a
+			SELECT DISTINCT b.featureName AS `id` FROM dfl_users_features AS a
 			INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
 			WHERE userId = :userId
-			ORDER BY a.featureId DESC' );
+			ORDER BY a.featureId ASC' );
 		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
 		$stmt->execute ();
 		$features = array ();
