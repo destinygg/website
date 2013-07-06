@@ -25,6 +25,17 @@ use Destiny\Utils\Tpl;
 		</h1>
 		<hr size="1">
 		
+		<a name="highlight"></a>
+		<h3>What is this yellow text?</h3>
+		<p>
+			So that is the color of the line when someone says your nick. It is called
+			a highlight, and you can also go into the settings menu and enable
+			desktop notifications.<br/>
+			With that you now get notified when somebody says your nick and the
+			browser is not in focus!<br/>
+			Being able to disable any kind of highlighting is on the TODO
+		</p>
+		
 		<a name="features"></a>
 		<h3>What are the features?</h3>
 		<p>
@@ -33,7 +44,6 @@ use Destiny\Utils\Tpl;
 			chat right now.<br/>
 			We have twitch faces (until they DMCA the fuck out of it at least).<br/>
 			Desktop notifications when someone highlights you (if your browser supports it).<br/>
-			Monospace font for all of your ASCII art needs (subject to change).<br/>
 			We reload the last N (currently 150, subject to change) lines of chat.<br/>
 			There is a LOT of things on our TODO list, get in touch if you want to
 			contribute (don't if you just want to ask for a specific feature)!

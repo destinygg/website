@@ -47,7 +47,7 @@ use Destiny\UserRole;
 	<div id="chat-user-list" class="chat-menu" style="display: none;">
 		<div class="list-wrap clearfix">
 			<div class="toolbar">
-				<h5>Users <button type="button" class="close">&times;</button></h5>
+				<h5>Users (~<span></span>)<button type="button" class="close">&times;</button></h5>
 			</div>
 			<div class="scrollable">
 				<h6>Admins</h6>
@@ -61,6 +61,9 @@ use Destiny\UserRole;
 				<hr/>
 				<h6>Bots</h6>
 				<ul class="unstyled bots"></ul>
+				<hr/>
+				<h6>Subscribers</h6>
+				<ul class="unstyled subs"></ul>
 				<hr/>
 				<h6>Plebs</h6>
 				<ul class="unstyled plebs"></ul>

@@ -188,9 +188,10 @@
 				}
 				chat.menu.closeMenus(chat);
 				var lists  = chat.userslist.find('ul'),
-				    admins = [], vips = [], mods = [], bots = [], plebs = [],
+				    admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
 				    elems  = {};
 				
+				chat.userslist.find('h5 span').text(chat.engine.users.length);
 				for(var username in chat.engine.users){
 					var u    = chat.engine.users[username],
 					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
@@ -204,6 +205,8 @@
 						mods.push(username.toLowerCase());
 					else if($.inArray('bot', u.features) >= 0)
 						bots.push(username.toLowerCase());
+					else if($.inArray('subscriber', u.features) >= 0)
+						subs.push(username.toLowerCase());
 					else
 						plebs.push(username.toLowerCase());
 					
@@ -221,6 +224,7 @@
 				appendUsers(vips, lists.filter('.vips'));
 				appendUsers(mods, lists.filter('.moderators'));
 				appendUsers(bots, lists.filter('.bots'));
+				appendUsers(subs, lists.filter('.subs'));
 				appendUsers(plebs, lists.filter('.plebs'));
 				chat.userslist.appendTo(chat.ui);
 				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
