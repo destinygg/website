@@ -526,16 +526,25 @@ function ChatUser(args){
 };
 ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
-	if($.inArray(UserFeatures.BOT, this.features))
-		icons += '<i class="icon-bot" title="Bot"/>';
-	if($.inArray(UserFeatures.ADMIN, this.features))
-		icons += '<i class="icon-administrator" title="Administrator"/>';
-	if($.inArray(UserFeatures.VIP, this.features))
-		icons += '<i class="icon-vip" title="VIP"/>';
-	if($.inArray(UserFeatures.MODERATOR, this.features))
-		icons += '<i class="icon-moderator" title="Moderator"/>';
-	if($.inArray(UserFeatures.SUBSCRIBER, this.features))
-		icons += '<i class="icon-subscriber" title="Subscriber"/>';
+	for (var i = 0; i < this.features.length; i++) {
+		switch(this.features[i]){
+			case UserFeatures.SUBSCRIBER :
+				icons += '<i class="icon-subscriber" title="Subscriber"/>';
+				break;
+			case UserFeatures.VIP :
+				icons += '<i class="icon-vip" title="VIP"/>';
+				break;
+			case UserFeatures.MODERATOR :
+				icons += '<i class="icon-moderator" title="Moderator"/>';
+				break;
+			case UserFeatures.ADMIN :
+				icons += '<i class="icon-administrator" title="Administrator"/>';
+				break;
+			case UserFeatures.BOT :
+				icons += '<i class="icon-bot" title="Bot"/>';
+				break;
+		}
+	}
 	return icons;
 };
 
