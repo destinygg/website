@@ -243,19 +243,19 @@ background-position: top left;
 }
 .chat .chat-lines i.icon-subscriber {
 opacity: 1;	
-background: url("/web/img/ico/favicon.png") no-repeat bottom left;
+background: url("../img/ico/bobross.png") no-repeat bottom left;
 }
 .chat .chat-lines i.icon-vip {
-background: url("/web/img/ico/leaf.png") no-repeat bottom left;
+background: url("../img/ico/leaf.png") no-repeat bottom left;
 }
 .chat .chat-lines i.icon-moderator {
-background: url("/web/img/ico/weather-lightning.png") no-repeat bottom left;
+background: url("../img/ico/weather-lightning.png") no-repeat bottom left;
 }
 .chat .chat-lines i.icon-administrator {
-background: url("/web/img/ico/cross-shield.png") no-repeat bottom left;
+background: url("../img/ico/cross-shield.png") no-repeat bottom left;
 }
 .chat .chat-lines i.icon-bot {
-background: url("/web/img/ico/robot.png") no-repeat bottom left;
+background: url("../img/ico/robot.png") no-repeat bottom left;
 }
 .chat-frame a.subscriber {
 color: #54AAD2;
