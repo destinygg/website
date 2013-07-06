@@ -171,7 +171,6 @@
 							chat.notifications = false;
 							break;
 						}
-						
 						chat.notifications = checked;
 						chat.saveChatOption(name, checked);
 						break;
@@ -202,14 +201,14 @@
 					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
 					
 					elems[username.toLowerCase()] = elem;
-					if ($.inArray('admin', u.features) >= 0)
+					if($.inArray('bot', u.features) >= 0)
+						bots.push(username.toLowerCase());
+					else if ($.inArray('admin', u.features) >= 0)
 						admins.push(username.toLowerCase());
 					else if($.inArray('vip', u.features) >= 0)
 						vips.push(username.toLowerCase());
 					else if($.inArray('moderator', u.features) >= 0)
 						mods.push(username.toLowerCase());
-					else if($.inArray('bot', u.features) >= 0)
-						bots.push(username.toLowerCase());
 					else if($.inArray('subscriber', u.features) >= 0)
 						subs.push(username.toLowerCase());
 					else
@@ -629,16 +628,16 @@ function ChatUserMessage(message, user, timestamp){
 		this.message = this.message.substring(4);
 	} else if (this.message.substring(0, 2) === '//')
 		this.message = this.message.substring(1);
-	
+	this.isAddon = false;
 	this.user = user;
 	return this;
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
-ChatUserMessage.prototype.wrap = function(html) {
+ChatUserMessage.prototype.wrap = function(html, css) {
 	if (this.user && this.user.username) {
-		return '<div class="'+'nick-' + this.user.username.toLowerCase()+'">'+html+'</div>';
+		return '<div class="'+((css) ? css +' ':'')+'nick-' + this.user.username.toLowerCase()+'">'+html+'</div>';
 	} else
-		return '<div>'+html+'</div>';
+		return '<div'+((css) ? ' class="'+css +'"':'')+'>'+html+'</div>';
 };
 ChatUserMessage.prototype.wrapUser = function(user){
 	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
@@ -662,5 +661,5 @@ ChatUserMessage.prototype.html = function(){
 ChatUserMessage.prototype.addonHtml = function(){
 	if(this.isEmote)
 		return this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
-	return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage());
+	return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage(), 'continue');
 };

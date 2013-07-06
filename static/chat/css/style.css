@@ -40,9 +40,17 @@ clear:both;
 word-wrap:break-word;	
 font-smoothing: none;
 -webkit-font-smoothing: none;
-padding-left:5px;
+padding-left: 5px;
+padding-bottom: 5px;
 }
-.chat-lines .continue {
+.chat-lines > div.continue {
+margin-top:-3px;
+}
+.chat-lines > div .continue {
+user-select: none;
+color:#222;
+}
+.chat-lines > div i.continue {
 user-select: none;
 color:#222;
 }
