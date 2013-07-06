@@ -1,7 +1,7 @@
 function chat(user, options) {
 
 	this.connected     = false;
-	this.debug         = true;
+	this.debug         = false;
 	this.users         = [];
 	this.ignorelist    = {};
 	this.controlevents = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
