@@ -6,16 +6,16 @@ function chat(user, options) {
 	this.ignorelist    = {};
 	this.controlevents = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
 	this.errorstrings  = {
-		"nopermission" : "You do not have the required permissions to use that command!",
-		"protocolerror": "Invalid or badly formatted command!",
-		"needlogin"    : "You have to be logged in to use that command!",
-		"invalidmsg"   : "The message was invalid!",
-		"throttled"    : "Throttled! You were trying to send messages too fast!",
-		"duplicate"    : "The messages is identical to the last one you sent!",
-		"muted"        : "You are muted!",
-		"submode"      : "The channel is currently in subscriber only mode!",
-		"needbanreason": "Providing a reason for the ban is mandatory!",
-		"banned"       : "You have been banned, disconnecting!",
+		"nopermission" : "You do not have the required permissions to use that",
+		"protocolerror": "Invalid or badly formatted",
+		"needlogin"    : "You have to be logged in to use that",
+		"invalidmsg"   : "The message was invalid",
+		"throttled"    : "Throttled! You were trying to send messages too fast",
+		"duplicate"    : "The messages is identical to the last one you sent",
+		"muted"        : "You are muted",
+		"submode"      : "The channel is currently in subscriber only mode",
+		"needbanreason": "Providing a reason for the ban is mandatory",
+		"banned"       : "You have been banned, disconnecting",
 		"requiresocket": "This chat requires WebSockets"
 	};
 	

@@ -28,6 +28,17 @@ padding-top: 40px;
 color: #999;
 }
 
+@media ( min-width : 1200px) {
+	#twitchpanel.single-view .twitch-element,
+	#twitchpanel.single-view .twitch-element-wrap{
+	width: 100%;
+	height: 689px;
+	}
+	#twitchpanel.single-view #twitch-player object {
+	height: 690px;
+	}
+}
+
 section {
 margin-top: 15px;
 }
@@ -314,7 +325,7 @@ border-bottom-right-radius: 0;
 
 #twitchpanel.split-view .panelheader .toolgroup,
 #twitchpanel.single-view .panelheader .toolgroup {
-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 #twitchpanel #twitch-elements {
