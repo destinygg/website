@@ -32,6 +32,8 @@
 			this.inputwrap = $(this.ui.find('.chat-input:first')[0]);
 			this.input = $(this.inputwrap.find('.input:first:first')[0]);
 			
+			this.inputwrap.removeClass('hidden');
+			
 			// Scrollbars and scroll locking
 			if(this.scrollPlugin == null){
 				//this.scrollPlugin = new destiny.fn.ChatScrollPlugin(this);

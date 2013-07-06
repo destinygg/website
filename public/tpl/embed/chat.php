@@ -26,9 +26,8 @@ use Destiny\UserRole;
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
 	</div>
-	<div class="chat-output-overlay"></div>
 	
-	<form class="chat-input clearfix">
+	<form class="chat-input clearfix hidden">
 		<div class="chat-input-wrap clearfix">
 			<?php if(Session::hasRole(UserRole::USER)): ?>
 			<div class="chat-input-control">
