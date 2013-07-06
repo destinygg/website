@@ -44,7 +44,20 @@ use Destiny\Utils\Tpl;
 		<div class="list-wrap clearfix">
 			<div class="scrollable">
 				<h5>Users <button type="button" class="close">&times;</button></h5>
-				<ul class="unstyled"></ul>
+				<h6>Admins</h6>
+				<ul class="unstyled admins"></ul>
+				<hr/>
+				<h6>VIP</h6>
+				<ul class="unstyled vips"></ul>
+				<hr/>
+				<h6>Moderators</h6>
+				<ul class="unstyled moderators"></ul>
+				<hr/>
+				<h6>Bots</h6>
+				<ul class="unstyled bots"></ul>
+				<hr/>
+				<h6>Plebs</h6>
+				<ul class="unstyled plebs"></ul>
 			</div>
 		</div>
 	</div>

@@ -172,20 +172,13 @@
 				}
 				chat = null;
 			});
-
-			if(this.getChatOption('showtime'))
-				this.ui.addClass('chat-time');
-			if(this.getChatOption('showicon'))
-				this.ui.addClass('chat-icons');
 			
 			// User list
 			this.userslist = this.ui.find('#chat-user-list:first').eq(0);
 			this.userslist.btn = this.ui.find('.chat-users-btn:first').eq(0);
-			this.userslist.list = this.userslist.find('ul:first').eq(0);
 			this.userslist.visible = false;
 			this.userslist.scrollable = this.userslist.find('.scrollable:first');
 			this.userslist.btn.on('click', function(e){
-				console.log(this);
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.userslist.detach();
@@ -193,15 +186,41 @@
 					return chat.menu.prototype.hideMenu.call(chat.userslist, chat);
 				}
 				chat.menu.closeMenus(chat);
-				chat.userslist.list.empty();
-				if(chat.engine.user){
-					chat.userslist.list.append($('<li><a class="'+ chat.engine.user.features.join(' ') +'">'+chat.engine.user.username+'</a></li>'));
-				}
+				var lists  = chat.userslist.find('ul'),
+				    admins = [], vips = [], mods = [], bots = [], plebs = [],
+				    elems  = {};
+				
 				for(var username in chat.engine.users){
-					if(!chat.engine.user || username != chat.engine.user.username){
-						chat.userslist.list.append($('<li><a class="'+ chat.engine.users[username].features.join(' ') +'">'+chat.engine.users[username].username+'</a></li>'));
-					}
+					var u    = chat.engine.users[username],
+					    elem = $('<li><a class="'+ u.features.join(' ') +'">'+u.username+'</a></li>');
+					
+					elems[username.toLowerCase()] = elem;
+					if ($.inArray('admin', u.features) >= 0)
+						admins.push(username.toLowerCase());
+					else if($.inArray('vip', u.features) >= 0)
+						vips.push(username.toLowerCase());
+					else if($.inArray('moderator', u.features) >= 0)
+						mods.push(username.toLowerCase());
+					else if($.inArray('bot', u.features) >= 0)
+						bots.push(username.toLowerCase());
+					else
+						plebs.push(username.toLowerCase());
+					
 				}
+				
+				var appendUsers = function(users, elem) {
+					users.sort()
+					for (var i = 0; i < users.length; i++) {
+						elem.append(elems[users[i]]);
+					};
+				};
+				
+				lists.empty();
+				appendUsers(admins, lists.filter('.admins'));
+				appendUsers(vips, lists.filter('.vips'));
+				appendUsers(mods, lists.filter('.moderators'));
+				appendUsers(bots, lists.filter('.bots'));
+				appendUsers(plebs, lists.filter('.plebs'));
 				chat.userslist.appendTo(chat.ui);
 				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
 			});
@@ -232,7 +251,6 @@
 						self.ui.toggleClass('chat-time', value);
 						self.resize();
 						break;
-						
 					case 'showicon':
 						self.ui.toggleClass('chat-icons', value);
 						self.resize();
