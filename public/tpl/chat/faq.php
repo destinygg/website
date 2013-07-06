@@ -33,7 +33,6 @@ use Destiny\Utils\Tpl;
 			chat right now.<br/>
 			We have twitch faces (until they DMCA the fuck out of it at least).<br/>
 			Desktop notifications when someone highlights you (if your browser supports it).<br/>
-			Monospace font for all of your ASCII art needs (subject to change).<br/>
 			We reload the last N (currently 150, subject to change) lines of chat.<br/>
 			There is a LOT of things on our TODO list, get in touch if you want to
 			contribute (don't if you just want to ask for a specific feature)!
