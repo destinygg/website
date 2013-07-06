@@ -1,7 +1,7 @@
 function chat(user, options) {
 
 	this.connected     = false;
-	this.debug         = true;
+	this.debug         = false;
 	this.users         = [];
 	this.ignorelist    = {};
 	this.controlevents = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
@@ -144,9 +144,11 @@ chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
 };
 chat.prototype.onQUIT = function(data) {
-	this.users[data.nick].connections--;
-	if (this.users[data.nick].connections <= 0)
-		delete(this.users[data.nick])
+	if (this.users[data.nick]) {
+		this.users[data.nick].connections--;
+		if (this.users[data.nick].connections <= 0)
+			delete(this.users[data.nick])
+	}
 };
 chat.prototype.onMSG = function(data) {
 	if(this.user.username != data.nick || !this.gui.resolveMessage(data)){
