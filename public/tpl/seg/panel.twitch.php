@@ -4,7 +4,7 @@ use Destiny\Session;
 use Destiny\Config;
 ?>
 <?if((bool) Config::$a['blocks']['twitch']):?>
-<section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&popout_chat=true">
+<section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="/embed/chat">
 	<div class="content content-dark">
 		<div class="panelheader clearfix">
 			<div class="toolgroup clearfix">
@@ -39,7 +39,7 @@ use Destiny\Config;
 			</div>
 			<div id="twitch-chat" class="twitch-element-wrap pull-left">
 				<?if((bool) Config::$a['blocks']['chat']):?>
-				<iframe class="twitch-element" frameborder="0" scrolling="no" id="chat_embed" src="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&amp;popout_chat=true"></iframe>
+				<iframe class="twitch-element" frameborder="0" scrolling="no" id="chat_embed" src="/embed/chat"></iframe>
 				<?endif;?>
 			</div>
 		</div>

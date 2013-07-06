@@ -8,6 +8,7 @@
 	};
 	$.extend(destiny.fn.Chat.prototype, {
 
+		theme: 'dark',
 		maxlines: 50,
 		lineCount: 0,
 		scrollPlugin: null,
@@ -17,8 +18,8 @@
 		input: null,
 		onSend: $.noop,
 		userMessages: [],
-		backlog: [],
-		hilightregex: {},
+		backlog: backlog,
+		highlightregex: {},
 		notifications: true,
 		
 		init: function(){
@@ -26,14 +27,15 @@
 			this.ui.data('chat', this);
 			
 			// local elements stored in vars to not have to get the elements via query each time
-			this.lines = $(this.ui.find('.chat-lines:first')[0]);
-			this.output = $(this.ui.find('.chat-output:first')[0]);
-			this.inputwrap = $(this.ui.find('.chat-input:first')[0]);
-			this.input = $(this.inputwrap.find('.input:first:first')[0]);
+			this.lines = this.ui.find('.chat-lines:first').eq(0);
+			this.output = this.ui.find('.chat-output:first').eq(0);
+			this.inputwrap = this.ui.find('.chat-input:first').eq(0);
+			this.input = this.inputwrap.find('.input:first:first').eq(0);
+			
+			this.inputwrap.removeClass('hidden');
 			
 			// Scrollbars and scroll locking
 			if(this.scrollPlugin == null){
-				//this.scrollPlugin = new destiny.fn.ChatScrollPlugin(this);
 				this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
 				this.scrollPlugin.lockScroll(true);
 			};
@@ -46,44 +48,236 @@
 			}
 
 			this.setupNotifications();
-			
-			if(this.notifications && this.engine.user){
-				// TODO make this optional so that the user can disable it
-				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
-				
-				// Temp place to ask for perms
-				this.ui.on('click', '.chat-settings-btn', function(e){
-					// not allowed but not denied, ask for permission, needs to be in a click handler
-					if (notifications.checkPermission() == 1) {
-						notifications.requestPermission(function(){});
-					};
-					console.log('Permissions ok');
-				});
+			if(this.engine.user.username){
+				this.highlightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 			};
 
 			// Bind to user input submit
-			this.ui.on('submit', '.chat-input form', function(e){
+			this.ui.on('submit', 'form.chat-input', function(e){
 				e.preventDefault();
 				$(this).closest('.chat.chat-frame').data('chat').send();
 			});
-			this.ui.on('click', '.chat-users-btn', function(e){
-				console.log(this, e, this.engine.users);
-			});
-
-			// Back log
-			if(this.backlog.length > 0){
-				this.backlog.reverse();
-				this.put(new ChatUIMessage('<hr>'));
-				for(var i=0; i<this.backlog.length; ++i){
-					this.put(new ChatUserMessage(this.backlog[i].data, new ChatUser(this.backlog[i]), this.backlog[i].timestamp));
+			
+			// Generic menus functions
+			this.menus = [];
+			this.menuOpenCount = 0;
+			this.menu = function(){
+				return this;
+			};
+			this.menu.addMenu = function(chat, e){
+				e.on('click', 'button.close', function(){
+					chat.menu.closeMenus(chat);
+				});
+				chat.menu.prototype.scrollable.apply(e);
+				chat.menus.push(e);
+				return this;
+			};
+			this.menu.update = function(chat){
+				if(chat.menuOpenCount > 0){
+					chat.ui.addClass('active-menu');
+				}else{
+					chat.ui.removeClass('active-menu');
 				}
-				this.put(new ChatUIMessage('<hr>'));
+			};
+			this.menu.closeMenus = function(chat){
+				for(var i=0;i<chat.menus.length; ++i){
+					if(chat.menus[i].visible){
+						this.prototype.hideMenu.call(chat.menus[i], chat);
+					}
+				}
+			};
+			this.menu.prototype.showMenu = function(chat){
+				this.stop().slideDown(50);
+				this.visible = true;
+				this.btn.addClass('active');
+				this.scrollable.mCustomScrollbar('update');
+				++chat.menuOpenCount;
+				chat.menu.update(chat);
+			};
+			this.menu.prototype.hideMenu = function(chat){
+				this.stop().hide();
+				this.visible = false;
+				this.btn.removeClass('active');
+				--chat.menuOpenCount;
+				chat.menu.update(chat);
+			};
+			this.menu.prototype.scrollable = function(){
+				this.scrollable.mCustomScrollbar({
+					theme: 'light-thin',
+					scrollInertia: 0,
+					horizontalScroll: false,
+					autoHideScrollbar: true,
+					scrollButtons:{enable:true}
+				});
+			};
+			this.menu.prototype.clickAway = function(){
+				var chat = $(this).closest('.chat').data('chat');
+				if(chat.menuOpenCount > 0){
+					chat.menu.closeMenus(chat);
+				}
 			};
 			
-			this.resize();
-			this.scrollPlugin.update();
-			this.scrollPlugin.scrollBottom();
-			return this;
+			this.output.on('click', this.menu.prototype.clickAway);
+			this.input.on('click', this.menu.prototype.clickAway);
+			//
+			
+			// Chat settings
+			this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
+			this.chatsettings.btn = this.ui.find('.chat-settings-btn:first').eq(0);
+			this.chatsettings.list = this.chatsettings.find('ul:first').eq(0);
+			this.chatsettings.visible = false;
+			this.chatsettings.scrollable = this.chatsettings.find('.scrollable:first');
+			this.loadSettings();
+			
+			this.chatsettings.btn.on('click', function(e){
+				e.preventDefault();
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				chat.chatsettings.detach();
+				if(chat.chatsettings.visible){
+					return chat.menu.prototype.hideMenu.call(chat.chatsettings, chat);
+				}
+				chat.menu.closeMenus(chat);
+				chat.chatsettings.appendTo(chat.ui);
+				return chat.menu.prototype.showMenu.call(chat.chatsettings, chat);
+			});
+			this.chatsettings.on('change', 'input[type="checkbox"]', function(){
+				var chat    = $(this).closest('.chat.chat-frame').data('chat'),
+				    name    = $(this).attr('name'),
+				    checked = $(this).is(':checked');
+				switch(name){
+				
+					case 'showtime':
+						chat.saveChatOption(name, checked);
+						chat.ui.toggleClass('chat-time', checked);
+						chat.resize();
+						break;
+						
+					case 'showicon':
+						chat.saveChatOption(name, checked);
+						chat.ui.toggleClass('chat-icons', checked);
+						chat.resize();
+						break;
+						
+					case 'notifications':
+						var permission = notifications.checkPermission();
+						if (permission == 1) // not yet allowed
+							notifications.requestPermission(function(){});
+						else if (permission == 2) {
+							chat.notifications = false;
+							break;
+						}
+						
+						chat.notifications = checked;
+						chat.saveChatOption(name, checked);
+						break;
+				}
+				chat = null;
+			});
+			
+			// User list
+			this.userslist = this.ui.find('#chat-user-list:first').eq(0);
+			this.userslist.btn = this.ui.find('.chat-users-btn:first').eq(0);
+			this.userslist.visible = false;
+			this.userslist.scrollable = this.userslist.find('.scrollable:first');
+			this.userslist.btn.on('click', function(e){
+				e.preventDefault();
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				chat.userslist.detach();
+				if(chat.userslist.visible){
+					return chat.menu.prototype.hideMenu.call(chat.userslist, chat);
+				}
+				chat.menu.closeMenus(chat);
+				var lists  = chat.userslist.find('ul'),
+				    admins = [], vips = [], mods = [], bots = [], plebs = [],
+				    elems  = {};
+				
+				for(var username in chat.engine.users){
+					var u    = chat.engine.users[username],
+					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
+					
+					elems[username.toLowerCase()] = elem;
+					if ($.inArray('admin', u.features) >= 0)
+						admins.push(username.toLowerCase());
+					else if($.inArray('vip', u.features) >= 0)
+						vips.push(username.toLowerCase());
+					else if($.inArray('moderator', u.features) >= 0)
+						mods.push(username.toLowerCase());
+					else if($.inArray('bot', u.features) >= 0)
+						bots.push(username.toLowerCase());
+					else
+						plebs.push(username.toLowerCase());
+					
+				}
+				
+				var appendUsers = function(users, elem) {
+					users.sort()
+					for (var i = 0; i < users.length; i++) {
+						elem.append(elems[users[i]]);
+					};
+				};
+				
+				lists.empty();
+				appendUsers(admins, lists.filter('.admins'));
+				appendUsers(vips, lists.filter('.vips'));
+				appendUsers(mods, lists.filter('.moderators'));
+				appendUsers(bots, lists.filter('.bots'));
+				appendUsers(plebs, lists.filter('.plebs'));
+				chat.userslist.appendTo(chat.ui);
+				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
+			});
+			
+			this.menu.addMenu(this, this.chatsettings);
+			this.menu.addMenu(this, this.userslist);
+			
+			// Enable toolbar
+			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
+			return this.resize();
+		},
+		
+		loadSettings: function() {
+			var self     = this,
+			    defaults = {
+				showtime     : false,
+				showicon     : false,
+				notifications: false,
+			};
+			
+			this.chatsettings.find('input[type="checkbox"]').each(function() {
+				var name  = $(this).attr('name'),
+				    value = self.getChatOption(name, defaults[name]);
+				
+				$(this).attr('checked', value);
+				switch(name){
+					case 'showtime':
+						self.ui.toggleClass('chat-time', value);
+						self.resize();
+						break;
+					case 'showicon':
+						self.ui.toggleClass('chat-icons', value);
+						self.resize();
+						break;
+				};
+			});
+		},
+		
+		loadBacklog: function() {
+			if(this.backlog.length > 0){
+				for (var i = this.backlog.length - 1; i >= 0; i--) {
+					var line    = this.backlog[i],
+					    message = this.engine.dispatchBacklog(line);
+					
+					if (!message)
+						continue;
+					
+					if ($.inArray(line.event, this.engine.controlevents) >= 0)
+						this.put(message, 'control');
+					else {
+						var m = this.put(message);
+						this.handleHighlight(m, true);
+					}
+				}
+				this.put(new ChatUIMessage('<hr/>'));
+			};
 		},
 		
 		lineCount: function(){
@@ -93,36 +287,55 @@
 		// API
 		purge: function(){
 			this.lines.empty();
-			$(this).triggerHandler('purge');
 			return this;
 		},
-		
+		pushControlMessage: function(message) {
+			var m = this.push(message);
+			m.ui.addClass('control');
+		},
 		push: function(message, state){
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
 			this.userMessages.push(message);
 			this.put(message, state);
+			this.scrollPlugin.update();
 			if(this.lineCount() >= this.maxlines){
-				$(this.lines.children()[0]).remove();
-			}else if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
-				this.scrollPlugin.update();
-				this.scrollPlugin.scrollBottom();
-			}else if(this.scrollPlugin.isScrollable()){
-				this.scrollPlugin.update()
+				this.lines.children().eq(0).remove();
 			}
-			this.handleNotification(message);
+			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
+				this.scrollPlugin.scrollBottom();
+			}
+			this.handleHighlight(message);
 			return message;
 		},
 		
+		lastMessage: null,
+		
 		// bypass ui updates and notifications
 		// used to mass put history messages, and only update ui afterwards
-		put: function(message, state){
-			message.ui = $(message.html()).appendTo(this.lines);
+		put: function(message, state, klass){
+			if(message instanceof ChatUserMessage){
+				if(this.lastMessage && this.lastMessage.user && message.user && this.lastMessage.user.username == message.user.username){
+					//same person
+					message.ui = $(message.addonHtml());
+				}else{
+					//different person
+					message.ui = $(message.html());
+				}
+			}else{
+				message.ui = $(message.html());
+			};
+			message.ui.appendTo(this.lines);
+			if (klass)
+				message.ui.addClass(klass);
+			
 			if(state != undefined)
 				message.status(state);
+			this.lastMessage = message;
+			return message;
 		},
 		
 		send: function(){
-			var str = this.input.val();
+			var str = this.input.val().trim();
 			if(str != ''){
 				this.input.val('').focus();
 				this.onSend(str, this.input[0]);
@@ -134,8 +347,9 @@
 		},
 		
 		resize: function(){
-			this.output.height(this.ui.height()-this.inputwrap.outerHeight());
-			$(this).triggerHandler('resize');
+			this.output.height(this.ui.height()-(this.inputwrap.height() + parseInt(this.inputwrap.css('margin-top'))));
+			this.scrollPlugin.update();
+			this.scrollPlugin.scrollBottom();
 			return this;
 		},
 		
@@ -145,14 +359,6 @@
 		
 		disableInput: function(){
 			this.input.attr('disabled', true);
-		},
-		
-		ping: function(){
-			//  stub
-		},
-		
-		removeUserLines: function(user){
-			// stub
 		},
 		
 		setupInputHistory: function(){
@@ -232,7 +438,7 @@
 		
 		setupNotifications: function() {
 			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
-			if(!notifications){
+			if(!notifications || !this.engine.user.username || !this.getChatOption('notifications', false)){
 				this.notifications = false;
 			}
 		},
@@ -258,10 +464,32 @@
 			}, 5000);
 		},
 		
-		handleNotification: function(message){
-			if(this.notifications && (message.user && message.user.username != this.engine.user.username && this.hilightregex.user.test(message.message))){
-				this.showNotification(message);
+		handleHighlight: function(message, skipnotify){
+			if (!this.highlightregex.user || !this.getChatOption('highlight', true))
+				return;
+			if (message.user && message.user.username != this.engine.user.username && this.highlightregex.user.test(message.message)) {
+				message.ui.addClass('highlight');
+				if(!skipnotify && this.notifications){
+					this.showNotification(message);
+				}
 			}
+		},
+		
+		getChatOption: function(option, defaultvalue) {
+			var options = JSON.parse(localStorage['chatoptions'] || '{}');
+			return (options[option] == undefined)? defaultvalue: options[option];
+		},
+		
+		saveChatOption: function(option, value) {
+			var options     = JSON.parse(localStorage['chatoptions'] || '{}');
+			options[option] = value;
+			localStorage['chatoptions'] = JSON.stringify(options);
+		},
+		
+		removeUserMessages: function(username) {
+			var klass = '.nick-'+username.toLowerCase();
+			$('.chat-lines '+klass).remove();
+			$('.chat.chat-frame').data('chat').resize();
 		}
 		
 	});
@@ -282,7 +510,8 @@ var UserFeatures = {
 	SUBSCRIBER	: 'subscriber',
 	VIP			: 'vip',
 	MODERATOR	: 'moderator',
-	ADMIN		: 'admin'
+	ADMIN		: 'admin',
+	BOT			: 'bot',
 };
 
 var ChatMessageStatus = {
@@ -296,32 +525,30 @@ var ChatMessageStatus = {
 function ChatUser(args){
 	args = args || {};
 	this.username = args.nick || '';
-	this.userId = '';
 	this.features = [];
 	this.connections = 0;
-	this.color = '#efefef';
 	args.features = args.features || [];
 	$.extend(this, args);
 	return this;
 };
 ChatUser.prototype.getFeatureHTML = function(){
 	var icons = '';
-	for (var i = this.features.length - 1; i >= 0; i--) {
+	for (var i = 0; i < this.features.length; i++) {
 		switch(this.features[i]){
-			case UserFeatures.PROTECTED :
-				icons += '<i class="icon-eye-close" title="Protected"/>';
-				break;
 			case UserFeatures.SUBSCRIBER :
-				icons += '<i class="icon-star" title="Subscriber"/>';
+				icons += '<i class="icon-subscriber" title="Subscriber"/>';
 				break;
 			case UserFeatures.VIP :
-				icons += '<i class="icon-film" title="VIP"/>';
+				icons += '<i class="icon-vip" title="VIP"/>';
 				break;
 			case UserFeatures.MODERATOR :
-				icons += '<i class="icon-leaf" title="Moderator"/>';
+				icons += '<i class="icon-moderator" title="Moderator"/>';
 				break;
 			case UserFeatures.ADMIN :
-				icons += '<i class="icon-fire" title="Administrator"/>';
+				icons += '<i class="icon-administrator" title="Administrator"/>';
+				break;
+			case UserFeatures.BOT :
+				icons += '<i class="icon-bot" title="Bot"/>';
 				break;
 		}
 	}
@@ -330,8 +557,7 @@ ChatUser.prototype.getFeatureHTML = function(){
 
 //UI MESSAGE
 function ChatUIMessage(html){
-	this.init(html);
-	return this;
+	return this.init(html);
 };
 ChatUIMessage.prototype.init = function(html){
 	this.message = html;
@@ -340,21 +566,24 @@ ChatUIMessage.prototype.init = function(html){
 ChatUIMessage.prototype.html = function(){
 	return this.wrap(this.wrapMessage());
 };
-ChatUIMessage.prototype.wrap = function(content){
-	return '<div>'+content+'</div>';
+ChatUIMessage.prototype.wrap = function(html){
+	return '<div>'+html+'</div>';
 };
-ChatUIMessage.prototype.wrapMessage = function(css){
-	return $('<span'+ ((css==undefined) ? '':' class="'+css+'"') +' />').html(this.message).html();
+ChatUIMessage.prototype.wrapMessage = function(){
+	return this.message;
 };
 
 //BASE MESSAGE
+// will find a nice home for these
+var emoteregex = /ArsonNoSexy|AsianGlow|BCWarrior|BORT|BibleThump|BionicBunion|BlargNaut|BloodTrail|BrainSlug|BrokeBack|CougarHunt|DAESuppy|DBstyle|DansGame|DatSheffy|EagleEye|EvilFetus|FPSMarksman|FUNgineer|FailFish|FrankerZ|FreakinStinkin|FuzzyOtterOO|GingerPower|HassanChop|HotPokket|ItsBoshyTime|JKanStyle|Jebaited|JonCarnage|Kappa|KevinTurtle|Kreygasm|MVGame|MrDestructoid|NinjaTroll|NoNoSpot|OMGScoots|OneHand|OpieOP|OptimizePrime|PJSalt|PMSTwin|PazPazowitz|PicoMause|PogChamp|Poooound|PunchTrees|RedCoat|ResidentSleeper|RuleFive|SMOrc|SMSkull|SSSsss|ShazBotstix|SoBayed|SoonerLater|StoneLightning|StrawBeary|SuperVinlin|SwiftRage|TehFunrun|TheRinger|TheTarFu|TinyFace|TooSpicy|TriHard|UleetBackup|UnSane|Volcania|WinWaker/;
+var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+
 function ChatMessage(message, timestamp){
-	this.init(message, timestamp);
-	return this;
+	return this.init(message, timestamp);
 };
 ChatMessage.prototype.init = function(message, timestamp){
 	this.message = message;
-	this.timestamp = moment(timestamp);
+	this.timestamp = moment.utc(timestamp).local();
 	this.state = null;
 	return this;
 };
@@ -370,13 +599,13 @@ ChatMessage.prototype.status = function(state){
 	return this;
 };
 ChatMessage.prototype.wrapTime = function(){
-	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+' </time>';
+	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+'</time>';
 };
 ChatMessage.prototype.wrapMessage = function(){
 	return $('<span/>').text(this.message).html();
 };
 ChatMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + this.wrapMessage());
+	return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
 };
 ChatMessage.prototype.wrap = function(content){
 	return '<div>'+content+'</div>';
@@ -384,42 +613,45 @@ ChatMessage.prototype.wrap = function(content){
 // USER MESSAGE
 function ChatUserMessage(message, user, timestamp){
 	this.init(message, timestamp);
+	// strip the /me
+	this.isEmote = false;
+	if (this.message.substring(0, 4) === '/me ') {
+		this.isEmote = true;
+		this.message = this.message.substring(4);
+	} else if (this.message.substring(0, 2) === '//')
+		this.message = this.message.substring(1);
+	
 	this.user = user;
-	this.emoteregex = /ArsonNoSexy|AsianGlow|BCWarrior|BORT|BibleThump|BionicBunion|BlargNaut|BloodTrail|BrainSlug|BrokeBack|CougarHunt|DAESuppy|DBstyle|DansGame|DatSheffy|EagleEye|EvilFetus|FPSMarksman|FUNgineer|FailFish|FrankerZ|FreakinStinkin|FuzzyOtterOO|GingerPower|HassanChop|HotPokket|ItsBoshyTime|JKanStyle|Jebaited|JonCarnage|Kappa|KevinTurtle|Kreygasm|MVGame|MrDestructoid|NinjaTroll|NoNoSpot|OMGScoots|OneHand|OpieOP|OptimizePrime|PJSalt|PMSTwin|PazPazowitz|PicoMause|PogChamp|Poooound|PunchTrees|RedCoat|ResidentSleeper|RuleFive|SMOrc|SMSkull|SSSsss|ShazBotstix|SoBayed|SoonerLater|StoneLightning|StrawBeary|SuperVinlin|SwiftRage|TehFunrun|TheRinger|TheTarFu|TinyFace|TooSpicy|TriHard|UleetBackup|UnSane|Volcania|WinWaker/;
-	this.linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 	return this;
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
+ChatUserMessage.prototype.wrap = function(html) {
+	if (this.user && this.user.username) {
+		return '<div class="'+'nick-' + this.user.username.toLowerCase()+'">'+html+'</div>';
+	} else
+		return '<div>'+html+'</div>';
+};
 ChatUserMessage.prototype.wrapUser = function(user){
-	var sep = '';
-	if (this.message.substring(0, 4) === '/me ')
-		sep = '*';
-	
-	return user.getFeatureHTML() +' <a style="color:'+user.color+'">'+sep+user.username+'</a>';
+	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
-	var sep = ': ';
-	if (this.message.substring(0, 4) === '/me ') {
-		sep = ' ';
-		this.message = this.message.substring(4); // strip the /me
-	}
-	
-	var elem  = $('<span/>').text(sep+this.message),
-	    emote = this.emoteregex.exec(elem.text());
-	
-	elem.html(elem.text().replace(this.linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
-	
+	var elem  = $('<msg/>').text(this.message),
+	    emote = emoteregex.exec(elem.text());
+	elem.html(elem.text().replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>'));
 	if (emote) {
-		var emoteelem = $('<div class="twitch-emote"/>');
-		emoteelem.addClass('twitch-emote-' + emote[0]);
-		emoteelem.attr('title', emote[0]);
-		
-		var html = elem.text().replace(emote[0], emoteelem.get(0).outerHTML);
-		elem.html(html);
+		var emoteelem = '<div title="'+emote[0]+'" class="twitch-emote twitch-emote-' + emote[0] +'"></div>';
+		elem.html(elem.text().replace(emote[0], emoteelem));
 	}
-	
-	return elem.html();
+	if(this.isEmote){
+		elem.addClass('emote');
+	}
+	return elem[0].outerHTML;
 };
 ChatUserMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + this.wrapUser(this.user) + this.wrapMessage());
+	return this.wrap(this.wrapTime() + ' ' + ((!this.isEmote) ? '' : '*') + this.wrapUser(this.user) + ((!this.isEmote) ? ': ' : ' ') + this.wrapMessage());
+};
+ChatUserMessage.prototype.addonHtml = function(){
+	if(this.isEmote)
+		return this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
+	return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage());
 };

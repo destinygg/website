@@ -7,12 +7,16 @@
 	$.extend(destiny.fn.ChatScrollPlugin.prototype, {
 		
 		scrollLocked: true,
+		scrolledBottom: true,
 		chat: null,
 		update: $.noop,
 		
 		init: function(){
 			var self = this;
 			$(self.chat.output).on({
+				scroll: function(e){
+					self.scrolledBottom = (self.chat.output.scrollTop() + self.chat.output.height() == self.chat.lines.height());
+				},
 				mousedown: function(e){
 					if(self.isScrollLocked() && !self.isScrolledBottom()){
 						self.lockScroll(false);
@@ -32,24 +36,24 @@
 					}
 				}
 			});
+
+			
 			self.chat.ui.addClass('chat-native-scroll');
 			return self;
 		},
 		
 		lockScroll: function(lock){
 			this.scrollLocked = lock; 
-			$(this).triggerHandler('lockScroll');
 			return this;
 		},
 		
 		scrollBottom: function(){
-			this.chat.output.scrollTop(this.chat.output.prop('scrollHeight'));
-			$(this).triggerHandler('scrollBottom');
-			return this;
+			this.scrolledBottom = true;
+			return this.chat.output.scrollTop(this.chat.output.prop('scrollHeight'));
 		},
 		
 		isScrolledBottom: function(){
-			return (!this.isScrollable() || this.chat.output.scrollTop() + this.chat.output.height() == this.chat.lines.height());
+			return (!this.isScrollable() || this.scrolledBottom);
 		},
 		
 		isScrollable: function(){

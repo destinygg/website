@@ -409,13 +409,6 @@ class SessionCredentials {
 	protected $features = array ();
 	
 	/**
-	 * The user color
-	 *
-	 * @var string
-	 */
-	protected $color = '';
-
-	/**
 	 * Set all the credentials at once
 	 *
 	 * @param array $params
@@ -446,9 +439,6 @@ class SessionCredentials {
 			if (isset ( $params ['roles'] ) && ! empty ( $params ['roles'] ) && is_array ( $params ['roles'] )) {
 				$this->setRoles ( array_unique ( $params ['roles'] ) );
 			}
-			if (isset ( $params ['color'] ) && ! empty ( $params ['color'] )) {
-				$this->setColor ( $params ['color'] );
-			}
 		}
 	}
 
@@ -466,8 +456,7 @@ class SessionCredentials {
 			'country' => $this->getCountry (),
 			'roles' => $this->getRoles (),
 			'authProvider' => $this->getAuthProvider (),
-			'features' => $this->getFeatures (),
-			'color' => $this->getColor () 
+			'features' => $this->getFeatures ()
 		);
 	}
 
@@ -516,9 +505,9 @@ class SessionCredentials {
 	}
 
 	/**
-	 * Add a roles
+	 * Add roles
 	 *
-	 * @param string $role
+	 * @param array|string $role
 	 */
 	public function addRoles($role) {
 		if (is_array ( $role )) {
@@ -600,16 +589,24 @@ class SessionCredentials {
 		return false;
 	}
 
-	public function getColor() {
-		return $this->color;
-	}
-
-	public function setColor($color) {
-		$this->color = $color;
+	/**
+	 * Add user features
+	 *
+	 * @param array|string $features
+	 */
+	public function addFeatures($features) {
+		if (is_array ( $features )) {
+			for($i = 0; $i < count ( $features ); ++ $i) {
+				if (! in_array ( $features [$i], $this->features )) {
+					$this->features [] = $features [$i];
+				}
+			}
+		} elseif (! in_array ( $features, $this->features )) {
+			$this->features [] = $features;
+		}
 	}
 
 }
-
 abstract class Session {
 	
 	/**

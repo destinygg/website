@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Service;
 
-use Destiny\Utils\Color;
 use Destiny\Config;
 use Destiny\Application;
 use Destiny\Service\RememberMeService;
@@ -147,6 +146,7 @@ class AuthenticationService extends Service {
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
 		if (! empty ( $subscription )) {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
+			$credentials->addFeatures ( \Destiny\UserFeature::SUBSCRIBER );
 		}
 		
 		// Get the stored roles
@@ -154,9 +154,6 @@ class AuthenticationService extends Service {
 		
 		// Add the user features
 		$credentials->setFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
-		
-		// Generate the user color
-		$credentials->setColor ( Color::getFeaturesColor ( $credentials->getFeatures () ) );
 		
 		// Update the auth credentials
 		Session::updateCredentials ( $credentials );

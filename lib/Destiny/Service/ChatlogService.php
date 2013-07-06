@@ -3,8 +3,6 @@ namespace Destiny\Service;
 
 use Destiny\Service;
 use Destiny\Application;
-use Destiny\Utils\Date;
-use Destiny\Config;
 use \PDO;
 
 class ChatlogService extends Service {
@@ -31,26 +29,10 @@ class ChatlogService extends Service {
 	 * @return \Destiny\Service\ChatLog
 	 */
 	public function getChatLog($limit) {
-		return new ChatLog ( $limit );
-	}
-
-}
-class ChatLog implements \Iterator {
-	
-	protected $stmt;
-	protected $key = - 1;
-	protected $value;
-	protected $limit = 0;
-
-	public function __construct($limit) {
-		$this->limit = $limit;
-	}
-
-	public function rewind() {
+		
 		$conn = Application::instance ()->getConnection ();
-		$this->stmt = $conn->prepare ( '
+		$stmt = $conn->prepare ( '
 			SELECT
-				u.userId,
 				u.username,
 				u2.username AS target,
 				l.event,
@@ -58,7 +40,7 @@ class ChatLog implements \Iterator {
 				l.timestamp,
 				(
 				
-					SELECT GROUP_CONCAT(fn.featureName)
+					SELECT GROUP_CONCAT( DISTINCT fn.featureName)
 					FROM dfl_users_features AS uf
 					INNER JOIN dfl_features AS fn ON (fn.featureId = uf.featureId)
 					WHERE uf.userId = u.userId
@@ -72,29 +54,33 @@ class ChatLog implements \Iterator {
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
 			ORDER BY l.id DESC
-			LIMIT ' . $this->limit, array (
-			PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY 
-		) );
+			LIMIT ' . $limit
+		);
 		
-		$this->stmt->execute ();
-		$this->next ();
-	}
-
-	public function current() {
-		return $this->value;
-	}
-
-	public function key() {
-		return $this->key;
-	}
-
-	public function next() {
-		$this->value = $this->stmt->fetch ( PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT );
-		$this->key ++;
-	}
-
-	public function valid() {
-		return $this->value !== false;
+		$stmt->execute();
+		$chatlog  = $stmt->fetchAll();
+		$lines    = array();
+		$suppress = array();
+		
+		foreach ( $chatlog as &$line ) {
+			
+			if ( $line['event'] == 'MUTE' or $line['event'] == 'BAN' ) {
+				$suppress[ $line['target'] ] = true;
+			}
+			
+			if ( isset( $suppress[ $line['username'] ] ) ) {
+				continue;
+			}
+			
+			if (! empty ( $line ['features'] ))
+				$line ['features'] = explode ( ',', $line ['features'] );
+			
+			$lines[] = $line;
+			
+		}
+		
+		return $lines;
+		
 	}
 
 }

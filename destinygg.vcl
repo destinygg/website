@@ -48,15 +48,20 @@ sub vcl_recv {
 		unset req.http.cookie;
 	}
 	
-	// cache the landing page if no session was started
-	if (req.url == "/" && req.http.Cookie !~ "sid=|rememberme=") {
+	// cache the landing page/chat landing page if no session was started
+	if ((req.url == "/" || req.url == "/embed/chat") && req.http.Cookie !~ "sid=|rememberme=") {
 		unset req.http.cookie;
 	}
 	
-	// cache the api requests - we need stateful json - until I clean it up
-	//if (req.url ~ "^/[^/]+\.json$") {
-	//	unset req.http.cookie;
-	//}
+	// cache some of the api requests - we need stateful json for the others - until I clean it up
+	if (req.url ~ "^/(lastfm|broadcasts|twitter|youtube|stream|summoners)\.json$") {
+		unset req.http.cookie;
+	}
+	
+	// drop any cookies on the chat history file
+	if ( req.url == "/chat/history.js" ) {
+		unset req.http.cookie;
+	}
 	
 	// Handle compression correctly. Different browsers send different
 	// "Accept-Encoding" headers, even though they mostly all support the same
@@ -100,6 +105,11 @@ sub vcl_fetch {
 	// mainly to override the cache headers sent by php
 	if ( (req.url == "/" && req.http.Cookie !~ "sid=|rememberme=") || req.url ~ "^/[^/]\.json$") {
 		set beresp.ttl = 30s;
+	}
+	
+	// do not cache the chat history for long
+	if ( req.url == "/chat/history.js" ) {
+		set beresp.ttl = 200ms;
 	}
 	
 }

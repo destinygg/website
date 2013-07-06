@@ -100,18 +100,6 @@ use Destiny\Session;
 					</div>
 		
 					<div class="control-group">
-						<label>Fantasy team:</label>
-						<label class="radio">
-							<input type="radio" name="feature[<?=\Destiny\UserFeature::STICKY_TEAMBAR?>]" value="0" <?=(!Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)) ? 'checked':''?>>
-							Show <u>only</u> on league page
-						</label>
-						<label class="radio">
-							<input type="radio" name="feature[<?=\Destiny\UserFeature::STICKY_TEAMBAR?>]" value="1" <?=(Session::hasFeature(\Destiny\UserFeature::STICKY_TEAMBAR)) ? 'checked':''?>>
-							Show on home page &amp; league page
-						</label>
-					</div>
-		
-					<div class="control-group">
 						<a href="#" rel="resetteam">Reset fantasy team</a>
 					</div>
 		

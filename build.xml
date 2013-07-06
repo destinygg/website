@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="destinygg" default="build">
 	
-	<property name="yuicompressor.jar" value="build" />
+	<property name="yuicompressor.jar" value="E:/work/nervo/yuicompressor/yuicompressor.jar" />
 
 	<target name="package" depends="readcomposerproperties">
 		<property name="build.dir" value="${basedir}/../destiny_packages/${composer.version}" />
@@ -23,7 +23,6 @@
 		<antcall target="copyvendor" />
 		<antcall target="packresources" />
 	</target>
-		
 	
 	<target name="build" depends="readcomposerproperties">
 		<property name="build.dir" value="${basedir}/../destiny_build" />
@@ -75,15 +74,18 @@
 		</antcall>
 		
 		<!-- Chat concat and compress -->
+		<concat destfile="${build.dir}/static/chat/css/style.${composer.version}.css" fixlastline="yes" append="no">
+			<fileset file="${build.dir}/static/chat/css/style.css" />
+			<fileset file="${build.dir}/static/chat/css/emoticons.css" />
+		</concat>
 		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/chat/css/style.css" />
+			<param name="file" value="${build.dir}/static/chat/css/style.${composer.version}.css" />
 		</antcall>
-		<move file="${build.dir}/static/chat/css/style.css" tofile="${build.dir}/static/chat/css/style.${composer.version}.css" />
 		<concat destfile="${build.dir}/static/chat/js/engine.${composer.version}.js" fixlastline="yes" append="no">
+			<fileset file="${build.dir}/static/chat/js/chat.js" />
 			<fileset file="${build.dir}/static/chat/js/gui.js" />
 			<fileset file="${build.dir}/static/chat/js/scroll.mCustom.js" />
 			<fileset file="${build.dir}/static/chat/js/scroll.native.js" />
-			<fileset file="${build.dir}/static/chat/js/impl.js" />
 		</concat>
 		<antcall target="compress">
 			<param name="file" value="${build.dir}/static/chat/js/engine.${composer.version}.js" />

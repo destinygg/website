@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Order;
 
 use PayPal\EBLBaseComponents\PaymentRequestInfoType;
@@ -211,6 +210,7 @@ class Complete {
 		// Add the subscriber role, this is just for UI
 		$credentials = Session::getCredentials ();
 		$credentials->addRoles ( \Destiny\UserRole::SUBSCRIBER );
+		$credentials->addFeatures ( \Destiny\UserFeature::SUBSCRIBER );
 		Session::updateCredentials ( $credentials );
 		
 		// Show the order complete screen

@@ -1,10 +1,24 @@
 function chat(user, options) {
 
-	this.connected = false;
-	this.debug = true;
-	this.users = {};
-	this.ignorelist = {};
-
+	this.connected     = false;
+	this.debug         = true;
+	this.users         = [];
+	this.ignorelist    = {};
+	this.controlevents = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
+	this.errorstrings  = {
+		"nopermission" : "You do not have the required permissions to use that",
+		"protocolerror": "Invalid or badly formatted",
+		"needlogin"    : "You have to be logged in to use that",
+		"invalidmsg"   : "The message was invalid",
+		"throttled"    : "Throttled! You were trying to send messages too fast",
+		"duplicate"    : "The messages is identical to the last one you sent",
+		"muted"        : "You are muted",
+		"submode"      : "The channel is currently in subscriber only mode",
+		"needbanreason": "Providing a reason for the ban is mandatory",
+		"banned"       : "You have been banned, disconnecting",
+		"requiresocket": "This chat requires WebSockets"
+	};
+	
 	// TODO clean this up
 	this.user = new ChatUser(user);
 	this.gui = new destiny.fn.Chat(this, options);
@@ -14,11 +28,11 @@ function chat(user, options) {
 		window.WebSocket = MozWebSocket;
 	
 	if ( !window.WebSocket )
-		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
+		return this.gui.push(new ChatMessage());
 	
 	this.gui.onSend = function(str){
-		if(this.engine.user == null || this.engine.user.username == '')
-			return this.push(new ChatMessage("You must be logged in to send messages"));
+		if(this.engine.user == null || !this.engine.user.username)
+			return this.push(new ChatMessage(this.errorstrings.requiresocket));
 		
 		if (str.substring(0, 1) === '/')
 			return this.engine.handleCommand(str.substring(1));
@@ -29,6 +43,7 @@ function chat(user, options) {
 	
 	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
 	this.init();
+	this.gui.loadBacklog();
 	options = null;
 }
 
@@ -51,7 +66,7 @@ chat.prototype.init = function() {
 		this.parseAndDispatch(event)
 	}, this);
 	
-	if(this.user){
+	if(this.user.username){
 		this.gui.push(new ChatMessage("Connecting as "+this.user.username+"..."));
 	}else{
 		this.gui.push(new ChatMessage("Connecting..."));
@@ -59,6 +74,7 @@ chat.prototype.init = function() {
 	
 	this.l = $.proxy(this.l, this);
 	this.emit = $.proxy(this.emit, this);
+	this.dispatchBacklog = $.proxy(this.dispatchBacklog, this);
 };
 chat.prototype.loadIgnoreList = function() {
 	if (!localStorage)
@@ -78,8 +94,29 @@ chat.prototype.parseAndDispatch = function(e) {
 		return this.sock.send('PONG ' + e.data.substring(eventname.length+1));
 	}
 	
+	if (this[handler]) {
+		var message = this[handler](obj);
+		if (message) {
+			
+			if ($.inArray(eventname, this.controlevents) >= 0)
+				this.gui.pushControlMessage(message);
+			else
+				this.gui.push(message);
+		}
+	}
+};
+chat.prototype.dispatchBacklog = function(e) {
+	var handler = 'on' + e.event,
+	    obj     = {
+		nick     : e.username,
+		data     : e.data || e.target,
+		features : e.features,
+		timestamp: moment.utc(e.timestamp).valueOf()
+	};
+	
 	if (this[handler])
-		this[handler](obj, e);
+		return this[handler](obj);
+	
 };
 chat.prototype.emit = function(eventname, data) {
 	this.sock.send(eventname + " " + JSON.stringify(data));
@@ -88,11 +125,11 @@ chat.prototype.emit = function(eventname, data) {
 // server events
 chat.prototype.onOPEN = function() {
 	this.connected = true;
-	this.gui.push(new ChatMessage("You are now connected"));
+	return new ChatMessage("You are now connected");
 };
 chat.prototype.onCLOSE = function() {
 	this.connected = false;
-	this.gui.push(new ChatMessage("You have been disconnected"));
+	return new ChatMessage("You have been disconnected");
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -112,35 +149,62 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick])
 };
 chat.prototype.onMSG = function(data) {
-	if(this.user == null || this.user.username != data.nick || !this.gui.resolveMessage(data)){
+	if(this.user.username != data.nick || !this.gui.resolveMessage(data)){
 		var lowernick = data.nick.toLowerCase();
 		if (this.ignorelist[lowernick]) // user ignored
 			return;
-		this.gui.push(new ChatUserMessage(data.data, this.users[data.nick], data.timestamp));
+		
+		var user = this.users[data.nick];
+		if (!user)
+			user = new ChatUser(data);
+		
+		return new ChatUserMessage(data.data, user, data.timestamp);
 	}
 };
 chat.prototype.onMUTE = function(data) {
-	// TODO make these messages distinct along with ban
-	// data.data is the nick which has been muted, no info about duration
-	this.gui.push(new ChatMessage(data.nick + " muted", data.timestamp));
-	this.gui.removeUserLines(data);
+	var suppressednick = data.data;
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
+		suppressednick = 'You have been';
+	else
+		this.gui.removeUserMessages(data.data);
+	
+	return new ChatMessage(suppressednick + " muted by " + data.nick, data.timestamp);
 };
 chat.prototype.onUNMUTE = function(data) {
-	this.gui.push(new ChatMessage(data.nick + " unmuted", data.timestamp));
+	var suppressednick = data.data;
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
+		suppressednick = 'You have been';
+	
+	return new ChatMessage(suppressednick + " unmuted by " + data.nick, data.timestamp);
 };
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
-	this.gui.push(new ChatMessage(data.nick + " banned", data.timestamp));
-	this.gui.removeUserLines(data);
+	var suppressednick = data.data;
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
+		suppressednick = 'You have been';
+	else
+		this.gui.removeUserMessages(data.data);
+	
+	return new ChatMessage(suppressednick + " banned by " + data.nick, data.timestamp);
 };
 chat.prototype.onUNBAN = function(data) {
-	this.gui.push(new ChatMessage(data.nick + " unbanned", data.timestamp));
+	var suppressednick = data.data;
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
+		suppressednick = 'You have been';
+	
+	return new ChatMessage(suppressednick + " unbanned by " + data.nick, data.timestamp);
 };
 chat.prototype.onERR = function(data) {
-	// data is a string now, TODO translate the raw error strings to something
-	// human readable
-	this.gui.push(new ChatMessage("Error: " + data));
+	return new ChatMessage("Error: " + this.errorstrings[data]);
 };
+chat.prototype.onREFRESH = function() {
+	window.location.href = window.location.href;
+};
+chat.prototype.onSUBONLY = function(data) {
+	var submode = data.data == 'on'? 'enabled': 'disabled';
+	return new ChatMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
+};
+
 chat.prototype.handleCommand = function(str) {
 	
 	var parts     = str.split(" ");
@@ -148,10 +212,18 @@ chat.prototype.handleCommand = function(str) {
 	    nickregex = /^[a-zA-Z0-9]{4,20}$/,
 	    payload   = {};
 	
+	if (str.substring(0, 1) === '/') {
+		payload.data = "/" + str;
+		this.emit("MSG", payload);
+		return;
+	}
+	
 	switch(command) {
-		
 		default:
 			this.gui.push(new ChatMessage("Error: unknown command"));
+			break;
+		case "help":
+			this.gui.push(new ChatMessage("Available commands: /me, /ignore, /mute, /unmute, /subonly"));
 			break;
 		case "me":
 			payload.data = "/" + str;
@@ -194,6 +266,11 @@ chat.prototype.handleCommand = function(str) {
 			this.loadIgnoreList();
 			break;
 		case "mute":
+			if (parts.length == 1) {
+				this.gui.push(new ChatMessage("Error: Usage: /" + command + " nick[ time]"));
+				return;
+			}
+			
 			// TODO bans are a little more involved, requiring a reason + ip bans + permbans
 			if (!nickregex.test(parts[1])) {
 				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick[ time]"));
@@ -212,6 +289,11 @@ chat.prototype.handleCommand = function(str) {
 			break;
 		case "unmute":
 		case "unban":
+		if (parts.length == 1) {
+				this.gui.push(new ChatMessage("Error: Usage: /" + command + " nick"));
+				return;
+			}
+			
 			if (!nickregex.test(parts[1])) {
 				this.gui.push(new ChatMessage("Error: Invalid nick - /" + command + " nick"));
 				return;
@@ -222,7 +304,7 @@ chat.prototype.handleCommand = function(str) {
 			break;
 		
 		case "subonly":
-			if (parts[1] != 'on' && parts[2] != 'off') {
+			if (parts[1] != 'on' && parts[1] != 'off') {
 				this.gui.push(new ChatMessage("Error: Invalid argument - /" + command + " on/off"));
 				return;
 			}

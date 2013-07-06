@@ -49,17 +49,6 @@ class Profile {
 			return 'profile';
 		}
 		
-		// Preferences
-		if (isset ( $params ['feature'] ) && ! empty ( $params ['feature'] )) {
-			$userFeatures = Session::getCredentials ()->getFeatures ();
-			if (! in_array ( UserFeature::STICKY_TEAMBAR, $userFeatures ) && isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 1) {
-				$userFeaturesService->addUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
-			}
-			if (in_array ( UserFeature::STICKY_TEAMBAR, $userFeatures ) && isset ( $params ['feature'] [UserFeature::STICKY_TEAMBAR] ) && $params ['feature'] [UserFeature::STICKY_TEAMBAR] == 0) {
-				$userFeaturesService->removeUserFeature ( $user ['userId'], UserFeature::STICKY_TEAMBAR );
-			}
-		}
-		
 		// Update user
 		
 		$userService->updateUser ( $user ['userId'], array (
