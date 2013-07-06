@@ -195,6 +195,10 @@ chat.prototype.onERR = function(data) {
 chat.prototype.onREFRESH = function() {
 	window.location.href = window.location.href;
 };
+chat.prototype.onSUBONLY = function(data) {
+	var submode = data.data == 'on'? 'enabled': 'disabled';
+	return new ChatMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
+};
 
 chat.prototype.handleCommand = function(str) {
 	
