@@ -19,7 +19,7 @@
 		onSend: $.noop,
 		userMessages: [],
 		backlog: backlog,
-		hilightregex: {},
+		highlightregex: {},
 		notifications: true,
 		
 		init: function(){
@@ -50,7 +50,7 @@
 
 			this.setupNotifications();
 			if(this.engine.user.username){
-				this.hilightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
+				this.highlightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 			};
 
 			// Bind to user input submit
@@ -274,7 +274,7 @@
 						this.put(message, 'control');
 					else {
 						var m = this.put(message);
-						this.handleHilight(m, true);
+						this.handleHighlight(m, true);
 					}
 				}
 				this.put(new ChatUIMessage('<hr/>'));
@@ -305,7 +305,7 @@
 			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
 				this.scrollPlugin.scrollBottom();
 			}
-			this.handleHilight(message);
+			this.handleHighlight(message);
 			return message;
 		},
 		
@@ -336,7 +336,7 @@
 		},
 		
 		send: function(){
-			var str = this.input.val();
+			var str = this.input.val().trim();
 			if(str != ''){
 				this.input.val('').focus();
 				this.onSend(str, this.input[0]);
@@ -465,11 +465,11 @@
 			}, 5000);
 		},
 		
-		handleHilight: function(message, skipnotify){
-			if (!this.hilightregex.user || !this.getChatOption('hilight', true))
+		handleHighlight: function(message, skipnotify){
+			if (!this.highlightregex.user || !this.getChatOption('highlight', true))
 				return;
-			if (message.user && message.user.username != this.engine.user.username && this.hilightregex.user.test(message.message)) {
-				message.ui.addClass('hilight');
+			if (message.user && message.user.username != this.engine.user.username && this.highlightregex.user.test(message.message)) {
+				message.ui.addClass('highlight');
 				if(!skipnotify && this.notifications){
 					this.showNotification(message);
 				}
