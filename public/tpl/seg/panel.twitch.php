@@ -4,7 +4,7 @@ use Destiny\Session;
 use Destiny\Config;
 ?>
 <?if((bool) Config::$a['blocks']['twitch']):?>
-<section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="http://www.twitch.tv/chat/embed?channel=<?=Config::$a['twitch']['user']?>&popout_chat=true">
+<section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="/embed/chat">
 	<div class="content content-dark">
 		<div class="panelheader clearfix">
 			<div class="toolgroup clearfix">
