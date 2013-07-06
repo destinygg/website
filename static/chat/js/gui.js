@@ -644,12 +644,14 @@ ChatUserMessage.prototype.wrapUser = function(user){
 	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 };
 ChatUserMessage.prototype.wrapMessage = function(){
-	var elem    = $('<msg/>').text(this.message), 
-		encoded = elem.html();
-	encoded = encoded.replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>');
+	var elem = $('<msg/>').text(this.message), 
+	encoded  = elem.html();
+	
 	var emoticon = emoteregex.exec(encoded);
 	if (emoticon)
 		encoded = encoded.replace(emoticon[0], '<div title="'+emoticon[0]+'" class="twitch-emote twitch-emote-' + emoticon[0] +'"></div>');
+	
+	encoded = encoded.replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>');
 	if(this.isEmote)
 		elem.addClass('emote');
 	return elem.html(encoded)[0].outerHTML;
