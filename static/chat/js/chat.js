@@ -31,7 +31,7 @@ function chat(user, options) {
 	
 	this.gui.onSend = function(str){
 		if(this.engine.user == null || !this.engine.user.username)
-			return this.push(new ChatMessage("You must be logged in to send messages"));
+			return this.push(new ChatMessage("You must be logged in to use this chat"));
 		
 		if (str.substring(0, 1) === '/')
 			return this.engine.handleCommand(str.substring(1));

@@ -347,3 +347,14 @@ margin: 5px 0;
 #chat-user-list ul {
 margin: 0;
 }
+.chat-login-msg {
+padding:0 0 0 10px;
+line-height:30px;
+font-size:14px;
+color: rgba(255,255,255,0.5);
+text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
+}
+.chat-login-msg:hover {
+color: rgba(255,255,255,1);
+text-shadow:0 0 3px rgba(255,255,255,0.25);	
+}

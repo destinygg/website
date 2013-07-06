@@ -2,6 +2,7 @@
 namespace Destiny;
 use Destiny\Utils\Http;
 use Destiny\Utils\Tpl;
+use Destiny\UserRole;
 ?>
 <!DOCTYPE html>
 <html>
@@ -29,9 +30,13 @@ use Destiny\Utils\Tpl;
 	
 	<form class="chat-input clearfix">
 		<div class="chat-input-wrap clearfix">
+			<?php if(Session::hasRole(UserRole::USER)): ?>
 			<div class="chat-input-control">
-				<input type="text" placeholder="Enter a message to chat..." class="input" autocomplete="off" style="border-radius:0" />
+				<input type="text" placeholder="Enter a message to chat..." class="input" autocomplete="off" />
 			</div>
+			<?php else: ?>
+			<a class="chat-login-msg" href="/login" target="_parent">You must be logged in to chat</a>
+			<?php endif; ?>
 		</div>
 		<div class="chat-tools-wrap">
 			<a class="iconbtn chat-send-btn" title="Send"><i class="icon-bullhorn icon-white subtle"></i></a>
