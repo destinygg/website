@@ -4,6 +4,7 @@ namespace Destiny\Action;
 use Destiny\Service\AuthenticationService;
 use Destiny\Service\UserFeaturesService;
 use Destiny\Service\UserService;
+use Destiny\Service\SubscriptionsService;
 use Destiny\Session;
 use Destiny\AppException;
 use Destiny\Utils\Country;
@@ -62,7 +63,15 @@ class Profile {
 		$credentials->setCountry ( $user ['country'] );
 		$credentials->setEmail ( $email );
 		$credentials->setUsername ( $username );
+		
+		// Get the users active subscriptions
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
+		if (! empty ( $subscription )) {
+			$credentials->addRoles ( \Destiny\UserRole::SUBSCRIBER );
+			$credentials->addFeatures ( \Destiny\UserFeature::SUBSCRIBER );
+		}
 		$credentials->setFeatures ( $userFeaturesService->getUserFeatures ( $user ['userId'] ) );
+		
 		Session::updateCredentials ( $credentials );
 		
 		$model->title = 'Profile';
