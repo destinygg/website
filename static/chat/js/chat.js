@@ -192,6 +192,10 @@ chat.prototype.onUNBAN = function(data) {
 chat.prototype.onERR = function(data) {
 	return new ChatMessage("Error: " + this.errorstrings[data]);
 };
+chat.prototype.onREFRESH = function() {
+	window.location.href = window.location.href;
+};
+
 chat.prototype.handleCommand = function(str) {
 	
 	var parts     = str.split(" ");
