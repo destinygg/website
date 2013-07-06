@@ -53,10 +53,10 @@ sub vcl_recv {
 		unset req.http.cookie;
 	}
 	
-	// cache the api requests - we need stateful json - until I clean it up
-	//if (req.url ~ "^/[^/]+\.json$") {
-	//	unset req.http.cookie;
-	//}
+	// cache some of the api requests - we need stateful json for the others - until I clean it up
+	if (req.url ~ "^/(lastfm|broadcasts|twitter|youtube|stream|summoners)\.json$") {
+		unset req.http.cookie;
+	}
 	
 	// drop any cookies on the chat history file
 	if ( req.url == "/chat/history.js" ) {
