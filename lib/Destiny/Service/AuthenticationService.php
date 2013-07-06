@@ -142,18 +142,18 @@ class AuthenticationService extends Service {
 		$credentials->setUserStatus ( $user ['userStatus'] );
 		$credentials->addRoles ( UserRole::USER );
 		
+		// Add the user features
+		$credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
+		
+		// Get the stored roles
+		$credentials->addRoles ( UserService::instance ()->getUserRoles ( $user ['userId'] ) );
+		
 		// Get the users active subscriptions
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
 		if (! empty ( $subscription )) {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
 			$credentials->addFeatures ( \Destiny\UserFeature::SUBSCRIBER );
 		}
-		
-		// Get the stored roles
-		$credentials->addRoles ( UserService::instance ()->getUserRoles ( $user ['userId'] ) );
-		
-		// Add the user features
-		$credentials->setFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
 		
 		// Update the auth credentials
 		Session::updateCredentials ( $credentials );
