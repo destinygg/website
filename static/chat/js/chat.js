@@ -162,14 +162,16 @@ chat.prototype.onMSG = function(data) {
 };
 chat.prototype.onMUTE = function(data) {
 	var suppressednick = data.data;
-	if (this.user.username == data.data)
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
+	else
+		this.gui.removeUserMessages(data.data);
 	
 	return new ChatMessage(suppressednick + " muted by " + data.nick, data.timestamp);
 };
 chat.prototype.onUNMUTE = function(data) {
 	var suppressednick = data.data;
-	if (this.user.username == data.data)
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
 	
 	return new ChatMessage(suppressednick + " unmuted by " + data.nick, data.timestamp);
@@ -177,14 +179,16 @@ chat.prototype.onUNMUTE = function(data) {
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
 	var suppressednick = data.data;
-	if (this.user.username == data.data)
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
+	else
+		this.gui.removeUserMessages(data.data);
 	
 	return new ChatMessage(suppressednick + " banned by " + data.nick, data.timestamp);
 };
 chat.prototype.onUNBAN = function(data) {
 	var suppressednick = data.data;
-	if (this.user.username == data.data)
+	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
 	
 	return new ChatMessage(suppressednick + " unbanned by " + data.nick, data.timestamp);

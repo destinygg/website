@@ -27,16 +27,15 @@
 			this.ui.data('chat', this);
 			
 			// local elements stored in vars to not have to get the elements via query each time
-			this.lines = $(this.ui.find('.chat-lines:first')[0]);
-			this.output = $(this.ui.find('.chat-output:first')[0]);
-			this.inputwrap = $(this.ui.find('.chat-input:first')[0]);
-			this.input = $(this.inputwrap.find('.input:first:first')[0]);
+			this.lines = this.ui.find('.chat-lines:first').eq(0);
+			this.output = this.ui.find('.chat-output:first').eq(0);
+			this.inputwrap = this.ui.find('.chat-input:first').eq(0);
+			this.input = this.inputwrap.find('.input:first:first').eq(0);
 			
 			this.inputwrap.removeClass('hidden');
 			
 			// Scrollbars and scroll locking
 			if(this.scrollPlugin == null){
-				//this.scrollPlugin = new destiny.fn.ChatScrollPlugin(this);
 				this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
 				this.scrollPlugin.lockScroll(true);
 			};
@@ -485,6 +484,12 @@
 			var options     = JSON.parse(localStorage['chatoptions'] || '{}');
 			options[option] = value;
 			localStorage['chatoptions'] = JSON.stringify(options);
+		},
+		
+		removeUserMessages: function(username) {
+			var klass = '.nick-'+username.toLowerCase();
+			$('.chat-lines '+klass).remove();
+			$('.chat.chat-frame').data('chat').resize();
 		}
 		
 	});
@@ -620,6 +625,12 @@ function ChatUserMessage(message, user, timestamp){
 	return this;
 };
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
+ChatUserMessage.prototype.wrap = function(html) {
+	if (this.user && this.user.username) {
+		return '<div class="'+'nick-' + this.user.username.toLowerCase()+'">'+html+'</div>';
+	} else
+		return '<div>'+html+'</div>';
+};
 ChatUserMessage.prototype.wrapUser = function(user){
 	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 };
