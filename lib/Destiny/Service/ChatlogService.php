@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Service;
 
+use Destiny\UserFeature;
 use Destiny\Service;
 use Destiny\Application;
 use \PDO;
@@ -29,7 +30,6 @@ class ChatlogService extends Service {
 	 * @return \Destiny\Service\ChatLog
 	 */
 	public function getChatLog($limit) {
-		
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT
@@ -38,6 +38,7 @@ class ChatlogService extends Service {
 				l.event,
 				l.data,
 				l.timestamp,
+				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				(
 				
 					SELECT GROUP_CONCAT( DISTINCT fn.featureName)
@@ -51,36 +52,41 @@ class ChatlogService extends Service {
 				chatlog AS l
 				LEFT JOIN dfl_users AS u ON u.userId = l.userid
 				LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = u.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
 			ORDER BY l.id DESC
-			LIMIT ' . $limit
-		);
+			LIMIT ' . $limit );
 		
-		$stmt->execute();
-		$chatlog  = $stmt->fetchAll();
-		$lines    = array();
-		$suppress = array();
+		$stmt->execute ();
+		$chatlog = $stmt->fetchAll ();
+		$lines = array ();
+		$suppress = array ();
 		
 		foreach ( $chatlog as &$line ) {
 			
-			if ( $line['event'] == 'MUTE' or $line['event'] == 'BAN' ) {
-				$suppress[ $line['target'] ] = true;
+			if ($line ['event'] == 'MUTE' or $line ['event'] == 'BAN') {
+				$suppress [$line ['target']] = true;
 			}
 			
-			if ( isset( $suppress[ $line['username'] ] ) ) {
+			if (isset ( $suppress [$line ['username']] )) {
 				continue;
 			}
 			
-			if (! empty ( $line ['features'] ))
-				$line ['features'] = explode ( ',', $line ['features'] );
+			if (! empty ( $line ['features'] )) {
+				$line ['features'] = array_merge ( explode ( ',', $line ['features'] ) );
+			} else {
+				$line ['features'] = array ();
+			}
 			
-			$lines[] = $line;
+			if (! empty ( $line ['subscriber'] ) && $line ['subscriber'] == 1) {
+				$line ['features'] [] = UserFeature::SUBSCRIBER;
+			}
 			
+			$lines [] = $line;
 		}
 		
 		return $lines;
-		
 	}
 
 }

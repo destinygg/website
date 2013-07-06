@@ -160,7 +160,7 @@ background: url("../img/cross-shield.png") no-repeat bottom left;
 .chat .chat-lines i.icon-bot {
 background: url("../img/robot.png") no-repeat bottom left;
 }
-.chat-frame a.user, #chat-user-list a {
+.chat-frame a.user {
 color: #A7A7A7; /* default pleb color */
 }
 .chat-frame a.subscriber {
