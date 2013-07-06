@@ -233,6 +233,7 @@ opacity: 0.75;
 background-position: top left;
 }
 .chat .chat-lines i.icon-subscriber {
+opacity: 1;	
 background: url("/web/img/ico/favicon.png") no-repeat bottom left;
 }
 .chat .chat-lines i.icon-vip {
