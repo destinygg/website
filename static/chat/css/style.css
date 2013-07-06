@@ -321,6 +321,7 @@ overflow: hidden;
 }
 .chat-menu ul {
 padding:0 10px;
+margin-top:10px;
 }
 .chat-menu ul > li:first-child h5 {
 margin-top:0;
