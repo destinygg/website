@@ -24,10 +24,10 @@ use Destiny\Utils\Tpl;
 	<section class="container">
 		<h1 class="page-title">Fantasy season 1 has ended!</h1>
 		<hr size="1">
-		<p>Well done to <a title="kilpo7">kilpo7</a>, <a title="Derpski">Derpski</a>, <a title="&amp; Bronzer ...">DICEDLEMMING</a> and the ever soothing <a title="dmcredgrave">dmcredgrave</a>.
+		<p>Well done to 1<sup>st</sup> <a title="kilpo7">kilpo7</a>, 2<sup>nd</sup> <a title="Derpski">Derpski</a>, 3<sup>rd</sup> <a title="&amp; Bronzer ..."> DICEDLEMMING</a> and the ever soothing 4<sup>th</sup> <a title="dmcredgrave"> dmcredgrave</a>.
 			Thanks to all who participated and watched the stream. The next couple of weeks we'll be implementing some more drastic changes, expect things to get interesting.. if you're interested in that kind of thing.
-			No prize money will be given out for this session but we'll come up with something.
-			<span class="label label-inverse">NOTE</span> Scores, champion purchases and leaderboards will be reset soon. All data will be kept for the mean time until we find a home for it.
+			No prize money will be given out for this session but we'll come up with something.<br>
+			<br><span class="label label-important">RESET</span> Scores, champion purchases and leaderboards have been reset. All data has been kept for the mean time until we find a home for it.
 		</p>
 	</section>
 	

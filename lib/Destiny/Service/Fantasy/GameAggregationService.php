@@ -452,22 +452,25 @@ class GameAggregationService extends Service {
 			champs.gamesWin = champstats._gamesWin, 
 			champs.gamesLost = champstats._gamesLost,
 			champs.gamesPlayed = champstats._gamesPlayed
-		' );
-		$conn->executeQuery ( '
-			UPDATE dfl_champs AS `champs`
-			INNER JOIN (
-				SELECT
-					_champs.championId,
-					(_champs.gamesPlayed/(
-						SELECT MAX(gamesPlayed) FROM dfl_champs
-					)) `playedRatio`,
-					COALESCE((_champs.gamesWin/_champs.gamesPlayed),0) `WinRatio`,
-					COALESCE((_champs.gamesLost/_champs.gamesPlayed),0) `LossRatio`
-				FROM dfl_champs AS `_champs`
-			) AS `champstats` ON (champstats.championId = champs.championId)
-			SET 
-			champs.championMultiplier = ROUND(1-champstats.playedRatio*champstats.WinRatio, 3)
-		' );
+		');
+		
+		if (Config::$a ['fantasy'] ['updateChampMultiplier']) {
+			$conn->executeQuery ( '
+				UPDATE dfl_champs AS `champs`
+				INNER JOIN (
+					SELECT
+						_champs.championId,
+						(_champs.gamesPlayed/(
+							SELECT MAX(gamesPlayed) FROM dfl_champs
+						)) `playedRatio`,
+						COALESCE((_champs.gamesWin/_champs.gamesPlayed),0) `WinRatio`,
+						COALESCE((_champs.gamesLost/_champs.gamesPlayed),0) `LossRatio`
+					FROM dfl_champs AS `_champs`
+				) AS `champstats` ON (champstats.championId = champs.championId)
+				SET 
+				champs.championMultiplier = ROUND(1-champstats.playedRatio*champstats.WinRatio, 3)
+			' );
+		}
 	}
 
 }
