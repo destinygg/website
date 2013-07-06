@@ -14,7 +14,6 @@ class History {
 
 	public function execute(array $params, ViewModel $model) {
 		$chatlog = ChatlogService::instance ()->getChatLog ( Config::$a ['chat'] ['backlog'] );
-		
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
 		Http::sendString ( 'var backlog = ' . json_encode ( $chatlog ) );
 		exit ();

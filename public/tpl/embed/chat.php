@@ -15,7 +15,7 @@ use Destiny\UserRole;
 <link href="<?=Config::cdn()?>/chat/css/style.<?=Config::version()?>.css" rel="stylesheet" media="screen">
 <?php else: ?>
 <link href="<?=Config::cdn()?>/chat/css/style.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/chat/css/twitch_sprite.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
 <?php endif; ?>
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
@@ -88,12 +88,12 @@ use Destiny\UserRole;
 <?include'./tpl/seg/commonbottom.php'?>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
+<script src="/chat/history.js"></script>
 <?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
 <script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
-<script src="/chat/history.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
 <?php endif; ?>

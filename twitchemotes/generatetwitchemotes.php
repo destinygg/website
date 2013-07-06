@@ -11,7 +11,7 @@ preg_match_all('#<div class="span2">.*?<img src="([^"]*?)"/>.*>(.*?)</a></center
 $triggers = array();
 $css      = '
 /*
-	spritemapper.output_css = twitch_sprite.css
+	spritemapper.output_css = emoticons.css
 	spritemapper.anneal_steps = 100
 */
 .twitch-emote {

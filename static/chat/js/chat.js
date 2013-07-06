@@ -15,7 +15,8 @@ function chat(user, options) {
 		"muted"        : "You are muted!",
 		"submode"      : "The channel is currently in subscriber only mode!",
 		"needbanreason": "Providing a reason for the ban is mandatory!",
-		"banned"       : "You have been banned, disconnecting!"
+		"banned"       : "You have been banned, disconnecting!",
+		"requiresocket": "This chat requires WebSockets"
 	};
 	
 	// TODO clean this up
@@ -27,11 +28,11 @@ function chat(user, options) {
 		window.WebSocket = MozWebSocket;
 	
 	if ( !window.WebSocket )
-		return this.gui.push(new ChatMessage("This chat requires WebSockets."));
+		return this.gui.push(new ChatMessage());
 	
 	this.gui.onSend = function(str){
 		if(this.engine.user == null || !this.engine.user.username)
-			return this.push(new ChatMessage("You must be logged in to use this chat"));
+			return this.push(new ChatMessage(this.errorstrings.requiresocket));
 		
 		if (str.substring(0, 1) === '/')
 			return this.engine.handleCommand(str.substring(1));
