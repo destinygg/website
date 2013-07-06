@@ -17,7 +17,7 @@
 		init: function(){
 			var self = this;
 			self.chat.output.mCustomScrollbar({
-				theme: 'light',
+				theme: 'light-thin',
 				scrollInertia: 0,
 				horizontalScroll: false,
 				autoHideScrollbar: false,
