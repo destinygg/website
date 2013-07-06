@@ -76,7 +76,7 @@ use Destiny\UserRole;
 			</div>
 			<div class="scrollable">
 				<ul class="unstyled">
-					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show user icons</label></li>
+					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show all user icons</label></li>
 					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time for each message</label></li>
 					<li><label class="checkbox"><input name="notifications" type="checkbox" /> Desktop notifications on hilight</label></li>
 				</ul>
