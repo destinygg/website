@@ -226,7 +226,7 @@ color:#222;
 width: 16px;
 line-height: 16px;
 height: 16px;
-margin: 0 1px;
+margin: 0;
 opacity: 0.75;
 }
 .chat .chat-lines i[class^="icon-"]:hover {
