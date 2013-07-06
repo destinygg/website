@@ -239,7 +239,7 @@
 			var self     = this,
 			    defaults = {
 				showtime     : false,
-				showicon     : true,
+				showicon     : false,
 				notifications: false,
 			};
 			
