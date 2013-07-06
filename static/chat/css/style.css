@@ -194,7 +194,7 @@ color: #fff371;
 color: #fff;
 }
 .chat-theme-dark .chat-lines > div > a.user, #chat-user-list a {
-color: #cccccc; /* default pleb color */
+color: #DEDEDE; /* default pleb color */
 }
 .chat-theme-dark .chat-lines > div > a.user.subscriber, #chat-user-list a.subscriber {
 color: #488ce7;
