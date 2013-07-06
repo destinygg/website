@@ -145,6 +145,23 @@
 				chat.chatsettings.appendTo(chat.ui);
 				return chat.menu.prototype.showMenu.call(chat.chatsettings, chat);
 			});
+			this.chatsettings.on('keypress blur', 'input[name=customhighlight]', function(e) {
+				var keycode = e.keyCode ? e.keyCode : e.which;
+				if (keycode && keycode != 13) // not enter
+					return;
+				
+				e.preventDefault();
+				var data = $(this).val().trim().split(',');
+				for (var i = data.length - 1; i >= 0; i--) {
+					data[i] = data[i].trim();
+					if (!data[i])
+						data.splice(i, 1)
+				};
+				
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				chat.saveChatOption('customhighlight', data );
+				chat.loadCustomHighlights();
+			});
 			this.chatsettings.on('change', 'input[type="checkbox"]', function(){
 				var chat    = $(this).closest('.chat.chat-frame').data('chat'),
 				    name    = $(this).attr('name'),
@@ -156,13 +173,17 @@
 						chat.ui.toggleClass('chat-time', checked);
 						chat.resize();
 						break;
-						
+					
 					case 'showicon':
 						chat.saveChatOption(name, checked);
 						chat.ui.toggleClass('chat-icons', checked);
 						chat.resize();
 						break;
-						
+					
+					case 'highlight':
+						chat.saveChatOption(name, checked);
+						break;
+					
 					case 'notifications':
 						var permission = notifications.checkPermission();
 						if (permission == 1) // not yet allowed
@@ -193,13 +214,14 @@
 				chat.menu.closeMenus(chat);
 				var lists  = chat.userslist.find('ul'),
 				    admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
-				    elems  = {};
+				    elems  = {},
+				    usercount = 0;
 				
-				chat.userslist.find('h5 span').text(chat.engine.users.length);
 				for(var username in chat.engine.users){
 					var u    = chat.engine.users[username],
 					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
 					
+					usercount++;
 					elems[username.toLowerCase()] = elem;
 					if($.inArray('bot', u.features) >= 0)
 						bots.push(username.toLowerCase());
@@ -216,7 +238,13 @@
 					
 				}
 				
+				chat.userslist.find('h5 span').text(usercount);
 				var appendUsers = function(users, elem) {
+					if (users.length == 0) {
+						elem.prev().hide().prev().hide();
+						return;
+					}
+					elem.prev().show().prev().show();
 					users.sort()
 					for (var i = 0; i < users.length; i++) {
 						elem.append(elems[users[i]]);
@@ -245,11 +273,15 @@
 		loadSettings: function() {
 			var self     = this,
 			    defaults = {
-				showtime     : false,
-				showicon     : false,
-				notifications: false,
+			    showtime     : false,
+			    showicon     : false,
+			    highlight    : true,
+			    notifications: false,
 			};
 			
+			customhighlight = self.getChatOption('customhighlight', []);
+			this.chatsettings.find('input[name=customhighlight]').val( customhighlight.join(', ') );
+			this.loadCustomHighlights();
 			this.chatsettings.find('input[type="checkbox"]').each(function() {
 				var name  = $(this).attr('name'),
 				    value = self.getChatOption(name, defaults[name]);
@@ -446,6 +478,9 @@
 		
 		setupNotifications: function() {
 			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
+			if(!notifications)
+				$('#chat-settings input[name=notifications]').closest('label').text('Notifications are not supported by your browser');
+			
 			if(!notifications || !this.engine.user.username || !this.getChatOption('notifications', false)){
 				this.notifications = false;
 			}
@@ -472,10 +507,24 @@
 			}, 5000);
 		},
 		
+		loadCustomHighlights: function() {
+			var highlights = this.getChatOption('customhighlight', []);
+			if (highlights.length == 0)
+				return;
+			
+			for (var i = highlights.length - 1; i >= 0; i--) {
+				highlights[i] = highlights[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
+			};
+			this.highlightregex.custom = new RegExp("\\b(?:"+highlights.join("|")+")\\b", "i")
+		},
+		
 		handleHighlight: function(message, skipnotify){
 			if (!this.highlightregex.user || !this.getChatOption('highlight', true))
 				return;
-			if (message.user && message.user.username != this.engine.user.username && this.highlightregex.user.test(message.message)) {
+			if (!message.user || message.user.username == this.engine.user.username)
+				return;
+			
+			if (this.highlightregex.user.test(message.message) || (this.highlightregex.custom && this.highlightregex.custom.test(message.message))) {
 				message.ui.addClass('highlight');
 				if(!skipnotify && this.notifications){
 					this.showNotification(message);

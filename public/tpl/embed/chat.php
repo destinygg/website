@@ -80,7 +80,9 @@ use Destiny\UserRole;
 				<ul class="unstyled">
 					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show all user icons</label></li>
 					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time for each message</label></li>
+					<li><label class="checkbox"><input name="highlight" type="checkbox" checked="checked"/> Highlight the line when someone mentions you</label></li>
 					<li><label class="checkbox"><input name="notifications" type="checkbox" /> Desktop notifications on highlight</label></li>
+					<li><label class="text"><input name="customhighlight"/> Custom words to highlight on, separated by a comma (,)</label></li>
 				</ul>
 			</div>
 		</div>
