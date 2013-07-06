@@ -19,6 +19,14 @@ use Destiny\Utils\Tpl;
 <body id="home">
 	<?include'./tpl/seg/top.php'?>
 	
+	<div class="container">
+		<div id="chatalert" class="alert alert-info" style="margin:10px 0 0 0;">
+			<button type="button" class="close persist" data-dismiss="alert">&times;</button>
+			<h4>New chat now available!</h4>
+			<div><a href="/chat/faq">Chat FAQ</a> Please remember it is still in alpha. <a href="/chat">FOR MORE GIRTH CLICK HERE</a></div>
+		</div>
+	</div>
+	
 	<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER) && (!isset($_COOKIE['alert-dismissed-subscription-cta']) || $_COOKIE['alert-dismissed-subscription-cta'] != true)):?>
 	<div class="container">
 		<div id="subscription-cta" class="alert alert-info" style="margin:10px 0 0 0;">
