@@ -194,13 +194,14 @@
 				chat.menu.closeMenus(chat);
 				var lists  = chat.userslist.find('ul'),
 				    admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
-				    elems  = {};
+				    elems  = {},
+				    usercount = 0;
 				
-				chat.userslist.find('h5 span').text(chat.engine.users.length);
 				for(var username in chat.engine.users){
 					var u    = chat.engine.users[username],
 					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
 					
+					usercount++;
 					elems[username.toLowerCase()] = elem;
 					if ($.inArray('admin', u.features) >= 0)
 						admins.push(username.toLowerCase());
@@ -217,6 +218,7 @@
 					
 				}
 				
+				chat.userslist.find('h5 span').text(usercount);
 				var appendUsers = function(users, elem) {
 					users.sort()
 					for (var i = 0; i < users.length; i++) {
