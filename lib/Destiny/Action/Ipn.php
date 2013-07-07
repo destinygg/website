@@ -26,7 +26,7 @@ class Ipn {
 		$ipnMessage = new PPIPNMessage ();
 		if (! $ipnMessage->validate ()) {
 			$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
-			$this->niceExit ();
+			$this->niceExit ( false );
 		}
 		$data = $ipnMessage->getRawData ();
 		$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
@@ -41,11 +41,11 @@ class Ipn {
 		// Make sure this IPN is for the merchant - not sure if this exists all the time
 		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
 			$log->critical ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
-			$this->niceExit ();
+			$this->niceExit ( false );
 		}
 		
 		$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
-		$this->niceExit ();
+		$this->niceExit ( true );
 	}
 
 	/**
@@ -53,8 +53,9 @@ class Ipn {
 	 *
 	 * @return void
 	 */
-	private function niceExit() {
+	private function niceExit($verified) {
 		Http::status ( Http::STATUS_OK );
+		echo ($verified) ? 'VERIFIED' : 'INVALID';
 		exit ();
 	}
 
