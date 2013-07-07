@@ -82,10 +82,11 @@
 			<param name="file" value="${build.dir}/static/chat/css/style.${composer.version}.css" />
 		</antcall>
 		<concat destfile="${build.dir}/static/chat/js/engine.${composer.version}.js" fixlastline="yes" append="no">
-			<fileset file="${build.dir}/static/chat/js/chat.js" />
-			<fileset file="${build.dir}/static/chat/js/gui.js" />
+			<fileset file="${build.dir}/static/chat/js/autocomplete.js" />
 			<fileset file="${build.dir}/static/chat/js/scroll.mCustom.js" />
 			<fileset file="${build.dir}/static/chat/js/scroll.native.js" />
+			<fileset file="${build.dir}/static/chat/js/gui.js" />
+			<fileset file="${build.dir}/static/chat/js/chat.js" />
 		</concat>
 		<antcall target="compress">
 			<param name="file" value="${build.dir}/static/chat/js/engine.${composer.version}.js" />

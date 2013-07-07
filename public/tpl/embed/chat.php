@@ -97,6 +97,7 @@ use Destiny\UserRole;
 <?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
 <script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
 <?php else: ?>
+<script src="<?=Config::cdn()?>/chat/js/autocomplete.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
 <script src="<?=Config::cdn()?>/chat/js/gui.js"></script>

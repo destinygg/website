@@ -1,3 +1,11 @@
+
+// Need a better place for these
+var emoticons = ['Draven','INFESTINY','FIDGETLOL','Hhhehhehe','4Head','ArsonNoSexy','AsianGlow','BCWarrior','BORT','BibleThump','BionicBunion','BlargNaut','BloodTrail','BrainSlug','BrokeBack','CougarHunt','DAESuppy','DBstyle','DansGame','DatSheffy','EagleEye','EvilFetus','FPSMarksman','FUNgineer','FailFish','FrankerZ','FreakinStinkin','FuzzyOtterOO','GingerPower','HassanChop','HotPokket','ItsBoshyTime','JKanStyle','Jebaited','JonCarnage','Kappa','KevinTurtle','Kreygasm','MVGame','MrDestructoid','NinjaTroll','NoNoSpot','OMGScoots','OneHand','OpieOP','OptimizePrime','PJSalt','PMSTwin','PazPazowitz','PicoMause','PogChamp','Poooound','PunchTrees','RedCoat','ResidentSleeper','RuleFive','SMOrc','SMSkull','SSSsss','ShazBotstix','SoBayed','SoonerLater','StoneLightning','StrawBeary','SuperVinlin','SwiftRage','TehFunrun','TheRinger','TheTarFu','TinyFace','TooSpicy','TriHard','UleetBackup','UnSane','Volcania','WinWaker'];
+var emoteregex = new RegExp('\\b(?:'+emoticons.join('|')+')\\b');
+var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+///\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
+
+
 (function($){
 	
 	destiny.fn.Chat = function(engine, options){
@@ -12,6 +20,7 @@
 		maxlines: 50,
 		lineCount: 0,
 		scrollPlugin: null,
+		autoCompletePlugin: null,
 		ui: null,
 		lines: null,
 		output: null,
@@ -62,6 +71,15 @@
 				$(this).closest('.chat.chat-frame').data('chat').send();
 			});
 			
+			// Auto complete
+			this.autoCompletePlugin = this.input.mAutoComplete({
+				minWordLength: 3,
+				maxResults: 5
+			}).data('mAutoComplete');
+			
+			for(var n in emoticons){
+				this.autoCompletePlugin.addData([emoticons[n]], 2);
+			}
 			
 			// Generic menus functions
 			this.menus = [];
@@ -631,10 +649,6 @@ ChatUIMessage.prototype.wrapMessage = function(){
 };
 
 //BASE MESSAGE
-// will find a nice home for these
-var emoteregex = /\b(?:Draven|INFESTINY|FIDGETLOL|Hhhehhehe|4Head|ArsonNoSexy|AsianGlow|BCWarrior|BORT|BibleThump|BionicBunion|BlargNaut|BloodTrail|BrainSlug|BrokeBack|CougarHunt|DAESuppy|DBstyle|DansGame|DatSheffy|EagleEye|EvilFetus|FPSMarksman|FUNgineer|FailFish|FrankerZ|FreakinStinkin|FuzzyOtterOO|GingerPower|HassanChop|HotPokket|ItsBoshyTime|JKanStyle|Jebaited|JonCarnage|Kappa|KevinTurtle|Kreygasm|MVGame|MrDestructoid|NinjaTroll|NoNoSpot|OMGScoots|OneHand|OpieOP|OptimizePrime|PJSalt|PMSTwin|PazPazowitz|PicoMause|PogChamp|Poooound|PunchTrees|RedCoat|ResidentSleeper|RuleFive|SMOrc|SMSkull|SSSsss|ShazBotstix|SoBayed|SoonerLater|StoneLightning|StrawBeary|SuperVinlin|SwiftRage|TehFunrun|TheRinger|TheTarFu|TinyFace|TooSpicy|TriHard|UleetBackup|UnSane|Volcania|WinWaker)\b/;
-var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-///\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
 function ChatMessage(message, timestamp){
 	return this.init(message, timestamp);
 };

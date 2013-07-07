@@ -145,10 +145,12 @@ chat.prototype.onNAMES = function(data) {
 	
 	for (var i = data.users.length - 1; i >= 0; i--) {
 		this.users[data.users[i].nick] = new ChatUser(data.users[i]);
+		this.gui.autoCompletePlugin.addData([data.users[i].nick], 1);
 	};
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
+	this.gui.autoCompletePlugin.addData([data.users[i].nick], 1);
 };
 chat.prototype.onQUIT = function(data) {
 	if (this.users[data.nick]) {
