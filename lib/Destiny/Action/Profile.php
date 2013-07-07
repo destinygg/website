@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action;
 
+use Destiny\Utils\Date;
 use Destiny\Service\AuthenticationService;
 use Destiny\Service\UserFeaturesService;
 use Destiny\Service\UserService;
@@ -9,6 +10,7 @@ use Destiny\Session;
 use Destiny\AppException;
 use Destiny\Utils\Country;
 use Destiny\ViewModel;
+use Destiny\Config;
 use Destiny\UserFeature;
 
 class Profile {
@@ -29,9 +31,9 @@ class Profile {
 			throw new AppException ( 'Invalid user' );
 		}
 		
-		$username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : '';
-		$email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : '';
-		$country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : '';
+		$username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : $user ['username'];
+		$email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
+		$country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
 		
 		try {
 			AuthenticationService::instance ()->validateUsername ( $username, $user );
@@ -50,13 +52,27 @@ class Profile {
 			return 'profile';
 		}
 		
-		// Update user
-		
-		$userService->updateUser ( $user ['userId'], array (
+		// Date for update
+		$userData = array (
 			'username' => $username,
 			'country' => $country,
 			'email' => $email 
-		) );
+		);
+		
+		// Is the user changing their name?
+		if (strcasecmp ( $username, $user ['username'] ) !== 0) {
+			$nameChangeCount = intval ( $user ['nameChangedCount'] );
+			// have they hit their limit
+			if ($nameChangeCount >= Config::$a ['profile'] ['nameChangeLimit']) {
+				throw new AppException ( 'You have reached your name change limit' );
+			} else {
+				$userData ['nameChangedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
+				$userData ['nameChangedCount'] = $nameChangeCount + 1;
+			}
+		}
+		
+		// Update user
+		$userService->updateUser ( $user ['userId'], $userData );
 		
 		// Update authentication credentials
 		$credentials = Session::getCredentials ();

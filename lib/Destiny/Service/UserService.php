@@ -88,6 +88,7 @@ class UserService extends Service {
 	public function addUser(array $user) {
 		$conn = Application::instance ()->getConnection ();
 		$user ['createdDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
+		$user ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
 		$conn->insert ( 'dfl_users', $user );
 		return $conn->lastInsertId ();
 	}
@@ -100,6 +101,7 @@ class UserService extends Service {
 	 */
 	public function updateUser($userId, array $user) {
 		$conn = Application::instance ()->getConnection ();
+		$user ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
 		$conn->update ( 'dfl_users', $user, array (
 			'userId' => $userId 
 		) );

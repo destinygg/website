@@ -52,6 +52,7 @@ use Destiny\Session;
 	
 	<section class="container">
 		<h3>Account</h3>
+		
 		<?php if(!empty($model->profileUpdated)): ?>
 		<div class="alert alert-info">
 			<strong>Success!</strong>
@@ -65,23 +66,44 @@ use Destiny\Session;
 			<?=Tpl::out($model->error->getMessage())?>
 		</div>
 		<?php endif; ?>
-
+		
+		<?if((!isset($_COOKIE['alert-dismissed-namechangealert']) || $_COOKIE['alert-dismissed-namechangealert'] != true)):?>
+		<div id="namechangealert" class="alert alert-error">
+			<button type="button" class="close persist" data-dismiss="alert">&times;</button>
+			<strong>Heads up!</strong> A name change limit has been implement. You are now limited to <?=Config::$a['profile']['nameChangeLimit']?> name changes per account
+			<br>Please contact <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> if you require assistance, or would like to request a manual name change.
+		</div>
+		<?php endif; ?>
+	
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<form id="profileSaveForm" action="/profile" method="post">
 					<input type="hidden" name="url" value="/league" />
 					
+					<?php if($model->user['nameChangedCount'] < Config::$a['profile']['nameChangeLimit']): ?>
 					<div class="control-group">
-						<label>Username:</label> 
+						<label>Username:
+						<br><small style="opacity:0.5;">(You have <?=Tpl::n(Config::$a['profile']['nameChangeLimit'] - $model->user['nameChangedCount'])?> name changes left)</small>
+						</label> 
 						<input type="text" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
 						<span class="help-block">A-z 0-9 and underscores. Must contain at least 4 and at most 20 characters</span>
 					</div>
+					<?php endif; ?>
+					
+					<?php if($model->user['nameChangedCount'] >= Config::$a['profile']['nameChangeLimit']): ?>
+					<div class="control-group">
+						<label>Username:
+						<br><small style="opacity:0.5;">(You have no more name changes available)</small>
+						</label> 
+						<input type="text" disabled="disabled" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
+					</div>
+					<?php endif; ?>
+					
 					<div class="control-group">
 						<label>Email:</label> 
 						<input type="text" name="email" value="<?=Tpl::out($model->user['email'])?>" placeholder="Email" />
 						<span class="help-block">Be it valid or not, it will be safe with us.</span>
 					</div>
-					
 					<div class="control-group">
 						<label>Country:</label> 
 						<select name="country">
