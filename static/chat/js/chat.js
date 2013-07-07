@@ -1,11 +1,11 @@
 function chat(user, options) {
 
-	this.connected     = false;
-	this.debug         = false;
-	this.users         = [];
-	this.ignorelist    = {};
-	this.controlevents = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
-	this.errorstrings  = {
+	this.connected      = false;
+	this.debug          = false;
+	this.users          = [];
+	this.ignorelist     = {};
+	this.controlevents  = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
+	this.errorstrings   = {
 		"nopermission" : "You do not have the required permissions to use that",
 		"protocolerror": "Invalid or badly formatted",
 		"needlogin"    : "You have to be logged in to use that",
@@ -128,8 +128,15 @@ chat.prototype.onOPEN = function() {
 	return new ChatMessage("You are now connected");
 };
 chat.prototype.onCLOSE = function() {
+	if (this.connected) {// if previously connected, refresh
+		setTimeout($.proxy(this.onREFRESH, this), 1000);
+		return new ChatMessage("You have been disconnected, reconnecting");
+	}
+	
 	this.connected = false;
-	return new ChatMessage("You have been disconnected");
+	var rand = Math.round(3+Math.random()*20);
+	setTimeout($.proxy(this.onREFRESH, this), rand * 1000);
+	return new ChatMessage("Chat unavailable, reconnecting in "+rand+" seconds");
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
