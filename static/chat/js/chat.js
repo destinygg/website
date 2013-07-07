@@ -232,7 +232,7 @@ chat.prototype.handleCommand = function(str) {
 			this.gui.push(new ChatMessage("Error: unknown command"));
 			break;
 		case "help":
-			this.gui.push(new ChatMessage("Available commands: /me, /ignore, /mute, /unmute, /subonly"));
+			this.gui.push(new ChatMessage("Available commands: /me, /ignore, /mute, /unmute, /subonly /ban /ipban /unban (also unbans ip bans)"));
 			break;
 		case "me":
 			payload.data = "/" + str;
@@ -293,6 +293,35 @@ chat.prototype.handleCommand = function(str) {
 			payload.data = parts[1];
 			if (duration && duration > 0)
 				payload.duration = duration;
+			
+			this.emit(command.toUpperCase(), payload);
+			break;
+		case "ban":
+		case "ipban":
+			if (parts.length < 4) {
+				this.gui.push(new ChatMessage("Error: Usage: /" + command + " nick time reason (time can be 'permanent')"));
+				return;
+			}
+			
+			if (!nickregex.test(parts[1])) {
+				this.gui.push(new ChatMessage("Error: Invalid nick"));
+				return;
+			}
+			
+			payload.nick = parts[1];
+			if (command == "ipban")
+				payload.banip = true;
+			
+			if (/^perm/i.test(parts[2]))
+				payload.ispermanent = true;
+			else
+				payload.duration = this.parseTimeInterval(parts[2]);
+			
+			payload.reason = parts.slice(3, parts.length).join(' ');
+			if (!payload.reason) {
+				this.gui.push(new ChatMessage("Error: Providing a reason is mandatory"));
+				return;
+			}
 			
 			this.emit(command.toUpperCase(), payload);
 			break;
