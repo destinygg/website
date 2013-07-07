@@ -77,6 +77,7 @@ use Destiny\Utils\Tpl;
 						<div class="clearfix pull-left" style="width: 33.33333%;">
 							<div class="control-group">
 								<h4>Champion multipliers</h4>
+								<?php if(Config::$a['fantasy']['updateChampMultiplier']): ?>
 								<p>
 									Each champion has their own score multiplier. 
 									<br />Score * (1 - ((X/Y) * (Z/X))).
@@ -84,6 +85,16 @@ use Destiny\Utils\Tpl;
 									<br /> Y = Most played games by a single champion
 									<br /> Z = Total games won by champion
 								</p>
+								<?php else: ?>
+								<p>Champion multipliers are disabled.</p>
+								<p style="opacity:0.25;">
+									Each champion has their own score multiplier. 
+									<br />Score * (1 - ((X/Y) * (Z/X))).
+									<br /> X = Total games played by champion
+									<br /> Y = Most played games by a single champion
+									<br /> Z = Total games won by champion
+								</p>
+								<?php endif; ?>
 							</div>
 						</div>
 						<div class="clearfix pull-left" style="width: 33.33333%;">
