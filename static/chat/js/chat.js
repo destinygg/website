@@ -323,7 +323,7 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			
-			this.emit(command.toUpperCase(), payload);
+			this.emit("BAN", payload);
 			break;
 		case "unmute":
 		case "unban":
