@@ -17,7 +17,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 	$.extend(destiny.fn.Chat.prototype, {
 
 		theme: 'dark',
-		maxlines: 50,
+		maxlines: 500,
 		lineCount: 0,
 		scrollPlugin: null,
 		autoCompletePlugin: null,
