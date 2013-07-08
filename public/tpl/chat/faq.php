@@ -55,7 +55,9 @@ use Destiny\Utils\Tpl;
 		<h3>Is there a list of emotes?</h3>
 		<p>
 			Not yet, twitch global emotes are all supported. We will have a list
-			when there are actually some custom emotes.
+			soon.<br/>
+			In the mean time, there is tab auto-completion for emoticons, and don't forget:<br/>
+			<strong>HOVER OVER THE EMOTICON to see how to produce it</strong>
 		</p>
 		
 		<a name="flairs"></a>
