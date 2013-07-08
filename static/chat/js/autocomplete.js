@@ -83,7 +83,10 @@
 							runAutoComplete();
 						}
 						return false;
+					}else if(results.length > 0){
+						inp.val(inp.val() + ' ');
 					}
+					
 					resetSearchResults();
 					return true;
 				}
