@@ -55,6 +55,9 @@
 		<copy todir="${build.dir}/static">
 			<fileset dir="static" />
 		</copy>
+		<copy todir="${build.dir}/scripts">
+			<fileset dir="scripts" />
+		</copy>
 		<copy todir="${build.dir}/cron">
 			<fileset dir="cron" />
 		</copy>
