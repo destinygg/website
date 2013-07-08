@@ -561,8 +561,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		},
 		
 		removeUserMessages: function(username) {
-			var klass = '.nick-'+username.toLowerCase();
-			$('.chat-lines '+klass).remove();
+			$('.chat-lines > div[data-username="'+username.toLowerCase()+'"]').remove();
 			$('.chat.chat-frame').data('chat').resize();
 		}
 		
@@ -697,7 +696,7 @@ function ChatUserMessage(message, user, timestamp){
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrap = function(html, css) {
 	if (this.user && this.user.username) {
-		return '<div class="'+((css) ? css +' ':'')+'nick-' + this.user.username.toLowerCase()+'">'+html+'</div>';
+		return '<div data-username="'+this.user.username.toLowerCase()+'" '+((css) ? 'class="'+css+'"':'')+'>'+html+'</div>';
 	} else
 		return '<div'+((css) ? ' class="'+css +'"':'')+'>'+html+'</div>';
 };
