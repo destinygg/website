@@ -101,6 +101,10 @@ $app->bind ( '/^\/league\/game\/(?<gameId>[0-9]+)/i', function (Application $app
 $app->bind ( '/^\/payment\/details\/(?<id>[0-9]+)/i', function (Application $app, array $params) {
 	$app->executeAction ( new Destiny\Action\Payment\Details (), $params );
 } );
+// /admin/user/9999
+$app->bind ( '/^\/admin\/user\/(?<id>[0-9]+)/i', function (Application $app, array $params) {
+	$app->executeAction ( new Destiny\Action\Admin\User (), $params );
+} );
 
 // "Easy" way to invoke actions based on the URL, second param is the default action
 $app->bindNamespace ( 'Destiny\Action', 'Home' );

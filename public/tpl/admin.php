@@ -23,14 +23,22 @@ use Destiny\Utils\Tpl;
 		<hr size="1">
 		
 		<h3>Fantasy League</h3>
+		<div class="navbar navbar-inverse navbar-subnav">
+			<div class="navbar-inner">
+					<ul class="nav">
+						<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>
+						<li><a href="#Tracking" data-toggle="tab">Tracking</a></li>
+					</ul>
+			</div>
+		</div>
+		<br>
+					
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<div class="tab-content control-group">
 					
-					<ul class="nav nav-pills">
-						<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>
-						<li><a href="#Tracking" data-toggle="tab">Tracking</a></li>
-					</ul>
+					
+					
 					
 					<div class="tab-pane active clearfix" id="Games">
 						<table class="grid">

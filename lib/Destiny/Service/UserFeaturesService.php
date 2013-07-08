@@ -31,10 +31,10 @@ class UserFeaturesService extends Service {
 	protected $features = null;
 
 	/**
-	 * Get a feature Id by the feature name
-	 * @param string $featureName
+	 * Return the full list of features
+	 * @return array
 	 */
-	public function getFeatureIdByName($featureName) {
+	public function getFeatures() {
 		if ($this->features == null) {
 			$conn = Application::instance ()->getConnection ();
 			$stmt = $conn->prepare ( 'SELECT featureId, featureName FROM dfl_features ORDER BY featureId ASC' );
@@ -44,10 +44,19 @@ class UserFeaturesService extends Service {
 				$this->features [$a ['featureName']] = $a ['featureId'];
 			}
 		}
-		if (! isset ( $this->features [$featureName] )) {
-			throw new AppException ( 'Invalid feature name' );
+		return $this->features;
+	}
+
+	/**
+	 * Get a feature Id by the feature name
+	 * @param string $featureName
+	 */
+	public function getFeatureIdByName($featureName) {
+		$features = $this->getFeatures ();
+		if (! isset ( $features [$featureName] )) {
+			throw new AppException ( sprintf('Invalid feature name %s', $featureName) );
 		}
-		return $this->features [$featureName];
+		return $features [$featureName];
 	}
 
 	/**
@@ -82,7 +91,7 @@ class UserFeaturesService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$this->removeAllUserFeatures ( $userId );
 		foreach ( $features as $feature ) {
-			$this->addUserFeature ( $userId, $feature ['id'] );
+			$this->addUserFeature ( $userId, $feature );
 		}
 	}
 
