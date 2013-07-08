@@ -24,7 +24,6 @@
 			var results 		= new Array(),
 				resultIndex 	= 0,
 				originalTxt 	= '',
-				addonTxt		= '',
 				lastWord		= '',
 				inp 			= $(this), 
 				autoComplete 	= new mAutoComplete(inp, options);
@@ -39,15 +38,12 @@
 				results 		= [];
 				resultIndex 	= 0;
 				originalTxt 	= '';
-				addonTxt 		= '';
 			}
 			
 			var showAutoComplete = function(i){
-				var gtxt = originalTxt.substr(0, originalTxt.lastIndexOf(lastWord)) + results[i];
-				addonTxt = gtxt.substring(originalTxt.length);
-				//inp.val(originalTxt + addonTxt);
-				inp.val(gtxt + ' ');
-				inp[0].setSelectionRange(gtxt.length+1, gtxt.length+1);
+				var gtxt = originalTxt.substr(0, originalTxt.lastIndexOf(lastWord)) + results[i] + ' ';
+				inp.val(gtxt);
+				inp[0].setSelectionRange(gtxt.length, gtxt.length);
 				inp[0].focus();
 			}
 			
@@ -129,7 +125,8 @@
 	};
 	mAutoComplete.prototype.getLastWord = function(txt){
 		var si = txt.lastIndexOf(" ");
-		return (si > 0) ? txt.substring(si+1) : txt;
+		var s = (si > 0) ? txt.substring(si+1) : txt;
+		return s.trim();
 	};
 	mAutoComplete.prototype.search = function(txt, limit){
 		txt = txt.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
