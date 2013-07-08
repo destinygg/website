@@ -150,7 +150,7 @@ chat.prototype.onNAMES = function(data) {
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
-	this.gui.autoCompletePlugin.addData([data.users[i].nick], 1);
+	this.gui.autoCompletePlugin.addData([data.nick], 1);
 };
 chat.prototype.onQUIT = function(data) {
 	if (this.users[data.nick]) {
