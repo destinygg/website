@@ -9,7 +9,16 @@ $twitchdestination = 'img/img/twitch-%s.png';
 @mkdir('css', 0775, true);
 preg_match_all('#<div class="span2">.*?<img src="([^"]*?)"/>.*>(.*?)</a></center><br/></div>#i', $html, $matches );
 
-$customemotes = array('Draven', 'INFESTINY', 'FIDGETLOL', 'Hhhehhehe');
+$customemotes = array(
+	'Draven',
+	'INFESTINY',
+	'FIDGETLOL',
+	'Hhhehhehe',
+	'GameOfThrows',
+	'WORTH',
+	'FeedNathan',
+	'Abathur',
+);
 $triggers     = array();
 $css          = '
 /*
@@ -75,8 +84,8 @@ foreach( $matches[1] as $key => $url ) {
 
 file_put_contents('css/emoticons_unsprited.css', $css );
 echo
-	"/\\b(?:",
-	implode("|", array_merge($customemotes, $matches[2])),
-	")\\b/",
+	'["',
+	implode('", "', array_merge($customemotes, $matches[2])),
+	'"];',
 	"\n\nRun spritemapper css/emoticons_unsprited.css --anneal=100\n"
 ;
