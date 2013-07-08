@@ -21,7 +21,7 @@ use Destiny\UserRole;
 </head>
 <body id="chat-embedded">
 
-<div id="destinychat" class="chat chat-frame chat-theme-dark">
+<div id="destinychat" class="chat chat-frame chat-theme-dark chat-icons">
 
 	<div class="chat-output clearfix">
 		<div class="chat-lines"></div>
@@ -78,12 +78,25 @@ use Destiny\UserRole;
 				<h5>Settings <button type="button" class="close">&times;</button></h5>
 			</div>
 			<div class="scrollable">
-				<ul class="unstyled">
-					<li><label class="checkbox"><input name="showicon" type="checkbox" /> Show all user icons</label></li>
-					<li><label class="checkbox"><input name="showtime" type="checkbox" /> Show time for each message</label></li>
-					<li><label class="checkbox"><input name="highlight" type="checkbox" checked="checked"/> Highlight the line when someone mentions you</label></li>
-					<li><label class="checkbox"><input name="notifications" type="checkbox" /> Desktop notifications on highlight</label></li>
-					<li><label class="text"><input name="customhighlight"/> Custom words to highlight on, separated by a comma (,)</label></li>
+				<ul class="unstyled" style="font-size:0.9em;">
+					<li>
+						<label class="checkbox" title="Show all user flair icons"><input name="hideflairicons" type="checkbox" /> Hide flair icons</label>
+					</li>
+					<li>
+						<label class="checkbox" title="Show the timestamps next to the messages"><input name="showtime" type="checkbox" /> Show time for messages</label>
+					</li>
+					<li>
+						<label class="checkbox" title="Highlight text that you are mentioned in"><input name="highlight" type="checkbox" checked="checked"/> Highlight on mention</label>
+					</li>
+					<li>
+						<label class="text" title="Your custom list of words that will make messages highlight">
+							Custom highlight words.
+							<input name="customhighlight" type="text" placeholder="Separated using a comma (,)" style="font-size:0.9em;"/>
+						</label>
+					</li>
+					<li>
+						<label class="checkbox" title="Show desktop notifications on hightlight"><input name="notifications" type="checkbox" /> Desktop notification on highlight</label>
+					</li>
 				</ul>
 			</div>
 		</div>

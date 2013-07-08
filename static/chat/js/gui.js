@@ -191,9 +191,9 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 						chat.resize();
 						break;
 					
-					case 'showicon':
-						chat.saveChatOption(name, checked);
-						chat.ui.toggleClass('chat-icons', checked);
+					case 'hideflairicons':
+						chat.saveChatOption(name, (!checked));
+						chat.ui.toggleClass('chat-icons', (!checked));
 						chat.resize();
 						break;
 					
@@ -290,10 +290,10 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		loadSettings: function() {
 			var self     = this,
 			    defaults = {
-			    showtime     : false,
-			    showicon     : false,
-			    highlight    : true,
-			    notifications: false,
+			    showtime       : false,
+			    hideflairicons : false,
+			    highlight      : true,
+			    notifications  : false,
 			};
 			
 			customhighlight = self.getChatOption('customhighlight', []);
@@ -309,8 +309,8 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 						self.ui.toggleClass('chat-time', value);
 						self.resize();
 						break;
-					case 'showicon':
-						self.ui.toggleClass('chat-icons', value);
+					case 'hideflairicons':
+						self.ui.toggleClass('chat-icons', (!value));
 						self.resize();
 						break;
 				};
