@@ -192,7 +192,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 						break;
 					
 					case 'hideflairicons':
-						chat.saveChatOption(name, (!checked));
+						chat.saveChatOption(name, checked);
 						chat.ui.toggleClass('chat-icons', (!checked));
 						chat.resize();
 						break;
