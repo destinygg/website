@@ -66,6 +66,11 @@
 			
 			inp.on({
 				keydown: function(e){
+
+					// If the user selected text, act as a normal input.
+					if(inp[0].selectionStart < inp[0].selectionEnd)
+						return true;
+					
 					// Ignore
 					if(e.keyCode == kCodes.ENTER || e.keyCode == kCodes.SHIFT || e.keyCode == kCodes.CTRL || e.keyCode == kCodes.ALT || e.keyCode == kCodes.CAPSLOCK || e.keyCode == kCodes.NUMLOCK)
 						return true;
@@ -83,8 +88,6 @@
 							runAutoComplete();
 						}
 						return false;
-					}else if(results.length > 0){
-						inp.val(inp.val() + ' ');
 					}
 					
 					resetSearchResults();
