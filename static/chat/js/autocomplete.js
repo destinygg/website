@@ -45,8 +45,9 @@
 			var showAutoComplete = function(i){
 				var gtxt = originalTxt.substr(0, originalTxt.lastIndexOf(lastWord)) + results[i];
 				addonTxt = gtxt.substr(originalTxt.length);
-				inp.val(originalTxt + addonTxt);
-				inp[0].setSelectionRange(originalTxt.length, originalTxt.length + addonTxt.length);
+				//inp.val(originalTxt + addonTxt);
+				inp.val(gtxt);
+				inp[0].setSelectionRange(originalTxt.length+ addonTxt.length, originalTxt.length + addonTxt.length);
 				inp[0].focus();
 			}
 			
@@ -64,65 +65,27 @@
 			};
 			
 			inp.on({
-				mousedown: function(){
-					if(results.length > 0){
-						inp.val(originalTxt);
-						resetSearchResults();
-					}
-				},
 				keydown: function(e){
 					// Ignore
-					if(e.keyCode == kCodes.ENTER || e.keyCode == kCodes.SHIFT || e.keyCode == kCodes.CTRL || e.keyCode == kCodes.ALT || e.keyCode == kCodes.CAPSLOCK || e.keyCode == kCodes.NUMLOCK){
+					if(e.keyCode == kCodes.ENTER || e.keyCode == kCodes.SHIFT || e.keyCode == kCodes.CTRL || e.keyCode == kCodes.ALT || e.keyCode == kCodes.CAPSLOCK || e.keyCode == kCodes.NUMLOCK)
 						return true;
-					}
-					// If an autocomplete is active
-					if(results.length > 0){
-						// Confirm autocomplete
-						if(e.keyCode == kCodes.RIGHT || e.keyCode == kCodes.END){
-							// This also updates the string to exactly what the search results are, for things like case sensitive emoticons
-							// so destiny would become Destiny, if they pressed the buttons
-							inp.val(originalTxt.substr(0, originalTxt.lastIndexOf(lastWord)) + results[resultIndex]);
+					
+					if(e.keyCode == kCodes.TAB){
+						inp.val(inp.val());
+						// If we have only 1 result, select it
+						if(results.length == 1){
+							showAutoComplete(resultIndex);
 							resetSearchResults();
-							return true;
-						}
-						// Cycle through options
-						if(e.keyCode == kCodes.TAB){
-							// If we have only 1 result, select it
-							if(results.length == 1){
-								inp.val(originalTxt.substr(0, originalTxt.lastIndexOf(lastWord)) + results[resultIndex]);
-								resetSearchResults();
-								// Cancel the event, or the tab goes off and you jump out the input
-								return false;
-							}
-							// Else cycle
+						}else if(results.length > 1){
 							resultIndex = (resultIndex == 0) ? results.length-1 : resultIndex-1;
 							showAutoComplete(resultIndex);
-							return false;
+						}else if(results.length <= 0){
+							runAutoComplete();
 						}
-						// Cancel auto complete
-						inp.val(originalTxt);
-						resetSearchResults();
+						return false;
 					}
+					resetSearchResults();
 					return true;
-				},
-				keypress: function(e){
-					// Let the enter do what it wants
-					if(e.keyCode == kCodes.ENTER){
-						if(results.length > 0){
-							inp.val(originalTxt);
-							resetSearchResults();
-							// Return false to prevent the user from sending unfinished text's
-							return false;
-						}
-						return true;
-					}
-					// If the user selected text, act as a normal input.
-					if(inp[0].selectionStart < inp[0].selectionEnd)
-						return true;
-					// Start the auto complete
-					inp.val(inp.val() + String.fromCharCode(e.keyCode || e.which));
-					runAutoComplete();
-					return false;
 				}
 			});
 		});
@@ -160,9 +123,10 @@
 	};
 	mAutoComplete.prototype.getLastWord = function(txt){
 		var si = txt.lastIndexOf(" ");
-		return (si > 0) ? txt.substr(si+1) : txt;
+		return (si > 0) ? txt.substring(si+1) : txt;
 	};
 	mAutoComplete.prototype.search = function(txt, limit){
+		txt = txt.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 		var res  = [], 
 			f 	 = new RegExp("\\b"+txt+"", "i"),
 			data = this.shards[this.getShardIdByTxt(txt)] || [];
