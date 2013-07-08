@@ -141,7 +141,10 @@ use Destiny\Utils\Tpl;
 		
 		<a name="tabcomp"></a>
 		<h3>Tab completion please?</h3>
-		<p>Working on it, quite high in priority.</p>
+		<p>
+			Now implemented and slick as fuck, don't forget to thank Ceneza!<br/>
+			Also auto-completes emoticons! Try it: hhh+Tab
+		</p>
 	</section>
 	
 	<?include'./tpl/seg/panel.ads.php'?>
