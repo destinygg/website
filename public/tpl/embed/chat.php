@@ -11,11 +11,11 @@ use Destiny\UserRole;
 <meta charset="utf-8">
 <?include'./tpl/seg/commontop.php'?>
 <link href="<?=Config::cdn()?>/vendor/css/jquery.mCustomScrollbar.css" rel="stylesheet" media="screen">
-<?php if(is_file(_STATICDIR .'/chat/css/style.'.Config::version().'.css')):?>
-<link href="<?=Config::cdn()?>/chat/css/style.<?=Config::version()?>.css" rel="stylesheet" media="screen">
+<?php if(is_file(_STATICDIR .'/chat/css/style.min.css')):?>
+<link href="<?=Config::cdn().'/'.Config::version()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 <?php else: ?>
-<link href="<?=Config::cdn()?>/chat/css/style.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn().'/'.Config::version()?>/chat/css/style.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn().'/'.Config::version()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
 <?php endif; ?>
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
@@ -112,14 +112,14 @@ use Destiny\UserRole;
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
 <script src="/chat/history"></script>
-<?php if(is_file(_STATICDIR .'/chat/js/engine.'.Config::version().'.js')):?>
-<script src="<?=Config::cdn()?>/chat/js/engine.<?=Config::version()?>.js"></script>
+<?php if(is_file(_STATICDIR .'/chat/js/engine.min.js')):?>
+<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/engine.min.js"></script>
 <?php else: ?>
-<script src="<?=Config::cdn()?>/chat/js/autocomplete.js"></script>
-<script src="<?=Config::cdn()?>/chat/js/scroll.native.js"></script>
-<script src="<?=Config::cdn()?>/chat/js/scroll.mCustom.js"></script>
-<script src="<?=Config::cdn()?>/chat/js/gui.js"></script>
-<script src="<?=Config::cdn()?>/chat/js/chat.js"></script>
+<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/autocomplete.js"></script>
+<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/scroll.native.js"></script>
+<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/scroll.mCustom.js"></script>
+<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/gui.js"></script>
+<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 <script>
 var c = new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat'), $model->options))?>);

@@ -74,14 +74,14 @@
 		</antcall>
 		
 		<!-- Chat concat and compress -->
-		<concat destfile="${build.dir}/static/chat/css/style.${composer.version}.css" fixlastline="yes" append="no">
+		<concat destfile="${build.dir}/static/chat/css/style.min.css" fixlastline="yes" append="no">
 			<fileset file="${build.dir}/static/chat/css/style.css" />
 			<fileset file="${build.dir}/static/chat/css/emoticons.css" />
 		</concat>
 		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/chat/css/style.${composer.version}.css" />
+			<param name="file" value="${build.dir}/static/chat/css/style.min.css" />
 		</antcall>
-		<concat destfile="${build.dir}/static/chat/js/engine.${composer.version}.js" fixlastline="yes" append="no">
+		<concat destfile="${build.dir}/static/chat/js/engine.min.js" fixlastline="yes" append="no">
 			<fileset file="${build.dir}/static/chat/js/autocomplete.js" />
 			<fileset file="${build.dir}/static/chat/js/scroll.mCustom.js" />
 			<fileset file="${build.dir}/static/chat/js/scroll.native.js" />
@@ -89,23 +89,23 @@
 			<fileset file="${build.dir}/static/chat/js/chat.js" />
 		</concat>
 		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/chat/js/engine.${composer.version}.js" />
+			<param name="file" value="${build.dir}/static/chat/js/engine.min.js" />
 		</antcall>
 
 		<!-- CSS concat and compress -->
-		<concat destfile="${build.dir}/static/web/css/style.${composer.version}.css" fixlastline="yes" append="no">
+		<concat destfile="${build.dir}/static/web/css/style.min.css" fixlastline="yes" append="no">
 			<fileset file="${build.dir}/static/web/css/style.css" />
 			<fileset file="${build.dir}/static/web/css/flags.css" />
 			<fileset file="${build.dir}/static/web/css/fantasy.css" />
 			<fileset file="${build.dir}/static/web/css/teammaker.css" />
 		</concat>
 		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/web/css/style.${composer.version}.css" />
+			<param name="file" value="${build.dir}/static/web/css/style.min.css" />
 		</antcall>
-		<delete><fileset dir="${build.dir}/static/web/css/" excludes="style.${composer.version}.css" includes="*.css" /></delete>
+		<delete><fileset dir="${build.dir}/static/web/css/" excludes="style.min.css" includes="*.css" /></delete>
 		
 		<!-- Js concat and compress -->
-		<concat destfile="${build.dir}/static/web/js/destiny.${composer.version}.js" fixlastline="yes" append="no">
+		<concat destfile="${build.dir}/static/web/js/destiny.min.js" fixlastline="yes" append="no">
 			<fileset file="${build.dir}/static/web/js/utils.js" />
 			<fileset file="${build.dir}/static/web/js/destiny.js" />
 			<fileset file="${build.dir}/static/web/js/feed.js" />
@@ -117,9 +117,9 @@
 			<fileset file="${build.dir}/static/web/js/ui.js" />
 		</concat>
 		<antcall target="compress">
-			<param name="file" value="${build.dir}/static/web/js/destiny.${composer.version}.js" />
+			<param name="file" value="${build.dir}/static/web/js/destiny.min.js" />
 		</antcall>
-		<delete><fileset dir="${build.dir}/static/web/js/" excludes="destiny.${composer.version}.js" includes="*.js" /></delete>
+		<delete><fileset dir="${build.dir}/static/web/js/" excludes="destiny.min.js" includes="*.js" /></delete>
 		
 	</target>
 	
