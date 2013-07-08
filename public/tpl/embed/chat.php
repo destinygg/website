@@ -97,6 +97,10 @@ use Destiny\UserRole;
 					<li>
 						<label class="checkbox" title="Show desktop notifications on hightlight"><input name="notifications" type="checkbox" /> Desktop notification on highlight</label>
 					</li>
+					<hr style="margin:5px 0;">
+					<li>
+						See the <a href="/chat/faq" target="_blank">chat faq</a> for more info
+					</li>
 				</ul>
 			</div>
 		</div>
