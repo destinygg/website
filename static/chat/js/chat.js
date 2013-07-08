@@ -131,7 +131,6 @@ chat.prototype.emit = function(eventname, data) {
 // server events
 chat.prototype.onOPEN = function() {
 	this.connected = true;
-	return new ChatMessage("You are now connected");
 };
 chat.prototype.onCLOSE = function() {
 	if (this.dontconnect) return;
@@ -148,12 +147,13 @@ chat.prototype.onCLOSE = function() {
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
-		return;
+		return new ChatMessage("You are now connected");
 	
 	for (var i = data.users.length - 1; i >= 0; i--) {
 		this.users[data.users[i].nick] = new ChatUser(data.users[i]);
 		this.gui.autoCompletePlugin.addData([data.users[i].nick], 1);
 	};
+	return new ChatMessage("You are now connected. Server connections: " + data.connectioncount);
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
