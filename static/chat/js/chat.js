@@ -243,8 +243,11 @@ chat.prototype.handleCommand = function(str) {
 		default:
 			this.gui.push(new ChatMessage("Error: unknown command"));
 			break;
+		case "emotes":
+				this.gui.push(new ChatMessage("Available emoticons: "+emoticons.join(", ")));
+			break;
 		case "help":
-			this.gui.push(new ChatMessage("Available commands: /me, /ignore, /mute, /unmute, /subonly /ban /ipban /unban (also unbans ip bans)"));
+			this.gui.push(new ChatMessage("Available commands: /emotes, /me, /ignore, /mute, /unmute, /subonly /ban /ipban /unban (also unbans ip bans)"));
 			break;
 		case "me":
 			payload.data = "/" + str;
