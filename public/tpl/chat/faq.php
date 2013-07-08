@@ -25,6 +25,12 @@ use Destiny\Utils\Tpl;
 		</h1>
 		<hr size="1">
 		
+		<a name="refreshes"></a>
+		<h3>Why does the chat keep refreshing?</h3>
+		<p>
+			The chat backend is being updated, no need to fret.
+		</p>
+		
 		<a name="highlight"></a>
 		<h3>What is this yellow text?</h3>
 		<p>
