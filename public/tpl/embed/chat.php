@@ -12,10 +12,10 @@ use Destiny\UserRole;
 <?include'./tpl/seg/commontop.php'?>
 <link href="<?=Config::cdn()?>/vendor/css/jquery.mCustomScrollbar.css" rel="stylesheet" media="screen">
 <?php if(is_file(_STATICDIR .'/chat/css/style.min.css')):?>
-<link href="<?=Config::cdn().'/'.Config::version()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 <?php else: ?>
-<link href="<?=Config::cdn().'/'.Config::version()?>/chat/css/style.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn().'/'.Config::version()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/chat/css/style.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
 <?php endif; ?>
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
@@ -113,13 +113,13 @@ use Destiny\UserRole;
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
 <script src="/chat/history"></script>
 <?php if(is_file(_STATICDIR .'/chat/js/engine.min.js')):?>
-<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/engine.min.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/engine.min.js"></script>
 <?php else: ?>
-<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/autocomplete.js"></script>
-<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/scroll.native.js"></script>
-<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/scroll.mCustom.js"></script>
-<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/gui.js"></script>
-<script src="<?=Config::cdn().'/'.Config::version()?>/chat/js/chat.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/autocomplete.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/scroll.native.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/scroll.mCustom.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/gui.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 <script>
 var c = new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat'), $model->options))?>);

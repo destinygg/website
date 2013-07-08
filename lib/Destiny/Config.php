@@ -37,6 +37,16 @@ abstract class Config {
 	}
 
 	/**
+	 * Return the cdn domain/version
+	 *
+	 * @param string $protocol
+	 * @return string
+	 */
+	public static function cdnv($protocol = 'http://') {
+		return self::cdn ( $protocol ) . '/' . Config::version ();
+	}
+
+	/**
 	 * Return the application version
 	 *
 	 * @return string
