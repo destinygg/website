@@ -61,6 +61,11 @@ chat.prototype.init = function() {
 		var event = {data: 'OPEN ""'};
 		this.parseAndDispatch(event)
 	}, this);
+	this.sock.onerror   = $.proxy(function() {
+		this.dontconnect = true;
+		var event = {data: 'ERR "banned"'};
+		this.parseAndDispatch(event)
+	}, this);
 	this.sock.onmessage = $.proxy(this.parseAndDispatch, this);
 	this.sock.onclose   = $.proxy(function() {
 		var event = {data: 'CLOSE ""'};
