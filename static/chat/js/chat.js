@@ -6,17 +6,18 @@ function chat(user, options) {
 	this.ignorelist     = {};
 	this.controlevents  = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
 	this.errorstrings   = {
-		"nopermission" : "You do not have the required permissions to use that",
-		"protocolerror": "Invalid or badly formatted",
-		"needlogin"    : "You have to be logged in to use that",
-		"invalidmsg"   : "The message was invalid",
-		"throttled"    : "Throttled! You were trying to send messages too fast",
-		"duplicate"    : "The messages is identical to the last one you sent",
-		"muted"        : "You are muted",
-		"submode"      : "The channel is currently in subscriber only mode",
-		"needbanreason": "Providing a reason for the ban is mandatory",
-		"banned"       : "You have been banned, disconnecting",
-		"requiresocket": "This chat requires WebSockets"
+		"nopermission"      : "You do not have the required permissions to use that",
+		"protocolerror"     : "Invalid or badly formatted",
+		"needlogin"         : "You have to be logged in to use that",
+		"invalidmsg"        : "The message was invalid",
+		"throttled"         : "Throttled! You were trying to send messages too fast",
+		"duplicate"         : "The messages is identical to the last one you sent",
+		"muted"             : "You are muted",
+		"submode"           : "The channel is currently in subscriber only mode",
+		"needbanreason"     : "Providing a reason for the ban is mandatory",
+		"banned"            : "You have been banned, disconnecting",
+		"requiresocket"     : "This chat requires WebSockets",
+		"toomanyconnections": "Only 3 concurrent connections allowed"
 	};
 	
 	// TODO clean this up
@@ -128,6 +129,7 @@ chat.prototype.onOPEN = function() {
 	return new ChatMessage("You are now connected");
 };
 chat.prototype.onCLOSE = function() {
+	if (this.dontconnect) return;
 	if (this.connected) {// if previously connected, refresh
 		var rand = Math.round(500+Math.random()*1000);
 		setTimeout($.proxy(this.onREFRESH, this), rand);
@@ -206,6 +208,9 @@ chat.prototype.onUNBAN = function(data) {
 	return new ChatMessage(suppressednick + " unbanned by " + data.nick, data.timestamp);
 };
 chat.prototype.onERR = function(data) {
+	if (data == "toomanyconnections")
+		this.dontconnect = true;
+	
 	return new ChatMessage("Error: " + this.errorstrings[data]);
 };
 chat.prototype.onREFRESH = function() {
