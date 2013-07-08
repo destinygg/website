@@ -44,10 +44,10 @@
 			
 			var showAutoComplete = function(i){
 				var gtxt = originalTxt.substr(0, originalTxt.lastIndexOf(lastWord)) + results[i];
-				addonTxt = gtxt.substr(originalTxt.length);
+				addonTxt = gtxt.substring(originalTxt.length);
 				//inp.val(originalTxt + addonTxt);
-				inp.val(gtxt);
-				inp[0].setSelectionRange(originalTxt.length+ addonTxt.length, originalTxt.length + addonTxt.length);
+				inp.val(gtxt + ' ');
+				inp[0].setSelectionRange(gtxt.length+1, gtxt.length+1);
 				inp[0].focus();
 			}
 			
