@@ -35,6 +35,7 @@ use Destiny\UserRole;
 			</div>
 			<?php else: ?>
 			<a class="chat-login-msg" href="/login" target="_parent">You must be logged in to chat</a>
+			<input type="hidden" class="input" />
 			<?php endif; ?>
 		</div>
 		<div class="chat-tools-wrap">

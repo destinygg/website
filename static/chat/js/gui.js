@@ -76,7 +76,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				minWordLength: 3,
 				maxResults: 5
 			}).data('mAutoComplete');
-			
 			for(var n in emoticons){
 				this.autoCompletePlugin.addData([emoticons[n]], 2);
 			}
