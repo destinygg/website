@@ -18,10 +18,6 @@ class Ipn {
 	 * @param array $params
 	 */
 	public function execute(array $params) {
-		// Send OK status immediately
-		Http::status ( Http::STATUS_OK );
-		@ob_flush ();
-		
 		$log = Application::instance ()->getLogger ();
 		$ipnMessage = new PPIPNMessage ();
 		if (! $ipnMessage->validate ()) {
