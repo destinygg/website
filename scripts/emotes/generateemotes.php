@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL);
-
+// Pass "css" as an argument to just regen the css, and not re-download the twitch emotes
 $cssonly = ( @$argv[1] == 'css');
 $html = file_get_contents('http://twitchemotes.com/');
 
