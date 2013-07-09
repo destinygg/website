@@ -17,7 +17,8 @@ function chat(user, options) {
 		"needbanreason"     : "Providing a reason for the ban is mandatory",
 		"banned"            : "You have been banned, disconnecting",
 		"requiresocket"     : "This chat requires WebSockets",
-		"toomanyconnections": "Only 3 concurrent connections allowed"
+		"toomanyconnections": "Only 3 concurrent connections allowed",
+		"temporaryerror"    : "There was a temporary problem with the websocket connection, reconnecting"
 	};
 	
 	// TODO clean this up
@@ -62,8 +63,7 @@ chat.prototype.init = function() {
 		this.parseAndDispatch(event)
 	}, this);
 	this.sock.onerror   = $.proxy(function() {
-		this.dontconnect = true;
-		var event = {data: 'ERR "banned"'};
+		var event = {data: 'ERR "temporaryerror"'};
 		this.parseAndDispatch(event)
 	}, this);
 	this.sock.onmessage = $.proxy(this.parseAndDispatch, this);
@@ -213,7 +213,7 @@ chat.prototype.onUNBAN = function(data) {
 	return new ChatMessage(suppressednick + " unbanned by " + data.nick, data.timestamp);
 };
 chat.prototype.onERR = function(data) {
-	if (data == "toomanyconnections")
+	if (data == "toomanyconnections" || data == "banned")
 		this.dontconnect = true;
 	
 	return new ChatMessage("Error: " + this.errorstrings[data]);
