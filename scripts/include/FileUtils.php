@@ -19,8 +19,7 @@ class FileUtils {
 	 * @var string
 	 */
 	public static $compressionUrl = 'http://shrinkassets.elasticbeanstalk.com';
-	// public static $compressionUrl = 'http://localhost:8080';
-	
+
 	/**
 	 * Join files together and save to $dest path
 	 *

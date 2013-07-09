@@ -1,6 +1,6 @@
 
 // Need a better place for these
-var emoticons = ["Draven", "Draven2", "Draven3", "Draven4", "Draven5", "INFESTINY", "FIDGETLOL", "Hhhehhehe", "GameOfThrows", "WORTH", "FeedNathan", "Abathur", "4Head", "ArsonNoSexy", "AsianGlow", "BCWarrior", "BORT", "BibleThump", "BionicBunion", "BlargNaut", "BloodTrail", "BrainSlug", "BrokeBack", "CougarHunt", "DAESuppy", "DBstyle", "DansGame", "DatSheffy", "EagleEye", "EvilFetus", "FPSMarksman", "FUNgineer", "FailFish", "FrankerZ", "FreakinStinkin", "FuzzyOtterOO", "GingerPower", "HassanChop", "HotPokket", "ItsBoshyTime", "JKanStyle", "Jebaited", "JonCarnage", "Kappa", "KevinTurtle", "Kreygasm", "MVGame", "MrDestructoid", "NinjaTroll", "NoNoSpot", "OMGScoots", "OneHand", "OpieOP", "OptimizePrime", "PJSalt", "PMSTwin", "PazPazowitz", "PicoMause", "PogChamp", "Poooound", "PunchTrees", "RedCoat", "ResidentSleeper", "RuleFive", "SMOrc", "SMSkull", "SSSsss", "ShazBotstix", "SoBayed", "SoonerLater", "StoneLightning", "StrawBeary", "SuperVinlin", "SwiftRage", "TehFunrun", "TheRinger", "TheTarFu", "TinyFace", "TooSpicy", "TriHard", "UleetBackup", "UnSane", "Volcania", "WinWaker"];
+var emoticons = ["Draven", "INFESTINY", "FIDGETLOL", "Hhhehhehe", "GameOfThrows", "WORTH", "FeedNathan", "Abathur", "4Head", "ArsonNoSexy", "AsianGlow", "BCWarrior", "BORT", "BibleThump", "BionicBunion", "BlargNaut", "BloodTrail", "BrainSlug", "BrokeBack", "CougarHunt", "DAESuppy", "DBstyle", "DansGame", "DatSheffy", "EagleEye", "EvilFetus", "FPSMarksman", "FUNgineer", "FailFish", "FrankerZ", "FreakinStinkin", "FuzzyOtterOO", "GingerPower", "HassanChop", "HotPokket", "ItsBoshyTime", "JKanStyle", "Jebaited", "JonCarnage", "Kappa", "KevinTurtle", "Kreygasm", "MVGame", "MrDestructoid", "NinjaTroll", "NoNoSpot", "OMGScoots", "OneHand", "OpieOP", "OptimizePrime", "PJSalt", "PMSTwin", "PazPazowitz", "PicoMause", "PogChamp", "Poooound", "PunchTrees", "RedCoat", "ResidentSleeper", "RuleFive", "SMOrc", "SMSkull", "SSSsss", "ShazBotstix", "SoBayed", "SoonerLater", "StoneLightning", "StrawBeary", "SuperVinlin", "SwiftRage", "TehFunrun", "TheRinger", "TheTarFu", "TinyFace", "TooSpicy", "TriHard", "UleetBackup", "UnSane", "Volcania", "WinWaker"];
 var emoteregex = new RegExp('\\b(?:'+emoticons.join('|')+')\\b');
 var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 ///\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
@@ -128,7 +128,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 					scrollInertia: 0,
 					horizontalScroll: false,
 					autoHideScrollbar: true,
-					scrollButtons:{enable:true}
+					scrollButtons:{enable:false}
 				});
 			};
 			this.menu.prototype.clickAway = function(){
