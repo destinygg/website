@@ -5,11 +5,10 @@ define ( '_STATICDIR', _BASEDIR . '/static' );
 define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
 
 require _VENDORDIR . '/autoload.php';
-require 'FileUtils.php';
+require 'include/FileUtils.php';
 
-$formatter = new \Monolog\Formatter\LineFormatter ( "%level_name% %message%\n", "H:i:s" );
 $stream = new \Monolog\Handler\StreamHandler ( 'php://stdout', \Monolog\Logger::DEBUG );
-$stream->setFormatter ( $formatter );
+$stream->setFormatter ( new \Monolog\Formatter\LineFormatter ( "%level_name% %message%\n", "H:i:s" ) );
 $log = new \Monolog\Logger ( 'DEBUG' );
 $log->pushHandler ( $stream );
 

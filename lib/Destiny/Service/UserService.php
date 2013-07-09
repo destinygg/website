@@ -3,6 +3,7 @@ namespace Destiny\Service;
 
 use Destiny\Service;
 use Destiny\Application;
+use Destiny\AppException;
 use Destiny\Utils\Date;
 
 class UserService extends Service {
@@ -21,6 +22,47 @@ class UserService extends Service {
 	 */
 	public static function instance() {
 		return parent::instance ();
+	}
+
+	/**
+	 * Set a list of user roles
+	 *
+	 * @param int $userId
+	 * @param array $roles
+	 */
+	public function setUserRoles($userId, array $roles) {
+		$this->removeAllUserRoles ( $userId );
+		foreach ( $roles as $role ) {
+			$this->addUserRole ( $userId, $role );
+		}
+	}
+
+	/**
+	 * Add a role to a user
+	 *
+	 * @param int $userId
+	 * @param string $roleName
+	 * @return the specfic record id
+	 */
+	public function addUserRole($userId, $roleId) {
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'dfl_users_roles', array (
+			'userId' => $userId,
+			'roleId' => $roleId 
+		) );
+		return $conn->lastInsertId ();
+	}
+
+	/**
+	 * Remove all roles from a user
+	 *
+	 * @param int $userId
+	 */
+	public function removeAllUserRoles($userId) {
+		$conn = Application::instance ()->getConnection ();
+		$conn->delete ( 'dfl_users_roles', array (
+			'userId' => $userId 
+		) );
 	}
 
 	/**
@@ -233,6 +275,27 @@ class UserService extends Service {
 			'userId' => $userId,
 			'authProvider' => $authProvider 
 		) );
+	}
+
+	/**
+	 * Find a user by username, returns a list of users
+	 *
+	 * @param string $username
+	 * @return array
+	 */
+	public function findUserByUsername($username, $limit = 10, $start = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT u.userId,u.username,u.email FROM dfl_users AS u 
+			WHERE u.username LIKE :username
+			ORDER BY u.username DESC
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'username', '%' . $username . '%', \PDO::PARAM_STR );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 }

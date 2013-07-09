@@ -60,17 +60,27 @@ use Destiny\Utils\Tpl;
 					<div class="control-group">
 						<label>Flair:</label>
 						<?php foreach($model->features as $featureName=>$featureId): ?>
+						<?php if(strcasecmp($featureName, 'subscriber') !== 0 && strcasecmp($featureName, 'admin') !== 'admin'): ?>
 						<label class="checkbox">
 							<input type="checkbox" name="features[]" value="<?=$featureName?>" <?=(in_array($featureName, $model->user['features']))?'checked="checked"':''?>>
 							<?=ucwords($featureName)?>
 						</label>
+						<?php endif; ?>
 						<?php endforeach; ?>
+					</div>
+					
+					<div class="control-group">
+						<label>Website Roles:</label>
+						<label class="checkbox">
+							<input type="checkbox" name="roles[]" value="<?=UserRole::ADMIN?>" <?=(in_array(UserRole::ADMIN, $model->user['roles']))?'checked="checked"':''?>>
+							Administrator
+						</label>
 					</div>
 					
 					
 					<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
 						<button type="submit" class="btn btn-primary">Confirm</button>
-						<a href="/admin" class="btn">Cancel</a>
+						<a href="/admin" class="btn">Back to Admin</a>
 					</div>
 				</form>
 			</div>

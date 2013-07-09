@@ -21,6 +21,15 @@ use Destiny\Utils\Tpl;
 			</small>
 		</h1>
 		<hr size="1">
+		<h3>User Search</h3>
+		<form id="user-search" class="form-search" action="/admin/user/">
+			<input type="hidden" name="id">
+			<div class="input-append">
+				<input class="span2" id="appendedInputButton" type="text" placeholder="Enter a username..." autocomplete="off">
+				<button class="btn btn-inverse" type="button">Edit</button>
+			</div>
+		</form>
+		<br>
 		
 		<h3>Fantasy League</h3>
 		<div class="navbar navbar-inverse navbar-subnav">
@@ -36,10 +45,6 @@ use Destiny\Utils\Tpl;
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<div class="tab-content control-group">
-					
-					
-					
-					
 					<div class="tab-pane active clearfix" id="Games">
 						<table class="grid">
 							<thead>
@@ -126,6 +131,37 @@ use Destiny\Utils\Tpl;
 	
 	<?include'./tpl/seg/foot.php'?>
 	<?include'./tpl/seg/commonbottom.php'?>
+	
+<script>
+(function(){
+
+	var users = [], f = $('#user-search');
+
+	f.find('input[type="text"]').typeahead({
+		updater: function(item){
+			for(var i=0; i<users.length; ++i){
+				if(users[i].username == item){
+					f.find('input[name="id"]').val(users[i].userId);
+					f.submit();
+					break;
+				}
+			};
+			return item;
+		},
+		source: function (query, process) {
+			return $.getJSON('/admin/user/find', {username: query}, function (data) {
+				users = data;
+				var list = new Array();
+				for(var i=0; i<users.length; ++i){
+					list.push(users[i].username);
+				};
+				return process(list);
+			});
+		}
+	});
+	
+})();
+</script>
 	
 </body>
 </html>

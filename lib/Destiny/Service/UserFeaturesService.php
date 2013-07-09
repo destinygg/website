@@ -88,7 +88,6 @@ class UserFeaturesService extends Service {
 	 * @param array $features
 	 */
 	public function setUserFeatures($userId, array $features) {
-		$conn = Application::instance ()->getConnection ();
 		$this->removeAllUserFeatures ( $userId );
 		foreach ( $features as $feature ) {
 			$this->addUserFeature ( $userId, $feature );
