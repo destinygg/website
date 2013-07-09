@@ -49,15 +49,16 @@
 			
 			var runAutoComplete = function(){
 				lastWord = autoComplete.getLastWord(inp.val());
+				
 				if(lastWord.length < settings.minWordLength) 
 					return;
 					
 				results = autoComplete.search(lastWord, settings.maxResults);
-				resultIndex = results.length-1;
+				resultIndex = 0;
 				originalTxt = inp.val();
 				
 				if(results && results.length > 0)
-					showAutoComplete(results.length-1);
+					showAutoComplete(resultIndex);
 			};
 			
 			inp.on({
@@ -72,13 +73,13 @@
 						return true;
 					
 					if(e.keyCode == kCodes.TAB){
-						inp.val(inp.val());
+						//inp.val(inp.val());
 						// If we have only 1 result, select it
 						if(results.length == 1){
 							showAutoComplete(resultIndex);
 							resetSearchResults();
 						}else if(results.length > 1){
-							resultIndex = (resultIndex == 0) ? results.length-1 : resultIndex-1;
+							resultIndex = (resultIndex == results.length-1) ? 0 : resultIndex+1;
 							showAutoComplete(resultIndex);
 						}else if(results.length <= 0){
 							runAutoComplete();
@@ -96,7 +97,7 @@
 	var mAutoComplete = function(input, options){
 		this.input = input;
 		this.shards = {};
-		this.shardIds = '1234567890_ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split();
+		this.shardIds = '1234567890_ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 		return this.init(input, options);
 	};
 	mAutoComplete.prototype.addData = function(data, weight){
@@ -117,6 +118,7 @@
 			if(typeof this.shards[id][weight] != 'object')
 				this.shards[id][weight] = [];
 			this.shards[id][weight].push(data[n]);
+			this.shards[id][weight].sort(function(x, y){return x > y});
 		}
 		return this;
 	};
@@ -133,14 +135,16 @@
 		var res  = [], 
 			f 	 = new RegExp("\\b"+txt+"", "i"),
 			data = this.shards[this.getShardIdByTxt(txt)] || [];
-			
+
 		search:
 		for(var weight in data){
 			for(var n in data[weight]){
-				if(res.length >= limit) 
+				if(res.length >= limit) {
 					break search;
-				if(f.test(data[weight][n])) 
+				}
+				if(f.test(data[weight][n])) {
 					res.push(data[weight][n]);
+				}
 			}
 		}
 		return res;
