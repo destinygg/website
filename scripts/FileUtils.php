@@ -1,6 +1,5 @@
 <?php
 use Monolog\Logger;
-
 class FileUtils {
 	
 	/**
@@ -20,8 +19,8 @@ class FileUtils {
 	 * @var string
 	 */
 	public static $compressionUrl = 'http://shrinkassets.elasticbeanstalk.com';
-	//public static $compressionUrl = 'http://localhost:8080';
-
+	// public static $compressionUrl = 'http://localhost:8080';
+	
 	/**
 	 * Join files together and save to $dest path
 	 *
@@ -30,11 +29,9 @@ class FileUtils {
 	 */
 	public static function concat($dest, array $files) {
 		self::$log->info ( sprintf ( 'Concat [%s]', $dest ), $files );
-		$fp = fopen ( self::$b . $dest, "a+" );
 		foreach ( $files as $file ) {
-			fwrite ( $fp, file_get_contents ( self::$b . $file ) . PHP_EOL . PHP_EOL );
+			file_put_contents ( self::$b . $dest, file_get_contents ( self::$b . $file ) . PHP_EOL . PHP_EOL, FILE_APPEND );
 		}
-		fclose ( $fp );
 	}
 
 	/**
