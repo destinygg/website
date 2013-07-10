@@ -225,7 +225,7 @@ color: #004D74;
 }
 
 .chat .chat-lines time, 
-.chat.chat-icons .user-message i {
+.chat .user-message i {
 display: none !important;	
 }
 .chat.chat-time .chat-lines time, 
