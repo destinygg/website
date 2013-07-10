@@ -132,7 +132,7 @@ chat.prototype.onOPEN = function() {
 chat.prototype.onCLOSE = function() {
 	if (this.dontconnect) return;
 	this.connected = false;
-	this.reconnectCount = (this.reconnectCount >= 10) ? 0: this.reconnectCount+1;
+	this.reconnectCount = (this.reconnectCount >= 10) ? 1: this.reconnectCount+1;
 	setTimeout($.proxy(this.onRECONNECT, this), (this.reconnectInterval*this.reconnectCount)*1000);
 	return new ChatStatusMessage("You have been disconnected, reconnecting in "+(this.reconnectInterval*this.reconnectCount)+" seconds");
 };
