@@ -34,17 +34,9 @@ use Destiny\Session;
 	
 	<?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
 	<section class="container">
-		<h3>Subscription</h3>
 		<div class="content content-dark clearfix">
-			<div style="width: 100%;" class="clearfix stream">
-				<form action="/subscribe" method="post">
-					<div class="control-group">
-						<p>You have no active subscriptions. Click the 'Subscribe' button below to get one!</p>
-					</div>
-					<div class="form-actions block-foot">
-						<a href="/subscribe" class="btn btn-primary"><i class="icon-heart icon-white"></i> Subscribe</a>
-					</div>
-				</form>
+			<div class="control-group">
+				<p><span class="label label-important">Subscription</span> You have no active subscriptions. Click <a href="/subscribe">here</a> to get one!</p>
 			</div>
 		</div>
 	</section>
