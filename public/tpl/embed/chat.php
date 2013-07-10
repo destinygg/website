@@ -29,14 +29,14 @@ use Destiny\UserRole;
 	
 	<form class="chat-input clearfix hidden">
 		<div class="chat-input-wrap clearfix">
-			<?php if(Session::hasRole(UserRole::USER)): ?>
 			<div class="chat-input-control">
-				<input type="text" placeholder="Enter a message to chat..." class="input" autocomplete="off" />
-			</div>
+			<?php if(Session::hasRole(UserRole::USER)): ?>
+			<input type="text" placeholder="Enter a message and hit send..." class="input" autocomplete="off" />
 			<?php else: ?>
 			<a class="chat-login-msg" href="/login" target="_parent">You must be logged in to chat</a>
 			<input type="hidden" class="input" />
 			<?php endif; ?>
+			</div>
 		</div>
 		<div class="chat-tools-wrap">
 			<a class="iconbtn chat-send-btn" title="Send"><i class="icon-bullhorn icon-white subtle"></i></a>
@@ -80,13 +80,19 @@ use Destiny\UserRole;
 			<div class="scrollable">
 				<ul class="unstyled" style="font-size:0.9em;">
 					<li>
-						<label class="checkbox" title="Show all user flair icons"><input name="hideflairicons" type="checkbox" /> Hide flair icons</label>
+						<label class="checkbox" title="Show all user flair icons">
+							<input name="hideflairicons" type="checkbox" /> Hide flair icons
+						</label>
 					</li>
 					<li>
-						<label class="checkbox" title="Show the timestamps next to the messages"><input name="showtime" type="checkbox" /> Show time for messages</label>
+						<label class="checkbox" title="Show the timestamps next to the messages">
+							<input name="showtime" type="checkbox" /> Show time for messages
+						</label>
 					</li>
 					<li>
-						<label class="checkbox" title="Highlight text that you are mentioned in"><input name="highlight" type="checkbox" checked="checked"/> Highlight on mention</label>
+						<label class="checkbox" title="Highlight text that you are mentioned in">
+							<input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
+						</label>
 					</li>
 					<li>
 						<label class="text" title="Your custom list of words that will make messages highlight">
@@ -95,11 +101,13 @@ use Destiny\UserRole;
 						</label>
 					</li>
 					<li>
-						<label class="checkbox" title="Show desktop notifications on hightlight"><input name="notifications" type="checkbox" /> Desktop notification on highlight</label>
+						<label class="checkbox" title="Show desktop notifications on hightlight">
+							<input name="notifications" type="checkbox" /> Desktop notification on highlight
+						</label>
 					</li>
-					<hr style="margin:5px 0;">
 					<li>
-						See the <a href="/chat/faq" target="_blank">chat faq</a> for more info
+						<hr style="margin:5px 0;">
+						See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information
 					</li>
 				</ul>
 			</div>
