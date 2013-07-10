@@ -1,3 +1,4 @@
+// This is to fix firefox
 (function(w) {
     "use strict";
     // most browsers have an implementation
@@ -112,6 +113,18 @@
 		
 		isScrollLocked: function(){
 			return this.scrollLocked;
+		},
+		
+		scroll: function(to){
+			var moveAmt = Math.floor(this.chat.output.height() / 3), 
+				pos = Math.abs(this.chat.lines.parent().position().top);
+			
+			if(to == 'up')
+				return this.chat.output.mCustomScrollbar('scrollTo', pos-moveAmt);
+			if(to == 'down')
+				return this.chat.output.mCustomScrollbar('scrollTo', pos+moveAmt);
+			
+			return this.chat.output.mCustomScrollbar('scrollTo',to);
 		}
 	});
 	

@@ -30,6 +30,9 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		backlog: backlog,
 		highlightregex: {},
 		notifications: true,
+		lastMessage: null,
+		menus: [],
+		menuOpenCount: 0,
 		
 		init: function(){
 			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
@@ -78,69 +81,26 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			}).data('mAutoComplete');
 
 			this.autoCompletePlugin.addData(emoticons, 2);
+
+			// Close the menu, or perform a scroll
+			this.input.on('keydown mousedown', $.proxy(function(e){
+				if(this.menuOpenCount > 0)
+					cMenu.closeMenus(this);
+				
+				if(e.keyCode == 33 /*PGUP*/){
+					this.scrollPlugin.scroll('up');
+					return false;
+				}
+				if(e.keyCode == 34 /*PGDOWN*/){
+					this.scrollPlugin.scroll('down');
+					return false;
+				}
+			}, this));
 			
-			// Generic menus functions
-			this.menus = [];
-			this.menuOpenCount = 0;
-			this.menu = function(){
-				return this;
-			};
-			this.menu.addMenu = function(chat, e){
-				e.on('click', 'button.close', function(){
-					chat.menu.closeMenus(chat);
-				});
-				chat.menu.prototype.scrollable.apply(e);
-				chat.menus.push(e);
-				return this;
-			};
-			this.menu.update = function(chat){
-				if(chat.menuOpenCount > 0){
-					chat.ui.addClass('active-menu');
-				}else{
-					chat.ui.removeClass('active-menu');
-				}
-			};
-			this.menu.closeMenus = function(chat){
-				for(var i=0;i<chat.menus.length; ++i){
-					if(chat.menus[i].visible){
-						this.prototype.hideMenu.call(chat.menus[i], chat);
-					}
-				}
-			};
-			this.menu.prototype.showMenu = function(chat){
-				this.stop().slideDown(50);
-				this.visible = true;
-				this.btn.addClass('active');
-				this.scrollable.mCustomScrollbar('update');
-				++chat.menuOpenCount;
-				chat.menu.update(chat);
-			};
-			this.menu.prototype.hideMenu = function(chat){
-				this.stop().hide();
-				this.visible = false;
-				this.btn.removeClass('active');
-				--chat.menuOpenCount;
-				chat.menu.update(chat);
-			};
-			this.menu.prototype.scrollable = function(){
-				this.scrollable.mCustomScrollbar({
-					theme: 'light-thin',
-					scrollInertia: 0,
-					horizontalScroll: false,
-					autoHideScrollbar: true,
-					scrollButtons:{enable:false}
-				});
-			};
-			this.menu.prototype.clickAway = function(){
-				var chat = $(this).closest('.chat').data('chat');
-				if(chat.menuOpenCount > 0){
-					chat.menu.closeMenus(chat);
-				}
-			};
-			
-			this.output.on('click', this.menu.prototype.clickAway);
-			this.input.on('click', this.menu.prototype.clickAway);
-			//
+			this.output.on('mousedown', $.proxy(function(e){ 
+				if(this.menuOpenCount > 0)
+					cMenu.closeMenus(this);
+			}, this));
 			
 			// Chat settings
 			this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
@@ -155,11 +115,11 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.chatsettings.detach();
 				if(chat.chatsettings.visible){
-					return chat.menu.prototype.hideMenu.call(chat.chatsettings, chat);
+					return cMenu.prototype.hideMenu.call(chat.chatsettings, chat);
 				}
-				chat.menu.closeMenus(chat);
+				cMenu.closeMenus(chat);
 				chat.chatsettings.appendTo(chat.ui);
-				return chat.menu.prototype.showMenu.call(chat.chatsettings, chat);
+				return cMenu.prototype.showMenu.call(chat.chatsettings, chat);
 			});
 			this.chatsettings.on('keypress blur', 'input[name=customhighlight]', function(e) {
 				var keycode = e.keyCode ? e.keyCode : e.which;
@@ -225,9 +185,9 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.userslist.detach();
 				if(chat.userslist.visible){
-					return chat.menu.prototype.hideMenu.call(chat.userslist, chat);
+					return cMenu.prototype.hideMenu.call(chat.userslist, chat);
 				}
-				chat.menu.closeMenus(chat);
+				cMenu.closeMenus(chat);
 				var lists  = chat.userslist.find('ul'),
 				    admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
 				    elems  = {},
@@ -275,11 +235,11 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				appendUsers(subs, lists.filter('.subs'));
 				appendUsers(plebs, lists.filter('.plebs'));
 				chat.userslist.appendTo(chat.ui);
-				return chat.menu.prototype.showMenu.call(chat.userslist, chat);
+				return cMenu.prototype.showMenu.call(chat.userslist, chat);
 			});
 			
-			this.menu.addMenu(this, this.chatsettings);
-			this.menu.addMenu(this, this.userslist);
+			cMenu.addMenu(this, this.chatsettings);
+			cMenu.addMenu(this, this.userslist);
 			
 			// Enable toolbar
 			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
@@ -359,8 +319,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			this.handleHighlight(message);
 			return message;
 		},
-		
-		lastMessage: null,
 		
 		// bypass ui updates and notifications
 		// used to mass put history messages, and only update ui afterwards
@@ -561,198 +519,191 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		});
 	});
 	
+	// USER FEATURES
+	UserFeatures = {
+		PROTECTED 	: 'protected',
+		SUBSCRIBER	: 'subscriber',
+		VIP			: 'vip',
+		MODERATOR	: 'moderator',
+		ADMIN		: 'admin',
+		BOT			: 'bot',
+	};
+
+	//CHAT USER
+	ChatUser = function(args){
+		args = args || {};
+		this.username = args.nick || '';
+		this.features = [];
+		this.connections = 0;
+		args.features = args.features || [];
+		$.extend(this, args);
+		return this;
+	};
+	ChatUser.prototype.getFeatureHTML = function(){
+		var icons = '';
+		for (var i = 0; i < this.features.length; i++) {
+			switch(this.features[i]){
+				case UserFeatures.SUBSCRIBER :
+					icons += '<i class="icon-subscriber" title="Subscriber"/>';
+					break;
+				case UserFeatures.VIP :
+					icons += '<i class="icon-vip" title="VIP"/>';
+					break;
+				case UserFeatures.MODERATOR :
+					icons += '<i class="icon-moderator" title="Moderator"/>';
+					break;
+				case UserFeatures.ADMIN :
+					icons += '<i class="icon-administrator" title="Administrator"/>';
+					break;
+				case UserFeatures.BOT :
+					icons += '<i class="icon-bot" title="Bot"/>';
+					break;
+			}
+		}
+		return icons;
+	};
+
+	//UI MESSAGE
+	ChatUIMessage = function(html){
+		return this.init(html);
+	};
+	ChatUIMessage.prototype.init = function(html){
+		this.message = html;
+		return this;
+	};
+	ChatUIMessage.prototype.html = function(){
+		return this.wrap(this.wrapMessage());
+	};
+	ChatUIMessage.prototype.wrap = function(html){
+		return '<div>'+html+'</div>';
+	};
+	ChatUIMessage.prototype.wrapMessage = function(){
+		return this.message;
+	};
+
+	//BASE MESSAGE
+	ChatMessage = function(message, timestamp){
+		return this.init(message, timestamp);
+	};
+	ChatMessage.prototype.init = function(message, timestamp){
+		this.message = message;
+		this.timestamp = moment.utc(timestamp).local();
+		this.state = null;
+		return this;
+	};
+	ChatMessage.prototype.status = function(state){
+		if(this.ui){
+			if(state){
+				this.ui.attr('class', state);
+			}else{
+				this.ui.removeAttr('class');
+			}
+		}
+		this.state = state;
+		return this;
+	};
+	ChatMessage.prototype.wrapTime = function(){
+		return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+'</time>';
+	};
+	ChatMessage.prototype.wrapMessage = function(){
+		return $('<span/>').text(this.message).html();
+	};
+	ChatMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
+	};
+	ChatMessage.prototype.wrap = function(content){
+		return '<div>'+content+'</div>';
+	};
+	// ERROR MESSAGE
+	ChatErrorMessage = function(error, timestamp){
+		this.init(error, timestamp);
+		return this;
+	};
+	$.extend(ChatErrorMessage.prototype, ChatMessage.prototype);
+	ChatErrorMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' <i class="icon-error"></i> ' + this.wrapMessage());
+	};
+	// INFO MESSAGE
+	ChatInfoMessage = function(message, timestamp){
+		this.init(message, timestamp);
+		return this;
+	};
+	$.extend(ChatInfoMessage.prototype, ChatMessage.prototype);
+	ChatInfoMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' <i class="icon-info"></i> ' + this.wrapMessage());
+	};
+	// ACTION MESSAGE
+	ChatActionMessage = function(message, timestamp){
+		this.init(message, timestamp);
+		return this;
+	};
+	$.extend(ChatActionMessage.prototype, ChatMessage.prototype);
+	ChatActionMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' <i class="icon-exclamation"></i> ' + this.wrapMessage());
+	};
+	// BROADCAST MESSAGE
+	ChatBroadcastMessage = function(message, timestamp){
+		this.init(message, timestamp);
+		return this;
+	};
+	$.extend(ChatBroadcastMessage.prototype, ChatMessage.prototype);
+	ChatBroadcastMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' <i class="icon-broadcast"></i> ' + this.wrapMessage());
+	};
+	// BROADCAST MESSAGE
+	ChatStatusMessage = function(message, timestamp){
+		this.init(message, timestamp);
+		return this;
+	};
+	$.extend(ChatStatusMessage.prototype, ChatMessage.prototype);
+	ChatStatusMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
+	};
+	// USER MESSAGE
+	ChatUserMessage = function(message, user, timestamp){
+		this.init(message, timestamp);
+		// strip the /me
+		this.isEmote = false;
+		if (this.message.substring(0, 4) === '/me ') {
+			this.isEmote = true;
+			this.message = this.message.substring(4);
+		} else if (this.message.substring(0, 2) === '//')
+			this.message = this.message.substring(1);
+		this.isAddon = false;
+		this.user = user;
+		return this;
+	};
+	$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
+	ChatUserMessage.prototype.wrap = function(html, css) {
+		if (this.user && this.user.username) {
+			return '<div class="user-message" data-username="'+this.user.username.toLowerCase()+'" '+((css) ? 'class="'+css+'"':'')+'>'+html+'</div>';
+		} else
+			return '<div class="user-message'+((css) ? ' '+css:'')+'">'+html+'</div>';
+	};
+	ChatUserMessage.prototype.wrapUser = function(user){
+		return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
+	};
+	ChatUserMessage.prototype.wrapMessage = function(){
+		var elem = $('<msg/>').text(this.message),
+		encoded  = elem.html();
+		
+		var emoticon = emoteregex.exec(encoded);
+		if (emoticon)
+			encoded = encoded.replace(emoticon[0], '<div title="'+emoticon[0]+'" class="chat-emote chat-emote-' + emoticon[0] +'"></div>');
+		
+		encoded = encoded.replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>');
+		if(this.isEmote)
+			elem.addClass('emote');
+		return elem.html(encoded)[0].outerHTML;
+	};
+	ChatUserMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' ' + ((!this.isEmote) ? '' : '*') + this.wrapUser(this.user) + ((!this.isEmote) ? ': ' : ' ') + this.wrapMessage());
+	};
+	ChatUserMessage.prototype.addonHtml = function(){
+		if(this.isEmote)
+			return this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
+		return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage(), 'continue');
+	};
+	
 	
 })(jQuery);
-
-// USER FEATURES
-var UserFeatures = {
-	PROTECTED 	: 'protected',
-	SUBSCRIBER	: 'subscriber',
-	VIP			: 'vip',
-	MODERATOR	: 'moderator',
-	ADMIN		: 'admin',
-	BOT			: 'bot',
-};
-
-var ChatMessageStatus = {
-	SENT		: 'sent',
-	UNSENT		: 'unsent',
-	PENDING		: 'pending',
-	FAILED		: 'failed'
-};
-
-//CHAT USER
-function ChatUser(args){
-	args = args || {};
-	this.username = args.nick || '';
-	this.features = [];
-	this.connections = 0;
-	args.features = args.features || [];
-	$.extend(this, args);
-	return this;
-};
-ChatUser.prototype.getFeatureHTML = function(){
-	var icons = '';
-	for (var i = 0; i < this.features.length; i++) {
-		switch(this.features[i]){
-			case UserFeatures.SUBSCRIBER :
-				icons += '<i class="icon-subscriber" title="Subscriber"/>';
-				break;
-			case UserFeatures.VIP :
-				icons += '<i class="icon-vip" title="VIP"/>';
-				break;
-			case UserFeatures.MODERATOR :
-				icons += '<i class="icon-moderator" title="Moderator"/>';
-				break;
-			case UserFeatures.ADMIN :
-				icons += '<i class="icon-administrator" title="Administrator"/>';
-				break;
-			case UserFeatures.BOT :
-				icons += '<i class="icon-bot" title="Bot"/>';
-				break;
-		}
-	}
-	return icons;
-};
-
-//UI MESSAGE
-function ChatUIMessage(html){
-	return this.init(html);
-};
-ChatUIMessage.prototype.init = function(html){
-	this.message = html;
-	return this;
-};
-ChatUIMessage.prototype.html = function(){
-	return this.wrap(this.wrapMessage());
-};
-ChatUIMessage.prototype.wrap = function(html){
-	return '<div>'+html+'</div>';
-};
-ChatUIMessage.prototype.wrapMessage = function(){
-	return this.message;
-};
-
-//BASE MESSAGE
-function ChatMessage(message, timestamp){
-	return this.init(message, timestamp);
-};
-ChatMessage.prototype.init = function(message, timestamp){
-	this.message = message;
-	this.timestamp = moment.utc(timestamp).local();
-	this.state = null;
-	return this;
-};
-ChatMessage.prototype.status = function(state){
-	if(this.ui){
-		if(state){
-			this.ui.attr('class', state);
-		}else{
-			this.ui.removeAttr('class');
-		}
-	}
-	this.state = state;
-	return this;
-};
-ChatMessage.prototype.wrapTime = function(){
-	return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+'</time>';
-};
-ChatMessage.prototype.wrapMessage = function(){
-	return $('<span/>').text(this.message).html();
-};
-ChatMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
-};
-ChatMessage.prototype.wrap = function(content){
-	return '<div>'+content+'</div>';
-};
-// ERROR MESSAGE
-function ChatErrorMessage(error, timestamp){
-	this.init(error, timestamp);
-	return this;
-};
-$.extend(ChatErrorMessage.prototype, ChatMessage.prototype);
-ChatErrorMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' <i class="icon-error"></i> ' + this.wrapMessage());
-};
-// INFO MESSAGE
-function ChatInfoMessage(message, timestamp){
-	this.init(message, timestamp);
-	return this;
-};
-$.extend(ChatInfoMessage.prototype, ChatMessage.prototype);
-ChatInfoMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' <i class="icon-info"></i> ' + this.wrapMessage());
-};
-// ACTION MESSAGE
-function ChatActionMessage(message, timestamp){
-	this.init(message, timestamp);
-	return this;
-};
-$.extend(ChatActionMessage.prototype, ChatMessage.prototype);
-ChatActionMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' <i class="icon-exclamation"></i> ' + this.wrapMessage());
-};
-// BROADCAST MESSAGE
-function ChatBroadcastMessage(message, timestamp){
-	this.init(message, timestamp);
-	return this;
-};
-$.extend(ChatBroadcastMessage.prototype, ChatMessage.prototype);
-ChatBroadcastMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' <i class="icon-broadcast"></i> ' + this.wrapMessage());
-};
-// BROADCAST MESSAGE
-function ChatStatusMessage(message, timestamp){
-	this.init(message, timestamp);
-	return this;
-};
-$.extend(ChatStatusMessage.prototype, ChatMessage.prototype);
-ChatStatusMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
-};
-// USER MESSAGE
-function ChatUserMessage(message, user, timestamp){
-	this.init(message, timestamp);
-	// strip the /me
-	this.isEmote = false;
-	if (this.message.substring(0, 4) === '/me ') {
-		this.isEmote = true;
-		this.message = this.message.substring(4);
-	} else if (this.message.substring(0, 2) === '//')
-		this.message = this.message.substring(1);
-	this.isAddon = false;
-	this.user = user;
-	return this;
-};
-$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
-ChatUserMessage.prototype.wrap = function(html, css) {
-	if (this.user && this.user.username) {
-		return '<div class="user-message" data-username="'+this.user.username.toLowerCase()+'" '+((css) ? 'class="'+css+'"':'')+'>'+html+'</div>';
-	} else
-		return '<div class="user-message'+((css) ? ' '+css:'')+'">'+html+'</div>';
-};
-ChatUserMessage.prototype.wrapUser = function(user){
-	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
-};
-ChatUserMessage.prototype.wrapMessage = function(){
-	var elem = $('<msg/>').text(this.message),
-	encoded  = elem.html();
-	
-	var emoticon = emoteregex.exec(encoded);
-	if (emoticon)
-		encoded = encoded.replace(emoticon[0], '<div title="'+emoticon[0]+'" class="chat-emote chat-emote-' + emoticon[0] +'"></div>');
-	
-	encoded = encoded.replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>');
-	if(this.isEmote)
-		elem.addClass('emote');
-	return elem.html(encoded)[0].outerHTML;
-};
-ChatUserMessage.prototype.html = function(){
-	return this.wrap(this.wrapTime() + ' ' + ((!this.isEmote) ? '' : '*') + this.wrapUser(this.user) + ((!this.isEmote) ? ': ' : ' ') + this.wrapMessage());
-};
-ChatUserMessage.prototype.addonHtml = function(){
-	if(this.isEmote)
-		return this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
-	return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage(), 'continue');
-};
