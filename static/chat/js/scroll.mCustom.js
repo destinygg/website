@@ -76,8 +76,8 @@
 					enable:true
 				},
 				callbacks: {
-					onTotalScrollOffset: 1,
-					onTotalScrollBackOffset: 1,
+					onTotalScrollOffset: 20,
+					onTotalScrollBackOffset: 20,
 					onScrollStart: function(){
 						self.scrolledBottom = false;
 					},

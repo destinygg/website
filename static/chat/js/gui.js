@@ -292,7 +292,8 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 						this.handleHighlight(m, true);
 					}
 				}
-				this.push(new ChatUIMessage('<hr/>'));
+				this.put(new ChatUIMessage('<hr/>'));
+				this.scrollPlugin.update();
 			};
 		},
 		
@@ -305,22 +306,21 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			this.userMessages.push(message);
 			this.put(message, state);
 			this.scrollPlugin.update();
-			if(this.lineCount() >= this.maxlines){
-				this.lines.children().eq(0).remove();
-			}
 			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
+				if(this.lineCount() >= this.maxlines){
+					var overshot = this.lineCount()-this.maxlines;
+					this.lines.children().slice(0,2+Math.floor(((this.lineCount()-this.maxlines) / this.maxlines)*100)).remove();
+				}
 				this.scrollPlugin.scrollBottom();
 			}
 			this.handleHighlight(message);
 			return message;
 		},
-		
-		// bypass ui updates and notifications
-		// used to mass put history messages, and only update ui afterwards
+
 		put: function(message, state, klass){
 			if(message instanceof ChatUserMessage){
 				if(this.lastMessage && this.lastMessage.user && message.user && this.lastMessage.user.username == message.user.username){
-					//same person
+					//same person consecutively
 					message.ui = $(message.addonHtml());
 				}else{
 					//different person
