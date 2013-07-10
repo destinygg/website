@@ -42,6 +42,10 @@ $.fn.sortElements = (function(){
 	};
 })();
 
+function getRandomInt (min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 String.prototype.ltrim = function( chars ) {
 	chars = chars || "\\s*";
 	return this.replace( new RegExp("^[" + chars + "]+", "g"), "" );

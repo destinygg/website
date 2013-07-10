@@ -127,17 +127,11 @@ chat.prototype.emit = function(eventname, data) {
 chat.prototype.onOPEN = function() {
 	this.connected = true;
 };
+
 chat.prototype.onCLOSE = function() {
 	if (this.dontconnect) return;
-	if (this.connected) {// if previously connected, refresh
-		var rand = Math.round(500+Math.random()*1000);
-		setTimeout($.proxy(this.onRECONNECT, this), rand);
-		return new ChatMessage("You have been disconnected, reconnecting");
-	}
-	
+	setTimeout($.proxy(this.onRECONNECT, this), ((this.connected) ? getRandomInt(1,3) : getRandomInt(5,30)) * 1000);
 	this.connected = false;
-	var rand = Math.round(3+Math.random()*20);
-	setTimeout($.proxy(this.onRECONNECT, this), rand * 1000);
 	return new ChatStatusMessage("You have been disconnected, reconnecting in "+rand+" seconds");
 };
 chat.prototype.onNAMES = function(data) {
