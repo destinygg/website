@@ -1,15 +1,7 @@
 (function(){
 			
 	var kCodes = {
-		ENTER		: 13,
-		RIGHT		: 39,
-		END			: 35,
-		TAB			: 9,
-		SHIFT		: 16,
-		CTRL		: 17,
-		ALT			: 18,
-		CAPSLOCK	: 20,
-		NUMLOCK		: 144
+		TAB : 9
 	};
 	
 	var mAutoComplete = function(input, options){
@@ -83,7 +75,8 @@
 			
 			var settings = $.extend({
 				minWordLength: 3,
-				maxResults: 5
+				maxResults: 5,
+				triggerKeys: [kCodes.TAB]
 			}, options);
 		
 			var results 		= new Array(),
@@ -138,13 +131,8 @@
 					return true;
 				},
 				keydown: function(e){
-					// Ignore if one of these keys are pressed OR
-					if(e.keyCode == kCodes.ENTER || e.keyCode == kCodes.SHIFT || e.keyCode == kCodes.CTRL || e.keyCode == kCodes.ALT || e.keyCode == kCodes.CAPSLOCK || e.keyCode == kCodes.NUMLOCK)
-						return true;
 
-					// if(inp[0].selectionStart < inp[0].selectionEnd) Care about selection?
-						
-					if(e.keyCode == kCodes.TAB){
+					if($.inArray(e.keyCode, settings.triggerKeys) >= 0){
 						if(results.length <= 0){
 							resetSearchResults();
 							checkCurrentWord();
@@ -153,7 +141,7 @@
 						// Always cancel tab? the user is used to not loosing focus
 						return false;
 					}
-					
+
 					// Cancel the search and continue the keydown
 					resetSearchResults();
 					return true;

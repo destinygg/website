@@ -56,6 +56,13 @@ class SessionInstance {
 		if (! empty ( $params )) {
 			Options::setOptions ( $this, $params );
 		}
+		// Puts all the credentials on the session data
+		$this->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
+			$params = $credentials->getData ();
+			foreach ( $params as $name => $value ) {
+				$session->set ( $name, $value );
+			}
+		} );
 	}
 
 	/**
@@ -407,7 +414,7 @@ class SessionCredentials {
 	 * @var array
 	 */
 	protected $features = array ();
-	
+
 	/**
 	 * Set all the credentials at once
 	 *
@@ -456,7 +463,7 @@ class SessionCredentials {
 			'country' => $this->getCountry (),
 			'roles' => $this->getRoles (),
 			'authProvider' => $this->getAuthProvider (),
-			'features' => $this->getFeatures ()
+			'features' => $this->getFeatures () 
 		);
 	}
 

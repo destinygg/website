@@ -19,7 +19,8 @@ use Destiny\Utils\Tpl;
 	
 		<h1 class="title">
 			<span>Confirm</span>
-			<small>your <img src="/img/ico/<?=Tpl::out($model->authProvider)?>_16.png" /> <?=Tpl::out(strtolower($model->authProvider))?> details</small>
+			
+			<small>your <i class="icon-<?=Tpl::out($model->authProvider)?>"></i> <?=Tpl::out(strtolower($model->authProvider))?> details</small>
 		</h1>
 		<hr size="1">
 		

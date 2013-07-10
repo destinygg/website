@@ -22,7 +22,7 @@ use Destiny\Utils\Tpl;
 		</h1>
 		<hr size="1">
 		<h3>User Search</h3>
-		<form id="user-search" class="form-search" action="/admin/user/">
+		<form id="user-search" class="form-search" action="/admin/user/" method="post">
 			<input type="hidden" name="id">
 			<div class="input-append">
 				<input class="span2" id="appendedInputButton" type="text" placeholder="Enter a username..." autocomplete="off">
@@ -142,6 +142,7 @@ use Destiny\Utils\Tpl;
 			for(var i=0; i<users.length; ++i){
 				if(users[i].username == item){
 					f.find('input[name="id"]').val(users[i].userId);
+					f.attr('action', '/admin/user/'+users[i].userId);
 					f.submit();
 					break;
 				}

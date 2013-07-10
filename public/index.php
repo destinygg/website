@@ -28,31 +28,15 @@ $session = $app->getSession ();
 $session->setSessionCookie ( new SessionCookie ( Config::$a ['cookie'] ) );
 $session->setCredentials ( new SessionCredentials () );
 
-// Puts all the credentials on the session data - we dont need to remove this, because its removed with the session automatically
-$session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
-	$params = $credentials->getData ();
-	foreach ( $params as $name => $value ) {
-		$session->set ( $name, $value );
-	}
-} );
-
 // Puts the session into the cache
 $session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
-	$redis = Application::instance ()->getRedis ();
-	if (! empty ( $redis )) {
-		$data = json_encode ( $credentials->getData () );
-		$redis->setOption ( Redis::OPT_SERIALIZER, Redis::SERIALIZER_NONE );
-		$redis->set ( sprintf ( 'CHAT:%s', $session->getSessionId () ), $data, 30 * 24 * 60 * 60 );
-		$redis->publish ( 'refreshuser', $data );
-		$redis->setOption ( Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP );
-	}
+	$chatIntegration = \Destiny\Service\ChatIntegrationService::instance ();
+	$chatIntegration->updateSession ( $session, $credentials );
 } );
 // Removes session from cache
 $session->addCleanupHandler ( function (SessionInstance $session) {
-	$redis = Application::instance ()->getRedis ();
-	if (! empty ( $redis )) {
-		$redis->delete ( sprintf ( 'CHAT:%s', $session->getSessionId () ) );
-	}
+	$chatIntegration = \Destiny\Service\ChatIntegrationService::instance ();
+	$chatIntegration->deleteSession ( $session );
 } );
 
 // Start the session if a valid session cookie is found
