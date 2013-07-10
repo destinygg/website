@@ -22,7 +22,7 @@ use Destiny\Utils\Tpl;
 		</h1>
 		<hr size="1">
 		
-		<h3>User Search</h3>
+		<h3>Find &amp edit a user</h3>
 		<form id="user-search" class="form-search" action="/admin/user/" method="get">
 			<div class="input-append">
 				<input class="span2" id="appendedInputButton" type="text" placeholder="Enter a username..." autocomplete="off">
@@ -31,7 +31,7 @@ use Destiny\Utils\Tpl;
 		</form>
 		<br>
 		
-		<h3>Fantasy League</h3>
+		<h3>Fantasy league</h3>
 		<div class="navbar navbar-inverse navbar-subnav">
 			<div class="navbar-inner">
 				<ul class="nav">

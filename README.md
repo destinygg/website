@@ -4,7 +4,6 @@ Work in progress...
 
 ## Requirements
 [composer](http://getcomposer.org/download/) is required to pull dependencies.
-Optionally a [Ant](http://ant.apache.org/) build.xml file is used to build the project into a output folder.
 
 
 ## Installation
@@ -13,8 +12,8 @@ Add your custom configuration file to /config/config.local.php, override what yo
 Composer setup
 	>composer upgrade
 	
-Ant build
-	>ant install
+Pack files build
+	>php -f "scripts/pack.php"
 
 Install the database structure
 	destiny.gg.sql
