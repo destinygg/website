@@ -24,15 +24,23 @@
 		return this;
 	};
 	mAutoComplete.prototype.shardData = function(data, weight){
+		var sortShards = [];
 		for(var n in data){
 			var id = this.getShardIdByTxt(data[n]);
 			if(typeof this.shards[id] != 'object')
 				this.shards[id] = {};
 			if(typeof this.shards[id][weight] != 'object')
 				this.shards[id][weight] = [];
-			this.shards[id][weight].push(data[n]);
-			this.shards[id][weight].sort(function(x, y){return x > y});
+			
+			if($.inArray(data[n], this.shards[id][weight]) < 0){
+				this.shards[id][weight].push(data[n]);
+				sortShards.push([id,weight]);
+			}
 		}
+		for(var x in sortShards)
+			this.shards[sortShards[x][0]][sortShards[x][1]].sort(function(x, y){return x > y});
+		
+		sortShards = null;
 		return this;
 	};
 	mAutoComplete.prototype.getCaretWord = function(inp){
@@ -75,7 +83,7 @@
 			}, options);
 		
 			var results 		= new Array(),
-				resultIndex 	= 0,
+				resultIndex 	= -1,
 				searchWord		= '',
 				originalTxt 	= '',
 				inp 			= $(this), 
@@ -102,7 +110,7 @@
 			};
 			
 			var showAutoComplete = function(){
-				resultIndex = (resultIndex == results.length) ? 0 : resultIndex+1;
+				resultIndex = (resultIndex >= results.length-1) ? 0 : resultIndex+1;
 				var replace = results[resultIndex];
 				if(replace){
 					var pre = originalTxt.substr(0,searchWord.startIndex),
