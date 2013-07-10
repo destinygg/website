@@ -283,7 +283,7 @@ class UserService extends Service {
 	 * @param string $username
 	 * @return array
 	 */
-	public function findUserByUsername($username, $limit = 10, $start = 0) {
+	public function findUsersByUsername($username, $limit = 10, $start = 0) {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT u.userId,u.username,u.email FROM dfl_users AS u 
@@ -291,7 +291,7 @@ class UserService extends Service {
 			ORDER BY u.username DESC
 			LIMIT :start,:limit
 		' );
-		$stmt->bindValue ( 'username', '%' . $username . '%', \PDO::PARAM_STR );
+		$stmt->bindValue ( 'username', $username, \PDO::PARAM_STR );
 		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();

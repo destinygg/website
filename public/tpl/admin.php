@@ -21,12 +21,12 @@ use Destiny\Utils\Tpl;
 			</small>
 		</h1>
 		<hr size="1">
+		
 		<h3>User Search</h3>
-		<form id="user-search" class="form-search" action="/admin/user/" method="post">
-			<input type="hidden" name="id">
+		<form id="user-search" class="form-search" action="/admin/user/" method="get">
 			<div class="input-append">
 				<input class="span2" id="appendedInputButton" type="text" placeholder="Enter a username..." autocomplete="off">
-				<button class="btn btn-inverse" type="button">Edit</button>
+				<button class="btn btn-inverse" type="submit">Select</button>
 			</div>
 		</form>
 		<br>
@@ -34,10 +34,10 @@ use Destiny\Utils\Tpl;
 		<h3>Fantasy League</h3>
 		<div class="navbar navbar-inverse navbar-subnav">
 			<div class="navbar-inner">
-					<ul class="nav">
-						<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>
-						<li><a href="#Tracking" data-toggle="tab">Tracking</a></li>
-					</ul>
+				<ul class="nav">
+					<li class="active"><a href="#Games" data-toggle="tab">Games</a></li>
+					<li><a href="#Tracking" data-toggle="tab">Tracking</a></li>
+				</ul>
 			</div>
 		</div>
 		<br>
@@ -135,19 +135,25 @@ use Destiny\Utils\Tpl;
 <script>
 (function(){
 
-	var users = [], f = $('#user-search');
+	var users = [], f = $('#user-search'), inpt = f.find('input[type="text"]');
 
-	f.find('input[type="text"]').typeahead({
-		updater: function(item){
+	f.on('submit', function(){
+		$.getJSON('/admin/user/find', {username: inpt.val(), exact: true}, function (data) {
+			if(data.length >= 1){
+				window.location.href = '/admin/user/'+data[0].userId;
+			}
+		});
+		return false;
+	});
+	inpt.typeahead({
+		updater: function(username){
 			for(var i=0; i<users.length; ++i){
-				if(users[i].username == item){
-					f.find('input[name="id"]').val(users[i].userId);
-					f.attr('action', '/admin/user/'+users[i].userId);
-					f.submit();
+				if(users[i].username == username){
+					window.location.href = '/admin/user/'+users[i].userId;
 					break;
 				}
 			};
-			return item;
+			return username;
 		},
 		source: function (query, process) {
 			return $.getJSON('/admin/user/find', {username: query}, function (data) {
@@ -160,7 +166,7 @@ use Destiny\Utils\Tpl;
 			});
 		}
 	});
-	
+
 })();
 </script>
 	
