@@ -192,48 +192,50 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				    admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
 				    elems  = {},
 				    usercount = 0;
-				
-				for(var username in chat.engine.users){
-					var u    = chat.engine.users[username],
-					    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
-					
-					usercount++;
-					elems[username.toLowerCase()] = elem;
-					if($.inArray('bot', u.features) >= 0)
-						bots.push(username.toLowerCase());
-					else if ($.inArray('admin', u.features) >= 0)
-						admins.push(username.toLowerCase());
-					else if($.inArray('vip', u.features) >= 0)
-						vips.push(username.toLowerCase());
-					else if($.inArray('moderator', u.features) >= 0)
-						mods.push(username.toLowerCase());
-					else if($.inArray('subscriber', u.features) >= 0)
-						subs.push(username.toLowerCase());
-					else
-						plebs.push(username.toLowerCase());
-					
-				}
-				
-				chat.userslist.find('h5 span').text(usercount);
-				var appendUsers = function(users, elem) {
-					if (users.length == 0) {
-						elem.prev().hide().prev().hide();
-						return;
-					}
-					elem.prev().show().prev().show();
-					users.sort()
-					for (var i = 0; i < users.length; i++) {
-						elem.append(elems[users[i]]);
-					};
-				};
-				
+
 				lists.empty();
-				appendUsers(admins, lists.filter('.admins'));
-				appendUsers(vips, lists.filter('.vips'));
-				appendUsers(mods, lists.filter('.moderators'));
-				appendUsers(bots, lists.filter('.bots'));
-				appendUsers(subs, lists.filter('.subs'));
-				appendUsers(plebs, lists.filter('.plebs'));
+				if(chat.engine.users.length > 0){
+					for(var username in chat.engine.users){
+						var u    = chat.engine.users[username],
+						    elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
+						
+						usercount++;
+						elems[username.toLowerCase()] = elem;
+						if($.inArray('bot', u.features) >= 0)
+							bots.push(username.toLowerCase());
+						else if ($.inArray('admin', u.features) >= 0)
+							admins.push(username.toLowerCase());
+						else if($.inArray('vip', u.features) >= 0)
+							vips.push(username.toLowerCase());
+						else if($.inArray('moderator', u.features) >= 0)
+							mods.push(username.toLowerCase());
+						else if($.inArray('subscriber', u.features) >= 0)
+							subs.push(username.toLowerCase());
+						else
+							plebs.push(username.toLowerCase());
+						
+					}
+					
+					chat.userslist.find('h5 span').text(usercount);
+					var appendUsers = function(users, elem) {
+						if (users.length == 0) {
+							elem.prev().hide().prev().hide();
+							return;
+						}
+						elem.prev().show().prev().show();
+						users.sort()
+						for (var i = 0; i < users.length; i++) {
+							elem.append(elems[users[i]]);
+						};
+					};
+					
+					appendUsers(admins, lists.filter('.admins'));
+					appendUsers(vips, lists.filter('.vips'));
+					appendUsers(mods, lists.filter('.moderators'));
+					appendUsers(bots, lists.filter('.bots'));
+					appendUsers(subs, lists.filter('.subs'));
+					appendUsers(plebs, lists.filter('.plebs'));
+				}
 				chat.userslist.appendTo(chat.ui);
 				return cMenu.prototype.showMenu.call(chat.userslist, chat);
 			});
