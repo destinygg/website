@@ -215,7 +215,8 @@ class AuthenticationService extends Service {
 				'userId' => $sessAuth ['userId'],
 				'authProvider' => $authCreds ['authProvider'],
 				'authId' => $authCreds ['authId'],
-				'authToken' => $authCreds ['authCode'] 
+				'authCode' => $authCreds ['authCode'],
+				'authDetail' => $authCreds ['authDetail'] 
 			) );
 			Session::set ( 'accountMerge' );
 			Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
@@ -233,7 +234,8 @@ class AuthenticationService extends Service {
 		$authProfile = $userService->getUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
 		if (! empty ( $authProfile )) {
 			$userService->updateUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'], array (
-				'authToken' => $authCreds ['authCode'] 
+				'authCode' => $authCreds ['authCode'],
+				'authDetail' => $authCreds ['authDetail'],
 			) );
 		}
 		

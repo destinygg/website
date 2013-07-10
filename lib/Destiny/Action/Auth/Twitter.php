@@ -40,6 +40,7 @@ class Twitter {
 		$arr ['authProvider'] = $this->authProvider;
 		$arr ['authCode'] = $code;
 		$arr ['authId'] = $data ['user_id'];
+		$arr ['authDetail'] = $data ['screen_name'];
 		$arr ['username'] = $data ['screen_name'];
 		$arr ['email'] = '';
 		return $arr;

@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action;
 
 use Destiny\Utils\Country;
@@ -92,10 +91,11 @@ class Register {
 			$user ['country'] = $country;
 			$user ['userId'] = $userService->addUser ( $user );
 			$userService->addUserAuthProfile ( array (
-					'userId' => $user ['userId'],
-					'authProvider' => $authSession ['authProvider'],
-					'authId' => $authSession ['authId'],
-					'authToken' => $authSession ['authCode'] 
+				'userId' => $user ['userId'],
+				'authProvider' => $authSession ['authProvider'],
+				'authId' => $authSession ['authId'],
+				'authCode' => $authSession ['authCode'],
+				'authDetail' => $authSession ['authDetail'] 
 			) );
 			$authService->handleAuthCredentials ( $authSession );
 		} catch ( AppException $e ) {

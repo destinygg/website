@@ -250,7 +250,8 @@ class UserService extends Service {
 			'userId' => $auth ['userId'],
 			'authProvider' => $auth ['authProvider'],
 			'authId' => $auth ['authId'],
-			'authToken' => $auth ['authToken'],
+			'authCode' => $auth ['authCode'],
+			'authDetail' => $auth ['authDetail'],
 			'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
 			'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		), array (

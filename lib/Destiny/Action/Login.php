@@ -66,7 +66,7 @@ class Login {
 			case 'GOOGLE' :
 				$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] ['google'] );
 				$authClient->setHeaderTokenName ( 'Bearer' );
-				$authClient->sendAuthorisation ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid', array (
+				$authClient->sendAuthorisation ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid+email', array (
 						'state' => 'security_token=' . Session::getSessionId () 
 				) );
 				exit ();

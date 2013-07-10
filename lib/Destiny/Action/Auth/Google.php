@@ -36,8 +36,9 @@ class Google {
 		$arr ['authProvider'] = $this->authProvider;
 		$arr ['authCode'] = $code;
 		$arr ['authId'] = $data ['id'];
-		$arr ['username'] = '';
-		$arr ['email'] = '';
+		$arr ['authDetail'] = $data ['email'];
+		$arr ['username'] = $data ['hd'];
+		$arr ['email'] = $data ['email'];
 		return $arr;
 	}
 
