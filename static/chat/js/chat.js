@@ -48,9 +48,9 @@ function chat(user, options) {
 	
 	this.gui.loadBacklog();
 	this.loadIgnoreList();
-	this.init();
 	this.dispatchBacklog = $.proxy(this.dispatchBacklog, this);
-	options = null;
+	this.gui.push(new ChatStatusMessage("Connecting..."));
+	this.init();
 }
 
 chat.prototype.l = function() {
@@ -75,12 +75,6 @@ chat.prototype.init = function() {
 		var event = {data: 'CLOSE ""'};
 		this.parseAndDispatch(event)
 	}, this);
-	
-	if(this.user.username){
-		this.gui.push(new ChatStatusMessage("Connecting as "+this.user.username+"..."));
-	}else{
-		this.gui.push(new ChatStatusMessage("Connecting..."));
-	}
 	
 	this.l = $.proxy(this.l, this);
 	this.emit = $.proxy(this.emit, this);
