@@ -137,7 +137,9 @@ use Destiny\Utils\Tpl;
 			than cater later to that 10%.<br/>
 			That said the code is open source and available at
 			<a href="https://github.com/sztanpet/destinychat">Github</a>,
-			so hack it up and send a pull request (hit up sztanpet for direction).
+			so hack it up and send a pull request (hit up sztanpet for direction).<br/>
+			For now, DharmaTurtle is providing a service while "real" irc is implemented:<br/>
+			chat is echoed to Rizon IRC at <a href="http://qchat.rizon.net/?channels=#destinyecho">#destinyecho</a>. Forwarding of IRC chat to DestinyChat is available (see the topic of the IRC channel for details).
 		</p>
 		
 		<a name="changelog"></a>
