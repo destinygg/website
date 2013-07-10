@@ -674,6 +674,51 @@ ChatMessage.prototype.html = function(){
 ChatMessage.prototype.wrap = function(content){
 	return '<div>'+content+'</div>';
 };
+// ERROR MESSAGE
+function ChatErrorMessage(error, timestamp){
+	this.init(error, timestamp);
+	return this;
+};
+$.extend(ChatErrorMessage.prototype, ChatMessage.prototype);
+ChatErrorMessage.prototype.html = function(){
+	return this.wrap(this.wrapTime() + ' <i class="icon-error"></i> ' + this.wrapMessage());
+};
+// INFO MESSAGE
+function ChatInfoMessage(message, timestamp){
+	this.init(message, timestamp);
+	return this;
+};
+$.extend(ChatInfoMessage.prototype, ChatMessage.prototype);
+ChatInfoMessage.prototype.html = function(){
+	return this.wrap(this.wrapTime() + ' <i class="icon-info"></i> ' + this.wrapMessage());
+};
+// ACTION MESSAGE
+function ChatActionMessage(message, timestamp){
+	this.init(message, timestamp);
+	return this;
+};
+$.extend(ChatActionMessage.prototype, ChatMessage.prototype);
+ChatActionMessage.prototype.html = function(){
+	return this.wrap(this.wrapTime() + ' <i class="icon-exclamation"></i> ' + this.wrapMessage());
+};
+// BROADCAST MESSAGE
+function ChatBroadcastMessage(message, timestamp){
+	this.init(message, timestamp);
+	return this;
+};
+$.extend(ChatBroadcastMessage.prototype, ChatMessage.prototype);
+ChatBroadcastMessage.prototype.html = function(){
+	return this.wrap(this.wrapTime() + ' <i class="icon-broadcast"></i> ' + this.wrapMessage());
+};
+// BROADCAST MESSAGE
+function ChatStatusMessage(message, timestamp){
+	this.init(message, timestamp);
+	return this;
+};
+$.extend(ChatStatusMessage.prototype, ChatMessage.prototype);
+ChatStatusMessage.prototype.html = function(){
+	return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
+};
 // USER MESSAGE
 function ChatUserMessage(message, user, timestamp){
 	this.init(message, timestamp);
@@ -691,9 +736,9 @@ function ChatUserMessage(message, user, timestamp){
 $.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 ChatUserMessage.prototype.wrap = function(html, css) {
 	if (this.user && this.user.username) {
-		return '<div data-username="'+this.user.username.toLowerCase()+'" '+((css) ? 'class="'+css+'"':'')+'>'+html+'</div>';
+		return '<div class="user-message" data-username="'+this.user.username.toLowerCase()+'" '+((css) ? 'class="'+css+'"':'')+'>'+html+'</div>';
 	} else
-		return '<div'+((css) ? ' class="'+css +'"':'')+'>'+html+'</div>';
+		return '<div class="user-message'+((css) ? ' '+css:'')+'">'+html+'</div>';
 };
 ChatUserMessage.prototype.wrapUser = function(user){
 	return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';

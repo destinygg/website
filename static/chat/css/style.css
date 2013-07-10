@@ -165,6 +165,22 @@ background: url("../img/crown.png") no-repeat bottom left;
 .chat .chat-lines i.icon-bot {
 background: url("../img/robot.png") no-repeat bottom left;
 }
+.chat .chat-lines i.icon-error {
+background: url("../img/exclamation-red.png") no-repeat bottom left;
+}
+.chat .chat-lines i.icon-info {
+background: url("../img/question-white.png") no-repeat bottom left;
+}
+.chat .chat-lines i.icon-exclamation {
+background: url("../img/exclamation-white.png") no-repeat bottom left;
+}
+.chat .chat-lines i.icon-broadcast {
+background: url("../img/exclamation-octagon.png") no-repeat bottom left;
+}
+.chat .chat-lines i.icon-status {
+background: url("../img/rocket.png") no-repeat bottom left;
+}
+
 .chat-frame a.user {
 color: #A7A7A7; /* default pleb color */
 }
@@ -209,11 +225,11 @@ color: #004D74;
 }
 
 .chat .chat-lines time, 
-.chat .chat-lines i {
+.chat.chat-icons .user-message i {
 display: none !important;	
 }
 .chat.chat-time .chat-lines time, 
-.chat.chat-icons .chat-lines i, 
+.chat.chat-icons .user-message i, 
 .chat-lines i.icon-subscriber, 
 .chat-lines i.icon-administrator {
 display: inline-block !important;	

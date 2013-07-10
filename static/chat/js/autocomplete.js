@@ -35,11 +35,6 @@
 		}
 		return this;
 	};
-	mAutoComplete.prototype.getLastWord = function(txt){
-		var si = txt.lastIndexOf(" ");
-		var s = (si > 0) ? txt.substring(si+1) : txt;
-		return s.trim();
-	};
 	mAutoComplete.prototype.getCaretWord = function(inp){
 		var pre = inp.val().substring(0, inp[0].selectionStart),
 			post = inp.val().substring(inp[0].selectionStart),
