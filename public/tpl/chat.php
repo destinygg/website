@@ -25,6 +25,10 @@ use Destiny\Config;
 		<iframe style="width: 100%; height: 540px; float:left; background: #111;" frameborder="0" scrolling="no" src="/embed/chat?theme=dark"></iframe>
 	</section>
 	
+	<?include'./tpl/seg/panel.videos.php'?>
+	<?include'./tpl/seg/panel.music.php'?>
+	<?include'./tpl/seg/panel.calendar.php'?>
+	<?include'./tpl/seg/panel.ads.php'?>
 	<?include'./tpl/seg/foot.php'?>
 	<?include'./tpl/seg/commonbottom.php'?>
 </body>
