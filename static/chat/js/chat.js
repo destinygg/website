@@ -1,8 +1,6 @@
 function chat(user, options) {
 
 	this.server             = 'ws://' + location.host + ':9998/ws';
-	this.reconnectInterval  = 5;
-	this.reconnectCount     = 1;
 	this.connected          = false;
 	this.debug              = false;
 	this.users              = [];
@@ -131,10 +129,16 @@ chat.prototype.onOPEN = function() {
 };
 chat.prototype.onCLOSE = function() {
 	if (this.dontconnect) return;
+	if (this.connected) {// if previously connected, refresh
+		var rand = Math.round(500+Math.random()*1000);
+		setTimeout($.proxy(this.onRECONNECT, this), rand);
+		return new ChatMessage("You have been disconnected, reconnecting");
+	}
+	
 	this.connected = false;
-	this.reconnectCount = (this.reconnectCount >= 10) ? 1: this.reconnectCount+1;
-	setTimeout($.proxy(this.onRECONNECT, this), (this.reconnectInterval*this.reconnectCount)*1000);
-	return new ChatStatusMessage("You have been disconnected, reconnecting in "+(this.reconnectInterval*this.reconnectCount)+" seconds");
+	var rand = Math.round(3+Math.random()*20);
+	setTimeout($.proxy(this.onRECONNECT, this), rand * 1000);
+	return new ChatStatusMessage("You have been disconnected, reconnecting in "+rand+" seconds");
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
