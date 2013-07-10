@@ -44,8 +44,8 @@ function chat(user, options) {
 	};
 	
 	this.sock = new WebSocket('ws://' + location.host + ':9998/ws');
-	this.init();
 	this.gui.loadBacklog();
+	this.init();
 	options = null;
 }
 
@@ -105,7 +105,7 @@ chat.prototype.parseAndDispatch = function(e) {
 		if (message) {
 			
 			if ($.inArray(eventname, this.controlevents) >= 0)
-				this.gui.pushControlMessage(message);
+				this.gui.push(message, 'control');
 			else
 				this.gui.push(message);
 		}

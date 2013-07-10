@@ -261,20 +261,22 @@ border-bottom-right-radius: 0;
 i.icon-loading {
 background: url(../img/busy14x14.gif) no-repeat center center;	
 }
-
 i.icon-bobross {
 background: url(../../favicon.png) no-repeat center center;
 margin-bottom: 1px;
 margin-top: 0;
+width:16px;
+height:16px;	
+}
+i.icon-subscriber, i.icon-bobross {
 -webkit-transform: rotate(0deg);
 -webkit-transition: rotate 0.2s ease-in-out;
 -moz-transition: rotate 0.2s ease-in-out;
 -o-transition: rotate 0.2s ease-in-out;
-transition: rotate 0.2s ease-in-out;
-width:16px;
-height:16px;	
+transition: rotate 0.2s ease-in-out;	
 }
-a:hover i.icon-bobross,.dropdown.open>a i.icon-bobross {
+a:hover i.icon-bobross,
+i.icon-subscriber:hover {
 -moz-animation: spin 3s infinite linear;
 -webkit-animation: spin 3s infinite linear;
 }

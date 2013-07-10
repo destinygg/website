@@ -332,7 +332,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 						this.handleHighlight(m, true);
 					}
 				}
-				this.put(new ChatUIMessage('<hr/>'));
+				this.push(new ChatUIMessage('<hr/>'));
 			};
 		},
 		
@@ -344,10 +344,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		purge: function(){
 			this.lines.empty();
 			return this;
-		},
-		pushControlMessage: function(message) {
-			var m = this.push(message);
-			m.ui.addClass('control');
 		},
 		push: function(message, state){
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
