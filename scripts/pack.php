@@ -34,6 +34,7 @@ FileUtils::delete ( '/chat/js/engine.min.js' );
 FileUtils::concat ( '/chat/js/engine.min.js', array (
 	'/chat/js/autocomplete.js',
 	'/chat/js/scroll.mCustom.js',
+	'/chat/js/chat.menu.js',
 	'/chat/js/gui.js',
 	'/chat/js/chat.js' 
 ) );
