@@ -12,6 +12,7 @@ use Destiny\SessionCookie;
 use Destiny\SessionInstance;
 use Destiny\Session;
 use Destiny\Config;
+use Destiny\Service\ChatIntegrationService;
 
 ini_set ( 'max_execution_time', 30 );
 ini_set ( 'mysql.connect_timeout', 10 );
@@ -30,13 +31,11 @@ $session->setCredentials ( new SessionCredentials () );
 
 // Puts the session into the cache
 $session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
-	$chatIntegration = \Destiny\Service\ChatIntegrationService::instance ();
-	$chatIntegration->updateSession ( $session, $credentials );
+	ChatIntegrationService::instance ()->updateSession ( $session, $credentials );
 } );
 // Removes session from cache
 $session->addCleanupHandler ( function (SessionInstance $session) {
-	$chatIntegration = \Destiny\Service\ChatIntegrationService::instance ();
-	$chatIntegration->deleteSession ( $session );
+	ChatIntegrationService::instance ()->deleteSession ( $session );
 } );
 
 // Start the session if a valid session cookie is found

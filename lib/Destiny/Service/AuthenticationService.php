@@ -133,13 +133,8 @@ class AuthenticationService extends Service {
 			throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
 		}
 		
-		$credentials = new SessionCredentials ();
-		$credentials->setUserId ( $user ['userId'] );
-		$credentials->setUserName ( $user ['username'] );
-		$credentials->setEmail ( $user ['email'] );
-		$credentials->setCountry ( $user ['country'] );
+		$credentials = new SessionCredentials ( $user );
 		$credentials->setAuthProvider ( $authProvider );
-		$credentials->setUserStatus ( $user ['userStatus'] );
 		$credentials->addRoles ( UserRole::USER );
 		
 		// Add the user features
@@ -325,7 +320,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
+	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),

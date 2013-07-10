@@ -14,6 +14,7 @@ use Destiny\Utils\Http;
 use Destiny\Application;
 use Destiny\Service\SubscriptionsService;
 use Destiny\UserRole;
+use Destiny\Service\ChatIntegrationService;
 
 class Update {
 
@@ -47,27 +48,18 @@ class Update {
 			'email' => $email 
 		);
 		UserService::instance ()->updateUser ( $user ['userId'], $userData );
-
+		
 		// Features
-		if (!isset ( $params ['features'] )){
-			$params ['features'] = array();
-		}
+		if (! isset ( $params ['features'] )) $params ['features'] = array ();
 		UserFeaturesService::instance ()->setUserFeatures ( $user ['userId'], $params ['features'] );
 		
 		// Roles
-		if (!isset ( $params ['roles'] )){
-			$params ['roles'] = array();
-		}
+		if (! isset ( $params ['roles'] )) $params ['roles'] = array ();
 		UserService::instance ()->setUserRoles ( $user ['userId'], $params ['roles'] );
 		
 		// Update the users credentials - this still requires the user to login/out
-		$credentials = new SessionCredentials ();
-		$credentials->setUserId ( $user ['userId'] );
-		$credentials->setUserName ( $user ['username'] );
-		$credentials->setEmail ( $user ['email'] );
-		$credentials->setCountry ( $user ['country'] );
+		$credentials = new SessionCredentials ( $user );
 		$credentials->setAuthProvider ( '' ); // we need to get the auth provider
-		$credentials->setUserStatus ( $user ['userStatus'] );
 		$credentials->addRoles ( UserRole::USER );
 		$credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
 		$credentials->addRoles ( UserService::instance ()->getUserRoles ( $user ['userId'] ) );
@@ -78,12 +70,7 @@ class Update {
 		}
 		
 		// Update the auth credentials
-		$redis = Application::instance ()->getRedis ();
-		if (! empty ( $redis )) {
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-			$redis->publish ( 'refreshuser', json_encode ( $credentials->getData () ) );
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
-		}
+		ChatIntegrationService::instance ()->refreshUser ( $credentials );
 		
 		// Lazy
 		Http::header ( Http::HEADER_LOCATION, sprintf ( '/admin/user/%s', $user ['userId'] ) );

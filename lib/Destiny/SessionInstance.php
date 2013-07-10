@@ -416,6 +416,16 @@ class SessionCredentials {
 	protected $features = array ();
 
 	/**
+	 * Create a session credentials instance
+	 * @param array $params
+	 */
+	public function __construct(array $params = null) {
+		if (! empty ( $params )) {
+			$this->setData ( $params );
+		}
+	}
+
+	/**
 	 * Set all the credentials at once
 	 *
 	 * @param array $params
