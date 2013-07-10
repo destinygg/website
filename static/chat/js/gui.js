@@ -300,11 +300,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			return this.lines.children().length;
 		},
 		
-		// API
-		purge: function(){
-			this.lines.empty();
-			return this;
-		},
 		push: function(message, state){
 			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
 			this.userMessages.push(message);
