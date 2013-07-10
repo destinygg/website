@@ -175,10 +175,7 @@ background: url("../img/question-white.png") no-repeat bottom left;
 background: url("../img/exclamation-white.png") no-repeat bottom left;
 }
 .chat .chat-lines i.icon-broadcast {
-background: url("../img/exclamation-octagon.png") no-repeat bottom left;
-}
-.chat .chat-lines i.icon-status {
-background: url("../img/rocket.png") no-repeat bottom left;
+background: url("../img/information.png") no-repeat bottom left;
 }
 
 .chat-frame a.user {
