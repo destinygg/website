@@ -405,14 +405,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			return this;
 		},
 		
-		enableInput: function(){
-			this.input.removeAttr('disabled', true);
-		},
-		
-		disableInput: function(){
-			this.input.attr('disabled', true);
-		},
-		
 		setupInputHistory: function(){
 			$(this.input).on('keyup', function(e) {
 				
