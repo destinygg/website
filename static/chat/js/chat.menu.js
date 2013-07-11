@@ -50,4 +50,13 @@
 		});
 	};
 	
+
+	cHoverTools = function(chat){
+		this.ui = chat.ui.find('.user-tools');
+		this.ui.detach().show();
+		return this;
+	};
+	cHoverTools.prototype.attach = function(ui){
+	};
+	
 })();

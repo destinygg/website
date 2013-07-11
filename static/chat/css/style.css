@@ -56,7 +56,7 @@ color:#222;
 text-decoration:line-through;
 opacity:0.5;
 }
-.chat-lines > div > a {
+.chat-lines a.user {
 font-weight:bold;
 }
 .chat-lines hr {
@@ -147,7 +147,15 @@ height: 16px;
 margin: 0;
 opacity: 1;
 }
-.chat .chat-lines i[class^="icon-"]:hover {
+.chat .chat-lines i.icon-subscriber:hover,
+.chat .chat-lines i.icon-vip:hover,
+.chat .chat-lines i.icon-moderator:hover,
+.chat .chat-lines i.icon-administrator:hover,
+.chat .chat-lines i.icon-bot:hover,
+.chat .chat-lines i.icon-error:hover,
+.chat .chat-lines i.icon-info:hover,
+.chat .chat-lines i.icon-exclamation:hover,
+.chat .chat-lines i.icon-broadcast:hover {
 background-position: top left;
 }
 .chat .chat-lines i.icon-subscriber {
@@ -369,4 +377,31 @@ text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
 .chat-login-msg:hover {
 color: rgba(255,255,255,1);
 text-shadow:0 0 3px rgba(255,255,255,0.25);	
+}
+
+.user-tools {
+top:0;
+left:-10px;
+position: absolute;
+border-radius:4px;
+z-index:20;
+width:auto;
+white-space: nowrap;
+}
+.user-tools > div {
+padding:5px;
+margin-top:25px;
+background: rgba(0,0,0,0.75);
+}
+.user-tools a {
+margin-left:5px;
+}
+.user-tools a.user {
+line-height:16px;
+}
+.hovertool-active {
+position: relative;
+}
+.hovertool-active a.user {
+z-index:50;
 }

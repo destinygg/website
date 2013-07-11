@@ -114,6 +114,13 @@ use Destiny\UserRole;
 		</div>
 	</div>
 	
+	<div class="user-tools" style="display: none;">
+		<div>
+			<a href="#"><i class="icon-ban-circle icon-white"></i> Mute</a> 
+			<a href="#"><i class="icon-eye-close icon-white"></i> Ignore</a>
+		</div>
+	</div>
+	
 </div>
 
 <?include'./tpl/seg/commonbottom.php'?>

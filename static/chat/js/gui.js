@@ -3,8 +3,6 @@
 var emoticons = ["Draven", "INFESTINY", "FIDGETLOL", "Hhhehhehe", "GameOfThrows", "WORTH", "FeedNathan", "Abathur", "4Head", "ArsonNoSexy", "AsianGlow", "BCWarrior", "BORT", "BibleThump", "BionicBunion", "BlargNaut", "BloodTrail", "BrainSlug", "BrokeBack", "CougarHunt", "DAESuppy", "DBstyle", "DansGame", "DatSheffy", "EagleEye", "EvilFetus", "FPSMarksman", "FUNgineer", "FailFish", "FrankerZ", "FreakinStinkin", "FuzzyOtterOO", "GingerPower", "HassanChop", "HotPokket", "ItsBoshyTime", "JKanStyle", "Jebaited", "JonCarnage", "Kappa", "KevinTurtle", "Kreygasm", "MVGame", "MrDestructoid", "NinjaTroll", "NoNoSpot", "OMGScoots", "OneHand", "OpieOP", "OptimizePrime", "PJSalt", "PMSTwin", "PazPazowitz", "PicoMause", "PogChamp", "Poooound", "PunchTrees", "RedCoat", "ResidentSleeper", "RuleFive", "SMOrc", "SMSkull", "SSSsss", "ShazBotstix", "SoBayed", "SoonerLater", "StoneLightning", "StrawBeary", "SuperVinlin", "SwiftRage", "TehFunrun", "TheRinger", "TheTarFu", "TinyFace", "TooSpicy", "TriHard", "UleetBackup", "UnSane", "Volcania", "WinWaker"];
 var emoteregex = new RegExp('\\b(?:'+emoticons.join('|')+')\\b');
 var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-///\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
-
 
 (function($){
 	
@@ -63,16 +61,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			if(this.engine.user.username){
 				this.highlightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 			};
-
-			// Bind to user input submit
-			this.ui.on('submit', 'form.chat-input', function(e){
-				e.preventDefault();
-				$(this).closest('.chat.chat-frame').data('chat').send();
-			});
-			this.ui.on('click', '.chat-send-btn', function(e){
-				e.preventDefault();
-				$(this).closest('.chat.chat-frame').data('chat').send();
-			});
 			
 			// Auto complete
 			this.autoCompletePlugin = this.input.mAutoComplete({
@@ -81,26 +69,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			}).data('mAutoComplete');
 
 			this.autoCompletePlugin.addData(emoticons, 2);
-
-			// Close the menu, or perform a scroll
-			this.input.on('keydown mousedown', $.proxy(function(e){
-				if(this.menuOpenCount > 0)
-					cMenu.closeMenus(this);
-				
-				if(e.keyCode == 33 /*PGUP*/){
-					this.scrollPlugin.scroll('up');
-					return false;
-				}
-				if(e.keyCode == 34 /*PGDOWN*/){
-					this.scrollPlugin.scroll('down');
-					return false;
-				}
-			}, this));
-			
-			this.output.on('mousedown', $.proxy(function(e){ 
-				if(this.menuOpenCount > 0)
-					cMenu.closeMenus(this);
-			}, this));
 			
 			// Chat settings
 			this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
@@ -245,6 +213,42 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			
 			// Enable toolbar
 			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
+
+			// Bind to user input submit
+			this.ui.on('submit', 'form.chat-input', function(e){
+				e.preventDefault();
+				$(this).closest('.chat.chat-frame').data('chat').send();
+			});
+			this.ui.on('click', '.chat-send-btn', function(e){
+				e.preventDefault();
+				$(this).closest('.chat.chat-frame').data('chat').send();
+			});
+
+			// Close the menu, or perform a scroll
+			this.input.on('keydown mousedown', $.proxy(function(e){
+				if(this.menuOpenCount > 0)
+					cMenu.closeMenus(this);
+				
+				if(e.keyCode == 33 /*PGUP*/){
+					this.scrollPlugin.scroll('up');
+					return false;
+				}
+				if(e.keyCode == 34 /*PGDOWN*/){
+					this.scrollPlugin.scroll('down');
+					return false;
+				}
+			}, this));
+			
+			this.output.on('mousedown', $.proxy(function(e){ 
+				if(this.menuOpenCount > 0)
+					cMenu.closeMenus(this);
+			}, this));
+			
+			this.userHoverTools = new cHoverTools(this);
+			this.lines.on('click', '> div > a.user', function(){
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				chat.userHoverTools.attach(this);
+			});
 			return this.resize();
 		},
 		
