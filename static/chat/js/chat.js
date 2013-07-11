@@ -240,7 +240,7 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatInfoMessage("Available emoticons: "+emoticons.join(", ")));
 			break;
 		case "help":
-			this.gui.push(new ChatInfoMessage("Available commands: /emotes, /me, /ignore, /mute, /unmute, /subonly /ban /ipban /unban (also unbans ip bans)"));
+			this.gui.push(new ChatInfoMessage("Available commands: /emotes /ignore /maxlines /me /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans)"));
 			break;
 		case "me":
 			payload.data = "/" + str;
