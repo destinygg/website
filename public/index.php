@@ -69,7 +69,7 @@ $app->bind ( '/^\/(admin)/i', function (Application $app) {
 } );
 
 // Logged in only
-$app->bind ( '/^\/(profile|order|subscribe|payment|fantasy|league\/[*]+)/i', function (Application $app, array $params) {
+$app->bind ( '/^\/(profile|order|subscription|subscribe|payment|fantasy|league\/[*]+)/i', function (Application $app, array $params) {
 	$app->getLogger ()->debug ( sprintf ( 'Security: [user] %s', $app->getPath () ) );
 	if (! Session::hasRole ( \Destiny\UserRole::USER )) {
 		$app->error ( Http::STATUS_UNAUTHORIZED );

@@ -539,6 +539,20 @@ class SessionCredentials {
 	}
 
 	/**
+	 * Remove a role
+	 *
+	 * @param string $role
+	 */
+	public function removeRole($role) {
+		for($i = 0; $i < count ( $this->roles ); ++ $i) {
+			if ($this->roles [$i] == $role) {
+				unset ( $this->roles [$i] );
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Check if this auth has a specific role
 	 *
 	 * @param int $roleId
@@ -620,6 +634,20 @@ class SessionCredentials {
 			}
 		} elseif (! in_array ( $features, $this->features )) {
 			$this->features [] = $features;
+		}
+	}
+
+	/**
+	 * Remove a feature
+	 *
+	 * @param string $feature
+	 */
+	public function removeFeature($feature) {
+		for($i = 0; $i < count ( $this->features ); ++ $i) {
+			if ($this->features [$i] == $feature) {
+				unset ( $this->features [$i] );
+				break;
+			}
 		}
 	}
 

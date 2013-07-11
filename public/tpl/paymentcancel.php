@@ -55,7 +55,7 @@ use Destiny\Utils\Date;
 					</div>
 					<div class="form-actions block-foot">
 						<img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
-						<button type="submit" class="btn btn-danger">Cancel scheduled payments</button>
+						<button type="submit" class="btn btn-danger">Cancel scheduled payment</button>
 						<a href="/profile/subscription" class="btn">Back to profile</a>
 					</div>
 				</form>

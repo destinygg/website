@@ -65,12 +65,15 @@ use Destiny\Session;
 							<dd><?=Tpl::moment(Date::getDateTime($model->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
 							<dt>End date:</dt>
 							<dd><?=Tpl::moment(Date::getDateTime($model->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
-							<dt>Time left:</dt>
+							<dt>Time remaining:</dt>
 							<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
 							
-							<?php if(Session::hasRole(\Destiny\UserRole::ADMIN)): ?>
+							<?php if(empty($model->paymentProfile) || strcasecmp($model->paymentProfile['state'], 'ActiveProfile')!==0): ?>
 							<dt>&nbsp;</dt>
-							<dd><a title="Cancel this subscription" onclick="if(confirm('Are you sure? this cannot be undone.')) window.location.href = '/subscription/cancel';" href="#">Cancel subscription</a></dd>
+							<dd><a title="Cancel this subscription" href="/subscription/cancel">Cancel subscription</a></dd>
+							<?php else: ?>
+							<dt>&nbsp;</dt>
+							<dd><small class="subtle">(If you wish to cancel this subscription, first cancel the payment profile below.)</small></dd>
 							<?php endif; ?>
 							
 							<?php if(!empty($model->paymentProfile)): ?>
