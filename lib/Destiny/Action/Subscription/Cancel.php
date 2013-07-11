@@ -46,7 +46,7 @@ class Cancel {
 			throw new AppException ( 'Must have an active subscription' );
 		}
 		if (! empty ( $subscription ['paymentProfileId'] )) {
-			$paymentProfile = OrdersService::instance ( OrdersService )->getPaymentProfileById ( $subscription ['paymentProfileId'] );
+			$paymentProfile = OrdersService::instance ()->getPaymentProfileById ( $subscription ['paymentProfileId'] );
 			if (strcasecmp ( $paymentProfile ['state'], 'ActiveProfile' ) === 0) {
 				throw new AppException ( 'Please first cancel the attached payment profile.' );
 			}
