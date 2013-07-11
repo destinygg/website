@@ -374,6 +374,9 @@ margin: 5px 0;
 #chat-user-list ul {
 margin: 0;
 }
+#chat-user-list .user {
+cursor: pointer;
+}
 
 /** User tools **/
 .user-tools {
