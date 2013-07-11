@@ -126,7 +126,6 @@ class LeagueApiService extends Service {
 			$summoner ['league'] = ($info ['stats']) ? $this->getLeague ( $info ) : null;
 			$summoners [] = $summoner;
 		}
-		// Put the most up to date summoner in from of the other
 		usort ( $summoners, function ($a, $b) {
 			if (! isset ( $a ['revisionDate'] )) {
 				return true;
@@ -134,9 +133,7 @@ class LeagueApiService extends Service {
 			if (! isset ( $b ['revisionDate'] )) {
 				return false;
 			}
-			$sD = Date::getDateTime ( $a ['revisionDate'] );
-			$eD = Date::getDateTime ( $b ['revisionDate'] );
-			return ($sD < $eD);
+			return Date::getDateTime ( $a ['revisionDate'] ) < Date::getDateTime ( $b ['revisionDate'] );
 		} );
 		$response = $summoners;
 		return $response;
