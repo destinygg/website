@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Tasks;
 
 use Destiny\Application;
@@ -12,7 +11,7 @@ class LastFmFeed {
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
 		$response = CommonApiService::instance ()->getLastFMTracks ()->getResponse ();
-		if(!empty($response)){
+		if (! empty ( $response )) {
 			$app->getCacheDriver ()->save ( 'recenttracks', $response );
 		}
 	}

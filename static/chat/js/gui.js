@@ -205,6 +205,11 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				chat.userslist.appendTo(chat.ui);
 				return cMenu.prototype.showMenu.call(chat.userslist, chat);
 			});
+			this.userslist.on('click', '.user', function(){
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				var username = $(this).text().toLowerCase();
+				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
+			});
 			
 			cMenu.addMenu(this, this.chatsettings);
 			cMenu.addMenu(this, this.userslist);
