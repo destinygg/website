@@ -131,7 +131,7 @@ class LeagueApiService extends Service {
 			if (! isset ( $a ['revisionDate'] )) {
 				return true;
 			}
-			if (! isset ( $b ['revisionDate]'] )) {
+			if (! isset ( $b ['revisionDate'] )) {
 				return false;
 			}
 			$sD = Date::getDateTime ( $a ['revisionDate'] );
