@@ -12,7 +12,9 @@ class LastFmFeed {
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
 		$response = CommonApiService::instance ()->getLastFMTracks ()->getResponse ();
-		$app->getCacheDriver ()->save ( 'recenttracks', $response );
+		if(!empty($response)){
+			$app->getCacheDriver ()->save ( 'recenttracks', $response );
+		}
 	}
 
 }
