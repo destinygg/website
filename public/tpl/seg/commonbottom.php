@@ -6,7 +6,7 @@ use Destiny\Config;
 <script src="<?=Config::cdn()?>/vendor/js/bootstrap.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/moment.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.cookie.js"></script>
-<?php if(is_file(_STATICDIR .'/web/js/destiny.min.js')):?>
+<?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/web/js/destiny.min.js')):?>
 <script src="<?=Config::cdnv()?>/web/js/destiny.min.js"></script>
 <?php else: ?>
 <script src="<?=Config::cdnv()?>/web/js/utils.js"></script>

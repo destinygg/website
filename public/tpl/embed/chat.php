@@ -11,7 +11,7 @@ use Destiny\UserRole;
 <meta charset="utf-8">
 <?include'./tpl/seg/commontop.php'?>
 <link href="<?=Config::cdn()?>/vendor/css/jquery.mCustomScrollbar.css" rel="stylesheet" media="screen">
-<?php if(is_file(_STATICDIR .'/chat/css/style.min.css')):?>
+<?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/chat/css/style.min.css')):?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 <?php else: ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.css" rel="stylesheet" media="screen">
@@ -127,7 +127,7 @@ use Destiny\UserRole;
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
 <script src="/chat/history"></script>
-<?php if(is_file(_STATICDIR .'/chat/js/engine.min.js')):?>
+<?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/chat/js/engine.min.js')):?>
 <script src="<?=Config::cdnv()?>/chat/js/engine.min.js"></script>
 <?php else: ?>
 <script src="<?=Config::cdnv()?>/chat/js/autocomplete.js"></script>
