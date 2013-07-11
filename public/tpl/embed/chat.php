@@ -114,10 +114,34 @@ use Destiny\UserRole;
 		</div>
 	</div>
 	
-	<div class="user-tools" style="display: none;">
-		<div>
-			<a href="#"><i class="icon-ban-circle icon-white"></i> Mute</a> 
-			<a href="#"><i class="icon-eye-close icon-white"></i> Ignore</a>
+	<div class="user-tools">
+		<div class="wrap">
+			<a href="#" class="close pull-right"><i class="icon-remove icon-white"></i></a>
+			<div class="user-tools-user">Destiny</div>
+			<div class="user-tools-wrap">
+				<a id="ignoreuser" href="#ignore"><i class="icon-eye-close icon-white"></i> Ignore</a>
+				<a id="forgiveuser" href="#ignore"><i class="icon-eye-open icon-white"></i> Forgive</a>
+				<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
+				<a id="toggle-mute-form" href="#mute" onclick="$('#user-mute-form').toggle()"><i class="icon-ban-circle icon-white"></i> Mute</a> 
+				<?php endif; ?>
+			</div>
+			<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
+			<form id="user-mute-form" style="margin-top:10px; display: none;">
+				<select id="banTimeLength" class="select" style="width:150px;">
+					<option value="0">Length of time</option>
+					<option value="permanent">Permanent</option>
+					<option value="10">10 minutes</option>
+					<option value="30">30 minutes</option>
+					<option value="60">1 hr</option>
+					<option value="720">12 hrs</option>
+					<option value="1440">24 hrs</option>
+				</select>
+				<input type="text" class="input" id="banReason" placeholder="Reason for ban" />
+				<br>
+				<button type="submit" class="btn btn-mini btn-danger">Confirm</button>
+				<button type="button" class="btn btn-mini" onclick="$('#user-mute-form').toggle();">Cancel</button>
+			</form>
+			<?php endif; ?>
 		</div>
 	</div>
 	

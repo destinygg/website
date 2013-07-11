@@ -6,10 +6,6 @@ overflow: hidden;
 min-height: 250px;
 min-width: 300px;
 }
-/*.chat-output, .chat-output .mCSB_container {
-transform: scale(1) translate3d(0,0,0);	
--webkit-transform: scale(1) translate3d(0,0,0);	
-}*/
 .chat-output .mCSB_container {
 margin-right:20px;
 }
@@ -21,14 +17,6 @@ margin:0;
 }
 .chat-lines msg.emote {
 font-style: italic;
-}
-.chat-native-scroll .chat-output {
-position: absolute;	
-top:0;
-left:0;
-overflow-x: hidden;
-overflow-y: scroll;
-width:100%;
 }
 .chat-frame {
 position: relative;	
@@ -58,6 +46,7 @@ opacity:0.5;
 }
 .chat-lines a.user {
 font-weight:bold;
+cursor: pointer;
 }
 .chat-lines hr {
 margin:8px 0;
@@ -74,7 +63,6 @@ background: -webkit-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 1
 background: -o-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 100%); /* Opera 11.10+ */
 background: -ms-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 100%); /* IE10+ */
 background: linear-gradient(to bottom,  rgba(46,46,46,1) 0%,rgba(28,28,28,1) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2e2e2e', endColorstr='#1c1c1c',GradientType=0 ); /* IE6-9 */
 width:100%;
 position: absolute;
 bottom:0;
@@ -187,22 +175,40 @@ background: url("../img/information.png") no-repeat bottom left;
 }
 
 .chat-frame a.user {
-color: #A7A7A7; /* default pleb color */
+color: #A7A7A7;
+}
+.chat-frame a.user:hover {
+color: #FAFAFA;
 }
 .chat-frame a.subscriber {
 color: #488ce7;
 }
+.chat-frame a.subscriber:hover {
+color: #6aa7f9;
+}
 .chat-frame a.moderator {
 color: #429A2D;
+}
+.chat-frame a.moderator:hover {
+color: #75e85a;
 }
 .chat-frame a.vip {
 color: #CF31E2;
 }
+.chat-frame a.vip:hover {
+color: #e564f4;
+}
 .chat-frame a.admin {
 color: #B91010;
 }
+.chat-frame a.admin:hover {
+color: #ff0000;
+}
 .chat-frame a.bot {
-color: #4a823c;
+color: #4ba235;
+}
+.chat-frame a.bot:hover {
+color: #7adb62;
 }
 
 /* Fonts / font-size */
@@ -288,6 +294,7 @@ color:#222;
 color:#222;
 }
 
+/* Chat menus */
 .chat-menu {
 position: absolute;
 right:20px;
@@ -314,7 +321,6 @@ background: -webkit-linear-gradient(top,  rgba(79,79,79,1) 0%,rgba(46,46,46,1) 1
 background: -o-linear-gradient(top,  rgba(79,79,79,1) 0%,rgba(46,46,46,1) 100%); /* Opera 11.10+ */
 background: -ms-linear-gradient(top,  rgba(79,79,79,1) 0%,rgba(46,46,46,1) 100%); /* IE10+ */
 background: linear-gradient(to bottom,  rgba(79,79,79,1) 0%,rgba(46,46,46,1) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4f4f4f', endColorstr='#2e2e2e',GradientType=0 ); /* IE6-9 */
 border-bottom:1px solid #121212;
 margin:0;
 line-height:20px;
@@ -368,6 +374,63 @@ margin: 5px 0;
 #chat-user-list ul {
 margin: 0;
 }
+
+/** User tools **/
+.user-tools {
+visibility:hidden;
+opacity:0;
+font-size: 12px;
+transition: all 0.1s ease-out;
+width:100%;
+position: absolute;
+top:-5px;
+left:0;
+}
+.user-tools.active {
+visibility: visible;	
+opacity:1;	
+top:0;	
+}
+.user-tools > div {
+transition: background 0.15s ease-out;	
+background: rgba(255,255,255,0.75);	
+border-radius: 4px;
+margin:5px 20px 5px 5px;
+padding:10px;
+}
+.user-tools.active > div {
+background: rgba(0,0,0,0.9);	
+}
+.user-tools-user {
+color:#efefef;
+font-size: 13px;
+font-weight: bold;
+line-height: 25px;
+}
+.user-tools-wrap {
+margin-left:-5px;
+}
+.user-tools-wrap > a {
+margin:0 5px;
+}
+
+.user-tools a#forgiveuser,
+.user-tools.user-ignored a#ignoreuser {
+display: none;
+}
+.user-tools.user-ignored a#forgiveuser {
+display: inline-block;
+}
+
+.chat.focus-user .chat-lines > div.user-message {
+opacity:0.3;
+}
+.chat.focus-user .chat-lines > div.user-message.focused,
+.chat.focus-user .chat-lines > div.user-message.highlight {
+opacity:1;
+}
+
+/* The text shown when a user is not logged in */
 .chat-login-msg {
 padding: 0 0 0 5px;
 line-height: 25px;
@@ -377,31 +440,4 @@ text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
 .chat-login-msg:hover {
 color: rgba(255,255,255,1);
 text-shadow:0 0 3px rgba(255,255,255,0.25);	
-}
-
-.user-tools {
-top:0;
-left:-10px;
-position: absolute;
-border-radius:4px;
-z-index:20;
-width:auto;
-white-space: nowrap;
-}
-.user-tools > div {
-padding:5px;
-margin-top:25px;
-background: rgba(0,0,0,0.75);
-}
-.user-tools a {
-margin-left:5px;
-}
-.user-tools a.user {
-line-height:16px;
-}
-.hovertool-active {
-position: relative;
-}
-.hovertool-active a.user {
-z-index:50;
 }

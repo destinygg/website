@@ -209,8 +209,14 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			cMenu.addMenu(this, this.chatsettings);
 			cMenu.addMenu(this, this.userslist);
 			
-			// Enable toolbar
-			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
+			// The tools for when you click on a user
+			this.cUserTools = new cUserTools(this);
+			this.lines.on('mousedown', 'div.user-message a.user', function(){
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				var username = $(this).closest('.user-message').data('username');
+				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
+				return false;
+			});
 
 			// Bind to user input submit
 			this.ui.on('submit', 'form.chat-input', function(e){
@@ -237,16 +243,15 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				}
 			}, this));
 			
-			this.output.on('mousedown', $.proxy(function(e){ 
+			this.output.on('mousedown', $.proxy(function(e){
+				if(this.cUserTools.visible)
+					this.cUserTools.hide();
 				if(this.menuOpenCount > 0)
 					cMenu.closeMenus(this);
 			}, this));
-			
-			this.userHoverTools = new cHoverTools(this);
-			this.lines.on('click', '> div > a.user', function(){
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				chat.userHoverTools.attach(this);
-			});
+
+			// Enable toolbar
+			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
 			return this.resize();
 		},
 		

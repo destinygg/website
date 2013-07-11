@@ -19,7 +19,7 @@ function chat(user, options) {
 		"banned"            : "You have been banned, disconnecting",
 		"requiresocket"     : "This chat requires WebSockets",
 		"toomanyconnections": "Only 3 concurrent connections allowed",
-		"socketerror"       : "Error connecting to the chat server"
+		"socketerror"       : "Error contacting server"
 	};
 	
 	// TODO clean this up
@@ -220,7 +220,7 @@ chat.prototype.onSUBONLY = function(data) {
 };
 
 chat.prototype.handleCommand = function(str) {
-	
+
 	var parts     = str.split(" ");
 	    command   = parts[0].toLowerCase(),
 	    nickregex = /^[a-zA-Z0-9_]{4,20}$/,

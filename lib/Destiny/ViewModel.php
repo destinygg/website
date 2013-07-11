@@ -41,6 +41,7 @@ class ViewModel {
 	 */
 	public function __set($name, $value) {
 		$this->vars [$name] = $value;
+		return $value;
 	}
 
 	/**
