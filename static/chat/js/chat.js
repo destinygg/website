@@ -40,7 +40,7 @@ function chat(user, options) {
 		if (str.substring(0, 1) === '/')
 			return this.engine.handleCommand(str.substring(1));
 
-		this.push(new ChatUserMessage(str, this.engine.user), (!this.engine.connected) ? ChatMessageStatus.UNSENT : ChatMessageStatus.PENDING);
+		this.push(new ChatUserMessage(str, this.engine.user), (!this.engine.connected) ? 'unsent' : 'pending');
 		this.engine.emit('MSG', {data: str});
 	};
 	
