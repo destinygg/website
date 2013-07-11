@@ -1,4 +1,6 @@
 <?php
+use Destiny\AppException;
+
 use Monolog\Logger;
 class FileUtils {
 	
@@ -62,10 +64,13 @@ class FileUtils {
 		$info = curl_getinfo ( $ch );
 		self::$log->info ( sprintf ( 'Curl [%s] %s', $info ["http_code"], $url ) );
 		curl_close ( $ch );
-		self::delete ( $file );
-		file_put_contents ( self::$b . $file, $response );
-		self::$log->info ( sprintf ( 'Put file [%s]', $file ) );
-		return true;
+		if ($info ["http_code"] != 200) {
+			self::delete ( $file );
+			file_put_contents ( self::$b . $file, $response );
+			self::$log->info ( sprintf ( 'Put file [%s]', $file ) );
+			return true;
+		}
+		return false;
 	}
 
 	/**
