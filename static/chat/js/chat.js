@@ -240,7 +240,7 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatInfoMessage("Available emoticons: "+emoticons.join(", ")));
 			break;
 		case "help":
-			this.gui.push(new ChatInfoMessage("Available commands: /emotes, /me, /ignore, /mute, /unmute, /subonly /ban /ipban /unban (also unbans ip bans)"));
+			this.gui.push(new ChatInfoMessage("Available commands: /emotes /ignore /maxlines /me /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans)"));
 			break;
 		case "me":
 			payload.data = "/" + str;
@@ -357,6 +357,23 @@ chat.prototype.handleCommand = function(str) {
 			
 			payload.data = parts[1];
 			this.emit(command.toUpperCase(), payload);
+			break;
+		case "maxlines":
+			
+			if (!parts[1]) {
+				this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
+				return;
+			}
+			
+			var newmaxlines = Math.abs(parseInt(parts[1], 10));
+			if (!newmaxlines) {
+				this.gui.push(new ChatErrorMessage("Invalid argument - /maxlines is expecting a number"));
+				return;
+			}
+			
+			this.gui.saveChatOption('maxlines', newmaxlines);
+			this.gui.maxlines = newmaxlines;
+			this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
 			break;
 	};
 };

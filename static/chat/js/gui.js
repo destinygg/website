@@ -255,12 +255,14 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		loadSettings: function() {
 			var self     = this,
 			    defaults = {
-			    showtime       : false,
-			    hideflairicons : false,
-			    highlight      : true,
-			    notifications  : false,
+					showtime      : false,
+					hideflairicons: false,
+					highlight     : true,
+					notifications : false,
+					maxlines      : this.maxlines,
 			};
 			
+			this.maxlines = self.getChatOption('maxlines', defaults['maxlines']);
 			customhighlight = self.getChatOption('customhighlight', []);
 			this.chatsettings.find('input[name=customhighlight]').val( customhighlight.join(', ') );
 			this.loadCustomHighlights();
