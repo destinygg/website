@@ -358,6 +358,23 @@ chat.prototype.handleCommand = function(str) {
 			payload.data = parts[1];
 			this.emit(command.toUpperCase(), payload);
 			break;
+		case "maxlines":
+			
+			if (!parts[1]) {
+				this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
+				return;
+			}
+			
+			var newmaxlines = Math.abs(parseInt(parts[1], 10));
+			if (!newmaxlines) {
+				this.gui.push(new ChatErrorMessage("Invalid argument - /maxlines is expecting a number"));
+				return;
+			}
+			
+			this.gui.saveChatOption('maxlines', newmaxlines);
+			this.gui.maxlines = newmaxlines;
+			this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
+			break;
 	};
 };
 chat.prototype.parseTimeInterval = function(str) {
