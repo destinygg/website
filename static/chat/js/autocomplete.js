@@ -7,7 +7,6 @@
 	var mAutoComplete = function(input, options){
 		this.input = input;
 		this.shards = {};
-		this.shardIds = '1234567890_ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 		return this.init(input, options);
 	};
 	mAutoComplete.prototype.getShardIdByTxt = function(txt){
@@ -18,9 +17,6 @@
 		return this;
 	};
 	mAutoComplete.prototype.init = function(input, options){
-		for(var i=0; i<this.shardIds.length; ++i){
-			this.shards[this.shardIds[i]] = {};
-		}
 		return this;
 	};
 	mAutoComplete.prototype.shardData = function(data, weight){
