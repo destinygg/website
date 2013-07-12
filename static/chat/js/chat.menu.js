@@ -70,7 +70,7 @@
 			self.hide();
 		});
 		this.ui.on('click', 'a.close', $.proxy(this.hide, this));
-		this.ui.on('click', 'a#ignoreuser,a#forgiveuser', function(){
+		this.ui.on('click', 'a#ignoreuser,a#unignoreuser', function(){
 			var cmd = $(this).attr('href').substring(1);
 			chat.engine.handleCommand(cmd + ' ' + self.username);
 			self.hide();

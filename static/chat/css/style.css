@@ -416,11 +416,11 @@ margin-left:-5px;
 margin:0 5px;
 }
 
-.user-tools a#forgiveuser,
+.user-tools a#unignoreuser,
 .user-tools.user-ignored a#ignoreuser {
 display: none;
 }
-.user-tools.user-ignored a#forgiveuser {
+.user-tools.user-ignored a#unignoreuser {
 display: inline-block;
 }
 
