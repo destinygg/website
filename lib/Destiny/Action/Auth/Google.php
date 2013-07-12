@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Auth;
 
 use Destiny\ViewModel;
@@ -37,7 +36,7 @@ class Google {
 		$arr ['authCode'] = $code;
 		$arr ['authId'] = $data ['id'];
 		$arr ['authDetail'] = $data ['email'];
-		$arr ['username'] = $data ['hd'];
+		$arr ['username'] = (isset ( $data ['hd'] )) ? $data ['hd'] : '';
 		$arr ['email'] = $data ['email'];
 		return $arr;
 	}
