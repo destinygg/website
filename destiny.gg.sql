@@ -3,6 +3,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
 /*Table structure for table `bans` */
 
 CREATE TABLE `bans` (
@@ -138,7 +139,8 @@ CREATE TABLE `dfl_orders_ipn` (
   `ipnTransactionType` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ipnTransactionId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ipnData` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_orders_items` */
@@ -313,11 +315,14 @@ CREATE TABLE `dfl_teams` (
 
 CREATE TABLE `dfl_users` (
   `userId` int(14) NOT NULL AUTO_INCREMENT,
-  `username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `country` varchar(4) COLLATE utf8_unicode_ci DEFAULT '',
   `createdDate` datetime NOT NULL,
+  `modifiedDate` datetime DEFAULT NULL,
   `userStatus` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nameChangedCount` tinyint(4) DEFAULT '0',
+  `nameChangedDate` datetime DEFAULT NULL,
   PRIMARY KEY (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -326,8 +331,9 @@ CREATE TABLE `dfl_users` (
 CREATE TABLE `dfl_users_auth` (
   `userId` int(14) DEFAULT NULL,
   `authProvider` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `authToken` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `authCode` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `authId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `authDetail` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   `modifiedDate` datetime DEFAULT NULL,
   KEY `authProvider` (`authProvider`,`authId`),
@@ -387,7 +393,3 @@ CREATE TABLE `dfl_users_subscriptions` (
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

@@ -21,7 +21,7 @@ Install the database structure
 
 ## The cron
 All api requests and heavy tasks are done on a single cron task (currently running every 60 seconds on the live server)
-This is controlled by "Tasks".
+This is controlled by the Scheduler, by running "Tasks".
 
 If you are running the website locally, you can call this file manually, or setup a cron.
 
@@ -29,4 +29,4 @@ If you are running the website locally, you can call this file manually, or setu
 
 The table "[prefix_]scheduled_tasks" will show when specific tasks have been run.
 
-If you don't run this, you will get no data in the site.
+If you don't run this, you will get empty UI and limited functionality in the site.
