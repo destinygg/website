@@ -31,7 +31,7 @@
 			self.onshow = options.onshow;
 			self.showOverlay();
 			new DestinyFeedConsumer({
-				url: destiny.baseUrl + 'Fantasy/Champions.json',
+				url: destiny.baseUrl + 'fantasy/champions.json',
 				success: function(championsResponse, textStatus){
 					self.setupChampions(championsResponse);
 					self.enableChampions();
@@ -367,7 +367,7 @@
 			self.lockedState = true;
 			self.setProgress('<span class="busy"><img src="'+ getChampIcon(champ.championName) +'" style="width:20px; height:20px;" /> Purchasing <strong>'+htmlEncode(champ.championName)+'</strong>...</span>');
 			$.ajax({
-				url: destiny.baseUrl + 'Fantasy/Champion/Purchase.json',
+				url: destiny.baseUrl + 'fantasy/champion/purchase.json',
 				data: {
 					championId: champ.championId,
 					teamId: self.team.teamId

@@ -267,7 +267,7 @@ $(function(){
 		// Check recent games
 		var lastChecked =  new Date(); // set on the initial page load
 		new DestinyFeedConsumer({
-			url: destiny.baseUrl + 'Fantasy/Recentgames.json',
+			url: destiny.baseUrl + 'fantasy/recentgames.json',
 			polling: 30,
 			ifModified: true,
 			start: false,
