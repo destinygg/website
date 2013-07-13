@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\League;
 
 use Destiny\Service\Fantasy\ChampionService;
@@ -12,9 +11,25 @@ use Destiny\Service\Fantasy\TeamService;
 use Destiny\Session;
 use Destiny\ViewModel;
 use Destiny\Utils\String;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Game {
 
+	/**
+	 * @Route ("/league/game/{gameId}")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function execute(array $params, ViewModel $model) {
 		$teamService = TeamService::instance ();
 		$challengeService = ChallengeService::instance ();
@@ -47,7 +62,6 @@ class Game {
 			$game ['champions'] [$x] ['summonerName'] = String::strictUTF8 ( $game ['champions'] [$x] ['summonerName'] );
 		}
 		$model->game = $game;
-		//$model->gameTracking = $gameService->getTrackedProgressByGameId ( $gameId );
 		$model->teamChampionScores = $gameService->getTeamGameChampionsScores ( $teamId, $gameId );
 		$model->teamGameScores = $gameService->getTeamGameScores ( $teamId, $gameId, 'GAME' );
 		

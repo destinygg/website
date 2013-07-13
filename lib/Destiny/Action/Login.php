@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action;
 
 use Destiny\Utils\Http;
@@ -10,9 +9,24 @@ use Destiny\Config;
 use Destiny\Session;
 use Destiny\ViewModel;
 use Destiny\OAuthClient;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Login {
 
+	/**
+	 * @Route ("/login")
+	 * @HttpMethod ({"GET"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @return string
+	 */
 	public function executeGet(array $params, ViewModel $model) {
 		if (Session::hasRole ( \Destiny\UserRole::USER )) {
 			throw new AppException ( 'You are already registered' );
@@ -21,6 +35,14 @@ class Login {
 		return 'login';
 	}
 
+	/**
+	 * @Route ("/login")
+	 * @HttpMethod ({"POST"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @return string
+	 */
 	public function executePost(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
 		$authProvider = (isset ( $params ['authProvider'] ) && ! empty ( $params ['authProvider'] )) ? $params ['authProvider'] : '';
@@ -31,7 +53,7 @@ class Login {
 			$model->error = new AppException ( 'Please select a authentication provider' );
 			return 'login';
 		}
-
+		
 		// This is and rememberme are the only places that will create a new session cookie for a user
 		Session::start ( Session::START_NOCOOKIE );
 		
@@ -67,28 +89,28 @@ class Login {
 				$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] ['google'] );
 				$authClient->setHeaderTokenName ( 'Bearer' );
 				$authClient->sendAuthorisation ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid+email', array (
-						'state' => 'security_token=' . Session::getSessionId () 
+					'state' => 'security_token=' . Session::getSessionId () 
 				) );
 				exit ();
 			
 			case 'TWITTER' :
 				$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
 				$tmhOAuth = new \tmhOAuth ( array (
-						'consumer_key' => $twitterOAuthConf ['clientId'],
-						'consumer_secret' => $twitterOAuthConf ['clientSecret'],
-						'token' => $twitterOAuthConf ['token'],
-						'secret' => $twitterOAuthConf ['secret'],
-						'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
-						'curl_timeout' => Config::$a ['curl'] ['timeout'],
-						'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
+					'consumer_key' => $twitterOAuthConf ['clientId'],
+					'consumer_secret' => $twitterOAuthConf ['clientSecret'],
+					'token' => $twitterOAuthConf ['token'],
+					'secret' => $twitterOAuthConf ['secret'],
+					'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
+					'curl_timeout' => Config::$a ['curl'] ['timeout'],
+					'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
 				) );
 				$code = $tmhOAuth->apponly_request ( array (
-						'without_bearer' => true,
-						'method' => 'POST',
-						'url' => $tmhOAuth->url ( 'oauth/request_token', '' ),
-						'params' => array (
-								'oauth_callback' => $callback 
-						) 
+					'without_bearer' => true,
+					'method' => 'POST',
+					'url' => $tmhOAuth->url ( 'oauth/request_token', '' ),
+					'params' => array (
+						'oauth_callback' => $callback 
+					) 
 				) );
 				if ($code != 200) {
 					throw new AppException ( 'There was an error communicating with Twitter.' );

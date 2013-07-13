@@ -89,7 +89,7 @@ use Destiny\Utils\Tpl;
 	</section>
 	<?endif;?>
 	
-	<?php if(!empty($model->topTeamChampions) && !empty($model->teamGameScores)): ?>
+	<?php if(!empty($model->topTeamChampions) || !empty($model->teamGameScores)): ?>
 	<?include'./tpl/seg/fantasy/recentgames.php'?>
 	<?php endif; ?>
 	

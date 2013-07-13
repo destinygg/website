@@ -134,7 +134,7 @@ use Destiny\Session;
 						<?php foreach($model->payments as $payment): ?>
 						<tr>
 							<td style="width: 100%;">
-								<a title="Payment details" href="/payment/details/<?=$payment['paymentId']?>"><?=substr($payment['transactionId'], 0, 8)?></a>
+								<a title="Payment details" href="/payment/<?=$payment['paymentId']?>/details"><?=substr($payment['transactionId'], 0, 8)?></a>
 								<span> - </span>
 								<span><?=Tpl::currency($payment['currency'], $payment['amount'])?></span>
 								<small class="subtle">on <?=Tpl::moment(Date::getDateTime($payment['paymentDate']),Date::STRING_FORMAT)?></small>

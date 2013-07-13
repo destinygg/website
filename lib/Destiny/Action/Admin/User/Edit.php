@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Action\Admin;
+namespace Destiny\Action\Admin\User;
 
 use Destiny\Service\UserFeaturesService;
 use Destiny\AppException;
@@ -13,9 +13,27 @@ use Destiny\Service\ChatIntegrationService;
 use Destiny\Service\AuthenticationService;
 use Destiny\Service\SubscriptionsService;
 use Destiny\Service\Fantasy\GameService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
-class User {
+/**
+ * @Action
+ */
+class Edit {
 
+	/**
+	 * @Route ("/admin/user")
+	 * @Route ("/admin/user/{id}/edit")
+	 * @Secure ({"ADMIN"})
+	 * @HttpMethod ({"GET"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$model->title = 'User';
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
@@ -25,13 +43,24 @@ class User {
 		if (empty ( $user )) {
 			throw new AppException ( 'User was not found' );
 		}
-		$user ['roles'] = UserService::instance ()->getUserRoles ( $user ['userId'] );
+		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );
 		$model->user = $user;
 		$model->features = UserFeaturesService::instance ()->getFeatures ();
 		return 'admin/user';
 	}
 
+	/**
+	 * @Route ("/admin/user")
+	 * @Route ("/admin/user/{id}/edit")
+	 * @Secure ({"ADMIN"})
+	 * @HttpMethod ({"POST"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function executePost(array $params, ViewModel $model) {
 		$model->title = 'User';
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
@@ -78,7 +107,7 @@ class User {
 		$credentials->setAuthProvider ( '' ); // we need to get the auth provider
 		$credentials->addRoles ( UserRole::USER );
 		$credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
-		$credentials->addRoles ( UserService::instance ()->getUserRoles ( $user ['userId'] ) );
+		$credentials->addRoles ( UserService::instance ()->getUserRolesByUserId ( $user ['userId'] ) );
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
 		if (! empty ( $subscription )) {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
@@ -88,7 +117,7 @@ class User {
 		// Update the auth credentials
 		ChatIntegrationService::instance ()->refreshUser ( $credentials );
 		
-		$user ['roles'] = UserService::instance ()->getUserRoles ( $user ['userId'] );
+		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );
 		$model->user = $user;
 		$model->features = UserFeaturesService::instance ()->getFeatures ();

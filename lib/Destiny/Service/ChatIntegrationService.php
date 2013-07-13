@@ -34,7 +34,7 @@ class ChatIntegrationService extends Service {
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
 			$id = sprintf ( 'CHAT:%s', $session->getSessionId () );
-			$update = $redis->exists ( $id );
+			$update = ($redis->get ( $id )) ? true : false;
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
 			$redis->set ( $id, $json, 30 * 24 * 60 * 60 );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );

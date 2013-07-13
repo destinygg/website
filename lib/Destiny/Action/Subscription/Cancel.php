@@ -7,9 +7,26 @@ use Destiny\Service\OrdersService;
 use Destiny\Service\SubscriptionsService;
 use Destiny\Utils\Http;
 use Destiny\AppException;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Cancel {
 
+	/**
+	 * @Route ("/subscription/cancel")
+	 * @Secure ({"USER"})
+	 * @HttpMethod ({"POST"})
+	 * 
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function executePost(array $params, ViewModel $model) {
 		if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
 			throw new AppException ( 'Must be an admin' );
@@ -40,6 +57,16 @@ class Cancel {
 		die ();
 	}
 
+	/**
+	 * @Route ("/subscription/cancel")
+	 * @Secure ({"USER"})
+	 * @HttpMethod ({"GET"})
+	 * 
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		if (empty ( $subscription )) {

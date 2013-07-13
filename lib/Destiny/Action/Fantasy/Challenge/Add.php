@@ -8,9 +8,23 @@ use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppException;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Add {
 
+	/**
+	 * @Route ("/fantasy/challenge/add")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @throws AppException
+	 */
 	public function execute(array $params) {
 		$response = array (
 			'success' => true,

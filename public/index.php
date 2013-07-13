@@ -1,6 +1,5 @@
 <?php
 use Destiny\UserRole;
-
 use Destiny\AppEvent;
 use Destiny\Service\UserService;
 use Destiny\Service\AuthenticationService;
@@ -60,38 +59,6 @@ if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 	}
 }
 
-// Admins only
-$app->bind ( '/^\/(admin)/i', function (Application $app) {
-	$app->getLogger ()->debug ( sprintf ( 'Security: [admin] %s', $app->getPath () ) );
-	if (! Session::hasRole ( \Destiny\UserRole::USER ) || ! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
-		$app->error ( Http::STATUS_UNAUTHORIZED );
-	}
-} );
-
-// Logged in only
-$app->bind ( '/^\/(profile|order|subscription|subscribe|payment|fantasy|league\/[*]+)/i', function (Application $app, array $params) {
-	$app->getLogger ()->debug ( sprintf ( 'Security: [user] %s', $app->getPath () ) );
-	if (! Session::hasRole ( \Destiny\UserRole::USER )) {
-		$app->error ( Http::STATUS_UNAUTHORIZED );
-	}
-} );
-
-// /league/game/9999
-$app->bind ( '/^\/league\/game\/(?<gameId>[0-9]+)/i', function (Application $app, array $params) {
-	$app->executeAction ( new Destiny\Action\League\Game (), $params );
-} );
-// /payment/details/9999
-$app->bind ( '/^\/payment\/details\/(?<id>[0-9]+)/i', function (Application $app, array $params) {
-	$app->executeAction ( new Destiny\Action\Payment\Details (), $params );
-} );
-// /admin/user/9999
-$app->bind ( '/^\/admin\/user\/(?<id>[0-9]+)/i', function (Application $app, array $params) {
-	$app->executeAction ( new Destiny\Action\Admin\User (), $params );
-} );
-
-// "Easy" way to invoke actions based on the URL, second param is the default action
-$app->bindNamespace ( 'Destiny\Action', 'Home' );
-
-// Nothing routed
-$app->error ( Http::STATUS_NOT_FOUND );
+// Attempts to find a route and execute the action
+$app->executeRequest ( (isset ( $_SERVER ['REQUEST_URI'] )) ? $_SERVER ['REQUEST_URI'] : '', $_SERVER ['REQUEST_METHOD'] );
 ?>

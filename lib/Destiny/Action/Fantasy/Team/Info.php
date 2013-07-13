@@ -8,9 +8,23 @@ use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppException;
 use Destiny\Service\Fantasy\TeamService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Info {
 
+	/**
+	 * @Route ("/fantasy/team/info")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @throws AppException
+	 */
 	public function execute(array $params) {
 		$ftService = TeamService::instance ();
 		// Get team - Make sure this is one of the users teams

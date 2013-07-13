@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Fantasy\Champion;
 
 use Destiny\Service\Fantasy\TeamService;
@@ -8,14 +7,28 @@ use Destiny\Utils\Http;
 use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\AppException;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Purchase {
 
+	/**
+	 * @Route ("/fantasy/champion/purchase")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @throws AppException
+	 */
 	public function execute(array $params) {
 		$response = array (
-				'success' => true,
-				'data' => array (),
-				'message' => '' 
+			'success' => true,
+			'data' => array (),
+			'message' => '' 
 		);
 		if (! isset ( $params ['championId'] ) || empty ( $params ['championId'] )) {
 			throw new AppException ( 'championId parameter required' );

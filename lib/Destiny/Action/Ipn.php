@@ -9,12 +9,20 @@ use Destiny\Config;
 use Destiny\Utils\Date;
 use Destiny\Service\SubscriptionsService;
 use Destiny\AppException;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Ipn {
 
 	/**
-	 * Handles the incoming HTTP request
+	 * @Route ("/ipn")
 	 *
+	 * Handles the incoming HTTP request
 	 * @param array $params
 	 */
 	public function execute(array $params) {

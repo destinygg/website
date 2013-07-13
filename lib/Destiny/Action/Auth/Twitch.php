@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Auth;
 
 use Destiny\ViewModel;
@@ -15,7 +14,14 @@ use Destiny\Service\Fantasy\TeamService;
 use Destiny\Utils\String\Params;
 use Destiny\AppException;
 use Destiny\OAuthClient;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Twitch {
 	
 	/**
@@ -26,29 +32,9 @@ class Twitch {
 	protected $authProvider = 'twitch';
 
 	/**
-	 * Build a standard auth array from custom data array from api response
+	 * @Route ("/auth/twitch")
 	 *
-	 * @param string $code
-	 * @param array $data
-	 * @return array
-	 */
-	private function getAuthCredentials($code, array $data) {
-		if (empty ( $data ) || ! isset ( $data ['_id'] ) || empty ( $data ['_id'] )) {
-			throw new AppException ( 'Authorization failed, invalid user data' );
-		}
-		$arr = array ();
-		$arr ['authProvider'] = $this->authProvider;
-		$arr ['authCode'] = $code;
-		$arr ['authId'] = $data ['_id'];
-		$arr ['authDetail'] = $data ['name'];
-		$arr ['username'] = (isset ( $data ['display_name'] ) && ! empty ( $data ['display_name'] )) ? $data ['display_name'] : $data ['name'];
-		$arr ['email'] = (isset ( $data ['email'] ) && ! empty ( $data ['email'] )) ? $data ['email'] : '';
-		return $arr;
-	}
-
-	/**
 	 * Handle the incoming oAuth request
-	 *
 	 * @param array $params
 	 * @throws AppException
 	 */
@@ -78,6 +64,27 @@ class Twitch {
 			$model->error = $e;
 			return 'login';
 		}
+	}
+
+	/**
+	 * Build a standard auth array from custom data array from api response
+	 *
+	 * @param string $code
+	 * @param array $data
+	 * @return array
+	 */
+	private function getAuthCredentials($code, array $data) {
+		if (empty ( $data ) || ! isset ( $data ['_id'] ) || empty ( $data ['_id'] )) {
+			throw new AppException ( 'Authorization failed, invalid user data' );
+		}
+		$arr = array ();
+		$arr ['authProvider'] = $this->authProvider;
+		$arr ['authCode'] = $code;
+		$arr ['authId'] = $data ['_id'];
+		$arr ['authDetail'] = $data ['name'];
+		$arr ['username'] = (isset ( $data ['display_name'] ) && ! empty ( $data ['display_name'] )) ? $data ['display_name'] : $data ['name'];
+		$arr ['email'] = (isset ( $data ['email'] ) && ! empty ( $data ['email'] )) ? $data ['email'] : '';
+		return $arr;
 	}
 
 	/**

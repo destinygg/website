@@ -12,9 +12,24 @@ use Destiny\Utils\Country;
 use Destiny\ViewModel;
 use Destiny\Config;
 use Destiny\UserFeature;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Profile {
 
+	/**
+	 * @Route ("/profile")
+	 * @HttpMethod ({"GET"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @return string
+	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
 		$model->title = 'Profile';
@@ -22,6 +37,15 @@ class Profile {
 		return 'profile';
 	}
 
+	/**
+	 * @Route ("/profile")
+	 * @HttpMethod ({"POST"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function executePost(array $params, ViewModel $model) {
 		// Get user
 		$userService = UserService::instance ();

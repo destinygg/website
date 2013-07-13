@@ -31,7 +31,7 @@ use Destiny\Utils\Tpl;
 		
 		<div class="content content-dark clearfix">
 			<div class="clearfix">
-				<form action="/admin/user/<?=Tpl::out($model->user['userId'])?>" method="post">
+				<form action="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" method="post">
 					<input type="hidden" name="id" value="<?=Tpl::out($model->user['userId'])?>" />
 					<div class="control-group">
 						<label class="control-label" for="inputUsername">Username / Nickname</label>

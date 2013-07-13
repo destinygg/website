@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action;
 
 use Destiny\Application;
@@ -7,7 +6,14 @@ use Destiny\ViewModel;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\Service\SubscriptionsService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Subscribe {
 	
 	/**
@@ -18,8 +24,9 @@ class Subscribe {
 	protected $checkoutId = '';
 
 	/**
-	 * Build subscribe checkout form
+	 * @Route ("/subscribe")
 	 *
+	 * Build subscribe checkout form
 	 * @param array $params
 	 */
 	public function execute(array $params, ViewModel $model) {

@@ -1,13 +1,26 @@
 <?php
-
 namespace Destiny\Action\Admin;
 
 use Destiny\AppException;
 use Destiny\Application;
 use Destiny\Service\Fantasy\GameAggregationService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class DeleteGame {
 
+	/**
+	 * @Route ("/admin/deletegame")
+	 * @Secure ({"ADMIN"})
+	 *
+	 * @param array $params
+	 * @throws AppException
+	 */
 	public function execute(array $params) {
 		if (! isset ( $params ['gameId'] ) || empty ( $params ['gameId'] )) {
 			throw new AppException ( 'gameId required.' );

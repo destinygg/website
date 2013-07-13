@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Fantasy\Team;
 
 use Destiny\Service\Fantasy\TeamService;
@@ -7,14 +6,28 @@ use Destiny\Utils\Http;
 use Destiny\MimeType;
 use Destiny\Session;
 use Destiny\AppException;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Reset {
 
+	/**
+	 * @Route ("/fantasy/team/reset")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @throws AppException
+	 */
 	public function execute(array $params) {
 		$response = array (
-				'success' => false,
-				'data' => array (),
-				'message' => '' 
+			'success' => false,
+			'data' => array (),
+			'message' => '' 
 		);
 		// Get team - Make sure this is one of the users teams
 		$team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );

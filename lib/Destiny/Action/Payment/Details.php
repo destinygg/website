@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Payment;
 
 use Destiny\Application;
@@ -7,9 +6,25 @@ use Destiny\AppException;
 use Destiny\ViewModel;
 use Destiny\Session;
 use Destiny\Service\OrdersService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Details {
 
+	/**
+	 * @Route ("/payment/{id}/details")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function execute(array $params, ViewModel $model) {
 		if (isset ( $params ['id'] )) {
 			$ordersService = OrdersService::instance ();

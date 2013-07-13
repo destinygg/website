@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Payment;
 
 use Destiny\Service\SubscriptionsService;
@@ -33,9 +32,25 @@ use PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType;
 use PayPal\EBLBaseComponents\PaymentDetailsType;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Activate {
 
+	/**
+	 * @Route ("/payment/activate")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function execute(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
 		$orderService = OrdersService::instance ();
@@ -210,9 +225,9 @@ class Activate {
 	 */
 	protected function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscription) {
 		$billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
-
+		
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
-		$RPProfileDetails->SubscriberName = Session::getCredentials()->getUsername(); // This should be passed in
+		$RPProfileDetails->SubscriberName = Session::getCredentials ()->getUsername (); // This should be passed in
 		$RPProfileDetails->BillingStartDate = $billingStartDate->format ( \DateTime::ATOM );
 		$RPProfileDetails->ProfileReference = $paymentProfile ['userId'] . '-' . $paymentProfile ['orderId'];
 		

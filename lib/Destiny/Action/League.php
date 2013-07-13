@@ -10,9 +10,23 @@ use Destiny\Service\Fantasy\TeamService;
 use Destiny\Service\Fantasy\ChallengeService;
 use Destiny\Service\Fantasy\LeaderboardService;
 use Destiny\Service\Fantasy\GameService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class League {
 
+	/**
+	 * @Route ("/league")
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @return string
+	 */
 	public function execute(array $params, ViewModel $model) {
 		$teamId = Session::get ( 'teamId' );
 		$userId = Session::get ( 'userId' );

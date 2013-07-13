@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\League;
 
 use Destiny\Session;
@@ -8,9 +7,25 @@ use Destiny\Service\Fantasy\ChallengeService;
 use Destiny\Service\Fantasy\TeamService;
 use Destiny\AppException;
 use Destiny\ViewModel;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Invites {
 
+	/**
+	 * @Route ("/league/invites")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function execute(array $params, ViewModel $model) {
 		$teamId = Session::get ( 'teamId' );
 		if (empty ( $teamId )) {

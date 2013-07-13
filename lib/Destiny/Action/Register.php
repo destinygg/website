@@ -11,7 +11,14 @@ use Destiny\Config;
 use Destiny\OAuthClient;
 use Destiny\Service\AuthenticationService;
 use Destiny\Service\UserService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Register {
 
 	/**
@@ -36,6 +43,9 @@ class Register {
 	}
 
 	/**
+	 * @Route ("/register")
+	 * @HttpMethod ({"GET"})
+	 *
 	 * Handle the confirmation request
 	 *
 	 * @param array $params
@@ -58,8 +68,10 @@ class Register {
 	}
 
 	/**
-	 * Handle the confirmation request
+	 * @Route ("/register")
+	 * @HttpMethod ({"POST"})
 	 *
+	 * Handle the confirmation request
 	 * @param array $params
 	 * @throws AppException
 	 */

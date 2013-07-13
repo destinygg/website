@@ -28,7 +28,14 @@ use Destiny\Config;
 use Destiny\Utils\Date;
 use Destiny\ViewModel;
 use Destiny\AppException;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Complete {
 	
 	/**
@@ -39,8 +46,10 @@ class Complete {
 	protected $checkoutId = '';
 
 	/**
-	 * We were redirected here from PayPal after the buyer approved/cancelled the payment
+	 * @Route ("/order/complete")
+	 * @Secure ({"USER"})
 	 *
+	 * We were redirected here from PayPal after the buyer approved/cancelled the payment
 	 * @param array $params
 	 */
 	public function execute(array $params, ViewModel $model) {

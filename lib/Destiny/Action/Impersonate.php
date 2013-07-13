@@ -9,9 +9,25 @@ use Destiny\Application;
 use Destiny\Session;
 use Destiny\Config;
 use Destiny\AppEvent;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Impersonate {
 
+	/**
+	 * @Route ("/impersonate")
+	 * @HttpMethod ({"GET"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		if (! Config::$a ['allowImpersonation']) {

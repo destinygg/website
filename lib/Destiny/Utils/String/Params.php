@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Utils\String;
 
 use Destiny\AppException;
@@ -9,7 +8,7 @@ abstract class Params {
 	public static function params($params, $join = '&', $wrap = '') {
 		$str = array ();
 		foreach ( $params as $n => $v ) {
-			$str [] = "$n=". $wrap ."$v". $wrap;
+			$str [] = "$n=$wrap" . "$v" . $wrap;
 		}
 		return join ( $join, $str );
 	}
@@ -52,19 +51,17 @@ abstract class Params {
 
 	protected static function getSearchString($pattern) {
 		$find = array (
-				'/{int:[^}]*}/',
-				'/{[^}]*}/' 
+			'/{[^}]*}/' 
 		);
 		$replace = array (
-				'([0-9\_\-\|\.]+)',
-				'([A-z0-9\_\-\|\.]+)' 
+			'([A-z0-9\_\-\|\.]+)' 
 		);
 		$subject = str_replace ( array (
-				'/',
-				'.' 
+			'/',
+			'.' 
 		), array (
-				'\\/',
-				'\\.' 
+			'\\/',
+			'\\.' 
 		), $pattern );
 		return '/^' . preg_replace ( $find, $replace, $subject ) . '$/i';
 	}

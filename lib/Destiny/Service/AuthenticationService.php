@@ -141,7 +141,7 @@ class AuthenticationService extends Service {
 		$credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
 		
 		// Get the stored roles
-		$credentials->addRoles ( UserService::instance ()->getUserRoles ( $user ['userId'] ) );
+		$credentials->addRoles ( UserService::instance ()->getUserRolesByUserId ( $user ['userId'] ) );
 		
 		// Get the users active subscriptions
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );

@@ -6,9 +6,24 @@ use Destiny\ViewModel;
 use Destiny\Application;
 use Destiny\Session;
 use Destiny\Service\Fantasy\TeamService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Home {
 
+	/**
+	 * @Route ("/")
+	 * @Route ("/home")
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @return string
+	 */
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();

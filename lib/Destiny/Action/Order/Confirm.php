@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Order;
 
 use Destiny\Application;
@@ -7,7 +6,14 @@ use Destiny\Service\SubscriptionsService;
 use Destiny\Session;
 use Destiny\ViewModel;
 use Destiny\AppException;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Confirm {
 	
 	/**
@@ -18,8 +24,10 @@ class Confirm {
 	protected $checkoutId = '';
 
 	/**
-	 * Create and send the order
+	 * @Route ("/order/confirm")
+	 * @Secure ({"USER"})
 	 *
+	 * Create and send the order
 	 * @param array $params
 	 */
 	public function execute(array $params, ViewModel $model) {

@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Admin;
 
 use Destiny\AppException;
@@ -9,9 +8,23 @@ use Destiny\Utils\Http;
 use Destiny\Config;
 use Destiny\MimeType;
 use Psr\Log\LoggerInterface;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Cron {
 
+	/**
+	 * @Route ("/admin/cron")
+	 * @Secure ({"ADMIN"})
+	 *
+	 * @param array $params
+	 * @throws AppException
+	 */
 	public function execute(array $params) {
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
 			throw new AppException ( 'Action id required.' );

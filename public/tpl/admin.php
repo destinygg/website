@@ -140,7 +140,7 @@ use Destiny\Utils\Tpl;
 	f.on('submit', function(){
 		$.getJSON('/admin/user/find', {username: inpt.val(), exact: true}, function (data) {
 			if(data.length >= 1){
-				window.location.href = '/admin/user/'+data[0].userId;
+				window.location.href = '/admin/user/'+data[0].userId + '/edit';
 			}
 		});
 		return false;
@@ -149,7 +149,7 @@ use Destiny\Utils\Tpl;
 		updater: function(username){
 			for(var i=0; i<users.length; ++i){
 				if(users[i].username == username){
-					window.location.href = '/admin/user/'+users[i].userId;
+					window.location.href = '/admin/user/'+users[i].userId + '/edit';
 					break;
 				}
 			};

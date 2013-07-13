@@ -1,4 +1,21 @@
 <?php
+use Destiny\Config;
+use Destiny\Application;
+use Destiny\Router;
+use Destiny\Routing\AnnotationDirectoryLoader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\FileCacheReader;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\Common\Cache\RedisCache;
+use Doctrine\DBAL\Configuration;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Processor\WebProcessor;
+use Monolog\Processor\MemoryPeakUsageProcessor;
+use \Redis;
+
 ini_set ( 'date.timezone', 'UTC' );
 
 // Used when the full path is needed to the base directory
@@ -6,34 +23,58 @@ define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
 define ( '_VENDORDIR', _BASEDIR . '/vendor' );
 define ( '_STATICDIR', _BASEDIR . '/static' );
 define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
-require _VENDORDIR . '/autoload.php';
+$loader = require _VENDORDIR . '/autoload.php';
 
-\Destiny\Config::load ( array_merge_recursive ( require _BASEDIR . '/config/config.php', json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) ) );
+Config::load ( array_merge_recursive ( require _BASEDIR . '/config/config.php', json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) ) );
 
-$log = new \Monolog\Logger ( $context->log );
-$log->pushHandler ( new \Monolog\Handler\StreamHandler ( \Destiny\Config::$a ['log'] ['path'] . $context->log . '.log', \Monolog\Logger::INFO ) );
-$log->pushProcessor ( new \Monolog\Processor\WebProcessor () );
-$log->pushProcessor ( new \Monolog\Processor\ProcessIdProcessor () );
-$log->pushProcessor ( new \Monolog\Processor\MemoryPeakUsageProcessor () );
+$app = new Application ();
 
-$db = \Doctrine\DBAL\DriverManager::getConnection ( \Destiny\Config::$a ['db'], new \Doctrine\DBAL\Configuration () );
+$log = new Logger ( $context->log );
+$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->log . '.log', Logger::INFO ) );
+$log->pushProcessor ( new WebProcessor () );
+$log->pushProcessor ( new MemoryPeakUsageProcessor () );
+$app->setLogger ( $log );
+
+$db = DriverManager::getConnection ( Config::$a ['db'], new Configuration () );
 $db->exec ( 'SET NAMES utf8' );
 $db->exec ( 'SET CHARACTER SET utf8' );
 $db->exec ( 'SET time_zone = \'+00:00\'' );
-
-$app = new \Destiny\Application ();
+$app->setConnection ( $db );
 
 if (class_exists ( 'Redis' )) {
-	$redis = new \Redis ();
-	$redis->connect ( \Destiny\Config::$a ['redis'] ['host'], \Destiny\Config::$a ['redis'] ['port'] );
-	$redis->select ( \Destiny\Config::$a ['redis'] ['database'] );
+	$redis = new Redis ();
+	$redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );
+	$redis->select ( Config::$a ['redis'] ['database'] );
 	$app->setRedis ( $redis );
-	$cache = new \Doctrine\Common\Cache\RedisCache ();
+	$cache = new RedisCache ();
 	$cache->setRedis ( $app->getRedis () );
 } else {
-	$cache = new \Doctrine\Common\Cache\FilesystemCache ( \Destiny\Config::$a ['cache'] ['path'] );
+	$cache = new FilesystemCache ( Config::$a ['cache'] ['path'] );
+}
+$app->setCacheDriver ( $cache );
+
+// Annotation autoloader
+AnnotationRegistry::registerLoader ( array (
+	$loader,
+	'loadClass' 
+) );
+
+// Read all the @Route annotations from the classes within the Action/ dir
+$actions = __DIR__ . '/Destiny/Action';
+$reader = new AnnotationReader ();
+$router = new Router ();
+if (Config::$a ['cacheAnnotations']) {
+	$reader = new FileCacheReader ( $reader, realpath ( Config::$a ['cache'] ['path'] ) . '/annotations/' );
+	$routes = $cache->fetch ( 'annotationRoutes' );
+	if (empty ( $routes )) {
+		$routes = AnnotationDirectoryLoader::load ( $reader, $actions );
+		$cache->save ( 'annotationRoutes', $routes );
+	}
+} else {
+	$routes = AnnotationDirectoryLoader::load ( $reader, $actions );
 }
 
-$app->setLogger ( $log );
-$app->setConnection ( $db );
-$app->setCacheDriver ( $cache );
+$router->setRoutes ( $routes );
+$app->setAnnotationReader ( $reader );
+$app->setRouter ( $router );
+?>

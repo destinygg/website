@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Action\Order;
 
 use PayPal\CoreComponentTypes\BasicAmountType;
@@ -21,7 +20,14 @@ use Destiny\Service\SubscriptionsService;
 use Destiny\ViewModel;
 use Destiny\AppException;
 use Destiny\Config;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Create {
 	
 	/**
@@ -32,8 +38,10 @@ class Create {
 	protected $checkoutId = '';
 
 	/**
-	 * Create and send the order
+	 * @Route ("/order/create")
+	 * @Secure ({"USER"})
 	 *
+	 * Create and send the order
 	 * @param array $params
 	 */
 	public function execute(array $params, ViewModel $model) {

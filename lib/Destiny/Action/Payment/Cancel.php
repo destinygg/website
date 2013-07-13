@@ -14,9 +14,25 @@ use PayPal\EBLBaseComponents\ManageRecurringPaymentsProfileStatusRequestDetailsT
 use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusReq;
 use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusRequestType;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Cancel {
 
+	/**
+	 * @Route ("/payment/cancel")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @throws AppException
+	 * @return string
+	 */
 	public function execute(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
 		$orderService = OrdersService::instance ();

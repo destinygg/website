@@ -559,7 +559,7 @@ class SessionCredentials {
 	 */
 	public function hasRole($roleId) {
 		foreach ( $this->roles as $role ) {
-			if ($role == $roleId) {
+			if (strcasecmp($role, $roleId) === 0) {
 				return true;
 			}
 		}

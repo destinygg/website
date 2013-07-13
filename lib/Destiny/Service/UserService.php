@@ -36,6 +36,41 @@ class UserService extends Service {
 			$this->addUserRole ( $userId, $role );
 		}
 	}
+	
+	/**
+	 * A list of roles
+	 * @var array
+	 */
+	protected $roles;
+
+	/**
+	 * Get all the user roles
+	 * @return array
+	 */
+	public function getUserRoles() {
+		if (! $this->roles) {
+			$conn = Application::instance ()->getConnection ();
+			$stmt = $conn->prepare ( 'SELECT * FROM `dfl_roles`' );
+			$stmt->execute ();
+			$this->roles = $stmt->fetchAll ();
+		}
+		return $this->roles;
+	}
+
+	/**
+	 * Get the roleId by roleName
+	 * @param string $roleName
+	 * @return array
+	 */
+	public function getRoleIdByName($roleName) {
+		$roles = $this->getUserRoles ();
+		foreach ( $roles as $role ) {
+			if (strcasecmp ( $role ['roleName'], $roleName ) === 0) {
+				return $role ['roleId'];
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Add a role to a user
@@ -44,7 +79,8 @@ class UserService extends Service {
 	 * @param string $roleName
 	 * @return the specfic record id
 	 */
-	public function addUserRole($userId, $roleId) {
+	public function addUserRole($userId, $roleName) {
+		$roleId = $this->getRoleIdByName ( $roleName );
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_roles', array (
 			'userId' => $userId,
@@ -155,14 +191,18 @@ class UserService extends Service {
 	 * @param int $userId
 	 * @return array
 	 */
-	public function getUserRoles($userId) {
+	public function getUserRolesByUserId($userId) {
 		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( 'SELECT roleId FROM dfl_users_roles WHERE userId = :userId' );
+		$stmt = $conn->prepare ( '
+			SELECT b.roleName FROM dfl_users_roles AS a 
+			INNER JOIN dfl_roles b ON (b.roleId = a.roleId)
+			WHERE a.userId = :userId
+		' );
 		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
 		$stmt->execute ();
 		$roles = array ();
-		while ( $roleId = $stmt->fetchColumn () ) {
-			$roles [] = intval ( $roleId );
+		while ( $role = $stmt->fetchColumn () ) {
+			$roles [] = $role;
 		}
 		return $roles;
 	}

@@ -10,7 +10,14 @@ use Destiny\Config;
 use Destiny\OAuthClient;
 use Destiny\Service\AuthenticationService;
 use Destiny\Service\UserService;
+use Destiny\Annotation\Action;
+use Destiny\Annotation\Route;
+use Destiny\Annotation\HttpMethod;
+use Destiny\Annotation\Secure;
 
+/**
+ * @Action
+ */
 class Google {
 	
 	/**
@@ -21,29 +28,9 @@ class Google {
 	protected $authProvider = 'google';
 
 	/**
-	 * Build a standard auth array from custom data array from api response
+	 * @Route ("/auth/google")
 	 *
-	 * @param string $code
-	 * @param array $data
-	 * @return array
-	 */
-	private function getAuthCredentials($code, array $data) {
-		if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
-			throw new AppException ( 'Authorization failed, invalid user data' );
-		}
-		$arr = array ();
-		$arr ['authProvider'] = $this->authProvider;
-		$arr ['authCode'] = $code;
-		$arr ['authId'] = $data ['id'];
-		$arr ['authDetail'] = $data ['email'];
-		$arr ['username'] = (isset ( $data ['hd'] )) ? $data ['hd'] : '';
-		$arr ['email'] = $data ['email'];
-		return $arr;
-	}
-
-	/**
 	 * Handle the incoming oAuth request
-	 *
 	 * @param array $params
 	 * @throws AppException
 	 */
@@ -65,6 +52,27 @@ class Google {
 			$model->error = $e;
 			return 'login';
 		}
+	}
+
+	/**
+	 * Build a standard auth array from custom data array from api response
+	 *
+	 * @param string $code
+	 * @param array $data
+	 * @return array
+	 */
+	private function getAuthCredentials($code, array $data) {
+		if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
+			throw new AppException ( 'Authorization failed, invalid user data' );
+		}
+		$arr = array ();
+		$arr ['authProvider'] = $this->authProvider;
+		$arr ['authCode'] = $code;
+		$arr ['authId'] = $data ['id'];
+		$arr ['authDetail'] = $data ['email'];
+		$arr ['username'] = (isset ( $data ['hd'] )) ? $data ['hd'] : '';
+		$arr ['email'] = $data ['email'];
+		return $arr;
 	}
 
 }
