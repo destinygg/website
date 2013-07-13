@@ -60,18 +60,18 @@ AnnotationRegistry::registerLoader ( array (
 ) );
 
 // Read all the @Route annotations from the classes within the Action/ dir
-$actions = __DIR__ . '/Destiny/Action';
+$actionsPath = __DIR__ . '/Destiny/Action';
 $reader = new AnnotationReader ();
 $router = new Router ();
 if (Config::$a ['cacheAnnotations']) {
 	$reader = new FileCacheReader ( $reader, realpath ( Config::$a ['cache'] ['path'] ) . '/annotations/' );
 	$routes = $cache->fetch ( 'annotationRoutes' );
 	if (empty ( $routes )) {
-		$routes = AnnotationDirectoryLoader::load ( $reader, $actions );
+		$routes = AnnotationDirectoryLoader::load ( $reader, $actionsPath );
 		$cache->save ( 'annotationRoutes', $routes );
 	}
 } else {
-	$routes = AnnotationDirectoryLoader::load ( $reader, $actions );
+	$routes = AnnotationDirectoryLoader::load ( $reader, $actionsPath );
 }
 
 $router->setRoutes ( $routes );
