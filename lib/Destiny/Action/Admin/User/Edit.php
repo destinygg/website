@@ -118,9 +118,9 @@ class Edit {
 		// Update the auth credentials
 		ChatIntegrationService::instance ()->refreshUser ( $credentials );
 		
-		// Setup a cache var to update the users session
+		// Flag a user session for update
 		$cache = Application::instance ()->getCacheDriver ();
-		$cache->save ( sprintf ( 'refreshsession-%s', Session::getSessionId () ), 1 );
+		$cache->save ( sprintf ( 'refreshusersession-%s', $user ['userId'] ), 1 );
 		
 		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );

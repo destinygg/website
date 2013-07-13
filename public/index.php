@@ -44,18 +44,23 @@ $userManager = UserService::instance ();
 $authService = AuthenticationService::instance ();
 
 // Check if the users session has been flagged for update
-if (Session::isStarted () && Session::getCredentials ()->isValid ()) {
-	$cache = $app->getCacheDriver ();
-	$refreshId = sprintf ( 'refreshsession-%s', Session::getSessionId () );
-	if ($cache->fetch ( $refreshId ) === 1) {
-		$cache->delete ( $refreshId );
-		$user = $userManager->getUserById ( Session::getCredentials ()->getUserId () );
-		$authService->login ( $user, 'refreshed' );
-		$app->addEvent ( new AppEvent ( array (
-			'type' => AppEvent::EVENT_INFO,
-			'label' => 'Your session has been updated',
-			'message' => sprintf ( 'Nothing to worry about, just letting you know...', Session::getCredentials ()->getUsername () ) 
-		) ) );
+if (Session::isStarted ()) {
+	$userId = Session::getCredentials ()->getUserId ();
+	if (! empty ( $userId )) {
+		$cache = $app->getCacheDriver ();
+		$cacheId = sprintf ( 'refreshusersession-%s', $userId );
+		if ($cache->fetch ( $cacheId ) === 1) {
+			$cache->delete ( $cacheId );
+			$user = $userManager->getUserById ( $userId );
+			if (! empty ( $user )) {
+				$authService->login ( $user, 'refreshed' );
+				$app->addEvent ( new AppEvent ( array (
+					'type' => AppEvent::EVENT_INFO,
+					'label' => 'Your session has been updated',
+					'message' => sprintf ( 'Nothing to worry about %s, just letting you know...', Session::getCredentials ()->getUsername () ) 
+				) ) );
+			}
+		}
 	}
 }
 
@@ -68,9 +73,9 @@ if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 			$authService->login ( $user, 'rememberme' );
 			$authService->setRememberMe ( $user );
 			$app->addEvent ( new AppEvent ( array (
-				'type' => AppEvent::EVENT_DANGER,
+				'type' => AppEvent::EVENT_INFO,
 				'label' => 'You have been automatically logged in',
-				'message' => sprintf ( 'Please logout if you are not "%s"', Session::getCredentials ()->getUsername () ) 
+				'message' => sprintf ( 'Nothing to worry about %s, just letting you know...', Session::getCredentials ()->getUsername () ) 
 			) ) );
 		}
 	}

@@ -135,6 +135,7 @@ class AuthenticationService extends Service {
 		
 		$credentials = new SessionCredentials ( $user );
 		$credentials->setAuthProvider ( $authProvider );
+		$credentials->setSecret ( Config::$a ['session'] ['secret'] );
 		$credentials->addRoles ( UserRole::USER );
 		
 		// Add the user features
@@ -235,7 +236,7 @@ class AuthenticationService extends Service {
 		if (! empty ( $authProfile )) {
 			$userService->updateUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'], array (
 				'authCode' => $authCreds ['authCode'],
-				'authDetail' => $authCreds ['authDetail'],
+				'authDetail' => $authCreds ['authDetail'] 
 			) );
 		}
 		
@@ -322,7 +323,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),

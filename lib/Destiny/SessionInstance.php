@@ -353,7 +353,7 @@ class SessionCookie {
 		if (isset ( $_COOKIE [$this->name] )) {
 			unset ( $_COOKIE [$this->name] );
 		}
-		setcookie ( $this->name, '', time () - 3600, Config::$a ['cookie'] ['path'], Config::$a ['cookie'] ['domain'] );
+		setcookie ( $this->name, '', time () - 3600, $this->getPath (), $this->getDomain () );
 	}
 
 }
@@ -414,6 +414,12 @@ class SessionCredentials {
 	 * @var array
 	 */
 	protected $features = array ();
+	
+	/**
+	 * A key used to invalidate an active session
+	 * @var string
+	 */
+	protected $secret = '';
 
 	/**
 	 * Create a session credentials instance
@@ -451,10 +457,13 @@ class SessionCredentials {
 				$this->setUserStatus ( $params ['userStatus'] );
 			}
 			if (isset ( $params ['features'] ) && ! empty ( $params ['features'] ) && is_array ( $params ['features'] )) {
-				$this->setFeatures ( $params ['features'] );
+				$this->setFeatures ( array_unique ( $params ['features'] ) );
 			}
 			if (isset ( $params ['roles'] ) && ! empty ( $params ['roles'] ) && is_array ( $params ['roles'] )) {
 				$this->setRoles ( array_unique ( $params ['roles'] ) );
+			}
+			if (isset ( $params ['secret'] ) && ! empty ( $params ['secret'] )) {
+				$this->setSecret ( $params ['secret'] );
 			}
 		}
 	}
@@ -473,7 +482,8 @@ class SessionCredentials {
 			'country' => $this->getCountry (),
 			'roles' => $this->getRoles (),
 			'authProvider' => $this->getAuthProvider (),
-			'features' => $this->getFeatures () 
+			'features' => $this->getFeatures (),
+			'secret' => $this->getSecret () 
 		);
 	}
 
@@ -485,6 +495,9 @@ class SessionCredentials {
 	 */
 	public function isValid() {
 		$data = $this->getData ();
+		if ($data ['secret'] != Config::$a ['session'] ['secret']) {
+			return false;
+		}
 		if (empty ( $data ['userId'] ) && intval ( $data ['userId'] ) > 0) {
 			return false;
 		}
@@ -559,7 +572,7 @@ class SessionCredentials {
 	 */
 	public function hasRole($roleId) {
 		foreach ( $this->roles as $role ) {
-			if (strcasecmp($role, $roleId) === 0) {
+			if (strcasecmp ( $role, $roleId ) === 0) {
 				return true;
 			}
 		}
@@ -649,6 +662,14 @@ class SessionCredentials {
 				break;
 			}
 		}
+	}
+
+	public function getSecret() {
+		return $this->secret;
+	}
+
+	public function setSecret($secret) {
+		$this->secret = $secret;
 	}
 
 }
