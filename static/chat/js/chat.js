@@ -271,13 +271,26 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			
-			if (this.ignorelist[nick]) {
-				delete(this.ignorelist[nick]);
-				this.gui.push(new ChatActionMessage(""+nick+" has been removed from your ignore list"));
-			} else {
-				this.ignorelist[nick] = true;
-				this.gui.push(new ChatActionMessage("Ignoring "+nick));
+			this.ignorelist[nick] = true;
+			this.gui.push(new ChatActionMessage("Ignoring "+nick));
+			
+			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
+			this.loadIgnoreList();
+			break;
+		case "unignore":
+			if (!localStorage) {
+				this.gui.push(new ChatErrorMessage("Ignore is unavailable, no localStorage"));
+				return;
 			}
+			
+			if (!parts[1] || !nickregex.test(parts[1].toLowerCase())) {
+				this.gui.push(new ChatErrorMessage("Invalid nick - /ignore nick"));
+				return;
+			}
+			var nick = parts[1].toLowerCase();
+			
+			delete(this.ignorelist[nick]);
+			this.gui.push(new ChatActionMessage(""+nick+" has been removed from your ignore list"));
 			
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
 			this.loadIgnoreList();
