@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Admin\User;
 
+use Destiny\Application;
 use Destiny\Service\UserFeaturesService;
 use Destiny\AppException;
 use Destiny\Service\UserService;
@@ -116,6 +117,10 @@ class Edit {
 		
 		// Update the auth credentials
 		ChatIntegrationService::instance ()->refreshUser ( $credentials );
+		
+		// Setup a cache var to update the users session
+		$cache = Application::instance ()->getCacheDriver ();
+		$cache->save ( sprintf ( 'refreshsession-%s', Session::getSessionId () ), 1 );
 		
 		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );

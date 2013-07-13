@@ -40,12 +40,29 @@ $session->addCleanupHandler ( function (SessionInstance $session) {
 // Start the session if a valid session cookie is found
 Session::start ( Session::START_IFCOOKIE );
 
+$userManager = UserService::instance ();
+$authService = AuthenticationService::instance ();
+
+// Check if the users session has been flagged for update
+if (Session::isStarted () && Session::getCredentials ()->isValid ()) {
+	$cache = $app->getCacheDriver ();
+	$refreshId = sprintf ( 'refreshsession-%s', Session::getSessionId () );
+	if ($cache->fetch ( $refreshId ) === 1) {
+		$cache->delete ( $refreshId );
+		$user = $userManager->getUserById ( Session::getCredentials ()->getUserId () );
+		$authService->login ( $user, 'refreshed' );
+		$app->addEvent ( new AppEvent ( array (
+			'type' => AppEvent::EVENT_INFO,
+			'label' => 'Your session has been updated',
+			'message' => sprintf ( 'Nothing to worry about, just letting you know...', Session::getCredentials ()->getUsername () ) 
+		) ) );
+	}
+}
+
 // If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie
 if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
-	$authService = AuthenticationService::instance ();
 	$userId = $authService->getRememberMe ();
 	if ($userId !== false) {
-		$userManager = UserService::instance ();
 		$user = $userManager->getUserById ( $userId );
 		if (! empty ( $user )) {
 			$authService->login ( $user, 'rememberme' );
