@@ -80,7 +80,7 @@ use Destiny\Utils\Tpl;
 			I mean sure, software has bugs no question about that, but can you
 			reliably reproduce it? If yes, we want to hear from you!<br/>
 			Go to the
-			<a href="https://github.com/sztanpet/destinychat/issues">issue tracker</a>
+			<a href="https://github.com/destinygg/chat/issues">issue tracker</a>
 			and create a ticket. Provide us with information, the more the merrier:<br/>
 			first and foremost, show us how we can reproduce the issue
 			(screen-shots, video, prose, whatever),<br/>
@@ -136,7 +136,7 @@ use Destiny\Utils\Tpl;
 			The priority right now is to have a working and nice chat for the 90% and
 			than cater later to that 10%.<br/>
 			That said the code is open source and available at
-			<a href="https://github.com/sztanpet/destinychat">Github</a>,
+			<a href="https://github.com/destinygg/chat">Github</a>,
 			so hack it up and send a pull request (hit up sztanpet for direction).<br/>
 			For now, DharmaTurtle is providing a service while "real" irc is implemented:<br/>
 			chat is echoed to Rizon IRC at <a href="http://qchat.rizon.net/?channels=#destinyecho">#destinyecho</a>. Forwarding of IRC chat to DestinyChat is available (see the topic of the IRC channel for details).
@@ -145,7 +145,7 @@ use Destiny\Utils\Tpl;
 		<a name="changelog"></a>
 		<h3>Is there a changelog?</h3>
 		<p>
-			For the back-end side, yes: on <a href="https://github.com/sztanpet/destinychat">Github</a><br/>
+			For the back-end side, yes: on <a href="https://github.com/destinygg/chat">Github</a><br/>
 			For the front-end side: Soon&trade;
 		</p>
 		
