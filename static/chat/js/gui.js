@@ -375,10 +375,16 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		},
 		
 		setupInputHistory: function(){
+			var modifierpressed = false;
 			$(this.input).on('keyup', function(e) {
 				
-				if (e.keyCode != 38 && e.keyCode != 40)
+				if (e.shiftKey || e.metaKey || e.ctrlKey)
+					modifierpressed = true;
+				
+				if ((e.keyCode != 38 && e.keyCode != 40) || modifierpressed) {
+					modifierpressed = false;
 					return;
+				}
 				
 				var self = $(this).closest('.chat.chat-frame').data('chat'),
 				    num  = e.keyCode == 38? -1: 1; // if uparrow we subtract otherwise add
