@@ -41,8 +41,8 @@ $e->message = 'Hamster #' . rand ( 1000, 9999 ) . ' is being replaced. The site 
 	
 	<?include'./errors/foot.php'?>
 	
-	<script src="<?=$cdn?>/js/vendor/jquery-1.10.1.min.js"></script>
-	<script src="<?=$cdn?>/js/vendor/bootstrap.js"></script>
+	<script src="<?=$cdn?>/vendor/js/jquery-1.10.1.min.js"></script>
+	<script src="<?=$cdn?>/vendor/js/bootstrap.js"></script>
 
 </body>
 </html>
