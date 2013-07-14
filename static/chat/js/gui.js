@@ -2,7 +2,8 @@
 // Need a better place for these
 var emoticons = ["Draven", "INFESTINY", "FIDGETLOL", "Hhhehhehe", "GameOfThrows", "WORTH", "FeedNathan", "Abathur", "4Head", "ArsonNoSexy", "AsianGlow", "BCWarrior", "BORT", "BibleThump", "BionicBunion", "BlargNaut", "BloodTrail", "BrainSlug", "BrokeBack", "CougarHunt", "DAESuppy", "DBstyle", "DansGame", "DatSheffy", "EagleEye", "EvilFetus", "FPSMarksman", "FUNgineer", "FailFish", "FrankerZ", "FreakinStinkin", "FuzzyOtterOO", "GingerPower", "HassanChop", "HotPokket", "ItsBoshyTime", "JKanStyle", "Jebaited", "JonCarnage", "Kappa", "KevinTurtle", "Kreygasm", "MVGame", "MrDestructoid", "NinjaTroll", "NoNoSpot", "OMGScoots", "OneHand", "OpieOP", "OptimizePrime", "PJSalt", "PMSTwin", "PazPazowitz", "PicoMause", "PogChamp", "Poooound", "PunchTrees", "RedCoat", "ResidentSleeper", "RuleFive", "SMOrc", "SMSkull", "SSSsss", "ShazBotstix", "SoBayed", "SoonerLater", "StoneLightning", "StrawBeary", "SuperVinlin", "SwiftRage", "TehFunrun", "TheRinger", "TheTarFu", "TinyFace", "TooSpicy", "TriHard", "UleetBackup", "UnSane", "Volcania", "WinWaker"];
 var emoteregex = new RegExp('\\b(?:'+emoticons.join('|')+')\\b');
-var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+var linkregex = /\b((https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|POST|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)(\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*)*(\/|\b))/gim;
 
 (function($){
 	
@@ -709,6 +710,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			encoded = encoded.replace(emoticon[0], '<div title="'+emoticon[0]+'" class="chat-emote chat-emote-' + emoticon[0] +'"></div>');
 		
 		encoded = encoded.replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>');
+		encoded = encoded.replace(vaguelinkregex, '<a href="http://$1" target="_blank" class="externallink">$1</a>');
 		if(this.isEmote)
 			elem.addClass('emote');
 		return elem.html(encoded)[0].outerHTML;
