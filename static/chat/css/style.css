@@ -236,12 +236,12 @@ color: #004D74;
 }
 
 .chat .chat-lines time, 
-.chat .user-message i {
+.chat .user-msg i {
 display: none !important;	
 }
-.chat.chat-time .chat-lines time, 
-.chat.chat-icons .user-message i, 
-.chat-lines i.icon-subscriber, 
+.chat.chat-time .chat-lines time,
+.chat.chat-icons .user-msg i,
+.chat-lines i.icon-subscriber,
 .chat-lines i.icon-administrator {
 display: inline-block !important;	
 }
@@ -266,6 +266,15 @@ color: #990000;
 }
 .chat-theme-dark .chat-lines > div.highlight {
 color: #fff371;
+}
+.chat-theme-dark .chat-lines > div.action-msg,
+.chat-theme-dark .chat-lines > div.error-msg,
+.chat-theme-dark .chat-lines > div.status-msg,
+.chat-theme-dark .chat-lines > div.ui-msg {
+color: #777;
+}
+.chat-theme-dark .chat-lines > div.own-msg {
+color: #eaeaea;
 }
 .chat-theme-dark .chat-input-control {
 background: #090909;
@@ -419,11 +428,11 @@ display: none;
 display: inline-block;
 }
 
-.chat.focus-user .chat-lines > div.user-message {
+.chat.focus-user .chat-lines > div.user-msg {
 opacity:0.3;
 }
-.chat.focus-user .chat-lines > div.user-message.focused,
-.chat.focus-user .chat-lines > div.user-message.highlight {
+.chat.focus-user .chat-lines > div.user-msg.focused,
+.chat.focus-user .chat-lines > div.user-msg.highlight {
 opacity:1;
 }
 
@@ -438,11 +447,3 @@ text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
 color: rgba(255,255,255,1);
 text-shadow:0 0 3px rgba(255,255,255,0.25);	
 }
-
-.chat-lines .action-msg,
-.chat-lines .error-msg,
-.chat-lines .status-msg {
-color: #777;
-}
-.chat-lines .ui-msg {}
-.chat-lines .own-msg {}

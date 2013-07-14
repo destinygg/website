@@ -217,9 +217,9 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 			
 			// The tools for when you click on a user
 			this.cUserTools = new cUserTools(this);
-			this.lines.on('mousedown', 'div.user-message a.user', function(){
+			this.lines.on('mousedown', 'div.user-msg a.user', function(){
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				var username = $(this).closest('.user-message').data('username');
+				var username = $(this).closest('.user-msg').data('username');
 				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
 				return false;
 			});
@@ -325,7 +325,6 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 			this.scrollPlugin.update();
 			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
 				if(this.lineCount() >= this.maxlines){
-					var overshot = this.lineCount()-this.maxlines;
 					this.lines.children().slice(0,2+Math.floor(((this.lineCount()-this.maxlines) / this.maxlines)*100)).remove();
 				}
 				this.scrollPlugin.scrollBottom();
@@ -334,7 +333,7 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 			return message;
 		},
 
-		put: function(message, state, klass){
+		put: function(message, state){
 			if(message instanceof ChatUserMessage){
 				if(this.lastMessage && this.lastMessage.user && message.user && this.lastMessage.user.username == message.user.username){
 					//same person consecutively
@@ -343,12 +342,13 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 					//different person
 					message.ui = $(message.html());
 				}
+				if(message.user && this.engine.user && this.engine.user.username == message.user.username){
+					message.ui.addClass('own-msg');
+				}
 			}else{
 				message.ui = $(message.html());
 			};
 			message.ui.appendTo(this.lines);
-			if (klass)
-				message.ui.addClass(klass);
 			
 			if(state != undefined)
 				message.status(state);
@@ -701,9 +701,9 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 	$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 	ChatUserMessage.prototype.wrap = function(html, css) {
 		if (this.user && this.user.username) {
-			return '<div class="user-message'+((css) ? ' '+css:'')+'" data-username="'+this.user.username.toLowerCase()+'">'+html+'</div>';
+			return '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+'" data-username="'+this.user.username.toLowerCase()+'">'+html+'</div>';
 		} else
-			return '<div class="user-message'+((css) ? ' '+css:'')+'">'+html+'</div>';
+			return '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+'">'+html+'</div>';
 	};
 	ChatUserMessage.prototype.wrapUser = function(user){
 		return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
