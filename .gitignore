@@ -1,2 +1,6 @@
 *.sublime-*
 config/config.local.php
+/.settings
+/.externalToolBuilders
+/.project
+/.buildpath
