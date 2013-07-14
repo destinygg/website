@@ -117,9 +117,17 @@
 				
 					// Only change the input value / move the cursor if the search word is different
 					if(replace.toLowerCase() != searchWord.word.toLowerCase()){
+						inp.focus();
+						if(post.substring(0,1) != " " || post.length == 0)
+							replace =  replace + " ";
 						inp.val(pre+replace+post);
-						inp[0].setSelectionRange(pre.length+replace.length+1, pre.length+replace.length+1);
-						inp[0].focus();
+						if(post.trim() == ''){
+							// If the cursor is at the end of the string, refocus input to shift the inputs overflow / focus
+							inp.blur().focus();
+						}else{
+							// If the caret is in the middle of other text, just move the cursor
+							inp[0].setSelectionRange(pre.length+replace.length, pre.length+replace.length);
+						}
 					}
 				}
 			};
