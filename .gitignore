@@ -4,3 +4,6 @@ config/config.local.php
 /.externalToolBuilders
 /.project
 /.buildpath
+
+/config/cert_key.pem
+/config/sdk_config.ini
