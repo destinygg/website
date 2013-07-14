@@ -299,13 +299,31 @@ color:#222;
 }
 
 /* Chat menus */
-.chat-menu {
-position: absolute;
-right:20px;
-bottom:40px;
-width:240px;
+.chat-menu, 
+.user-tools {
+visibility:hidden;	
+opacity:0;
+font-size: 12px;
+transition: all 0.1s ease-out;
+position: absolute;	
 font-size:12px;
+}
+.chat-menu.active,
+.user-tools.active {
+visibility: visible;	
+opacity:1;	
+}
+.chat-menu {
+right:20px;
+bottom:0;
+width:240px;
 z-index:19;
+}
+.chat-menu.active {
+bottom:40px;
+}
+.user-tools.active {
+top:0;
 }
 .chat-menu .toolbar {
 width:100%;
@@ -313,7 +331,8 @@ position: absolute;
 top:-31px;
 left:0;	
 }
-.chat-menu h5 {
+.chat-menu h5,
+.user-tools h5 { {
 text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
 user-select: none;
 -moz-user-select: none;
@@ -332,6 +351,10 @@ display: block;
 padding:5px 10px;
 border-radius: 4px 4px 0 0;
 }
+.chat-menu h5 .close,
+.user-tools h5 .close {
+margin-top:3px;'
+}
 .chat-menu li, .chat-menu label {
 font-size:12px;	
 }
@@ -345,18 +368,22 @@ z-index:20;
 .chat-menu .list-wrap .scrollable {
 max-height:330px;	
 }
-.chat-menu .list-wrap {
-background: rgba(25,25,25,0.9);
-border-radius:0 0 4px 4px;
+.chat-menu .list-wrap,
+.user-tools.active > div {
+background: rgba(25,25,25,0.9);	
 padding:0;
+}
+.chat-menu .list-wrap {
+border-radius:0 0 4px 4px;
 margin-top:auto;
 }
 .chat-menu .list-wrap .scrollable {
 overflow: hidden;
 }
-.chat-menu ul {
+.chat-menu ul,
+.user-tools .tools {
 padding:0 10px;
-margin-top:10px;
+margin:10px 0;
 }
 .chat-menu ul > li:first-child h5 {
 margin-top:0;
@@ -382,36 +409,25 @@ margin: 0;
 cursor: pointer;
 }
 
+.chat.focus-user .chat-lines > div.user-msg {
+opacity:0.3;
+}
+.chat.focus-user .chat-lines > div.user-msg.focused,
+.chat.focus-user .chat-lines > div.user-msg.highlight {
+opacity:1;
+}
+
 /** User tools **/
 .user-tools {
-visibility:hidden;
-opacity:0;
-font-size: 12px;
-transition: all 0.1s ease-out;
 width:100%;
 position: absolute;
 top:-5px;
 left:0;
 }
-.user-tools.active {
-visibility: visible;	
-opacity:1;	
-top:0;	
-}
 .user-tools > div {
-transition: background 0.15s ease-out;	
-background: rgba(255,255,255,0.75);	
 border-radius: 4px;
 margin:5px 20px 5px 5px;
 padding:10px;
-}
-.user-tools.active > div {
-background: rgba(0,0,0,0.9);	
-}
-.user-tools-user {
-color:#efefef;
-font-size: 16px;
-line-height: 25px;
 }
 .user-tools-wrap {
 margin-left:-5px;
@@ -426,14 +442,6 @@ display: none;
 }
 .user-tools.user-ignored a#unignoreuser {
 display: inline-block;
-}
-
-.chat.focus-user .chat-lines > div.user-msg {
-opacity:0.3;
-}
-.chat.focus-user .chat-lines > div.user-msg.focused,
-.chat.focus-user .chat-lines > div.user-msg.highlight {
-opacity:1;
 }
 
 /* The text shown when a user is not logged in */

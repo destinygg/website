@@ -4,19 +4,12 @@
 		return this;
 	};
 	cMenu.addMenu = function(chat, e){
-		e.on('click', 'button.close', function(){
+		e.on('click', '.close', function(){
 			cMenu.closeMenus(chat);
 		});
 		cMenu.prototype.scrollable.apply(e);
 		chat.menus.push(e);
 		return this;
-	};
-	cMenu.update = function(chat){
-		if(chat.menuOpenCount > 0){
-			chat.ui.addClass('active-menu');
-		}else{
-			chat.ui.removeClass('active-menu');
-		}
 	};
 	cMenu.closeMenus = function(chat){
 		for(var i=0;i<chat.menus.length; ++i){
@@ -26,19 +19,17 @@
 		}
 	};
 	cMenu.prototype.showMenu = function(chat){
-		this.stop().slideDown(50);
+		this.addClass('active');
 		this.visible = true;
 		this.btn.addClass('active');
 		this.scrollable.mCustomScrollbar('update');
 		++chat.menuOpenCount;
-		cMenu.update(chat);
 	};
 	cMenu.prototype.hideMenu = function(chat){
-		this.stop().hide();
+		this.removeClass('active')
 		this.visible = false;
 		this.btn.removeClass('active');
 		--chat.menuOpenCount;
-		cMenu.update(chat);
 	};
 	cMenu.prototype.scrollable = function(){
 		this.scrollable.mCustomScrollbar({

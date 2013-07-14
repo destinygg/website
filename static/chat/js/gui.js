@@ -82,12 +82,12 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 			this.chatsettings.btn.on('click', function(e){
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				chat.chatsettings.detach();
+				//chat.chatsettings.detach();
 				if(chat.chatsettings.visible){
 					return cMenu.prototype.hideMenu.call(chat.chatsettings, chat);
 				}
 				cMenu.closeMenus(chat);
-				chat.chatsettings.appendTo(chat.ui);
+				//chat.chatsettings.appendTo(chat.ui);
 				return cMenu.prototype.showMenu.call(chat.chatsettings, chat);
 			});
 			this.chatsettings.on('keypress blur', 'input[name=customhighlight]', function(e) {
@@ -152,7 +152,7 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 			this.userslist.btn.on('click', function(e){
 				e.preventDefault();
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				chat.userslist.detach();
+				//chat.userslist.detach();
 				if(chat.userslist.visible){
 					return cMenu.prototype.hideMenu.call(chat.userslist, chat);
 				}
@@ -203,13 +203,8 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 				appendUsers(bots, lists.filter('.bots'));
 				appendUsers(subs, lists.filter('.subs'));
 				appendUsers(plebs, lists.filter('.plebs'));
-				chat.userslist.appendTo(chat.ui);
+				//chat.userslist.appendTo(chat.ui);
 				return cMenu.prototype.showMenu.call(chat.userslist, chat);
-			});
-			this.userslist.on('click', '.user', function(){
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				var username = $(this).text().toLowerCase();
-				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
 			});
 			
 			cMenu.addMenu(this, this.chatsettings);
@@ -217,6 +212,11 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 			
 			// The tools for when you click on a user
 			this.cUserTools = new cUserTools(this);
+			this.userslist.on('click', '.user', function(){
+				var chat = $(this).closest('.chat.chat-frame').data('chat');
+				var username = $(this).text().toLowerCase();
+				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
+			});
 			this.lines.on('mousedown', 'div.user-msg a.user', function(){
 				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				var username = $(this).closest('.user-msg').data('username');
