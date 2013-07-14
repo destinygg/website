@@ -69,6 +69,8 @@ class FileUtils {
 			file_put_contents ( self::$b . $file, $response );
 			self::$log->info ( sprintf ( 'Put file [%s]', $file ) );
 			return true;
+		} else {
+			self::$log->error ( $response );
 		}
 		return false;
 	}
