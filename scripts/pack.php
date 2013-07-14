@@ -23,6 +23,7 @@ FileUtils::copy ( '/errors/css/style.css', '/errors/css/style.min.css' );
 FileUtils::compress ( '/errors/css/style.min.css' );
 
 // Chat CSS
+FileUtils::delete ( '/chat/css/style.min.css' );
 FileUtils::concat ( '/chat/css/style.min.css', array (
 	'/chat/css/style.css',
 	'/chat/css/emoticons.css' 

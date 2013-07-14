@@ -303,7 +303,7 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 						continue;
 					
 					if ($.inArray(line.event, this.engine.controlevents) >= 0)
-						this.put(message, 'control');
+						this.put(message);
 					else {
 						var m = this.put(message);
 						this.handleHighlight(m, true);
@@ -593,7 +593,7 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 		return this.wrap(this.wrapMessage());
 	};
 	ChatUIMessage.prototype.wrap = function(html){
-		return '<div>'+html+'</div>';
+		return '<div class="ui-msg">'+html+'</div>';
 	};
 	ChatUIMessage.prototype.wrapMessage = function(){
 		return this.message;
@@ -607,6 +607,7 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 		this.message = message;
 		this.timestamp = moment.utc(timestamp).local();
 		this.state = null;
+		this.type = 'chat';
 		return this;
 	};
 	ChatMessage.prototype.status = function(state){
@@ -630,11 +631,12 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
 	};
 	ChatMessage.prototype.wrap = function(content){
-		return '<div>'+content+'</div>';
+		return '<div class="'+this.type+'-msg">'+content+'</div>';
 	};
 	// ERROR MESSAGE
 	ChatErrorMessage = function(error, timestamp){
 		this.init(error, timestamp);
+		this.type = 'error';
 		return this;
 	};
 	$.extend(ChatErrorMessage.prototype, ChatMessage.prototype);
@@ -644,6 +646,7 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 	// INFO MESSAGE
 	ChatInfoMessage = function(message, timestamp){
 		this.init(message, timestamp);
+		this.type = 'info';
 		return this;
 	};
 	$.extend(ChatInfoMessage.prototype, ChatMessage.prototype);
@@ -653,33 +656,37 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 	// ACTION MESSAGE
 	ChatActionMessage = function(message, timestamp){
 		this.init(message, timestamp);
+		this.type = 'action';
 		return this;
 	};
 	$.extend(ChatActionMessage.prototype, ChatMessage.prototype);
 	ChatActionMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-exclamation"></i> ' + this.wrapMessage());
 	};
-	// BROADCAST MESSAGE
-	ChatBroadcastMessage = function(message, timestamp){
+	// COMMAND MESSAGE
+	ChatCommandMessage = function(message, timestamp){
 		this.init(message, timestamp);
+		this.type = 'command';
 		return this;
 	};
-	$.extend(ChatBroadcastMessage.prototype, ChatMessage.prototype);
-	ChatBroadcastMessage.prototype.html = function(){
+	$.extend(ChatCommandMessage.prototype, ChatMessage.prototype);
+	ChatCommandMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-broadcast"></i> ' + this.wrapMessage());
 	};
-	// BROADCAST MESSAGE
+	// STATUS MESSAGE
 	ChatStatusMessage = function(message, timestamp){
 		this.init(message, timestamp);
+		this.type = 'status';
 		return this;
 	};
 	$.extend(ChatStatusMessage.prototype, ChatMessage.prototype);
 	ChatStatusMessage.prototype.html = function(){
-		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
+		return this.wrap(this.wrapTime() + ' <i class="icon-status"></i> ' + this.wrapMessage());
 	};
 	// USER MESSAGE
 	ChatUserMessage = function(message, user, timestamp){
 		this.init(message, timestamp);
+		this.type = 'user';
 		// strip the /me
 		this.isEmote = false;
 		if (this.message.substring(0, 4) === '/me ') {
@@ -694,7 +701,7 @@ var vaguelinkregex = /\b([-A-Z0-9.]+\.(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|
 	$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
 	ChatUserMessage.prototype.wrap = function(html, css) {
 		if (this.user && this.user.username) {
-			return '<div class="user-message" data-username="'+this.user.username.toLowerCase()+'" '+((css) ? 'class="'+css+'"':'')+'>'+html+'</div>';
+			return '<div class="user-message'+((css) ? ' '+css:'')+'" data-username="'+this.user.username.toLowerCase()+'">'+html+'</div>';
 		} else
 			return '<div class="user-message'+((css) ? ' '+css:'')+'">'+html+'</div>';
 	};

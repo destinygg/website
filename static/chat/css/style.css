@@ -143,7 +143,7 @@ opacity: 1;
 .chat .chat-lines i.icon-error:hover,
 .chat .chat-lines i.icon-info:hover,
 .chat .chat-lines i.icon-exclamation:hover,
-.chat .chat-lines i.icon-broadcast:hover {
+.chat .chat-lines i.icon-status:hover {
 background-position: top left;
 }
 .chat .chat-lines i.icon-subscriber {
@@ -170,7 +170,7 @@ background: url("../img/question-white.png") no-repeat bottom left;
 .chat .chat-lines i.icon-exclamation {
 background: url("../img/exclamation-white.png") no-repeat bottom left;
 }
-.chat .chat-lines i.icon-broadcast {
+.chat .chat-lines i.icon-status {
 background: url("../img/information.png") no-repeat bottom left;
 }
 
@@ -264,13 +264,8 @@ color:#414141;
 .chat-theme-dark .chat-lines > div .p-whisper {
 color: #990000;
 }
-
 .chat-theme-dark .chat-lines > div.highlight {
 color: #fff371;
-}
-
-.chat-theme-dark .chat-lines > div.control {
-color: #fff;
 }
 .chat-theme-dark .chat-input-control {
 background: #090909;
@@ -443,3 +438,11 @@ text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
 color: rgba(255,255,255,1);
 text-shadow:0 0 3px rgba(255,255,255,0.25);	
 }
+
+.chat-lines .action-msg,
+.chat-lines .error-msg,
+.chat-lines .status-msg {
+color: #777;
+}
+.chat-lines .ui-msg {}
+.chat-lines .own-msg {}

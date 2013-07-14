@@ -133,17 +133,17 @@ chat.prototype.onCLOSE = function() {
 	var rand = ((this.connected) ? getRandomInt(1,3) : getRandomInt(5,30));
 	setTimeout($.proxy(this.onRECONNECT, this), rand * 1000);
 	this.connected = false;
-	return new ChatStatusMessage("You have been disconnected, reconnecting in "+rand+" seconds");
+	return new ChatStatusMessage("Disconnected... reconnecting in "+rand+" seconds");
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
-		return new ChatStatusMessage("You are now connected");
+		return new ChatStatusMessage("Connected");
 	
 	for (var i = data.users.length - 1; i >= 0; i--) {
 		this.users[data.users[i].nick] = new ChatUser(data.users[i]);
 		this.gui.autoCompletePlugin.addData([data.users[i].nick], 1);
 	};
-	return new ChatStatusMessage("You are now connected. Server connections: " + data.connectioncount);
+	return new ChatStatusMessage("Connected. Server connections: " + data.connectioncount);
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
@@ -183,7 +183,7 @@ chat.prototype.onUNMUTE = function(data) {
 	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
 	
-	return new ChatBroadcastMessage(suppressednick + " unmuted by " + data.nick, data.timestamp);
+	return new ChatCommandMessage(suppressednick + " unmuted by " + data.nick, data.timestamp);
 };
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
@@ -193,7 +193,7 @@ chat.prototype.onBAN = function(data) {
 	else
 		this.gui.removeUserMessages(data.data);
 	
-	return new ChatBroadcastMessage(suppressednick + " banned by " + data.nick, data.timestamp);
+	return new ChatCommandMessage(suppressednick + " banned by " + data.nick, data.timestamp);
 };
 chat.prototype.onUNBAN = function(data) {
 	var suppressednick = data.data;
@@ -216,7 +216,7 @@ chat.prototype.onRECONNECT = function() {
 };
 chat.prototype.onSUBONLY = function(data) {
 	var submode = data.data == 'on'? 'enabled': 'disabled';
-	return new ChatBroadcastMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
+	return new ChatCommandMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
 };
 
 chat.prototype.handleCommand = function(str) {

@@ -120,7 +120,7 @@ use Destiny\UserRole;
 			<div class="user-tools-user">Destiny</div>
 			<div class="user-tools-wrap">
 				<a id="ignoreuser" href="#ignore"><i class="icon-eye-close icon-white"></i> Ignore</a>
-				<a id="unignoreuser" href="#ignore"><i class="icon-eye-open icon-white"></i> Unignore</a>
+				<a id="unignoreuser" href="#unignore"><i class="icon-eye-open icon-white"></i> Unignore</a>
 				<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
 				<a id="toggle-mute-form" href="#mute" onclick="$('#user-mute-form').toggle()"><i class="icon-ban-circle icon-white"></i> Mute</a> 
 				<?php endif; ?>
