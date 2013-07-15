@@ -21,6 +21,9 @@ $customemotes = array(
 	'LUL',
 	'Heimerdonger',
 	'PICNIC',
+	'ASLAN',
+	'DJAslan',
+	'SoSad',
 );
 $twitchemotes = array(
 	'Kappa',
