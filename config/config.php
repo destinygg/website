@@ -62,9 +62,6 @@ return array_replace_recursive ( array (
 	'cdn' => array (
 		'domain' 		=> '' 
 	),
-	'session' => array (
-		'secret'		=> 'TVNLIENBEINOELS' // Used to force a global session update
-	),
 	'cookie' => array (
 		'domain' 		=> '',
 		'name' 			=> 'sid',

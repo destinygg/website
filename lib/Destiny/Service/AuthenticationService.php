@@ -135,7 +135,6 @@ class AuthenticationService extends Service {
 		
 		$credentials = new SessionCredentials ( $user );
 		$credentials->setAuthProvider ( $authProvider );
-		$credentials->setSecret ( Config::$a ['session'] ['secret'] );
 		$credentials->addRoles ( UserRole::USER );
 		
 		// Add the user features

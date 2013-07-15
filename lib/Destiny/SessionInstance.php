@@ -416,12 +416,6 @@ class SessionCredentials {
 	protected $features = array ();
 	
 	/**
-	 * A key used to invalidate an active session
-	 * @var string
-	 */
-	protected $secret = '';
-
-	/**
 	 * Create a session credentials instance
 	 * @param array $params
 	 */
@@ -462,9 +456,6 @@ class SessionCredentials {
 			if (isset ( $params ['roles'] ) && ! empty ( $params ['roles'] ) && is_array ( $params ['roles'] )) {
 				$this->setRoles ( array_unique ( $params ['roles'] ) );
 			}
-			if (isset ( $params ['secret'] ) && ! empty ( $params ['secret'] )) {
-				$this->setSecret ( $params ['secret'] );
-			}
 		}
 	}
 
@@ -482,8 +473,7 @@ class SessionCredentials {
 			'country' => $this->getCountry (),
 			'roles' => $this->getRoles (),
 			'authProvider' => $this->getAuthProvider (),
-			'features' => $this->getFeatures (),
-			'secret' => $this->getSecret () 
+			'features' => $this->getFeatures ()
 		);
 	}
 
@@ -495,9 +485,6 @@ class SessionCredentials {
 	 */
 	public function isValid() {
 		$data = $this->getData ();
-		if ($data ['secret'] != Config::$a ['session'] ['secret']) {
-			return false;
-		}
 		if (empty ( $data ['userId'] ) && intval ( $data ['userId'] ) > 0) {
 			return false;
 		}
@@ -662,14 +649,6 @@ class SessionCredentials {
 				break;
 			}
 		}
-	}
-
-	public function getSecret() {
-		return $this->secret;
-	}
-
-	public function setSecret($secret) {
-		$this->secret = $secret;
 	}
 
 }
