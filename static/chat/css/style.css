@@ -319,7 +319,7 @@ margin:0 5px;
 .chat-menu, 
 .user-tools {
 opacity:0;
-transition: top 0.1s ease-out, bottom 0.1s ease-out, opacity 0.25s ease-out;
+transition: top 0.25s ease-out, bottom 0.25s ease-out, opacity 0.1s ease-in;
 position: absolute;	
 font-size: 12px;
 }
