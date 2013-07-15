@@ -3,9 +3,22 @@
 	cMenu = function(){
 		return this;
 	};
+	
+	var showMenuUI = function(ui){
+		clearTimeout(ui.data('hide-timeout'));
+		ui.addClass('active').css('visibility', 'visible');
+	};
+	var hideMenuUI = function(ui){
+		ui.removeClass('active');
+		ui.data('hide-timeout', setTimeout(function(){
+			ui.css('visibility', 'hidden');
+		}, 250));
+	};
+	
 	cMenu.addMenu = function(chat, e){
 		e.on('click', '.close', function(){
 			cMenu.closeMenus(chat);
+			return false;
 		});
 		cMenu.prototype.scrollable.apply(e);
 		chat.menus.push(e);
@@ -19,14 +32,14 @@
 		}
 	};
 	cMenu.prototype.showMenu = function(chat){
-		this.addClass('active').css('visibility', 'visible');
+		showMenuUI(this);
 		this.visible = true;
 		this.btn.addClass('active');
 		this.scrollable.mCustomScrollbar('update');
 		++chat.menuOpenCount;
 	};
 	cMenu.prototype.hideMenu = function(chat){
-		this.removeClass('active').delay(350).css('visibility', 'hidden');
+		hideMenuUI(this);
 		this.visible = false;
 		this.btn.removeClass('active');
 		--chat.menuOpenCount;
@@ -74,7 +87,8 @@
 			return;
 		this.chat.lines.find('.focused').removeClass('focused');
 		this.chat.ui.removeClass('focus-user');
-		this.ui.removeClass('active user-ignored').delay(350).css('visibility', 'hidden');
+		this.ui.removeClass('user-ignored');
+		hideMenuUI(this.ui);
 		this.visible = false;
 		return false;
 	};
@@ -96,7 +110,7 @@
 		this.ui.user.text(this.label);
 		this.chat.lines.find('div[data-username="'+this.username+'"]').addClass('focused');
 		this.chat.ui.addClass('focus-user');
-		this.ui.addClass('active').css('visibility', 'visible');
+		showMenuUI(this.ui);
 		this.visible = true;
 		return false;
 	};
