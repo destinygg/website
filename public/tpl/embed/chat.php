@@ -45,7 +45,7 @@ use Destiny\UserRole;
 		</div>
 	</form>
 	
-	<div id="chat-user-list" class="chat-menu">
+	<div id="chat-user-list" class="chat-menu" style="visibility: hidden;">
 		<div class="list-wrap clearfix">
 			<div class="toolbar">
 				<h5>
@@ -75,7 +75,7 @@ use Destiny\UserRole;
 		</div>
 	</div>
 	
-	<div id="chat-settings" class="chat-menu">
+	<div id="chat-settings" class="chat-menu" style="visibility: hidden;">
 		<div class="list-wrap clearfix">
 			<div class="toolbar">
 				<h5>
@@ -120,7 +120,7 @@ use Destiny\UserRole;
 		</div>
 	</div>
 	
-	<div class="user-tools">
+	<div class="user-tools" style="visibility: hidden;">
 		<div class="wrap clearfix">
 			<h5>
 				<a href="#" class="close pull-right"><i class="icon-remove icon-white"></i></a>

@@ -19,14 +19,14 @@
 		}
 	};
 	cMenu.prototype.showMenu = function(chat){
-		this.addClass('active');
+		this.addClass('active').css('visibility', 'visible');
 		this.visible = true;
 		this.btn.addClass('active');
 		this.scrollable.mCustomScrollbar('update');
 		++chat.menuOpenCount;
 	};
 	cMenu.prototype.hideMenu = function(chat){
-		this.removeClass('active')
+		this.removeClass('active').delay(350).css('visibility', 'hidden');
 		this.visible = false;
 		this.btn.removeClass('active');
 		--chat.menuOpenCount;
@@ -75,7 +75,7 @@
 			return;
 		this.chat.lines.find('.focused').removeClass('focused');
 		this.chat.ui.removeClass('focus-user');
-		this.ui.removeClass('active user-ignored');
+		this.ui.removeClass('active user-ignored').delay(350).css('visibility', 'hidden');
 		this.visible = false;
 		return false;
 	};
@@ -97,7 +97,7 @@
 		this.ui.user.text(this.label);
 		this.chat.lines.find('div[data-username="'+this.username+'"]').addClass('focused');
 		this.chat.ui.addClass('focus-user');
-		this.ui.addClass('active');
+		this.ui.addClass('active').css('visibility', 'visible');
 		this.visible = true;
 		return false;
 	};
