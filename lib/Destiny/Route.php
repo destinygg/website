@@ -19,6 +19,21 @@ class Route {
 	}
 
 	/**
+	 * Serialization
+	 * 
+	 * @return array
+	 */
+	function __sleep() {
+		return array (
+			'path',
+			'class',
+			'classMethod',
+			'httpMethod',
+			'secure'
+		);
+	}
+
+	/**
 	 * Return the parameters in the path
 	 * @param string $path
 	 * @return array

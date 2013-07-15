@@ -28,9 +28,6 @@ class Cancel {
 	 * @return string
 	 */
 	public function executePost(array $params, ViewModel $model) {
-		if (! Session::hasRole ( \Destiny\UserRole::ADMIN )) {
-			throw new AppException ( 'Must be an admin' );
-		}
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		if (! empty ( $subscription )) {
 			

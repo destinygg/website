@@ -64,11 +64,11 @@ $actionsPath = __DIR__ . '/Destiny/Action';
 $reader = new AnnotationReader ();
 $router = new Router ();
 if (Config::$a ['cacheAnnotations']) {
-	$reader = new FileCacheReader ( $reader, realpath ( Config::$a ['cache'] ['path'] ) . '/annotations/' );
-	$routes = $cache->fetch ( 'annotationRoutes' );
+	$reader = new FileCacheReader ( $reader, realpath ( Config::$a ['cache'] ['path'] ) . '/annotation/' );
+	$routes = $cache->fetch ( 'annotationroutes' );
 	if (empty ( $routes )) {
 		$routes = AnnotationDirectoryLoader::load ( $reader, $actionsPath );
-		$cache->save ( 'annotationRoutes', $routes );
+		$cache->save ( 'annotationroutes', $routes );
 	}
 } else {
 	$routes = AnnotationDirectoryLoader::load ( $reader, $actionsPath );
