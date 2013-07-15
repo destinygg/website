@@ -18,17 +18,18 @@ FileUtils::$log = $log;
 $log->info ( sprintf ( 'Starting with base [%s]', _STATICDIR ) );
 
 // Errors concat and compress
-FileUtils::delete ( '/errors/css/style.min.css' );
-FileUtils::copy ( '/errors/css/style.css', '/errors/css/style.min.css' );
-FileUtils::compress ( '/errors/css/style.min.css' );
+//FileUtils::delete ( '/errors/css/style.min.css' );
+//FileUtils::copy ( '/errors/css/style.css', '/errors/css/style.min.css' );
+//FileUtils::compress ( '/errors/css/style.min.css' );
 
 // Chat CSS
 FileUtils::delete ( '/chat/css/style.min.css' );
 FileUtils::concat ( '/chat/css/style.min.css', array (
 	'/chat/css/style.css',
-	'/chat/css/emoticons.css' 
+	'/chat/css/emoticons.css'
 ) );
 FileUtils::compress ( '/chat/css/style.min.css' );
+
 
 // Chat JS
 FileUtils::delete ( '/chat/js/engine.min.js' );
