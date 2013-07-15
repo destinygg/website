@@ -1,16 +1,16 @@
 <?php
 error_reporting(E_ALL);
-// Pass "css" as an argument to just regen the css, and not re-download the twitch emotes
-$cssonly = ( @$argv[1] == 'css');
-$html = file_get_contents('http://twitchemotes.com/');
 
-$twitchdestination = 'img/img/twitch-%s.png';
+function genHTML($trigger) {
+	global $html;
+	$html[] = sprintf('<div class="chat-emote chat-emote-%1$s" title="%1$s"></div>', $trigger);
+}
+
 @mkdir('img', 0775, true);
 @mkdir('css', 0775, true);
-preg_match_all('#<div class="span2">.*?<img src="([^"]*?)"/>.*>(.*?)</a></center><br/></div>#i', $html, $matches );
 
 $customemotes = array(
-	'Draven',
+	'Dravewin',
 	'INFESTINY',
 	'FIDGETLOL',
 	'Hhhehhehe',
@@ -18,8 +18,26 @@ $customemotes = array(
 	'WORTH',
 	'FeedNathan',
 	'Abathur',
+	'LUL',
+	'Heimerdonger',
+	'PICNIC',
+);
+$twitchemotes = array(
+	'Kappa',
+	'Klappa',
+	'DappaKappa',
+	'BibleThump',
+	'BloodTrail',
+	'BrainSlug',
+	'FrankerZ',
+	'Kreygasm',
+	'PJSalt',
+	'SSSsss',
+	'FailFish',
+	'BasedGod',
 );
 $triggers     = array();
+$html  	      = array();
 $css          = '
 /*
 	spritemapper.output_css   = ../emoticons.css
@@ -56,36 +74,56 @@ foreach( $customemotes as $trigger ) {
 		$dimensions[1],
 		$path
 	);
-	
+	genHTML($trigger);
 }
 
-foreach( $matches[1] as $key => $url ) {
+foreach( $twitchemotes as $trigger ) {
 	
-	$trigger  = $matches[2][ $key ];
-	preg_match('/-(\d+)x(\d+)\.png$/', $url, $dimensions );
-	$filename = sprintf( $twitchdestination, $trigger );
-	$path     = sprintf('twitch-%s.png', $trigger );
-	
-	if ( !$cssonly ) {
-		$img = file_get_contents( $url );
-		file_put_contents( $filename, $img );
-	}
+	$path       = sprintf('twitch-%s.png', $trigger );
+	$filename   = sprintf('img/twitch-%s.png', $trigger );
+	$dimensions = getimagesize( $filename );
 	
 	$css .= sprintf(
 		$emotecss,
 		$trigger,
+		$dimensions[0],
 		$dimensions[1],
-		$dimensions[2],
-		$dimensions[2],
+		$dimensions[1],
 		$path
 	);
-	
+	genHTML($trigger);
 }
 
 file_put_contents('css/emoticons_unsprited.css', $css );
+
+ob_start();
+?>
+<html>
+<head>
+	<link href="css/emoticons_unsprited.css" rel="stylesheet" media="screen">
+	<link href="emoticons.css" rel="stylesheet" media="screen">
+	<style>
+	body {
+		background-color: #000;
+	}
+	div.chat-emote {
+		display: block;
+		margin: 50px 0;
+	}
+	</style>
+	
+</head>
+<body>
+<br/><br/>
+<?=implode("\r\n", $html);?>
+</body>
+</html>
+<?php
+file_put_contents('preview.html', ob_get_clean());
+
 echo
 	'["',
-	implode('", "', array_merge($customemotes, $matches[2])),
+	implode('", "', array_merge($customemotes, $twitchemotes)),
 	'"];',
 	"\n\nRun spritemapper css/emoticons_unsprited.css --anneal=100\n"
 ;

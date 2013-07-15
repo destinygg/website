@@ -1,6 +1,6 @@
 
 // Need a better place for these
-var emoticons = ["Dravewin", "INFESTINY", "FIDGETLOL", "Hhhehhehe", "GameOfThrows", "WORTH", "FeedNathan", "Abathur", "4Head", "ArsonNoSexy", "AsianGlow", "BCWarrior", "BORT", "BibleThump", "BionicBunion", "BlargNaut", "BloodTrail", "BrainSlug", "BrokeBack", "CougarHunt", "DAESuppy", "DBstyle", "DansGame", "DatSheffy", "EagleEye", "EvilFetus", "FPSMarksman", "FUNgineer", "FailFish", "FrankerZ", "FreakinStinkin", "FuzzyOtterOO", "GingerPower", "HassanChop", "HotPokket", "ItsBoshyTime", "JKanStyle", "Jebaited", "JonCarnage", "Kappa", "KevinTurtle", "Kreygasm", "MVGame", "MrDestructoid", "NinjaTroll", "NoNoSpot", "OMGScoots", "OneHand", "OpieOP", "OptimizePrime", "PJSalt", "PMSTwin", "PazPazowitz", "PicoMause", "PogChamp", "Poooound", "PunchTrees", "RedCoat", "ResidentSleeper", "RuleFive", "SMOrc", "SMSkull", "SSSsss", "ShazBotstix", "SoBayed", "SoonerLater", "StoneLightning", "StrawBeary", "SuperVinlin", "SwiftRage", "TehFunrun", "TheRinger", "TheTarFu", "TinyFace", "TooSpicy", "TriHard", "UleetBackup", "UnSane", "Volcania", "WinWaker"];
+var emoticons = ["Dravewin", "INFESTINY", "FIDGETLOL", "Hhhehhehe", "GameOfThrows", "WORTH", "FeedNathan", "Abathur", "LUL", "Heimerdonger", "PICNIC", "Kappa", "Klappa", "DappaKappa", "BibleThump", "BloodTrail", "BrainSlug", "FrankerZ", "Kreygasm", "PJSalt", "SSSsss", "FailFish", "BasedGod"];
 var emoteregex = new RegExp('\\b(?:'+emoticons.join('|')+')\\b');
 var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 
