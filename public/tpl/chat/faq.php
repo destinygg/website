@@ -60,8 +60,8 @@ use Destiny\Utils\Tpl;
 		<a name="emotelist"></a>
 		<h3>Is there a list of emotes?</h3>
 		<p>
-			Not yet, twitch global emotes are all supported. We will have a list
-			soon.<br/>
+			A very ghetto-one you can see with typing /emotes in chat, twitch global emotes are all supported. We will have a proper list
+			soon-ish.<br/>
 			In the mean time, there is tab auto-completion for emoticons, and don't forget:<br/>
 			<strong>HOVER OVER THE EMOTICON to see how to produce it</strong>
 		</p>
@@ -80,7 +80,7 @@ use Destiny\Utils\Tpl;
 			I mean sure, software has bugs no question about that, but can you
 			reliably reproduce it? If yes, we want to hear from you!<br/>
 			Go to the
-			<a href="https://github.com/destinygg/chat/issues">issue tracker</a>
+			<a href="https://github.com/destinygg/website/issues">issue tracker</a>
 			and create a ticket. Provide us with information, the more the merrier:<br/>
 			first and foremost, show us how we can reproduce the issue
 			(screen-shots, video, prose, whatever),<br/>
@@ -145,8 +145,9 @@ use Destiny\Utils\Tpl;
 		<a name="changelog"></a>
 		<h3>Is there a changelog?</h3>
 		<p>
-			For the back-end side, yes: on <a href="https://github.com/destinygg/chat">Github</a><br/>
-			For the front-end side: Soon&trade;
+			Yes!<br/>
+			<a href="https://github.com/destinygg/website/commits/stable">For the website and chat front-end</a><br/>
+			<a href="https://github.com/destinygg/chat/commits/master">For the chat back-end</a>
 		</p>
 		
 		<a name="tabcomp"></a>
