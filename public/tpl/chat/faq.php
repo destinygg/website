@@ -60,8 +60,8 @@ use Destiny\Utils\Tpl;
 		<a name="emotelist"></a>
 		<h3>Is there a list of emotes?</h3>
 		<p>
-			Not yet, twitch global emotes are all supported. We will have a list
-			soon.<br/>
+			A very ghetto-one you can see with typing /emotes in chat, twitch global emotes are all supported. We will have a proper list
+			soon-ish.<br/>
 			In the mean time, there is tab auto-completion for emoticons, and don't forget:<br/>
 			<strong>HOVER OVER THE EMOTICON to see how to produce it</strong>
 		</p>
@@ -146,8 +146,8 @@ use Destiny\Utils\Tpl;
 		<h3>Is there a changelog?</h3>
 		<p>
 			Yes!<br/>
-			<a href="https://github.com/destinygg/website">For the website and chat front-end</a><br/>
-			<a href="https://github.com/destinygg/chat">For the chat back-end</a>
+			<a href="https://github.com/destinygg/website/commits/stable">For the website and chat front-end</a><br/>
+			<a href="https://github.com/destinygg/chat/commits/master">For the chat back-end</a>
 		</p>
 		
 		<a name="tabcomp"></a>
