@@ -41,7 +41,6 @@
 		});
 	};
 	
-
 	cUserTools = function(chat){
 		var self = this;
 		this.chat = chat;
