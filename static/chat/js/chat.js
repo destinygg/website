@@ -176,7 +176,7 @@ chat.prototype.onMUTE = function(data) {
 	else
 		this.gui.removeUserMessages(data.data);
 	
-	return new ChatBroadcastMessage(suppressednick + " muted by " + data.nick, data.timestamp);
+	return new ChatCommandMessage(suppressednick + " muted by " + data.nick, data.timestamp);
 };
 chat.prototype.onUNMUTE = function(data) {
 	var suppressednick = data.data;
@@ -200,7 +200,7 @@ chat.prototype.onUNBAN = function(data) {
 	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
 	
-	return new ChatBroadcastMessage(suppressednick + " unbanned by " + data.nick, data.timestamp);
+	return new ChatCommandMessage(suppressednick + " unbanned by " + data.nick, data.timestamp);
 };
 chat.prototype.onERR = function(data) {
 	if (data == "toomanyconnections" || data == "banned")
