@@ -1,8 +1,7 @@
-<?
-namespace Destiny;
-use Destiny\Utils\Date;
-use Destiny\Utils\Lol;
-use Destiny\Utils\Tpl;
+<?php
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
 <html>

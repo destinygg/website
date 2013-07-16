@@ -1,9 +1,11 @@
-<?
-namespace Destiny;
-use Destiny\Utils\Date;
-use Destiny\Utils\Http;
-use Destiny\Utils\Lol;
-use Destiny\Utils\Tpl;
+<?php
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Session;
+use Destiny\Common\UserRole;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -17,11 +19,11 @@ use Destiny\Utils\Tpl;
 <body id="help" class="league">
 	<?include'./tpl/seg/top.php'?>
 	
-	<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
+	<?if(!Session::hasRole(UserRole::USER)):?>
 	<?include'./tpl/seg/fantasy/calltoaction.php'?>
 	<?endif;?>
 	
-	<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+	<?if(Session::hasRole(UserRole::USER)):?>
 	<?include'./tpl/seg/fantasy/teambar.php'?>
 	<?include'./tpl/seg/fantasy/teammaker.php'?>
 	<?endif;?>

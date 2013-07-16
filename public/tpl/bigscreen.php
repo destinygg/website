@@ -1,8 +1,10 @@
 <?
 namespace Destiny;
-use Destiny\Utils\Http;
-use Destiny\Utils\Date;
-use Destiny\Utils\Tpl;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Session;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -24,9 +26,9 @@ use Destiny\Utils\Tpl;
 					<div id="destiny-illustration"></div>
 					<div style="top:25px; right:0; width:400px; position: absolute;">
 						<ul class="nav nav-pills">
-							<?php if(!Session::hasRole(\Destiny\UserRole::USER)): ?>
+							<?php if(!Session::hasRole(\Destiny\Common\UserRole::USER)): ?>
 							<li><a href="/login"><i class="icon-heart icon-white subtle"></i> Register</a></li>
-							<?php elseif(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)): ?>
+							<?php elseif(!Session::hasRole(\Destiny\Common\UserRole::SUBSCRIBER)): ?>
 							<li><a href="/subscribe"><i class="icon-heart icon-white subtle"></i> Subscribe</a></li>
 							<?php endif; ?>
 							<li><a href="/"><i class="icon-home icon-white subtle"></i> Home</a></li>

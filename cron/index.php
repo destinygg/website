@@ -1,9 +1,9 @@
 <?php
-use Destiny\Application;
-use Destiny\AppException;
-use Destiny\Session;
-use Destiny\Scheduler;
-use Destiny\Config;
+use Destiny\Common\Application;
+use Destiny\Common\AppException;
+use Destiny\Common\Session;
+use Destiny\Common\Scheduler;
+use Destiny\Common\Config;
 
 ini_set ( 'mysql.connect_timeout', 10 );
 ini_set ( 'max_execution_time', 60 );

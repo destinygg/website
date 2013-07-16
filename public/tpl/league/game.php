@@ -1,9 +1,11 @@
-<?
-namespace Destiny;
-use Destiny\Utils\Date;
-use Destiny\Utils\Http;
-use Destiny\Utils\Lol;
-use Destiny\Utils\Tpl;
+<?php
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Session;
+use Destiny\Common\UserRole;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -17,11 +19,11 @@ use Destiny\Utils\Tpl;
 <body id="game" class="league">
 	<?include'./tpl/seg/top.php'?>
 	
-	<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
+	<?if(!Session::hasRole(UserRole::USER)):?>
 	<?include'./tpl/seg/fantasy/calltoaction.php'?>
 	<?endif;?>
 	
-	<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+	<?if(Session::hasRole(UserRole::USER)):?>
 	<?include'./tpl/seg/fantasy/teambar.php'?>
 	<?include'./tpl/seg/fantasy/teammaker.php'?>
 	<?endif;?>
@@ -37,10 +39,10 @@ use Destiny\Utils\Tpl;
 		<div id="activeGame" data-gameid="<?=$model->game['gameId']?>" class="game-vertical clearfix" style="margin-top:0; position: relative; border:none;">
 			<div style="width:50%; float:left;">
 				<div class="clearfix game-team-blue">
-					<h4><?=($model->game['gameWinSideId']==\Destiny\Utils\Lol::TEAMSIDE_BLUE) ? 'Winning side':'Losing side'?></h4>
+					<h4><?=($model->game['gameWinSideId']==Lol::TEAMSIDE_BLUE) ? 'Winning side':'Losing side'?></h4>
 					<div class="pull-left">
 					<?php foreach ($model->game['champions'] as $bSummoner): ?>
-					<?php if($bSummoner['teamSideId'] == \Destiny\Utils\Lol::TEAMSIDE_BLUE): ?>
+					<?php if($bSummoner['teamSideId'] == Lol::TEAMSIDE_BLUE): ?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$bSummoner['summonerId']?>" title="<?=Tpl::out($bSummoner['championName'])?>">
 							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($bSummoner['championName'])?>" />
 							<?=Tpl::out($bSummoner['summonerName'])?>
@@ -52,10 +54,10 @@ use Destiny\Utils\Tpl;
 			</div>
 			<div style="width:50%; float:right;">
 				<div class="clearfix game-team-purple">
-					<h4><?=($model->game['gameWinSideId']==\Destiny\Utils\Lol::TEAMSIDE_PURPLE) ? 'Winning side':'Losing side'?></h4>
+					<h4><?=($model->game['gameWinSideId']==Lol::TEAMSIDE_PURPLE) ? 'Winning side':'Losing side'?></h4>
 					<div class="pull-right">
 					<?php foreach ($model->game['champions'] as $pSummoner): ?>
-					<?php if($pSummoner['teamSideId'] == \Destiny\Utils\Lol::TEAMSIDE_PURPLE): ?>
+					<?php if($pSummoner['teamSideId'] == Lol::TEAMSIDE_PURPLE): ?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$pSummoner['summonerId']?>" title="<?=Tpl::out($pSummoner['championName'])?>">
 							<?=Tpl::out($pSummoner['summonerName'])?>
 							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($pSummoner['championName'])?>" />

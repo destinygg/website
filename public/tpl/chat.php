@@ -1,10 +1,10 @@
 <?
 namespace Destiny;
-use Destiny\Utils\Http;
-use Destiny\Utils\Tpl;
-use Destiny\Utils\Date;
-use Destiny\Session;
-use Destiny\Config;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Session;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>

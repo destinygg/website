@@ -1,8 +1,9 @@
-<?
-namespace Destiny;
-use Destiny\Utils\Date;
-use Destiny\Utils\Lol;
-use Destiny\Utils\Tpl;
+<?php
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Country;
+use Destiny\Common\UserRole;
 ?>
 <!DOCTYPE html>
 <html>
@@ -51,7 +52,7 @@ use Destiny\Utils\Tpl;
 						<label>Country:</label>
 						<select name="country">
 							<option value="">Select your country</option>
-							<?$countries = Utils\Country::getCountries();?>
+							<?$countries = Country::getCountries();?>
 							<option value="">&nbsp;</option>
 							<option value="US" <?if($model->user['country'] == 'US'):?>
 								selected="selected" <?endif;?>>United States</option>

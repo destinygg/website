@@ -1,7 +1,7 @@
-<?
-namespace Destiny;
-use Destiny\Utils\Tpl;
-use Destiny\Utils\Lol;
+<?php
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Config;
 ?>
 <div class="content content-dark stream-grids clearfix">
 

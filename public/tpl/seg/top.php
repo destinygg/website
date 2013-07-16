@@ -1,4 +1,10 @@
-<? namespace Destiny; ?>
+<? 
+namespace Destiny; 
+use Destiny\Common\UserRole;
+use Destiny\Common\Session; 
+use Destiny\Common\Config;
+use Destiny\Common\Application;
+?>
 <div id="main-nav" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
@@ -10,26 +16,26 @@
 					<li><a title="youtube.com" href="http://www.youtube.com/user/StevenBonnell">Youtube</a></li>
 					<li><a title="reddit.com" href="http://www.reddit.com/r/Destiny/">Reddit</a></li>
 					<li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
-					<?if(!Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
+					<?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
 					<li><a href="/subscribe" rel="subscribe">Subscribe</a></li>
 					<?php endif; ?>
-					<?if(Session::hasRole(\Destiny\UserRole::SUBSCRIBER)):?>
+					<?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
 					<li href="/profile" class="subscribed"><a title="You have an active subscription!">Subscribed</a></li>
 					<?php endif; ?>
 				</ul>
 				<ul class="nav pull-right">
-					<?if(!Session::hasRole(\Destiny\UserRole::USER)):?>
+					<?if(!Session::hasRole(UserRole::USER)):?>
 					<li><a href="/login" rel="login">Login - Register</a></li>
 					<?endif;?>
-					<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+					<?if(Session::hasRole(UserRole::USER)):?>
 					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
 					<?php endif; ?>
 				</ul>
 				<ul class="nav pull-right">
 					<li><a href="/league" rel="league">Fantasy League</a></li>
-					<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+					<?if(Session::hasRole(UserRole::USER)):?>
 					<li><a href="/profile" rel="profile">Profile</a></li>
 					<?endif;?>
 				</ul>

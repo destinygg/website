@@ -1,6 +1,7 @@
 <?
 namespace Destiny;
-use Destiny\Utils\Tpl;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>

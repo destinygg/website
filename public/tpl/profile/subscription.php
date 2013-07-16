@@ -1,8 +1,9 @@
-<?
-namespace Destiny;
-use Destiny\Utils\Tpl;
-use Destiny\Utils\Date;
-use Destiny\Session;
+<?php
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Session;
+use Destiny\Common\Config;
+use Destiny\Common\UserRole;
 ?>
 <!DOCTYPE html>
 <html>

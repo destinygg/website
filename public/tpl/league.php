@@ -1,13 +1,13 @@
 <?
 namespace Destiny;
-use Destiny\Service\Fantasy\TeamService;
-
-use Destiny\Service\Fantasy\LeaderboardService;
-
-use Destiny\Utils\Date;
-use Destiny\Utils\Http;
-use Destiny\Utils\Lol;
-use Destiny\Utils\Tpl;
+use Destiny\Common\Service\Fantasy\TeamService;
+use Destiny\Common\Service\Fantasy\LeaderboardService;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Config;
+use Destiny\Common\Session;
 ?>
 <!DOCTYPE html>
 <html>
@@ -33,7 +33,7 @@ use Destiny\Utils\Tpl;
 	<?//include'./tpl/seg/fantasy/calltoaction.php'?>
 	<?//endif;?>
 	
-	<?if(Session::hasRole(\Destiny\UserRole::USER)):?>
+	<?if(Session::hasRole(\Destiny\Common\UserRole::USER)):?>
 	
 	<?include'./tpl/seg/fantasy/teambar.php'?>
 	<?include'./tpl/seg/fantasy/teammaker.php'?>
@@ -57,7 +57,7 @@ use Destiny\Utils\Tpl;
 			<div style="width:50%; float:left;">
 				<div class="clearfix game-team-blue">
 					<div class="pull-left">
-					<?php foreach ($model->ingame['gameData']['gameTeams'][\Destiny\Utils\Lol::TEAMSIDE_BLUE] as $bSummoner): ?>
+					<?php foreach ($model->ingame['gameData']['gameTeams'][Lol::TEAMSIDE_BLUE] as $bSummoner): ?>
 						<?php $bChamp = Lol::getChampPick($model->ingame['gameData'], $bSummoner)?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$bSummoner['summonerId']?>" title="<?=Tpl::out($bSummoner['name'])?>" data-placement="bottom" rel="tooltip">
 							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($bChamp['championName'])?>" />
@@ -69,7 +69,7 @@ use Destiny\Utils\Tpl;
 			<div style="width:50%; float:right;">
 				<div class="clearfix game-team-purple">
 					<div class="pull-right">
-					<?php foreach ($model->ingame['gameData']['gameTeams'][\Destiny\Utils\Lol::TEAMSIDE_PURPLE] as $pSummoner): ?>
+					<?php foreach ($model->ingame['gameData']['gameTeams'][Lol::TEAMSIDE_PURPLE] as $pSummoner): ?>
 						<?php $pChamp = Lol::getChampPick($model->ingame['gameData'], $pSummoner)?>
 						<a class="champion" href="http://www.lolking.net/summoner/na/<?=$pSummoner['summonerId']?>" title="<?=Tpl::out($pSummoner['name'])?>" data-placement="bottom" rel="tooltip">
 							<img style="width: 45px; height: 45px;" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=Lol::getIcon($pChamp['championName'])?>" />

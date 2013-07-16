@@ -1,8 +1,10 @@
 <?php
-namespace Destiny;
-use Destiny\Utils\Http;
-use Destiny\Utils\Tpl;
-use Destiny\UserRole;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\UserRole;
+use Destiny\Common\UserFeature;
+use Destiny\Common\Session;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>

@@ -1,6 +1,6 @@
 <?
-namespace Destiny;
-use Destiny\Utils\Tpl;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Config;
 ?>
 <?if((bool) Config::$a['blocks']['lol']): ?>
 <section id="lolpanel" class="container">

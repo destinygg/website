@@ -1,23 +1,23 @@
 <?php
 namespace Destiny\Action\Admin\User;
 
-use Destiny\Application;
-use Destiny\Service\UserFeaturesService;
-use Destiny\AppException;
-use Destiny\Service\UserService;
-use Destiny\Session;
-use Destiny\SessionCredentials;
-use Destiny\ViewModel;
-use Destiny\UserRole;
-use Destiny\Utils\Country;
-use Destiny\Service\ChatIntegrationService;
-use Destiny\Service\AuthenticationService;
-use Destiny\Service\SubscriptionsService;
-use Destiny\Service\Fantasy\GameService;
-use Destiny\Annotation\Action;
-use Destiny\Annotation\Route;
-use Destiny\Annotation\HttpMethod;
-use Destiny\Annotation\Secure;
+use Destiny\Common\Application;
+use Destiny\Common\Service\UserFeaturesService;
+use Destiny\Common\AppException;
+use Destiny\Common\Service\UserService;
+use Destiny\Common\Session;
+use Destiny\Common\SessionCredentials;
+use Destiny\Common\ViewModel;
+use Destiny\Common\UserRole;
+use Destiny\Common\Utils\Country;
+use Destiny\Common\Service\ChatIntegrationService;
+use Destiny\Common\Service\AuthenticationService;
+use Destiny\Common\Service\SubscriptionsService;
+use Destiny\Common\Service\Fantasy\GameService;
+use Destiny\Common\Annotation\Action;
+use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Annotation\Secure;
 
 /**
  * @Action
@@ -112,7 +112,7 @@ class Edit {
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
 		if (! empty ( $subscription )) {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
-			$credentials->addFeatures ( \Destiny\UserFeature::SUBSCRIBER );
+			$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
 		}
 		
 		// Update the auth credentials

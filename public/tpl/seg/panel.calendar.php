@@ -1,7 +1,7 @@
 <?
-namespace Destiny;
-use Destiny\Utils\Tpl;
-use Destiny\Utils\Date;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Config;
 
 if (! empty ( $model->events ) && ! empty ( $model->articles )) :
 ?>

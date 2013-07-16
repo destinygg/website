@@ -1,6 +1,6 @@
 <?php
-use Destiny\Utils\Tpl;
-use Destiny\Config;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Config;
 ?>	
 <script src="<?=Config::cdn()?>/vendor/js/jquery-1.10.1.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/bootstrap.js"></script>
