@@ -23,7 +23,7 @@ class Find {
 	 * @param array $params
 	 */
 	public function execute(array $params) {
-		$s = $params ['username'];
+		$s = (isset ( $params ['username'] )) ? $params ['username'] : '';
 		if (! isset ( $params ['exact'] )) {
 			$s .= '%';
 		}
