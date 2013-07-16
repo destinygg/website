@@ -60,9 +60,9 @@ use Destiny\Utils\Tpl;
 		<a name="emotelist"></a>
 		<h3>Is there a list of emotes?</h3>
 		<p>
-			A very ghetto-one you can see with typing /emotes in chat, twitch global emotes are all supported. We will have a proper list
-			soon-ish.<br/>
-			In the mean time, there is tab auto-completion for emoticons, and don't forget:<br/>
+			A very ghetto-one you can see with typing /emotes in chat, some of the twitch global emotes are supported.<br/>
+			Proper list <a href="https://github.com/destinygg/website/wiki/Emotes">HERE</a><br/>
+			There is <strong>tab auto-completion</strong> for emoticons, and don't forget:<br/>
 			<strong>HOVER OVER THE EMOTICON to see how to produce it</strong>
 		</p>
 		
