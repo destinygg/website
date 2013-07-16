@@ -1,7 +1,7 @@
 <? 
-use Destiny\Utils\Date;
-use Destiny\Session;
-use Destiny\Config;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Session; 
+use Destiny\Common\Config;
 ?>
 <?if((bool) Config::$a['blocks']['twitch']):?>
 <section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="/embed/chat">

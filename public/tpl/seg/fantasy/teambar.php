@@ -1,7 +1,7 @@
 <?
-namespace Destiny;
-use Destiny\Utils\Tpl;
-use Destiny\Utils\Lol;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Config;
 ?>
 <?php if(!empty($model->team)):?>
 <?php $team = $model->team?>

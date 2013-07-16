@@ -1,8 +1,9 @@
 <?
 namespace Destiny;
-use Destiny\Utils\Tpl;
-use Destiny\Utils\Currency;
-use Destiny\Utils\Date;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Currency;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>

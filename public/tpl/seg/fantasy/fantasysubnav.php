@@ -1,5 +1,5 @@
 <?php 
-use Destiny\Config;
+use Destiny\Common\Config;
 ?>
 <div class="navbar navbar-inverse navbar-subnav">
 	<div class="navbar-inner">

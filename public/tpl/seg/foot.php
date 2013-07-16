@@ -1,5 +1,5 @@
 <?php
-namespace Destiny; 
+use Destiny\Common\Config;
 ?>
 <section id="footer" class="container">
 	<footer class="clearfix">

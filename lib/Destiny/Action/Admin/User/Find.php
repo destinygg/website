@@ -1,15 +1,15 @@
 <?php
 namespace Destiny\Action\Admin\User;
 
-use Destiny\Service\UserService;
-use Destiny\AppException;
-use Destiny\Session;
-use Destiny\Utils\Http;
-use Destiny\MimeType;
-use Destiny\Annotation\Action;
-use Destiny\Annotation\Route;
-use Destiny\Annotation\HttpMethod;
-use Destiny\Annotation\Secure;
+use Destiny\Common\Service\UserService;
+use Destiny\Common\AppException;
+use Destiny\Common\Session;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\MimeType;
+use Destiny\Common\Annotation\Action;
+use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Annotation\Secure;
 
 /**
  * @Action

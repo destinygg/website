@@ -1,5 +1,6 @@
-<? namespace Destiny; ?>
-
+<?php
+use Destiny\Common\Config;
+?>
 <section class="container">
 	<div class="content clearfix" style="position: relative;">
 

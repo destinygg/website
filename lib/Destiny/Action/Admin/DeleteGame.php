@@ -1,13 +1,13 @@
 <?php
 namespace Destiny\Action\Admin;
 
-use Destiny\AppException;
-use Destiny\Application;
-use Destiny\Service\Fantasy\GameAggregationService;
-use Destiny\Annotation\Action;
-use Destiny\Annotation\Route;
-use Destiny\Annotation\HttpMethod;
-use Destiny\Annotation\Secure;
+use Destiny\Common\AppException;
+use Destiny\Common\Application;
+use Destiny\Common\Service\Fantasy\GameAggregationService;
+use Destiny\Common\Annotation\Action;
+use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Annotation\Secure;
 
 /**
  * @Action
@@ -31,9 +31,9 @@ class DeleteGame {
 		GameAggregationService::instance ()->removeGame ( $params ['gameId'] );
 		GameAggregationService::instance ()->calculateTeamScore ();
 		GameAggregationService::instance ()->calculateTeamRanks ();
-		$task = new \Destiny\Tasks\Leaderboards ();
+		$task = new \Destiny\Cron\Action\Leaderboards ();
 		$task->execute ( $log );
-		$task = new \Destiny\Tasks\Champions ();
+		$task = new \Destiny\Cron\Action\Champions ();
 		$task->execute ( $log );
 	}
 

@@ -1,5 +1,5 @@
 <?php 
-use Destiny\Config; 
+use Destiny\Common\Config;
 ?>
 <?if(!empty(Config::$a['analytics']['account']) && !empty(Config::$a['analytics']['domainName'])):?>
 

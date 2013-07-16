@@ -1,6 +1,6 @@
 <?php 
-use Destiny\Config; 
-use Destiny\Utils\Http;
+use Destiny\Common\Utils\Http;
+use Destiny\Common\Config;
 ?>
 <meta property="og:site_name" content="<?=Config::$a['meta']['shortName']?>" />
 <meta property="og:title" content="<?=Config::$a['meta']['title']?>" />

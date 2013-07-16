@@ -1,9 +1,8 @@
 <?php 
-namespace Destiny;
-use Destiny\Config;
-use Destiny\Utils\Tpl;
-use Destiny\Utils\Lol;
-use Destiny\Utils\Date;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Utils\Lol;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Config;
 ?>
 <section class="container">
 	<div class="content content-dark stream-grids clearfix">

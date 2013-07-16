@@ -1,4 +1,3 @@
-<?namespace Destiny;?>
 <section class="container">
 	<h1 class="page-title">Don't have a fantasy team? <small>make one...</small></h1>
 	<hr size="1">
