@@ -272,7 +272,7 @@ chat.prototype.handleCommand = function(str) {
 			}
 			
 			this.ignorelist[nick] = true;
-			this.gui.push(new ChatActionMessage("Ignoring "+nick));
+			this.gui.push(new ChatStatusMessage("Ignoring "+nick));
 			
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
 			this.loadIgnoreList();
@@ -290,7 +290,7 @@ chat.prototype.handleCommand = function(str) {
 			var nick = parts[1].toLowerCase();
 			
 			delete(this.ignorelist[nick]);
-			this.gui.push(new ChatActionMessage(""+nick+" has been removed from your ignore list"));
+			this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
 			
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
 			this.loadIgnoreList();

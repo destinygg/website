@@ -612,9 +612,9 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 	ChatMessage.prototype.status = function(state){
 		if(this.ui){
 			if(state){
-				this.ui.attr('class', state);
+				this.ui.addClass(state);
 			}else{
-				this.ui.removeAttr('class');
+				this.ui.removeClass(this.state);
 			}
 		}
 		this.state = state;
@@ -642,7 +642,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 	ChatErrorMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-error"></i> ' + this.wrapMessage());
 	};
-	// INFO MESSAGE
+	// INFO / HELP MESSAGE
 	ChatInfoMessage = function(message, timestamp){
 		this.init(message, timestamp);
 		this.type = 'info';
@@ -652,16 +652,6 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 	ChatInfoMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-info"></i> ' + this.wrapMessage());
 	};
-	// ACTION MESSAGE
-	ChatActionMessage = function(message, timestamp){
-		this.init(message, timestamp);
-		this.type = 'action';
-		return this;
-	};
-	$.extend(ChatActionMessage.prototype, ChatMessage.prototype);
-	ChatActionMessage.prototype.html = function(){
-		return this.wrap(this.wrapTime() + ' <i class="icon-exclamation"></i> ' + this.wrapMessage());
-	};
 	// COMMAND MESSAGE
 	ChatCommandMessage = function(message, timestamp){
 		this.init(message, timestamp);
@@ -670,7 +660,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 	};
 	$.extend(ChatCommandMessage.prototype, ChatMessage.prototype);
 	ChatCommandMessage.prototype.html = function(){
-		return this.wrap(this.wrapTime() + ' <i class="icon-broadcast"></i> ' + this.wrapMessage());
+		return this.wrap(this.wrapTime() + ' <i class="icon-command"></i> ' + this.wrapMessage());
 	};
 	// STATUS MESSAGE
 	ChatStatusMessage = function(message, timestamp){

@@ -139,10 +139,11 @@ opacity: 1;
 .chat .chat-lines i.icon-moderator:hover,
 .chat .chat-lines i.icon-administrator:hover,
 .chat .chat-lines i.icon-bot:hover,
+
 .chat .chat-lines i.icon-error:hover,
+.chat .chat-lines i.icon-status:hover,
 .chat .chat-lines i.icon-info:hover,
-.chat .chat-lines i.icon-exclamation:hover,
-.chat .chat-lines i.icon-status:hover {
+.chat .chat-lines i.icon-command:hover {
 background-position: top left;
 }
 .chat .chat-lines i.icon-subscriber {
@@ -160,17 +161,18 @@ background: url("../img/crown.png") no-repeat bottom left;
 .chat .chat-lines i.icon-bot {
 background: url("../img/robot.png") no-repeat bottom left;
 }
+
 .chat .chat-lines i.icon-error {
 background: url("../img/exclamation-red.png") no-repeat bottom left;
+}
+.chat .chat-lines i.icon-status {
+background: url("../img/information.png") no-repeat bottom left;	
 }
 .chat .chat-lines i.icon-info {
 background: url("../img/question-white.png") no-repeat bottom left;
 }
-.chat .chat-lines i.icon-exclamation {
-background: url("../img/exclamation-white.png") no-repeat bottom left;
-}
-.chat .chat-lines i.icon-status {
-background: url("../img/information.png") no-repeat bottom left;
+.chat .chat-lines i.icon-command {
+background: url("../img/exclamation-diamond.png") no-repeat bottom left;	
 }
 
 .chat-frame a.user {
@@ -266,11 +268,18 @@ color: #990000;
 .chat-theme-dark .chat-lines > div.highlight {
 color: #fff371;
 }
-.chat-theme-dark .chat-lines > div.action-msg,
+.chat-theme-dark .chat-lines > div.command-msg,
 .chat-theme-dark .chat-lines > div.error-msg,
 .chat-theme-dark .chat-lines > div.status-msg,
 .chat-theme-dark .chat-lines > div.ui-msg {
-color: #777;
+color: #fafafa;
+}
+.chat-theme-dark .chat-lines > div.command-msg,
+.chat-theme-dark .chat-lines > div.error-msg,
+.chat-theme-dark .chat-lines > div.status-msg {
+}
+.chat-theme-dark .chat-lines > div.command-msg {
+background: linear-gradient(to right,  rgba(255,255,255,0.025) 0%,rgba(255,255,255,0) 100%); /* W3C */
 }
 .chat-theme-dark .chat-lines > div.own-msg {
 color: #eaeaea;
