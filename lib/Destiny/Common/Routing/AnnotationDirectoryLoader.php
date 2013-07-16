@@ -25,11 +25,7 @@ abstract class AnnotationDirectoryLoader {
 	 */
 	public static function load(Reader $reader, $base, $path) {
 		$routes = array ();
-		// Get and sort all files in a specific directory
-		$files = iterator_to_array ( new RecursiveIteratorIterator ( new RecursiveDirectoryIterator ( $base . $path ), RecursiveIteratorIterator::SELF_FIRST ) );
-		usort ( $files, function (SplFileInfo $a, SplFileInfo $b) {
-			return ( string ) $a > ( string ) $b ? 1 : - 1;
-		} );
+		$files = self::getFiles ( $base, $path );
 		// Run through all the public classes, that have Action annotations, check for Route annotations
 		foreach ( $files as $file ) {
 			if ('.php' !== substr ( $file->getFilename (), - 4 )) continue;
@@ -66,6 +62,21 @@ abstract class AnnotationDirectoryLoader {
 			}
 		}
 		return $routes;
+	}
+
+	/**
+	 * Get all the files in a folder
+	 * @param string $base
+	 * @param string $path
+	 * @return array<SplFileInfo>
+	 */
+	private static function getFiles($base, $path) {
+		// Get and sort all files in a specific directory
+		$files = iterator_to_array ( new RecursiveIteratorIterator ( new RecursiveDirectoryIterator ( $base . $path ), RecursiveIteratorIterator::SELF_FIRST ) );
+		usort ( $files, function (SplFileInfo $a, SplFileInfo $b) {
+			return ( string ) $a > ( string ) $b ? 1 : - 1;
+		} );
+		return $files;
 	}
 
 }

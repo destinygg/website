@@ -16,9 +16,9 @@ class Aggregate {
 			$log->debug ( 'Aggregate #' . $aggregateGame ['gameId'] );
 			$faService->aggregateGame ( $aggregateGame ['gameId'] );
 		}
-		$task = new \Destiny\Cron\Action\Leaderboards ();
+		$task = new \Destiny\Action\Cron\Leaderboards ();
 		$task->execute ( $log );
-		$task = new \Destiny\Cron\Action\Champions ();
+		$task = new \Destiny\Action\Cron\Champions ();
 		$task->execute ( $log );
 	}
 
