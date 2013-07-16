@@ -21,7 +21,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
 
 $context = new stdClass ();
-$context->log = 'http';
+$context->log = 'web';
 require __DIR__ . '/../lib/boot.php';
 $app = Application::instance ();
 

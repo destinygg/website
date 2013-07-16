@@ -22,8 +22,16 @@ define ( '_STATICDIR', _BASEDIR . '/static' );
 define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
 $loader = require _VENDORDIR . '/autoload.php';
 
-AnnotationRegistry::registerLoader ( array ($loader, 'loadClass') );
-Config::load ( array_merge_recursive ( require _BASEDIR . '/config/config.php', json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) ) );
+AnnotationRegistry::registerLoader ( array (
+	$loader,
+	'loadClass' 
+) );
+
+Config::load ( array_replace_recursive ( 
+	require _BASEDIR . '/config/config.php', 
+	require _BASEDIR . '/config/config.local.php', 
+	json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) 
+) );
 
 $app = new Application ();
 $app->setLoader ( $loader );
