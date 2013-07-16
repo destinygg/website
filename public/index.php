@@ -44,13 +44,13 @@ $session->addCleanupHandler ( function (SessionInstance $session) {
 Session::start ( Session::START_IFCOOKIE );
 
 // Startup the remember me service
-RememberMeService::instance ()->startup ();
+RememberMeService::instance ()->init ();
 
 // Read all the @Route annotations from the classes within [lib]Destiny/Web/Action
 // Would be nice if a RedisFileCacheReader existed, or could be custom built
 $reader = new FileCacheReader ( new AnnotationReader (), realpath ( Config::$a ['cache'] ['path'] ) . '/annotation/' );
 $app->setAnnotationReader ( $reader );
-$app->setRouter ( new Router ( AnnotationDirectoryLoader::load ( $reader, _LIBDIR . '/', 'Destiny/Action/Web' ) ) );
+$app->setRouter ( new Router ( AnnotationDirectoryLoader::load ( $reader, _LIBDIR . '/', 'Destiny/Action/' ) ) );
 
 // Attempts to find a route and execute the action
 $app->executeRequest ( (isset ( $_SERVER ['REQUEST_URI'] )) ? $_SERVER ['REQUEST_URI'] : '', $_SERVER ['REQUEST_METHOD'] );

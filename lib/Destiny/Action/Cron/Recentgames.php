@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Cron\Action;
+namespace Destiny\Action\Cron;
 
 use Destiny\Common\Service\Fantasy\GameService;
 use Destiny\Common\Config;

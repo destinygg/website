@@ -30,8 +30,9 @@ class RememberMeService extends Service {
 	 * Does a remember me login
 	 * @return void
 	 */
-	public function startup() {
+	public function init() {
 		$app = Application::instance ();
+		
 		// Check if the users session has been flagged for update
 		if (Session::isStarted ()) {
 			$userId = Session::getCredentials ()->getUserId ();
