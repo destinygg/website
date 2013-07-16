@@ -161,7 +161,7 @@ class Application extends Service {
 	 */
 	public function error($code, $e = null) {
 		Http::status ( $code );
-		$this->template ( './errors/' . $code . '.php', new ViewModel ( array (
+		$this->template ( './tpl/errors/' . $code . '.php', new ViewModel ( array (
 			'error' => $e,
 			'code' => $code 
 		) ) );
