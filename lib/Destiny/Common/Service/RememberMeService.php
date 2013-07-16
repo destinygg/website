@@ -2,6 +2,8 @@
 namespace Destiny\Common\Service;
 
 use Destiny\Common\Service;
+use Destiny\Common\Session;
+use Destiny\Common\AppEvent;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 
@@ -21,6 +23,56 @@ class RememberMeService extends Service {
 	 */
 	public static function instance() {
 		return parent::instance ();
+	}
+
+	/**
+	 * Checks the users current session status
+	 * Does a remember me login
+	 * @return void
+	 */
+	public function startup() {
+		$app = Application::instance ();
+		// Check if the users session has been flagged for update
+		if (Session::isStarted ()) {
+			$userId = Session::getCredentials ()->getUserId ();
+			if (! empty ( $userId )) {
+				$cache = $app->getCacheDriver ();
+				$cacheId = sprintf ( 'refreshusersession-%s', $userId );
+				if ($cache->fetch ( $cacheId ) === 1) {
+					$cache->delete ( $cacheId );
+					$userManager = UserService::instance ();
+					$user = $userManager->getUserById ( $userId );
+					if (! empty ( $user )) {
+						$authService = AuthenticationService::instance ();
+						$authService->login ( $user, 'refreshed' );
+						$app->addEvent ( new AppEvent ( array (
+							'type' => AppEvent::EVENT_INFO,
+							'label' => 'Your session has been updated',
+							'message' => sprintf ( 'Nothing to worry about %s, just letting you know...', Session::getCredentials ()->getUsername () ) 
+						) ) );
+					}
+				}
+			}
+		}
+		
+		// If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie
+		if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
+			$authService = AuthenticationService::instance ();
+			$userId = $authService->getRememberMe ();
+			if ($userId !== false) {
+				$userManager = UserService::instance ();
+				$user = $userManager->getUserById ( $userId );
+				if (! empty ( $user )) {
+					$authService->login ( $user, 'rememberme' );
+					$authService->setRememberMe ( $user );
+					$app->addEvent ( new AppEvent ( array (
+						'type' => AppEvent::EVENT_INFO,
+						'label' => 'You have been automatically logged in',
+						'message' => sprintf ( 'Nothing to worry about %s, just letting you know...', Session::getCredentials ()->getUsername () ) 
+					) ) );
+				}
+			}
+		}
 	}
 
 	/**
