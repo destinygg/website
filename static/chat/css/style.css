@@ -33,7 +33,7 @@ margin-top:-3px;
 }
 .chat-lines > div .continue {
 user-select: none;
-color:#222;
+color:#444;
 }
 .chat-lines > div i.continue {
 user-select: none;
