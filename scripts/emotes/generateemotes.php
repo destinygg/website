@@ -20,7 +20,6 @@ $customemotes = array(
 	'Abathur',
 	'LUL',
 	'Heimerdonger',
-	'PICNIC',
 	'ASLAN',
 	'DJAslan',
 	'SoSad',

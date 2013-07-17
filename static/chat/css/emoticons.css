@@ -81,13 +81,6 @@
 	background: url('../img/emoticons.png') no-repeat 0 -66px;
 }
 
-.chat-emote.chat-emote-PICNIC {
-	width: 200px;
-	height: 20px;
-	margin-top: -20px;
-	background: url('../img/emoticons.png') no-repeat -102px 0;
-}
-
 .chat-emote.chat-emote-ASLAN {
 	width: 50px;
 	height: 37px;
