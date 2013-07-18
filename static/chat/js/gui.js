@@ -27,10 +27,12 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		userMessages: [],
 		backlog: backlog,
 		highlightregex: {},
+		highlightnicks: {},
 		notifications: true,
 		lastMessage: null,
 		menus: [],
 		menuOpenCount: 0,
+		timestampformat: null,
 		
 		init: function(){
 			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
@@ -268,8 +270,10 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 					highlight     : true,
 					notifications : false,
 					maxlines      : this.maxlines,
+					timestampformat: 'HH:mm'
 			};
 			
+			this.timestampformat = self.getChatOption('timestampformat', defaults['timestampformat']);
 			this.maxlines = self.getChatOption('maxlines', defaults['maxlines']);
 			customhighlight = self.getChatOption('customhighlight', []);
 			this.chatsettings.find('input[name=customhighlight]').val( customhighlight.join(', ') );
@@ -487,6 +491,8 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		},
 		
 		loadCustomHighlights: function() {
+			this.highlightnicks = this.getChatOption('highlightnicks', {});
+			
 			var highlights = this.getChatOption('customhighlight', []);
 			if (highlights.length == 0)
 				return;
@@ -498,9 +504,16 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		},
 		
 		handleHighlight: function(message, skipnotify){
-			if (!this.highlightregex.user || !this.getChatOption('highlight', true))
-				return;
+			
 			if (!message.user || message.user.username == this.engine.user.username)
+				return;
+			
+			var u = message.user.username.toLowerCase();
+			if (this.highlightnicks[u]) {
+				message.ui.addClass('highlight');
+			}
+			
+			if (!this.highlightregex.user || !this.getChatOption('highlight', true))
 				return;
 			
 			if (this.highlightregex.user.test(message.message) || (this.highlightregex.custom && this.highlightregex.custom.test(message.message))) {
@@ -509,6 +522,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 					this.showNotification(message);
 				}
 			}
+			
 		},
 		
 		getChatOption: function(option, defaultvalue) {
@@ -616,6 +630,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		this.timestamp = moment.utc(timestamp).local();
 		this.state = null;
 		this.type = 'chat';
+		this.timestampformat = $('.chat.chat-frame').data('chat').timestampformat;
 		return this;
 	};
 	ChatMessage.prototype.status = function(state){
@@ -630,7 +645,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		return this;
 	};
 	ChatMessage.prototype.wrapTime = function(){
-		return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format('HH:mm')+'</time>';
+		return '<time datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format(this.timestampformat)+'</time>';
 	};
 	ChatMessage.prototype.wrapMessage = function(){
 		return $('<span/>').text(this.message).html();

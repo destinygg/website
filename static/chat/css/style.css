@@ -266,7 +266,7 @@ color:#414141;
 color: #990000;
 }
 .chat-theme-dark .chat-lines > div.highlight {
-color: #fff371;
+background-color: #5A5A16;
 }
 .chat-theme-dark .chat-lines > div.command-msg,
 .chat-theme-dark .chat-lines > div.error-msg,
@@ -282,7 +282,7 @@ color: #fafafa;
 background: linear-gradient(to right,  rgba(255,255,255,0.025) 0%,rgba(255,255,255,0) 100%); /* W3C */
 }
 .chat-theme-dark .chat-lines > div.own-msg {
-color: #eaeaea;
+background-color: #252525;
 }
 .chat-theme-dark .chat-input-control {
 background: #090909;
