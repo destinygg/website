@@ -133,24 +133,46 @@ use Destiny\Common\Config;
 					<a id="ignoreuser" href="#ignore"><i class="icon-eye-close icon-white"></i> Ignore</a>
 					<a id="unignoreuser" href="#unignore"><i class="icon-eye-open icon-white"></i> Unignore</a>
 					<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
-					<a id="toggle-mute-form" href="#mute" onclick="$('#user-mute-form').toggle()"><i class="icon-ban-circle icon-white"></i> Mute</a> 
+					<a id="toggle-mute-form" href="#mute" onclick="$('#user-mute-form').toggle(); $('#user-ban-form').hide();"><i class="icon-ban-circle icon-white"></i> Mute</a> 
+					<a id="toggle-mute-form" href="#mute" onclick="$('#user-ban-form').toggle(); $('#user-mute-form').hide();"><i class="icon-remove icon-white"></i> Ban</a> 
 					<?php endif; ?>
 				</div>
 				<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
-				<form id="user-mute-form" style="margin-top:10px; display: none;">
-					<select id="banTimeLength" class="select" style="width:150px;" onchange="$('#banReason').focus();">
-						<option value="0">Length of time</option>
-						<option value="perm">Permanent</option>
-						<option value="10">10 minutes</option>
-						<option value="30">30 minutes</option>
-						<option value="60">1 hr</option>
-						<option value="720">12 hrs</option>
-						<option value="1440">24 hrs</option>
-					</select>
-					<input type="text" class="input" id="banReason" placeholder="Reason for ban" />
-					<br>
-					<button type="submit" class="btn btn-mini btn-danger">Confirm</button>
-					<button type="button" class="btn btn-mini" onclick="$('#user-mute-form').toggle();">Cancel</button>
+				<form class="ban-form" id="user-mute-form" style="margin-top:10px; display: none;">
+					<div>
+						<select id="banTimeLength" class="select" style="width:150px;" onchange="$('#banReason').focus();">
+							<option value="0">Length of time</option>
+							<option value="10">10 minutes</option>
+							<option value="30">30 minutes</option>
+							<option value="60">1 hr</option>
+							<option value="720">12 hrs</option>
+							<option value="1440">24 hrs</option>
+						</select>
+					</div>
+					<div>
+						<button type="submit" class="btn btn-mini btn-primary">Confirm</button>
+						<button type="button" class="btn btn-mini" onclick="$('.ban-form').hide();">Cancel</button>
+					</div>
+				</form>
+				<form class="ban-form" id="user-ban-form" style="margin-top:10px; display: none;">
+					<input type="hidden" name="ipBan" id="ipBan" value="" />
+					<div>
+						<select id="banTimeLength" class="select" style="width:150px;" onchange="$('#banReason').focus();">
+							<option value="0">Length of time</option>
+							<option value="10">10 minutes</option>
+							<option value="30">30 minutes</option>
+							<option value="60">1 hr</option>
+							<option value="720">12 hrs</option>
+							<option value="1440">24 hrs</option>
+							<option value="perm">Permanent</option>
+						</select>
+						<input type="text" class="input" id="banReason" placeholder="Reason for ban" />
+					</div>
+					<div>
+						<button type="submit" class="btn btn-mini btn-primary">Ban user</button>
+						<button type="submit" class="btn btn-mini btn-danger" onclick="$('#ipBan').val('1');">IP ban user</button>
+						<button type="button" class="btn btn-mini" onclick="$('.ban-form').hide();">Cancel</button>
+					</div>
 				</form>
 				<?php endif; ?>
 			</div>

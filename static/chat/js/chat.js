@@ -232,6 +232,8 @@ chat.prototype.handleCommand = function(str) {
 		return;
 	}
 	
+	this.l(command, parts);
+	
 	switch(command) {
 		default:
 			this.gui.push(new ChatErrorMessage("Unknown command"));

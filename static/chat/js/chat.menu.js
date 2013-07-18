@@ -66,13 +66,26 @@
 		this.ui.muteForm = this.ui.find('#user-mute-form');
 		this.ui.muteForm.on('submit', function(){
 			var time = $(this).find('#banTimeLength');
-			var reason = $(this).find('#banReason');
-			chat.engine.handleCommand('ban ' + self.username + ' ' + time.val() + 'm' + ' ' + htmlEncode(reason.val()));
-			time.val('');
-			reason.val('');
+			chat.engine.handleCommand('mute ' + self.username + ' ' + time.val() + 'm');
+			time.val('0');
 			self.hide();
 			return false;
 		});
+		this.ui.banForm = this.ui.find("#user-ban-form");
+		this.ui.banForm.on('submit', function(){
+			var time = $(this).find('#banTimeLength'),
+				reason = $(this).find('#banReason'),
+				ipBan = $(this).find('#ipBan'),
+				cmd = (ipBan.val() == '1') ? 'ipban' : 'ban';
+			chat.engine.handleCommand(cmd + ' ' + self.username + ' ' + time.val() + 'm' + ' ' + htmlEncode(reason.val()));
+			time.val('0');
+			reason.val('');
+			ipBan.val('');
+			self.hide();
+			return false;
+		});
+		
+		
 		this.ui.on('click', 'a.close', $.proxy(this.hide, this));
 		this.ui.on('click', 'a#ignoreuser,a#unignoreuser', function(){
 			var cmd = $(this).attr('href').substring(1);
@@ -98,8 +111,9 @@
 			return this.hide();
 		if(this.visible)
 			this.hide();
-		
+
 		this.ui.muteForm.hide();
+		this.ui.banForm.hide();
 		
 		this.label = label;
 		this.user = user;
