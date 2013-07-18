@@ -28,9 +28,6 @@ clear:both;
 word-wrap:break-word;
 padding: 3px 0 3px 5px;
 }
-.chat-lines > div.continue {
-margin-top:-3px;
-}
 .chat-lines > div .continue {
 user-select: none;
 color:#444;
@@ -266,23 +263,33 @@ color:#414141;
 color: #990000;
 }
 .chat-theme-dark .chat-lines > div.highlight {
-background-color: #5A5A16;
+background: linear-gradient(to right,  rgba(0,150,255,0.2) 0%,rgba(0,150,255,0) 100%);
+}
+.chat-theme-dark .chat-lines > div.highlight time {
+color: #838383;
 }
 .chat-theme-dark .chat-lines > div.command-msg,
 .chat-theme-dark .chat-lines > div.error-msg,
 .chat-theme-dark .chat-lines > div.status-msg,
-.chat-theme-dark .chat-lines > div.ui-msg {
-color: #fafafa;
+.chat-theme-dark .chat-lines > div.ui-msg,
+.chat-theme-dark .chat-lines > div.own-msg,
+.chat-theme-dark .chat-lines > div.highlight {
+color: #dedede;
 }
 .chat-theme-dark .chat-lines > div.command-msg,
 .chat-theme-dark .chat-lines > div.error-msg,
 .chat-theme-dark .chat-lines > div.status-msg {
 }
 .chat-theme-dark .chat-lines > div.command-msg {
-background: linear-gradient(to right,  rgba(255,255,255,0.025) 0%,rgba(255,255,255,0) 100%); /* W3C */
+background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 99%);
 }
 .chat-theme-dark .chat-lines > div.own-msg {
-background-color: #252525;
+background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 100%);
+}
+.chat-theme-dark .chat-lines > div.command-msg,
+.chat-theme-dark .chat-lines > div.own-msg,
+.chat-theme-dark .chat-lines > div.highlight msg {
+text-shadow:1px 1px 0 rgba(0,0,0,0.5);	
 }
 .chat-theme-dark .chat-input-control {
 background: #090909;
