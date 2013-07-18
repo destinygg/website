@@ -67,10 +67,11 @@
 		this.ui.muteForm.on('submit', function(){
 			var time = $(this).find('#banTimeLength');
 			var reason = $(this).find('#banReason');
-			chat.engine.handleCommand('/mute ' + self.username + ' ' + time.val() + 'm ' + '"' + htmlEncode(reason.val()) + '"');
+			chat.engine.handleCommand('ban ' + self.username + ' ' + time.val() + 'm' + ' ' + htmlEncode(reason.val()));
 			time.val('');
 			reason.val('');
 			self.hide();
+			return false;
 		});
 		this.ui.on('click', 'a.close', $.proxy(this.hide, this));
 		this.ui.on('click', 'a#ignoreuser,a#unignoreuser', function(){

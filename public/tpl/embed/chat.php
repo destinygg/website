@@ -138,9 +138,9 @@ use Destiny\Common\Config;
 				</div>
 				<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
 				<form id="user-mute-form" style="margin-top:10px; display: none;">
-					<select id="banTimeLength" class="select" style="width:150px;">
+					<select id="banTimeLength" class="select" style="width:150px;" onchange="$('#banReason').focus();">
 						<option value="0">Length of time</option>
-						<option value="permanent">Permanent</option>
+						<option value="perm">Permanent</option>
 						<option value="10">10 minutes</option>
 						<option value="30">30 minutes</option>
 						<option value="60">1 hr</option>
