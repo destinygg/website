@@ -44,6 +44,10 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			this.inputwrap = this.ui.find('.chat-input:first').eq(0);
 			this.input = this.inputwrap.find('.input:first:first').eq(0);
 			
+			$(window).focus(function(){
+				$("div.chat-input-control input").focus();
+			});
+			
 			this.inputwrap.removeClass('hidden');
 			
 			// Scrollbars and scroll locking
