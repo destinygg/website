@@ -262,10 +262,8 @@ color:#414141;
 .chat-theme-dark .chat-lines > div .p-whisper {
 color: #990000;
 }
-.chat-theme-dark .chat-lines > div.highlight {
-background: linear-gradient(to right,  rgba(0,150,255,0.2) 0%,rgba(0,150,255,0) 100%);
-}
-.chat-theme-dark .chat-lines > div.highlight time {
+.chat-theme-dark .chat-lines > div.highlight time,
+.chat-lines > div.highlight .continue {
 color: #838383;
 }
 .chat-theme-dark .chat-lines > div.command-msg,
@@ -285,6 +283,9 @@ background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255
 }
 .chat-theme-dark .chat-lines > div.own-msg {
 background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 100%);
+}
+.chat-theme-dark .chat-lines > div.highlight {
+background: linear-gradient(to right,  rgba(0,150,255,0.5) 0%,rgba(0,150,255,0) 100%);
 }
 .chat-theme-dark .chat-lines > div.command-msg,
 .chat-theme-dark .chat-lines > div.own-msg,
@@ -391,6 +392,7 @@ max-height:330px;
 }
 .chat-menu .list-wrap,
 .user-tools > div {
+box-shadow: 0 2px 6px rgba(0,0,0,0.9);	
 border-radius:0 0 4px 4px;	
 background: rgba(25,25,25,0.9);	
 padding:0;
