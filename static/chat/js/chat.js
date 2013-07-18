@@ -12,7 +12,7 @@ function chat(user, options) {
 		"needlogin"         : "You have to be logged in to use that",
 		"invalidmsg"        : "The message was invalid",
 		"throttled"         : "Throttled! You were trying to send messages too fast",
-		"duplicate"         : "The messages is identical to the last one you sent",
+		"duplicate"         : "The message is identical to the last one you sent",
 		"muted"             : "You are muted",
 		"submode"           : "The channel is currently in subscriber only mode",
 		"needbanreason"     : "Providing a reason for the ban is mandatory",
