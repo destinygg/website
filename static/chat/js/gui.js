@@ -530,11 +530,20 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 	});
 	
 	// should be moved somewhere better
-	$(window).on('resize.chat',function(){
-		$('.chat.chat-frame').each(function(){
-			$(this).data('chat').resize();
-		});
+	$(window).on({
+		'resize.chat': function(){
+			$('.chat.chat-frame').each(function(){
+				$(this).data('chat').resize();
+			});
+		},
+		'focus.chat': function(){
+			$('.chat.chat-frame:first').data('chat').input.focus();
+		},
+		'load.chat': function(){
+			$('.chat.chat-frame:first').data('chat').input.focus();
+		}
 	});
+	
 	
 	// USER FEATURES
 	UserFeatures = {
