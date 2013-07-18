@@ -266,7 +266,7 @@ color:#414141;
 color: #990000;
 }
 .chat-theme-dark .chat-lines > div.highlight {
-background-color: rgba(255, 243, 113, 0.30);
+background-color: #5A5A16;
 }
 .chat-theme-dark .chat-lines > div.command-msg,
 .chat-theme-dark .chat-lines > div.error-msg,

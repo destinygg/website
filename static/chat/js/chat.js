@@ -388,6 +388,48 @@ chat.prototype.handleCommand = function(str) {
 			this.gui.maxlines = newmaxlines;
 			this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
 			break;
+		case "highlight":
+			
+			if (!parts[1]) {
+				var nicks = [];
+				$.each(this.gui.highlightnicks, function(k, v) {
+					nicks.push(k);
+				});
+				
+				this.gui.push(new ChatInfoMessage("Currenty highlighted users: " + nicks.join(', ')));
+				return;
+			}
+			
+			if (!nickregex.test(parts[1])) {
+				this.gui.push(new ChatErrorMessage("Invalid nick - /" + command + " nick"));
+				return;
+			}
+			
+			var nick = parts[1].toLowerCase();
+			if (this.gui.highlightnicks[nick])
+				delete(this.gui.highlightnicks[nick]);
+			else
+				this.gui.highlightnicks[nick] = true;
+			
+			this.gui.saveChatOption('highlightnicks', this.gui.highlightnicks);
+			this.gui.push(new ChatInfoMessage("Now highlighting: " + nick));
+			break;
+		case "timestampformat":
+			if (!parts[1]) {
+				this.gui.push(new ChatInfoMessage("Current format: " + this.gui.timestampformat + " (the default is 'HH:mm', for more info: http://momentjs.com/docs/#/displaying/format/)"));
+				return;
+			}
+			
+			var format = str.substring(command.length);
+			if ( !/^[a-z :.,-\\*]+$/i.test(format)) {
+				this.gui.push(new ChatErrorMessage("Invalid format, see: http://momentjs.com/docs/#/displaying/format/"));
+				return;
+			}
+			
+			this.gui.timestampformat = format;
+			this.gui.saveChatOption('timestampformat', format);
+			this.gui.push(new ChatInfoMessage("New format: " + this.gui.timestampformat));
+			break;
 	};
 };
 chat.prototype.parseTimeInterval = function(str) {
