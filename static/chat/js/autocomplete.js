@@ -12,31 +12,21 @@
 	mAutoComplete.prototype.getShardIdByTxt = function(txt){
 		return txt.substr(0,1).toUpperCase();
 	};
-	mAutoComplete.prototype.addData = function(data, weight){
-		this.shardData(data, weight);
+	mAutoComplete.prototype.addData = function(nick, weight){
+		var id        = this.getShardIdByTxt(nick),
+		    lowernick = nick.toLowerCase();
+		
+		if(!this.shards[id])
+			this.shards[id] = {};
+		
+		if (this.shards[id][lowernick])
+			this.shards[id][lowernick].weight = weight;
+		else
+			this.shards[id][lowernick] = {nick: nick, weight: weight};
+		
 		return this;
 	};
 	mAutoComplete.prototype.init = function(input, options){
-		return this;
-	};
-	mAutoComplete.prototype.shardData = function(data, weight){
-		var sortShards = [];
-		for(var n in data){
-			var id = this.getShardIdByTxt(data[n]);
-			if(typeof this.shards[id] != 'object')
-				this.shards[id] = {};
-			if(typeof this.shards[id][weight] != 'object')
-				this.shards[id][weight] = [];
-			
-			if($.inArray(data[n], this.shards[id][weight]) < 0){
-				this.shards[id][weight].push(data[n]);
-				sortShards.push([id,weight]);
-			}
-		}
-		for(var x in sortShards)
-			this.shards[sortShards[x][0]][sortShards[x][1]].sort(function(x, y){return x > y});
-		
-		sortShards = null;
 		return this;
 	};
 	mAutoComplete.prototype.getCaretWord = function(inp){
@@ -50,22 +40,32 @@
 			post = post.substring(0, endCaret);
 		return {pre: pre, post: post, word: pre+post, startIndex: startCaret};
 	};
-	mAutoComplete.prototype.search = function(txt, limit){
-		txt = txt.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-		var res  = [], 
-			f    = new RegExp("\\b"+txt+"", "i"),
-			data = this.shards[this.getShardIdByTxt(txt)] || [];
-		search:
-		for(var weight in data){
-			for(var n in data[weight]){
-				if(res.length >= limit) {
-					break search;
-				}
-				if(f.test(data[weight][n])) {
-					res.push(data[weight][n]);
-				}
-			}
+	mAutoComplete.prototype.cmp = function(a, b) {
+		if (a.weight == b.weight) {
+			// if the weight is the same, order lexically
+			var a = a.nick.toLowerCase(),
+			    b = b.nick.toLowerCase();
+			
+			if (a == b)
+				return 0;
+			
+			return a > b? 1: -1;
 		}
+		return a.weight > b.weight? -1: 1;
+	};
+	mAutoComplete.prototype.search = function(txt, limit){
+		// escape the text being inserted into the regexp
+		txt = txt.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+		var res  = [],
+		    f    = new RegExp("^"+txt, "i"),
+		    data = this.shards[this.getShardIdByTxt(txt)] || {};
+		
+		$.each(data, function(nick, v) {
+			if (f.test(nick))
+				res.push(v);
+		});
+		
+		res.sort(this.cmp);
 		return res;
 	};
 
@@ -107,13 +107,13 @@
 			
 			var showAutoComplete = function(){
 				resultIndex = (resultIndex >= results.length-1) ? 0 : resultIndex+1;
-				var replace = results[resultIndex];
+				var replace = (results[resultIndex] || {}).nick;
 				if(replace){
-					var pre = originalTxt.substr(0,searchWord.startIndex),
-						post = originalTxt.substr(searchWord.startIndex+searchWord.word.length);
+					var pre  = originalTxt.substr(0,searchWord.startIndex),
+					    post = originalTxt.substr(searchWord.startIndex+searchWord.word.length);
 					
 					if(post.substring(0,1) != " " || post.length == 0)
-						post =  " " + post;
+						post = " " + post;
 				
 					// Only change the input value / move the cursor if the search word is different
 					if(replace.toLowerCase() != searchWord.word.toLowerCase()){

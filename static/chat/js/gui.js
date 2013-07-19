@@ -64,7 +64,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			}
 
 			this.setupNotifications();
-			if(this.engine.user.username){
+			if (this.engine.user.username) {
 				this.highlightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
 			};
 			
@@ -73,8 +73,10 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 				minWordLength: 2,
 				maxResults: 10
 			}).data('mAutoComplete');
-
-			this.autoCompletePlugin.addData(emoticons, 2);
+			
+			for (var i = emoticons.length - 1; i >= 0; i--) {
+				this.autoCompletePlugin.addData(emoticons[i], 0);
+			};
 			
 			// Chat settings
 			this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
