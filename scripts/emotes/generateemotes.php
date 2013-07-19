@@ -24,6 +24,7 @@ $customemotes = array(
 	'DJAslan',
 	'SoSad',
 	'DURRSTINY',
+	'SURPRISE',
 );
 $twitchemotes = array(
 	'Kappa',
