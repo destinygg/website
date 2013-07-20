@@ -1,6 +1,6 @@
 
 // Need a better place for these
-var emoticons = ["Dravewin", "INFESTINY", "FIDGETLOL", "Hhhehhehe", "GameOfThrows", "WORTH", "FeedNathan", "Abathur", "LUL", "Heimerdonger", "ASLAN", "DJAslan", "SoSad", "DURRSTINY", "SURPRISE", "Kappa", "Klappa", "DappaKappa", "BibleThump", "BloodTrail", "BrainSlug", "FrankerZ", "Kreygasm", "PJSalt", "SSSsss", "FailFish", "BasedGod"];
+var emoticons = ["Abathur", "ASLAN", "BasedGod", "BibleThump", "BloodTrail", "BrainSlug", "DappaKappa", "DJAslan", "Dravewin", "DURRSTINY", "FailFish", "FeedNathan", "FIDGETLOL", "FrankerZ", "GameOfThrows", "Heimerdonger", "Hhhehhehe", "INFESTINY", "Kappa", "Klappa", "Kreygasm", "LUL", "NoTears", "OverRustle", "PJSalt", "SoSad", "SSSsss", "SURPRISE", "WORTH"];
 var emoteregex = new RegExp('\\b(?:'+emoticons.join('|')+')\\b');
 var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 

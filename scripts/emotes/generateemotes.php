@@ -25,6 +25,8 @@ $customemotes = array(
 	'SoSad',
 	'DURRSTINY',
 	'SURPRISE',
+	'NoTears',
+	'OverRustle',
 );
 $twitchemotes = array(
 	'Kappa',
@@ -40,6 +42,7 @@ $twitchemotes = array(
 	'FailFish',
 	'BasedGod',
 );
+
 $triggers     = array();
 $html  	      = array();
 $css          = '
@@ -124,10 +127,36 @@ ob_start();
 </html>
 <?php
 file_put_contents('preview.html', ob_get_clean());
-
+$emotes = array_merge($customemotes, $twitchemotes);
+natcasesort($emotes);
 echo
 	'["',
-	implode('", "', array_merge($customemotes, $twitchemotes)),
+	implode('", "', $emotes),
 	'"];',
 	"\n\nRun spritemapper css/emoticons_unsprited.css --anneal=100\n"
 ;
+
+/*
+	'animation: rustle 100ms 5;
+	-webkit-animation: rustle 100ms 5;
+}
+.chat-emote.chat-emote-OverRustle:hover {
+	animation: rustle 100ms infinite;
+	-webkit-animation: rustle 100ms infinite;
+}
+@keyframes rustle {
+	from {
+		left: 0px;
+	}
+	to {
+		left: 2px;
+	}
+}
+@-webkit-keyframes rustle {
+	from {
+		left: 0px;
+	}
+	to {
+		left: 2px;
+	}
+*/
