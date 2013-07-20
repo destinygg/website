@@ -19,7 +19,8 @@ function chat(user, options) {
 		"banned"            : "You have been banned, disconnecting",
 		"requiresocket"     : "This chat requires WebSockets",
 		"toomanyconnections": "Only 3 concurrent connections allowed",
-		"socketerror"       : "Error contacting server"
+		"socketerror"       : "Error contacting server",
+		"notfound"          : "The user was not found"
 	};
 	
 	// TODO clean this up
