@@ -4,7 +4,6 @@ namespace Destiny\Common\Utils;
 use Destiny\Common\AppException;
 
 abstract class Http {
-	
 	const HEADER_ETAG = 'Etag';
 	const HEADER_STATUS = 'Status';
 	const HEADER_CONTENTLENGTH = 'Content-Length';
@@ -27,7 +26,8 @@ abstract class Http {
 		404 => 'Not Found',
 		401 => 'Unauthorized',
 		304 => 'Not Modified',
-		200 => 'OK' 
+		200 => 'OK',
+		403 => 'Forbidden' 
 	);
 
 	public static function header($name, $value, $replace = true) {

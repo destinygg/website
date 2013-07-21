@@ -41,18 +41,22 @@ class Api {
 	 * @throws AppException
 	 */
 	public function execute(array $params, ViewModel $model) {
-		$response = array ();
+		$app = Application::instance ();
+		$response = null;
 		try {
 			if (! isset ( $params ['authtoken'] ) || empty ( $params ['authtoken'] )) {
-				throw new AppException ( 'Invalid or empty authToken' );
+				Http::status ( Http::STATUS_FORBIDDEN );
+				die ( 'Invalid or empty authToken' );
 			}
 			$authToken = ApiAuthenticationService::instance ()->getAuthToken ( $params ['authtoken'] );
 			if (empty ( $authToken )) {
-				throw new AppException ( 'Auth token not found' );
+				Http::status ( Http::STATUS_FORBIDDEN );
+				die ( 'Auth token not found' );
 			}
 			$user = UserService::instance ()->getUserById ( $authToken ['userId'] );
 			if (empty ( $user )) {
-				throw new AppException ( 'User not found' );
+				Http::status ( Http::STATUS_FORBIDDEN );
+				die ( 'User not found' );
 			}
 			$credentials = new SessionCredentials ( $user );
 			$credentials->setAuthProvider ( 'API' );
@@ -64,14 +68,13 @@ class Api {
 				$credentials->addRoles ( UserRole::SUBSCRIBER );
 				$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
 			}
-			$response ['success'] = true;
-			$response ['data'] = $credentials->getData();
+			$response = $credentials->getData ();
+			Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+			Http::sendString ( json_encode ( $response ) );
 		} catch ( \Exception $e ) {
-			$response ['success'] = false;
-			$response ['error'] = $e->getMessage ();
+			Http::status ( Http::STATUS_ERROR );
+			die ( $e->getMessage () );
 		}
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $response ) );
 	}
 
 }
