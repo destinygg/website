@@ -350,7 +350,7 @@ CREATE TABLE `dfl_users_auth_token` (
   PRIMARY KEY (`authTokenId`),
   KEY `userId` (`userId`),
   KEY `authToken` (`authToken`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_users_champs` */
 

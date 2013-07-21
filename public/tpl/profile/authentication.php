@@ -35,6 +35,7 @@ use Destiny\Common\Config;
 	
 	<section class="container">
 		<h3>Providers <small>authentication</small></h3>
+		<p>Authentication providers are what we use to know who you are! you can login with any of the services below</p>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				
@@ -78,6 +79,9 @@ use Destiny\Common\Config;
 	
 	<section class="container">
 		<h3>Login keys</h3>
+		<p>Login keys allow you to login to the destiny.gg chat without the need for a username or password.
+		<br><label class="label label-important">WARNING</label> Login keys MUST be kept a confidential. 
+		</p>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<form action="/profile/authtoken/create" method="post">
