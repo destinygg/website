@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Payment;
 
+use Destiny\Common\Commerce\PaymentProfileStatus;
 use Destiny\Common\Application;
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Service\OrdersService;
@@ -86,8 +87,8 @@ class Cancel {
 			}
 			$profileStatus = $getRPPDetailsResponse->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus;
 			// Active profile, send off the cancel
-			if (strcasecmp ( $profileStatus, 'ActiveProfile' ) === 0 || strcasecmp ( $profileStatus, 'CancelledProfile' ) === 0) {
-				if (strcasecmp ( $profileStatus, 'ActiveProfile' ) === 0) {
+			if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVEPROFILE ) === 0 || strcasecmp ( $profileStatus, PaymentProfileStatus::CANCELLEDPROFILE ) === 0) {
+				if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
 					// Do we have a payment profile, we need to cancel it with paypal
 					$manageRPPStatusReqestDetails = new ManageRecurringPaymentsProfileStatusRequestDetailsType ();
 					$manageRPPStatusReqestDetails->Action = 'Cancel';
@@ -107,12 +108,12 @@ class Cancel {
 					$log = Application::instance ()->getLogger ();
 					$log->info ( sprintf ( 'Payment profile cancelled from status [%s]', $profileStatus ) );
 				}
-				$orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], 'Cancelled' );
+				$orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], PaymentProfileStatus::CANCELLEDPROFILE );
 			} else {
 				throw new AppException ( sprintf ( 'Invalid payment profile status [%s] %s', $profileStatus, $paymentProfile ['paymentProfileId'] ) );
 			}
 			
-			// Cancel subscription status
+			// Remove the recurring flag on the subscription
 			if (! empty ( $subscription )) {
 				$subService->updateSubscriptionRecurring ( $subscription ['subscriptionId'], false );
 			}
@@ -120,9 +121,7 @@ class Cancel {
 			// Show unsubscribed screen
 			$model->unsubscribed = true;
 			return 'paymentcancel';
-		} else 
-
-		{
+		} else {
 			throw new AppException ( 'Invalid confirmation id' );
 		}
 		throw new AppException ( 'Could not cancel subscription' );

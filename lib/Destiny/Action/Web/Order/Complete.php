@@ -32,6 +32,9 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Commerce\OrderStatus;
+use Destiny\Common\Commerce\PaymentStatus;
+use Destiny\Common\Commerce\SubscriptionStatus;
 
 /**
  * @Action
@@ -175,7 +178,7 @@ class Complete {
 		$payments = array ();
 		if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
 			if (isset ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo )) {
-				$orderStatus = 'Completed';
+				$orderStatus = OrderStatus::COMPLETED;
 				for($i = 0; $i < count ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo ); ++ $i) {
 					$paymentInfo = $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo [$i];
 					$payment = array ();
@@ -188,8 +191,8 @@ class Complete {
 					$payment ['paymentType'] = $paymentInfo->PaymentType;
 					$payment ['paymentStatus'] = $paymentInfo->PaymentStatus;
 					$payment ['paymentDate'] = Date::getDateTime ( $paymentInfo->PaymentDate )->format ( 'Y-m-d H:i:s' );
-					if ($paymentInfo->PaymentStatus != 'Completed') {
-						$orderStatus = 'Incomplete';
+					if ($paymentInfo->PaymentStatus != PaymentStatus::COMPLETED) {
+						$orderStatus = OrderStatus::PENDING;
 					}
 					$ordersService->addOrderPayment ( $payment );
 					$payments [] = $payment;
@@ -208,19 +211,24 @@ class Complete {
 		}
 		
 		// Create / adjust subscription
+		if ($orderStatus == OrderStatus::COMPLETED) {
+			$subscriptionStatus = SubscriptionStatus::ACTIVE;
+			// Add the subscriber role, this is just for UI
+			$credentials = Session::getCredentials ();
+			$credentials->addRoles ( \Destiny\Common\UserRole::SUBSCRIBER );
+			$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
+			Session::updateCredentials ( $credentials );
+			//
+		} else {
+			$subscriptionStatus = SubscriptionStatus::PENDING;
+		}
 		$start = Date::getDateTime ( 'NOW' );
 		$end = Date::getDateTime ( 'NOW' );
 		$end->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
-		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], $start->format ( 'Y-m-d H:i:s' ), $end->format ( 'Y-m-d H:i:s' ), 'Active', (! empty ( $paymentProfile )), 'destiny.gg' );
+		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], $start->format ( 'Y-m-d H:i:s' ), $end->format ( 'Y-m-d H:i:s' ), $subscriptionStatus, (! empty ( $paymentProfile )), 'destiny.gg' );
 		if (! empty ( $paymentProfile )) {
 			SubscriptionsService::instance ()->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
 		}
-		
-		// Add the subscriber role, this is just for UI
-		$credentials = Session::getCredentials ();
-		$credentials->addRoles ( \Destiny\Common\UserRole::SUBSCRIBER );
-		$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
-		Session::updateCredentials ( $credentials );
 		
 		// Show the order complete screen
 		$model->order = $order;

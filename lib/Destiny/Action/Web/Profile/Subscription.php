@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Profile;
 
+use Destiny\Common\Commerce\SubscriptionStatus;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
@@ -29,10 +30,12 @@ class Subscription {
 		$orderService = OrdersService::instance ();
 		$userService = UserService::instance ();
 		$userId = Session::get ( 'userId' );
-		$model->title = 'Subscription';
-		$model->user = $userService->getUserById ( $userId );
-		$model->payments = $orderService->getPaymentsByUser ( $userId, 10, 0 );
+		
 		$subscription = $subsService->getUserActiveSubscription ( $userId );
+		if (empty ( $subscription )) {
+			$subscription = $subsService->getUserPendingSubscription ( $userId );
+		}
+		
 		$paymentProfile = null;
 		// Add the subscriptions payment profile, if it has one
 		// a little dirty
@@ -42,6 +45,10 @@ class Subscription {
 				$paymentProfile ['billingCycle'] = $orderService->buildBillingCycleString ( $paymentProfile ['billingFrequency'], $paymentProfile ['billingPeriod'] );
 			}
 		}
+		
+		$model->title = 'Subscription';
+		$model->user = $userService->getUserById ( $userId );
+		$model->payments = $orderService->getPaymentsByUser ( $userId, 10, 0 );
 		$model->paymentProfile = $paymentProfile;
 		$model->subscription = $subscription;
 		return 'profile/subscription';

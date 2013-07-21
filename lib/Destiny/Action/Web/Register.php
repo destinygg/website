@@ -34,10 +34,10 @@ class Register {
 		}
 		$authSession = Session::get ( 'authSession' );
 		if (empty ( $authSession ) || empty ( $authSession ['authCode'] ) || ($params ['code'] != $authSession ['authCode'])) {
-			throw new AppException ( 'Invalid authentication session' );
+			throw new AppException ( 'Invalid authentication code' );
 		}
 		if (empty ( $authSession ['authProvider'] ) || empty ( $authSession ['authCode'] ) || empty ( $authSession ['authId'] )) {
-			throw new AppException ( 'Invalid authentication session' );
+			throw new AppException ( 'Invalid authentication information' );
 		}
 		return $authSession;
 	}

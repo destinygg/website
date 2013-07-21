@@ -257,7 +257,7 @@ class OrdersService extends Service {
 	 * @param int $paymentProfileId
 	 * @param \DateTime $billingNextDate
 	 */
-	public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
+	public function updatePaymentProfileNextPayment($paymentProfileId,\DateTime $billingNextDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_orders_payment_profiles', array (
 			'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 
@@ -293,6 +293,25 @@ class OrdersService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payments WHERE transactionId = :transactionId LIMIT 0,1' );
 		$stmt->bindValue ( 'transactionId', $transactionId, \PDO::PARAM_STR );
+		$stmt->execute ();
+		return $stmt->fetch ();
+	}
+
+	/**
+	 * Get a payments order
+	 *
+	 * @param int $paymentId
+	 * @return array
+	 */
+	public function getOrderByPaymentId($paymentId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT * FROM dfl_orders AS a
+			INNER JOIN dfl_orders_payments AS b ON (b.orderId = a.orderId)
+			WHERE b.paymentId = :paymentId
+			LIMIT 0,1
+		' );
+		$stmt->bindValue ( 'paymentId', $paymentId, \PDO::PARAM_INT );
 		$stmt->execute ();
 		return $stmt->fetch ();
 	}

@@ -1,6 +1,8 @@
 <?php
 namespace Destiny\Action\Web\Subscription;
 
+use Destiny\Common\Commerce\PaymentProfileStatus;
+use Destiny\Common\Commerce\SubscriptionStatus;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Service\OrdersService;
@@ -21,7 +23,7 @@ class Cancel {
 	 * @Route ("/subscription/cancel")
 	 * @Secure ({"USER"})
 	 * @HttpMethod ({"POST"})
-	 * 
+	 *
 	 * @param array $params
 	 * @param ViewModel $model
 	 * @throws AppException
@@ -33,7 +35,7 @@ class Cancel {
 			
 			if (! empty ( $subscription ['paymentProfileId'] )) {
 				$paymentProfile = OrdersService::instance ()->getPaymentProfileById ( $subscription ['paymentProfileId'] );
-				if (strcasecmp ( $paymentProfile ['state'], 'ActiveProfile' ) === 0) {
+				if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
 					throw new AppException ( 'Please first cancel the attached payment profile.' );
 				}
 			}
@@ -43,7 +45,7 @@ class Cancel {
 			$credentials->removeFeature ( \Destiny\Common\UserFeature::SUBSCRIBER );
 			Session::updateCredentials ( $credentials );
 			
-			$subscription ['status'] = 'Cancelled';
+			$subscription ['status'] = SubscriptionStatus::CANCELLED;
 			SubscriptionsService::instance ()->updateSubscriptionState ( $subscription ['subscriptionId'], $subscription ['status'] );
 			
 			$model->subscription = $subscription;
@@ -58,7 +60,7 @@ class Cancel {
 	 * @Route ("/subscription/cancel")
 	 * @Secure ({"USER"})
 	 * @HttpMethod ({"GET"})
-	 * 
+	 *
 	 * @param array $params
 	 * @param ViewModel $model
 	 * @throws AppException
@@ -71,7 +73,7 @@ class Cancel {
 		}
 		if (! empty ( $subscription ['paymentProfileId'] )) {
 			$paymentProfile = OrdersService::instance ()->getPaymentProfileById ( $subscription ['paymentProfileId'] );
-			if (strcasecmp ( $paymentProfile ['state'], 'ActiveProfile' ) === 0) {
+			if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
 				throw new AppException ( 'Please first cancel the attached payment profile.' );
 			}
 		}

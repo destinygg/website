@@ -1,6 +1,10 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\Commerce\PaymentProfileStatus;
+use Destiny\Common\Commerce\SubscriptionStatus;
+use Destiny\Common\Commerce\OrderStatus;
+use Destiny\Common\Commerce\PaymentStatus;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Application;
 use Destiny\Common\Service\OrdersService;
@@ -42,7 +46,7 @@ class Ipn {
 			'ipnData' => json_encode ( $data ) 
 		) );
 		
-		// Make sure this IPN is for the merchant - not sure if this exists all the time
+		// Make sure this IPN is for the merchant
 		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
 			$log->critical ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
 			$this->niceExit ( false );
@@ -76,58 +80,87 @@ class Ipn {
 		switch (strtolower ( $txnType )) {
 			
 			// Post back from checkout, make sure the payment lines up
+			// This is sent when a express checkout has been performed by a user
 			case 'express_checkout' :
 				$payment = $orderService->getPaymentByTransactionId ( $txnId );
 				if (! empty ( $payment )) {
+					
+					// Make sure the payment values are the same
 					if (number_format ( $payment ['amount'], 2 ) != number_format ( $data ['mc_gross'], 2 )) {
 						throw new AppException ( 'Amount for payment do not match' );
 					}
+					
+					// Update the payment status
 					$orderService->updatePaymentState ( $payment, $data ['payment_status'] );
 					$log->notice ( sprintf ( 'Updated payment status %s status %s', $data ['txn_id'], $data ['payment_status'] ) );
+					
+					// If the payment status WAS PENDING, and the IPN payment status is COMPLETED
+					// Then we need to activate the attached subscription and complete the order
+					// This is for the ECHECK payment method
+					if (strcasecmp ( $payment ['paymentStatus'], PaymentStatus::PENDING ) === 0 && strcasecmp ( $data ['payment_status'], PaymentStatus::COMPLETED ) === 0) {
+						$order = $orderService->getOrderByPaymentId ( $payment ['paymentId'] );
+						if (! empty ( $order )) {
+							$orderService->updateOrderState ( $order ['orderId'], OrderStatus::COMPLETED );
+							$log->notice ( sprintf ( 'Updated order status %s status %s', $order ['orderId'], OrderStatus::COMPLETED ) );
+							$subscription = $subService->getUserPendingSubscription ( $order ['userId'] );
+							if (! empty ( $subscription )) {
+								$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
+								$log->notice ( sprintf ( 'Updated subscription status %s status %s', $order ['orderId'], SubscriptionStatus::ACTIVE ) );
+							}
+						}
+					}
 				}
 				break;
 			
-			// Recurring payment, renew subscriptions. make sure 'payment_status' == 'completed'
+			// Recurring payment, renew subscriptions, or set to pending depending on the type
+			// This is sent from paypal when a recurring payment is billed
 			case 'recurring_payment' :
+				
 				if (! isset ( $data ['payment_status'] )) {
 					throw new AppException ( 'Invalid payment status' );
 				}
-				$paymentProfile = $this->getPaymentProfile ( $data );
-				$nextPaymentDate = Date::getDateTime ( $data ['next_payment_date'] );
-				$orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], $data ['payment_status'] );
-				$orderService->updatePaymentProfileNextPayment ( $paymentProfile ['profileId'], $nextPaymentDate );
-				
-				if (strcasecmp ( $data ['payment_status'], 'Completed' ) === 0) {
-					// Add a payment
-					// @TODO it doesnt say wether this IPN request is in addition to another payment request I assume not
-					$payment = array ();
-					$payment ['orderId'] = $paymentProfile ['orderId'];
-					$payment ['payerId'] = $data ['payer_id'];
-					$payment ['amount'] = $data ['mc_gross'];
-					$payment ['currency'] = $data ['mc_currency'];
-					$payment ['transactionId'] = $txnId;
-					$payment ['transactionType'] = $txnType;
-					$payment ['paymentType'] = $data ['payment_type'];
-					$payment ['paymentStatus'] = $data ['payment_status'];
-					$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'] )->format ( 'Y-m-d H:i:s' );
-					$orderService->addOrderPayment ( $payment );
-					$log->notice ( sprintf ( 'Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
-					
-					// Extend the subscription if the payment was successful
-					$subscription = $subService->getUserActiveSubscription ( $paymentProfile ['userId'] );
-					if (! empty ( $subscription )) {
-						$subService->updateSubscriptionDateEnd ( $subscription ['subscriptionId'], $nextPaymentDate );
-						$log->notice ( sprintf ( 'Renewed profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
-					}
-				} else {
-					// Change the state of the profile
-					$subscription = $subService->getUserActiveSubscription ( $paymentProfile ['userId'] );
-					if (! empty ( $subscription )) {
-						$subService->updateSubscriptionState ( $subscription ['subscriptionId'], $nextPaymentDate );
-					}
-					$log->notice ( sprintf ( 'Failed to renew profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
+				if (! isset ( $data ['next_payment_date'] )) {
+					throw new AppException ( 'Invalid next_payment_date' );
 				}
 				
+				$paymentProfile = $this->getPaymentProfile ( $data );
+				$subscription = $subService->getUserActiveSubscription ( $paymentProfile ['userId'] );
+				if (empty ( $subscription )) {
+					throw new AppException ( 'Invalid subscription for recurring payment' );
+				}
+				
+				$nextPaymentDate = Date::getDateTime ( $data ['next_payment_date'] );
+				$orderService->updatePaymentProfileNextPayment ( $paymentProfile ['profileId'], $nextPaymentDate );
+				
+				// Update the subscription end date regardless if the payment was successful or not
+				$end = Date::getDateTime ( $subscription ['endDate'] );
+				$end->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
+				
+				$subService->updateSubscriptionDateEnd ( $subscription ['subscriptionId'], $end );
+				$log->notice ( sprintf ( 'Update Subscription end date %s [%s]', $subscription ['subscriptionId'], $end->format ( Date::FORMAT ) ) );
+				
+				// Change the subscription state depending on the payment state
+				if (strcasecmp ( $payment ['paymentStatus'], PaymentStatus::PENDING ) === 0) {
+					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::PENDING );
+					$log->notice ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], SubscriptionStatus::PENDING ) );
+				} else if (strcasecmp ( $payment ['paymentStatus'], PaymentStatus::COMPLETED ) !== 0) {
+					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], $payment ['paymentStatus'] );
+					$log->notice ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], $payment ['paymentStatus'] ) );
+				}
+				
+				// Add a payment to the order
+				$payment = array ();
+				$payment ['orderId'] = $paymentProfile ['orderId'];
+				$payment ['payerId'] = $data ['payer_id'];
+				$payment ['amount'] = $data ['mc_gross'];
+				$payment ['currency'] = $data ['mc_currency'];
+				$payment ['transactionId'] = $txnId;
+				$payment ['transactionType'] = $txnType;
+				$payment ['paymentType'] = $data ['payment_type'];
+				$payment ['paymentStatus'] = $data ['payment_status'];
+				$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'] )->format ( 'Y-m-d H:i:s' );
+				$orderService->addOrderPayment ( $payment );
+				$log->notice ( sprintf ( 'Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				break;
 			
 			// Sent if user cancels subscription from Paypal's site.
@@ -137,7 +170,7 @@ class Ipn {
 				$log->notice ( sprintf ( 'Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				break;
 			
-			// sent on first postback when the user first subscribes.
+			// sent on first postback when the user subscribes
 			case 'recurring_payment_profile_created' :
 				$paymentProfile = $this->getPaymentProfile ( $data );
 				if (strcasecmp ( $data ['profile_status'], 'Active' ) === 0) {

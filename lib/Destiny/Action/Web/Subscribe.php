@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\AppException;
 use Destiny\Common\Application;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
@@ -31,14 +32,21 @@ class Subscribe {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$subsService = SubscriptionsService::instance ();
-		$subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		
+		if (empty ( $subscription )) {
+			$subscription = $subsService->getUserPendingSubscription ( Session::get ( 'userId' ) );
+			if (! empty ( $subscription )) {
+				throw new AppException ( 'You already have a subscription in the "pending" state. Please cancel this first.' );
+			}
+		}
 		
 		// Setup the initial checkout token, the value is checked in each step, to make sure the user actually used the checkout process
 		$this->checkoutId = md5 ( microtime ( true ) . Session::get ( 'userId' ) );
 		Session::set ( 'checkoutId', $this->checkoutId );
 		$model->title = 'Subscribe';
 		$model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
-		$model->subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$model->subscription = $subscription;
 		$model->checkoutId = $this->checkoutId;
 		return 'subscribe';
 	}

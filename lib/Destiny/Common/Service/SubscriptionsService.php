@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Common\Service;
 
+use Destiny\Common\Commerce\SubscriptionStatus;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
@@ -8,7 +9,6 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\AppException;
 
 class SubscriptionsService extends Service {
-	
 	protected static $instance = null;
 
 	/**
@@ -78,14 +78,31 @@ class SubscriptionsService extends Service {
 	/**
 	 * Get the first active subscription
 	 * Note: This does not take into account end date.
+	 * It relies on the subscription status Active
 	 *
 	 * @param int $userId
 	 * @return array
 	 */
 	public function getUserActiveSubscription($userId) {
 		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND status = \'Active\' ORDER BY createdDate DESC LIMIT 0,1' );
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND status = :status ORDER BY createdDate DESC LIMIT 0,1' );
 		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+		$stmt->execute ();
+		return $stmt->fetch ();
+	}
+
+	/**
+	 * Get the first pending subscription
+	 *
+	 * @param int $userId
+	 * @return array
+	 */
+	public function getUserPendingSubscription($userId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND status = :status ORDER BY createdDate DESC LIMIT 0,1' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'status', SubscriptionStatus::PENDING, \PDO::PARAM_STR );
 		$stmt->execute ();
 		return $stmt->fetch ();
 	}
@@ -96,7 +113,7 @@ class SubscriptionsService extends Service {
 	 * @param int $subscriptionId
 	 * @param \DateTime $endDate
 	 */
-	public function updateSubscriptionDateEnd($subscriptionId,\DateTime $endDate) {
+	public function updateSubscriptionDateEnd($subscriptionId, \DateTime $endDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users_subscriptions', array (
 			'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
