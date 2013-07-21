@@ -340,6 +340,18 @@ CREATE TABLE `dfl_users_auth` (
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+/*Table structure for table `dfl_users_auth_token` */
+
+CREATE TABLE `dfl_users_auth_token` (
+  `authTokenId` INT(14) NOT NULL AUTO_INCREMENT,
+  `userId` INT(11) DEFAULT NULL,
+  `authToken` VARCHAR(32) CHARACTER SET utf8 DEFAULT NULL,
+  `createdDate` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`authTokenId`),
+  KEY `userId` (`userId`),
+  KEY `authToken` (`authToken`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
 /*Table structure for table `dfl_users_champs` */
 
 CREATE TABLE `dfl_users_champs` (

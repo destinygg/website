@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Profile;
 
+use Destiny\Common\Service\ApiAuthenticationService;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
@@ -27,6 +28,7 @@ class Authentication {
 		$userId = Session::get ( 'userId' );
 		$model->title = 'Authentication';
 		$model->user = $userService->getUserById ( $userId );
+		
 		// Build a list of profile types for UI purposes
 		$authProfiles = $userService->getAuthProfilesByUserId ( $userId );
 		$authProfileTypes = array ();
@@ -37,6 +39,8 @@ class Authentication {
 			$model->authProfiles = $authProfiles;
 			$model->authProfileTypes = $authProfileTypes;
 		}
+		
+		$model->authTokens = ApiAuthenticationService::instance ()->getAuthTokensByUserId ( $userId );
 		return 'profile/authentication';
 	}
 
