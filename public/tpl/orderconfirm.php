@@ -52,6 +52,12 @@ use Destiny\Common\Config;
 								<?php endif; ?>
 								</div>
 							</div>
+							
+							<p>
+								<span class="label label-warning">NOTE:</span> Those who choose to use the &quot;eCheck&quot; as a payment type, will not receive their subscription
+								<br>until the payment has been cleared which can take up to 7 business days. 
+							</p>
+							
 							<p>By clicking the 'Pay subscription' button below, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</p>
 						</div>
 					</div>

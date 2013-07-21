@@ -43,10 +43,7 @@ use Destiny\Common\Config;
 						<?php endif; ?>
 						
 						<?php if(empty($model->subscription)): ?>
-						<p>
-							Choose a subscription from the selection below. 
-							<br />Payments are processed and secured by PayPal.
-						</p>
+						<p>Choose a subscription from the selection below.</p>
 						
 						<br>
 						<div id="subscriptions" class="clearfix">
@@ -133,8 +130,9 @@ use Destiny\Common\Config;
 									</div>
 								</div>
 							</div>
-							
 						</div>
+						
+						
 						<?php endif; ?>
 						
 					</div>
