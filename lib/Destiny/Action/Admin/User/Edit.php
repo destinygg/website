@@ -103,21 +103,6 @@ class Edit {
 		if (! isset ( $params ['roles'] )) $params ['roles'] = array ();
 		UserService::instance ()->setUserRoles ( $user ['userId'], $params ['roles'] );
 		
-		// Update the users credentials - this still requires the user to login/out
-		$credentials = new SessionCredentials ( $user );
-		$credentials->setAuthProvider ( '' ); // we need to get the auth provider
-		$credentials->addRoles ( UserRole::USER );
-		$credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
-		$credentials->addRoles ( UserService::instance ()->getUserRolesByUserId ( $user ['userId'] ) );
-		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
-		if (! empty ( $subscription )) {
-			$credentials->addRoles ( UserRole::SUBSCRIBER );
-			$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
-		}
-		
-		// Update the auth credentials
-		ChatIntegrationService::instance ()->refreshUser ( $credentials );
-		
 		// Flag a user session for update
 		$cache = Application::instance ()->getCacheDriver ();
 		$cache->save ( sprintf ( 'refreshusersession-%s', $user ['userId'] ), 1 );

@@ -45,12 +45,13 @@ class RememberMeService extends Service {
 					$user = $userManager->getUserById ( $userId );
 					if (! empty ( $user )) {
 						$authService = AuthenticationService::instance ();
-						$authService->login ( $user, 'refreshed' );
+						$credentials = $authService->login ( $user, 'refreshed' );
 						$app->addEvent ( new AppEvent ( array (
 							'type' => AppEvent::EVENT_INFO,
 							'label' => 'Your session has been updated',
 							'message' => sprintf ( 'Nothing to worry about %s, just letting you know...', Session::getCredentials ()->getUsername () ) 
 						) ) );
+						ChatIntegrationService::instance ()->refreshUserCredentials ( $credentials );
 					}
 				}
 			}
@@ -111,7 +112,7 @@ class RememberMeService extends Service {
 	 * @param DateTime $expire
 	 * @param DateTime $createdDate
 	 */
-	public function addRememberMe($userId, $token, $tokenType, \DateTime $expire, \DateTime $createdDate) {
+	public function addRememberMe($userId, $token, $tokenType,\DateTime $expire,\DateTime $createdDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_rememberme', array (
 			'userId' => $userId,

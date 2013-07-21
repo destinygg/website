@@ -106,6 +106,9 @@ class Ipn {
 							if (! empty ( $subscription )) {
 								$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
 								$log->notice ( sprintf ( 'Updated subscription status %s status %s', $order ['orderId'], SubscriptionStatus::ACTIVE ) );
+								// Flag a user session for update
+								$cache = Application::instance ()->getCacheDriver ();
+								$cache->save ( sprintf ( 'refreshusersession-%s', $subscription ['userId'] ), 1 );
 							}
 						}
 					}
@@ -161,6 +164,10 @@ class Ipn {
 				$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'] )->format ( 'Y-m-d H:i:s' );
 				$orderService->addOrderPayment ( $payment );
 				$log->notice ( sprintf ( 'Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
+				
+				// Flag a user session for update
+				$cache = Application::instance ()->getCacheDriver ();
+				$cache->save ( sprintf ( 'refreshusersession-%s', $subscription ['userId'] ), 1 );
 				break;
 			
 			// Sent if user cancels subscription from Paypal's site.

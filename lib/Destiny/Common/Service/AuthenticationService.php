@@ -161,6 +161,7 @@ class AuthenticationService extends Service {
 			$team ['teamId'] = TeamService::instance ()->addTeam ( $user ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
 		}
 		Session::set ( 'teamId', $team ['teamId'] );
+		return $credentials;
 	}
 
 	/**
@@ -322,7 +323,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),

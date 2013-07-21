@@ -32,8 +32,13 @@ class Profile {
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		if (empty ( $subscription )) {
+			$subscription = SubscriptionsService::instance ()->getUserPendingSubscription ( Session::get ( 'userId' ) );
+		}
 		$model->title = 'Profile';
 		$model->user = $userService->getUserById ( Session::get ( 'userId' ) );
+		$model->subscription = $subscription;
 		return 'profile';
 	}
 

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Common\Service;
 
+use Destiny\Common\UserRole;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\SessionInstance;
@@ -39,7 +40,7 @@ class ChatIntegrationService extends Service {
 			$redis->set ( $id, $json, 30 * 24 * 60 * 60 );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
 			if ($update) {
-				$this->refreshUser ( $credentials );
+				$this->refreshUserCredentials ( $credentials );
 			}
 		}
 	}
@@ -48,7 +49,7 @@ class ChatIntegrationService extends Service {
 	 * Refresh a users session
 	 * @param SessionCredentials $credentials
 	 */
-	public function refreshUser(SessionCredentials $credentials) {
+	public function refreshUserCredentials(SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );

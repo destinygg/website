@@ -33,7 +33,7 @@ use Destiny\Common\UserRole;
 		</div>
 	</section>
 
-	<?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
+	<?php if(empty($model->subscription)): ?>
 	<section class="container">
 		<div class="content content-dark clearfix">
 			<div class="control-group">
