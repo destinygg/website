@@ -13,16 +13,15 @@
 		return txt.substr(0,1).toUpperCase();
 	};
 	mAutoComplete.prototype.addData = function(nick, weight){
-		var id        = this.getShardIdByTxt(nick),
-		    lowernick = nick.toLowerCase();
+		var id        = this.getShardIdByTxt(nick);
 		
 		if(!this.shards[id])
 			this.shards[id] = {};
 		
-		if (this.shards[id][lowernick])
-			this.shards[id][lowernick].weight = weight;
+		if (this.shards[id][nick])
+			this.shards[id][nick].weight = weight;
 		else
-			this.shards[id][lowernick] = {nick: nick, weight: weight};
+			this.shards[id][nick] = {nick: nick, weight: weight};
 		
 		return this;
 	};
