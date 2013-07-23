@@ -169,11 +169,10 @@ chat.prototype.onMSG = function(data) {
 			return;
 		
 		var user = this.users[data.nick];
-		if (!user)
-			user = new ChatUser(data);
-		else
-			this.gui.autoCompletePlugin.addData(data.nick, data.timestamp);
+		if (!user || user.features.length != data.features.length)
+			user = this.users[data.nick] = new ChatUser(data);
 		
+		this.gui.autoCompletePlugin.addData(data.nick, data.timestamp);
 		return new ChatUserMessage(data.data, user, data.timestamp);
 	}
 };
