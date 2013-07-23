@@ -62,14 +62,6 @@ use Destiny\Common\UserRole;
 		</div>
 		<?php endif; ?>
 		
-		<?if((!isset($_COOKIE['alert-dismissed-namechangealert']) || $_COOKIE['alert-dismissed-namechangealert'] != true)):?>
-		<div id="namechangealert" class="alert alert-error">
-			<button type="button" class="close persist" data-dismiss="alert">&times;</button>
-			<strong>Heads up!</strong> A name change limit has been implement. You are now limited to <?=Config::$a['profile']['nameChangeLimit']?> name changes per account
-			<br>Please contact <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> if you require assistance, or would like to request a manual name change.
-		</div>
-		<?php endif; ?>
-	
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<form id="profileSaveForm" action="/profile" method="post">
