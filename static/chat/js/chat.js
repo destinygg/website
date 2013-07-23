@@ -159,9 +159,13 @@ chat.prototype.onQUIT = function(data) {
 	}
 };
 chat.prototype.onMSG = function(data) {
+
+	// If we have the same user as the one logged in, update the features
+	if(this.user.username == data.nick && $.isArray(data.features))
+		this.user.features = data.features;
+	
 	if(this.user.username != data.nick || !this.gui.resolveMessage(data)){
-		var lowernick = data.nick.toLowerCase();
-		if (this.ignorelist[lowernick]) // user ignored
+		if (this.ignorelist[data.nick.toLowerCase()]) // user ignored
 			return;
 		
 		var user = this.users[data.nick];
