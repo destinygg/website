@@ -159,6 +159,8 @@ use Destiny\Common\Config;
 					<div>
 						<select id="banTimeLength" class="select" style="width:150px;" onchange="$('#banReason').focus();">
 							<option value="0">Length of time</option>
+							<option value="1">1 minute</option>
+							<option value="5">5 minutes</option>
 							<option value="10">10 minutes</option>
 							<option value="30">30 minutes</option>
 							<option value="60">1 hr</option>
