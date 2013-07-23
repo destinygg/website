@@ -334,7 +334,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),
@@ -379,7 +379,7 @@ class AuthenticationService extends Service {
 		} else {
 			// Otherwise set a session variable which is picked up by the remember me service to update the session
 			$cache = Application::instance ()->getCacheDriver ();
-			$cache->save ( sprintf ( 'refreshusersession-%s', $userId ), 1 );
+			$cache->save ( sprintf ( 'refreshusersession-%s', $userId ), time (), intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
 		}
 		
 		// Update the chat session
@@ -388,22 +388,26 @@ class AuthenticationService extends Service {
 
 	/**
 	 * Check if the user has been flagged for update
+	 *
 	 * @param int $userId
 	 * @return boolean
 	 */
 	public function isUserFlaggedForUpdate($userId) {
 		$cache = Application::instance ()->getCacheDriver ();
-		return ($cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) ) === 1);
+		$lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
+		return ($lastUpdated && $lastUpdated != Session::get ( 'lastUpdated' ));
 	}
 
 	/**
-	 * Check if the user has been flagged for update
+	 * Updates the session last updated time to match the cache time
+	 *
 	 * @param int $userId
 	 * @return boolean
 	 */
 	public function clearUserUpdateFlag($userId) {
 		$cache = Application::instance ()->getCacheDriver ();
-		return $cache->delete ( sprintf ( 'refreshusersession-%s', $userId ) );
+		$lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
+		Session::set ( 'lastUpdated', $lastUpdated );
 	}
 
 }

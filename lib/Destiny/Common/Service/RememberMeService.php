@@ -32,26 +32,24 @@ class RememberMeService extends Service {
 	 */
 	public function init() {
 		$app = Application::instance ();
+		$authService = AuthenticationService::instance ();
 		
 		// Check if the users session has been flagged for update
 		if (Session::isStarted ()) {
 			$userId = Session::getCredentials ()->getUserId ();
-			if (! empty ( $userId )) {
-				if (AuthenticationService::instance ()->isUserFlaggedForUpdate ( $userId )) {
-					AuthenticationService::instance ()->clearUserUpdateFlag ( $userId );
-					$userManager = UserService::instance ();
-					$user = $userManager->getUserById ( $userId );
-					if (! empty ( $user )) {
-						$authService = AuthenticationService::instance ();
-						$authService->login ( $user, 'session' );
-					}
+			if (! empty ( $userId ) && $authService->isUserFlaggedForUpdate ( $userId )) {
+				$authService->clearUserUpdateFlag ( $userId );
+				$userManager = UserService::instance ();
+				$user = $userManager->getUserById ( $userId );
+				if (! empty ( $user )) {
+					$authService = AuthenticationService::instance ();
+					$authService->login ( $user, 'session' );
 				}
 			}
 		}
 		
 		// If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie
 		if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
-			$authService = AuthenticationService::instance ();
 			$userId = $authService->getRememberMe ();
 			if ($userId !== false) {
 				$userManager = UserService::instance ();

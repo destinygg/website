@@ -25,6 +25,7 @@ class Profile {
 	/**
 	 * @Route ("/profile")
 	 * @HttpMethod ({"GET"})
+	 * @Secure ({"USER"})
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
@@ -45,6 +46,7 @@ class Profile {
 	/**
 	 * @Route ("/profile")
 	 * @HttpMethod ({"POST"})
+	 * @Secure ({"USER"})
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
