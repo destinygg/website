@@ -67,7 +67,12 @@ class Edit {
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
 			throw new AppException ( 'userId required' );
 		}
-		$user = UserService::instance ()->getUserById ( $params ['id'] );
+
+		$authService = AuthenticationService::instance ();
+		$userService = UserService::instance ();
+		$userFeatureService = UserFeaturesService::instance ();
+		
+		$user = $userService->getUserById ( $params ['id'] );
 		if (empty ( $user )) {
 			throw new AppException ( 'User was not found' );
 		}
@@ -76,8 +81,8 @@ class Edit {
 		$email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
 		$country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
 		
-		AuthenticationService::instance ()->validateUsername ( $username, $user );
-		AuthenticationService::instance ()->validateEmail ( $email, $user );
+		$authService->validateUsername ( $username, $user );
+		$authService->validateEmail ( $email, $user );
 		if (! empty ( $country )) {
 			$countryArr = Country::getCountryByCode ( $country );
 			if (empty ( $countryArr )) {
@@ -92,25 +97,23 @@ class Edit {
 			'country' => $country,
 			'email' => $email 
 		);
-		UserService::instance ()->updateUser ( $user ['userId'], $userData );
-		$user = UserService::instance ()->getUserById ( $params ['id'] );
+		$userService->updateUser ( $user ['userId'], $userData );
+		$user = $userService->getUserById ( $params ['id'] );
 		
 		// Features
 		if (! isset ( $params ['features'] )) $params ['features'] = array ();
-		UserFeaturesService::instance ()->setUserFeatures ( $user ['userId'], $params ['features'] );
+		$userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
 		
 		// Roles
 		if (! isset ( $params ['roles'] )) $params ['roles'] = array ();
-		UserService::instance ()->setUserRoles ( $user ['userId'], $params ['roles'] );
+		$userService->setUserRoles ( $user ['userId'], $params ['roles'] );
 		
-		// Flag a user session for update
-		$cache = Application::instance ()->getCacheDriver ();
-		$cache->save ( sprintf ( 'refreshusersession-%s', $user ['userId'] ), 1 );
+		$authService->flagUserForUpdate ( $user ['userId'] );
 		
-		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
-		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );
+		$user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
+		$user ['features'] = $userFeatureService->getUserFeatures ( $user ['userId'] );
 		$model->user = $user;
-		$model->features = UserFeaturesService::instance ()->getFeatures ();
+		$model->features = $userFeatureService->getFeatures ();
 		$model->profileUpdated = true;
 		return 'admin/user';
 	}

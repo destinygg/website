@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Subscription;
 
+use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Commerce\PaymentProfileStatus;
 use Destiny\Common\Commerce\SubscriptionStatus;
 use Destiny\Common\ViewModel;
@@ -30,7 +31,8 @@ class Cancel {
 	 * @return string
 	 */
 	public function executePost(array $params, ViewModel $model) {
-		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$userId = Session::getCredentials ()->getUserId ();
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $userId );
 		if (! empty ( $subscription )) {
 			
 			if (! empty ( $subscription ['paymentProfileId'] )) {
@@ -39,14 +41,10 @@ class Cancel {
 					throw new AppException ( 'Please first cancel the attached payment profile.' );
 				}
 			}
-			// Update the credentials
-			$credentials = Session::getCredentials ();
-			$credentials->removeRole ( \Destiny\Common\UserRole::SUBSCRIBER );
-			$credentials->removeFeature ( \Destiny\Common\UserFeature::SUBSCRIBER );
-			Session::updateCredentials ( $credentials );
 			
 			$subscription ['status'] = SubscriptionStatus::CANCELLED;
 			SubscriptionsService::instance ()->updateSubscriptionState ( $subscription ['subscriptionId'], $subscription ['status'] );
+			AuthenticationService::instance ()->flagUserForUpdate ( $userId );
 			
 			$model->subscription = $subscription;
 			$model->subscriptionCancelled = true;

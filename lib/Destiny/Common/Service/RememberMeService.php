@@ -37,21 +37,13 @@ class RememberMeService extends Service {
 		if (Session::isStarted ()) {
 			$userId = Session::getCredentials ()->getUserId ();
 			if (! empty ( $userId )) {
-				$cache = $app->getCacheDriver ();
-				$cacheId = sprintf ( 'refreshusersession-%s', $userId );
-				if ($cache->fetch ( $cacheId ) === 1) {
-					$cache->delete ( $cacheId );
+				if (AuthenticationService::instance ()->isUserFlaggedForUpdate ( $userId )) {
+					AuthenticationService::instance ()->clearUserUpdateFlag ( $userId );
 					$userManager = UserService::instance ();
 					$user = $userManager->getUserById ( $userId );
 					if (! empty ( $user )) {
 						$authService = AuthenticationService::instance ();
-						$credentials = $authService->login ( $user, 'refreshed' );
-						$app->addEvent ( new AppEvent ( array (
-							'type' => AppEvent::EVENT_INFO,
-							'label' => 'Your session has been updated',
-							'message' => sprintf ( 'Nothing to worry about %s, just letting you know...', Session::getCredentials ()->getUsername () ) 
-						) ) );
-						ChatIntegrationService::instance ()->refreshUserCredentials ( $credentials );
+						$authService->login ( $user, 'session' );
 					}
 				}
 			}
@@ -112,7 +104,7 @@ class RememberMeService extends Service {
 	 * @param DateTime $expire
 	 * @param DateTime $createdDate
 	 */
-	public function addRememberMe($userId, $token, $tokenType,\DateTime $expire,\DateTime $createdDate) {
+	public function addRememberMe($userId, $token, $tokenType, \DateTime $expire, \DateTime $createdDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_rememberme', array (
 			'userId' => $userId,

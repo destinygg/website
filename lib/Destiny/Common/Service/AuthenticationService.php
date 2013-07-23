@@ -14,6 +14,7 @@ use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\UserRole;
+use Destiny\Common\UserFeature;
 
 class AuthenticationService extends Service {
 	
@@ -119,20 +120,13 @@ class AuthenticationService extends Service {
 	}
 
 	/**
-	 * Setup the authenticated user
+	 * Create a credentials object for a specific user
 	 *
 	 * @param array $user
+	 * @param string $authProvider
+	 * @return SessionCredentials
 	 */
-	public function login(array $user, $authProvider) {
-		$session = Session::instance ();
-		// Renew the session upon successful login, makes it slightly harder to hijack
-		$session->renew ( true );
-		
-		// Check the user status
-		if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
-			throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
-		}
-		
+	public function getUserCredentials(array $user, $authProvider) {
 		$credentials = new SessionCredentials ( $user );
 		$credentials->setAuthProvider ( $authProvider );
 		$credentials->addRoles ( UserRole::USER );
@@ -147,10 +141,27 @@ class AuthenticationService extends Service {
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
 		if (! empty ( $subscription )) {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
-			$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
+			$credentials->addFeatures ( UserFeature::SUBSCRIBER );
+		}
+		return $credentials;
+	}
+
+	/**
+	 * Setup the authenticated user
+	 *
+	 * @param array $user
+	 */
+	public function login(array $user, $authProvider) {
+		$session = Session::instance ();
+		// Renew the session upon successful login, makes it slightly harder to hijack
+		$session->renew ( true );
+		
+		// Check the user status
+		if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
+			throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
 		}
 		
-		// Update the auth credentials
+		$credentials = $this->getUserCredentials ( $user, $authProvider );
 		Session::updateCredentials ( $credentials );
 		
 		// @TODO find a better place for this
@@ -352,6 +363,46 @@ class AuthenticationService extends Service {
 			unset ( $_COOKIE [$this->remembermeId] );
 		}
 		setcookie ( $this->remembermeId, '', time () - 3600, Config::$a ['cookie'] ['path'], Config::$a ['cookie'] ['domain'] );
+	}
+
+	/**
+	 * Flag a user session for update
+	 * @param int $userId
+	 */
+	public function flagUserForUpdate($userId) {
+		$cache = Application::instance ()->getCacheDriver ();
+		$cache->save ( sprintf ( 'refreshusersession-%s', $userId ), 1 );
+		
+		$user = UserService::instance ()->getUserById ( $userId );
+		$credentials = $this->getUserCredentials ( $user, 'session' );
+		
+		// Update the chat session
+		ChatIntegrationService::instance ()->refreshUserCredentials ( $credentials );
+		
+		// Update the current session if the userId is the same as the credential user id
+		if (Session::getCredentials ()->getUserId () == $userId) {
+			Session::updateCredentials ( $credentials );
+		}
+	}
+
+	/**
+	 * Check if the user has been flagged for update
+	 * @param int $userId
+	 * @return boolean
+	 */
+	public function isUserFlaggedForUpdate($userId) {
+		$cache = Application::instance ()->getCacheDriver ();
+		return ($cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) ) === 1);
+	}
+
+	/**
+	 * Check if the user has been flagged for update
+	 * @param int $userId
+	 * @return boolean
+	 */
+	public function clearUserUpdateFlag($userId) {
+		$cache = Application::instance ()->getCacheDriver ();
+		return $cache->delete ( sprintf ( 'refreshusersession-%s', $userId ) );
 	}
 
 }

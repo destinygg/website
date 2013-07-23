@@ -18,7 +18,7 @@ class Ping {
 	 * @param array $params
 	 */
 	public function execute(array $params) {
-		Http::header ( 'X-Ping', 'Destiny' );
+		Http::header ( 'X-Pong', 'Destiny' );
 		Http::status ( Http::STATUS_OK );
 		exit ();
 	}

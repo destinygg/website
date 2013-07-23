@@ -55,6 +55,7 @@ class Profile {
 		// Get user
 		$userService = UserService::instance ();
 		$userFeaturesService = UserFeaturesService::instance ();
+		$authService = AuthenticationService::instance ();
 		$user = $userService->getUserById ( Session::get ( 'userId' ) );
 		if (empty ( $user )) {
 			throw new AppException ( 'Invalid user' );
@@ -102,25 +103,16 @@ class Profile {
 		
 		// Update user
 		$userService->updateUser ( $user ['userId'], $userData );
+		$authService->flagUserForUpdate ( $user ['userId'] );
 		
-		// Update authentication credentials
-		$credentials = Session::getCredentials ();
-		$credentials->setCountry ( $user ['country'] );
-		$credentials->setEmail ( $email );
-		$credentials->setUsername ( $username );
-		
-		// Get the users active subscriptions
-		$credentials->setFeatures ( $userFeaturesService->getUserFeatures ( Session::get ( 'userId' ) ) );
-		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
-		if (! empty ( $subscription )) {
-			$credentials->addRoles ( \Destiny\Common\UserRole::SUBSCRIBER );
-			$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
+		if (empty ( $subscription )) {
+			$subscription = SubscriptionsService::instance ()->getUserPendingSubscription ( $user ['userId'] );
 		}
 		
-		Session::updateCredentials ( $credentials );
-		
 		$model->title = 'Profile';
-		$model->user = $userService->getUserById ( Session::get ( 'userId' ) );
+		$model->user = $userService->getUserById ( $user ['userId'] );
+		$model->subscription = $subscription;
 		$model->profileUpdated = true;
 		return 'profile';
 	}

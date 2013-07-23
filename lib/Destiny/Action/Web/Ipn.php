@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Commerce\PaymentProfileStatus;
 use Destiny\Common\Commerce\SubscriptionStatus;
 use Destiny\Common\Commerce\OrderStatus;
@@ -76,6 +77,7 @@ class Ipn {
 		$log = Application::instance ()->getLogger ();
 		$orderService = OrdersService::instance ();
 		$subService = SubscriptionsService::instance ();
+		$authService = AuthenticationService::instance ();
 		
 		switch (strtolower ( $txnType )) {
 			
@@ -106,9 +108,7 @@ class Ipn {
 							if (! empty ( $subscription )) {
 								$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
 								$log->notice ( sprintf ( 'Updated subscription status %s status %s', $order ['orderId'], SubscriptionStatus::ACTIVE ) );
-								// Flag a user session for update
-								$cache = Application::instance ()->getCacheDriver ();
-								$cache->save ( sprintf ( 'refreshusersession-%s', $subscription ['userId'] ), 1 );
+								$authService->flagUserForUpdate ( $subscription ['userId'] );
 							}
 						}
 					}
@@ -164,10 +164,7 @@ class Ipn {
 				$payment ['paymentDate'] = Date::getDateTime ( $data ['payment_date'] )->format ( 'Y-m-d H:i:s' );
 				$orderService->addOrderPayment ( $payment );
 				$log->notice ( sprintf ( 'Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
-				
-				// Flag a user session for update
-				$cache = Application::instance ()->getCacheDriver ();
-				$cache->save ( sprintf ( 'refreshusersession-%s', $subscription ['userId'] ), 1 );
+				$authService->flagUserForUpdate ( $subscription ['userId'] );
 				break;
 			
 			// Sent if user cancels subscription from Paypal's site.

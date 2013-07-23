@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Order;
 
+use Destiny\Common\Service\AuthenticationService;
 use PayPal\EBLBaseComponents\PaymentRequestInfoType;
 use PayPal\CoreComponentTypes\BasicAmountType;
 use PayPal\EBLBaseComponents\AddressType;
@@ -213,12 +214,6 @@ class Complete {
 		// Create / adjust subscription
 		if ($orderStatus == OrderStatus::COMPLETED) {
 			$subscriptionStatus = SubscriptionStatus::ACTIVE;
-			// Add the subscriber role, this is just for UI
-			$credentials = Session::getCredentials ();
-			$credentials->addRoles ( \Destiny\Common\UserRole::SUBSCRIBER );
-			$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
-			Session::updateCredentials ( $credentials );
-			//
 		} else {
 			$subscriptionStatus = SubscriptionStatus::PENDING;
 		}
@@ -228,6 +223,11 @@ class Complete {
 		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], $start->format ( 'Y-m-d H:i:s' ), $end->format ( 'Y-m-d H:i:s' ), $subscriptionStatus, (! empty ( $paymentProfile )), 'destiny.gg' );
 		if (! empty ( $paymentProfile )) {
 			SubscriptionsService::instance ()->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
+		}
+		
+		// Add the subscriber role, this is just for UI
+		if ($orderStatus == OrderStatus::COMPLETED) {
+			AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
 		}
 		
 		// Show the order complete screen
