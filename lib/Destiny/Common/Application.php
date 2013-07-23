@@ -147,7 +147,11 @@ class Application extends Service {
 			$this->error ( Http::STATUS_ERROR, $e );
 		} catch ( \Exception $e ) {
 			$this->logger->critical ( $e->getMessage () );
-			$this->error ( Http::STATUS_ERROR, new AppException ( 'Maximum over-rustle has been achieved' ) );
+			if (Config::$a ['showExceptionMessages']) {
+				$this->error ( Http::STATUS_ERROR, new AppException ( 'Maximum over-rustle has been achieved' ) );
+			} else {
+				$this->error ( Http::STATUS_ERROR, $e->getMessage () );
+			}
 		}
 	}
 

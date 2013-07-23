@@ -4,6 +4,7 @@ return array (
 	'cleanOutputBuffer'		=> true, // If TRUE cleans the output buffer before sending well formatted responses
 	'allowImpersonation'	=> false, /// MUST BE OFF ON LIVE AT ALL TIMES /impersonate?user=Cene or /impersonate?userId=12
 	'useMinifiedFiles'		=> false, // Prevent using minified files
+	'showExceptionMessages'	=> false,
 	'profile' => array(
 		'nameChangeLimit' 	=> 1
 	),
