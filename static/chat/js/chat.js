@@ -249,7 +249,7 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatInfoMessage("Available emoticons: "+emoticons.join(", ")));
 			break;
 		case "help":
-			this.gui.push(new ChatInfoMessage("Available commands: /emotes /ignore (without arguments to list the nicks ignored) /unignore /maxlines /me /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans)"));
+			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
 			break;
 		case "me":
 			payload.data = "/" + str;
@@ -397,6 +397,7 @@ chat.prototype.handleCommand = function(str) {
 			this.gui.maxlines = newmaxlines;
 			this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
 			break;
+		case "unhighlight":
 		case "highlight":
 			
 			if (!parts[1]) {
@@ -415,13 +416,15 @@ chat.prototype.handleCommand = function(str) {
 			}
 			
 			var nick = parts[1].toLowerCase();
-			if (this.gui.highlightnicks[nick])
+			if (command == "unhighlight") {
 				delete(this.gui.highlightnicks[nick]);
-			else
+				this.gui.push(new ChatInfoMessage("No longer highlighting: " + nick));
+			} else {
 				this.gui.highlightnicks[nick] = true;
+				this.gui.push(new ChatInfoMessage("Now highlighting: " + nick));
+			}
 			
 			this.gui.saveChatOption('highlightnicks', this.gui.highlightnicks);
-			this.gui.push(new ChatInfoMessage("Now highlighting: " + nick));
 			break;
 		case "timestampformat":
 			if (!parts[1]) {
