@@ -68,6 +68,7 @@ class Login {
 			if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
 				throw new AppException ( 'You are already logged in and authenticated using this provider.' );
 			}
+			// @TODO this code block is wrong, and gets invoked when you try login after being authed
 			// We do this because some oauth providers don't support multiple callbacks
 			// Do an extra check for a variable that is only sent from the form within the profile
 			if (! isset ( $params ['accountMerge'] ) || $params ['accountMerge'] != '1') {

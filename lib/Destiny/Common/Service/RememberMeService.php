@@ -33,22 +33,6 @@ class RememberMeService extends Service {
 	public function init() {
 		$app = Application::instance ();
 		$authService = AuthenticationService::instance ();
-		
-		// Check if the users session has been flagged for update
-		if (Session::isStarted ()) {
-			$userId = Session::getCredentials ()->getUserId ();
-			$lastUpdate = $authService->isUserFlaggedForUpdate ( $userId );
-			if (! empty ( $userId ) && $lastUpdate !== false) {
-				$authService->clearUserUpdateFlag ( $userId, $lastUpdate );
-				$userManager = UserService::instance ();
-				$user = $userManager->getUserById ( $userId );
-				if (! empty ( $user )) {
-					$authService = AuthenticationService::instance ();
-					$authService->login ( $user, 'session' );
-				}
-			}
-		}
-		
 		// If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie
 		if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
 			$userId = $authService->getRememberMe ();
@@ -56,7 +40,9 @@ class RememberMeService extends Service {
 				$userManager = UserService::instance ();
 				$user = $userManager->getUserById ( $userId );
 				if (! empty ( $user )) {
-					$authService->login ( $user, 'rememberme' );
+					Session::start ( Session::START_NOCOOKIE );
+					$credentials = $authService->getUserCredentials ( $user, 'rememberme' );
+					Session::updateCredentials ( $credentials );
 					$authService->setRememberMe ( $user );
 					$app->addEvent ( new AppEvent ( array (
 						'type' => AppEvent::EVENT_INFO,

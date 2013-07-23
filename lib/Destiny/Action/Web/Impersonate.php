@@ -1,6 +1,8 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\Utils\Http;
+
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\AppException;
@@ -50,7 +52,10 @@ class Impersonate {
 			throw new AppException ( 'User not found. Try a different userId or username' );
 		}
 		
-		$authService->login ( $user, 'impersonating' );
+		$credentials = $authService->getUserCredentials ( $user, 'impersonating' );
+		Session::start ( Session::START_NOCOOKIE );
+		Session::updateCredentials ( $credentials );
+		
 		$app->addEvent ( new AppEvent ( array (
 			'type' => AppEvent::EVENT_DANGER,
 			'label' => sprintf ( 'You are now impersonating [%s]', Session::getCredentials ()->getUsername () ),

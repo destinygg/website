@@ -31,19 +31,11 @@ $session->setSessionCookie ( new SessionCookie ( Config::$a ['cookie'] ) );
 $session->setCredentials ( new SessionCredentials () );
 $app->setSession ( $session );
 
-// Puts the session into the cache
-$session->addCredentialHandler ( function (SessionInstance $session, SessionCredentials $credentials) {
-	ChatIntegrationService::instance ()->updateSession ( $session, $credentials );
-} );
-// Removes chat session from cache
-$session->addCleanupHandler ( function (SessionInstance $session) {
-	ChatIntegrationService::instance ()->deleteSession ( $session );
-} );
-
 // Start the session if a valid session cookie is found
 Session::start ( Session::START_IFCOOKIE );
 
-// Startup the remember me service
+// Startup the remember me and auth service
+AuthenticationService::instance ()->init ();
 RememberMeService::instance ()->init ();
 
 // Read all the @Route annotations from the classes within [lib]Destiny/Web/Action

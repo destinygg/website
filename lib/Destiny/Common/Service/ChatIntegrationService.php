@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Common\Service;
 
+use Destiny\Common\Session;
 use Destiny\Common\UserRole;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
@@ -30,7 +31,7 @@ class ChatIntegrationService extends Service {
 	 * @param SessionInstance $session
 	 * @param SessionCredentials $credentials
 	 */
-	public function updateSession(SessionInstance $session, SessionCredentials $credentials) {
+	public function setChatSession(SessionInstance $session, SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
@@ -40,7 +41,7 @@ class ChatIntegrationService extends Service {
 			$redis->set ( $id, $json, 30 * 24 * 60 * 60 );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
 			if ($update) {
-				$this->refreshUserCredentials ( $credentials );
+				$this->refreshChatSession ( $credentials );
 			}
 		}
 	}
@@ -49,24 +50,28 @@ class ChatIntegrationService extends Service {
 	 * Refresh a users session
 	 * @param SessionCredentials $credentials
 	 */
-	public function refreshUserCredentials(SessionCredentials $credentials) {
+	public function refreshChatSession(SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
 			$redis->publish ( 'refreshuser', $json );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
+			$log = Application::instance ()->getLogger ();
+			$log->notice ( 'Got refreshuser message [%s]', array (
+				'cred' => $credentials->getData (),
+				'session' => Session::getSessionId () 
+			) );
 		}
 	}
 
 	/**
 	 * Delete the session for the chat user
-	 * @param SessionInstance $session
 	 */
-	public function deleteSession(SessionInstance $session) {
+	public function deleteChatSession() {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
-			$redis->delete ( sprintf ( 'CHAT:%s', $session->getSessionId () ) );
+			$redis->delete ( sprintf ( 'CHAT:%s', Session::getSessionId () ) );
 		}
 	}
 

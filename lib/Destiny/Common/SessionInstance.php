@@ -34,20 +34,6 @@ class SessionInstance {
 	protected $credentials = null;
 	
 	/**
-	 * A list of callable credential handlers
-	 *
-	 * @var array
-	 */
-	protected $credentialHandlers = array ();
-	
-	/**
-	 * A list of callable cleanup handlers
-	 *
-	 * @var array
-	 */
-	protected $cleanupHandlers = array ();
-
-	/**
 	 * Setup the session
 	 *
 	 * @param array $params
@@ -213,46 +199,6 @@ class SessionInstance {
 		return $this->started;
 	}
 
-	/**
-	 * Prepends a handler to the handler stack
-	 *
-	 * @param callabel $fn
-	 */
-	public function addCredentialHandler($fn) {
-		array_unshift ( $this->credentialHandlers, $fn );
-	}
-
-	/**
-	 * Run all the credential managers
-	 *
-	 * @return void
-	 */
-	public function executeCredentialHandlers(SessionCredentials $credentials) {
-		foreach ( $this->credentialHandlers as $handler ) {
-			call_user_func ( $handler, $this, $credentials );
-		}
-	}
-
-	/**
-	 * Prepends a handler to the handler stack
-	 *
-	 * @param callabel $fn
-	 */
-	public function addCleanupHandler($fn) {
-		array_unshift ( $this->cleanupHandlers, $fn );
-	}
-
-	/**
-	 * Run all the cleanup handlers
-	 *
-	 * @return void
-	 */
-	public function executeCleanupHandlers() {
-		foreach ( $this->cleanupHandlers as $handler ) {
-			call_user_func ( $handler, $this );
-		}
-	}
-
 }
 class SessionCookie {
 	
@@ -407,7 +353,7 @@ class SessionCredentials {
 	 * @var array
 	 */
 	protected $features = array ();
-	
+
 	/**
 	 * Create a session credentials instance
 	 * @param array $params
@@ -466,7 +412,7 @@ class SessionCredentials {
 			'country' => $this->getCountry (),
 			'roles' => $this->getRoles (),
 			'authProvider' => $this->getAuthProvider (),
-			'features' => $this->getFeatures ()
+			'features' => $this->getFeatures () 
 		);
 	}
 
@@ -713,20 +659,16 @@ abstract class Session {
 	}
 
 	/**
-	 * Set and validate authentication creditials
+	 * Updates the session variables
 	 *
 	 * @param SessionCredentials $credentials
 	 */
 	public static function updateCredentials(SessionCredentials $credentials) {
 		$session = self::instance ();
-
-		// Puts all the credentials on the session data
 		$params = $credentials->getData ();
 		foreach ( $params as $name => $value ) {
 			$session->set ( $name, $value );
 		}
-		
-		$session->executeCredentialHandlers ( $credentials );
 		$session->setCredentials ( $credentials );
 	}
 
@@ -746,7 +688,6 @@ abstract class Session {
 	 */
 	public static function destroy() {
 		$session = self::instance ();
-		$session->executeCleanupHandlers ();
 		$session->destroy ();
 	}
 

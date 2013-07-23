@@ -109,9 +109,36 @@ class AuthenticationService extends Service {
 	}
 
 	/**
+	 * Check if a user has been flagged for updates, and refreshes the session credentials
+	 * @throws AppException
+	 */
+	public function init() {
+		$app = Application::instance ();
+		// Check if the users session has been flagged for update
+		if (Session::isStarted ()) {
+			$userId = Session::getCredentials ()->getUserId ();
+			$lastUpdate = $this->isUserFlaggedForUpdate ( $userId );
+			if (! empty ( $userId ) && $lastUpdate !== false) {
+				$this->clearUserUpdateFlag ( $userId, $lastUpdate );
+				$userManager = UserService::instance ();
+				$user = $userManager->getUserById ( $userId );
+				if (! empty ( $user )) {
+					// Check the user status
+					if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
+						throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
+					}
+					$credentials = $this->getUserCredentials ( $user, 'session' );
+					Session::updateCredentials ( $credentials );
+				}
+			}
+		}
+	}
+
+	/**
 	 * Logout a user
 	 */
 	public function logout() {
+		ChatIntegrationService::instance ()->deleteChatSession ();
 		$userId = Session::getCredentials ()->getUserId ();
 		if (! empty ( $userId )) {
 			$this->clearRememberMe ( $userId );
@@ -143,35 +170,6 @@ class AuthenticationService extends Service {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
 			$credentials->addFeatures ( UserFeature::SUBSCRIBER );
 		}
-		return $credentials;
-	}
-
-	/**
-	 * Setup the authenticated user
-	 *
-	 * @param array $user
-	 */
-	public function login(array $user, $authProvider) {
-		$session = Session::instance ();
-		// Renew the session upon successful login, makes it slightly harder to hijack
-		$session->renew ( true );
-		
-		// Check the user status
-		if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
-			throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
-		}
-		
-		$credentials = $this->getUserCredentials ( $user, $authProvider );
-		Session::updateCredentials ( $credentials );
-		
-		// @TODO find a better place for this
-		// If this user has no team, create a new one
-		$team = TeamService::instance ()->getTeamByUserId ( $user ['userId'] );
-		if (empty ( $team )) {
-			$team = array ();
-			$team ['teamId'] = TeamService::instance ()->addTeam ( $user ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
-		}
-		Session::set ( 'teamId', $team ['teamId'] );
 		return $credentials;
 	}
 
@@ -251,8 +249,30 @@ class AuthenticationService extends Service {
 			) );
 		}
 		
-		// Login, setup user session
-		$this->login ( $profileUser, $authCreds ['authProvider'] );
+		// Check the user status
+		if (strcasecmp ( $profileUser ['userStatus'], 'Active' ) !== 0) {
+			throw new AppException ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
+		}
+		
+		// Create the session
+		$user = $profileUser;
+		$session = Session::instance ();
+		// Renew the session upon successful login, makes it slightly harder to hijack
+		$session->renew ( true );
+		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
+		Session::updateCredentials ( $credentials );
+		ChatIntegrationService::instance ()->setChatSession ( $session, $credentials );
+		
+		// @TODO find a better place for this
+		// If this user has no team, create a new one
+		$team = TeamService::instance ()->getTeamByUserId ( $profileUser ['userId'] );
+		if (empty ( $team )) {
+			$team = array ();
+			$team ['teamId'] = TeamService::instance ()->addTeam ( $profileUser ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
+		}
+		Session::set ( 'teamId', $team ['teamId'] );
+		
+		// Remember me
 		if (Session::set ( 'rememberme' )) {
 			$this->setRememberMe ( $profileUser );
 		}
@@ -334,7 +354,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
+	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),
@@ -383,7 +403,7 @@ class AuthenticationService extends Service {
 		}
 		
 		// Update the chat session
-		ChatIntegrationService::instance ()->refreshUserCredentials ( $credentials );
+		ChatIntegrationService::instance ()->refreshChatSession ( $credentials );
 	}
 
 	/**
