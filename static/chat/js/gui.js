@@ -1,7 +1,8 @@
 
 // Need a better place for these
 var emoticons = ["Abathur", "ASLAN", "BasedGod", "BibleThump", "BloodTrail", "BrainSlug", "DappaKappa", "DJAslan", "Dravewin", "DURRSTINY", "FailFish", "FeedNathan", "FIDGETLOL", "FrankerZ", "GameOfThrows", "Heimerdonger", "Hhhehhehe", "INFESTINY", "Kappa", "Klappa", "Kreygasm", "LUL", "NoTears", "OverRustle", "PJSalt", "SoSad", "SSSsss", "SURPRISE", "WORTH"];
-var emoteregex = new RegExp('\\b(?:'+emoticons.join('|')+')\\b');
+var emoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b');
+var gemoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b', 'gm');
 var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 
 (function($){
@@ -715,6 +716,14 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 			this.message = this.message.substring(1);
 		this.isAddon = false;
 		this.user = user;
+		this.emoteregex = emoteregex;
+		for (var i = user.features.length - 1; i >= 0; i--) {
+			var feature = user.features[i];
+			if (feature == "subscriber" || feature == "vip" || feature == "admin") {
+				this.emoteregex = gemoteregex;
+				break;
+			}
+		};
 		return this;
 	};
 	$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
@@ -731,10 +740,7 @@ var linkregex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=
 		var elem = $('<msg/>').text(this.message),
 		encoded  = elem.html();
 		
-		var emoticon = emoteregex.exec(encoded);
-		if (emoticon)
-			encoded = encoded.replace(emoticon[0], '<div title="'+emoticon[0]+'" class="chat-emote chat-emote-' + emoticon[0] +'"></div>');
-		
+		encoded = encoded.replace(this.emoteregex, '<div title="$1" class="chat-emote chat-emote-$1"></div>');
 		encoded = encoded.replace(linkregex, '<a href="$1" target="_blank" class="externallink">$1</a>');
 		if(this.isEmote)
 			elem.addClass('emote');
