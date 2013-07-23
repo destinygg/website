@@ -390,23 +390,22 @@ class AuthenticationService extends Service {
 	 * Check if the user has been flagged for update
 	 *
 	 * @param int $userId
-	 * @return boolean
+	 * @return last update time | false
 	 */
 	public function isUserFlaggedForUpdate($userId) {
 		$cache = Application::instance ()->getCacheDriver ();
 		$lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
-		return ($lastUpdated && $lastUpdated != Session::get ( 'lastUpdated' ));
+		return ($lastUpdated && $lastUpdated != Session::get ( 'lastUpdated' )) ? $lastUpdated : false;
 	}
 
 	/**
 	 * Updates the session last updated time to match the cache time
 	 *
 	 * @param int $userId
+	 * @param int $lastUpdated
 	 * @return boolean
 	 */
-	public function clearUserUpdateFlag($userId) {
-		$cache = Application::instance ()->getCacheDriver ();
-		$lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
+	public function clearUserUpdateFlag($userId, $lastUpdated) {
 		Session::set ( 'lastUpdated', $lastUpdated );
 	}
 

@@ -37,8 +37,9 @@ class RememberMeService extends Service {
 		// Check if the users session has been flagged for update
 		if (Session::isStarted ()) {
 			$userId = Session::getCredentials ()->getUserId ();
-			if (! empty ( $userId ) && $authService->isUserFlaggedForUpdate ( $userId )) {
-				$authService->clearUserUpdateFlag ( $userId );
+			$lastUpdate = $authService->isUserFlaggedForUpdate ( $userId );
+			if (! empty ( $userId ) && $lastUpdate !== false) {
+				$authService->clearUserUpdateFlag ( $userId, $lastUpdate );
 				$userManager = UserService::instance ();
 				$user = $userManager->getUserById ( $userId );
 				if (! empty ( $user )) {
