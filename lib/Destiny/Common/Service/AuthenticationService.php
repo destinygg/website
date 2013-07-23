@@ -334,7 +334,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
+	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),
@@ -370,19 +370,20 @@ class AuthenticationService extends Service {
 	 * @param int $userId
 	 */
 	public function flagUserForUpdate($userId) {
-		$cache = Application::instance ()->getCacheDriver ();
-		$cache->save ( sprintf ( 'refreshusersession-%s', $userId ), 1 );
-		
 		$user = UserService::instance ()->getUserById ( $userId );
 		$credentials = $this->getUserCredentials ( $user, 'session' );
 		
+		if (Session::getCredentials ()->getUserId () == $userId) {
+			// Update the current session if the userId is the same as the credential user id
+			Session::updateCredentials ( $credentials );
+		} else {
+			// Otherwise set a session variable which is picked up by the remember me service to update the session
+			$cache = Application::instance ()->getCacheDriver ();
+			$cache->save ( sprintf ( 'refreshusersession-%s', $userId ), 1 );
+		}
+		
 		// Update the chat session
 		ChatIntegrationService::instance ()->refreshUserCredentials ( $credentials );
-		
-		// Update the current session if the userId is the same as the credential user id
-		if (Session::getCredentials ()->getUserId () == $userId) {
-			Session::updateCredentials ( $credentials );
-		}
 	}
 
 	/**
