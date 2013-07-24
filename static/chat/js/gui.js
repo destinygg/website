@@ -747,14 +747,7 @@ function urlReplaceCallback(match, url, scheme) {
 			this.message = this.message.substring(1);
 		this.isAddon = false;
 		this.user = user;
-		this.emoteregex = emoteregex;
-		for (var i = user.features.length - 1; i >= 0; i--) {
-			var feature = user.features[i];
-			if (feature == "subscriber" || feature == "vip" || feature == "admin") {
-				this.emoteregex = gemoteregex;
-				break;
-			}
-		};
+		this.emoteregex = (user.features || []).length > 0? gemoteregex :emoteregex;
 		return this;
 	};
 	$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
