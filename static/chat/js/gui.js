@@ -16,7 +16,7 @@ var linkregex;
 		"(?:[\\w-]+\\.)+" + //match subdomains and domain
 		tlds + //match valid+accepted TLDs, we don't care about punycode
 		"(?:\\/[" + urlchars + "]*)?)" + //match path and query 
-		"\\b", "gim"
+		"(?=$|[\\s\\)\\]])", "gim"
 	);
 })();
 
