@@ -129,6 +129,7 @@ class AuthenticationService extends Service {
 					}
 					$credentials = $this->getUserCredentials ( $user, 'session' );
 					Session::updateCredentials ( $credentials );
+					ChatIntegrationService::instance ()->initChatSession ( $credentials );
 				}
 			}
 		}
@@ -261,7 +262,7 @@ class AuthenticationService extends Service {
 		$session->renew ( true );
 		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
 		Session::updateCredentials ( $credentials );
-		ChatIntegrationService::instance ()->setChatSession ( $credentials );
+		ChatIntegrationService::instance ()->initChatSession ( $credentials );
 		
 		// @TODO find a better place for this
 		// If this user has no team, create a new one
@@ -396,14 +397,14 @@ class AuthenticationService extends Service {
 		if (Session::getCredentials ()->getUserId () == $userId) {
 			// Update the current session if the userId is the same as the credential user id
 			Session::updateCredentials ( $credentials );
+			// Init / create the current users chat session
+			ChatIntegrationService::instance ()->initChatSession ( $credentials );
 		} else {
 			// Otherwise set a session variable which is picked up by the remember me service to update the session
 			$cache = Application::instance ()->getCacheDriver ();
 			$cache->save ( sprintf ( 'refreshusersession-%s', $userId ), time (), intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
 		}
-		
-		// Update the chat session
-		ChatIntegrationService::instance ()->refreshChatSession ( $credentials );
+		ChatIntegrationService::instance ()->refreshChatUserSession ( $credentials );
 	}
 
 	/**
@@ -412,7 +413,7 @@ class AuthenticationService extends Service {
 	 * @param int $userId
 	 * @return last update time | false
 	 */
-	public function isUserFlaggedForUpdate($userId) {
+	private function isUserFlaggedForUpdate($userId) {
 		$cache = Application::instance ()->getCacheDriver ();
 		$lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
 		return ($lastUpdated && $lastUpdated != Session::get ( 'lastUpdated' )) ? $lastUpdated : false;
@@ -425,7 +426,7 @@ class AuthenticationService extends Service {
 	 * @param int $lastUpdated
 	 * @return boolean
 	 */
-	public function clearUserUpdateFlag($userId, $lastUpdated) {
+	private function clearUserUpdateFlag($userId, $lastUpdated) {
 		Session::set ( 'lastUpdated', $lastUpdated );
 	}
 

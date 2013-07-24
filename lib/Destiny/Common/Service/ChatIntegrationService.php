@@ -27,40 +27,49 @@ class ChatIntegrationService extends Service {
 	}
 
 	/**
-	 * Handle the update of the credentials for chat
+	 * Refresh a users session
+	 *
 	 * @param SessionCredentials $credentials
 	 */
-	public function setChatSession(SessionCredentials $credentials) {
+	public function initChatSession(SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
-			$json = json_encode ( $credentials->getData () );
-			$id = sprintf ( 'CHAT:%s', Session::getSessionId () );
-			$update = ($redis->get ( $id )) ? true : false;
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-			$redis->set ( $id, $json, 30 * 24 * 60 * 60 );
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
-			if ($update) {
-				$this->refreshChatSession ( $credentials );
+			$sessionId = Session::getSessionId ();
+			$id = sprintf ( 'CHAT:%s', $sessionId );
+			if (! $redis->get ( $id )) {
+				$this->setChatSession ( $credentials, $sessionId );
 			}
 		}
 	}
 
 	/**
-	 * Refresh a users session
+	 * Handle the update of the credentials for chat
+	 * @param SessionCredentials $credentials
+	 * @param string $sessionId
+	 */
+	public function setChatSession(SessionCredentials $credentials, $sessionId) {
+		$redis = Application::instance ()->getRedis ();
+		if (! empty ( $redis )) {
+			$json = json_encode ( $credentials->getData () );
+			$id = sprintf ( 'CHAT:%s', $sessionId );
+			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
+			$redis->set ( $id, $json, 30 * 24 * 60 * 60 );
+			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
+		}
+	}
+
+	/**
+	 * Update a users session
+	 *
 	 * @param SessionCredentials $credentials
 	 */
-	public function refreshChatSession(SessionCredentials $credentials) {
+	public function refreshChatUserSession(SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
 			$redis->publish ( 'refreshuser', $json );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
-			$log = Application::instance ()->getLogger ();
-			$log->notice ( 'Got refreshuser message [%s]', array (
-				'cred' => $credentials->getData (),
-				'session' => Session::getSessionId () 
-			) );
 		}
 	}
 

@@ -43,6 +43,7 @@ class RememberMeService extends Service {
 					Session::start ( Session::START_NOCOOKIE );
 					$credentials = $authService->getUserCredentials ( $user, 'rememberme' );
 					Session::updateCredentials ( $credentials );
+					ChatIntegrationService::instance ()->initChatSession ( $credentials );
 					$authService->setRememberMe ( $user );
 					$app->addEvent ( new AppEvent ( array (
 						'type' => AppEvent::EVENT_INFO,
@@ -89,7 +90,7 @@ class RememberMeService extends Service {
 	 * @param DateTime $expire
 	 * @param DateTime $createdDate
 	 */
-	public function addRememberMe($userId, $token, $tokenType, \DateTime $expire, \DateTime $createdDate) {
+	public function addRememberMe($userId, $token, $tokenType,\DateTime $expire,\DateTime $createdDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_rememberme', array (
 			'userId' => $userId,

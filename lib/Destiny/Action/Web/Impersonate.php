@@ -1,8 +1,8 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\Service\ChatIntegrationService;
 use Destiny\Common\Utils\Http;
-
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\AppException;
@@ -55,6 +55,7 @@ class Impersonate {
 		$credentials = $authService->getUserCredentials ( $user, 'impersonating' );
 		Session::start ( Session::START_NOCOOKIE );
 		Session::updateCredentials ( $credentials );
+		ChatIntegrationService::instance ()->initChatSession ( $credentials );
 		
 		$app->addEvent ( new AppEvent ( array (
 			'type' => AppEvent::EVENT_DANGER,
