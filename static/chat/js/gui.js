@@ -13,10 +13,10 @@ var linkregex;
 		"(?:^|[\\s([])" + //Match valid delimiters for multi URL lines
 		"(((?:https?|ftp):\\/\\/)?" + //Begin URL group, match and group protocol (if any).
 		"(?:[\\w]+(?::[" + urlchars + "]*)?@)?" + //Match basic auth user/password prefix
-		"(?:[\\w-]+\\.)+" + //match subdomains(amount limited) and domain
-		tlds +//match valid+accepted TLDs
+		"(?:[\\w-]+\\.)+" + //match subdomains and domain
+		tlds + //match valid+accepted TLDs, we don't care about punycode
 		"(?:\\/[" + urlchars + "]*)?)" + //match path and query 
-		"\\b","gim"
+		"\\b", "gim"
 	);
 })();
 
