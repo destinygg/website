@@ -3,30 +3,39 @@
 var emoticons = ["Abathur", "ASLAN", "BasedGod", "BibleThump", "BloodTrail", "BrainSlug", "DappaKappa", "DJAslan", "Dravewin", "DURRSTINY", "FailFish", "FeedNathan", "FIDGETLOL", "FrankerZ", "GameOfThrows", "Heimerdonger", "Hhhehhehe", "INFESTINY", "Kappa", "Klappa", "Kreygasm", "LUL", "NoTears", "OverRustle", "PJSalt", "SoSad", "SSSsss", "SURPRISE", "WORTH"];
 var emoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b');
 var gemoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b', 'gm');
-var urlchars = "\\w!\"#$%&'*+,-./:;<=>?@\\\\^`|~";//chars allowed in url path+auth params
-var tlds ="(AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|POST|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
-var linkregex = new RegExp("(?:^|[\\s([])" + //Match valid delimiters for multi URL lines
-"(((?:http|https|ftp):\\/\\/)?" + //Begin URL group, match and group protocol (if any).
-"(?:[\\w]+(?::[" + urlchars + "]*)?@)?" + //Match basic auth user/password prefix
-"(?:[\\w-]+\\.){1,5}" + //match subdomains(amount limited) and domain
-tlds +//match valid+accepted TLDs
-"(\\/[" + urlchars + "]*)?)" + //match path and query 
-"\\b","gim");
-var htmlencmap = {
-	"&": "&amp;",
-	"'": "&#39;",
-	'"': "&quot;",
-	"<": "&lt;",
-	">": "&gt;"
-};
-var htmlencregex = /[&"'<>]/g;
+var linkregex;
 
-function urlReplaceCallback(match, url, proto, tld, path){
-	var encUrl = url.replace(htmlencregex,function(c){
+(function() {
+	var urlchars = "\\w!\"#$%&'*+,-./:;<=>?@\\\\^`|~", //chars allowed in url path+auth params
+	    tlds     = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|POST|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+	
+	linkregex = new RegExp(
+		"(?:^|[\\s([])" + //Match valid delimiters for multi URL lines
+		"(((?:https?|ftp):\\/\\/)?" + //Begin URL group, match and group protocol (if any).
+		"(?:[\\w]+(?::[" + urlchars + "]*)?@)?" + //Match basic auth user/password prefix
+		"(?:[\\w-]+\\.)+" + //match subdomains(amount limited) and domain
+		tlds +//match valid+accepted TLDs
+		"(?:\\/[" + urlchars + "]*)?)" + //match path and query 
+		"\\b","gim"
+	);
+})();
+
+function urlReplaceCallback(match, url, scheme) {
+	var encodedUrl = url.replace(/[&"'<>]/g, function(c) {
+		var htmlencmap = {
+			"&": "&amp;",
+			"'": "&#39;",
+			'"': "&quot;",
+			"<": "&lt;",
+			">": "&gt;"
+		};
 		return htmlencmap[c];
 	});
-	var protoPfx = ((proto)?"":"http://");
-	return match.replace(url,'<a target="_blank" class="externallink" href="' + protoPfx + encUrl + '">' + encUrl + '</a>');
+	
+	if (!scheme)
+		scheme = 'http://';
+	
+	return match.replace(url, '<a target="_blank" class="externallink" href="' + scheme + encodedUrl + '">' + encodedUrl + '</a>');
 }
 
 (function($){
