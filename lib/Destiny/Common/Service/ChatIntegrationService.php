@@ -28,14 +28,13 @@ class ChatIntegrationService extends Service {
 
 	/**
 	 * Handle the update of the credentials for chat
-	 * @param SessionInstance $session
 	 * @param SessionCredentials $credentials
 	 */
-	public function setChatSession(SessionInstance $session, SessionCredentials $credentials) {
+	public function setChatSession(SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
-			$id = sprintf ( 'CHAT:%s', $session->getSessionId () );
+			$id = sprintf ( 'CHAT:%s', Session::getSessionId () );
 			$update = ($redis->get ( $id )) ? true : false;
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
 			$redis->set ( $id, $json, 30 * 24 * 60 * 60 );

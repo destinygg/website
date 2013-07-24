@@ -261,7 +261,7 @@ class AuthenticationService extends Service {
 		$session->renew ( true );
 		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
 		Session::updateCredentials ( $credentials );
-		ChatIntegrationService::instance ()->setChatSession ( $session, $credentials );
+		ChatIntegrationService::instance ()->setChatSession ( $credentials );
 		
 		// @TODO find a better place for this
 		// If this user has no team, create a new one
@@ -354,7 +354,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),
