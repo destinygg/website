@@ -5,7 +5,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\UserRole;
+use Destiny\Common\UserFeature;
 ?>
 <!DOCTYPE html>
 <html>

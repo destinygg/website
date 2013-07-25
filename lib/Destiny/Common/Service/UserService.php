@@ -332,7 +332,7 @@ class UserService extends Service {
 			ORDER BY u.username DESC
 			LIMIT :start,:limit
 		' );
-		$stmt->bindValue ( 'username', $username, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'username', '%'.$username.'%', \PDO::PARAM_STR );
 		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();

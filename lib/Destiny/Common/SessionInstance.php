@@ -32,7 +32,7 @@ class SessionInstance {
 	 * @var SessionCredentials
 	 */
 	protected $credentials = null;
-	
+
 	/**
 	 * Setup the session
 	 *
@@ -552,7 +552,7 @@ class SessionCredentials {
 	 */
 	public function hasFeature($featureId) {
 		foreach ( $this->features as $feature ) {
-			if ($feature == $featureId) {
+			if (strcasecmp ( $feature, $featureId ) == 0) {
 				return true;
 			}
 		}

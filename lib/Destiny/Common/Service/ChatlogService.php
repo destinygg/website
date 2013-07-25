@@ -25,9 +25,9 @@ class ChatlogService extends Service {
 	}
 
 	/**
-	 * Returns a new ChatLog
+	 * Returns a chat log list
 	 *
-	 * @return \Destiny\Service\ChatLog
+	 * @return array
 	 */
 	public function getChatLog($limit) {
 		$conn = Application::instance ()->getConnection ();
