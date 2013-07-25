@@ -71,11 +71,7 @@ abstract class Date {
 			$format [] = "%i " . $doPlural ( $interval->i, "minute" );
 		}
 		if ($interval->s !== 0) {
-			if (! count ( $format )) {
-				return "less than a minute";
-			} else {
-				$format [] = "%s " . $doPlural ( $interval->s, "second" );
-			}
+			$format [] = "%s " . $doPlural ( $interval->s, "second" );
 		}
 		// We use the two biggest parts
 		if (count ( $format ) > 1) {
