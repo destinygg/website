@@ -1,4 +1,3 @@
-
 // Need a better place for these
 var emoticons = ["Abathur", "ASLAN", "BasedGod", "BibleThump", "BloodTrail", "BrainSlug", "DappaKappa", "DJAslan", "Dravewin", "DURRSTINY", "FailFish", "FeedNathan", "FIDGETLOL", "FrankerZ", "GameOfThrows", "Heimerdonger", "Hhhehhehe", "INFESTINY", "Kappa", "Klappa", "Kreygasm", "LUL", "NoTears", "OverRustle", "PJSalt", "SoSad", "SSSsss", "SURPRISE", "WORTH"];
 var emoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b');
@@ -169,7 +168,20 @@ function urlReplaceCallback(match, url, scheme) {
 						break;
 					
 					case 'notifications':
-						var permission = notifications.checkPermission();
+						if (!notifications)
+							break;
+						
+						var permission;
+						if (notifications.checkPermission)
+							permission = notifications.checkPermission();
+						else if (notifications.permission) {
+							switch(notifications.permission) {
+								case "default": permission = 1; break;
+								case "denied":  permission = 2; break;
+								case "granted": permission = 3; break;
+							}
+						}
+						
 						if (permission == 1) // not yet allowed
 							notifications.requestPermission(function(){});
 						else if (permission == 2) {
@@ -498,7 +510,7 @@ function urlReplaceCallback(match, url, scheme) {
 		},
 		
 		setupNotifications: function() {
-			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
+			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications || window.Notification;
 			if(!notifications)
 				$('#chat-settings input[name=notifications]').closest('label').text('Notifications are not supported by your browser');
 			
@@ -508,24 +520,49 @@ function urlReplaceCallback(match, url, scheme) {
 		},
 		
 		showNotification: function(message) {
-			var msg = message.message, title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...';
+			if (!this.notifications)
+				return;
+			
+			var msg   = message.message,
+			    title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...',
+			    notif = null,
+			    self  = this;
+			
 			if (msg.length >= 30)
 				msg = msg.substring(0, 30) + '...';
-
-			var notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
 			
 			// only ever show a single notification
 			if (this.currentnotification)
-				this.currentnotification.cancel();
+				this.currentnotification.close();
 			
-			this.currentnotification = notif;
-			notif.show();
-			var self = this;
+			if (notifications.createNotification){
+				// Try more widely supported webkit API first
+				notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
+				this.currentnotification = notif;
+				notif.show();
+				
+			} else {
+				// Fallback to standard HTML5 notifications if needed
+				notif =  new notifications(title, {
+					icon: destiny.cdn+'/chat/img/notifyicon.png',
+					body: msg,
+					tag : message.timestamp.unix(),
+					dir : "auto"
+				});
+				this.currentnotification = notif;
+			}
+			
+			// If a notification was created and shown, close it after 5 seconds
 			setTimeout(function() {
-				notif.cancel();
-				self.currentnotification = null;
+				notif.close();
+				// only null out our own notification so that we can still cancel
+				// the previous notification
+				if (notif === self.currentnotification)
+					self.currentnotification = null;
+				
 				self = null;
 			}, 5000);
+			
 		},
 		
 		loadCustomHighlights: function() {
