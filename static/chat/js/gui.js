@@ -168,7 +168,20 @@ function urlReplaceCallback(match, url, scheme) {
 						break;
 					
 					case 'notifications':
-						var permission = notifications.checkPermission();
+						if (!notifications)
+							break;
+						
+						var permission;
+						if (notifications.checkPermission)
+							permission = notifications.checkPermission();
+						else if (notifications.permission) {
+							switch(notifications.permission) {
+								case "default": permission = 1; break;
+								case "denied":  permission = 2; break;
+								case "granted": permission = 3; break;
+							}
+						}
+						
 						if (permission == 1) // not yet allowed
 							notifications.requestPermission(function(){});
 						else if (permission == 2) {
@@ -507,46 +520,49 @@ function urlReplaceCallback(match, url, scheme) {
 		},
 		
 		showNotification: function(message) {
-			var msg = message.message, title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...';
+			if (!this.notifications)
+				return;
+			
+			var msg   = message.message,
+			    title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...',
+			    notif = null,
+			    self  = this;
+			
 			if (msg.length >= 30)
 				msg = msg.substring(0, 30) + '...';
-			var notif = null;
-			var self = this;
 			
 			// only ever show a single notification
 			if (this.currentnotification)
-				this.currentnotification.cancel();
-						
+				this.currentnotification.close();
+			
 			if (notifications.createNotification){
 				// Try more widely supported webkit API first
 				notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
 				this.currentnotification = notif;
 				notif.show();
 				
-			} else if (window.Notification) {
-				// Fallback to std. HTML5 notifications if needed
-				if (this.currentnotification)
-					this.currentnotification.close();
-				
-				notif =  new Notification(title, {
-					icon: destiny.cdn+'/chat/img/notifyicon.png',					
+			} else {
+				// Fallback to standard HTML5 notifications if needed
+				notif =  new notifications(title, {
+					icon: destiny.cdn+'/chat/img/notifyicon.png',
 					body: msg,
-					tag: message.timestamp.unix(),
-					dir: "auto"
+					tag : message.timestamp.unix(),
+					dir : "auto"
 				});
 				this.currentnotification = notif;
 			}
 			
 			// If a notification was created and shown, close it after 5 seconds
-			if (notif) {
-				setTimeout(function() {
-					notif.close(); 
-					if (notif === self.currentnotification) {
-						self.currentnotification = null;
-					}
-					self = null;
-				}, 5000);
-			}				
+			setTimeout(function() {
+				notif.close();
+				// only null out our own notification so that we can still cancel
+				// the previous notification
+				if (notif === self.currentnotification)
+					self.currentnotification = null;
+				
+				self = null;
+			}, 5000);
+			
 		},
 		
 		loadCustomHighlights: function() {
