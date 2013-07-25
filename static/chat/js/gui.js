@@ -1,4 +1,3 @@
-
 // Need a better place for these
 var emoticons = ["Abathur", "ASLAN", "BasedGod", "BibleThump", "BloodTrail", "BrainSlug", "DappaKappa", "DJAslan", "Dravewin", "DURRSTINY", "FailFish", "FeedNathan", "FIDGETLOL", "FrankerZ", "GameOfThrows", "Heimerdonger", "Hhhehhehe", "INFESTINY", "Kappa", "Klappa", "Kreygasm", "LUL", "NoTears", "OverRustle", "PJSalt", "SoSad", "SSSsss", "SURPRISE", "WORTH"];
 var emoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b');
@@ -498,7 +497,7 @@ function urlReplaceCallback(match, url, scheme) {
 		},
 		
 		setupNotifications: function() {
-			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications;
+			window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications || window.Notification;
 			if(!notifications)
 				$('#chat-settings input[name=notifications]').closest('label').text('Notifications are not supported by your browser');
 			
@@ -511,21 +510,43 @@ function urlReplaceCallback(match, url, scheme) {
 			var msg = message.message, title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...';
 			if (msg.length >= 30)
 				msg = msg.substring(0, 30) + '...';
-
-			var notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
+			var notif = null;
+			var self = this;
 			
 			// only ever show a single notification
 			if (this.currentnotification)
 				this.currentnotification.cancel();
+						
+			if (notifications.createNotification){
+				// Try more widely supported webkit API first
+				notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
+				this.currentnotification = notif;
+				notif.show();
+				
+			} else if (window.Notification) {
+				// Fallback to std. HTML5 notifications if needed
+				if (this.currentnotification)
+					this.currentnotification.close();
+				
+				notif =  new Notification(title, {
+					icon: destiny.cdn+'/chat/img/notifyicon.png',					
+					body: msg,
+					tag: message.timestamp.unix(),
+					dir: "auto"
+				});
+				this.currentnotification = notif;
+			}
 			
-			this.currentnotification = notif;
-			notif.show();
-			var self = this;
-			setTimeout(function() {
-				notif.cancel();
-				self.currentnotification = null;
-				self = null;
-			}, 5000);
+			// If a notification was created and shown, close it after 5 seconds
+			if (notif) {
+				setTimeout(function() {
+					notif.close(); 
+					if (notif === self.currentnotification) {
+						self.currentnotification = null;
+					}
+					self = null;
+				}, 5000);
+			}				
 		},
 		
 		loadCustomHighlights: function() {
