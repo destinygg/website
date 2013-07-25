@@ -5,6 +5,7 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
 use Destiny\Common\Utils\String\Params;
+use Destiny\Common\Router;
 use Doctrine\Common\Cache\CacheProvider;
 use Psr\Log\LoggerInterface;
 
@@ -68,7 +69,7 @@ class Application extends Service {
 	
 	/**
 	 * The request router
-	 * @var Destiny\Router
+	 * @var Router
 	 */
 	protected $router;
 	
@@ -109,12 +110,20 @@ class Application extends Service {
 			return $this->error ( Http::STATUS_NOT_FOUND );
 		}
 		
-		// Check the route security against the user roles
+		// Check the route security against the user roles and features
+		$credentials = Session::getCredentials ();
 		$secure = $route->getSecure ();
 		if (! empty ( $secure )) {
-			$credentials = Session::getCredentials ();
 			foreach ( $secure as $role ) {
 				if (! $credentials->hasRole ( $role )) {
+					return $this->error ( Http::STATUS_UNAUTHORIZED );
+				}
+			}
+		}
+		$features = $route->getFeature ();
+		if (! empty ( $features )) {
+			foreach ( $features as $feature ) {
+				if (! $credentials->hasFeature ( $feature )) {
 					return $this->error ( Http::STATUS_UNAUTHORIZED );
 				}
 			}
@@ -147,7 +156,7 @@ class Application extends Service {
 			$this->error ( Http::STATUS_ERROR, $e );
 		} catch ( \Exception $e ) {
 			$this->logger->critical ( $e->getMessage () );
-			if (!Config::$a ['showExceptionMessages']) {
+			if (! Config::$a ['showExceptionMessages']) {
 				$this->error ( Http::STATUS_ERROR, new AppException ( 'Maximum over-rustle has been achieved' ) );
 			} else {
 				$this->error ( Http::STATUS_ERROR, $e );

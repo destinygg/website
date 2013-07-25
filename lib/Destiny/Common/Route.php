@@ -11,6 +11,7 @@ class Route {
 	public $classMethod;
 	public $httpMethod;
 	public $secure;
+	public $feature;
 
 	public function __construct(array $params = null) {
 		if (! empty ( $params )) {
@@ -29,7 +30,8 @@ class Route {
 			'class',
 			'classMethod',
 			'httpMethod',
-			'secure' 
+			'secure',
+			'feature' 
 		);
 	}
 
@@ -100,6 +102,14 @@ class Route {
 
 	public function setSecure($secure) {
 		$this->secure = $secure;
+	}
+
+	public function getFeature() {
+		return $this->feature;
+	}
+
+	public function setFeature($feature) {
+		$this->feature = $feature;
 	}
 
 }
