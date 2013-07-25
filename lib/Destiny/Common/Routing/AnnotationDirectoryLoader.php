@@ -51,12 +51,14 @@ abstract class AnnotationDirectoryLoader {
 					
 					$httpMethod = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\HttpMethod' );
 					$secure = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Secure' );
+					$feature = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Feature' );
 					$routes [] = new Route ( array (
 						'path' => $route->path,
 						'classMethod' => $method->name,
 						'class' => $refl->name,
 						'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
-						'secure' => ($secure) ? $secure->roles : null 
+						'secure' => ($secure) ? $secure->roles : null,
+						'feature' => ($feature) ? $feature->features : null 
 					) );
 				}
 			}

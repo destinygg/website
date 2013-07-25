@@ -2,13 +2,15 @@
 namespace Destiny\Common\Annotation;
 
 /**
+ * This annotation relies on the Route annotation being present
+ * 
  * @Annotation
  * @Target({"CLASS","METHOD"})
  */
 class Secure {
 	
 	/**
-	 * The URL path
+	 * The roles list
 	 * @var array<string>
 	 */
 	public $roles;
