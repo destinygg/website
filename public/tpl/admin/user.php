@@ -3,6 +3,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Lol;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
+use Destiny\Common\Config;
 use Destiny\Common\UserRole;
 ?>
 <!DOCTYPE html>
@@ -18,17 +19,26 @@ use Destiny\Common\UserRole;
 	
 	<section class="container" id="admintabs">
 		<h1 class="page-title">
-			<span>User</span> <small>(<a title="<?=Tpl::out($model->user['email'])?>" href="mailto:<?=Tpl::out($model->user['email'])?>"><?=Tpl::out($model->user['username'])?></a>)
-			</small>
+			<span>User</span> 
+			<small>(<a title="<?=Tpl::out($model->user['email'])?>" href="mailto:<?=Tpl::out($model->user['email'])?>"><?=Tpl::out($model->user['username'])?></a>)</small>
 		</h1>
 		<hr size="1">
 		
+		<form id="user-search" class="form-search" action="/admin/user/" method="get">
+			<div class="input-append">
+				<input class="span2" id="appendedInputButton" type="text" placeholder="Enter a username..." autocomplete="off">
+				<button class="btn btn-inverse" type="submit">Select</button>
+			</div>
+		</form>
+		<br>
+			
 		<?php if(!empty($model->profileUpdated)): ?>
 		<div class="alert alert-info">
 			<strong>Success!</strong>
 			Profile updated
 		</div>
 		<?php endif; ?>
+		
 		
 		<div class="content content-dark clearfix">
 			<div class="clearfix">
@@ -66,7 +76,7 @@ use Destiny\Common\UserRole;
 					</div>
 					
 					<div class="control-group">
-						<label>Flair:</label>
+						<label>Features:</label>
 						<?php foreach($model->features as $featureName=>$featureId): ?>
 						<?php if(strcasecmp($featureName, 'subscriber') !== 0 && strcasecmp($featureName, 'admin') !== 'admin'): ?>
 						<label class="checkbox">
@@ -99,6 +109,8 @@ use Destiny\Common\UserRole;
 	
 	<?include'./tpl/seg/foot.php'?>
 	<?include'./tpl/seg/commonbottom.php'?>
+	
+	<script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
 	
 </body>
 </html>
