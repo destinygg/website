@@ -33,8 +33,26 @@ function urlReplaceCallback(match, url, scheme, address, path, offset, message) 
 		};
 		return htmlencmap[c];
 	}),
-	linkClass = "externallink";	
+	linkClass = "externallink",
+	contextStart = offset - 10,
+	contextEnd = contextStart + match.length + 20,
+	nsfwregex = /(NSFW|NSFL|SPOILER)/gim;
+	
 	scheme = scheme ? '': 'http://';
+	
+	//Limit context for NSFW/NSFL search to 10 chars (or array bounds) 
+	if (contextStart < 0) {
+		contextStart = 0
+	}
+	
+	if (contextEnd > message.length) {
+		contextEnd = message.length;
+	}
+
+	if (nsfwregex.test(message.substring(contextStart, contextEnd))) {
+		linkClass += " nsfwlink";
+	}
+
 	return match.replace(url, '<a target="_blank" class="' + linkClass + '" href="' + scheme + encodedUrl + '">' + encodedUrl + '</a>');
 }
 
