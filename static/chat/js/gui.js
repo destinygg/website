@@ -109,7 +109,8 @@ function urlReplaceCallback(match, url, scheme) {
 			}).data('mAutoComplete');
 			
 			for (var i = emoticons.length - 1; i >= 0; i--) {
-				this.autoCompletePlugin.addData(emoticons[i], 0);
+				// let the emotes have more weight than someone who never spoke
+				this.autoCompletePlugin.addData(emoticons[i], 2);
 			};
 			
 			// Chat settings
