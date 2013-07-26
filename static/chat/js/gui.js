@@ -806,9 +806,15 @@ function urlReplaceCallback(match, url, scheme) {
 		
 		encoded = encoded.replace(this.emoteregex, '<div title="$1" class="chat-emote chat-emote-$1"></div>');
 		encoded = encoded.replace(linkregex, urlReplaceCallback);
+		
 		if(this.isEmote)
 			elem.addClass('emote');
-		return elem.html(encoded)[0].outerHTML;
+		
+		elem.html(encoded)
+		if (/\b(?:NSFW|NSFL|SPOILER)\b/i.test(encoded))
+			elem.find('a').addClass('nsfw-link');
+		
+		return elem.get(0).outerHTML;
 	};
 	ChatUserMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' ' + ((!this.isEmote) ? '' : '*') + this.wrapUser(this.user) + ((!this.isEmote) ? ': ' : ' ') + this.wrapMessage());
