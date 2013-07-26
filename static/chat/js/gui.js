@@ -33,9 +33,9 @@ function urlReplaceCallback(match, url, scheme) {
 		};
 		return htmlencmap[c];
 	}),
-	linkClass = "externallink";	
+	
 	scheme = scheme ? '': 'http://';
-	return match.replace(url, '<a target="_blank" class="' + linkClass + '" href="' + scheme + encodedUrl + '">' + encodedUrl + '</a>');
+	return match.replace(url, '<a target="_blank" class="externallink" href="' + scheme + encodedUrl + '">' + encodedUrl + '</a>');
 }
 
 (function($){
