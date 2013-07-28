@@ -27,22 +27,6 @@ class ChatIntegrationService extends Service {
 	}
 
 	/**
-	 * Refresh a users session
-	 *
-	 * @param SessionCredentials $credentials
-	 */
-	public function initChatSession(SessionCredentials $credentials) {
-		$redis = Application::instance ()->getRedis ();
-		if (! empty ( $redis )) {
-			$sessionId = Session::getSessionId ();
-			$id = sprintf ( 'CHAT:%s', $sessionId );
-			if (! $redis->get ( $id )) {
-				$this->setChatSession ( $credentials, $sessionId );
-			}
-		}
-	}
-
-	/**
 	 * Handle the update of the credentials for chat
 	 * @param SessionCredentials $credentials
 	 * @param string $sessionId
@@ -53,7 +37,7 @@ class ChatIntegrationService extends Service {
 			$json = json_encode ( $credentials->getData () );
 			$id = sprintf ( 'CHAT:%s', $sessionId );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-			$redis->set ( $id, $json, 30 * 24 * 60 * 60 );
+			$redis->set ( $id, $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
 		}
 	}

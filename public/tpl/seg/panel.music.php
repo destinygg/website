@@ -50,10 +50,10 @@ use Destiny\Common\Config;
 						<div class="artist"><?=Tpl::out($track['artist']['#text'])?></div>
 						<div class="details">
 							<?if($track['date_str'] != ''):?>
-							<?=Tpl::fromNow(Date::getDateTime($track['date_str']), Date::FORMAT, 'class="pull-right"')?>
+							<span class="pull-right"><?=Tpl::fromNow(Date::getDateTime($track['date_str']), Date::FORMAT)?></span>
 							<?endif;?>
 							<?if($trackIndex==0 && $track['date_str'] == ''):?>
-							<time class="pull-right">now playing</time>
+							<span class="pull-right"><time>now playing</time></span>
 							<?endif;?>
 							<small class="album subtle"><?=Tpl::out($track['album']['#text'])?></small>
 						</div>

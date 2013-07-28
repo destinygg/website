@@ -65,7 +65,7 @@ class Cancel {
 	 * @return string
 	 */
 	public function executeGet(array $params, ViewModel $model) {
-		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		if (empty ( $subscription )) {
 			throw new AppException ( 'Must have an active subscription' );
 		}

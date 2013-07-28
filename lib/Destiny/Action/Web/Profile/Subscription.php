@@ -29,7 +29,7 @@ class Subscription {
 		$subsService = SubscriptionsService::instance ();
 		$orderService = OrdersService::instance ();
 		$userService = UserService::instance ();
-		$userId = Session::get ( 'userId' );
+		$userId = Session::getCredentials ()->getUserId ();
 		
 		$subscription = $subsService->getUserActiveSubscription ( $userId );
 		if (empty ( $subscription )) {

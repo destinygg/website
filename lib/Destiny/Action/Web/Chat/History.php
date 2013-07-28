@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Chat;
 
+use Destiny\Common\UserFeature;
 use Destiny\Common\AppException;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
@@ -27,8 +28,33 @@ class History {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$chatlog = ChatlogService::instance ()->getChatLog ( Config::$a ['chat'] ['backlog'] );
+		$lines = array ();
+		$suppress = array ();
+		foreach ( $chatlog as &$line ) {
+			
+			if ($line ['event'] == 'MUTE' or $line ['event'] == 'BAN') {
+				$suppress [$line ['target']] = true;
+			}
+			
+			if (isset ( $suppress [$line ['username']] )) {
+				continue;
+			}
+			
+			if (! empty ( $line ['features'] )) {
+				$line ['features'] = explode ( ',', $line ['features'] );
+			} else {
+				$line ['features'] = array ();
+			}
+			
+			if (! empty ( $line ['subscriber'] ) && $line ['subscriber'] == 1) {
+				$line ['features'] [] = UserFeature::SUBSCRIBER;
+			}
+			
+			$lines [] = $line;
+		}
+		
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
-		Http::sendString ( 'var backlog = ' . json_encode ( $chatlog ) );
+		Http::sendString ( 'var backlog = ' . json_encode ( $lines ) );
 		exit ();
 	}
 

@@ -36,7 +36,7 @@ class Game {
 		$champService = ChampionService::instance ();
 		$gameService = GameService::instance ();
 		$cacheDriver = Application::instance ()->getCacheDriver ();
-		$userId = Session::get ( 'userId' );
+		$userId = Session::getCredentials ()->getUserId ();
 		$teamId = Session::get ( 'teamId' );
 		$gameId = (isset ( $params ['gameId'] ) && ! empty ( $params ['gameId'] )) ? $params ['gameId'] : '';
 		if (empty ( $gameId )) {

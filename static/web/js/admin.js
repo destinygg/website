@@ -11,7 +11,7 @@
 		return false;
 	});
 	inpt.typeahead({
-		items: 20,
+		items: 10,
 		updater: function(username){
 			for(var i=0; i<users.length; ++i){
 				if(users[i].username == username){

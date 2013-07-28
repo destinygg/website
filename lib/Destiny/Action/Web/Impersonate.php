@@ -55,7 +55,7 @@ class Impersonate {
 		$credentials = $authService->getUserCredentials ( $user, 'impersonating' );
 		Session::start ( Session::START_NOCOOKIE );
 		Session::updateCredentials ( $credentials );
-		ChatIntegrationService::instance ()->initChatSession ( $credentials );
+		ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 		
 		$app->addEvent ( new AppEvent ( array (
 			'type' => AppEvent::EVENT_DANGER,

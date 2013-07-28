@@ -26,7 +26,8 @@ FileUtils::compress ( '/errors/css/style.min.css' );
 FileUtils::delete ( '/chat/css/style.min.css' );
 FileUtils::concat ( '/chat/css/style.min.css', array (
 	'/chat/css/style.css',
-	'/chat/css/emoticons.css'
+	'/chat/css/emoticons.css',
+	'/chat/css/flair.css'
 ) );
 FileUtils::compress ( '/chat/css/style.min.css' );
 

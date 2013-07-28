@@ -1,6 +1,9 @@
 <?php
 namespace Destiny\Action\Admin\User;
 
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Service\ChatlogService;
+use Destiny\Common\Service\ChatBanService;
 use Destiny\Common\Application;
 use Destiny\Common\Service\UserFeaturesService;
 use Destiny\Common\AppException;
@@ -48,6 +51,13 @@ class Edit {
 		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );
 		$model->user = $user;
 		$model->features = UserFeaturesService::instance ()->getFeatures ();
+		$ban = ChatBanService::instance ()->getUserActiveBan ( $user ['userId'] );
+		$banContext = array ();
+		if (! empty ( $ban )) {
+			$banContext = ChatlogService::instance ()->getChatLogBanContext ( $user ['userId'], Date::getDateTime ( $ban ['starttimestamp'] ), 18 );
+		}
+		$model->banContext = $banContext;
+		$model->ban = $ban;
 		return 'admin/user';
 	}
 
@@ -67,7 +77,7 @@ class Edit {
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
 			throw new AppException ( 'userId required' );
 		}
-
+		
 		$authService = AuthenticationService::instance ();
 		$userService = UserService::instance ();
 		$userFeatureService = UserFeaturesService::instance ();
@@ -112,6 +122,13 @@ class Edit {
 		
 		$user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = $userFeatureService->getUserFeatures ( $user ['userId'] );
+		$ban = ChatBanService::instance ()->getUserActiveBan ( $user ['userId'] );
+		$banContext = array ();
+		if (! empty ( $ban )) {
+			$banContext = ChatlogService::instance ()->getChatLogBanContext ( $user ['userId'], Date::getDateTime ( $ban ['starttimestamp'] ), 18 );
+		}
+		$model->banContext = $banContext;
+		$model->ban = $ban;
 		$model->user = $user;
 		$model->features = $userFeatureService->getFeatures ();
 		$model->profileUpdated = true;

@@ -30,12 +30,12 @@ class Reset {
 			'message' => '' 
 		);
 		// Get team - Make sure this is one of the users teams
-		$team = TeamService::instance ()->getTeamByUserId ( Session::get ( 'userId' ) );
+		$team = TeamService::instance ()->getTeamByUserId ( Session::getCredentials()->getUserId() );
 		if (empty ( $team )) {
 			throw new AppException ( 'User team not found' );
 		}
 		// Security
-		if (Session::get ( 'userId' ) != $team ['userId']) {
+		if (Session::getCredentials()->getUserId() != $team ['userId']) {
 			throw new AppException ( 'Reset team failed user does not have rights to this team.' );
 		}
 		// Reset team vars

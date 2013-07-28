@@ -1,0 +1,72 @@
+.chat .chat-lines i[class^="icon-"] {
+background-position: top left;
+background-repeat: no-repeat;
+}
+.chat .chat-lines i[class^="icon-"]:hover {
+background-position: bottom left;
+}
+
+i.icon-subscriber {
+background-image: url("../img/bobross.png");
+}
+i.icon-vip {
+background-image: url("../img/leaf.png");
+}
+i.icon-moderator {
+background-image: url("../img/weather-lightning.png");
+}
+i.icon-administrator {
+background-image: url("../img/crown.png");
+}
+i.icon-bot {
+background-image: url("../img/robot.png");
+}
+i.icon-error {
+background-image: url("../img/exclamation-red.png");
+}
+i.icon-status {
+background-image: url("../img/information.png");	
+}
+i.icon-info {
+background-image: url("../img/question-white.png");
+}
+i.icon-command {
+background-image: url("../img/exclamation-diamond.png");	
+}
+
+.chat-frame a.user {
+color: #A7A7A7;
+}
+.chat-frame a.user:hover {
+color: #FAFAFA;
+}
+.chat-frame a.subscriber {
+color: #488ce7;
+}
+.chat-frame a.subscriber:hover {
+color: #6aa7f9;
+}
+.chat-frame a.moderator {
+color: #429A2D;
+}
+.chat-frame a.moderator:hover {
+color: #75e85a;
+}
+.chat-frame a.vip {
+color: #CF31E2;
+}
+.chat-frame a.vip:hover {
+color: #e564f4;
+}
+.chat-frame a.admin {
+color: #B91010;
+}
+.chat-frame a.admin:hover {
+color: #ff0000;
+}
+.chat-frame a.bot {
+color: #4ba235;
+}
+.chat-frame a.bot:hover {
+color: #7adb62;
+}

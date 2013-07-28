@@ -38,7 +38,7 @@ class Cancel {
 		$subService = SubscriptionsService::instance ();
 		$orderService = OrdersService::instance ();
 		
-		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		$paymentProfile = null;
 		if (! empty ( $subscription ['paymentProfileId'] )) {
 			$paymentProfile = $orderService->getPaymentProfileById ( $subscription ['paymentProfileId'] );
@@ -62,7 +62,7 @@ class Cancel {
 		
 		// Get confirmation
 		if (! isset ( $params ['confirmationId'] ) || empty ( $params ['confirmationId'] )) {
-			$confirmationId = md5 ( microtime ( true ) . Session::get ( 'userId' ) );
+			$confirmationId = md5 ( microtime ( true ) . Session::getCredentials ()->getUserId () );
 			Session::set ( 'confirmationId', $confirmationId );
 			$model->confirmationId = $confirmationId;
 			$model->unsubscribed = false;

@@ -34,7 +34,7 @@ class Group {
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
 		$model->challengers = $challengeService->getTeamChallengers ( $teamId, 10 );
 		if (! empty ( $teamId )) {
-			$model->team = $teamService->getTeamByUserId ( Session::get ( 'userId' ) );
+			$model->team = $teamService->getTeamByUserId ( Session::getCredentials ()->getUserId () );
 			$model->teamChamps = $teamService->getTeamChamps ( $teamId );
 		}
 		return 'league/group';

@@ -129,7 +129,7 @@ class AuthenticationService extends Service {
 					}
 					$credentials = $this->getUserCredentials ( $user, 'session' );
 					Session::updateCredentials ( $credentials );
-					ChatIntegrationService::instance ()->initChatSession ( $credentials );
+					ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 				}
 			}
 		}
@@ -262,16 +262,7 @@ class AuthenticationService extends Service {
 		$session->renew ( true );
 		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
 		Session::updateCredentials ( $credentials );
-		ChatIntegrationService::instance ()->initChatSession ( $credentials );
-		
-		// @TODO find a better place for this
-		// If this user has no team, create a new one
-		$team = TeamService::instance ()->getTeamByUserId ( $profileUser ['userId'] );
-		if (empty ( $team )) {
-			$team = array ();
-			$team ['teamId'] = TeamService::instance ()->addTeam ( $profileUser ['userId'], Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
-		}
-		Session::set ( 'teamId', $team ['teamId'] );
+		ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 		
 		// Remember me
 		if (Session::set ( 'rememberme' )) {
@@ -398,7 +389,7 @@ class AuthenticationService extends Service {
 			// Update the current session if the userId is the same as the credential user id
 			Session::updateCredentials ( $credentials );
 			// Init / create the current users chat session
-			ChatIntegrationService::instance ()->initChatSession ( $credentials );
+			ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 		} else {
 			// Otherwise set a session variable which is picked up by the remember me service to update the session
 			$cache = Application::instance ()->getCacheDriver ();

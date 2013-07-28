@@ -37,7 +37,7 @@ class Invites {
 		$model->title = 'Invites';
 		$model->user = Session::getCredentials ()->getData ();
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
-		$model->team = $teamService->getTeamByUserId ( Session::get ( 'userId' ) );
+		$model->team = $teamService->getTeamByUserId ( Session::getCredentials ()->getUserId () );
 		$model->teamChamps = $teamService->getTeamChamps ( $teamId );
 		$model->challengers = $challengeService->getTeamChallengers ( $teamId, 10 );
 		$model->invites = $challengeService->getInvites ( $teamId, 5 );

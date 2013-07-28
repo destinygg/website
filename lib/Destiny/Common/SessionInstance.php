@@ -548,11 +548,11 @@ class SessionCredentials {
 	/**
 	 * Check if this auth has a specific feature
 	 *
-	 * @param int $roleId
+	 * @param int $featureId
 	 */
-	public function hasFeature($featureId) {
+	public function hasFeature($featureName) {
 		foreach ( $this->features as $feature ) {
-			if (strcasecmp ( $feature, $featureId ) == 0) {
+			if (strcasecmp ( $feature, $featureName ) == 0) {
 				return true;
 			}
 		}

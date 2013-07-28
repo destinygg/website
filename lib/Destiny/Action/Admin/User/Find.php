@@ -27,7 +27,7 @@ class Find {
 		if (! isset ( $params ['exact'] )) {
 			$s .= '%';
 		}
-		$users = UserService::instance ()->findUsersByUsername ( $s, 20 );
+		$users = UserService::instance ()->findUsersByUsername ( $s, 10 );
 		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		Http::sendString ( json_encode ( $users ) );
 		exit ();

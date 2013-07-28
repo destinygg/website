@@ -51,7 +51,7 @@ class Purchase {
 			throw new AppException ( 'Team not found' );
 		}
 		// Security
-		if (Session::get ( 'userId' ) != $team ['userId']) {
+		if (Session::getCredentials()->getUserId() != $team ['userId']) {
 			throw new AppException ( 'Update team failed: User does not have rights to this team. {"userId":' . $team ['userId'] . ',"teamId":' . $team ['teamId'] . '}' );
 		}
 		$champ = $champService->getChampionById ( $params ['championId'] );
@@ -60,7 +60,7 @@ class Purchase {
 			throw new AppException ( 'Not enough credits' );
 		}
 		$team ['credits'] = $team ['credits'] - floatval ( $champ ['championValue'] );
-		$champService->unlockChampion ( Session::get ( 'userId' ), $champ ['championId'] );
+		$champService->unlockChampion ( Session::getCredentials()->getUserId(), $champ ['championId'] );
 		$teamService->updateTeamResources ( $team );
 		return $team;
 	}

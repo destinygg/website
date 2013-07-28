@@ -402,20 +402,29 @@ $(function(){
 
 // Change time on selected elements
 (function(){
-	var applMomentTime = function(){
-		$('time[data-moment="true"]:not(.moment-set)').each(function(){
-			var ui = $(this), datetime = ui.data('datetime') || ui.attr('datetime') || ui.text();
-			ui.data('datetime', datetime);
-			if(ui.data('moment-fromnow')){
-				ui.html(moment(datetime).fromNow());
-			}else{
-				ui.addClass('moment-set');
-				ui.html(moment(datetime).format('MMMM Do, h:mm:ss a'));
-			}
-		});
+	var applyMomentToElement = function(e){
+		
+		var ui = $(e), 
+			datetime = ui.data('datetime') || ui.attr('datetime') || ui.text(),
+			format = ui.data('format') || 'MMMM Do, h:mm:ss a';
+		
+		if(ui.data('moment-fromnow')){
+			ui.addClass('moment-update');
+			ui.html(moment(datetime).fromNow());
+		}else{
+			ui.html(moment(datetime).format(format));
+		}
+		
+		ui.data('datetime', datetime).addClass('moment-set');
 	};
-	window.setInterval(applMomentTime, 30000);
-	applMomentTime();
+	window.setInterval(function(){
+		$('time.moment-update').each(function(){
+			applyMomentToElement(this);
+		});
+	}, 30000);
+	$('time[data-moment="true"]:not(.moment-set)').each(function(){
+		applyMomentToElement(this);
+	});
 })();
 
 

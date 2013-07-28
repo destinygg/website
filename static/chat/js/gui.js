@@ -32,7 +32,7 @@ function urlReplaceCallback(match, url, scheme) {
 	});
 	
 	scheme = scheme ? '': 'http://';
-	return match.replace(url, '<a target="_blank" class="externallink" href="' + scheme + encodedUrl + '">' + encodedUrl + '</a>');
+	return match.replace(url, '<a target="_blank" class="externallink" href="' + scheme + encodedUrl + '" rel="nofollow">' + encodedUrl + '</a>');
 }
 
 (function($){

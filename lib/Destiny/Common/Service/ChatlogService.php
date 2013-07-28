@@ -40,7 +40,6 @@ class ChatlogService extends Service {
 				l.timestamp,
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
 				(
-				
 					SELECT GROUP_CONCAT( DISTINCT fn.featureName)
 					FROM dfl_users_features AS uf
 					INNER JOIN dfl_features AS fn ON (fn.featureId = uf.featureId)
@@ -56,37 +55,46 @@ class ChatlogService extends Service {
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
 			ORDER BY l.id DESC
-			LIMIT ' . $limit );
+			LIMIT 0,:limit
+		' );
 		
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();
-		$chatlog = $stmt->fetchAll ();
-		$lines = array ();
-		$suppress = array ();
-		
-		foreach ( $chatlog as &$line ) {
-			
-			if ($line ['event'] == 'MUTE' or $line ['event'] == 'BAN') {
-				$suppress [$line ['target']] = true;
-			}
-			
-			if (isset ( $suppress [$line ['username']] )) {
-				continue;
-			}
-			
-			if (! empty ( $line ['features'] )) {
-				$line ['features'] = array_merge ( explode ( ',', $line ['features'] ) );
-			} else {
-				$line ['features'] = array ();
-			}
-			
-			if (! empty ( $line ['subscriber'] ) && $line ['subscriber'] == 1) {
-				$line ['features'] [] = UserFeature::SUBSCRIBER;
-			}
-			
-			$lines [] = $line;
-		}
-		
-		return $lines;
+		return $stmt->fetchAll ();
+	}
+
+	/**
+	 * Get the last X number of messages from a specific user starting at a specific date
+	 *
+	 * @param int $userId
+	 * @param DateTime $startRange
+	 * @param int $limit
+	 * @param int $start
+	 */
+	public function getChatLogBanContext($userId,\DateTime $startRange, $limit = 10, $start = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT
+				u.username,
+				u2.username AS target,
+				l.event,
+				l.data,
+				l.timestamp
+			FROM
+				chatlog AS l
+				LEFT JOIN dfl_users AS u ON u.userId = l.userid
+				LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
+			WHERE
+				l.event NOT IN("JOIN", "QUIT")
+				AND l.timestamp <= :startRange
+			ORDER BY l.id DESC
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'startRange', $startRange, \Doctrine\DBAL\Types\DateTimeType::DATETIME );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
 	}
 
 }

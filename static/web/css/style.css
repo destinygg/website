@@ -31,11 +31,11 @@ color: #999;
 @media ( min-width : 1200px) {
 	#twitchpanel.single-view .twitch-element,
 	#twitchpanel.single-view .twitch-element-wrap{
-	width: 100%;
-	height: 689px;
+		width: 100%;
+		height: 689px;
 	}
 	#twitchpanel.single-view #twitch-player object {
-	height: 690px;
+		height: 690px;
 	}
 }
 
@@ -54,6 +54,10 @@ color: #888;
 
 h1 small,h2 small,h3 small,h4 small,h5 small,h6 small {
 color: #666;
+}
+
+blockquote {
+border-color:#111;
 }
 
 span.subtle {

@@ -32,17 +32,17 @@ class Subscribe {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$subsService = SubscriptionsService::instance ();
-		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = $subsService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		
 		if (empty ( $subscription )) {
-			$subscription = $subsService->getUserPendingSubscription ( Session::get ( 'userId' ) );
+			$subscription = $subsService->getUserPendingSubscription ( Session::getCredentials ()->getUserId () );
 			if (! empty ( $subscription )) {
 				throw new AppException ( 'You already have a subscription in the "pending" state. Please cancel this first.' );
 			}
 		}
 		
 		// Setup the initial checkout token, the value is checked in each step, to make sure the user actually used the checkout process
-		$this->checkoutId = md5 ( microtime ( true ) . Session::get ( 'userId' ) );
+		$this->checkoutId = md5 ( microtime ( true ) . Session::getCredentials ()->getUserId () );
 		Session::set ( 'checkoutId', $this->checkoutId );
 		$model->title = 'Subscribe';
 		$model->subscriptions = Config::$a ['commerce'] ['subscriptions'];

@@ -29,7 +29,7 @@ class FileUtils {
 	 * @param array $files
 	 */
 	public static function concat($dest, array $files) {
-		self::$log->info ( sprintf ( 'Concat [%s]', $dest ), $files );
+		self::$log->info ( sprintf ( 'Concat [%s] %s', $dest, join ( ',', $files ) ) );
 		foreach ( $files as $file ) {
 			file_put_contents ( self::$b . $dest, file_get_contents ( self::$b . $file ) . PHP_EOL . PHP_EOL, FILE_APPEND );
 		}

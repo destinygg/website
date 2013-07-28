@@ -30,7 +30,7 @@ class Help {
 		$model->user = Session::getCredentials ()->getData ();
 		$model->leagueServers = $cacheDriver->fetch ( 'leaguestatus' );
 		if (! empty ( $teamId )) {
-			$model->team = $teamService->getTeamByUserId ( Session::get ( 'userId' ) );
+			$model->team = $teamService->getTeamByUserId ( Session::getCredentials ()->getUserId () );
 			$model->teamChamps = $teamService->getTeamChamps ( $teamId );
 		}
 		return 'league/help';

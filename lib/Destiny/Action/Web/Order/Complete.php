@@ -68,7 +68,7 @@ class Complete {
 			if (isset ( $params ['orderId'] )) {
 				$order = $ordersService->getOrderById ( $params ['orderId'] );
 				// Make sure the order is for this user
-				if (! empty ( $order ) && $order ['userId'] == Session::get ( 'userId' ) && strcasecmp ( $order ['state'], 'Completed' ) === 0) {
+				if (! empty ( $order ) && $order ['userId'] == Session::getCredentials ()->getUserId () && strcasecmp ( $order ['state'], 'Completed' ) === 0) {
 					// @TODO this should be done better
 					Http::header ( Http::HEADER_LOCATION, '/profile/subscription' );
 					die ();

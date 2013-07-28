@@ -55,7 +55,7 @@ class Activate {
 		$subService = SubscriptionsService::instance ();
 		$orderService = OrdersService::instance ();
 		
-		$subscription = $subService->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		// This can only be done on active subscriptions, else the user must resub
 		if (empty ( $subscription )) {
 			$model->error = new AppException ( 'No subscription to re-activate' );
@@ -134,7 +134,7 @@ class Activate {
 		
 		// Get confirmation and handle success
 		if (! isset ( $params ['confirmationId'] ) || empty ( $params ['confirmationId'] )) {
-			$confirmationId = md5 ( microtime ( true ) . Session::get ( 'userId' ) );
+			$confirmationId = md5 ( microtime ( true ) . Session::getCredentials ()->getUserId () );
 			Session::set ( 'confirmationId', $confirmationId );
 			$model->title = 'Activate scheduled payment';
 			$model->confirmationId = $confirmationId;

@@ -33,7 +33,7 @@ class Info {
 			throw new AppException ( 'Team not found' );
 		}
 		// Security
-		if (Session::get ( 'userId' ) != $team ['userId']) {
+		if (Session::getCredentials()->getUserId() != $team ['userId']) {
 			throw new AppException ( 'User does not have rights to this team.' );
 		}
 		$modifiedTime = Date::getDateTime ( $team ['modifiedDate'] );

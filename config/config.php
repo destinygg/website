@@ -6,7 +6,7 @@ return array (
 	'useMinifiedFiles'		=> false, // Prevent using minified files
 	'showExceptionMessages'	=> false,
 	'profile' => array(
-		'nameChangeLimit' 	=> 1
+		'nameChangeLimit' 	=> 0
 	),
 	'chat' => array(
 		'backlog' 			=> 150,

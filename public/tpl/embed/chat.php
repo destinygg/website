@@ -19,6 +19,7 @@ use Destiny\Common\Config;
 <link href="<?=Config::cdnv()?>/chat/css/style.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdnv()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
 <?php endif; ?>
+<link href="<?=Config::cdnv()?>/chat/css/flair.css" rel="stylesheet" media="screen">
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="chat-embedded">
@@ -184,9 +185,10 @@ use Destiny\Common\Config;
 </div>
 
 <?include'./tpl/seg/commonbottom.php'?>
+
+<script src="/chat/history"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
-<script src="/chat/history"></script>
 <?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/chat/js/engine.min.js')):?>
 <script src="<?=Config::cdnv()?>/chat/js/engine.min.js"></script>
 <?php else: ?>

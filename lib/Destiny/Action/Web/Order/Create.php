@@ -154,7 +154,7 @@ class Create {
 	private function createOrder(array $subscription) {
 		$ordersService = OrdersService::instance ();
 		$order = array ();
-		$order ['userId'] = Session::get ( 'userId' );
+		$order ['userId'] = Session::getCredentials ()->getUserId ();
 		$order ['description'] = $subscription ['label'];
 		$order ['amount'] = $subscription ['amount'];
 		$order ['currency'] = Config::$a ['commerce'] ['currency'];
@@ -185,7 +185,7 @@ class Create {
 		$billingStartDate->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
 		$paymentProfile = array ();
 		$paymentProfile ['paymentProfileId'] = '';
-		$paymentProfile ['userId'] = Session::get ( 'userId' );
+		$paymentProfile ['userId'] = Session::getCredentials ()->getUserId ();
 		$paymentProfile ['orderId'] = $order ['orderId'];
 		$paymentProfile ['amount'] = $order ['amount'];
 		$paymentProfile ['currency'] = $order ['currency'];

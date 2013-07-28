@@ -33,12 +33,12 @@ class Profile {
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
-		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::get ( 'userId' ) );
+		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		if (empty ( $subscription )) {
-			$subscription = SubscriptionsService::instance ()->getUserPendingSubscription ( Session::get ( 'userId' ) );
+			$subscription = SubscriptionsService::instance ()->getUserPendingSubscription ( Session::getCredentials ()->getUserId () );
 		}
 		$model->title = 'Profile';
-		$model->user = $userService->getUserById ( Session::get ( 'userId' ) );
+		$model->user = $userService->getUserById ( Session::getCredentials ()->getUserId () );
 		$model->subscription = $subscription;
 		return 'profile';
 	}
@@ -58,7 +58,7 @@ class Profile {
 		$userService = UserService::instance ();
 		$userFeaturesService = UserFeaturesService::instance ();
 		$authService = AuthenticationService::instance ();
-		$user = $userService->getUserById ( Session::get ( 'userId' ) );
+		$user = $userService->getUserById ( Session::getCredentials ()->getUserId () );
 		if (empty ( $user )) {
 			throw new AppException ( 'Invalid user' );
 		}

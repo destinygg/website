@@ -35,7 +35,7 @@ class Details {
 			if (empty ( $order )) {
 				throw new AppException ( 'Order not found' );
 			}
-			if ($order ['userId'] != Session::get ( 'userId' )) {
+			if ($order ['userId'] != Session::getCredentials ()->getUserId ()) {
 				throw new AppException ( 'Permission denied' );
 			}
 			if (strcasecmp ( $order ['state'], 'New' ) === 0) {

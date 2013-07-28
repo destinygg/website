@@ -25,7 +25,7 @@ class Authentication {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
-		$userId = Session::get ( 'userId' );
+		$userId = Session::getCredentials ()->getUserId ();
 		$model->title = 'Authentication';
 		$model->user = $userService->getUserById ( $userId );
 		

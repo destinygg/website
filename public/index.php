@@ -1,4 +1,6 @@
 <?php
+use Destiny\Common\Service\Fantasy\TeamService;
+
 use Destiny\Common\Application;
 use Destiny\Common\UserRole;
 use Destiny\Common\AppEvent;
@@ -43,6 +45,19 @@ RememberMeService::instance ()->init ();
 $reader = new FileCacheReader ( new AnnotationReader (), realpath ( Config::$a ['cache'] ['path'] ) . '/annotation/' );
 $app->setAnnotationReader ( $reader );
 $app->setRouter ( new Router ( AnnotationDirectoryLoader::load ( $reader, _LIBDIR . '/', 'Destiny/Action/' ) ) );
+
+// @TODO find a better place for this
+// If this user has no team, create a new one
+$teamId = Session::get ( 'teamId' );
+if (Session::hasRole ( UserRole::USER ) && empty ( $teamId )) {
+	$teamService = TeamService::instance ();
+	$team = $teamService->getTeamByUserId ( Session::getCredentials ()->getUserId () );
+	if (empty ( $team )) {
+		$team = array ();
+		$team ['teamId'] = $teamService->addTeam ( Session::getCredentials ()->getUserId (), Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
+	}
+	Session::set ( 'teamId', $team ['teamId'] );
+}
 
 // Attempts to find a route and execute the action
 $app->executeRequest ( (isset ( $_SERVER ['REQUEST_URI'] )) ? $_SERVER ['REQUEST_URI'] : '', $_SERVER ['REQUEST_METHOD'] );

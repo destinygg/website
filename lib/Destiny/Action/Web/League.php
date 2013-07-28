@@ -29,7 +29,7 @@ class League {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$teamId = Session::get ( 'teamId' );
-		$userId = Session::get ( 'userId' );
+		$userId = Session::getCredentials ()->getUserId ();
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
 		$champService = ChampionService::instance ();

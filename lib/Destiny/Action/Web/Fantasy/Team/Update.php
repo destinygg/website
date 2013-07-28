@@ -53,12 +53,12 @@ class Update {
 			throw new AppException ( 'Team not found' );
 		}
 		// Security
-		if (Session::get ( 'userId' ) != $team ['userId']) {
+		if (Session::getCredentials ()->getUserId () != $team ['userId']) {
 			throw new AppException ( 'Update team failed user does not have rights to this team.' );
 		}
 		
 		// Get the users unlocked champs
-		$userChampions = ChampionService::instance ()->getUserChampions ( Session::get ( 'userId' ) );
+		$userChampions = ChampionService::instance ()->getUserChampions ( Session::getCredentials ()->getUserId () );
 		$userChampionIds = array ();
 		foreach ( $userChampions as $userChamp ) {
 			$userChampionIds [$userChamp ['championId']] = $userChamp ['championName'];
