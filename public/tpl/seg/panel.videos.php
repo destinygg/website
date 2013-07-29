@@ -33,7 +33,7 @@ use Destiny\Common\Config;
 		</div>
 		<div id="broadcasts" class="stream">
 			<h3 class="title clearfix">
-				<span>Broadcasts</span> <a href="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/videos?kind=past_broadcasts" class="twitch-title">twitch.tv</a>
+				<span>Broadcasts</span> <a href="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/profile/pastBroadcasts" class="twitch-title">twitch.tv</a>
 			</h3>
 			<ul class="thumbnails">
 			<?if(isset($model->broadcasts) && !empty($model->broadcasts['videos'])):?>
