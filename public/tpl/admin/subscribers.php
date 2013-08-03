@@ -17,32 +17,6 @@ use Destiny\Common\UserRole;
 
 	<?include'./tpl/seg/top.php'?>
 	
-	<?php if(!empty($model->subscribersT1)): ?>
-	<section class="container">
-		<h3>T1 Subscribers</h3>
-		<div class="content content-dark stream-grids clearfix">
-			<div class="stream stream-grid" style="width:100%;">
-				<table class="grid">
-					<thead>
-						<tr>
-							<td style="width: 100%;">User</td>
-							<td>Subscription</td>
-						</tr>
-					</thead>
-					<tbody>
-					<?php foreach($model->subscribersT1 as $sub): ?>
-					<tr>
-						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
-						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>
-					</tr>
-					<?php endforeach; ?>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</section>
-	<?php endif; ?>
-	
 	<?php if(!empty($model->subscribersT2)): ?>
 	<section class="container">
 		<h3>T2 Subscribers</h3>
@@ -57,6 +31,32 @@ use Destiny\Common\UserRole;
 					</thead>
 					<tbody>
 					<?php foreach($model->subscribersT2 as $sub): ?>
+					<tr>
+						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
+						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>
+					</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+	<?php endif; ?>
+	
+	<?php if(!empty($model->subscribersT1)): ?>
+	<section class="container">
+		<h3>T1 Subscribers</h3>
+		<div class="content content-dark stream-grids clearfix">
+			<div class="stream stream-grid" style="width:100%;">
+				<table class="grid">
+					<thead>
+						<tr>
+							<td style="width: 100%;">User</td>
+							<td>Subscription</td>
+						</tr>
+					</thead>
+					<tbody>
+					<?php foreach($model->subscribersT1 as $sub): ?>
 					<tr>
 						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
 						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>

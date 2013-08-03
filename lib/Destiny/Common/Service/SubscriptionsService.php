@@ -119,7 +119,7 @@ class SubscriptionsService extends Service {
 	 * @param int $subscriptionId
 	 * @param \DateTime $endDate
 	 */
-	public function updateSubscriptionDateEnd($subscriptionId, \DateTime $endDate) {
+	public function updateSubscriptionDateEnd($subscriptionId,\DateTime $endDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users_subscriptions', array (
 			'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
@@ -199,12 +199,12 @@ class SubscriptionsService extends Service {
 			SELECT u.userId,u.username,u.email,o.description,s.createdDate,s.endDate,s.subscriptionSource,s.recurring,s.status FROM dfl_orders AS o
 			INNER JOIN dfl_users_subscriptions AS s ON (s.userId = o.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
 			INNER JOIN dfl_users AS u ON (u.userId = s.userId)
-			WHERE o.description LIKE :subscriptionType
+			WHERE o.description LIKE \'%' . $subscriptionType . '%\'
 			AND o.state = :orderStatus
-			GROUP BY o.userId		
+			GROUP BY o.userId
+			ORDER BY u.username
 		' );
 		$stmt->bindValue ( 'orderStatus', OrderStatus::COMPLETED, \PDO::PARAM_STR );
-		$stmt->bindValue ( 'subscriptionType', '%' . $subscriptionType . '%', \PDO::PARAM_STR );
 		$stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
 		$stmt->bindValue ( 'subscriptionSource', 'destiny.gg', \PDO::PARAM_STR );
 		$stmt->execute ();
