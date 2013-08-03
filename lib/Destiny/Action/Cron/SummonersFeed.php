@@ -9,9 +9,12 @@ use Psr\Log\LoggerInterface;
 class SummonersFeed {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::instance ();
-		$response = LeagueApiService::instance ()->getSummoners ();
-		$app->getCacheDriver ()->save ( 'summoners', $response );
+		$cacheDriver = Application::instance ()->getCacheDriver ();
+		$streamInfo = $cacheDriver->fetch ( 'streaminfo' );
+		if (! empty ( $streamInfo ['stream'] )) {
+			$response = LeagueApiService::instance ()->getSummoners ();
+			$cacheDriver->save ( 'summoners', $response );
+		}
 	}
 
 }

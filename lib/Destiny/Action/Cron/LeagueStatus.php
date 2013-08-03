@@ -9,10 +9,13 @@ use Psr\Log\LoggerInterface;
 class LeagueStatus {
 
 	public function execute(LoggerInterface $log) {
-		$log->debug ( 'Updated lol status' );
-		$response = LeagueApiService::instance ()->getStatus ()->getResponse ();
-		$app = Application::instance ();
-		$app->getCacheDriver ()->save ( 'leaguestatus', $response );
+		$cacheDriver = Application::instance ()->getCacheDriver ();
+		$streamInfo = $cacheDriver->fetch ( 'streaminfo' );
+		if (! empty ( $streamInfo ['stream'] )) {
+			$log->debug ( 'Updated lol status' );
+			$response = LeagueApiService::instance ()->getStatus ()->getResponse ();
+			$cacheDriver->save ( 'leaguestatus', $response );
+		}
 	}
 
 }

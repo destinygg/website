@@ -9,9 +9,9 @@ use Psr\Log\LoggerInterface;
 class StreamInfo {
 
 	public function execute(LoggerInterface $log) {
-		$app = Application::instance ();
+		$cacheDriver = Application::instance ()->getCacheDriver ();
 		$response = TwitchApiService::instance ()->getStreamInfo ()->getResponse ();
-		$app->getCacheDriver ()->save ( 'streaminfo', $response );
+		$cacheDriver->save ( 'streaminfo', $response );
 	}
 
 }
