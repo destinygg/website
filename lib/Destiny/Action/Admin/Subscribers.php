@@ -24,8 +24,8 @@ class Subscribers {
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
-		$model->subscribersT1 = $subService->getSubscriptionsByType ( 'premium' );
-		$model->subscribersT2 = $subService->getSubscriptionsByType ( 'standard' );
+		$model->subscribersT2 = $subService->getSubscriptionsByType ( 'premium' );
+		$model->subscribersT1 = $subService->getSubscriptionsByType ( 'standard' );
 		return 'admin/subscribers';
 	}
 
