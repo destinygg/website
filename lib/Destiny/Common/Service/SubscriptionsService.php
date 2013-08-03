@@ -9,6 +9,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\AppException;
 
 class SubscriptionsService extends Service {
+	
 	protected static $instance = null;
 
 	/**
@@ -28,10 +29,15 @@ class SubscriptionsService extends Service {
 	 */
 	public function expiredSubscriptions() {
 		$conn = Application::instance ()->getConnection ();
-		$conn->executeQuery ( '
-			UPDATE dfl_users_subscriptions SET `status` = \'Expired\'
-			WHERE status = \'Active\' AND endDate + INTERVAL 72 HOUR <= NOW()
-		' );
+		$stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE status = \'Active\' AND endDate + INTERVAL 24 HOUR <= NOW()' );
+		$stmt->execute ();
+		$subscriptions = $stmt->fetchAll ();
+		if (! empty ( $subscriptions )) {
+			foreach ( $subscriptions as $sub ) {
+				AuthenticationService::instance ()->flagUserForUpdate ( $sub ['userId'] );
+				$conn->executeQuery ( 'UPDATE dfl_users_subscriptions SET `status` = \'Expired\' WHERE subscriptionId = \'' . $sub ['subscriptionId'] . '\'' );
+			}
+		}
 	}
 
 	/**

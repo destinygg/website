@@ -314,8 +314,8 @@ return array (
 			array (
 				'action' => 'SubscriptionExpire',
 				'lastExecuted' => null,
-				'frequency' => 6,
-				'period' => 'hour',
+				'frequency' => 30,
+				'period' => 'minute',
 				'executeOnNextRun' => false
 			),
 			array (
