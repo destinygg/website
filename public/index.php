@@ -54,9 +54,10 @@ if (Session::hasRole ( UserRole::USER ) && empty ( $teamId )) {
 	$userId = Session::getCredentials ()->getUserId ();
 	$team = $teamService->getTeamByUserId ( $userId );
 	if (empty ( $team )) {
-		$teamId = $teamService->addTeam ( $userId, Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
+		$team = array ();
+		$team ['teamId'] = $teamService->addTeam ( $userId, Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
 	}
-	Session::set ( 'teamId', $teamId );
+	Session::set ( 'teamId', $team ['teamId'] );
 }
 
 // Attempts to find a route and execute the action
