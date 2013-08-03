@@ -51,12 +51,12 @@ $app->setRouter ( new Router ( AnnotationDirectoryLoader::load ( $reader, _LIBDI
 $teamId = Session::get ( 'teamId' );
 if (Session::hasRole ( UserRole::USER ) && empty ( $teamId )) {
 	$teamService = TeamService::instance ();
-	$team = $teamService->getTeamByUserId ( Session::getCredentials ()->getUserId () );
+	$userId = Session::getCredentials ()->getUserId ();
+	$team = $teamService->getTeamByUserId ( $userId );
 	if (empty ( $team )) {
-		$team = array ();
-		$team ['teamId'] = $teamService->addTeam ( Session::getCredentials ()->getUserId (), Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
+		$teamId = $teamService->addTeam ( $userId, Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
 	}
-	Session::set ( 'teamId', $team ['teamId'] );
+	Session::set ( 'teamId', $teamId );
 }
 
 // Attempts to find a route and execute the action

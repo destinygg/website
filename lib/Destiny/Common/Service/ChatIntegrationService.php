@@ -27,6 +27,19 @@ class ChatIntegrationService extends Service {
 	}
 
 	/**
+	 * Refreshes the current users session timeout
+	 *
+	 * @return void
+	 */
+	public function renewChatSessionExpiration() {
+		$redis = Application::instance ()->getRedis ();
+		$id = sprintf ( 'CHAT:%s', Session::getSessionId () );
+		if (! empty ( $redis ) && $redis->exists ( $id )) {
+			$redis->expire ( $id, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
+		}
+	}
+
+	/**
 	 * Handle the update of the credentials for chat
 	 * @param SessionCredentials $credentials
 	 * @param string $sessionId
