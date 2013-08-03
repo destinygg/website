@@ -202,7 +202,7 @@ class SubscriptionsService extends Service {
 			WHERE o.description LIKE \'%' . $subscriptionType . '%\'
 			AND o.state = :orderStatus
 			GROUP BY o.userId
-			ORDER BY u.username
+			ORDER BY s.createdDate ASC
 		' );
 		$stmt->bindValue ( 'orderStatus', OrderStatus::COMPLETED, \PDO::PARAM_STR );
 		$stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );

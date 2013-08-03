@@ -25,17 +25,20 @@ use Destiny\Common\UserRole;
 				<table class="grid">
 					<thead>
 						<tr>
+							<td></td>
 							<td style="width: 100%;">User</td>
 							<td>Subscription</td>
 						</tr>
 					</thead>
 					<tbody>
+					<?php $i=1; ?>
 					<?php foreach($model->subscribersT2 as $sub): ?>
 					<tr>
+						<td><?=$i?></td>
 						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
 						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>
 					</tr>
-					<?php endforeach; ?>
+					<?php $i++; endforeach; ?>
 					</tbody>
 				</table>
 			</div>
@@ -51,17 +54,20 @@ use Destiny\Common\UserRole;
 				<table class="grid">
 					<thead>
 						<tr>
+							<td></td>
 							<td style="width: 100%;">User</td>
 							<td>Subscription</td>
 						</tr>
 					</thead>
 					<tbody>
+					<?php $i=1; ?>
 					<?php foreach($model->subscribersT1 as $sub): ?>
 					<tr>
+						<td><?=$i?></td>
 						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
 						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>
 					</tr>
-					<?php endforeach; ?>
+					<?php $i++; endforeach; ?>
 					</tbody>
 				</table>
 			</div>
