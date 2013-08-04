@@ -102,7 +102,7 @@ use Destiny\Common\UserFeature;
 							
 								<dt>Billing start date:</dt>
 								<dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
-								<?php if($billingNextDate != $billingNextDate): ?>
+								<?php if($billingNextDate > $billingStartDate): ?>
 								<dt>Billing next date:</dt>
 								<dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
 								<?php endif; ?>

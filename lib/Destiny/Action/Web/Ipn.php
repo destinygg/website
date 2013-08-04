@@ -137,18 +137,18 @@ class Ipn {
 				
 				// Update the subscription end date regardless if the payment was successful or not
 				$end = Date::getDateTime ( $subscription ['endDate'] );
-				$end->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
+				$end->modify ( '+' . $paymentProfile ['billingFrequency'] . ' ' . strtolower ( $paymentProfile ['billingPeriod'] ) );
 				
 				$subService->updateSubscriptionDateEnd ( $subscription ['subscriptionId'], $end );
 				$log->notice ( sprintf ( 'Update Subscription end date %s [%s]', $subscription ['subscriptionId'], $end->format ( Date::FORMAT ) ) );
 				
 				// Change the subscription state depending on the payment state
-				if (strcasecmp ( $payment ['paymentStatus'], PaymentStatus::PENDING ) === 0) {
+				if (strcasecmp ( $data ['payment_status'], PaymentStatus::PENDING ) === 0) {
 					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::PENDING );
 					$log->notice ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], SubscriptionStatus::PENDING ) );
-				} else if (strcasecmp ( $payment ['paymentStatus'], PaymentStatus::COMPLETED ) !== 0) {
-					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], $payment ['paymentStatus'] );
-					$log->notice ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], $payment ['paymentStatus'] ) );
+				} else if (strcasecmp ( $data ['payment_status'], PaymentStatus::COMPLETED ) !== 0) {
+					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], $data ['payment_status'] );
+					$log->notice ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], $data ['payment_status'] ) );
 				}
 				
 				// Add a payment to the order

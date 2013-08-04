@@ -29,7 +29,7 @@ class Login {
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		if (Session::hasRole ( \Destiny\Common\UserRole::USER )) {
-			throw new AppException ( 'You are already registered' );
+			throw new AppException ( 'You are already authenticated' );
 		}
 		$model->title = 'Login';
 		return 'login';
