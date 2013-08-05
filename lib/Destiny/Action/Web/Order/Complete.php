@@ -154,7 +154,7 @@ class Complete {
 				return 'ordererror';
 			}
 			// Set the payment profile to active, and paymetProfileId
-			$ordersService->updatePaymentProfileStatus ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
+			$ordersService->updatePaymentProfileId ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
 		}
 		
 		// Complete the checkout

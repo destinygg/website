@@ -31,40 +31,34 @@ class Ipn {
 	 * @param array $params
 	 */
 	public function execute(array $params) {
-		$log = Application::instance ()->getLogger ();
-		$ipnMessage = new PPIPNMessage ();
-		if (! $ipnMessage->validate ()) {
-			$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
-			$this->niceExit ( false );
-		}
-		$data = $ipnMessage->getRawData ();
-		$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
-		$orderService = OrdersService::instance ();
-		$orderService->addIPNRecord ( array (
-			'ipnTrackId' => $data ['ipn_track_id'],
-			'ipnTransactionId' => $data ['txn_id'],
-			'ipnTransactionType' => $data ['txn_type'],
-			'ipnData' => json_encode ( $data ) 
-		) );
-		
-		// Make sure this IPN is for the merchant
-		if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
-			$log->critical ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
-			$this->niceExit ( false );
-		}
-		
-		$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
-		$this->niceExit ( true );
-	}
-
-	/**
-	 * Closes and sends an OK response
-	 *
-	 * @return void
-	 */
-	private function niceExit($verified) {
 		Http::status ( Http::STATUS_OK );
-		echo ($verified) ? 'VERIFIED' : 'INVALID';
+		try {
+			$log = Application::instance ()->getLogger ();
+			$ipnMessage = new PPIPNMessage ();
+			if (! $ipnMessage->validate ()) {
+				$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
+				exit ();
+			}
+			$data = $ipnMessage->getRawData ();
+			$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
+			$orderService = OrdersService::instance ();
+			$orderService->addIPNRecord ( array (
+				'ipnTrackId' => $data ['ipn_track_id'],
+				'ipnTransactionId' => $data ['txn_id'],
+				'ipnTransactionType' => $data ['txn_type'],
+				'ipnData' => json_encode ( $data ) 
+			) );
+			
+			// Make sure this IPN is for the merchant
+			if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
+				$log->critical ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
+				exit ();
+			}
+			
+			$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
+		} catch ( \Exception $e ) {
+			$log->critical ( $e->getMessage () );
+		}
 		exit ();
 	}
 
@@ -93,7 +87,7 @@ class Ipn {
 					}
 					
 					// Update the payment status
-					$orderService->updatePaymentState ( $payment, $data ['payment_status'] );
+					$orderService->updatePaymentStatus ( $payment, $data ['payment_status'] );
 					$log->notice ( sprintf ( 'Updated payment status %s status %s', $data ['txn_id'], $data ['payment_status'] ) );
 					
 					// If the payment status WAS PENDING, and the IPN payment status is COMPLETED

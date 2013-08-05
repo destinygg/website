@@ -237,6 +237,21 @@ class OrdersService extends Service {
 	}
 
 	/**
+	 * Update a payment profile next payment date
+	 *
+	 * @param int $paymentProfileId
+	 * @param \DateTime $billingNextDate
+	 */
+	public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
+		$conn = Application::instance ()->getConnection ();
+		$conn->update ( 'dfl_orders_payment_profiles', array (
+			'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 
+		), array (
+			'profileId' => $paymentProfileId 
+		) );
+	}
+
+	/**
 	 * Set a payment profile state to cancelled
 	 *
 	 * @param int $paymentProfile
@@ -252,21 +267,6 @@ class OrdersService extends Service {
 	}
 
 	/**
-	 * Update a payment profile next payment date
-	 *
-	 * @param int $paymentProfileId
-	 * @param \DateTime $billingNextDate
-	 */
-	public function updatePaymentProfileNextPayment($paymentProfileId,\DateTime $billingNextDate) {
-		$conn = Application::instance ()->getConnection ();
-		$conn->update ( 'dfl_orders_payment_profiles', array (
-			'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 
-		), array (
-			'profileId' => $paymentProfileId 
-		) );
-	}
-
-	/**
 	 * Set the paymentProfileId, and state to "Active"
 	 *
 	 * @todo dirty
@@ -274,7 +274,7 @@ class OrdersService extends Service {
 	 * @param int $paymentProfileId
 	 * @param string $status
 	 */
-	public function updatePaymentProfileStatus($profileId, $paymentProfileId, $state) {
+	public function updatePaymentProfileId($profileId, $paymentProfileId, $state) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_orders_payment_profiles', array (
 			'paymentProfileId' => $paymentProfileId,
