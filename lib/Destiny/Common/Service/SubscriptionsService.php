@@ -22,14 +22,26 @@ class SubscriptionsService extends Service {
 	}
 
 	/**
-	 * Sets subscription status to 'Expired' where the end date is smaller than NOW +72 HOUR
-	 * Since paypal says it takes up to 72 hours for recurring payments to occur
+	 * Expires subscritions based on their end date
 	 *
 	 * @return int the number of expired subscriptions
 	 */
 	public function expiredSubscriptions() {
 		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE status = \'Active\' AND endDate + INTERVAL 24 HOUR <= NOW()' );
+		
+		// Expire recurring subs with a 24 hour grace period
+		$stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE recurring = 1 AND status = \'Active\' AND endDate + INTERVAL 24 HOUR <= NOW()' );
+		$stmt->execute ();
+		$subscriptions = $stmt->fetchAll ();
+		if (! empty ( $subscriptions )) {
+			foreach ( $subscriptions as $sub ) {
+				AuthenticationService::instance ()->flagUserForUpdate ( $sub ['userId'] );
+				$conn->executeQuery ( 'UPDATE dfl_users_subscriptions SET `status` = \'Expired\' WHERE subscriptionId = \'' . $sub ['subscriptionId'] . '\'' );
+			}
+		}
+		
+		// Expire NONE recurring subs immediately
+		$stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE recurring = 0 AND status = \'Active\' AND endDate <= NOW()' );
 		$stmt->execute ();
 		$subscriptions = $stmt->fetchAll ();
 		if (! empty ( $subscriptions )) {
