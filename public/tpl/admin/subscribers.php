@@ -28,6 +28,7 @@ use Destiny\Common\UserRole;
 							<td></td>
 							<td style="width: 100%;">User</td>
 							<td>Subscription</td>
+							<td>Recurring</td>
 							<td></td>
 						</tr>
 					</thead>
@@ -38,6 +39,7 @@ use Destiny\Common\UserRole;
 						<td><?=$i?></td>
 						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
 						<td><?=Tpl::out($sub['description'])?></td>
+						<td><?=($sub['recurring'] == 1) ? 'Yes':'No'?></td>
 						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>
 					</tr>
 					<?php $i++; endforeach; ?>
@@ -59,6 +61,7 @@ use Destiny\Common\UserRole;
 							<td></td>
 							<td style="width: 100%;">User</td>
 							<td>Subscription</td>
+							<td>Recurring</td>
 							<td></td>
 						</tr>
 					</thead>
@@ -69,6 +72,7 @@ use Destiny\Common\UserRole;
 						<td><?=$i?></td>
 						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
 						<td><?=Tpl::out($sub['description'])?></td>
+						<td><?=($sub['recurring'] == 1) ? 'Yes':'No'?></td>
 						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>
 					</tr>
 					<?php $i++; endforeach; ?>
