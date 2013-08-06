@@ -21,12 +21,14 @@ abstract class Http {
 	const STATUS_UNAUTHORIZED = 401;
 	const STATUS_ERROR = 500;
 	const STATUS_OK = 200;
+	const STATUS_NO_CONTENT = 204;
 	public static $HEADER_STATUSES = array (
 		500 => 'Error',
 		404 => 'Not Found',
 		401 => 'Unauthorized',
 		304 => 'Not Modified',
 		200 => 'OK',
+		204 => 'No Content',
 		403 => 'Forbidden' 
 	);
 

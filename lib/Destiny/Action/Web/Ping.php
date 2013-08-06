@@ -19,7 +19,7 @@ class Ping {
 	 */
 	public function execute(array $params) {
 		Http::header ( 'X-Pong', 'Destiny' );
-		Http::status ( Http::STATUS_OK );
+		Http::status ( Http::STATUS_NO_CONTENT );
 		exit ();
 	}
 
