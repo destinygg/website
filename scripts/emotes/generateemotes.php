@@ -9,39 +9,9 @@ function genHTML($trigger) {
 @mkdir('img', 0775, true);
 @mkdir('css', 0775, true);
 
-$customemotes = array(
-	'Dravewin',
-	'INFESTINY',
-	'FIDGETLOL',
-	'Hhhehhehe',
-	'GameOfThrows',
-	'WORTH',
-	'FeedNathan',
-	'Abathur',
-	'LUL',
-	'Heimerdonger',
-	'ASLAN',
-	'DJAslan',
-	'SoSad',
-	'DURRSTINY',
-	'SURPRISE',
-	'NoTears',
-	'OverRustle',
-);
-$twitchemotes = array(
-	'Kappa',
-	'Klappa',
-	'DappaKappa',
-	'BibleThump',
-	'BloodTrail',
-	'BrainSlug',
-	'FrankerZ',
-	'Kreygasm',
-	'PJSalt',
-	'SSSsss',
-	'FailFish',
-	'BasedGod',
-);
+$config = require realpath ( __DIR__ . '/../' ) . '/config/config.php';
+$customemotes = $config ['chat'] ['customemotes'];
+$twitchemotes = $config ['chat'] ['twitchemotes'];
 
 $triggers     = array();
 $html  	      = array();
@@ -107,21 +77,23 @@ ob_start();
 ?>
 <html>
 <head>
-	<link href="css/emoticons_unsprited.css" rel="stylesheet" media="screen">
-	<link href="emoticons.css" rel="stylesheet" media="screen">
-	<style>
-	body {
-		background-color: #000;
-	}
-	div.chat-emote {
-		display: block;
-		margin: 50px 0;
-	}
-	</style>
-	
+<link href="css/emoticons_unsprited.css" rel="stylesheet" media="screen">
+<link href="emoticons.css" rel="stylesheet" media="screen">
+<style>
+body {
+	background-color: #000;
+}
+
+div.chat-emote {
+	display: block;
+	margin: 50px 0;
+}
+</style>
+
 </head>
 <body>
-<br/><br/>
+	<br />
+	<br />
 <?=implode("\r\n", $html);?>
 </body>
 </html>

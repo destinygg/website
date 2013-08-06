@@ -63,6 +63,9 @@ class AuthenticationService extends Service {
 		if (empty ( $username )) {
 			throw new AppException ( 'Username required' );
 		}
+		if (count ( preg_grep ( "/" . $username . "/i", Config::$a ['chat'] ['customemotes'] ) ) > 0 || count ( preg_grep ( "/" . $username . "/i", Config::$a ['chat'] ['twitchemotes'] ) )) {
+			throw new AppException ( 'That username has been blacklisted' );
+		}
 		if (preg_match ( '/^[A-Za-z0-9_]{4,20}$/', $username ) == 0) {
 			throw new AppException ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
 		}
@@ -346,7 +349,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
+	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),

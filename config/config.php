@@ -10,7 +10,40 @@ return array (
 	),
 	'chat' => array(
 		'backlog' 			=> 150,
-		'maxlines' 			=> 150
+		'maxlines' 			=> 150,
+		'customemotes' => array(
+			'Dravewin',
+			'INFESTINY',
+			'FIDGETLOL',
+			'Hhhehhehe',
+			'GameOfThrows',
+			'WORTH',
+			'FeedNathan',
+			'Abathur',
+			'LUL',
+			'Heimerdonger',
+			'ASLAN',
+			'DJAslan',
+			'SoSad',
+			'DURRSTINY',
+			'SURPRISE',
+			'NoTears',
+			'OverRustle'
+		),
+		'twitchemotes' => array(
+			'Kappa',
+			'Klappa',
+			'DappaKappa',
+			'BibleThump',
+			'BloodTrail',
+			'BrainSlug',
+			'FrankerZ',
+			'Kreygasm',
+			'PJSalt',
+			'SSSsss',
+			'FailFish',
+			'BasedGod'
+		)
 	),
 	'redis' => array(
 		'host' 				=> '127.0.0.1',
