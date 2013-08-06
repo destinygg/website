@@ -136,6 +136,7 @@ use Destiny\Common\Config;
 					<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
 					<a id="toggle-mute-form" href="#mute" onclick="$('#user-mute-form').toggle(); $('#user-ban-form').hide();"><i class="icon-ban-circle icon-white"></i> Mute</a> 
 					<a id="toggle-mute-form" href="#mute" onclick="$('#user-ban-form').toggle(); $('#user-mute-form').hide();"><i class="icon-remove icon-white"></i> Ban</a> 
+					<a id="clearmessages" href="#clearmessages"><i class="icon-fire icon-white"></i> Clear messages</a> 
 					<?php endif; ?>
 				</div>
 				<?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>

@@ -128,7 +128,6 @@ chat.prototype.emit = function(eventname, data) {
 chat.prototype.onOPEN = function() {
 	this.connected = true;
 };
-
 chat.prototype.onCLOSE = function() {
 	if (this.dontconnect) return;
 	var rand = ((this.connected) ? getRandomInt(1,3) : getRandomInt(5,30));
@@ -159,7 +158,6 @@ chat.prototype.onQUIT = function(data) {
 	}
 };
 chat.prototype.onMSG = function(data) {
-
 	// If we have the same user as the one logged in, update the features
 	if(this.user.username == data.nick && $.isArray(data.features))
 		this.user.features = data.features;
@@ -242,19 +240,24 @@ chat.prototype.handleCommand = function(str) {
 	this.l(command, parts);
 	
 	switch(command) {
+	
 		default:
 			this.gui.push(new ChatErrorMessage("Unknown command"));
 			break;
+			
 		case "emotes":
-				this.gui.push(new ChatInfoMessage("Available emoticons: "+emoticons.join(", ")));
+			this.gui.push(new ChatInfoMessage("Available emoticons: "+emoticons.join(", ")));
 			break;
+			
 		case "help":
 			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
 			break;
+			
 		case "me":
 			payload.data = "/" + str;
 			this.emit("MSG", payload);
 			break;
+			
 		case "ignore":
 			if (!localStorage) {
 				this.gui.push(new ChatErrorMessage("Ignore is unavailable, no localStorage"));
@@ -286,6 +289,7 @@ chat.prototype.handleCommand = function(str) {
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
 			this.loadIgnoreList();
 			break;
+			
 		case "unignore":
 			if (!localStorage) {
 				this.gui.push(new ChatErrorMessage("Ignore is unavailable, no localStorage"));
@@ -304,6 +308,7 @@ chat.prototype.handleCommand = function(str) {
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
 			this.loadIgnoreList();
 			break;
+			
 		case "mute":
 			if (parts.length == 1) {
 				this.gui.push(new ChatInfoMessage("Usage: /" + command + " nick[ time]"));
@@ -326,6 +331,7 @@ chat.prototype.handleCommand = function(str) {
 			
 			this.emit(command.toUpperCase(), payload);
 			break;
+			
 		case "ban":
 		case "ipban":
 			if (parts.length < 4) {
@@ -355,9 +361,10 @@ chat.prototype.handleCommand = function(str) {
 			
 			this.emit("BAN", payload);
 			break;
+			
 		case "unmute":
 		case "unban":
-		if (parts.length == 1) {
+			if (parts.length == 1) {
 				this.gui.push(new ChatInfoMessage("Usage: /" + command + " nick"));
 				return;
 			}
@@ -380,6 +387,7 @@ chat.prototype.handleCommand = function(str) {
 			payload.data = parts[1];
 			this.emit(command.toUpperCase(), payload);
 			break;
+			
 		case "maxlines":
 			
 			if (!parts[1]) {
@@ -397,9 +405,9 @@ chat.prototype.handleCommand = function(str) {
 			this.gui.maxlines = newmaxlines;
 			this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
 			break;
+			
 		case "unhighlight":
 		case "highlight":
-			
 			if (!parts[1]) {
 				var nicks = [];
 				$.each(this.gui.highlightnicks, function(k, v) {
@@ -426,6 +434,7 @@ chat.prototype.handleCommand = function(str) {
 			
 			this.gui.saveChatOption('highlightnicks', this.gui.highlightnicks);
 			break;
+			
 		case "timestampformat":
 			if (!parts[1]) {
 				this.gui.push(new ChatInfoMessage("Current format: " + this.gui.timestampformat + " (the default is 'HH:mm', for more info: http://momentjs.com/docs/#/displaying/format/)"));
@@ -446,7 +455,7 @@ chat.prototype.handleCommand = function(str) {
 };
 chat.prototype.parseTimeInterval = function(str) {
 	var nanoseconds = 0,
-	    units   = {
+		units   = {
 		s: 1000000000,
 		sec: 1000000000, secs: 1000000000,
 		second: 1000000000, seconds: 1000000000,
@@ -470,6 +479,5 @@ chat.prototype.parseTimeInterval = function(str) {
 		
 		nanoseconds += +number;
 	});
-	
 	return nanoseconds;
 };
