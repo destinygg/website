@@ -2,7 +2,6 @@
 namespace Destiny\Common;
 
 use Destiny\Common\Service\ChatIntegrationService;
-
 use Destiny\Common\Utils\Options;
 
 class SessionInstance {
@@ -631,7 +630,7 @@ abstract class Session {
 				case self::START_IFCOOKIE :
 					$sid = $session->getSessionCookie ()->getCookie ();
 					if (! empty ( $sid )) {
-						ChatIntegrationService::instance ()->renewChatSessionExpiration ();
+						ChatIntegrationService::instance ()->renewChatSessionExpiration ( $sid );
 						return $session->start ();
 					}
 					return false;
