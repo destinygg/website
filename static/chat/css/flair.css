@@ -1,9 +1,9 @@
 .chat .chat-lines i[class^="icon-"] {
-background-position: top left;
+background-position: bottom left;
 background-repeat: no-repeat;
 }
 .chat .chat-lines i[class^="icon-"]:hover {
-background-position: bottom left;
+background-position: top left;
 }
 
 i.icon-subscriber {
