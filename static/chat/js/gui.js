@@ -1,52 +1,22 @@
-// Need a better place for these
-var emoticons = ["Abathur", "ASLAN", "BasedGod", "BibleThump", "BloodTrail", "BrainSlug", "DappaKappa", "DJAslan", "Dravewin", "DURRSTINY", "FailFish", "FeedNathan", "FIDGETLOL", "FrankerZ", "GameOfThrows", "Heimerdonger", "Hhhehhehe", "INFESTINY", "Kappa", "Klappa", "Kreygasm", "LUL", "NoTears", "OverRustle", "PJSalt", "SoSad", "SSSsss", "SURPRISE", "WORTH"];
-var emoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b');
-var gemoteregex = new RegExp('\\b('+emoticons.join('|')+')\\b', 'gm');
-var linkregex;
-
-(function() {
-	var urlchars = "\\w!\"#$%&'*+,-./:;<=>?@\\\\^`|~", //chars allowed in url path+auth params
-	    tlds     = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|POST|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)",
-	    ipaddr   = "(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])";
-	
-	linkregex = new RegExp(
-		"(?:^|[\\s\\(\\[])" + //Match valid delimiters for multi URL lines
-		"(((?:https?|ftp):\\/\\/)?" + //Begin URL group, match and group protocol (if any).
-		"(?:[\\w]+(?::[" + urlchars + "]*)?@)?" + //Match basic auth user/password prefix
-		"(?:" + ipaddr + "|(?:"+ // match an ip address or domain
-		"(?:[\\w-]+\\.)+" + //match subdomains and domain
-		tlds + //match valid+accepted TLDs, we don't care about punycode
-		"))(?:\\/[" + urlchars + "]*)?)" + //match path and query, END URL group
-		"(?=$|[\\s\\)\\]])", // Look ahead for valid delimiters
-		"gim"
-	);
-})();
-
-function urlReplaceCallback(match, url, scheme) {
-	var encodedUrl = url.replace(/[&"'<>]/g, function(c) {
-		var htmlencmap = {
-			"&": "&amp;",
-			"'": "&#39;",
-			'"': "&quot;",
-			"<": "&lt;",
-			">": "&gt;"
-		};
-		return htmlencmap[c];
-	}),
-	
-	scheme = scheme ? '': 'http://';
-	return match.replace(url, '<a target="_blank" class="externallink" href="' + scheme + encodedUrl + '" rel="nofollow">' + encodedUrl + '</a>');
-}
-
 (function($){
 	
-	destiny.fn.Chat = function(engine, options){
-		$.extend(this, options);
-		this.ui = $(this.ui);
+	// Global chat instances
+	destiny.chat = [];
+	
+	//ChatGUI $('#element) shortcut
+	$.fn.ChatGui = function(user, options){
+		destiny.chat[0] = new chat(this, user, options);
+		destiny.chat[0].start();
+	};
+	
+	// ChatGUI class
+	ChatGui = function(element, engine, options){
+		this.ui = $(element);
 		this.engine = engine;
+		$.extend(this, options);
 		return this.init();
 	};
-	$.extend(destiny.fn.Chat.prototype, {
+	$.extend(ChatGui.prototype, {
 
 		theme: 'dark',
 		maxlines: 500,
@@ -67,28 +37,28 @@ function urlReplaceCallback(match, url, scheme) {
 		menus: [],
 		menuOpenCount: 0,
 		timestampformat: null,
+		emoticons: [],
+		formatters: [],
 		
 		init: function(){
-			// Set the elements data 'chat' var - should prob remove this - used to reference this in the UI
-			this.ui.data('chat', this);
+			
+			// local var for this instance
+			var chat = this;
 			
 			// local elements stored in vars to not have to get the elements via query each time
 			this.lines = this.ui.find('.chat-lines:first').eq(0);
 			this.output = this.ui.find('.chat-output:first').eq(0);
 			this.inputwrap = this.ui.find('.chat-input:first').eq(0);
 			this.input = this.inputwrap.find('.input:first:first').eq(0);
-			
-			$(window).focus(function(){
-				$("div.chat-input-control input").focus();
-			});
-			
 			this.inputwrap.removeClass('hidden');
 			
+			// Message formatters
+			this.formatters.push(new destiny.fn.EmoteFormatter(this));
+			this.formatters.push(new destiny.fn.UrlFormatter(this));
+			
 			// Scrollbars and scroll locking
-			if(this.scrollPlugin == null){
-				this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
-				this.scrollPlugin.lockScroll(true);
-			};
+			this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
+			this.scrollPlugin.lockScroll(true);
 			
 			// Input history
 			this.currenthistoryline = -1;
@@ -108,9 +78,9 @@ function urlReplaceCallback(match, url, scheme) {
 				maxResults: 10
 			}).data('mAutoComplete');
 			
-			for (var i = emoticons.length - 1; i >= 0; i--) {
+			for (var i = this.emoticons.length - 1; i >= 0; i--) {
 				// let the emotes have more weight than someone who never spoke
-				this.autoCompletePlugin.addData(emoticons[i], 2);
+				this.autoCompletePlugin.addData(this.emoticons[i], 2);
 			};
 			
 			// Chat settings
@@ -123,13 +93,10 @@ function urlReplaceCallback(match, url, scheme) {
 			
 			this.chatsettings.btn.on('click', function(e){
 				e.preventDefault();
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				//chat.chatsettings.detach();
 				if(chat.chatsettings.visible){
 					return cMenu.prototype.hideMenu.call(chat.chatsettings, chat);
 				}
 				cMenu.closeMenus(chat);
-				//chat.chatsettings.appendTo(chat.ui);
 				return cMenu.prototype.showMenu.call(chat.chatsettings, chat);
 			});
 			this.chatsettings.on('keypress blur', 'input[name=customhighlight]', function(e) {
@@ -144,14 +111,11 @@ function urlReplaceCallback(match, url, scheme) {
 					if (!data[i])
 						data.splice(i, 1)
 				};
-				
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				chat.saveChatOption('customhighlight', data );
 				chat.loadCustomHighlights();
 			});
 			this.chatsettings.on('change', 'input[type="checkbox"]', function(){
-				var chat    = $(this).closest('.chat.chat-frame').data('chat'),
-				    name    = $(this).attr('name'),
+				var name    = $(this).attr('name'),
 				    checked = $(this).is(':checked');
 				switch(name){
 				
@@ -206,8 +170,6 @@ function urlReplaceCallback(match, url, scheme) {
 			this.userslist.scrollable = this.userslist.find('.scrollable:first');
 			this.userslist.btn.on('click', function(e){
 				e.preventDefault();
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
-				//chat.userslist.detach();
 				if(chat.userslist.visible){
 					return cMenu.prototype.hideMenu.call(chat.userslist, chat);
 				}
@@ -257,8 +219,8 @@ function urlReplaceCallback(match, url, scheme) {
 				appendUsers(mods, lists.filter('.moderators'));
 				appendUsers(bots, lists.filter('.bots'));
 				appendUsers(subs, lists.filter('.subs'));
-				appendUsers(plebs, lists.filter('.plebs'));
-				//chat.userslist.appendTo(chat.ui);
+				appendUsers(plebs, lists.filter('.plebs'));				//chat.userslist.appendTo(chat.ui);
+
 				return cMenu.prototype.showMenu.call(chat.userslist, chat);
 			});
 			
@@ -268,12 +230,10 @@ function urlReplaceCallback(match, url, scheme) {
 			// The tools for when you click on a user
 			this.cUserTools = new cUserTools(this);
 			this.userslist.on('click', '.user', function(){
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				var username = $(this).text().toLowerCase();
 				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
 			});
 			this.lines.on('mousedown', 'div.user-msg a.user', function(){
-				var chat = $(this).closest('.chat.chat-frame').data('chat');
 				var username = $(this).closest('.user-msg').data('username');
 				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
 				return false;
@@ -282,14 +242,14 @@ function urlReplaceCallback(match, url, scheme) {
 			// Bind to user input submit
 			this.ui.on('submit', 'form.chat-input', function(e){
 				e.preventDefault();
-				$(this).closest('.chat.chat-frame').data('chat').send();
+				chat.send();
 			});
 			this.ui.on('click', '.chat-send-btn', function(e){
 				e.preventDefault();
-				$(this).closest('.chat.chat-frame').data('chat').send();
+				chat.send();
 			});
 
-			// Close the menu, or perform a scroll
+			// Close all menus and perform a scroll
 			this.input.on('keydown mousedown', $.proxy(function(e){
 				if(this.menuOpenCount > 0)
 					cMenu.closeMenus(this);
@@ -303,7 +263,7 @@ function urlReplaceCallback(match, url, scheme) {
 					return false;
 				}
 			}, this));
-			
+			// Close all menus if someone clicks on any messages
 			this.output.on('mousedown', $.proxy(function(e){
 				if(this.cUserTools.visible)
 					this.cUserTools.hide();
@@ -434,6 +394,7 @@ function urlReplaceCallback(match, url, scheme) {
 		
 		setupInputHistory: function(){
 			var modifierpressed = false;
+			var chat = this;
 			$(this.input).on('keyup', function(e) {
 				
 				if (e.shiftKey || e.metaKey || e.ctrlKey)
@@ -444,38 +405,36 @@ function urlReplaceCallback(match, url, scheme) {
 					return;
 				}
 				
-				var self = $(this).closest('.chat.chat-frame').data('chat'),
-				    num  = e.keyCode == 38? -1: 1; // if uparrow we subtract otherwise add
+				var num  = e.keyCode == 38? -1: 1; // if uparrow we subtract otherwise add
 				
 				// if uparrow and we are not currently showing any lines from the history
-				if (self.currenthistoryline < 0 && e.keyCode == 38) {
+				if (chat.currenthistoryline < 0 && e.keyCode == 38) {
 					// set the current line to the end if the history, do not subtract 1
 					// thats done later
-					self.currenthistoryline = self.getInputHistory().length;
+					chat.currenthistoryline = chat.getInputHistory().length;
 					// store the typed in message so that we can go back to it
-					self.storedinputline = $(self.input).val();
+					chat.storedinputline = chat.input.val();
 					
-					if (self.currenthistoryline <= 0) // nothing in the history, bail out
+					if (chat.currenthistoryline <= 0) // nothing in the history, bail out
 						return;
 					
-				} else if (self.currenthistoryline < 0 && e.keyCode == 40)
+				} else if (chat.currenthistoryline < 0 && e.keyCode == 40)
 					return; // down arrow, but nothing to show
 				
-				var index = self.currenthistoryline + num;
+				var index = chat.currenthistoryline + num;
 				// out of bounds
-				if (index >= self.getInputHistory().length || index < 0) {
+				if (index >= chat.getInputHistory().length || index < 0) {
 					
 					// down arrow was pressed to get back to the original line, reset
-					if (index >= self.getInputHistory().length) {
-						$(self.input).val(self.storedinputline);
-						self.currenthistoryline = -1;
+					if (index >= chat.getInputHistory().length) {
+						chat.input.val(chat.storedinputline);
+						chat.currenthistoryline = -1;
 					}
-					
 					return;
 				}
 				
-				self.currenthistoryline = index;
-				$(self.input).val(self.getInputHistory()[index]);
+				chat.currenthistoryline = index;
+				chat.input.val(chat.getInputHistory()[index]);
 				
 			});
 		},
@@ -616,8 +575,8 @@ function urlReplaceCallback(match, url, scheme) {
 		},
 		
 		removeUserMessages: function(username) {
-			$('.chat-lines > div[data-username="'+username.toLowerCase()+'"]').remove();
-			$('.chat.chat-frame').data('chat').resize();
+			this.lines.children('div[data-username="'+username.toLowerCase()+'"]').remove();
+			this.resize();
 		}
 		
 	});
@@ -625,15 +584,13 @@ function urlReplaceCallback(match, url, scheme) {
 	// should be moved somewhere better
 	$(window).on({
 		'resize.chat': function(){
-			$('.chat.chat-frame').each(function(){
-				$(this).data('chat').resize();
-			});
+			destiny.chat[0].gui.resize();
 		},
 		'focus.chat': function(){
-			$('.chat.chat-frame:first').data('chat').input.focus();
+			destiny.chat[0].gui.input.focus();
 		},
 		'load.chat': function(){
-			$('.chat.chat-frame:first').data('chat').input.focus();
+			destiny.chat[0].gui.input.focus();
 		}
 	});
 	
@@ -709,7 +666,7 @@ function urlReplaceCallback(match, url, scheme) {
 		this.timestamp = moment.utc(timestamp).local();
 		this.state = null;
 		this.type = 'chat';
-		this.timestampformat = $('.chat.chat-frame').data('chat').timestampformat;
+		this.timestampformat = destiny.chat[0].gui.timestampformat;
 		return this;
 	};
 	ChatMessage.prototype.status = function(state){
@@ -788,7 +745,6 @@ function urlReplaceCallback(match, url, scheme) {
 			this.message = this.message.substring(1);
 		this.isAddon = false;
 		this.user = user;
-		this.emoteregex = (user.features || []).length > 0? gemoteregex :emoteregex;
 		return this;
 	};
 	$.extend(ChatUserMessage.prototype, ChatMessage.prototype);
@@ -802,19 +758,16 @@ function urlReplaceCallback(match, url, scheme) {
 		return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 	};
 	ChatUserMessage.prototype.wrapMessage = function(){
-		var elem = $('<msg/>').text(this.message),
-		encoded  = elem.html();
-		
-		encoded = encoded.replace(this.emoteregex, '<div title="$1" class="chat-emote chat-emote-$1"></div>');
-		encoded = encoded.replace(linkregex, urlReplaceCallback);
+		var elem     = $('<msg/>').text(this.message),
+		    encoded  = elem.html();
 		
 		if(this.isEmote)
 			elem.addClass('emote');
 		
-		elem.html(encoded)
-		if (/\b(?:NSFW|NSFL|SPOILER)\b/i.test(encoded))
-			elem.find('a').addClass('nsfw-link');
+		for(var i=0; i<destiny.chat[0].gui.formatters.length; ++i)
+			encoded = destiny.chat[0].gui.formatters[i].format(encoded, this.user);
 		
+		elem.html(encoded);
 		return elem.get(0).outerHTML;
 	};
 	ChatUserMessage.prototype.html = function(){

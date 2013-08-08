@@ -1,5 +1,4 @@
-function chat(user, options) {
-
+function chat(element, user, options) {
 	this.server             = 'ws://' + location.host + ':9998/ws';
 	this.connected          = false;
 	this.debug              = false;
@@ -22,16 +21,15 @@ function chat(user, options) {
 		"socketerror"       : "Error contacting server",
 		"notfound"          : "The user was not found"
 	};
-	
-	// TODO clean this up
-	this.user = new ChatUser(user);
-	this.gui = new destiny.fn.Chat(this, options);
-	//
-
+	this.user               = new ChatUser(user);
+	this.gui                = new ChatGui(element, this, options);
+	return this;
+};
+chat.prototype.start = function(){
 	if (window.MozWebSocket)
 		window.WebSocket = MozWebSocket;
 	
-	if ( !window.WebSocket )
+	if (!window.WebSocket)
 		return this.gui.push(new ChatErrorMessage(this.errorstrings.requiresocket));
 	
 	this.gui.onSend = function(str){
@@ -50,8 +48,7 @@ function chat(user, options) {
 	this.dispatchBacklog = $.proxy(this.dispatchBacklog, this);
 	this.gui.push(new ChatStatusMessage("Connecting..."));
 	this.init();
-}
-
+};
 chat.prototype.l = function() {
 	if (!this.debug)
 		return;
@@ -389,7 +386,6 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "maxlines":
-			
 			if (!parts[1]) {
 				this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
 				return;

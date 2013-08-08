@@ -196,11 +196,12 @@ use Destiny\Common\Config;
 <script src="<?=Config::cdnv()?>/chat/js/autocomplete.js"></script>
 <script src="<?=Config::cdnv()?>/chat/js/scroll.mCustom.js"></script>
 <script src="<?=Config::cdnv()?>/chat/js/chat.menu.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/formatters.js"></script>
 <script src="<?=Config::cdnv()?>/chat/js/gui.js"></script>
 <script src="<?=Config::cdnv()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 <script>
-var c = new chat(<?=Tpl::jsout($model->user)?>, <?=Tpl::jsout(array_merge(array('ui'=>'#destinychat'), $model->options))?>);
+$('#destinychat').ChatGui(<?=Tpl::jsout($model->user)?>,<?=Tpl::jsout($model->options)?>);
 </script>
 </body>
 </html>

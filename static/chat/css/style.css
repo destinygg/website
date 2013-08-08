@@ -157,9 +157,6 @@ color: #004D74;
 .chat-lines a.nsfw-link {
 border-bottom: 1px dashed red;
 }
-.chat-lines a.nsfw-link:hover {
-border-bottom: none;
-}
 
 .chat .chat-lines time, 
 .chat .user-msg i {

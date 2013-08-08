@@ -63,7 +63,8 @@ class AuthenticationService extends Service {
 		if (empty ( $username )) {
 			throw new AppException ( 'Username required' );
 		}
-		if (count ( preg_grep ( "/" . $username . "/i", Config::$a ['chat'] ['customemotes'] ) ) > 0 || count ( preg_grep ( "/" . $username . "/i", Config::$a ['chat'] ['twitchemotes'] ) )) {
+		
+		if (preg_match ( '/\\b(' . join ( '|', array_merge ( Config::$a ['chat'] ['customemotes'], Config::$a ['chat'] ['twitchemotes'] ) ) . ')\\b/i', preg_quote ( $username ) ) > 0) {
 			throw new AppException ( 'That username has been blacklisted' );
 		}
 		if (preg_match ( '/^[A-Za-z0-9_]{4,20}$/', $username ) == 0) {
@@ -78,14 +79,8 @@ class AuthenticationService extends Service {
 		if (preg_match_all ( "/[0-9]/", $username, $m ) > round ( strlen ( $username ) / 2 )) {
 			throw new AppException ( 'Number ratio is too damn high' );
 		}
-		if (! empty ( $user )) {
-			if (UserService::instance ()->getIsUsernameTaken ( $username, $user ['userId'] )) {
-				throw new AppException ( 'The username you asked for is already being used' );
-			}
-		} else {
-			if (UserService::instance ()->getIsUsernameTaken ( $username )) {
-				throw new AppException ( 'The username you asked for is already being used' );
-			}
+		if (UserService::instance ()->getIsUsernameTaken ( $username, ((! empty ( $user )) ? $user ['userId'] : 0) )) {
+			throw new AppException ( 'The username you asked for is already being used' );
 		}
 	}
 
