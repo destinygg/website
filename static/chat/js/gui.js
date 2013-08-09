@@ -599,8 +599,7 @@
 	UserFeatures = {
 		PROTECTED    : 'protected',
 		SUBSCRIBER   : 'subscriber',
-		SUBSCRIBERT1 : 'flair1',
-		SUBSCRIBERT2 : 'flair2',
+		SUBSCRIBERT2 : 'flair1',
 		VIP          : 'vip',
 		MODERATOR    : 'moderator',
 		ADMIN        : 'admin',
@@ -637,10 +636,8 @@
 		}
 		if($.inArray(UserFeatures.SUBSCRIBERT2, this.features) >= 0){
 			icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
-		}else if($.inArray(UserFeatures.SUBSCRIBERT1, this.features) >= 0){
-			icons += '<i class="icon-subscribert1" title="Subscriber (T1)"/>';
 		}else if($.inArray(UserFeatures.SUBSCRIBER, this.features) >= 0){
-			icons += '<i class="icon-subscriber" title="Subscriber"/>';
+			icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
 		}
 		return icons;
 	};

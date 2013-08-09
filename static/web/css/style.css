@@ -274,7 +274,6 @@ height:16px;
 }
 i.icon-subscriber, 
 i.icon-bobross, 
-i.icon-subscribert1, 
 i.icon-subscribert2 {
 -webkit-transform: rotate(0deg);
 -webkit-transition: rotate 0.2s ease-in-out;
@@ -284,7 +283,6 @@ transition: rotate 0.2s ease-in-out;
 }
 a:hover i.icon-bobross,
 i.icon-subscriber:hover,
-i.icon-subscribert1:hover,
 i.icon-subscribert2:hover {
 -moz-animation: spin 3s infinite linear;
 -webkit-animation: spin 3s infinite linear;

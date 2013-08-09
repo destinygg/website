@@ -50,7 +50,7 @@ class Edit {
 		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );
 		$model->user = $user;
-		$model->features = UserFeaturesService::instance ()->getFeatures ();
+		$model->features = UserFeaturesService::instance ()->getDetailedFeatures ();
 		$ban = ChatBanService::instance ()->getUserActiveBan ( $user ['userId'] );
 		$banContext = array ();
 		if (! empty ( $ban )) {
@@ -130,7 +130,7 @@ class Edit {
 		$model->banContext = $banContext;
 		$model->ban = $ban;
 		$model->user = $user;
-		$model->features = $userFeatureService->getFeatures ();
+		$model->features = $userFeatureService->getDetailedFeatures ();
 		$model->profileUpdated = true;
 		return 'admin/user';
 	}

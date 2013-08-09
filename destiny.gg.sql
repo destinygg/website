@@ -60,10 +60,11 @@ CREATE TABLE `dfl_champs` (
 /*Table structure for table `dfl_features` */
 
 CREATE TABLE `dfl_features` (
-  `featureId` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `featureName` varchar(100) NOT NULL,
+  `featureId` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `featureName` VARCHAR(100) NOT NULL,
+  `featureLabel` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`featureId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `dfl_games` */
 

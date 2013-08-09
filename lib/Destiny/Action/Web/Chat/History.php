@@ -48,9 +48,7 @@ class History {
 			
 			if (! empty ( $line ['subscriber'] ) && $line ['subscriber'] == 1) {
 				$line ['features'] [] = UserFeature::SUBSCRIBER;
-				if ($line ['subscriptionTier'] == 1) {
-					$line ['features'] [] = UserFeature::SUBSCRIBERT1;
-				} else if ($line ['subscriptionTier'] == 2) {
+				if ($line ['subscriptionTier'] == 2) {
 					$line ['features'] [] = UserFeature::SUBSCRIBERT2;
 				}
 			}

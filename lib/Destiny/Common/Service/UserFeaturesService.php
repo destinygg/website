@@ -31,8 +31,8 @@ class UserFeaturesService extends Service {
 	protected $features = null;
 
 	/**
-	 * Return the full list of features
-	 * @return array
+	 * Return a list of features
+	 * @return array<featureName, featureId>
 	 */
 	public function getFeatures() {
 		if ($this->features == null) {
@@ -45,6 +45,21 @@ class UserFeaturesService extends Service {
 			}
 		}
 		return $this->features;
+	}
+
+	/**
+	 * Return the full list of features
+	 * @return array
+	 */
+	public function getDetailedFeatures() {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC' );
+		$stmt->execute ();
+		$features = array ();
+		while ( $a = $stmt->fetch () ) {
+			$features [$a ['featureName']] = $a;
+		}
+		return $features;
 	}
 
 	/**

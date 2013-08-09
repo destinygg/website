@@ -81,13 +81,11 @@ use Destiny\Common\UserRole;
 						
 						<div class="control-group">
 							<label>Features:</label>
-							<?php foreach($model->features as $featureName=>$featureId): ?>
-							<?php if(strcasecmp($featureName, 'subscriber') !== 0 && strcasecmp($featureName, 'admin') !== 'admin'): ?>
+							<?php foreach($model->features as $featureName=>$f): ?>
 							<label class="checkbox">
-								<input type="checkbox" name="features[]" value="<?=$featureName?>" <?=(in_array($featureName, $model->user['features']))?'checked="checked"':''?>>
-								<?=ucwords($featureName)?>
+								<input type="checkbox" name="features[]" value="<?=$f['featureName']?>" <?=(in_array($featureName, $model->user['features']))?'checked="checked"':''?>>
+								<?=$f['featureLabel']?>
 							</label>
-							<?php endif; ?>
 							<?php endforeach; ?>
 						</div>
 						
