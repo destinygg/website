@@ -9,6 +9,12 @@ background-position: top left;
 i.icon-subscriber {
 background-image: url("../img/bobross.png");
 }
+i.icon-subscribert1 {
+background-image: url("../img/bobross2.png");
+}
+i.icon-subscribert2 {
+background-image: url("../img/bobross2.png");
+}
 i.icon-vip {
 background-image: url("../img/leaf.png");
 }

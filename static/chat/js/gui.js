@@ -597,12 +597,14 @@
 	
 	// USER FEATURES
 	UserFeatures = {
-		PROTECTED 	: 'protected',
-		SUBSCRIBER	: 'subscriber',
-		VIP			: 'vip',
-		MODERATOR	: 'moderator',
-		ADMIN		: 'admin',
-		BOT			: 'bot',
+		PROTECTED    : 'protected',
+		SUBSCRIBER   : 'subscriber',
+		SUBSCRIBERT1 : 'subscribert1',
+		SUBSCRIBERT2 : 'subscribert2',
+		VIP          : 'vip',
+		MODERATOR    : 'moderator',
+		ADMIN        : 'admin',
+		BOT          : 'bot',
 	};
 
 	//CHAT USER
@@ -619,9 +621,6 @@
 		var icons = '';
 		for (var i = 0; i < this.features.length; i++) {
 			switch(this.features[i]){
-				case UserFeatures.SUBSCRIBER :
-					icons += '<i class="icon-subscriber" title="Subscriber"/>';
-					break;
 				case UserFeatures.VIP :
 					icons += '<i class="icon-vip" title="VIP"/>';
 					break;
@@ -635,6 +634,13 @@
 					icons += '<i class="icon-bot" title="Bot"/>';
 					break;
 			}
+		}
+		if($.inArray(UserFeatures.SUBSCRIBERT2, this.features) >= 0){
+			icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
+		}else if($.inArray(UserFeatures.SUBSCRIBERT1, this.features) >= 0){
+			icons += '<i class="icon-subscribert1" title="Subscriber (T1)"/>';
+		}else if($.inArray(UserFeatures.SUBSCRIBER, this.features) >= 0){
+			icons += '<i class="icon-subscriber" title="Subscriber"/>';
 		}
 		return icons;
 	};

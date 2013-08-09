@@ -47,6 +47,9 @@ use Destiny\Common\UserFeature;
 	<section class="container">
 		
 		<?if(!empty($model->subscription)):?>
+		
+		<?php $subType = Config::$a['commerce']['subscriptions'][$model->subscription['subscriptionType']];?>
+		
 		<h3>Subscription</h3>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
@@ -60,9 +63,15 @@ use Destiny\Common\UserFeature;
 							<span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
 							<?php endif; ?>
 							</dd>
+							<dt>Type:</dt>
+							<dd><?=Tpl::out($subType['label'])?> (T<?=Tpl::out($subType['tier'])?>)</dd>
+							<br>
 							
+							<?php if(strcasecmp($model->subscription['subscriptionSource'], 'destiny.gg') !== 0): ?>
 							<dt>Source:</dt>
 							<dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
+							<?php endif; ?>
+							
 							<dt>Created date:</dt>
 							<dd><?=Tpl::moment(Date::getDateTime($model->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
 							<dt>End date:</dt>
@@ -84,11 +93,6 @@ use Destiny\Common\UserFeature;
 								<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
 								<dt>Amount:</dt>
 								<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
-								
-								<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
-								<dt>Profile:</dt>
-								<dd><?=Tpl::mask($model->paymentProfile['paymentProfileId'])?></dd>
-								<?php endif; ?>
 								
 								<dt>Billing Cycle:</dt>
 								<dd><?=Tpl::out($model->paymentProfile ['billingCycle'])?></dd>

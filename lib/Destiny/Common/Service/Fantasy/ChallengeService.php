@@ -41,7 +41,7 @@ class ChallengeService extends Service {
 			FROM dfl_teams AS `teams`
 			LEFT JOIN dfl_challengers AS `challengers` ON (challengers.challengeTeamId = teams.teamId)
 			INNER JOIN dfl_users AS `users` ON (users.userId = challengers.challengeTeamId AND users.userStatus = \'Active\')
-			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+			LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = teams.userId AND subs.status = \'Active\') 
 			LEFT JOIN dfl_team_ranks AS `ranks` ON (ranks.teamId = challengers.challengeTeamId)  
 			WHERE ((challengers.ownerTeamId = :teamId AND challengers.status = \'ACCEPTED\') OR teams.teamId = :teamId)
 			GROUP BY teams.teamId

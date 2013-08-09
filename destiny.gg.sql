@@ -393,15 +393,17 @@ CREATE TABLE `dfl_users_roles` (
 /*Table structure for table `dfl_users_subscriptions` */
 
 CREATE TABLE `dfl_users_subscriptions` (
-  `subscriptionId` int(14) NOT NULL AUTO_INCREMENT,
-  `subscriptionSource` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `userId` int(14) DEFAULT NULL,
-  `createdDate` datetime DEFAULT NULL,
-  `endDate` datetime DEFAULT NULL,
-  `status` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `recurring` tinyint(4) DEFAULT NULL,
-  `paymentProfileId` int(14) DEFAULT NULL,
+  `subscriptionId` INT(14) NOT NULL AUTO_INCREMENT,
+  `subscriptionSource` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `subscriptionType` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `subscriptionTier` TINYINT(4) DEFAULT NULL,
+  `userId` INT(14) DEFAULT NULL,
+  `createdDate` DATETIME DEFAULT NULL,
+  `endDate` DATETIME DEFAULT NULL,
+  `status` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `recurring` TINYINT(4) DEFAULT NULL,
+  `paymentProfileId` INT(14) DEFAULT NULL,
   PRIMARY KEY (`subscriptionId`),
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

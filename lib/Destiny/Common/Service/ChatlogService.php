@@ -39,6 +39,8 @@ class ChatlogService extends Service {
 				l.data,
 				l.timestamp,
 				IF(subs.userId IS NULL,0,1) AS `subscriber`,
+				subs.subscriptionType AS `subscriptionType`,
+				subs.subscriptionTier AS `subscriptionTier`,
 				(
 					SELECT GROUP_CONCAT( DISTINCT fn.featureName)
 					FROM dfl_users_features AS uf
@@ -51,7 +53,7 @@ class ChatlogService extends Service {
 				chatlog AS l
 				LEFT JOIN dfl_users AS u ON u.userId = l.userid
 				LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = u.userId AND subs.endDate > NOW() AND subs.status = \'Active\') 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = u.userId AND subs.status = \'Active\') 
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
 			ORDER BY l.id DESC

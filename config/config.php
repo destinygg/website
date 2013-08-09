@@ -277,9 +277,11 @@ return array (
 		),
 		'receiver_email'			=> '',
 		'currency'					=> 'USD',
+		// The KEY is the subscriptions type
 		'subscriptions' => array (
 			'1-MONTH-SUB' => array (
 				'id'				=> '1-MONTH-SUB',
+				'tier'				=> 1,
 				'label'				=> 'Standard subscription',
 				'agreement'			=> '$5.00 (per month) recurring subscription',
 				'amount'			=> '5.00',
@@ -288,6 +290,7 @@ return array (
 			),
 			'3-MONTH-SUB' => array (
 				'id'				=> '3-MONTH-SUB',
+				'tier'				=> 1,
 				'label'				=> 'Value subscription',
 				'agreement'			=> '$12.00 (per 3 months) recurring subscription',
 				'amount'			=> '12.00',
@@ -296,6 +299,7 @@ return array (
 			),
 			'1-MONTH-SUB2' => array (
 				'id'				=> '1-MONTH-SUB2',
+				'tier'				=> 2,
 				'label'				=> 'Premium subscription',
 				'agreement'			=> '$10.00 (per month) recurring subscription',
 				'amount'			=> '10.00',
@@ -304,6 +308,7 @@ return array (
 			),
 			'3-MONTH-SUB2' => array (
 				'id'				=> '3-MONTH-SUB2',
+				'tier'				=> 2,
 				'label'				=> 'Premium value subscription',
 				'agreement'			=> '$24.00 (per 3 months) recurring subscription',
 				'amount'			=> '24.00',
@@ -349,13 +354,6 @@ return array (
 				'lastExecuted' => null,
 				'frequency' => 30,
 				'period' => 'minute',
-				'executeOnNextRun' => false
-			),
-			array (
-				'action' => 'TwitchSubscriptions',
-				'lastExecuted' => null,
-				'frequency' => 1,
-				'period' => 'month',
 				'executeOnNextRun' => false
 			),
 			array (

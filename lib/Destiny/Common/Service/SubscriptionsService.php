@@ -68,16 +68,25 @@ class SubscriptionsService extends Service {
 	}
 
 	/**
-	 * This whole method is shit
+	 * Adds a new subscription
 	 *
 	 * @param int $userId
-	 * @param array $subscription
+	 * @param string $startDate
+	 * @param string $endDate
+	 * @param string $status
+	 * @param boolean $recurring
+	 * @param string $source
+	 * @param string $type
+	 * @param int $tier
+	 * @return string
 	 */
-	public function addSubscription($userId, $startDate, $endDate, $status, $recurring, $source) {
+	public function addSubscription($userId, $startDate, $endDate, $status, $recurring, $source, $type, $tier) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->insert ( 'dfl_users_subscriptions', array (
 			'userId' => $userId,
 			'subscriptionSource' => $source,
+			'subscriptionType' => $type,
+			'subscriptionTier' => $tier,
 			'createdDate' => $startDate,
 			'endDate' => $endDate,
 			'recurring' => $recurring,
@@ -85,6 +94,8 @@ class SubscriptionsService extends Service {
 		), array (
 			\PDO::PARAM_INT,
 			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_INT,
 			\PDO::PARAM_STR,
 			\PDO::PARAM_STR,
 			\PDO::PARAM_BOOL,
@@ -131,7 +142,7 @@ class SubscriptionsService extends Service {
 	 * @param int $subscriptionId
 	 * @param \DateTime $endDate
 	 */
-	public function updateSubscriptionDateEnd($subscriptionId,\DateTime $endDate) {
+	public function updateSubscriptionDateEnd($subscriptionId, \DateTime $endDate) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_users_subscriptions', array (
 			'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
@@ -199,24 +210,21 @@ class SubscriptionsService extends Service {
 	}
 
 	/**
-	 * Get a list of subscriptions
+	 * Get a list of subscriptions by tier
 	 *
-	 * @todo this needs to be refactored when proper sub types are implemented
-	 * @param string $subscriptionType
+	 * @param tinyint $tier
 	 * @return array<array>
 	 */
-	public function getSubscriptionsByType($subscriptionType) {
+	public function getSubscriptionsByTier($tier) {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
-			SELECT u.userId,u.username,u.email,o.description,s.createdDate,s.endDate,s.subscriptionSource,s.recurring,s.status FROM dfl_orders AS o
-			INNER JOIN dfl_users_subscriptions AS s ON (s.userId = o.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
+			SELECT u.userId,u.username,u.email,s.subscriptionType,s.createdDate,s.endDate,s.subscriptionSource,s.recurring,s.status 
+			FROM dfl_users_subscriptions AS s
 			INNER JOIN dfl_users AS u ON (u.userId = s.userId)
-			WHERE o.description LIKE \'%' . $subscriptionType . '%\'
-			AND o.state = :orderStatus
-			GROUP BY o.userId
+			WHERE s.subscriptionTier = :subscriptionTier AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource
 			ORDER BY s.createdDate ASC
 		' );
-		$stmt->bindValue ( 'orderStatus', OrderStatus::COMPLETED, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'subscriptionTier', $tier, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
 		$stmt->bindValue ( 'subscriptionSource', 'destiny.gg', \PDO::PARAM_STR );
 		$stmt->execute ();

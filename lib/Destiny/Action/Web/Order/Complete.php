@@ -59,6 +59,7 @@ class Complete {
 	public function execute(array $params, ViewModel $model) {
 		$this->checkoutId = Session::get ( 'checkoutId' );
 		$ordersService = OrdersService::instance ();
+		$subService = SubscriptionsService::instance ();
 		$log = Application::instance ()->getLogger ();
 		
 		// Make sure our checkoutId is valid
@@ -104,7 +105,7 @@ class Complete {
 			return 'ordererror';
 		}
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
-		$subscription = SubscriptionsService::instance ()->getSubscriptionType ( $order ['items'] [0] ['itemSku'] );
+		$subscription = $subService->getSubscriptionType ( $order ['items'] [0] ['itemSku'] );
 		$paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
 		// END REALLY DIRTY
 		
@@ -220,9 +221,9 @@ class Complete {
 		$start = Date::getDateTime ( 'NOW' );
 		$end = Date::getDateTime ( 'NOW' );
 		$end->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
-		$subscriptionId = SubscriptionsService::instance ()->addSubscription ( $order ['userId'], $start->format ( 'Y-m-d H:i:s' ), $end->format ( 'Y-m-d H:i:s' ), $subscriptionStatus, (! empty ( $paymentProfile )), 'destiny.gg' );
+		$subscriptionId = $subService->addSubscription ( $order ['userId'], $start->format ( 'Y-m-d H:i:s' ), $end->format ( 'Y-m-d H:i:s' ), $subscriptionStatus, (! empty ( $paymentProfile )), 'destiny.gg', $subscription ['id'], $subscription ['tier'] );
 		if (! empty ( $paymentProfile )) {
-			SubscriptionsService::instance ()->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
+			$subService->updateSubscriptionPaymentProfile ( $subscriptionId, $paymentProfile ['profileId'], true );
 		}
 		
 		// Add the subscriber role, this is just for UI

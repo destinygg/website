@@ -35,10 +35,11 @@ use Destiny\Common\UserRole;
 					<tbody>
 					<?php $i=1; ?>
 					<?php foreach($model->subscribersT2 as $sub): ?>
+					<?php $subType = Config::$a['commerce']['subscriptions'][$sub['subscriptionType']];?>
 					<tr>
 						<td><?=$i?></td>
 						<td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
-						<td><?=Tpl::out($sub['description'])?></td>
+						<td><?=Tpl::out($subType['label'])?> (T<?=Tpl::out($subType['tier'])?>)</td>
 						<td><?=($sub['recurring'] == 1) ? 'Yes':'No'?></td>
 						<td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?> - <?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>
 					</tr>
