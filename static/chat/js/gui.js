@@ -599,8 +599,8 @@
 	UserFeatures = {
 		PROTECTED    : 'protected',
 		SUBSCRIBER   : 'subscriber',
-		SUBSCRIBERT1 : 'subscribert1',
-		SUBSCRIBERT2 : 'subscribert2',
+		SUBSCRIBERT1 : 'flair1',
+		SUBSCRIBERT2 : 'flair2',
 		VIP          : 'vip',
 		MODERATOR    : 'moderator',
 		ADMIN        : 'admin',
