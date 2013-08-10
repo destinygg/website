@@ -261,7 +261,6 @@ border-top-left-radius: 0;
 border-top-right-radius: 0;
 border-bottom-right-radius: 0;
 }
-
 i.icon-loading {
 background: url(../img/busy14x14.gif) no-repeat center center;	
 }
@@ -272,22 +271,17 @@ margin-top: 0;
 width:16px;
 height:16px;	
 }
-i.icon-subscriber, 
-i.icon-bobross, 
-i.icon-subscribert2 {
+i.icon-bobross {
 -webkit-transform: rotate(0deg);
 -webkit-transition: rotate 0.2s ease-in-out;
 -moz-transition: rotate 0.2s ease-in-out;
 -o-transition: rotate 0.2s ease-in-out;
 transition: rotate 0.2s ease-in-out;	
 }
-a:hover i.icon-bobross,
-i.icon-subscriber:hover,
-i.icon-subscribert2:hover {
+a:hover i.icon-bobross {
 -moz-animation: spin 3s infinite linear;
 -webkit-animation: spin 3s infinite linear;
 }
-
 i.icon-twitch {
 width:16px;
 height:16px;

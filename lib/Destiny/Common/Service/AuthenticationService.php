@@ -169,7 +169,7 @@ class AuthenticationService extends Service {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
 			$credentials->addFeatures ( UserFeature::SUBSCRIBER );
 			if ($subscription ['subscriptionTier'] == 2) {
-				$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBERT2 );
+				$credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
 			}
 		}
 		return $credentials;

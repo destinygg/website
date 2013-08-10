@@ -5,7 +5,19 @@ background-repeat: no-repeat;
 .chat .chat-lines i[class^="icon-"]:hover {
 background-position: top left;
 }
-
+i.icon-subscriber,
+i.icon-subscribert2 {
+-webkit-transform: rotate(0deg);
+-webkit-transition: rotate 0.2s ease-in-out;
+-moz-transition: rotate 0.2s ease-in-out;
+-o-transition: rotate 0.2s ease-in-out;
+transition: rotate 0.2s ease-in-out;	
+}
+i.icon-subscriber:hover,
+i.icon-subscribert2:hover {
+-moz-animation: spin 3s infinite linear;
+-webkit-animation: spin 3s infinite linear;
+}
 i.icon-subscriber {
 background-image: url("../img/bobross.png");
 }

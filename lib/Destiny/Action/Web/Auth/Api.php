@@ -20,6 +20,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\UserFeature;
 
 /**
  * @Action
@@ -66,9 +67,9 @@ class Api {
 			$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $authToken ['userId'] );
 			if (! empty ( $subscription )) {
 				$credentials->addRoles ( UserRole::SUBSCRIBER );
-				$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBER );
+				$credentials->addFeatures ( UserFeature::SUBSCRIBER );
 				if ($subscription ['subscriptionTier'] == 2) {
-					$credentials->addFeatures ( \Destiny\Common\UserFeature::SUBSCRIBERT2 );
+					$credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
 				}
 			}
 			$response = $credentials->getData ();
