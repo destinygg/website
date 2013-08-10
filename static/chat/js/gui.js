@@ -604,6 +604,7 @@
 		MODERATOR    : 'moderator',
 		ADMIN        : 'admin',
 		BOT          : 'bot',
+		NOTABLE      : 'flair2',
 	};
 
 	//CHAT USER
@@ -631,6 +632,9 @@
 					break;
 				case UserFeatures.BOT :
 					icons += '<i class="icon-bot" title="Bot"/>';
+					break;
+				case UserFeatures.NOTABLE :
+					icons += '<i class="icon-notable" title="Notable"/>';
 					break;
 			}
 		}
