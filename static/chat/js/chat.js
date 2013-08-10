@@ -1,5 +1,5 @@
 function chat(element, user, options) {
-	this.server             = 'ws://' + location.host + ':9998/ws';
+	this.server             = 'ws://' + location.host + ':' + options.port + '/ws';
 	this.connected          = false;
 	this.debug              = false;
 	this.users              = [];
