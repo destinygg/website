@@ -219,7 +219,8 @@
 				appendUsers(mods, lists.filter('.moderators'));
 				appendUsers(bots, lists.filter('.bots'));
 				appendUsers(subs, lists.filter('.subs'));
-				appendUsers(plebs, lists.filter('.plebs'));				//chat.userslist.appendTo(chat.ui);
+				appendUsers(plebs, lists.filter('.plebs'));
+				//chat.userslist.appendTo(chat.ui);
 
 				return cMenu.prototype.showMenu.call(chat.userslist, chat);
 			});
@@ -611,11 +612,33 @@
 	ChatUser = function(args){
 		args = args || {};
 		this.username = args.nick || '';
-		this.features = [];
 		this.connections = 0;
-		args.features = args.features || [];
+		args.featuresbytes = args.features || 0;
 		$.extend(this, args);
+		this.features = [];
+		this.assembleFeatures();
 		return this;
+	};
+	ChatUser.prototype.assembleFeatures = function(){
+		var featuresbyte = this.featuresbytes
+		    self         = this,
+		    flairs       = {
+			"admin"     : 1<<0,
+			"moderator" : 1<<1,
+			"protected" : 1<<2,
+			"subscriber": 1<<3,
+			"vip"       : 1<<4,
+			"bot"       : 1<<5
+		};
+		
+		$.each(flairs, function(k, v) {
+			if ((featuresbyte & v) != 0)
+				self.features.push(k);
+		});
+		for (var i = 28; i >= 5; i--) {
+			if ((featuresbyte & (1 << i)) != 0)
+				self.features.push('flair' + (i-6))
+		};
 	};
 	ChatUser.prototype.getFeatureHTML = function(){
 		var icons = '';
