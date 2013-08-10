@@ -419,7 +419,7 @@ class OrdersService extends Service {
 		$conn->update ( 'dfl_orders_payments', array (
 			'state' => $state 
 		), array (
-			'profileId' => $payment ['paymentId'] 
+			'paymentId' => $payment ['paymentId'] 
 		) );
 	}
 
