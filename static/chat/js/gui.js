@@ -1,12 +1,12 @@
 (function($){
 	
-	// Global chat instances
-	destiny.chat = [];
+	// Global chat instance
+	destiny.chat;
 	
 	//ChatGUI $('#element) shortcut
 	$.fn.ChatGui = function(user, options){
-		destiny.chat[0] = new chat(this, user, options);
-		destiny.chat[0].start();
+		destiny.chat = new chat(this, user, options);
+		destiny.chat.start();
 	};
 	
 	// ChatGUI class
@@ -585,13 +585,13 @@
 	// should be moved somewhere better
 	$(window).on({
 		'resize.chat': function(){
-			destiny.chat[0].gui.resize();
+			destiny.chat.gui.resize();
 		},
 		'focus.chat': function(){
-			destiny.chat[0].gui.input.focus();
+			destiny.chat.gui.input.focus();
 		},
 		'load.chat': function(){
-			destiny.chat[0].gui.input.focus();
+			destiny.chat.gui.input.focus();
 		}
 	});
 	
@@ -613,14 +613,14 @@
 		args = args || {};
 		this.username = args.nick || '';
 		this.connections = 0;
-		args.featuresbytes = args.features || 0;
+		args.featuresbyte = args.features || 0;
 		$.extend(this, args);
 		this.features = [];
 		this.assembleFeatures();
 		return this;
 	};
 	ChatUser.prototype.assembleFeatures = function(){
-		var featuresbyte = this.featuresbytes
+		var featuresbyte = this.featuresbyte
 		    self         = this,
 		    flairs       = {
 			"admin"     : 1<<0,
@@ -696,7 +696,7 @@
 		this.timestamp = moment.utc(timestamp).local();
 		this.state = null;
 		this.type = 'chat';
-		this.timestampformat = destiny.chat[0].gui.timestampformat;
+		this.timestampformat = destiny.chat.gui.timestampformat;
 		return this;
 	};
 	ChatMessage.prototype.status = function(state){
@@ -794,8 +794,8 @@
 		if(this.isEmote)
 			elem.addClass('emote');
 		
-		for(var i=0; i<destiny.chat[0].gui.formatters.length; ++i)
-			encoded = destiny.chat[0].gui.formatters[i].format(encoded, this.user);
+		for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
+			encoded = destiny.chat.gui.formatters[i].format(encoded, this.user);
 		
 		elem.html(encoded);
 		return elem.get(0).outerHTML;

@@ -164,7 +164,7 @@ chat.prototype.onMSG = function(data) {
 			return;
 		
 		var user = this.users[data.nick];
-		if (!user || user.features.length != data.features.length)
+		if (!user || user.features != data.featuresbyte)
 			user = this.users[data.nick] = new ChatUser(data);
 		
 		this.gui.autoCompletePlugin.addData(data.nick, data.timestamp);
