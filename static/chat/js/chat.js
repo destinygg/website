@@ -246,7 +246,7 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "emotes":
-			this.gui.push(new ChatInfoMessage("Available emoticons: "+emoticons.join(", ")));
+			this.gui.push(new ChatInfoMessage("Available emoticons: "+this.gui.emoticons.join(", ")));
 			break;
 			
 		case "help":

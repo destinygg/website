@@ -47,10 +47,12 @@ class Chat {
 	 * @param array $params
 	 */
 	private function getChatOptionParams(array $params) {
+		$emotes = array_merge ( Config::$a ['chat'] ['customemotes'], Config::$a ['chat'] ['twitchemotes'] );
+		natcasesort( $emotes );
 		return array (
 			'port' => Config::$a ['chat'] ['port'],
 			'maxlines' => Config::$a ['chat'] ['maxlines'],
-			'emoticons' => array_merge ( Config::$a ['chat'] ['customemotes'], Config::$a ['chat'] ['twitchemotes'] ) 
+			'emoticons' => array_values( $emotes ),
 		);
 	}
 
