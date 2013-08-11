@@ -7,6 +7,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\SessionInstance;
 use Destiny\Common\SessionCredentials;
+use Destiny\Common\Config;
 
 class ChatIntegrationService extends Service {
 	
@@ -35,7 +36,7 @@ class ChatIntegrationService extends Service {
 	public function renewChatSessionExpiration($sessionId) {
 		if (! empty ( $sessionId )) {
 			$redis = Application::instance ()->getRedis ();
-			$id = sprintf ( 'CHAT:%s', $sessionId );
+			$id = sprintf ( 'CHAT:session-%s', $sessionId );
 			if (! empty ( $redis )) {
 				$redis->expire ( $id, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
 			}
@@ -51,7 +52,7 @@ class ChatIntegrationService extends Service {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
-			$id = sprintf ( 'CHAT:%s', $sessionId );
+			$id = sprintf ( 'CHAT:session-%s', $sessionId );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
 			$redis->set ( $id, $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
@@ -68,7 +69,8 @@ class ChatIntegrationService extends Service {
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-			$redis->publish ( 'refreshuser', $json );
+			// pub/sub channels in redis are not database-specific, so make them
+			$redis->publish ( 'refreshuser-' . Config::$a ['redis'] ['database'], $json );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
 		}
 	}
@@ -79,7 +81,7 @@ class ChatIntegrationService extends Service {
 	public function deleteChatSession() {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
-			$redis->delete ( sprintf ( 'CHAT:%s', Session::getSessionId () ) );
+			$redis->delete ( sprintf ( 'CHAT:session-%s', Session::getSessionId () ) );
 		}
 	}
 
