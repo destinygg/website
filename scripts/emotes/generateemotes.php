@@ -10,6 +10,8 @@ function genHTML($trigger) {
 @mkdir('css', 0775, true);
 
 define('_BASEDIR', realpath ( __DIR__ . '/../../' ) );
+chdir( _BASEDIR . '/scripts/emotes');
+
 $config = require _BASEDIR . '/config/config.php';
 
 $customemotes = $config ['chat'] ['customemotes'];
@@ -106,8 +108,8 @@ echo
 ;
 
 /*
-	'animation: rustle 100ms 5;
-	-webkit-animation: rustle 100ms 5;
+	animation: rustle 100ms 7;
+	-webkit-animation: rustle 100ms 7;
 }
 .chat-emote.chat-emote-OverRustle:hover {
 	animation: rustle 100ms infinite;
