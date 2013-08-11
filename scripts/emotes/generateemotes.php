@@ -9,7 +9,9 @@ function genHTML($trigger) {
 @mkdir('img', 0775, true);
 @mkdir('css', 0775, true);
 
-$config = require realpath ( __DIR__ . '/../' ) . '/config/config.php';
+define('_BASEDIR', realpath ( __DIR__ . '/../../' ) );
+$config = require _BASEDIR . '/config/config.php';
+
 $customemotes = $config ['chat'] ['customemotes'];
 $twitchemotes = $config ['chat'] ['twitchemotes'];
 
@@ -92,20 +94,15 @@ div.chat-emote {
 
 </head>
 <body>
-	<br />
-	<br />
+<br />
+<br />
 <?=implode("\r\n", $html);?>
 </body>
 </html>
 <?php
 file_put_contents('preview.html', ob_get_clean());
-$emotes = array_merge($customemotes, $twitchemotes);
-natcasesort($emotes);
 echo
-	'["',
-	implode('", "', $emotes),
-	'"];',
-	"\n\nRun spritemapper css/emoticons_unsprited.css --anneal=100\n"
+	"Run spritemapper css/emoticons_unsprited.css --anneal=100\n"
 ;
 
 /*

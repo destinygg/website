@@ -29,7 +29,8 @@ return array (
 			'DURRSTINY',
 			'SURPRISE',
 			'NoTears',
-			'OverRustle'
+			'OverRustle',
+			'DuckerZ',
 		),
 		'twitchemotes' => array(
 			'Kappa',
