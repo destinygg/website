@@ -127,10 +127,10 @@ chat.prototype.onOPEN = function() {
 };
 chat.prototype.onCLOSE = function() {
 	if (this.dontconnect) return;
-	var rand = ((this.connected) ? getRandomInt(1,3) : getRandomInt(5,30));
-	setTimeout($.proxy(this.onRECONNECT, this), rand * 1000);
+	var rand = ((this.connected) ? getRandomInt(501,3000) : getRandomInt(5000,30000));
+	setTimeout($.proxy(this.onRECONNECT, this), rand);
 	this.connected = false;
-	return new ChatStatusMessage("Disconnected... reconnecting in "+rand+" seconds");
+	return new ChatStatusMessage("Disconnected... reconnecting in "+(Math.round(rand/1000))+" seconds");
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -164,8 +164,11 @@ chat.prototype.onMSG = function(data) {
 			return;
 		
 		var user = this.users[data.nick];
-		if (!user || user.features != data.featuresbyte)
+		if (!user || user.features.length != data.features.length) {
 			user = this.users[data.nick] = new ChatUser(data);
+			if (user.nick == this.user.nick)
+				this.user = user;
+		}
 		
 		this.gui.autoCompletePlugin.addData(data.nick, data.timestamp);
 		return new ChatUserMessage(data.data, user, data.timestamp);
