@@ -73,7 +73,7 @@ class Twitter {
 			}
 			$data = $tmhOAuth->extract_params ( $tmhOAuth->response ['response'] );
 			$authCreds = $this->getAuthCredentials ( $oauth ['oauth_token'], $data );
-			if (Session::get ( 'accountMerge' ) == 1) {
+			if (Session::get ( 'accountMerge' ) === '1') {
 				$authService->handleAuthAndMerge ( $authCreds );
 			} else {
 				$authService->handleAuthCredentials ( $authCreds );

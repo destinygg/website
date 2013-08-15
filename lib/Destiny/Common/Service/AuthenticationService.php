@@ -242,6 +242,7 @@ class AuthenticationService extends Service {
 	public function handleAuthCredentials(array $authCreds) {
 		$userService = UserService::instance ();
 		$this->validateAuthCredentials ( $authCreds );
+		
 		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
 		
 		// If the user is empty stop and go to confirm / setup the user details
@@ -266,16 +267,15 @@ class AuthenticationService extends Service {
 			throw new AppException ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
 		}
 		
-		// Create the session
-		$user = $profileUser;
-		$session = Session::instance ();
-		// Renew the session upon successful login, makes it slightly harder to hijack
-		$session->renew ( true );
+		//Renew the session upon successful login, makes it slightly harder to hijack
+		//$session = Session::instance ();
+		//$session->renew ( true );
+		
 		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
 		Session::updateCredentials ( $credentials );
 		ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 		
-		// Remember me
+		// Remember me (this gets and then unsets the var)
 		if (Session::set ( 'rememberme' )) {
 			$this->setRememberMe ( $profileUser );
 		}

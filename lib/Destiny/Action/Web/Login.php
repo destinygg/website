@@ -67,7 +67,7 @@ class Login {
 		
 		// @TODO this logic feels dirty and out of place
 		// If this user is already logged in and the account merge param is set - probably trying to merge
-		if (Session::hasRole ( UserRole::USER ) && isset ( $params ['accountMerge'] ) && $params ['accountMerge'] == '1') {
+		if (Session::hasRole ( UserRole::USER ) && isset ( $params ['accountMerge'] ) && $params ['accountMerge'] === '1') {
 			// check if the auth provider you are trying to login with is not the same as the current
 			$currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
 			if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
@@ -75,7 +75,7 @@ class Login {
 			}
 			// Set a session var that is picked up in the AuthenticationService
 			// in the GET method, this variable is unset
-			Session::set ( 'accountMerge', 1 );
+			Session::set ( 'accountMerge', '1' );
 		}
 		
 		$callback = sprintf ( Config::$a ['oauth'] ['callback'], strtolower ( $authProvider ) );

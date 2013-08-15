@@ -57,7 +57,7 @@ class Twitch {
 			if (! empty ( $broadcaster ) && Config::$a ['twitch'] ['broadcasterAuth'] == true && strcasecmp ( $authCreds ['username'], $broadcaster ) === 0) {
 				$this->handleBroadcasterLogin ( $authClient, $accessToken, $params );
 			}
-			if (Session::get ( 'accountMerge' ) == 1) {
+			if (Session::get ( 'accountMerge' ) === '1') {
 				$authService->handleAuthAndMerge ( $authCreds );
 			} else {
 				$authService->handleAuthCredentials ( $authCreds );

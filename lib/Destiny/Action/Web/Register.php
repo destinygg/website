@@ -108,7 +108,7 @@ class Register {
 				'authCode' => $authSession ['authCode'],
 				'authDetail' => $authSession ['authDetail'] 
 			) );
-			if (Session::get ( 'accountMerge' ) == 1) {
+			if (Session::get ( 'accountMerge' ) === '1') {
 				$authService->handleAuthAndMerge ( $authSession );
 			} else {
 				$authService->handleAuthCredentials ( $authSession );
