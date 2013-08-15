@@ -176,6 +176,7 @@ return array (
 		'user'					=> '',
 		'client_id'				=> '',
 		'client_secret'			=> '',
+		'broadcasterAuth'		=> false,
 		'broadcaster' => array (
 			'user'				=> ''
 		) 

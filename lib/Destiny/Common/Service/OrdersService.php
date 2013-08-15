@@ -417,7 +417,7 @@ class OrdersService extends Service {
 	public function updatePaymentStatus(array $payment, $state) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_orders_payments', array (
-			'state' => $state 
+			'paymentStatus' => $state 
 		), array (
 			'paymentId' => $payment ['paymentId'] 
 		) );

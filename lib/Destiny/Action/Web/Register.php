@@ -109,7 +109,11 @@ class Register {
 				'authCode' => $authSession ['authCode'],
 				'authDetail' => $authSession ['authDetail'] 
 			) );
-			$authService->handleAuthCredentials ( $authSession );
+			if (Session::get ( 'accountMerge' ) == 1) {
+				$authService->handleAuthAndMerge ( $authCreds );
+			} else {
+				$authService->handleAuthCredentials ( $authCreds );
+			}
 		} catch ( AppException $e ) {
 			$model->title = 'Error';
 			$model->username = $username;

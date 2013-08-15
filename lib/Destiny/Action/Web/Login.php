@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\UserRole;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Service\AuthenticationService;
@@ -28,9 +29,10 @@ class Login {
 	 * @return string
 	 */
 	public function executeGet(array $params, ViewModel $model) {
-		if (Session::hasRole ( \Destiny\Common\UserRole::USER )) {
+		if (Session::hasRole ( UserRole::USER )) {
 			throw new AppException ( 'You are already authenticated' );
 		}
+		Session::set ( 'accountMerge' );
 		$model->title = 'Login';
 		return 'login';
 	}
@@ -45,8 +47,10 @@ class Login {
 	 */
 	public function executePost(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
+		
 		$authProvider = (isset ( $params ['authProvider'] ) && ! empty ( $params ['authProvider'] )) ? $params ['authProvider'] : '';
 		$rememberme = (isset ( $params ['rememberme'] ) && ! empty ( $params ['rememberme'] )) ? true : false;
+		
 		if (empty ( $authProvider )) {
 			$model->title = 'Login error';
 			$model->rememberme = $rememberme;
@@ -61,20 +65,16 @@ class Login {
 			Session::set ( 'rememberme', 1 );
 		}
 		
-		// If this user is already logged in
-		if (Session::hasRole ( 'user' )) {
+		// @TODO this logic feels dirty and out of place
+		// If this user is already logged in and the account merge param is set - probably trying to merge
+		if (Session::hasRole ( UserRole::USER ) && isset ( $params ['accountMerge'] ) && $params ['accountMerge'] == '1') {
 			// check if the auth provider you are trying to login with is not the same as the current
 			$currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
 			if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
 				throw new AppException ( 'You are already logged in and authenticated using this provider.' );
 			}
-			// @TODO this code block is wrong, and gets invoked when you try login after being authed
-			// We do this because some oauth providers don't support multiple callbacks
-			// Do an extra check for a variable that is only sent from the form within the profile
-			if (! isset ( $params ['accountMerge'] ) || $params ['accountMerge'] != '1') {
-				throw new AppException ( 'Account merge failed' );
-			}
 			// Set a session var that is picked up in the AuthenticationService
+			// in the GET method, this variable is unset
 			Session::set ( 'accountMerge', 1 );
 		}
 		

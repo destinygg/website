@@ -46,7 +46,11 @@ class Google {
 			$accessToken = $authClient->fetchAccessToken ( $params ['code'], 'https://accounts.google.com/o/oauth2/token', sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ) );
 			$data = $authClient->fetchUserInfo ( $accessToken, 'https://www.googleapis.com/oauth2/v2/userinfo' );
 			$authCreds = $this->getAuthCredentials ( $params ['code'], $data );
-			$authService->handleAuthCredentials ( $authCreds );
+			if (Session::get ( 'accountMerge' ) == 1) {
+				$authService->handleAuthAndMerge ( $authCreds );
+			} else {
+				$authService->handleAuthCredentials ( $authCreds );
+			}
 		} catch ( AppException $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;

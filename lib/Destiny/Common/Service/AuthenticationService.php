@@ -189,51 +189,60 @@ class AuthenticationService extends Service {
 	}
 
 	/**
-	 * Handles the credentials after authorization
+	 * Handles the authentication and then merging of accounts
 	 *
-	 * @param string $accessToken
 	 * @param array $authCreds
+	 * @throws AppException
 	 */
-	public function handleAuthCredentials(array $authCreds) {
+	public function handleAuthAndMerge(array $authCreds) {
+		Session::set ( 'accountMerge' );
 		$userService = UserService::instance ();
-		// Make sure the credentials are valid
 		$this->validateAuthCredentials ( $authCreds );
 		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
 		
-		// Check if we are MERGING or not
-		if (Session::get ( 'accountMerge' ) == 1) {
-			if (! Session::hasRole ( \Destiny\Common\UserRole::USER )) {
-				throw new AppException ( 'Authentication required' );
-			}
-			$sessAuth = Session::getCredentials ()->getData ();
-			// We need to merge the accounts if one exists
-			if (! empty ( $profileUser )) {
-				// If the profile userId is the same as the current one, the profiles are connceted, they shouldnt be here
-				if ($profileUser ['userId'] == $sessAuth ['userId']) {
-					throw new AppException ( 'These account are already connected' );
-				}
-				// If the profile user is older than the current user, prompt the user to rather login using the other profile
-				if (intval ( $profileUser ['userId'] ) < $sessAuth ['userId']) {
-					throw new AppException ( sprintf ( 'Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds ['authProvider'] ) );
-				}
-				// So we have a profile for a different user to the one logged in, we delete that user, and add a profile for the current user
-				$userService->removeAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
-				// Set the user profile to Merged
-				$userService->updateUser ( $profileUser ['userId'], array (
-					'userStatus' => 'Merged' 
-				) );
-			}
-			$userService->addUserAuthProfile ( array (
-				'userId' => $sessAuth ['userId'],
-				'authProvider' => $authCreds ['authProvider'],
-				'authId' => $authCreds ['authId'],
-				'authCode' => $authCreds ['authCode'],
-				'authDetail' => $authCreds ['authDetail'] 
-			) );
-			Session::set ( 'accountMerge' );
-			Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
-			exit ();
+		if (! Session::hasRole ( UserRole::USER )) {
+			throw new AppException ( 'Authentication required' );
 		}
+		
+		$sessAuth = Session::getCredentials ()->getData ();
+		// We need to merge the accounts if one exists
+		if (! empty ( $profileUser )) {
+			// If the profile userId is the same as the current one, the profiles are connceted, they shouldnt be here
+			if ($profileUser ['userId'] == $sessAuth ['userId']) {
+				throw new AppException ( 'These account are already connected' );
+			}
+			// If the profile user is older than the current user, prompt the user to rather login using the other profile
+			if (intval ( $profileUser ['userId'] ) < $sessAuth ['userId']) {
+				throw new AppException ( sprintf ( 'Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds ['authProvider'] ) );
+			}
+			// So we have a profile for a different user to the one logged in, we delete that user, and add a profile for the current user
+			$userService->removeAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
+			// Set the user profile to Merged
+			$userService->updateUser ( $profileUser ['userId'], array (
+				'userStatus' => 'Merged' 
+			) );
+		}
+		$userService->addUserAuthProfile ( array (
+			'userId' => $sessAuth ['userId'],
+			'authProvider' => $authCreds ['authProvider'],
+			'authId' => $authCreds ['authId'],
+			'authCode' => $authCreds ['authCode'],
+			'authDetail' => $authCreds ['authDetail'] 
+		) );
+		Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
+		exit ();
+	}
+
+	/**
+	 * Handles the credentials after authorization
+	 *
+	 * @param array $authCreds
+	 * @throws AppException
+	 */
+	public function handleAuthCredentials(array $authCreds) {
+		$userService = UserService::instance ();
+		$this->validateAuthCredentials ( $authCreds );
+		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
 		
 		// If the user is empty stop and go to confirm / setup the user details
 		if (empty ( $profileUser )) {
@@ -242,6 +251,7 @@ class AuthenticationService extends Service {
 			exit ();
 		}
 		
+		// The user has registed before...
 		// Update the auth profile for this provider
 		$authProfile = $userService->getUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
 		if (! empty ( $authProfile )) {

@@ -54,11 +54,14 @@ class Twitch {
 			
 			// Weird twitch broadcaster quirk
 			$broadcaster = Config::$a ['twitch'] ['broadcaster'] ['user'];
-			if (strcasecmp ( $authCreds ['username'], $broadcaster ) === 0) {
+			if (! empty ( $broadcaster ) && Config::$a ['twitch'] ['broadcasterAuth'] == true && strcasecmp ( $authCreds ['username'], $broadcaster ) === 0) {
 				$this->handleBroadcasterLogin ( $authClient, $accessToken, $params );
 			}
-			
-			$authService->handleAuthCredentials ( $authCreds );
+			if (Session::get ( 'accountMerge' ) == 1) {
+				$authService->handleAuthAndMerge ( $authCreds );
+			} else {
+				$authService->handleAuthCredentials ( $authCreds );
+			}
 		} catch ( AppException $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
