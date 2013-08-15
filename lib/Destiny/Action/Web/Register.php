@@ -76,7 +76,6 @@ class Register {
 	 * @throws AppException
 	 */
 	public function executePost(array $params, ViewModel $model) {
-		$authSession = $this->getAuthSession ( $params );
 		$userService = UserService::instance ();
 		$authService = AuthenticationService::instance ();
 		$authSession = $this->getAuthSession ( $params );
@@ -110,9 +109,9 @@ class Register {
 				'authDetail' => $authSession ['authDetail'] 
 			) );
 			if (Session::get ( 'accountMerge' ) == 1) {
-				$authService->handleAuthAndMerge ( $authCreds );
+				$authService->handleAuthAndMerge ( $authSession );
 			} else {
-				$authService->handleAuthCredentials ( $authCreds );
+				$authService->handleAuthCredentials ( $authSession );
 			}
 		} catch ( AppException $e ) {
 			$model->title = 'Error';
