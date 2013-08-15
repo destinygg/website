@@ -10,7 +10,7 @@ use Destiny\Common\Config;
 <html>
 <head>
 <title><?=Tpl::title($model->title)?></title>
-<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <?include'./tpl/seg/commontop.php'?>
 <link href="<?=Config::cdn()?>/vendor/css/jquery.mCustomScrollbar.css" rel="stylesheet" media="screen">
 <?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/chat/css/style.min.css')):?>
