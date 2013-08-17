@@ -351,7 +351,11 @@ $(function(){
 			var bh = $('body').height(); 
 			pc.height( ((bh < 550) ? 550:bh) - offset );
 			pc.find('#twitch-chat-wrap .twitch-element').height( pc.height()-20 );
-			pc.find('#twitch-stream-wrap .twitch-element').height( pc.height() - 20 - 30 );
+			if (document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen){
+				pc.find('#twitch-stream-wrap .twitch-element').height("100%");
+			} else {
+				pc.find('#twitch-stream-wrap .twitch-element').height( pc.height() - 20 - 30 );
+			}
 		};
 		$(window).on('resize', _resize);
 		_resize();
