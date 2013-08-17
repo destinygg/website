@@ -93,7 +93,9 @@ $(function(){
 	var fullscreenFn = function(fn, elem) {
 		var agents = ["webkit", "moz", "ms", "o", ""];
 		for (var i = agents.length - 1; i >= 0; i--) {
-			var agent = agents[i];
+			var agent  = agents[i],
+			    fullFn = null;
+			
 			if (!agent) // if no agent the function starts with a lower case letter
 				fullFn = fn.substr(0,1).toLowerCase() + fn.substr(1);
 			else // just preprend the agent to the function
