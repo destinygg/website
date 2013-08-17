@@ -90,29 +90,29 @@ $(function(){
 	 * Iterate over browser variants of the given fullscreen API function string,
 	 * and if found, call it on the given element.
 	 */	
-	function fullscreenFn(fn, elem) {			
-		var idx = 0, type, fullFn = fn;
-		var agent = ["webkit", "moz", "ms", "o", ""];
-		while (idx < agent.length && !elem[fullFn]) {
-			fullFn = fn;
-			if (agent[idx] == "") {
-				fullFn = fullFn.substr(0,1).toLowerCase() + fullFn.substr(1);
-			}
-			fullFn = agent[idx] + fullFn;
-			type = typeof elem[fullFn];
-			if (type != "undefined") {
-				agent = [agent[idx]];
-				return (type == "function" ? elem[fullFn]() : elem[fullFn]);
-			}
-			idx++;
-		}
-	}
+	var fullscreenFn = function(fn, elem) {
+		var agents = ["webkit", "moz", "ms", "o", ""];
+		for (var i = agents.length - 1; i >= 0; i--) {
+			var agent = agents[i];
+			if (!agent) // if no agent the function starts with a lower case letter
+				fullFn = fn.substr(0,1).toLowerCase() + fn.substr(1);
+			else // just preprend the agent to the function
+				fullFn = agent + fn;
+			
+			if (typeof elem[fullFn] != "function")
+				continue;
+			
+			elem[fullFn]();
+			break;
+		};
+	};
 	
 	// Toggles player fullscreen using the global fullscreen flag
-	function toggleFullscreen(){		
+	var toggleFullscreen = function(e) {
+		e.preventDefault();
 		if(document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen){
-			fullscreenFn("CancelFullScreen",document);
-		} else { 		
+			fullscreenFn("CancelFullScreen", document);
+		} else {
 			fullscreenFn("RequestFullScreen", playerWrap.get(0));
 		}
 	}

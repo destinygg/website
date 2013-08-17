@@ -67,9 +67,9 @@ position: absolute;
 z-index: 10;
 right: 0px;
 bottom: 0px;
-height: 28px;
-width: 31px;
-background: url(../img/twitch_fso_bg.png) no-repeat;
+height: 30px;
+width: 62px;
+background: transparent;
 cursor: pointer;
 }
 body#bigscreen #twitch-stream-wrap > div {
