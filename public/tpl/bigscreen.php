@@ -38,8 +38,7 @@ use Destiny\Common\Config;
 			</div>
 		</section>
 		
-		<div class="page-content container clearfix">
-		
+		<div class="page-content container clearfix">		
 			<div id="twitch-stream-wrap" class="pull-left">
 				<div>
 					<div class="panelheader clearfix">
@@ -58,11 +57,15 @@ use Destiny\Common\Config;
 						</div>
 					</div>
 					<div class="twitch-element-wrap">
-						<div class="twitch-element-overlay"></div>
+						<div class="twitch-overlay to-botright"></div>
+						<div class="twitch-overlay to-botleft"></div>
+						<div class="twitch-overlay to-main"></div>
+						<div class="twitch-fsbtn"></div>
 						<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" bgcolor="#000000">
 							<param name="allowFullScreen" value="true" />
 							<param name="allowScriptAccess" value="always" />
 							<param name="allowNetworking" value="all" />
+							<param name="wmode" value="transparent" />	
 							<param name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" />
 							<param name="flashvars" value="hostname=www.twitch.tv&channel=<?=Config::$a['twitch']['user']?>&auto_play=true" />
 						</object>

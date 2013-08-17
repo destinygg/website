@@ -7,6 +7,12 @@ $(function(){
 		popoutChatBtn = twitch.find('#popoutchat'),
 		popoutVideoBtn = twitch.find('#popoutvideo'),
 		bigscreenmodeBtn = twitch.find('#bigscreenmode');
+	
+	// Refs for standard and bigscreen mode
+	var playerWrap = $("div.twitch-element-wrap"),
+		fullscreenBtn = playerWrap.find('div.twitch-fsbtn'),
+		playerOverlays = playerWrap.find('div.twitch-overlay')
+		playerObject = playerWrap.find('object.twitch-element');
 
 	var twitchChat = {
 		popup: null,
@@ -79,6 +85,41 @@ $(function(){
 		});
 		return false;
 	});
+	
+	/**
+	 * Iterate over browser variants of the given fullscreen API function string,
+	 * and if found, call it on the given element.
+	 */	
+	function fullscreenFn(fn, elem) {			
+		var idx = 0, type, fullFn = fn;
+		var agent = ["webkit", "moz", "ms", "o", ""];
+		while (idx < agent.length && !elem[fullFn]) {
+			fullFn = fn;
+			if (agent[idx] == "") {
+				fullFn = fullFn.substr(0,1).toLowerCase() + fullFn.substr(1);
+			}
+			fullFn = agent[idx] + fullFn;
+			type = typeof elem[fullFn];
+			if (type != "undefined") {
+				agent = [agent[idx]];
+				return (type == "function" ? elem[fullFn]() : elem[fullFn]);
+			}
+			idx++;
+		}
+	}
+	
+	// Toggles player fullscreen using the global fullscreen flag
+	function toggleFullscreen(){		
+		if(document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen){
+			fullscreenFn("CancelFullScreen",document);
+		} else { 		
+			fullscreenFn("RequestFullScreen", playerWrap.get(0));
+		}
+	}
+	
+	//Bind clicks on overlay items that prevent accidental redirects to twitch
+	fullscreenBtn.click(toggleFullscreen);
+	playerOverlays.dblclick(toggleFullscreen);
 
 	// Periodically check if the stream is offline, ad show ads.
 	var offlineAdvert = {
