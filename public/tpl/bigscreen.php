@@ -13,7 +13,7 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?include'./tpl/seg/opengraph.php'?>
 <?include'./tpl/seg/commontop.php'?>
-<link href="<?=Config::cdn()?>/web/css/bigscreen.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/web/css/bigscreen.css" rel="stylesheet" media="screen">
 <?include'./tpl/seg/google.tracker.php'?>
 </head>
 <body id="bigscreen">
