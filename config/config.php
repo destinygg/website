@@ -33,18 +33,6 @@ return array (
 			'DuckerZ',
 		),
 		'twitchemotes' => array(
-			'Kappa',
-			'Klappa',
-			'DappaKappa',
-			'BibleThump',
-			'BloodTrail',
-			'BrainSlug',
-			'FrankerZ',
-			'Kreygasm',
-			'PJSalt',
-			'SSSsss',
-			'FailFish',
-			'BasedGod'
 		)
 	),
 	'redis' => array(
