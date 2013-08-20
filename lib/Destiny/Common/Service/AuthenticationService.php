@@ -182,10 +182,62 @@ class AuthenticationService extends Service {
 	 * @throws AppException
 	 */
 	private function validateAuthCredentials(array $authCreds) {
-		if (! isset ( $authCreds ['authId'] ) || ! isset ( $authCreds ['username'] ) || ! isset ( $authCreds ['email'] ) || ! isset ( $authCreds ['authCode'] ) || ! isset ( $authCreds ['authProvider'] )) {
+		if (! isset ( $authCreds ['authId'] ) || ! isset ( $authCreds ['username'] ) || empty ( $authCreds ['username'] ) || ! isset ( $authCreds ['email'] ) || ! isset ( $authCreds ['authCode'] ) || ! isset ( $authCreds ['authProvider'] )) {
 			Application::instance ()->getLogger ()->error ( sprintf ( 'Error validating auth credentials %s', var_export ( $authCreds, true ) ) );
 			throw new AppException ( 'Invalid auth credentials' );
 		}
+	}
+
+	/**
+	 * Handles the credentials after authorization
+	 *
+	 * @param array $authCreds
+	 * @throws AppException
+	 */
+	public function handleAuthCredentials(array $authCreds) {
+		$userService = UserService::instance ();
+		$this->validateAuthCredentials ( $authCreds );
+		
+		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
+		
+		// If the user is empty stop and go to confirm / setup the user details
+		if (empty ( $profileUser )) {
+			Session::set ( 'authSession', $authCreds );
+			Http::header ( Http::HEADER_LOCATION, '/register?code=' . urlencode ( $authCreds ['authCode'] ) );
+			exit ();
+		}
+		
+		// The user has registed before...
+		// Update the auth profile for this provider
+		$authProfile = $userService->getUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
+		if (! empty ( $authProfile )) {
+			$userService->updateUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'], array (
+				'authCode' => $authCreds ['authCode'],
+				'authDetail' => $authCreds ['authDetail'] 
+			) );
+		}
+		
+		// Check the user status
+		if (strcasecmp ( $profileUser ['userStatus'], 'Active' ) !== 0) {
+			throw new AppException ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
+		}
+		
+		//Renew the session upon successful login, makes it slightly harder to hijack
+		$session = Session::instance ();
+		$session->renew ( true );
+		
+		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
+		Session::updateCredentials ( $credentials );
+		ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
+		
+		// Remember me (this gets and then unsets the var)
+		if (Session::set ( 'rememberme' )) {
+			$this->setRememberMe ( $profileUser );
+		}
+		
+		Session::set ( 'authSession' );
+		Http::header ( Http::HEADER_LOCATION, '/profile' );
+		exit ();
 	}
 
 	/**
@@ -230,58 +282,6 @@ class AuthenticationService extends Service {
 			'authDetail' => $authCreds ['authDetail'] 
 		) );
 		Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
-		exit ();
-	}
-
-	/**
-	 * Handles the credentials after authorization
-	 *
-	 * @param array $authCreds
-	 * @throws AppException
-	 */
-	public function handleAuthCredentials(array $authCreds) {
-		$userService = UserService::instance ();
-		$this->validateAuthCredentials ( $authCreds );
-		
-		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
-		
-		// If the user is empty stop and go to confirm / setup the user details
-		if (empty ( $profileUser )) {
-			Session::set ( 'authSession', $authCreds );
-			Http::header ( Http::HEADER_LOCATION, '/register?code=' . urlencode ( $authCreds ['authCode'] ) );
-			exit ();
-		}
-		
-		// The user has registed before...
-		// Update the auth profile for this provider
-		$authProfile = $userService->getUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
-		if (! empty ( $authProfile )) {
-			$userService->updateUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'], array (
-				'authCode' => $authCreds ['authCode'],
-				'authDetail' => $authCreds ['authDetail'] 
-			) );
-		}
-		
-		// Check the user status
-		if (strcasecmp ( $profileUser ['userStatus'], 'Active' ) !== 0) {
-			throw new AppException ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
-		}
-		
-		//Renew the session upon successful login, makes it slightly harder to hijack
-		//$session = Session::instance ();
-		//$session->renew ( true );
-		
-		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
-		Session::updateCredentials ( $credentials );
-		ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
-		
-		// Remember me (this gets and then unsets the var)
-		if (Session::set ( 'rememberme' )) {
-			$this->setRememberMe ( $profileUser );
-		}
-		
-		Session::set ( 'authSession' );
-		Http::header ( Http::HEADER_LOCATION, '/profile' );
 		exit ();
 	}
 
