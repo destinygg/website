@@ -64,7 +64,7 @@ class AuthenticationService extends Service {
 			throw new AppException ( 'Username required' );
 		}
 		
-		if (preg_match ( '/\\b(' . join ( '|', array_merge ( Config::$a ['chat'] ['customemotes'], Config::$a ['chat'] ['twitchemotes'] ) ) . ')\\b/i', preg_quote ( $username ) ) > 0) {
+		if (preg_match ( '/\\b(' . join ( '|', Config::$a ['chat'] ['customemotes'] ) . ')\\b/i', preg_quote ( $username ) ) > 0) {
 			throw new AppException ( 'That username has been blacklisted' );
 		}
 		if (preg_match ( '/^[A-Za-z0-9_]{4,20}$/', $username ) == 0) {
