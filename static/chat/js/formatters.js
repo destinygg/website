@@ -33,7 +33,7 @@
 		return this;
 	}
 	destiny.fn.UrlFormatter.prototype.encodeUrl = function(url){
-		return url.replace(/[&"'<>]/g, function(c){
+		return url.replace(/["']/g, function(c){
 			var htmlencmap = { // anything else gets already encoded
 				"'": "&#39;",
 				'"': "&quot;",
