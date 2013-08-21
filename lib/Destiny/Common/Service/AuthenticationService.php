@@ -182,7 +182,7 @@ class AuthenticationService extends Service {
 	 * @throws AppException
 	 */
 	private function validateAuthCredentials(array $authCreds) {
-		if (! isset ( $authCreds ['authId'] ) || ! isset ( $authCreds ['username'] ) || (isset($authCreds ['username']) && empty ( $authCreds ['username'] )) || ! isset ( $authCreds ['email'] ) || ! isset ( $authCreds ['authCode'] ) || ! isset ( $authCreds ['authProvider'] )) {
+		if (! isset ( $authCreds ['authId'] ) || ! isset ( $authCreds ['username'] ) || ! isset ( $authCreds ['email'] ) || ! isset ( $authCreds ['authCode'] ) || ! isset ( $authCreds ['authProvider'] )) {
 			Application::instance ()->getLogger ()->error ( sprintf ( 'Error validating auth credentials %s', var_export ( $authCreds, true ) ) );
 			throw new AppException ( 'Invalid auth credentials' );
 		}
