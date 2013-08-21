@@ -29,17 +29,14 @@
 			"))(?:\\/[" + urlchars + "]*)?)" + //match path and query, END URL group
 			"(?=$|[\\s\\)\\]])", // Look ahead for valid delimiters
 			"gim"
-		);		
+		);
 		return this;
 	}
 	destiny.fn.UrlFormatter.prototype.encodeUrl = function(url){
 		return url.replace(/[&"'<>]/g, function(c){
-			var htmlencmap = {
-				"&": "&amp;",
+			var htmlencmap = { // anything else gets already encoded
 				"'": "&#39;",
 				'"': "&quot;",
-				"<": "&lt;",
-				">": "&gt;"
 			};
 			return htmlencmap[c];
 		});

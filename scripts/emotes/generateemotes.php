@@ -15,7 +15,6 @@ chdir( _BASEDIR . '/scripts/emotes');
 $config = require _BASEDIR . '/config/config.php';
 
 $customemotes = $config ['chat'] ['customemotes'];
-$twitchemotes = $config ['chat'] ['twitchemotes'];
 
 $triggers     = array();
 $html  	      = array();
@@ -45,23 +44,6 @@ foreach( $customemotes as $trigger ) {
 	
 	$path       = $trigger . '.png';
 	$filename   = 'img/' . $path;
-	$dimensions = getimagesize( $filename );
-	
-	$css .= sprintf(
-		$emotecss,
-		$trigger,
-		$dimensions[0],
-		$dimensions[1],
-		$dimensions[1],
-		$path
-	);
-	genHTML($trigger);
-}
-
-foreach( $twitchemotes as $trigger ) {
-	
-	$path       = sprintf('twitch-%s.png', $trigger );
-	$filename   = sprintf('img/twitch-%s.png', $trigger );
 	$dimensions = getimagesize( $filename );
 	
 	$css .= sprintf(
