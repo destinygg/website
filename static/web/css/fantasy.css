@@ -341,6 +341,9 @@ line-height:25px;
 display:block;
 float:left;
 }
+.game-team-bar-horizontal {
+min-width:240px;
+}
 .game-team-bar-horizontal img {
 border-radius:4px;
 overflow: hidden;
