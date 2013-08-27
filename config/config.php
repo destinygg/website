@@ -34,6 +34,10 @@ return array (
 			'Kappa',
 			'Klappa',
 			'DappaKappa',
+			'BibleThump',
+			'AngelThump',
+			'FrankerZ',
+			'BasedGod',
 		),
 	),
 	'redis' => array(
