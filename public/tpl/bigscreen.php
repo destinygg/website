@@ -61,14 +61,7 @@ use Destiny\Common\Config;
 						<div class="twitch-overlay to-botleft"></div>
 						<div class="twitch-overlay to-main"></div>
 						<div class="twitch-fsbtn"></div>
-						<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" bgcolor="#000000">
-							<param name="allowFullScreen" value="true" />
-							<param name="allowScriptAccess" value="always" />
-							<param name="allowNetworking" value="all" />
-							<param name="wmode" value="transparent" />	
-							<param name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" />
-							<param name="flashvars" value="hostname=www.twitch.tv&channel=<?=Config::$a['twitch']['user']?>&auto_play=true" />
-						</object>
+						<iframe class="twitch-element" id="live_embed_player_flash" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" frameborder="0" scrolling="no"></iframe>
 					</div>
 				</div>
 			</div>
