@@ -149,9 +149,7 @@ chat.prototype.onJOIN = function(data) {
 };
 chat.prototype.onQUIT = function(data) {
 	if (this.users[data.nick]) {
-		this.users[data.nick].connections--;
-		if (this.users[data.nick].connections <= 0)
-			delete(this.users[data.nick])
+		delete(this.users[data.nick])
 	}
 };
 chat.prototype.onMSG = function(data) {
@@ -164,13 +162,16 @@ chat.prototype.onMSG = function(data) {
 			return;
 		
 		var user = this.users[data.nick];
-		if (!user || user.features.length != data.features.length) {
-			user = this.users[data.nick] = new ChatUser(data);
+		if (!user) {
+			user = new ChatUser(data);
 			if (user.nick == this.user.nick)
 				this.user = user;
-		}
+		} else
+			this.gui.autoCompletePlugin.addData(data.nick, data.timestamp);
 		
-		this.gui.autoCompletePlugin.addData(data.nick, data.timestamp);
+		if (user && user.features.length != data.features.length)
+			this.users[data.nick] = user;
+		
 		return new ChatUserMessage(data.data, user, data.timestamp);
 	}
 };

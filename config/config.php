@@ -38,6 +38,8 @@ return array (
 			'AngelThump',
 			'FrankerZ',
 			'BasedGod',
+			'TooSpicy',
+			'OhKrappa',
 		),
 	),
 	'redis' => array(
