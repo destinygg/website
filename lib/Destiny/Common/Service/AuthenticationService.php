@@ -396,7 +396,7 @@ class AuthenticationService extends Service {
 		$user = UserService::instance ()->getUserById ( $userId );
 		$credentials = $this->getUserCredentials ( $user, 'session' );
 		
-		if (Session::getCredentials ()->getUserId () == $userId) {
+		if (Session::getCredentials () != null && Session::getCredentials ()->getUserId () == $userId) {
 			// Update the current session if the userId is the same as the credential user id
 			Session::updateCredentials ( $credentials );
 			// Init / create the current users chat session
