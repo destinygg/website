@@ -35,7 +35,7 @@ $word = $words [array_rand ( $words, 1 )];
 
 	<?include'foot.php'?>
 
-	<script src="<?=Config::cdn()?>/vendor/js/jquery-1.10.1.min.js"></script>
+	<script src="<?=Config::cdn()?>/vendor/js/jquery-1.10.2.min.js"></script>
 	<script src="<?=Config::cdn()?>/vendor/js/bootstrap.js"></script>
 
 </body>

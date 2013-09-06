@@ -160,7 +160,6 @@
 						chat.saveChatOption(name, checked);
 						break;
 				}
-				chat = null;
 			});
 			
 			// User list
