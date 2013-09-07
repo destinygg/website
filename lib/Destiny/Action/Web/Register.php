@@ -15,6 +15,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 
 /**
  * @Action
@@ -70,6 +71,7 @@ class Register {
 	/**
 	 * @Route ("/register")
 	 * @HttpMethod ({"POST"})
+	 * @Transactional
 	 *
 	 * Handle the confirmation request
 	 * @param array $params

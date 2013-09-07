@@ -13,6 +13,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 use PayPal\CoreComponentTypes\BasicAmountType;
 use PayPal\PayPalAPI\SetExpressCheckoutReq;
 use PayPal\PayPalAPI\SetExpressCheckoutRequestType;
@@ -45,6 +46,7 @@ class Activate {
 	/**
 	 * @Route ("/payment/activate")
 	 * @Secure ({"USER"})
+	 * @Transactional
 	 *
 	 * @param array $params
 	 * @param ViewModel $model

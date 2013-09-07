@@ -21,6 +21,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 
 /**
  * @Action
@@ -66,6 +67,7 @@ class Edit {
 	 * @Route ("/admin/user/{id}/edit")
 	 * @Secure ({"ADMIN"})
 	 * @HttpMethod ({"POST"})
+	 * @Transactional
 	 *
 	 * @param array $params
 	 * @param ViewModel $model

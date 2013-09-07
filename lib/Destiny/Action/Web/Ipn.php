@@ -17,6 +17,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 use PayPal\IPN\PPIPNMessage;
 
 /**
@@ -26,6 +27,7 @@ class Ipn {
 
 	/**
 	 * @Route ("/ipn")
+	 * @Transactional
 	 *
 	 * Handles the incoming HTTP request
 	 * @param array $params

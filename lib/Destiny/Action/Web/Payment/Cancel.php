@@ -13,6 +13,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsReq;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsRequestType;
 use PayPal\EBLBaseComponents\ManageRecurringPaymentsProfileStatusRequestDetailsType;
@@ -28,6 +29,7 @@ class Cancel {
 	/**
 	 * @Route ("/payment/cancel")
 	 * @Secure ({"USER"})
+	 * @Transactional
 	 *
 	 * @param array $params
 	 * @param ViewModel $model

@@ -14,6 +14,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 
 /**
  * @Action
@@ -29,6 +30,7 @@ class Google {
 
 	/**
 	 * @Route ("/auth/google")
+	 * @Transactional
 	 *
 	 * Handle the incoming oAuth request
 	 * @param array $params

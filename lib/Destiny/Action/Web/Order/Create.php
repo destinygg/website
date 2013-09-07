@@ -24,6 +24,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 
 /**
  * @Action
@@ -40,6 +41,7 @@ class Create {
 	/**
 	 * @Route ("/order/create")
 	 * @Secure ({"USER"})
+	 * @Transactional
 	 *
 	 * Create and send the order
 	 * @param array $params

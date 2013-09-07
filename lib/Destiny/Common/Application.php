@@ -7,6 +7,7 @@ use Destiny\Common\Utils\String\Params;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Annotations\Reader;
 use Psr\Log\LoggerInterface;
+use Destiny\Common\Annotation\Transactional;
 
 class Application extends Service {
 	
@@ -138,54 +139,74 @@ class Application extends Service {
 		// Get and init action class
 		$className = $route->getClass ();
 		$classMethod = $route->getClassMethod ();
-			
-		// Begin a DB transaction before the action begins
-		$conn = $this->getConnection ();
-		$conn->beginTransaction ();
+		
+		// Init the action class instance
+		$classInstance = new $className ();
+		
+		// Check for @Transactional annotation
+		$transactional = ($this->getAnnotationReader ()->getMethodAnnotation ( new \ReflectionMethod ( $classInstance, $classMethod ), 'Destiny\Common\Annotation\Transactional' ) == null) ? false : true;
+		
+		// If transactional begin a DB transaction before the action begins
+		if ($transactional) {
+			$conn = $this->getConnection ();
+			$conn->beginTransaction ();
+		}
 		
 		try {
+			$model = new ViewModel ();
 			
-			// Init the action class instance
-			$classInstance = new $className ();
-			
-			// Execute the method, and handle the response
-			$response = $classInstance->$classMethod ( $params, $model = new ViewModel () );
-			
-			// Commit the DB transaction
-			$conn->commit ();
+			// Execute the class method
+			$response = $classInstance->$classMethod ( $params, $model );
 			
 			// Check if the response is valid
 			if (empty ( $response ) || ! is_string ( $response )) {
-				throw new InvalidResponseException ();
+				throw new Exception ('Invalid action response');
 			}
 			
-			// Redirect response
-			if (substr ( $response, 0, 10 ) === 'redirect: ') {
-				$redirect = substr ( $response, 10 );
-				Http::header ( Http::HEADER_LOCATION, substr ( $response, 10 ) );
-				return;
+			// Commit the DB transaction
+			if ($transactional) {
+				$conn->commit ();
 			}
 			
-			// Template response
-			$tpl = './tpl/' . $response . '.php';
-			if (! is_file ( $tpl )) {
-				throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
-			}
-			$this->template ( $tpl, $model );
+			// Handle the action response
+			$this->handleActionResponse ( $response, $model );
 			//
-		} catch ( InvalidResponseException $e ) {
-			$conn->rollback ();
-			$this->logger->error ( 'Invalid response' );
-			$this->error ( Http::STATUS_NO_CONTENT, $e );
 		} catch ( Exception $e ) {
-			$conn->rollback ();
+			if ($transactional) {
+				$conn->rollback ();
+			}
 			$this->logger->error ( $e->getMessage () );
 			$this->error ( Http::STATUS_ERROR, $e );
 		} catch ( \Exception $e ) {
-			$conn->rollback ();
+			if ($transactional) {
+				$conn->rollback ();
+			}
 			$this->logger->critical ( $e->getMessage () );
 			$this->error ( Http::STATUS_ERROR, new Exception ( 'Maximum over-rustle has been achieved' ) );
 		}
+	}
+
+	/**
+	 * Handle the action response
+	 * @param Mix $response
+	 * @param ViewModel $model
+	 * @throws InvalidResponseException
+	 * @throws Exception
+	 */
+	private function handleActionResponse($response, ViewModel $model) {
+		// Redirect response
+		if (substr ( $response, 0, 10 ) === 'redirect: ') {
+			$redirect = substr ( $response, 10 );
+			Http::header ( Http::HEADER_LOCATION, substr ( $response, 10 ) );
+			return;
+		}
+		
+		// Template response
+		$tpl = './tpl/' . $response . '.php';
+		if (! is_file ( $tpl )) {
+			throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
+		}
+		$this->template ( $tpl, $model );
 	}
 
 	/**

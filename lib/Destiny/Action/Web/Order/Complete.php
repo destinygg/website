@@ -33,6 +33,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Commerce\OrderStatus;
 use Destiny\Common\Commerce\PaymentStatus;
 use Destiny\Common\Commerce\SubscriptionStatus;
@@ -52,6 +53,7 @@ class Complete {
 	/**
 	 * @Route ("/order/complete")
 	 * @Secure ({"USER"})
+	 * @Transactional
 	 *
 	 * We were redirected here from PayPal after the buyer approved/cancelled the payment
 	 * @param array $params

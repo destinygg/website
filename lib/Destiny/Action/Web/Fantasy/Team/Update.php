@@ -12,6 +12,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 
 /**
  * @Action
@@ -21,6 +22,7 @@ class Update {
 	/**
 	 * @Route ("/fantasy/team/update")
 	 * @Secure ({"USER"})
+	 * @Transactional
 	 *
 	 * @param array $params
 	 * @throws Exception

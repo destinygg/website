@@ -11,6 +11,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Annotation\Transactional;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -21,6 +22,7 @@ class Cron {
 	/**
 	 * @Route ("/admin/cron")
 	 * @Secure ({"ADMIN"})
+	 * @Transactional
 	 *
 	 * @param array $params
 	 * @throws Exception
