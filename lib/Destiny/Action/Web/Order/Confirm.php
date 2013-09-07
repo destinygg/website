@@ -5,7 +5,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -34,11 +34,11 @@ class Confirm {
 		$this->checkoutId = Session::get ( 'checkoutId' );
 		// Make sure our checkoutId is valid
 		if (! isset ( $params ['checkoutId'] ) || empty ( $this->checkoutId ) || $this->checkoutId != $params ['checkoutId']) {
-			$model->error = new AppException ( 'Invalid checkout token' );
+			$model->error = new Exception ( 'Invalid checkout token' );
 			return 'ordererror';
 		}
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
-			$model->error = new AppException ( 'Empty subscription type' );
+			$model->error = new Exception ( 'Empty subscription type' );
 			return 'ordererror';
 		}
 		$recurringSubscription = (isset ( $params ['renew'] ) && $params ['renew'] == '1') ? true : false;

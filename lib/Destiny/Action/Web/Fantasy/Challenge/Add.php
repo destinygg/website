@@ -7,7 +7,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -23,7 +23,7 @@ class Add {
 	 * @Secure ({"USER"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params) {
 		$response = array (
@@ -33,16 +33,16 @@ class Add {
 		);
 		try {
 			if (! isset ( $params ['name'] ) || empty ( $params ['name'] )) {
-				throw new AppException ( 'Name required.' );
+				throw new Exception ( 'Name required.' );
 			}
 			$teamService = TeamService::instance ();
 			$teams = $teamService->getTeamsByUsername ( $params ['name'] );
 			if (empty ( $teams )) {
-				throw new AppException ( 'User not found' );
+				throw new Exception ( 'User not found' );
 			}
 			$team = $teams [0];
 			if (intval ( $team ['teamId'] ) == intval ( Session::get ( 'teamId' ) )) {
-				throw new AppException ( 'Play with yourself?' );
+				throw new Exception ( 'Play with yourself?' );
 			}
 			$response ['success'] = ChallengeService::instance ()->challengeTeam ( Session::get ( 'teamId' ), $team ['teamId'] );
 			$response ['message'] = ($response ['success']) ? 'Challenge sent.' : 'Challenge already exists';

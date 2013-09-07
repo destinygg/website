@@ -8,7 +8,7 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Service\UserFeaturesService;
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Service\UserService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Session;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
@@ -32,7 +32,7 @@ class Ban {
 	public function addBan(array $params, ViewModel $model) {
 		$model->title = 'New Ban';
 		if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-			throw new AppException ( 'userId required' );
+			throw new Exception ( 'userId required' );
 		}
 		
 		$authService = AuthenticationService::instance ();
@@ -41,7 +41,7 @@ class Ban {
 		
 		$user = $userService->getUserById ( $params ['userId'] );
 		if (empty ( $user )) {
-			throw new AppException ( 'User was not found' );
+			throw new Exception ( 'User was not found' );
 		}
 		
 		$model->user = $user;
@@ -63,7 +63,7 @@ class Ban {
 	 */
 	public function insertBan(array $params, ViewModel $model) {
 		if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-			throw new AppException ( 'userId required' );
+			throw new Exception ( 'userId required' );
 		}
 		
 		$ban = array ();
@@ -92,10 +92,10 @@ class Ban {
 	public function editBan(array $params, ViewModel $model) {
 		$model->title = 'Update Ban';
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new AppException ( 'id required' );
+			throw new Exception ( 'id required' );
 		}
 		if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-			throw new AppException ( 'userId required' );
+			throw new Exception ( 'userId required' );
 		}
 		
 		$authService = AuthenticationService::instance ();
@@ -104,7 +104,7 @@ class Ban {
 		
 		$user = $userService->getUserById ( $params ['userId'] );
 		if (empty ( $user )) {
-			throw new AppException ( 'User was not found' );
+			throw new Exception ( 'User was not found' );
 		}
 		
 		$model->user = $user;
@@ -121,10 +121,10 @@ class Ban {
 	 */
 	public function updateBan(array $params, ViewModel $model) {
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new AppException ( 'id required' );
+			throw new Exception ( 'id required' );
 		}
 		if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-			throw new AppException ( 'userId required' );
+			throw new Exception ( 'userId required' );
 		}
 		
 		$chatBanService = ChatBanService::instance ();
@@ -155,10 +155,10 @@ class Ban {
 	 */
 	public function removeBan(array $params) {
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new AppException ( 'id required' );
+			throw new Exception ( 'id required' );
 		}
 		if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-			throw new AppException ( 'userId required' );
+			throw new Exception ( 'userId required' );
 		}
 		
 		$chatBanService = ChatBanService::instance ();

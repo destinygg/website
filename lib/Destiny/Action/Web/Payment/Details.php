@@ -2,7 +2,7 @@
 namespace Destiny\Action\Web\Payment;
 
 use Destiny\Common\Application;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Service\OrdersService;
@@ -22,7 +22,7 @@ class Details {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function execute(array $params, ViewModel $model) {
@@ -33,13 +33,13 @@ class Details {
 			$order = $ordersService->getOrderById ( intval ( $payment ['orderId'] ) );
 			
 			if (empty ( $order )) {
-				throw new AppException ( 'Order not found' );
+				throw new Exception ( 'Order not found' );
 			}
 			if ($order ['userId'] != Session::getCredentials ()->getUserId ()) {
-				throw new AppException ( 'Permission denied' );
+				throw new Exception ( 'Permission denied' );
 			}
 			if (strcasecmp ( $order ['state'], 'New' ) === 0) {
-				throw new AppException ( 'Invalid order status' );
+				throw new Exception ( 'Invalid order status' );
 			}
 			
 			// Make sure the order is for this user
@@ -48,7 +48,7 @@ class Details {
 			$model->paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
 			$model->payment = $payment;
 		} else {
-			throw new AppException ( 'Invalid paymentId' );
+			throw new Exception ( 'Invalid paymentId' );
 		}
 		return 'payment';
 	}

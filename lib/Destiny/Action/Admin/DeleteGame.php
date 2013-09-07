@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Action\Admin;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Application;
 use Destiny\Common\Service\Fantasy\GameAggregationService;
 use Destiny\Common\Annotation\Action;
@@ -19,11 +19,11 @@ class DeleteGame {
 	 * @Secure ({"ADMIN"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params) {
 		if (! isset ( $params ['gameId'] ) || empty ( $params ['gameId'] )) {
-			throw new AppException ( 'gameId required.' );
+			throw new Exception ( 'gameId required.' );
 		}
 		$log = Application::instance ()->getLogger ();
 		$log->notice ( sprintf ( 'Game %s reset', $params ['gameId'] ) );

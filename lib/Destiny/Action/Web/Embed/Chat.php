@@ -2,7 +2,7 @@
 namespace Destiny\Action\Web\Embed;
 
 use Destiny\Common\UserRole;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;

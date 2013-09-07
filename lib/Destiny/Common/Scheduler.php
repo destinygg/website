@@ -3,7 +3,7 @@ namespace Destiny\Common;
 
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Options;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -183,7 +183,7 @@ class Scheduler {
 			$actionObj = new $actionClass ();
 			$actionObj->execute ( $this->logger );
 		} else {
-			throw new AppException ( sprintf ( 'Action not found: %s', $actionClass ) );
+			throw new Exception ( sprintf ( 'Action not found: %s', $actionClass ) );
 		}
 		$this->logger->debug ( sprintf ( 'Execute end %s', $task ['action'] ) );
 	}

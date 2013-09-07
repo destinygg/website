@@ -5,7 +5,7 @@ use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -21,7 +21,7 @@ class Reset {
 	 * @Secure ({"USER"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params) {
 		$response = array (
@@ -32,11 +32,11 @@ class Reset {
 		// Get team - Make sure this is one of the users teams
 		$team = TeamService::instance ()->getTeamByUserId ( Session::getCredentials()->getUserId() );
 		if (empty ( $team )) {
-			throw new AppException ( 'User team not found' );
+			throw new Exception ( 'User team not found' );
 		}
 		// Security
 		if (Session::getCredentials()->getUserId() != $team ['userId']) {
-			throw new AppException ( 'Reset team failed user does not have rights to this team.' );
+			throw new Exception ( 'Reset team failed user does not have rights to this team.' );
 		}
 		// Reset team vars
 		TeamService::instance ()->resetTeam ( $team );

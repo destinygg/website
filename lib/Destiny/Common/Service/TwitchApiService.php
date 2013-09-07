@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common\Service;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
@@ -70,7 +70,7 @@ class TwitchApiService extends Service {
 			'contentType' => MimeType::JSON,
 			'onfetch' => function ($json) {
 				if (isset ( $json ['status'] ) && $json ['status'] == 503) {
-					throw new AppException ( 'Stream api down' );
+					throw new Exception ( 'Stream api down' );
 				}
 				if (is_object ( $json ) && isset ( $json ['stream'] ) && $json ['stream'] != null) {
 					$json ['stream'] ['channel'] ['updated_at'] = Date::getDateTime ( $json ['stream'] ['channel'] ['updated_at'] )->format ( Date::FORMAT );

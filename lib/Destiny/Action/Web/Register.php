@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Application;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\OAuthClient;
 use Destiny\Common\Service\AuthenticationService;
@@ -25,19 +25,19 @@ class Register {
 	 * Make sure we have a valid session
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 * @return array
 	 */
 	private function getAuthSession(array $params) {
 		if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
-			throw new AppException ( 'Invalid code' );
+			throw new Exception ( 'Invalid code' );
 		}
 		$authSession = Session::get ( 'authSession' );
 		if (empty ( $authSession ) || empty ( $authSession ['authCode'] ) || ($params ['code'] != $authSession ['authCode'])) {
-			throw new AppException ( 'Invalid authentication code' );
+			throw new Exception ( 'Invalid authentication code' );
 		}
 		if (empty ( $authSession ['authProvider'] ) || empty ( $authSession ['authCode'] ) || empty ( $authSession ['authId'] )) {
-			throw new AppException ( 'Invalid authentication information' );
+			throw new Exception ( 'Invalid authentication information' );
 		}
 		return $authSession;
 	}
@@ -49,7 +49,7 @@ class Register {
 	 * Handle the confirmation request
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$authSession = $this->getAuthSession ( $params );
@@ -73,7 +73,7 @@ class Register {
 	 *
 	 * Handle the confirmation request
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function executePost(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
@@ -91,7 +91,7 @@ class Register {
 			if (! empty ( $country )) {
 				$countryArr = Country::getCountryByCode ( $country );
 				if (empty ( $countryArr )) {
-					throw new AppException ( 'Invalid country' );
+					throw new Exception ( 'Invalid country' );
 				}
 				$country = $countryArr ['alpha-2'];
 			}
@@ -115,7 +115,7 @@ class Register {
 				$authService->handleAuthCredentials ( $authSession );
 				return 'redirect: /profile';
 			}
-		} catch ( AppException $e ) {
+		} catch ( Exception $e ) {
 			$model->title = 'Error';
 			$model->username = $username;
 			$model->email = $email;

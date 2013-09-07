@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common\Utils;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 
 abstract class Http {
 	
@@ -39,7 +39,7 @@ abstract class Http {
 
 	public static function status($status) {
 		if (! isset ( self::$HEADER_STATUSES [intval ( $status )] )) {
-			throw new AppException ( sprintf ( 'HTTP status not supported %s', $status ) );
+			throw new Exception ( sprintf ( 'HTTP status not supported %s', $status ) );
 		}
 		header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
 	}

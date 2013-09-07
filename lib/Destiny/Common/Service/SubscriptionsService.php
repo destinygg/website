@@ -7,7 +7,7 @@ use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 
 class SubscriptionsService extends Service {
 	protected static $instance = null;
@@ -64,7 +64,7 @@ class SubscriptionsService extends Service {
 		if (! empty ( $subscriptionId ) && isset ( $subscriptions [$subscriptionId] )) {
 			return $subscriptions [$subscriptionId];
 		}
-		throw new AppException ( 'Subscription type not found' );
+		throw new Exception ( 'Subscription type not found' );
 	}
 
 	/**

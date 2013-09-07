@@ -6,7 +6,7 @@ use Destiny\Common\UserRole;
 use Destiny\Common\AppEvent;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\SessionCookie;

@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common\Service;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
@@ -69,7 +69,7 @@ class UserFeaturesService extends Service {
 	public function getFeatureIdByName($featureName) {
 		$features = $this->getFeatures ();
 		if (! isset ( $features [$featureName] )) {
-			throw new AppException ( sprintf ( 'Invalid feature name %s', $featureName ) );
+			throw new Exception ( sprintf ( 'Invalid feature name %s', $featureName ) );
 		}
 		return $features [$featureName];
 	}

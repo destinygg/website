@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Application;
 use Destiny\Common\MimeType;

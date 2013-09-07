@@ -50,7 +50,7 @@ class OAuthClient {
 	 * @param string $code
 	 * @param string $url
 	 * @param string $redirect
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string false
 	 */
 	public function fetchAccessToken($code, $url, $redirect) {
@@ -72,11 +72,11 @@ class OAuthClient {
 			'postData' => $post 
 		) );
 		if ($curlBrowser->getResponseCode () != 200) {
-			throw new AppException ( 'Request access token failed' );
+			throw new Exception ( 'Request access token failed' );
 		}
 		$data = $curlBrowser->getResponse ();
 		if (empty ( $data ) || ! isset ( $data ['access_token'] ) || empty ( $data ['access_token'] )) {
-			throw new AppException ( 'Request for access token failed' );
+			throw new Exception ( 'Request for access token failed' );
 		}
 		return $data ['access_token'];
 	}
@@ -96,7 +96,7 @@ class OAuthClient {
 			) 
 		) );
 		if ($curlBrowser->getResponseCode () != 200) {
-			throw new AppException ( 'Request for user failed' );
+			throw new Exception ( 'Request for user failed' );
 		}
 		return $curlBrowser->getResponse ();
 	}

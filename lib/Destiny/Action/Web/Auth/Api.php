@@ -11,7 +11,7 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Session;
 use Destiny\Common\Application;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\OAuthClient;
 use Destiny\Common\Service\AuthenticationService;
@@ -39,7 +39,7 @@ class Api {
 	 *
 	 * Handle the incoming oAuth request
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$app = Application::instance ();

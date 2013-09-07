@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Application;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
@@ -37,7 +37,7 @@ class Subscribe {
 		if (empty ( $subscription )) {
 			$subscription = $subsService->getUserPendingSubscription ( Session::getCredentials ()->getUserId () );
 			if (! empty ( $subscription )) {
-				throw new AppException ( 'You already have a subscription in the "pending" state. Please cancel this first.' );
+				throw new Exception ( 'You already have a subscription in the "pending" state. Please cancel this first.' );
 			}
 		}
 		

@@ -12,7 +12,7 @@ use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Service\SubscriptionsService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -83,7 +83,7 @@ class Ipn {
 					
 					// Make sure the payment values are the same
 					if (number_format ( $payment ['amount'], 2 ) != number_format ( $data ['mc_gross'], 2 )) {
-						throw new AppException ( 'Amount for payment do not match' );
+						throw new Exception ( 'Amount for payment do not match' );
 					}
 					
 					// Update the payment status
@@ -114,16 +114,16 @@ class Ipn {
 			case 'recurring_payment' :
 				
 				if (! isset ( $data ['payment_status'] )) {
-					throw new AppException ( 'Invalid payment status' );
+					throw new Exception ( 'Invalid payment status' );
 				}
 				if (! isset ( $data ['next_payment_date'] )) {
-					throw new AppException ( 'Invalid next_payment_date' );
+					throw new Exception ( 'Invalid next_payment_date' );
 				}
 				
 				$paymentProfile = $this->getPaymentProfile ( $data );
 				$subscription = $subService->getUserActiveSubscription ( $paymentProfile ['userId'] );
 				if (empty ( $subscription )) {
-					throw new AppException ( 'Invalid subscription for recurring payment' );
+					throw new Exception ( 'Invalid subscription for recurring payment' );
 				}
 				
 				$nextPaymentDate = Date::getDateTime ( $data ['next_payment_date'] );
@@ -188,12 +188,12 @@ class Ipn {
 	 */
 	protected function getPaymentProfile(array $data) {
 		if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {
-			throw new AppException ( 'Invalid recurring_payment_id' );
+			throw new Exception ( 'Invalid recurring_payment_id' );
 		}
 		$orderService = OrdersService::instance ();
 		$paymentProfile = $orderService->getPaymentProfileByPaymentProfileId ( $data ['recurring_payment_id'] );
 		if (empty ( $paymentProfile )) {
-			throw new AppException ( 'Invalid payment profile' );
+			throw new Exception ( 'Invalid payment profile' );
 		}
 		return $paymentProfile;
 	}

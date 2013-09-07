@@ -1,6 +1,6 @@
 <?php
 use Destiny\Common\Application;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Session;
 use Destiny\Common\Scheduler;
 use Destiny\Common\Config;
@@ -23,7 +23,7 @@ try {
 	echo PHP_EOL . 'Scheduler starting';
 	$scheduler->executeShedule ( false );
 	echo PHP_EOL . 'Scheduler completed';
-} catch ( AppException $e ) {
+} catch ( Exception $e ) {
 	$log->error ( $e->getMessage () );
 	echo PHP_EOL . 'Scheduler completed with errors';
 } catch ( \Exception $e ) {

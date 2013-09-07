@@ -12,7 +12,7 @@ use Destiny\Common\Logger;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Utils\String\Params;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\OAuthClient;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
@@ -37,18 +37,18 @@ class Twitter {
 	 * Handle the incoming oAuth request
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$UserService = UserService::instance ();
 		$authService = AuthenticationService::instance ();
 		try {
 			if ((! isset ( $params ['oauth_token'] ) || empty ( $params ['oauth_token'] )) || ! isset ( $params ['oauth_verifier'] ) || empty ( $params ['oauth_verifier'] )) {
-				throw new AppException ( 'Authentication failed' );
+				throw new Exception ( 'Authentication failed' );
 			}
 			$oauth = Session::set ( 'oauth' );
 			if ($params ['oauth_token'] !== $oauth ['oauth_token']) {
-				throw new AppException ( 'Invalid login session' );
+				throw new Exception ( 'Invalid login session' );
 			}
 			
 			$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
@@ -69,7 +69,7 @@ class Twitter {
 				) 
 			) );
 			if ($code != 200) {
-				throw new AppException ( 'Failed to retrieve user data' );
+				throw new Exception ( 'Failed to retrieve user data' );
 			}
 			$data = $tmhOAuth->extract_params ( $tmhOAuth->response ['response'] );
 			$authCreds = $this->getAuthCredentials ( $oauth ['oauth_token'], $data );
@@ -80,7 +80,7 @@ class Twitter {
 				$authService->handleAuthCredentials ( $authCreds );
 				return 'redirect: /profile';
 			}
-		} catch ( AppException $e ) {
+		} catch ( Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
 			return 'login';
@@ -96,7 +96,7 @@ class Twitter {
 	 */
 	private function getAuthCredentials($code, array $data) {
 		if (empty ( $data ) || ! isset ( $data ['user_id'] ) || empty ( $data ['user_id'] )) {
-			throw new AppException ( 'Authorization failed, invalid user data' );
+			throw new Exception ( 'Authorization failed, invalid user data' );
 		}
 		$arr = array ();
 		$arr ['authProvider'] = $this->authProvider;

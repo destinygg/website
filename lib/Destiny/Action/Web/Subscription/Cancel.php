@@ -9,7 +9,7 @@ use Destiny\Common\Session;
 use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -27,7 +27,7 @@ class Cancel {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function executePost(array $params, ViewModel $model) {
@@ -38,7 +38,7 @@ class Cancel {
 			if (! empty ( $subscription ['paymentProfileId'] )) {
 				$paymentProfile = OrdersService::instance ()->getPaymentProfileById ( $subscription ['paymentProfileId'] );
 				if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
-					throw new AppException ( 'Please first cancel the attached payment profile.' );
+					throw new Exception ( 'Please first cancel the attached payment profile.' );
 				}
 			}
 			
@@ -60,18 +60,18 @@ class Cancel {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		if (empty ( $subscription )) {
-			throw new AppException ( 'Must have an active subscription' );
+			throw new Exception ( 'Must have an active subscription' );
 		}
 		if (! empty ( $subscription ['paymentProfileId'] )) {
 			$paymentProfile = OrdersService::instance ()->getPaymentProfileById ( $subscription ['paymentProfileId'] );
 			if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
-				throw new AppException ( 'Please first cancel the attached payment profile.' );
+				throw new Exception ( 'Please first cancel the attached payment profile.' );
 			}
 		}
 		$model->subscription = $subscription;

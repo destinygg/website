@@ -5,7 +5,7 @@ use Destiny\Common\Service\ChatIntegrationService;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Service\UserService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
 use Destiny\Common\Session;
@@ -27,18 +27,18 @@ class Impersonate {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		if (! Config::$a ['allowImpersonation']) {
-			throw new AppException ( 'Impersonating is not allowed' );
+			throw new Exception ( 'Impersonating is not allowed' );
 		}
 		$userId = (isset ( $params ['userId'] ) && ! empty ( $params ['userId'] )) ? $params ['userId'] : '';
 		$username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : '';
 		if (empty ( $userId ) && empty ( $username )) {
-			throw new AppException ( '[username] or [userId] required' );
+			throw new Exception ( '[username] or [userId] required' );
 		}
 		$authService = AuthenticationService::instance ();
 		$userService = UserService::instance ();
@@ -49,7 +49,7 @@ class Impersonate {
 		}
 		
 		if (empty ( $user )) {
-			throw new AppException ( 'User not found. Try a different userId or username' );
+			throw new Exception ( 'User not found. Try a different userId or username' );
 		}
 		
 		$credentials = $authService->getUserCredentials ( $user, 'impersonating' );

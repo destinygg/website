@@ -8,7 +8,7 @@ use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Config;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -48,7 +48,7 @@ class Activate {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function execute(array $params, ViewModel $model) {
@@ -58,7 +58,7 @@ class Activate {
 		$subscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		// This can only be done on active subscriptions, else the user must resub
 		if (empty ( $subscription )) {
-			$model->error = new AppException ( 'No subscription to re-activate' );
+			$model->error = new Exception ( 'No subscription to re-activate' );
 			return 'paymenterror';
 		}
 		
@@ -75,7 +75,7 @@ class Activate {
 				$items = $orderService->getOrderItems ( $paymentProfile ['orderId'] );
 				$subType = $subService->getSubscriptionType ( $items [0] ['itemSku'] );
 				if (empty ( $subType )) {
-					$model->error = new AppException ( 'Invalid subscription type' );
+					$model->error = new Exception ( 'Invalid subscription type' );
 					return 'paymenterror';
 				}
 				$subscription ['agreement'] = $subType ['agreement'];
@@ -84,22 +84,22 @@ class Activate {
 		
 		// We always need an inactive-active profile
 		if (empty ( $paymentProfile ) || strcasecmp ( $paymentProfile ['state'], 'ActiveProfile' ) === 0) {
-			throw new AppException ( sprintf ( 'Payment profile already active' ) );
+			throw new Exception ( sprintf ( 'Payment profile already active' ) );
 		}
 		
 		// If we got a success response, its from PP
 		if (isset ( $params ['success'] ) && ! empty ( $params ['success'] )) {
 			if (! isset ( $params ['token'] ) || empty ( $params ['token'] )) {
-				$model->error = new AppException ( 'Invalid token' );
+				$model->error = new Exception ( 'Invalid token' );
 				return 'paymenterror';
 			}
 			if (empty ( $params ['confirmationId'] ) || $params ['confirmationId'] != Session::get ( 'confirmationId' )) {
-				$model->error = new AppException ( 'Invalid confirmation id' );
+				$model->error = new Exception ( 'Invalid confirmation id' );
 				return 'paymenterror';
 			}
 			
 			if ($params ['success'] == 'false' || $params ['success'] === false) {
-				$model->error = new AppException ( 'Error activating payment' );
+				$model->error = new Exception ( 'Error activating payment' );
 				return 'paymenterror';
 			}
 			
@@ -109,13 +109,13 @@ class Activate {
 				
 				$createRPProfileResponse = $this->createRecurringPaymentProfile ( $paymentProfile, $params ['token'], $subscription );
 				if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
-					$model->error = new AppException ( 'Failed to create recurring payment request' );
+					$model->error = new Exception ( 'Failed to create recurring payment request' );
 					return 'paymenterror';
 				}
 				$paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
 				$paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
 				if (empty ( $paymentProfileId )) {
-					$model->error = new AppException ( 'Invalid recurring payment profileId returned from Paypal' );
+					$model->error = new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
 					return 'paymenterror';
 				}
 				// Recreates the profile, since this is a "reactivation"
@@ -154,7 +154,7 @@ class Activate {
 				return 'redirect: ' . Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token );
 			}
 		}
-		$model->error = new AppException ( 'Invalid confirmation id' );
+		$model->error = new Exception ( 'Invalid confirmation id' );
 		return 'paymenterror';
 	}
 

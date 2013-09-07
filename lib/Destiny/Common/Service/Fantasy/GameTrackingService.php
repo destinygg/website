@@ -6,7 +6,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Cache;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 
 class GameTrackingService extends Service {
 	protected static $instance = null;
@@ -148,7 +148,7 @@ class GameTrackingService extends Service {
 				}
 			}
 			if ($game ['gameStartTime'] == null) {
-				throw new AppException ( 'GameStartTime could not be retrieved' );
+				throw new Exception ( 'GameStartTime could not be retrieved' );
 			}
 			$conn->insert ( 'dfl_ingame_progress', array (
 				'gameId' => $game ['gameId'],

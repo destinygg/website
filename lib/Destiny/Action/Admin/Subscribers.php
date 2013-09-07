@@ -3,7 +3,7 @@ namespace Destiny\Action\Admin;
 
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\ViewModel;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Application;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
@@ -20,7 +20,7 @@ class Subscribers {
 	 * @Secure ({"ADMIN"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();

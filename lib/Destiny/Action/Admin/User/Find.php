@@ -2,7 +2,7 @@
 namespace Destiny\Action\Admin\User;
 
 use Destiny\Common\Service\UserService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Session;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;

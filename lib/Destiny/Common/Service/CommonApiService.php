@@ -6,7 +6,7 @@ use Destiny\Common\CurlBrowser;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\String;
 use Destiny\Common\Config;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\MimeType;
 
 class CommonApiService extends Service {
@@ -61,7 +61,7 @@ class CommonApiService extends Service {
 			'contentType' => MimeType::JSON,
 			'onfetch' => function ($json) {
 				if (! $json || isset ( $json ['error'] ) && $json ['error'] > 0 || count ( $json ['recenttracks'] ['track'] ) <= 0) {
-					throw new AppException ( 'Error fetching tracks' );
+					throw new Exception ( 'Error fetching tracks' );
 				}
 				foreach ( $json ['recenttracks'] ['track'] as $i => $track ) {
 					// Timezone DST = -1
@@ -85,7 +85,7 @@ class CommonApiService extends Service {
 	 *
 	 * @param array $options
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 * @return \Destiny\CurlBrowser
 	 */
 	public function getYoutubePlaylist(array $options = array(), array $params = array()) {
@@ -105,7 +105,7 @@ class CommonApiService extends Service {
 						$item ['snippet'] ['publishedAt'] = Date::getDateTime ( $item ['snippet'] ['publishedAt'], Date::FORMAT );
 					}
 				} else {
-					throw new AppException ( 'Youtube API Down' );
+					throw new Exception ( 'Youtube API Down' );
 				}
 				return $json;
 			} 

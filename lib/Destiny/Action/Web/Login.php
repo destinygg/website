@@ -5,7 +5,7 @@ use Destiny\Common\UserRole;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
@@ -30,7 +30,7 @@ class Login {
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		if (Session::hasRole ( UserRole::USER )) {
-			throw new AppException ( 'You are already authenticated' );
+			throw new Exception ( 'You are already authenticated' );
 		}
 		Session::set ( 'accountMerge' );
 		$model->title = 'Login';
@@ -54,7 +54,7 @@ class Login {
 		if (empty ( $authProvider )) {
 			$model->title = 'Login error';
 			$model->rememberme = $rememberme;
-			$model->error = new AppException ( 'Please select a authentication provider' );
+			$model->error = new Exception ( 'Please select a authentication provider' );
 			return 'login';
 		}
 		
@@ -71,7 +71,7 @@ class Login {
 			// check if the auth provider you are trying to login with is not the same as the current
 			$currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
 			if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
-				throw new AppException ( 'You are already logged in and authenticated using this provider.' );
+				throw new Exception ( 'You are already logged in and authenticated using this provider.' );
 			}
 			// Set a session var that is picked up in the AuthenticationService
 			// in the GET method, this variable is unset
@@ -112,11 +112,11 @@ class Login {
 					) 
 				) );
 				if ($code != 200) {
-					throw new AppException ( 'There was an error communicating with Twitter.' );
+					throw new Exception ( 'There was an error communicating with Twitter.' );
 				}
 				$response = $tmhOAuth->extract_params ( $tmhOAuth->response ['response'] );
 				if ($response ['oauth_callback_confirmed'] !== 'true') {
-					throw new AppException ( 'The callback was not confirmed by Twitter so we cannot continue.' );
+					throw new Exception ( 'The callback was not confirmed by Twitter so we cannot continue.' );
 				}
 				Session::set ( 'oauth', $response );
 				return 'redirect: ' . $tmhOAuth->url ( 'oauth/authorize', '' ) . "?oauth_token={$response['oauth_token']}";
@@ -124,7 +124,7 @@ class Login {
 			default :
 				$model->title = 'Login error';
 				$model->rememberme = $rememberme;
-				$model->error = new AppException ( 'Auth type not supported' );
+				$model->error = new Exception ( 'Auth type not supported' );
 				return 'login';
 		}
 	}

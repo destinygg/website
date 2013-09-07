@@ -18,7 +18,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\ViewModel;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
@@ -51,17 +51,17 @@ class Create {
 		$subsService = SubscriptionsService::instance ();
 		$subscription = $subsService->getUserActiveSubscription ( Session::get ( 'userId' ) );
 		if (! empty ( $subscription )) {
-			$model->error = new AppException ( 'User already has a valid subscription' );
+			$model->error = new Exception ( 'User already has a valid subscription' );
 			return 'ordererror';
 		}
 		
 		// Make sure our checkoutId is valid
 		if (! isset ( $params ['checkoutId'] ) || empty ( $this->checkoutId ) || $this->checkoutId != $params ['checkoutId']) {
-			$model->error = new AppException ( 'Invalid checkout token' );
+			$model->error = new Exception ( 'Invalid checkout token' );
 			return 'ordererror';
 		}
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
-			$model->error = new AppException ( 'Invalid subscription type' );
+			$model->error = new Exception ( 'Invalid subscription type' );
 			return 'ordererror';
 		}
 		
@@ -85,7 +85,7 @@ class Create {
 		$log = Application::instance ()->getLogger ();
 		$log->error ( $setECResponse->Errors->ShortMessage );
 		
-		$model->error = new AppException ( sprintf ( 'A order error has occurred. The order reference is: %s', $order ['orderId'] ) );
+		$model->error = new Exception ( sprintf ( 'A order error has occurred. The order reference is: %s', $order ['orderId'] ) );
 		return 'ordererror';
 	}
 

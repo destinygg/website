@@ -7,7 +7,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -23,7 +23,7 @@ class Update {
 	 * @Secure ({"USER"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params) {
 		$response = array (
@@ -32,7 +32,7 @@ class Update {
 			'message' => '' 
 		);
 		if (! isset ( $params ['champions'] ) || ! isset ( $params ['teamId'] )) {
-			throw new AppException ( 'Invalid request' );
+			throw new Exception ( 'Invalid request' );
 		}
 		$team = $this->updateTeam ( $response, $params );
 		$response ['data'] = array ();
@@ -50,11 +50,11 @@ class Update {
 		// Get team - Make sure this is one of the users teams
 		$team = $teamService->getTeamById ( ( int ) $params ['teamId'] );
 		if (empty ( $team )) {
-			throw new AppException ( 'Team not found' );
+			throw new Exception ( 'Team not found' );
 		}
 		// Security
 		if (Session::getCredentials ()->getUserId () != $team ['userId']) {
-			throw new AppException ( 'Update team failed user does not have rights to this team.' );
+			throw new Exception ( 'Update team failed user does not have rights to this team.' );
 		}
 		
 		// Get the users unlocked champs
@@ -74,7 +74,7 @@ class Update {
 			$newChampsId [] = $champ ['championId'];
 			// Check if champions have been unlocked || if the champ is currently free
 			if (! isset ( $userChampionIds [$champ ['championId']] ) && $champ ['championFree'] == '0') {
-				throw new AppException ( 'Champion "' . $userChamp ['championName'] . '" not unlocked' );
+				throw new Exception ( 'Champion "' . $userChamp ['championName'] . '" not unlocked' );
 			}
 		}
 		foreach ( $oldChamps as $champ ) {
@@ -104,7 +104,7 @@ class Update {
 		
 		// Check & debit transfers
 		if (intval ( $team ['transfersRemaining'] ) < $transferDebit) {
-			throw new AppException ( 'No available transfers' );
+			throw new Exception ( 'No available transfers' );
 		}
 		$team ['transfersRemaining'] = intval ( $team ['transfersRemaining'] ) - $transferDebit;
 		
@@ -137,11 +137,11 @@ class Update {
 		$max = ( int ) Config::$a ['fantasy'] ['team'] ['maxChampions'];
 		// Not enough champs
 		if ($size < $min) {
-			throw new AppException ( 'Min [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
+			throw new Exception ( 'Min [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
 		}
 		// Too many champs
 		if ($size > $max) {
-			throw new AppException ( 'Max [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
+			throw new Exception ( 'Max [' . $min . '-' . $max . '] ' . $size . ' champions limit' );
 		}
 	}
 

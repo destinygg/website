@@ -5,7 +5,7 @@ use Destiny\Common\Service\Fantasy\ChallengeService;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -21,14 +21,14 @@ class Delete {
 	 * @Secure ({"USER"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params) {
 		if (! isset ( $params ['teamId'] ) || empty ( $params ['teamId'] )) {
-			throw new AppException ( 'teamId required.' );
+			throw new Exception ( 'teamId required.' );
 		}
 		if (intval ( $params ['teamId'] ) == intval ( Session::get ( 'teamId' ) )) {
-			throw new AppException ( 'Play with yourself?' );
+			throw new Exception ( 'Play with yourself?' );
 		}
 		$response = array (
 			'success' => true,

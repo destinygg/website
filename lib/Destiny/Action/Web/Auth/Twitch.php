@@ -12,7 +12,7 @@ use Destiny\Common\Logger;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Utils\String\Params;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\OAuthClient;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
@@ -36,14 +36,14 @@ class Twitch {
 	 *
 	 * Handle the incoming oAuth request
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$authService = AuthenticationService::instance ();
 		try {
 			if (isset ( $params ['error'] ) && ! empty ( $params ['error'] )) {
 				$model->title = 'Login error';
-				$model->error = new AppException ( 'Authentication failed' );
+				$model->error = new Exception ( 'Authentication failed' );
 				return 'login';
 			}
 			$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] [$this->authProvider] );
@@ -59,7 +59,7 @@ class Twitch {
 				$authService->handleAuthCredentials ( $authCreds );
 				return 'redirect: /profile';
 			}
-		} catch ( AppException $e ) {
+		} catch ( Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
 			return 'login';
@@ -75,7 +75,7 @@ class Twitch {
 	 */
 	private function getAuthCredentials($code, array $data) {
 		if (empty ( $data ) || ! isset ( $data ['_id'] ) || empty ( $data ['_id'] )) {
-			throw new AppException ( 'Authorization failed, invalid user data' );
+			throw new Exception ( 'Authorization failed, invalid user data' );
 		}
 		$arr = array ();
 		$arr ['authProvider'] = $this->authProvider;

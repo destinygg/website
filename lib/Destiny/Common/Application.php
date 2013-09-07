@@ -1,11 +1,9 @@
 <?php
 namespace Destiny\Common;
 
-use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
 use Destiny\Common\Utils\String\Params;
-use Destiny\Common\Router;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Annotations\Reader;
 use Psr\Log\LoggerInterface;
@@ -137,26 +135,28 @@ class Application extends Service {
 		// Combine the get, post and the {param}'s from the string
 		$params = array_merge ( $_GET, $_POST, $route->getPathParams ( $path ) );
 		
+		// Get and init action class
+		$className = $route->getClass ();
+		$classMethod = $route->getClassMethod ();
+			
+		// Begin a DB transaction before the action begins
+		$conn = $this->getConnection ();
+		$conn->beginTransaction ();
+		
 		try {
-			// Get and init action class
-			$className = $route->getClass ();
-			$classMethod = $route->getClassMethod ();
-			$model = new ViewModel ();
+			
+			// Init the action class instance
 			$classInstance = new $className ();
 			
-			// Begin a DB transaction before the action begins
-			$connection = $this->getConnection ();
-			$connection->beginTransaction ();
-			
 			// Execute the method, and handle the response
-			$response = $classInstance->$classMethod ( $params, $model );
+			$response = $classInstance->$classMethod ( $params, $model = new ViewModel () );
 			
 			// Commit the DB transaction
-			$connection->commit ();
+			$conn->commit ();
 			
 			// Check if the response is valid
 			if (empty ( $response ) || ! is_string ( $response )) {
-				$this->error ( Http::STATUS_NO_CONTENT, new AppException ( 'Invalid response' ) );
+				throw new InvalidResponseException ();
 			}
 			
 			// Redirect response
@@ -169,16 +169,22 @@ class Application extends Service {
 			// Template response
 			$tpl = './tpl/' . $response . '.php';
 			if (! is_file ( $tpl )) {
-				throw new AppException ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
+				throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
 			}
 			$this->template ( $tpl, $model );
 			//
-		} catch ( AppException $e ) {
+		} catch ( InvalidResponseException $e ) {
+			$conn->rollback ();
+			$this->logger->error ( 'Invalid response' );
+			$this->error ( Http::STATUS_NO_CONTENT, $e );
+		} catch ( Exception $e ) {
+			$conn->rollback ();
 			$this->logger->error ( $e->getMessage () );
 			$this->error ( Http::STATUS_ERROR, $e );
 		} catch ( \Exception $e ) {
+			$conn->rollback ();
 			$this->logger->critical ( $e->getMessage () );
-			$this->error ( Http::STATUS_ERROR, new AppException ( 'Maximum over-rustle has been achieved' ) );
+			$this->error ( Http::STATUS_ERROR, new Exception ( 'Maximum over-rustle has been achieved' ) );
 		}
 	}
 

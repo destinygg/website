@@ -28,7 +28,7 @@ use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -74,19 +74,19 @@ class Complete {
 					return 'redirect: /profile/subscription';
 				}
 			}
-			$model->error = new AppException ( 'Invalid checkout token' );
+			$model->error = new Exception ( 'Invalid checkout token' );
 			return 'ordererror';
 		}
 		if (! isset ( $params ['token'] ) || empty ( $params ['token'] )) {
-			$model->error = new AppException ( 'Invalid token' );
+			$model->error = new Exception ( 'Invalid token' );
 			return 'ordererror';
 		}
 		if (! isset ( $params ['success'] )) {
-			$model->error = new AppException ( 'Invalid success response' );
+			$model->error = new Exception ( 'Invalid success response' );
 			return 'ordererror';
 		}
 		if (! isset ( $params ['orderId'] )) {
-			$model->error = new AppException ( 'Invalid orderId' );
+			$model->error = new Exception ( 'Invalid orderId' );
 			return 'ordererror';
 		}
 		
@@ -96,11 +96,11 @@ class Complete {
 		// Get | Build the order | Dirty
 		$order = $ordersService->getOrderById ( $params ['orderId'] );
 		if (empty ( $order )) {
-			$model->error = new AppException ( 'Invalid order record' );
+			$model->error = new Exception ( 'Invalid order record' );
 			return 'ordererror';
 		}
 		if ($order ['state'] != 'New') {
-			$model->error = new AppException ( 'Invalid order status' );
+			$model->error = new Exception ( 'Invalid order status' );
 			return 'ordererror';
 		}
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
@@ -115,7 +115,7 @@ class Complete {
 			if (! empty ( $paymentProfile )) {
 				$ordersService->updatePaymentProfileState ( $paymentProfile ['profileId'], 'Error' );
 			}
-			$model->error = new AppException ( 'Order request failed' );
+			$model->error = new Exception ( 'Order request failed' );
 			return 'ordererror';
 		}
 		
@@ -123,13 +123,13 @@ class Complete {
 		$ecResponse = $this->retrieveCheckoutInfo ( $token );
 		if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
 			$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-			$model->error = new AppException ( 'Failed to retrieve express checkout details' );
+			$model->error = new Exception ( 'Failed to retrieve express checkout details' );
 			return 'ordererror';
 		}
 		
 		// Is done after the success check
 		if (! isset ( $params ['PayerID'] ) || empty ( $params ['PayerID'] )) {
-			$model->error = new AppException ( 'Invalid PayerID' );
+			$model->error = new Exception ( 'Invalid PayerID' );
 			return 'ordererror';
 		}
 		
@@ -143,14 +143,14 @@ class Complete {
 			$createRPProfileResponse = $this->createRecurringPaymentProfile ( $paymentProfile, $token, $subscription );
 			if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
 				$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-				$model->error = new AppException ( 'Failed to create recurring payment request' );
+				$model->error = new Exception ( 'Failed to create recurring payment request' );
 				return 'ordererror';
 			}
 			$paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
 			$paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
 			if (empty ( $paymentProfileId )) {
 				$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-				$model->error = new AppException ( 'Invalid recurring payment profileId returned from Paypal' );
+				$model->error = new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
 				return 'ordererror';
 			}
 			// Set the payment profile to active, and paymetProfileId
@@ -201,13 +201,13 @@ class Complete {
 				$ordersService->updateOrderState ( $order ['orderId'], $orderStatus );
 			} else {
 				$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-				$model->error = new AppException ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
+				$model->error = new Exception ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
 				return 'ordererror';
 			}
 		} else {
 			$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
 			$log->error ( $DoECResponse->Errors [0]->LongMessage );
-			$model->error = new AppException ( 'Unable to retrieve response from Paypal' );
+			$model->error = new Exception ( 'Unable to retrieve response from Paypal' );
 			return 'ordererror';
 		}
 		

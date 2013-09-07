@@ -7,7 +7,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Service\Fantasy\GameService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Cache;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 
 class GameAggregationService extends Service {
 	
@@ -26,7 +26,7 @@ class GameAggregationService extends Service {
 	 * Aggregate / calculate the scoring for a game
 	 *
 	 * @param int $gameId
-	 * @throws AppException
+	 * @throws Exception
 	 * @return boolean
 	 */
 	public function aggregateGame($gameId) {
@@ -35,10 +35,10 @@ class GameAggregationService extends Service {
 		
 		$game = $fgService->getGameById ( $gameId );
 		if (empty ( $game )) {
-			throw new AppException ( 'Game data not found' );
+			throw new Exception ( 'Game data not found' );
 		}
 		if ($game ['aggregated'] == 1) {
-			throw new AppException ( 'Game already aggregated.' );
+			throw new Exception ( 'Game already aggregated.' );
 		}
 		
 		// Set the aggregated flag before an error occurs later on
@@ -121,7 +121,7 @@ class GameAggregationService extends Service {
 						$stmt->bindValue ( 'maxTransfers', Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'], \PDO::PARAM_INT );
 						$stmt->execute ();
 					} else {
-						throw new AppException ( 'Unsupported reward type' );
+						throw new Exception ( 'Unsupported reward type' );
 					}
 					break;
 				
@@ -156,7 +156,7 @@ class GameAggregationService extends Service {
 						$stmt->bindValue ( 'maxTransfers', Config::$a ['fantasy'] ['team'] ['maxAvailableTransfers'], \PDO::PARAM_INT );
 						$stmt->execute ();
 					} else {
-						throw new AppException ( 'Unsupported reward type' );
+						throw new Exception ( 'Unsupported reward type' );
 					}
 					break;
 			}

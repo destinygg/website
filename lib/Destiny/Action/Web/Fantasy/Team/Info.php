@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
@@ -23,18 +23,18 @@ class Info {
 	 * @Secure ({"USER"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params) {
 		$ftService = TeamService::instance ();
 		// Get team - Make sure this is one of the users teams
 		$team = $ftService->getTeamById ( intval ( $params ['teamId'] ) );
 		if (empty ( $team )) {
-			throw new AppException ( 'Team not found' );
+			throw new Exception ( 'Team not found' );
 		}
 		// Security
 		if (Session::getCredentials()->getUserId() != $team ['userId']) {
-			throw new AppException ( 'User does not have rights to this team.' );
+			throw new Exception ( 'User does not have rights to this team.' );
 		}
 		$modifiedTime = Date::getDateTime ( $team ['modifiedDate'] );
 		$createdTime = Date::getDateTime ( $team ['modifiedDate'] );

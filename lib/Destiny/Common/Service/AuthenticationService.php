@@ -5,7 +5,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Application;
 use Destiny\Common\Service\RememberMeService;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Service;
@@ -57,30 +57,30 @@ class AuthenticationService extends Service {
 	 *
 	 * @param string $username
 	 * @param array $user
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function validateUsername($username, array $user = null) {
 		if (empty ( $username )) {
-			throw new AppException ( 'Username required' );
+			throw new Exception ( 'Username required' );
 		}
 		
 		if (preg_match ( '/\\b(' . join ( '|', Config::$a ['chat'] ['customemotes'] ) . ')\\b/i', preg_quote ( $username ) ) > 0) {
-			throw new AppException ( 'That username has been blacklisted' );
+			throw new Exception ( 'That username has been blacklisted' );
 		}
 		if (preg_match ( '/^[A-Za-z0-9_]{4,20}$/', $username ) == 0) {
-			throw new AppException ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
+			throw new Exception ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
 		}
 		if (preg_match_all ( '/[0-9]{4}/', $username, $m ) > 0) {
-			throw new AppException ( 'Too many numbers in a row' );
+			throw new Exception ( 'Too many numbers in a row' );
 		}
 		if (preg_match_all ( '/[\_]{2}/', $username, $m ) > 0 || preg_match_all ( "/[_]+/", $username, $m ) > 2) {
-			throw new AppException ( 'Too many underscores' );
+			throw new Exception ( 'Too many underscores' );
 		}
 		if (preg_match_all ( "/[0-9]/", $username, $m ) > round ( strlen ( $username ) / 2 )) {
-			throw new AppException ( 'Number ratio is too damn high' );
+			throw new Exception ( 'Number ratio is too damn high' );
 		}
 		if (UserService::instance ()->getIsUsernameTaken ( $username, ((! empty ( $user )) ? $user ['userId'] : 0) )) {
-			throw new AppException ( 'The username you asked for is already being used' );
+			throw new Exception ( 'The username you asked for is already being used' );
 		}
 	}
 
@@ -89,26 +89,26 @@ class AuthenticationService extends Service {
 	 *
 	 * @param string $email
 	 * @param array $user
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function validateEmail($email, array $user = null) {
 		if (! filter_var ( $email, FILTER_VALIDATE_EMAIL )) {
-			throw new AppException ( 'A valid email is required' );
+			throw new Exception ( 'A valid email is required' );
 		}
 		if (! empty ( $user )) {
 			if (UserService::instance ()->getIsEmailTaken ( $email, $user ['userId'] )) {
-				throw new AppException ( 'The email you asked for is already being used' );
+				throw new Exception ( 'The email you asked for is already being used' );
 			}
 		} else {
 			if (UserService::instance ()->getIsEmailTaken ( $email )) {
-				throw new AppException ( 'The email you asked for is already being used' );
+				throw new Exception ( 'The email you asked for is already being used' );
 			}
 		}
 	}
 
 	/**
 	 * Check if a user has been flagged for updates, and refreshes the session credentials
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function init() {
 		$app = Application::instance ();
@@ -123,7 +123,7 @@ class AuthenticationService extends Service {
 				if (! empty ( $user )) {
 					// Check the user status
 					if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
-						throw new AppException ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
+						throw new Exception ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
 					}
 					$credentials = $this->getUserCredentials ( $user, 'session' );
 					Session::updateCredentials ( $credentials );
@@ -179,12 +179,12 @@ class AuthenticationService extends Service {
 	 * Validate that a set of auth credentials has what it needs
 	 *
 	 * @param array $authCreds
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	private function validateAuthCredentials(array $authCreds) {
 		if (! isset ( $authCreds ['authId'] ) || ! isset ( $authCreds ['username'] ) || ! isset ( $authCreds ['email'] ) || ! isset ( $authCreds ['authCode'] ) || ! isset ( $authCreds ['authProvider'] )) {
 			Application::instance ()->getLogger ()->error ( sprintf ( 'Error validating auth credentials %s', var_export ( $authCreds, true ) ) );
-			throw new AppException ( 'Invalid auth credentials' );
+			throw new Exception ( 'Invalid auth credentials' );
 		}
 	}
 
@@ -192,7 +192,7 @@ class AuthenticationService extends Service {
 	 * Handles the credentials after authorization
 	 *
 	 * @param array $authCreds
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function handleAuthCredentials(array $authCreds) {
 		$userService = UserService::instance ();
@@ -218,7 +218,7 @@ class AuthenticationService extends Service {
 		
 		// Check the user status
 		if (strcasecmp ( $profileUser ['userStatus'], 'Active' ) !== 0) {
-			throw new AppException ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
+			throw new Exception ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
 		}
 		
 		// Renew the session upon successful login, makes it slightly harder to hijack
@@ -241,7 +241,7 @@ class AuthenticationService extends Service {
 	 * Handles the authentication and then merging of accounts
 	 *
 	 * @param array $authCreds
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function handleAuthAndMerge(array $authCreds) {
 		Session::set ( 'accountMerge' );
@@ -250,7 +250,7 @@ class AuthenticationService extends Service {
 		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
 		
 		if (! Session::hasRole ( UserRole::USER )) {
-			throw new AppException ( 'Authentication required' );
+			throw new Exception ( 'Authentication required' );
 		}
 		
 		$sessAuth = Session::getCredentials ()->getData ();
@@ -258,11 +258,11 @@ class AuthenticationService extends Service {
 		if (! empty ( $profileUser )) {
 			// If the profile userId is the same as the current one, the profiles are connceted, they shouldnt be here
 			if ($profileUser ['userId'] == $sessAuth ['userId']) {
-				throw new AppException ( 'These account are already connected' );
+				throw new Exception ( 'These account are already connected' );
 			}
 			// If the profile user is older than the current user, prompt the user to rather login using the other profile
 			if (intval ( $profileUser ['userId'] ) < $sessAuth ['userId']) {
-				throw new AppException ( sprintf ( 'Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds ['authProvider'] ) );
+				throw new Exception ( sprintf ( 'Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds ['authProvider'] ) );
 			}
 			// So we have a profile for a different user to the one logged in, we delete that user, and add a profile for the current user
 			$userService->removeAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
@@ -311,15 +311,15 @@ class AuthenticationService extends Service {
 			if (! empty ( $rememberMe )) {
 				try {
 					if (Date::getDateTime ( $rememberMe ['createdDate'] ) != Date::getDateTime ( $cookie ['created'] )) {
-						throw new AppException ( 'Token invalid [createdDate] does not match' );
+						throw new Exception ( 'Token invalid [createdDate] does not match' );
 					}
 					if (Date::getDateTime ( $rememberMe ['expireDate'] ) != Date::getDateTime ( $cookie ['expire'] )) {
-						throw new AppException ( 'Token invalid [expireDate] does not match' );
+						throw new Exception ( 'Token invalid [expireDate] does not match' );
 					}
 					if ($cookie ['token'] != md5 ( $rememberMe ['userId'] . Date::getDateTime ( $rememberMe ['createdDate'] )->getTimestamp () . Date::getDateTime ( $rememberMe ['expireDate'] )->getTimestamp () . $this->remembermeSalt )) {
-						throw new AppException ( 'Token invalid [token] does not match' );
+						throw new Exception ( 'Token invalid [token] does not match' );
 					}
-				} catch ( AppException $e ) {
+				} catch ( Exception $e ) {
 					$this->clearRememberMe ( $rememberMe ['userId'] );
 					Application::instance ()->getLogger ()->error ( sprintf ( 'Remember-me: %s', $e->getMessage () ) );
 					return false;

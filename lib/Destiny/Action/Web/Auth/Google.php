@@ -5,7 +5,7 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Session;
 use Destiny\Common\Application;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\OAuthClient;
 use Destiny\Common\Service\AuthenticationService;
@@ -32,14 +32,14 @@ class Google {
 	 *
 	 * Handle the incoming oAuth request
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$UserService = UserService::instance ();
 		$authService = AuthenticationService::instance ();
 		try {
 			if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
-				throw new AppException ( 'Authentication failed, invalid or empty code.' );
+				throw new Exception ( 'Authentication failed, invalid or empty code.' );
 			}
 			$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] [$this->authProvider] );
 			$authClient->setHeaderTokenName ( 'Bearer' );
@@ -53,7 +53,7 @@ class Google {
 				$authService->handleAuthCredentials ( $authCreds );
 				return 'redirect: /profile';
 			}
-		} catch ( AppException $e ) {
+		} catch ( Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
 			return 'login';
@@ -69,7 +69,7 @@ class Google {
 	 */
 	private function getAuthCredentials($code, array $data) {
 		if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
-			throw new AppException ( 'Authorization failed, invalid user data' );
+			throw new Exception ( 'Authorization failed, invalid user data' );
 		}
 		$arr = array ();
 		$arr ['authProvider'] = $this->authProvider;

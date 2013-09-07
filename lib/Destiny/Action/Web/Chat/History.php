@@ -2,7 +2,7 @@
 namespace Destiny\Action\Web\Chat;
 
 use Destiny\Common\UserFeature;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;

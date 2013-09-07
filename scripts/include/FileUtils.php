@@ -1,5 +1,5 @@
 <?php
-use Destiny\AppException;
+use Destiny\Exception;
 
 use Monolog\Logger;
 class FileUtils {

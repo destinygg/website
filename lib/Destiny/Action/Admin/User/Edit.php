@@ -6,7 +6,7 @@ use Destiny\Common\Service\ChatlogService;
 use Destiny\Common\Service\ChatBanService;
 use Destiny\Common\Application;
 use Destiny\Common\Service\UserFeaturesService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Session;
 use Destiny\Common\SessionCredentials;
@@ -35,17 +35,17 @@ class Edit {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function executeGet(array $params, ViewModel $model) {
 		$model->title = 'User';
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new AppException ( 'userId required' );
+			throw new Exception ( 'userId required' );
 		}
 		$user = UserService::instance ()->getUserById ( $params ['id'] );
 		if (empty ( $user )) {
-			throw new AppException ( 'User was not found' );
+			throw new Exception ( 'User was not found' );
 		}
 		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );
@@ -69,13 +69,13 @@ class Edit {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function executePost(array $params, ViewModel $model) {
 		$model->title = 'User';
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new AppException ( 'userId required' );
+			throw new Exception ( 'userId required' );
 		}
 		
 		$authService = AuthenticationService::instance ();
@@ -84,7 +84,7 @@ class Edit {
 		
 		$user = $userService->getUserById ( $params ['id'] );
 		if (empty ( $user )) {
-			throw new AppException ( 'User was not found' );
+			throw new Exception ( 'User was not found' );
 		}
 		
 		$username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : $user ['username'];
@@ -96,7 +96,7 @@ class Edit {
 		if (! empty ( $country )) {
 			$countryArr = Country::getCountryByCode ( $country );
 			if (empty ( $countryArr )) {
-				throw new AppException ( 'Invalid country' );
+				throw new Exception ( 'Invalid country' );
 			}
 			$country = $countryArr ['alpha-2'];
 		}

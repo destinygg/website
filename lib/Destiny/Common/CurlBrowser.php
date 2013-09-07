@@ -7,7 +7,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
 use Destiny\Common\Application;
 use Psr\Log\LoggerInterface;
-use Destiny\AppException;
+use Destiny\Exception;
 
 /**
  * Used simply to retrieve HTTP data via a curl URL request

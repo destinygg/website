@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common\Utils\String;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 
 abstract class Params {
 
@@ -18,7 +18,7 @@ abstract class Params {
 			$keys = self::getKeys ( $pattern );
 			$values = self::getValues ( $pattern, $string );
 			if (count ( $values ) != count ( $keys )) {
-				throw new AppException ( '$values and $keys must have the exact length' );
+				throw new Exception ( '$values and $keys must have the exact length' );
 			}
 			$params = array ();
 			for($i = 0; $i < count ( $keys ); ++ $i) {

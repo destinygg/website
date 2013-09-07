@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Profile;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Service\ApiAuthenticationService;
 use Destiny\Common\Session;
 use Destiny\Common\Utils\Http;
@@ -27,7 +27,7 @@ class CreateAuthToken {
 		$userId = Session::getCredentials ()->getUserId ();
 		$tokens = $apiAuthService->getAuthTokensByUserId ( $userId );
 		if (count ( $tokens ) >= 5) {
-			throw new AppException ( 'You have reached the maximum [5] allowed login keys.' );
+			throw new Exception ( 'You have reached the maximum [5] allowed login keys.' );
 		}
 		$token = $apiAuthService->createAuthToken ( $userId );
 		$apiAuthService->addAuthToken ( $userId, $token );

@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Action\Admin;
 
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Application;
 use Destiny\Common\Scheduler;
 use Destiny\Common\Utils\Http;
@@ -23,11 +23,11 @@ class Cron {
 	 * @Secure ({"ADMIN"})
 	 *
 	 * @param array $params
-	 * @throws AppException
+	 * @throws Exception
 	 */
 	public function execute(array $params) {
 		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new AppException ( 'Action id required.' );
+			throw new Exception ( 'Action id required.' );
 		}
 		set_time_limit ( 180 );
 		$log = Application::instance ()->getLogger ();

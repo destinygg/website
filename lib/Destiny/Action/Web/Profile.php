@@ -7,7 +7,7 @@ use Destiny\Common\Service\UserFeaturesService;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Session;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Config;
@@ -50,7 +50,7 @@ class Profile {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function executePost(array $params, ViewModel $model) {
@@ -60,7 +60,7 @@ class Profile {
 		$authService = AuthenticationService::instance ();
 		$user = $userService->getUserById ( Session::getCredentials ()->getUserId () );
 		if (empty ( $user )) {
-			throw new AppException ( 'Invalid user' );
+			throw new Exception ( 'Invalid user' );
 		}
 		
 		$username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : $user ['username'];
@@ -73,11 +73,11 @@ class Profile {
 			if (! empty ( $country )) {
 				$countryArr = Country::getCountryByCode ( $country );
 				if (empty ( $countryArr )) {
-					throw new AppException ( 'Invalid country' );
+					throw new Exception ( 'Invalid country' );
 				}
 				$country = $countryArr ['alpha-2'];
 			}
-		} catch ( AppException $e ) {
+		} catch ( Exception $e ) {
 			$model->title = 'Profile';
 			$model->user = $user;
 			$model->error = $e;
@@ -96,7 +96,7 @@ class Profile {
 			$nameChangeCount = intval ( $user ['nameChangedCount'] );
 			// have they hit their limit
 			if ($nameChangeCount >= Config::$a ['profile'] ['nameChangeLimit']) {
-				throw new AppException ( 'You have reached your name change limit' );
+				throw new Exception ( 'You have reached your name change limit' );
 			} else {
 				$userData ['nameChangedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
 				$userData ['nameChangedCount'] = $nameChangeCount + 1;

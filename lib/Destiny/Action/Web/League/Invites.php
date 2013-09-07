@@ -5,7 +5,7 @@ use Destiny\Common\Session;
 use Destiny\Common\Application;
 use Destiny\Common\Service\Fantasy\ChallengeService;
 use Destiny\Common\Service\Fantasy\TeamService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
@@ -23,13 +23,13 @@ class Invites {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function execute(array $params, ViewModel $model) {
 		$teamId = Session::get ( 'teamId' );
 		if (empty ( $teamId )) {
-			throw new AppException ( 'Requires a team' );
+			throw new Exception ( 'Requires a team' );
 		}
 		$teamService = TeamService::instance ();
 		$challengeService = ChallengeService::instance ();

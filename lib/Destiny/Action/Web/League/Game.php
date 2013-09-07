@@ -3,7 +3,7 @@ namespace Destiny\Action\Web\League;
 
 use Destiny\Common\Service\Fantasy\ChampionService;
 use Destiny\Common\Service\Fantasy\LeaderboardService;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Service\Fantasy\GameService;
 use Destiny\Common\Service\Fantasy\ChallengeService;
 use Destiny\Common\Application;
@@ -27,7 +27,7 @@ class Game {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function execute(array $params, ViewModel $model) {
@@ -40,14 +40,14 @@ class Game {
 		$teamId = Session::get ( 'teamId' );
 		$gameId = (isset ( $params ['gameId'] ) && ! empty ( $params ['gameId'] )) ? $params ['gameId'] : '';
 		if (empty ( $gameId )) {
-			throw new AppException ( 'Game not found' );
+			throw new Exception ( 'Game not found' );
 		}
 		$game = $gameService->getGameById ( $gameId );
 		if (empty ( $game )) {
-			throw new AppException ( 'Game not found' );
+			throw new Exception ( 'Game not found' );
 		}
 		if (empty ( $teamId )) {
-			throw new AppException ( 'A team is required' );
+			throw new Exception ( 'A team is required' );
 		}
 		
 		$model->title = 'Game';

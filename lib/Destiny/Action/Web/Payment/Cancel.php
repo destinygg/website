@@ -8,7 +8,7 @@ use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -31,7 +31,7 @@ class Cancel {
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
-	 * @throws AppException
+	 * @throws Exception
 	 * @return string
 	 */
 	public function execute(array $params, ViewModel $model) {
@@ -49,11 +49,11 @@ class Cancel {
 		
 		// We need an active sub
 		if (empty ( $subscription )) {
-			throw new AppException ( 'No active subscription to cancel' );
+			throw new Exception ( 'No active subscription to cancel' );
 		}
 		// We always need an active profile
 		if (empty ( $paymentProfile ) || strcasecmp ( $paymentProfile ['state'], 'ActiveProfile' ) !== 0) {
-			throw new AppException ( sprintf ( 'Payment profile is not active %s', $paymentProfile ['state'] ) );
+			throw new Exception ( sprintf ( 'Payment profile is not active %s', $paymentProfile ['state'] ) );
 		}
 		
 		$model->title = 'Cancel scheduled payment';
@@ -83,7 +83,7 @@ class Cancel {
 			$getRPPDetailsReq->GetRecurringPaymentsProfileDetailsRequest = $getRPPDetailsReqest;
 			$getRPPDetailsResponse = $paypalService->GetRecurringPaymentsProfileDetails ( $getRPPDetailsReq );
 			if (empty ( $getRPPDetailsResponse ) || $getRPPDetailsResponse->Ack != 'Success') {
-				throw new AppException ( 'Error retrieving payment profile status' );
+				throw new Exception ( 'Error retrieving payment profile status' );
 			}
 			$profileStatus = $getRPPDetailsResponse->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus;
 			// Active profile, send off the cancel
@@ -102,7 +102,7 @@ class Cancel {
 					
 					$manageRPPStatusResponse = $paypalService->ManageRecurringPaymentsProfileStatus ( $manageRPPStatusReq );
 					if (! isset ( $manageRPPStatusResponse ) || $manageRPPStatusResponse->Ack != 'Success') {
-						throw new AppException ( $manageRPPStatusResponse->Errors [0]->LongMessage );
+						throw new Exception ( $manageRPPStatusResponse->Errors [0]->LongMessage );
 					}
 				} else {
 					$log = Application::instance ()->getLogger ();
@@ -110,7 +110,7 @@ class Cancel {
 				}
 				$orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], PaymentProfileStatus::CANCELLEDPROFILE );
 			} else {
-				throw new AppException ( sprintf ( 'Invalid payment profile status [%s] %s', $profileStatus, $paymentProfile ['paymentProfileId'] ) );
+				throw new Exception ( sprintf ( 'Invalid payment profile status [%s] %s', $profileStatus, $paymentProfile ['paymentProfileId'] ) );
 			}
 			
 			// Remove the recurring flag on the subscription
@@ -122,9 +122,9 @@ class Cancel {
 			$model->unsubscribed = true;
 			return 'paymentcancel';
 		} else {
-			throw new AppException ( 'Invalid confirmation id' );
+			throw new Exception ( 'Invalid confirmation id' );
 		}
-		throw new AppException ( 'Could not cancel subscription' );
+		throw new Exception ( 'Could not cancel subscription' );
 	}
 
 }

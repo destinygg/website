@@ -5,7 +5,7 @@ use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Cache;
-use Destiny\Common\AppException;
+use Destiny\Common\Exception;
 
 class GameService extends Service {
 	
