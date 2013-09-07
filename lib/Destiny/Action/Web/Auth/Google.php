@@ -48,8 +48,10 @@ class Google {
 			$authCreds = $this->getAuthCredentials ( $params ['code'], $data );
 			if (Session::get ( 'accountMerge' ) === '1') {
 				$authService->handleAuthAndMerge ( $authCreds );
+				return 'redirect: /profile/authentication';
 			} else {
 				$authService->handleAuthCredentials ( $authCreds );
+				return 'redirect: /profile';
 			}
 		} catch ( AppException $e ) {
 			$model->title = 'Login error';

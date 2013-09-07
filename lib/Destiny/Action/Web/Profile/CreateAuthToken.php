@@ -31,8 +31,7 @@ class CreateAuthToken {
 		}
 		$token = $apiAuthService->createAuthToken ( $userId );
 		$apiAuthService->addAuthToken ( $userId, $token );
-		Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
-		die ();
+		return 'redirect: /profile/authentication';
 	}
 
 }

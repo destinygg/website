@@ -36,8 +36,7 @@ class DeleteAuthToken {
 			throw new AppException ( 'Auth token not owned by user' );
 		}
 		$apiAuthService->removeAuthToken ( $authToken ['authTokenId'] );
-		Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
-		die ();
+		return 'redirect: /profile/authentication';
 	}
 
 }

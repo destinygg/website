@@ -28,6 +28,14 @@ class Router {
 	public function setRoutes(array $routes) {
 		$this->routes = $routes;
 	}
+	
+	/**
+	 * Add a route
+	 * @param Route $route
+	 */
+	public function addRoute(Route $route){
+		$this->routes[] = $route;
+	}
 
 	/**
 	 * Find a route by path

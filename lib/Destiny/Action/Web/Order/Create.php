@@ -78,8 +78,7 @@ class Create {
 		
 		if (isset ( $setECResponse ) && $setECResponse->Ack == 'Success') {
 			// &useraction=commit
-			Http::header ( Http::HEADER_LOCATION, Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token ) );
-			die ();
+			return 'redirect: '.Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token );
 		}
 		
 		$ordersService->updateOrderState ( $order ['orderId'], 'Error' );

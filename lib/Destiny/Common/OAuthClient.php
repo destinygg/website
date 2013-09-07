@@ -102,20 +102,19 @@ class OAuthClient {
 	}
 
 	/**
-	 * Send the authorization request
-	 * Does a location header and exits script
+	 * Get the authorization request endpoint
 	 *
 	 * @param string $url
 	 * @param string $redirect
 	 * @param string $scope
-	 * @return void
+	 * @return string
 	 */
-	public function sendAuthorisation($url, $redirect, $scope, array $params = array()) {
+	public function getAuthorisationEndPoint($url, $redirect, $scope, array $params = array()) {
 		$params ['response_type'] = 'code';
 		$params ['client_id'] = urlencode ( $this->getClientId () );
 		$params ['redirect_uri'] = urlencode ( $redirect );
 		$params ['scope'] = $scope;
-		Http::header ( Http::HEADER_LOCATION, $url . '?' . Params::params ( $params ) );
+		return $url . '?' . Params::params ( $params );
 	}
 
 	public function getClientId() {

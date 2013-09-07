@@ -50,8 +50,7 @@ class Cancel {
 			$model->subscriptionCancelled = true;
 			return 'profile/cancelsubscription';
 		}
-		Http::header ( Http::HEADER_LOCATION, '/profile' );
-		die ();
+		return 'redirect: /profile';
 	}
 
 	/**

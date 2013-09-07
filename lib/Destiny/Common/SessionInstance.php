@@ -82,9 +82,11 @@ class SessionInstance {
 	public function destroy() {
 		$cookie = $this->getSessionCookie ();
 		$cookie->clearCookie ();
-		session_destroy ();
-		$_SESSION = array ();
-		session_regenerate_id ( false );
+		if ($this->isStarted ()) {
+			session_destroy ();
+			$_SESSION = array ();
+			session_regenerate_id ( false );
+		}
 	}
 
 	/**

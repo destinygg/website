@@ -52,15 +52,12 @@ class Twitch {
 			$data = $authClient->fetchUserInfo ( $accessToken, 'https://api.twitch.tv/kraken/user' );
 			$authCreds = $this->getAuthCredentials ( $params ['code'], $data );
 			
-			// Weird twitch broadcaster quirk
-			$broadcaster = Config::$a ['twitch'] ['broadcaster'] ['user'];
-			if (! empty ( $broadcaster ) && Config::$a ['twitch'] ['broadcasterAuth'] == true && strcasecmp ( $authCreds ['username'], $broadcaster ) === 0) {
-				$this->handleBroadcasterLogin ( $authClient, $accessToken, $params );
-			}
 			if (Session::get ( 'accountMerge' ) === '1') {
 				$authService->handleAuthAndMerge ( $authCreds );
+				return 'redirect: /profile/authentication';
 			} else {
 				$authService->handleAuthCredentials ( $authCreds );
+				return 'redirect: /profile';
 			}
 		} catch ( AppException $e ) {
 			$model->title = 'Login error';
@@ -88,34 +85,6 @@ class Twitch {
 		$arr ['username'] = (isset ( $data ['display_name'] ) && ! empty ( $data ['display_name'] )) ? $data ['display_name'] : $data ['name'];
 		$arr ['email'] = (isset ( $data ['email'] ) && ! empty ( $data ['email'] )) ? $data ['email'] : '';
 		return $arr;
-	}
-
-	/**
-	 * Because twitch / subscriber calls are only authed against the broadcaster, we need to do some magic when they try to login
-	 *
-	 * @param oAuthClient $authClient
-	 * @param string $accessToken
-	 * @param array $params
-	 * @throws AppException
-	 */
-	protected function handleBroadcasterLogin(OAuthClient $authClient, $accessToken, array $params) {
-		// If the username is the broadcaster, and the permissions are NOT the same
-		// the broadcaster tried to login, but we need additional permissions from that user.
-		// So we redirect again, with the correct permissions
-		$broadcaster = Config::$a ['twitch'] ['broadcaster'] ['user'];
-		$broadcastPerms = 'channel_check_subscription+channel_subscriptions+user_read';
-		// Since scope uses the + and running + through a url produces a space
-		$scope = (isset ( $params ['scope'] )) ? str_replace ( ' ', '+', $params ['scope'] ) : null;
-		if (! empty ( $scope )) {
-			if ($scope != $broadcastPerms) {
-				$log = Application::instance ()->getLogger ();
-				$log->notice ( 'Requested broadcaster permissions [' . $broadcaster . ']' );
-				$authClient->sendAuthorisation ( 'https://api.twitch.tv/kraken/oauth2/authorize', sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ), $broadcastPerms );
-				exit ();
-			}
-			file_put_contents ( Config::$a ['cache'] ['path'] . 'BROADCASTERTOKEN.tmp', $accessToken );
-			// end the broadcaster strangeness
-		}
 	}
 
 }

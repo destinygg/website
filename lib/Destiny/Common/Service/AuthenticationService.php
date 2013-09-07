@@ -165,7 +165,7 @@ class AuthenticationService extends Service {
 		
 		// Get the users active subscriptions
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
-		if (! empty ( $subscription)) {
+		if (! empty ( $subscription )) {
 			$credentials->addRoles ( UserRole::SUBSCRIBER );
 			$credentials->addFeatures ( UserFeature::SUBSCRIBER );
 			if ($subscription ['subscriptionTier'] == 2) {
@@ -203,8 +203,7 @@ class AuthenticationService extends Service {
 		// If the user is empty stop and go to confirm / setup the user details
 		if (empty ( $profileUser )) {
 			Session::set ( 'authSession', $authCreds );
-			Http::header ( Http::HEADER_LOCATION, '/register?code=' . urlencode ( $authCreds ['authCode'] ) );
-			exit ();
+			return 'redirect: /register?code=' . urlencode ( $authCreds ['authCode'] );
 		}
 		
 		// The user has registed before...
@@ -222,7 +221,7 @@ class AuthenticationService extends Service {
 			throw new AppException ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
 		}
 		
-		//Renew the session upon successful login, makes it slightly harder to hijack
+		// Renew the session upon successful login, makes it slightly harder to hijack
 		$session = Session::instance ();
 		$session->renew ( true );
 		
@@ -236,8 +235,6 @@ class AuthenticationService extends Service {
 		}
 		
 		Session::set ( 'authSession' );
-		Http::header ( Http::HEADER_LOCATION, '/profile' );
-		exit ();
 	}
 
 	/**
@@ -281,8 +278,6 @@ class AuthenticationService extends Service {
 			'authCode' => $authCreds ['authCode'],
 			'authDetail' => $authCreds ['authDetail'] 
 		) );
-		Http::header ( Http::HEADER_LOCATION, '/profile/authentication' );
-		exit ();
 	}
 
 	/**
@@ -357,7 +352,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
+	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),

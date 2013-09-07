@@ -23,8 +23,7 @@ class Logout {
 	 */
 	public function execute(array $params) {
 		AuthenticationService::instance ()->logout ();
-		Http::header ( Http::HEADER_LOCATION, '/' );
-		exit ();
+		return 'redirect: /';
 	}
 
 }

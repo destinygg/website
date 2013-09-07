@@ -83,16 +83,14 @@ class Login {
 			case 'TWITCH' :
 				$authClient = new oAuthClient ( Config::$a ['oauth'] ['providers'] ['twitch'] );
 				$authClient->setHeaderTokenName ( 'OAuth' );
-				$authClient->sendAuthorisation ( 'https://api.twitch.tv/kraken/oauth2/authorize', $callback, 'user_read' );
-				exit ();
+				return 'redirect: '. $authClient->getAuthorisationEndPoint ( 'https://api.twitch.tv/kraken/oauth2/authorize', $callback, 'user_read' );
 			
 			case 'GOOGLE' :
 				$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] ['google'] );
 				$authClient->setHeaderTokenName ( 'Bearer' );
-				$authClient->sendAuthorisation ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid+email', array (
+				return 'redirect: '. $authClient->getAuthorisationEndPoint ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid+email', array (
 					'state' => 'security_token=' . Session::getSessionId () 
 				) );
-				exit ();
 			
 			case 'TWITTER' :
 				$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
@@ -121,9 +119,7 @@ class Login {
 					throw new AppException ( 'The callback was not confirmed by Twitter so we cannot continue.' );
 				}
 				Session::set ( 'oauth', $response );
-				$url = $tmhOAuth->url ( 'oauth/authorize', '' ) . "?oauth_token={$response['oauth_token']}";
-				Http::header ( Http::HEADER_LOCATION, $url );
-				exit ();
+				return 'redirect: ' . $tmhOAuth->url ( 'oauth/authorize', '' ) . "?oauth_token={$response['oauth_token']}";
 			
 			default :
 				$model->title = 'Login error';

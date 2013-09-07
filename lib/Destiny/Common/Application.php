@@ -7,6 +7,7 @@ use Destiny\Common\Utils\Options;
 use Destiny\Common\Utils\String\Params;
 use Destiny\Common\Router;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Annotations\Reader;
 use Psr\Log\LoggerInterface;
 
 class Application extends Service {
@@ -61,17 +62,16 @@ class Application extends Service {
 	protected $redis = null;
 	
 	/**
-	 * The annotation reader
-	 *
-	 * @var Doctrine\Common\Annotations\Reader
-	 */
-	protected $annotationReader = null;
-	
-	/**
 	 * The request router
 	 * @var Router
 	 */
 	protected $router;
+	
+	/**
+	 * The request router
+	 * @var Reader
+	 */
+	protected $annotationReader;
 	
 	/**
 	 * The autoloader
@@ -98,18 +98,7 @@ class Application extends Service {
 		Options::setOptions ( $this, $args );
 	}
 
-	/**
-	 * Executes the action if a route is found
-	 */
-	public function executeRequest($uri, $method) {
-		$path = parse_url ( $uri, PHP_URL_PATH );
-		$route = $this->router->findRoute ( $path, $method );
-		
-		// No route found
-		if (! $route) {
-			return $this->error ( Http::STATUS_NOT_FOUND );
-		}
-		
+	private function checkRouteSecurity(Route $route) {
 		// Check the route security against the user roles and features
 		$credentials = Session::getCredentials ();
 		$secure = $route->getSecure ();
@@ -128,39 +117,68 @@ class Application extends Service {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Executes the action if a route is found
+	 */
+	public function executeRequest($uri, $method) {
+		$path = parse_url ( $uri, PHP_URL_PATH );
+		$route = $this->router->findRoute ( $path, $method );
+		
+		// No route found
+		if (! $route) {
+			return $this->error ( Http::STATUS_NOT_FOUND );
+		}
+		
+		// Security checks
+		$this->checkRouteSecurity ( $route );
+		
+		// Combine the get, post and the {param}'s from the string
+		$params = array_merge ( $_GET, $_POST, $route->getPathParams ( $path ) );
 		
 		try {
-			
-			// Combine the get, post and the {param}'s from the string
-			$params = array_merge ( $_GET, $_POST, $route->getPathParams ( $path ) );
-			
 			// Get and init action class
 			$className = $route->getClass ();
 			$classMethod = $route->getClassMethod ();
+			$model = new ViewModel ();
 			$classInstance = new $className ();
 			
-			// Execute the method, and handle the response
-			$response = $classInstance->$classMethod ( $params, $model = new ViewModel () );
+			// Begin a DB transaction before the action begins
+			$connection = $this->getConnection ();
+			$connection->beginTransaction ();
 			
-			// if a action returns a string, try to load it as a template
-			if (is_string ( $response )) {
-				$tpl = './tpl/' . $response . '.php';
-				if (! is_file ( $tpl )) {
-					throw new AppException ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
-				}
-				$this->template ( $tpl, $model );
+			// Execute the method, and handle the response
+			$response = $classInstance->$classMethod ( $params, $model );
+			
+			// Commit the DB transaction
+			$connection->commit ();
+			
+			// Check if the response is valid
+			if (empty ( $response ) || ! is_string ( $response )) {
+				$this->error ( Http::STATUS_NO_CONTENT, new AppException ( 'Invalid response' ) );
 			}
+			
+			// Redirect response
+			if (substr ( $response, 0, 10 ) === 'redirect: ') {
+				$redirect = substr ( $response, 10 );
+				Http::header ( Http::HEADER_LOCATION, substr ( $response, 10 ) );
+				return;
+			}
+			
+			// Template response
+			$tpl = './tpl/' . $response . '.php';
+			if (! is_file ( $tpl )) {
+				throw new AppException ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
+			}
+			$this->template ( $tpl, $model );
 			//
 		} catch ( AppException $e ) {
 			$this->logger->error ( $e->getMessage () );
 			$this->error ( Http::STATUS_ERROR, $e );
 		} catch ( \Exception $e ) {
 			$this->logger->critical ( $e->getMessage () );
-			if (! Config::$a ['showExceptionMessages']) {
-				$this->error ( Http::STATUS_ERROR, new AppException ( 'Maximum over-rustle has been achieved' ) );
-			} else {
-				$this->error ( Http::STATUS_ERROR, $e );
-			}
+			$this->error ( Http::STATUS_ERROR, new AppException ( 'Maximum over-rustle has been achieved' ) );
 		}
 	}
 
@@ -252,22 +270,6 @@ class Application extends Service {
 	}
 
 	/**
-	 * Get the annotation reader
-	 * @return \Doctrine\Common\Annotations\Reader
-	 */
-	public function getAnnotationReader() {
-		return $this->annotationReader;
-	}
-
-	/**
-	 * Set the annotation reader
-	 * @param Doctrine\Common\Annotations\Reader $annotationReader
-	 */
-	public function setAnnotationReader($annotationReader) {
-		$this->annotationReader = $annotationReader;
-	}
-
-	/**
 	 * Get the session api
 	 *
 	 * @return \Destiny\SessionInstance
@@ -332,7 +334,7 @@ class Application extends Service {
 
 	/**
 	 * Get the request router
-	 * @return \Destiny\Router
+	 * @return Router
 	 */
 	public function getRouter() {
 		return $this->router;
@@ -360,6 +362,22 @@ class Application extends Service {
 	 */
 	public function setLoader($loader) {
 		$this->loader = $loader;
+	}
+
+	/**
+	 * Get the annotation reader
+	 * @return Reader
+	 */
+	public function getAnnotationReader() {
+		return $this->annotationReader;
+	}
+
+	/**
+	 * Set the annotation reader
+	 * @param Reader $annotationReader
+	 */
+	public function setAnnotationReader(Reader $annotationReader) {
+		$this->annotationReader = $annotationReader;
 	}
 
 }

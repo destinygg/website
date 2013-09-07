@@ -20,6 +20,14 @@ class Route {
 	public function __construct(array $params) {
 		$this->path = $params ['value'];
 	}
+	
+	/**
+	 * Get the path
+	 * @return string
+	 */
+	public function getPath(){
+		return $this->path;
+	}
 
 }
 ?>

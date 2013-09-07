@@ -71,8 +71,7 @@ class Complete {
 				// Make sure the order is for this user
 				if (! empty ( $order ) && $order ['userId'] == Session::getCredentials ()->getUserId () && strcasecmp ( $order ['state'], 'Completed' ) === 0) {
 					// @TODO this should be done better
-					Http::header ( Http::HEADER_LOCATION, '/profile/subscription' );
-					die ();
+					return 'redirect: /profile/subscription';
 				}
 			}
 			$model->error = new AppException ( 'Invalid checkout token' );

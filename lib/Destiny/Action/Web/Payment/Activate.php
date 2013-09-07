@@ -151,8 +151,7 @@ class Activate {
 			$setECResponse = $this->getExpressCheckoutResponse ( $subscription, $newPaymentProfile, $params ['confirmationId'] );
 			if (isset ( $setECResponse ) && $setECResponse->Ack == 'Success') {
 				// &useraction=commit
-				Http::header ( Http::HEADER_LOCATION, Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token ) );
-				exit ();
+				return 'redirect: ' . Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token );
 			}
 		}
 		$model->error = new AppException ( 'Invalid confirmation id' );

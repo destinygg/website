@@ -110,8 +110,10 @@ class Register {
 			) );
 			if (Session::get ( 'accountMerge' ) === '1') {
 				$authService->handleAuthAndMerge ( $authSession );
+				return 'redirect: /profile/authentication';
 			} else {
 				$authService->handleAuthCredentials ( $authSession );
+				return 'redirect: /profile';
 			}
 		} catch ( AppException $e ) {
 			$model->title = 'Error';

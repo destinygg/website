@@ -4,6 +4,7 @@ namespace Destiny\Common\Utils;
 use Destiny\Common\AppException;
 
 abstract class Http {
+	
 	const HEADER_ETAG = 'Etag';
 	const HEADER_STATUS = 'Status';
 	const HEADER_CONTENTLENGTH = 'Content-Length';

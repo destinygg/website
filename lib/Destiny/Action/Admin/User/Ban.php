@@ -79,9 +79,7 @@ class Ban {
 		$chatBanService = ChatBanService::instance ();
 		$ban ['id'] = $chatBanService->insertBan ( $ban );
 		AuthenticationService::instance ()->flagUserForUpdate ( $ban ['targetuserid'] );
-		
-		Http::header ( Http::HEADER_LOCATION, '/admin/user/' . $params ['userId'] . '/ban/' . $ban ['id'] . '/edit' );
-		die ();
+		return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $ban ['id'] . '/edit';
 	}
 
 	/**
@@ -146,8 +144,7 @@ class Ban {
 		$chatBanService->updateBan ( $ban );
 		AuthenticationService::instance ()->flagUserForUpdate ( $ban ['targetuserid'] );
 		
-		Http::header ( Http::HEADER_LOCATION, '/admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit' );
-		die ();
+		return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit';
 	}
 
 	/**
@@ -171,8 +168,7 @@ class Ban {
 		$chatBanService->updateBan ( $ban );
 		AuthenticationService::instance ()->flagUserForUpdate ( $ban ['targetuserid'] );
 		
-		Http::header ( Http::HEADER_LOCATION, '/admin/user/' . $params ['userId'] . '/edit' );
-		die ();
+		return 'redirect: /admin/user/' . $params ['userId'] . '/edit';
 	}
 
 }
