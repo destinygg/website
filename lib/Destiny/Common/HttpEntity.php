@@ -1,11 +1,14 @@
 <?php
 namespace Destiny\Common;
 
+use Destiny\Common\Utils\Http;
+
 class HttpEntity {
 	
 	private $headers = array ();
-	private $status;
+	private $status = Http::STATUS_OK;
 	private $body;
+	private $location;
 
 	public function __construct($status, $body = null) {
 		$this->status = $status;
@@ -21,7 +24,7 @@ class HttpEntity {
 	}
 
 	public function addHeader($name, $value) {
-		$this->headers [] = array($name, $value);
+		$this->headers [] = array ($name,$value);
 	}
 
 	public function getStatus() {
@@ -38,6 +41,14 @@ class HttpEntity {
 
 	public function setBody($body) {
 		$this->body = $body;
+	}
+
+	public function getLocation() {
+		return $this->location;
+	}
+
+	public function setLocation($location) {
+		$this->location = $location;
 	}
 
 }

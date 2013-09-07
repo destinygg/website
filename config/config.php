@@ -1,7 +1,6 @@
 <?php
 return array (
 	'cacheAnnotations'		=> true, // If TRUE, stores the annotation definitions in files /tmp/annotations/ (these need to be cleared if changes are made to annotations)
-	'cleanOutputBuffer'		=> true, // If TRUE cleans the output buffer before sending well formatted responses
 	'allowImpersonation'	=> false, /// MUST BE OFF ON LIVE AT ALL TIMES /impersonate?user=Cene or /impersonate?userId=12
 	'useMinifiedFiles'		=> false, // Prevent using minified files
 	'profile' => array(

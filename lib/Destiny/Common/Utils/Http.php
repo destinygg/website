@@ -23,6 +23,7 @@ abstract class Http {
 	const STATUS_ERROR = 500;
 	const STATUS_OK = 200;
 	const STATUS_NO_CONTENT = 204;
+	
 	public static $HEADER_STATUSES = array (
 		500 => 'Error',
 		404 => 'Not Found',
@@ -42,10 +43,6 @@ abstract class Http {
 			throw new Exception ( sprintf ( 'HTTP status not supported %s', $status ) );
 		}
 		header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
-	}
-
-	public static function auth($type, $realm) {
-		header ( 'WWW-Authenticate: ' . $type . ' realm="' . $realm . '"' );
 	}
 		
 	// Return FALSE if unmodified | TRUE if modified or we can't tell

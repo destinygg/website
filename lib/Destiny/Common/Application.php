@@ -97,63 +97,48 @@ class Application extends Service {
 		Options::setOptions ( $this, $args );
 	}
 
-	private function checkRouteSecurity(Route $route) {
-		// Check the route security against the user roles and features
-		$credentials = Session::getCredentials ();
-		$secure = $route->getSecure ();
-		if (! empty ( $secure )) {
-			foreach ( $secure as $role ) {
-				if (! $credentials->hasRole ( $role )) {
-					return $this->error ( Http::STATUS_UNAUTHORIZED );
-				}
-			}
-		}
-		$features = $route->getFeature ();
-		if (! empty ( $features )) {
-			foreach ( $features as $feature ) {
-				if (! $credentials->hasFeature ( $feature )) {
-					return $this->error ( Http::STATUS_UNAUTHORIZED );
-				}
-			}
-		}
-	}
-
 	/**
 	 * Executes the action if a route is found
 	 */
 	public function executeRequest($uri, $method) {
 		$path = parse_url ( $uri, PHP_URL_PATH );
 		$route = $this->router->findRoute ( $path, $method );
+		$model = new ViewModel ();
 		
 		// No route found
 		if (! $route) {
-			return $this->error ( Http::STATUS_NOT_FOUND );
+			$response = new HttpEntity ( Http::STATUS_NOT_FOUND );
+			$response->setBody ( $this->template ( './tpl/errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
+			$this->handleHttpEntityResponse ( $response );
 		}
 		
 		// Security checks
-		$this->checkRouteSecurity ( $route );
-		
-		// Combine the get, post and the {param}'s from the string
-		$params = array_merge ( $_GET, $_POST, $route->getPathParams ( $path ) );
-		
-		// Get and init action class
-		$className = $route->getClass ();
-		$classMethod = $route->getClassMethod ();
-		
-		// Init the action class instance
-		$classInstance = new $className ();
-		
-		// Check for @Transactional annotation
-		$transactional = ($this->getAnnotationReader ()->getMethodAnnotation ( new \ReflectionMethod ( $classInstance, $classMethod ), 'Destiny\Common\Annotation\Transactional' ) == null) ? false : true;
-		
-		// If transactional begin a DB transaction before the action begins
-		if ($transactional) {
-			$conn = $this->getConnection ();
-			$conn->beginTransaction ();
+		if (! $this->hasRouteSecurity ( $route, Session::getCredentials () )) {
+			$response = new HttpEntity ( Http::STATUS_UNAUTHORIZED );
+			$response->setBody ( $this->template ( './tpl/errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
+			$this->handleHttpEntityResponse ( $response );
 		}
 		
 		try {
-			$model = new ViewModel ();
+			
+			// Parameters
+			$params = array_merge ( $_GET, $_POST, $route->getPathParams ( $path ) );
+			
+			// Get and init action class
+			$className = $route->getClass ();
+			$classMethod = $route->getClassMethod ();
+			
+			// Init the action class instance
+			$classInstance = new $className ();
+			
+			// Check for @Transactional annotation
+			$transactional = ($this->getAnnotationReader ()->getMethodAnnotation ( new \ReflectionMethod ( $classInstance, $classMethod ), 'Destiny\Common\Annotation\Transactional' ) == null) ? false : true;
+			
+			// If transactional begin a DB transaction before the action begins
+			if ($transactional) {
+				$conn = $this->getConnection ();
+				$conn->beginTransaction ();
+			}
 			
 			// Execute the class method
 			$response = $classInstance->$classMethod ( $params, $model );
@@ -163,98 +148,107 @@ class Application extends Service {
 				throw new Exception ( 'Invalid action response' );
 			}
 			
+			// Redirect response
+			if (is_string ( $response ) && substr ( $response, 0, 10 ) === 'redirect: ') {
+				$redirect = substr ( $response, 10 );
+				$response = new HttpEntity ( Http::STATUS_OK );
+				$response->setLocation ( $redirect );
+			}
+			
+			// Template response
+			if (is_string ( $response )) {
+				$tpl = './tpl/' . $response . '.php';
+				if (! is_file ( $tpl )) {
+					throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
+				}
+				$response = new HttpEntity ( Http::STATUS_OK );
+				$response->setBody ( $this->template ( $tpl, $model ) );
+			}
+			
 			// Commit the DB transaction
 			if ($transactional) {
 				$conn->commit ();
 			}
-			
-			// Handle the action response
-			$this->handleActionResponse ( $response, $model );
 			//
-		} catch ( Exception $e ) {
-			if ($transactional) {
-				$conn->rollback ();
-			}
-			$this->logger->error ( $e->getMessage () );
-			$this->error ( Http::STATUS_ERROR, $e );
 		} catch ( \Exception $e ) {
+			$this->logger->critical ( $e->getMessage () );
 			if ($transactional) {
 				$conn->rollback ();
 			}
-			$this->logger->critical ( $e->getMessage () );
-			$this->error ( Http::STATUS_ERROR, new Exception ( 'Maximum over-rustle has been achieved' ) );
+			$reponse = new HttpEntity ( Http::STATUS_ERROR );
+			$model->error = new Exception ( 'Maximum over-rustle has been achieved' );
+			$model->code = Http::STATUS_ERROR;
+			$reponse->setBody ( $this->template ( './tpl/errors/' . Http::STATUS_ERROR . '.php', $model ) );
 		}
+		
+		// Handle the request response
+		$this->handleHttpEntityResponse ( $response );
 	}
 
 	/**
-	 * Handle the action response
-	 * @param Mix $response
-	 * @param ViewModel $model
+	 * Handle the HttpEntity response
+	 * @param HttpEntity $response
 	 * @throws Exception
+	 * @return void
 	 */
-	private function handleActionResponse($response, ViewModel $model) {
-		
-		// HttpEntity response
-		if ($response instanceof HttpEntity) {
-			$headers = $response->getHeaders ();
-			foreach ( $headers as $header ) {
-				Http::header ( $header [0], $header [1] );
-			}
-			Http::status ( $response->getStatus () );
-			$body = $response->getBody ();
-			if (! empty ( $body )) {
-				echo $body;
-			}
+	private function handleHttpEntityResponse(HttpEntity $response) {
+		$location = $response->getLocation ();
+		if (! empty ( $location )) {
+			Http::header ( Http::HEADER_LOCATION, $location );
 			exit ();
 		}
-		
-		// Redirect response
-		if (substr ( $response, 0, 10 ) === 'redirect: ') {
-			$redirect = substr ( $response, 10 );
-			Http::header ( Http::HEADER_LOCATION, substr ( $response, 10 ) );
-			exit ();
+		$headers = $response->getHeaders ();
+		foreach ( $headers as $header ) {
+			Http::header ( $header [0], $header [1] );
 		}
-		
-		// Template response
-		$tpl = './tpl/' . $response . '.php';
-		if (! is_file ( $tpl )) {
-			throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
+		Http::status ( $response->getStatus () );
+		$body = $response->getBody ();
+		if (! empty ( $body )) {
+			echo $body;
 		}
-		$this->template ( $tpl, $model );
 		exit ();
 	}
 
 	/**
-	 * Log and throw a response error
-	 * Valid responses are 401,403,404,500
-	 *
-	 * @param string $code
-	 * @param function $fn
-	 * @param Exception $e
+	 * Check if the security credentials have the correct values for the route
+	 * @param Route $route
+	 * @param Route $credentials
+	 * @return boolean
 	 */
-	public function error($code, $e = null) {
-		Http::status ( $code );
-		$this->template ( './tpl/errors/' . $code . '.php', new ViewModel ( array (
-			'error' => $e,
-			'code' => $code 
-		) ) );
+	private function hasRouteSecurity(Route $route, SessionCredentials $credentials) {
+		// Check the route security against the user roles and features
+		$secure = $route->getSecure ();
+		if (! empty ( $secure )) {
+			foreach ( $secure as $role ) {
+				if (! $credentials->hasRole ( $role )) {
+					return false;
+				}
+			}
+		}
+		$features = $route->getFeature ();
+		if (! empty ( $features )) {
+			foreach ( $features as $feature ) {
+				if (! $credentials->hasFeature ( $feature )) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	/**
-	 * Include a template and exit
+	 * Include a template and return a template file
 	 *
 	 * @param string $filename
+	 * @return string
 	 */
 	public function template($filename, ViewModel $model) {
 		$this->logger->debug ( 'Template: ' . $filename );
-		if (Config::$a ['cleanOutputBuffer']) {
-			// Catches warnings and output before this points and clears it
-			@ob_clean ();
-		}
 		ob_start ();
 		include $filename;
-		ob_flush ();
-		exit ();
+		$contents = ob_get_contents ();
+		ob_end_clean ();
+		return $contents;
 	}
 
 	/**
