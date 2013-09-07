@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Fantasy\Team;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\MimeType;
@@ -28,16 +29,23 @@ class Info {
 	public function execute(array $params) {
 		$ftService = TeamService::instance ();
 		// Get team - Make sure this is one of the users teams
-		$team = $ftService->getTeamById ( intval ( $params ['teamId'] ) );
+		$team = $ftService->getTeamById ( intval ( $params['teamId'] ) );
 		if (empty ( $team )) {
 			throw new Exception ( 'Team not found' );
 		}
 		// Security
-		if (Session::getCredentials()->getUserId() != $team ['userId']) {
+		if (Session::getCredentials ()->getUserId () != $team ['userId']) {
 			throw new Exception ( 'User does not have rights to this team.' );
 		}
 		$modifiedTime = Date::getDateTime ( $team ['modifiedDate'] );
 		$createdTime = Date::getDateTime ( $team ['modifiedDate'] );
+
+		if (! Http::checkIfModifiedSince ( $modifiedTime->getTimestamp () )) {
+			$response = new HttpEntity ( Http::STATUS_NOT_MODIFIED );
+			$response->addHeader ( Http::HEADER_LAST_MODIFIED, $modifiedTime->format ( 'r' ) );
+			$response->addHeader ( Http::HEADER_CONNECTION, 'close' );
+			return $response;
+		}
 		
 		$team ['teamId'] = intval ( $team ['teamId'] );
 		$team ['userId'] = intval ( $team ['userId'] );
@@ -48,12 +56,12 @@ class Info {
 		$team ['modifiedDate'] = $modifiedTime->format ( Date::FORMAT );
 		$team ['champions'] = TeamService::instance ()->getTeamChamps ( $team ['teamId'] );
 		
-		Http::checkIfModifiedSince ( $modifiedTime->getTimestamp (), true );
-		Http::header ( Http::HEADER_LAST_MODIFIED, $modifiedTime->format ( 'r' ) );
-		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
-		Http::header ( Http::HEADER_PRAGMA, 'public' );
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $team ) );
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $team ) );
+		$response->addHeader ( Http::HEADER_LAST_MODIFIED, $modifiedTime->format ( 'r' ) );
+		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
+		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 }

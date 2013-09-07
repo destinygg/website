@@ -9,6 +9,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\HttpEntity;
 
 /**
  * @Action
@@ -23,10 +24,11 @@ class Broadcasts {
 	public function execute(array $params) {
 		$app = Application::instance ();
 		$broadcasts = $app->getCacheDriver ()->fetch ( 'pastbroadcasts' );
-		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
-		Http::header ( Http::HEADER_PRAGMA, 'public' );
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $broadcasts ) );
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $broadcasts ) );
+		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
+		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 }

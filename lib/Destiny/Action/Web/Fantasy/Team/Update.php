@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Fantasy\Team;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Service\Fantasy\ChampionService;
 use Destiny\Common\Utils\Http;
@@ -41,8 +42,10 @@ class Update {
 		$response ['data'] ['team'] = $team;
 		$response ['data'] ['champions'] = TeamService::instance ()->getTeamChamps ( $team ['teamId'] );
 		$response ['success'] = true;
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $response ) );
+		
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $response ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 	private function updateTeam(array &$response, array $params) {

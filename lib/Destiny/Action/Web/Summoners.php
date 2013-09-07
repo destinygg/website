@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\MimeType;
@@ -23,10 +24,11 @@ class Summoners {
 	public function execute(array $params) {
 		$app = Application::instance ();
 		$summoners = $app->getCacheDriver ()->fetch ( 'summoners' );
-		Http::header ( Http::HEADER_CACHE_CONTROL, 'private' );
-		Http::header ( Http::HEADER_PRAGMA, 'public' );
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $summoners ) );
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $summoners ) );
+		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
+		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 }

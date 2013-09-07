@@ -6,8 +6,8 @@ use Destiny\Common\Utils\Options;
 use Destiny\Common\Utils\String\Params;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Annotations\Reader;
-use Psr\Log\LoggerInterface;
 use Destiny\Common\Annotation\Transactional;
+use Psr\Log\LoggerInterface;
 
 class Application extends Service {
 	
@@ -159,8 +159,8 @@ class Application extends Service {
 			$response = $classInstance->$classMethod ( $params, $model );
 			
 			// Check if the response is valid
-			if (empty ( $response ) || ! is_string ( $response )) {
-				throw new Exception ('Invalid action response');
+			if (empty ( $response )) {
+				throw new Exception ( 'Invalid action response' );
 			}
 			
 			// Commit the DB transaction
@@ -190,15 +190,29 @@ class Application extends Service {
 	 * Handle the action response
 	 * @param Mix $response
 	 * @param ViewModel $model
-	 * @throws InvalidResponseException
 	 * @throws Exception
 	 */
 	private function handleActionResponse($response, ViewModel $model) {
+		
+		// HttpEntity response
+		if ($response instanceof HttpEntity) {
+			$headers = $response->getHeaders ();
+			foreach ( $headers as $header ) {
+				Http::header ( $header [0], $header [1] );
+			}
+			Http::status ( $response->getStatus () );
+			$body = $response->getBody ();
+			if (! empty ( $body )) {
+				echo $body;
+			}
+			exit ();
+		}
+		
 		// Redirect response
 		if (substr ( $response, 0, 10 ) === 'redirect: ') {
 			$redirect = substr ( $response, 10 );
 			Http::header ( Http::HEADER_LOCATION, substr ( $response, 10 ) );
-			return;
+			exit ();
 		}
 		
 		// Template response
@@ -207,6 +221,7 @@ class Application extends Service {
 			throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
 		}
 		$this->template ( $tpl, $model );
+		exit ();
 	}
 
 	/**

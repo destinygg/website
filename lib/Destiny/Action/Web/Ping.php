@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
@@ -18,9 +19,9 @@ class Ping {
 	 * @param array $params
 	 */
 	public function execute(array $params) {
-		Http::header ( 'X-Pong', 'Destiny' );
-		Http::status ( Http::STATUS_NO_CONTENT );
-		exit ();
+		$response = new HttpEntity ( Http::STATUS_OK );
+		$response->addHeader ( 'X-Pong', 'Destiny' );
+		return $response;
 	}
 
 }

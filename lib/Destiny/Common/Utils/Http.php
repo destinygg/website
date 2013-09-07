@@ -47,60 +47,18 @@ abstract class Http {
 	public static function auth($type, $realm) {
 		header ( 'WWW-Authenticate: ' . $type . ' realm="' . $realm . '"' );
 	}
-
-	public static function sendFile($filename) {
-		@ob_end_flush ();
-		@flush ();
-		readfile ( "$filename" );
-		exit ();
-	}
-
-	public static function sendString($str) {
-		@ob_end_flush ();
-		@flush ();
-		echo $str;
-		exit ();
-	}
-
-	public static function sendNotModifiedResponse() {
-		if (isset ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] ) && ! empty ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] )) {
-			self::status ( self::STATUS_NOT_MODIFIED );
-			self::header ( self::HEADER_CONNECTION, 'close' );
-			@ob_end_flush ();
-			@flush ();
-			exit ();
-		}
-	}
-	
+		
 	// Return FALSE if unmodified | TRUE if modified or we can't tell
-	public static function checkIfModifiedSince($mtime, $send = false) {
+	public static function checkIfModifiedSince($mtime) {
 		global $_SERVER;
 		if (isset ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] ) && ! empty ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] )) {
 			if ($_SERVER ['HTTP_IF_MODIFIED_SINCE'] == gmdate ( 'r', $mtime )) {
-				if ($send) {
-					self::header ( self::HEADER_LAST_MODIFIED, gmdate ( 'r', $mtime ) );
-					self::sendNotModifiedResponse ();
-				}
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	// Return FALSE if unmodified | TRUE if modified or we can't tell
-	protected static function checkIfNoneMatch($etag, $send = false) {
-		global $_SERVER;
-		if (isset ( $_SERVER ['HTTP_IF_NONE_MATCH'] ) && ! empty ( $_SERVER ['HTTP_IF_NONE_MATCH'] )) {
-			if ($_SERVER ['HTTP_IF_NONE_MATCH'] == $etag) {
-				if ($send) {
-					self::sendNotModifiedResponse ();
-				}
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/**
 	 * ### getBaseUrl function
 	 * // utility function that returns base url for

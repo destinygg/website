@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Admin;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Exception;
 use Destiny\Common\Application;
 use Destiny\Common\Scheduler;
@@ -40,8 +41,10 @@ class Cron {
 		$scheduler->loadSchedule ();
 		$scheduler->executeTaskByName ( $params ['id'] );
 		$response ['message'] = sprintf ( 'Execute %s', $params ['id'] );
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $response ) );
+		
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $response ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 }

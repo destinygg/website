@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Fantasy\Challenge;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Service\Fantasy\ChallengeService;
 use Destiny\Common\Utils\Http;
@@ -52,8 +53,10 @@ class Add {
 			$response ['success'] = false;
 			$response ['message'] = $e->getMessage ();
 		}
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $response ) );
+		
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $response ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 }

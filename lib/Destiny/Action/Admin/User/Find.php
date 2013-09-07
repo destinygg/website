@@ -2,6 +2,7 @@
 namespace Destiny\Action\Admin\User;
 
 use Destiny\Common\Service\UserService;
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Exception;
 use Destiny\Common\Session;
 use Destiny\Common\Utils\Http;
@@ -28,9 +29,10 @@ class Find {
 			$s .= '%';
 		}
 		$users = UserService::instance ()->findUsersByUsername ( $s, 10 );
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $users ) );
-		exit ();
+		$response = new HttpEntity ( Http::STATUS_OK );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		$response->setBody ( json_encode ( $users ) );
+		return $response;
 	}
 
 }

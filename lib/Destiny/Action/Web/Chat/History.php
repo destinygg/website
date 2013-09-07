@@ -2,6 +2,7 @@
 namespace Destiny\Action\Web\Chat;
 
 use Destiny\Common\UserFeature;
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
@@ -55,9 +56,9 @@ class History {
 			$lines [] = $line;
 		}
 		
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
-		Http::sendString ( 'var backlog = ' . json_encode ( $lines ) );
-		exit ();
+		$response = new HttpEntity ( Http::STATUS_OK, 'var backlog = ' . json_encode ( $lines ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
+		return $response;
 	}
 
 }

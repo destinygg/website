@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Auth;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\MimeType;
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Service\UserFeaturesService;
@@ -46,18 +47,15 @@ class Api {
 		$response = null;
 		try {
 			if (! isset ( $params ['authtoken'] ) || empty ( $params ['authtoken'] )) {
-				Http::status ( Http::STATUS_FORBIDDEN );
-				die ( 'Invalid or empty authToken' );
+				return new HttpEntity ( Http::STATUS_FORBIDDEN, 'Invalid or empty authToken' );
 			}
 			$authToken = ApiAuthenticationService::instance ()->getAuthToken ( $params ['authtoken'] );
 			if (empty ( $authToken )) {
-				Http::status ( Http::STATUS_FORBIDDEN );
-				die ( 'Auth token not found' );
+				return new HttpEntity ( Http::STATUS_FORBIDDEN, 'Auth token not found' );
 			}
 			$user = UserService::instance ()->getUserById ( $authToken ['userId'] );
 			if (empty ( $user )) {
-				Http::status ( Http::STATUS_FORBIDDEN );
-				die ( 'User not found' );
+				return new HttpEntity ( Http::STATUS_FORBIDDEN, 'User not found' );
 			}
 			$credentials = new SessionCredentials ( $user );
 			$credentials->setAuthProvider ( 'API' );
@@ -72,12 +70,13 @@ class Api {
 					$credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
 				}
 			}
-			$response = $credentials->getData ();
-			Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-			Http::sendString ( json_encode ( $response ) );
+			
+			$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $credentials->getData () ) );
+			$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+			return $response;
 		} catch ( \Exception $e ) {
-			Http::status ( Http::STATUS_ERROR );
-			die ( $e->getMessage () );
+			$response = new HttpEntity ( Http::STATUS_ERROR, $e->getMessage () );
+			return $response;
 		}
 	}
 

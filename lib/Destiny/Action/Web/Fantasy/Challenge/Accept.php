@@ -2,6 +2,7 @@
 namespace Destiny\Action\Web\Fantasy\Challenge;
 
 use Destiny\Common\Service\Fantasy\ChallengeService;
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Exception;
@@ -39,8 +40,11 @@ class Accept {
 		);
 		$response ['response'] = ChallengeService::instance ()->acceptChallenge ( intval ( $params ['teamId'] ), intval ( Session::get ( 'teamId' ) ) );
 		$response ['message'] = ($response ['response']) ? 'Accepted!' : 'Failed!';
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $response ) );
+
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $response ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
+		
 	}
 
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Fantasy;
 
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
@@ -23,8 +24,9 @@ class Champions {
 	 */
 	public function execute(array $params) {
 		$champions = Application::instance ()->getCacheDriver ()->fetch ( 'champions' );
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $champions ) );
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $champions ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 }

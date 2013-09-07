@@ -2,6 +2,7 @@
 namespace Destiny\Action\Web\Fantasy;
 
 use Destiny\Common\Service\LeagueApiService;
+use Destiny\Common\HttpEntity;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
@@ -34,16 +35,18 @@ class Ingame {
 			if (! empty ( $ingame ) && ! empty ( $ingame ['gameData'] )) {
 				// Abililty to send the game id, if it is still ingame, send a not modified response
 				if (isset ( $params ['gameId'] ) && intval ( $params ['gameId'] ) == $ingame ['gameId']) {
-					Http::status ( Http::STATUS_NOT_MODIFIED );
-					Http::header ( Http::HEADER_CONNECTION, 'close' );
+					$response = new HttpEntity ( Http::STATUS_NOT_MODIFIED );
+					$response->addHeader ( Http::HEADER_CONNECTION, 'close' );
+					return $response;
 				}
 				break;
 			} else {
 				$ingame = null;
 			}
 		}
-		Http::header ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		Http::sendString ( json_encode ( $ingame ) );
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $ingame ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
 
 }
