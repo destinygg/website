@@ -15,119 +15,119 @@
 	width: 30px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -162px -64px;
+	background: url('../img/emoticons.png') no-repeat -300px -31px;
 }
 
 .chat-emote.chat-emote-INFESTINY {
 	width: 35px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -133px 0;
+	background: url('../img/emoticons.png') no-repeat -190px -31px;
 }
 
 .chat-emote.chat-emote-FIDGETLOL {
 	width: 25px;
 	height: 25px;
 	margin-top: -25px;
-	background: url('../img/emoticons.png') no-repeat -240px 0;
+	background: url('../img/emoticons.png') no-repeat -452px 0;
 }
 
 .chat-emote.chat-emote-Hhhehhehe {
 	width: 35px;
 	height: 25px;
 	margin-top: -25px;
-	background: url('../img/emoticons.png') no-repeat -204px 0;
+	background: url('../img/emoticons.png') no-repeat -478px 0;
 }
 
 .chat-emote.chat-emote-GameOfThrows {
 	width: 79px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -40px -31px;
+	background: url('../img/emoticons.png') no-repeat -37px 0;
 }
 
 .chat-emote.chat-emote-WORTH {
 	width: 21px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -203px -31px;
+	background: url('../img/emoticons.png') no-repeat -278px 0;
 }
 
 .chat-emote.chat-emote-FeedNathan {
 	width: 39px;
 	height: 32px;
 	margin-top: -32px;
-	background: url('../img/emoticons.png') no-repeat -57px -64px;
+	background: url('../img/emoticons.png') no-repeat -33px -31px;
 }
 
 .chat-emote.chat-emote-Abathur {
 	width: 82px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -120px -31px;
+	background: url('../img/emoticons.png') no-repeat -408px -31px;
 }
 
 .chat-emote.chat-emote-LUL {
 	width: 36px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -249px -31px;
+	background: url('../img/emoticons.png') no-repeat -160px 0;
 }
 
 .chat-emote.chat-emote-Heimerdonger {
 	width: 39px;
 	height: 32px;
 	margin-top: -32px;
-	background: url('../img/emoticons.png') no-repeat 0 -31px;
+	background: url('../img/emoticons.png') no-repeat -73px -31px;
 }
 
 .chat-emote.chat-emote-ASLAN {
 	width: 41px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -120px -64px;
+	background: url('../img/emoticons.png') no-repeat -258px -31px;
 }
 
 .chat-emote.chat-emote-DJAslan {
 	width: 32px;
 	height: 36px;
 	margin-top: -36px;
-	background: url('../img/emoticons.png') no-repeat 0 -64px;
+	background: url('../img/emoticons.png') no-repeat 0 -31px;
 }
 
 .chat-emote.chat-emote-SoSad {
 	width: 23px;
 	height: 32px;
 	margin-top: -32px;
-	background: url('../img/emoticons.png') no-repeat -33px -64px;
+	background: url('../img/emoticons.png') no-repeat -113px -31px;
 }
 
 .chat-emote.chat-emote-DURRSTINY {
 	width: 21px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -286px -31px;
+	background: url('../img/emoticons.png') no-repeat -197px 0;
 }
 
 .chat-emote.chat-emote-SURPRISE {
 	width: 33px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -308px -31px;
+	background: url('../img/emoticons.png') no-repeat -300px 0;
 }
 
 .chat-emote.chat-emote-NoTears {
 	width: 31px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -101px 0;
+	background: url('../img/emoticons.png') no-repeat -226px -31px;
 }
 
 .chat-emote.chat-emote-OverRustle {
 	width: 33px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -24px 0;
+	background: url('../img/emoticons.png') no-repeat -334px 0;
 	animation: rustle 100ms 7;
 	-webkit-animation: rustle 100ms 7;
 }
@@ -156,68 +156,75 @@
 	width: 56px;
 	height: 26px;
 	margin-top: -26px;
-	background: url('../img/emoticons.png') no-repeat -342px -31px;
+	background: url('../img/emoticons.png') no-repeat -395px 0;
 }
 
 .chat-emote.chat-emote-Kappa {
 	width: 22px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -97px -64px;
+	background: url('../img/emoticons.png') no-repeat -331px -31px;
 }
 
 .chat-emote.chat-emote-Klappa {
 	width: 34px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -169px 0;
+	background: url('../img/emoticons.png') no-repeat -219px 0;
 }
 
 .chat-emote.chat-emote-DappaKappa {
 	width: 26px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -356px -64px;
+	background: url('../img/emoticons.png') no-repeat -368px 0;
 }
 
 .chat-emote.chat-emote-BibleThump {
 	width: 36px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -193px -64px;
+	background: url('../img/emoticons.png') no-repeat 0 0;
 }
 
 .chat-emote.chat-emote-AngelThump {
 	width: 95px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -260px -64px;
+	background: url('../img/emoticons.png') no-repeat -491px -31px;
 }
 
 .chat-emote.chat-emote-FrankerZ {
 	width: 42px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -58px 0;
+	background: url('../img/emoticons.png') no-repeat -117px 0;
 }
 
 .chat-emote.chat-emote-BasedGod {
 	width: 29px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -230px -64px;
+	background: url('../img/emoticons.png') no-repeat -354px -31px;
 }
 
 .chat-emote.chat-emote-TooSpicy {
 	width: 23px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat -225px -31px;
+	background: url('../img/emoticons.png') no-repeat -384px -31px;
 }
 
 .chat-emote.chat-emote-OhKrappa {
 	width: 23px;
 	height: 30px;
 	margin-top: -30px;
-	background: url('../img/emoticons.png') no-repeat 0 0;
+	background: url('../img/emoticons.png') no-repeat -254px 0;
+}
+
+.chat-emote.chat-emote-SoDoge {
+	width: 52px;
+	height: 30px;
+	margin-top: -30px;
+	background: url('../img/emoticons.png') no-repeat -137px -31px;
 }

@@ -38,6 +38,7 @@ return array (
 			'BasedGod',
 			'TooSpicy',
 			'OhKrappa',
+			'SoDoge',
 		),
 	),
 	'redis' => array(
