@@ -29,9 +29,6 @@ class Login {
 	 * @return string
 	 */
 	public function executeGet(array $params, ViewModel $model) {
-		if (Session::hasRole ( UserRole::USER )) {
-			throw new Exception ( 'You are already authenticated' );
-		}
 		Session::set ( 'accountMerge' );
 		$model->title = 'Login';
 		return 'login';
