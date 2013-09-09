@@ -29,7 +29,6 @@ use Destiny\Common\Annotation\Transactional;
 class Edit {
 
 	/**
-	 * @Route ("/admin/user")
 	 * @Route ("/admin/user/{id}/edit")
 	 * @Secure ({"ADMIN"})
 	 * @HttpMethod ({"GET"})
@@ -63,7 +62,6 @@ class Edit {
 	}
 
 	/**
-	 * @Route ("/admin/user")
 	 * @Route ("/admin/user/{id}/edit")
 	 * @Secure ({"ADMIN"})
 	 * @HttpMethod ({"POST"})
