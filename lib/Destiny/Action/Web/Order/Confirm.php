@@ -1,14 +1,12 @@
 <?php
 namespace Destiny\Action\Web\Order;
 
-use Destiny\Common\Application;
 use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 
 /**

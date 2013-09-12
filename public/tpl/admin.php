@@ -1,6 +1,4 @@
 <?php
-use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Lol;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>

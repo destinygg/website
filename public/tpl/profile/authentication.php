@@ -1,9 +1,7 @@
 <?
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\UserFeature;
 ?>
 <!DOCTYPE html>
 <html>
@@ -45,8 +43,10 @@ use Destiny\Common\UserFeature;
 					<input type="hidden" id="inputAccountMerge" name="accountMerge" value="1" />
 					<table class="grid" style="width:100%">
 						<thead>
-							<td>Profile</td>
-							<td style="width:100%;">Status</td>
+							<tr>
+								<td>Profile</td>
+								<td style="width:100%;">Status</td>
+							</tr>
 						</thead>
 						<tbody>
 							<?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
@@ -80,14 +80,16 @@ use Destiny\Common\UserFeature;
 	
 	<section class="container">
 		<h3>Login keys</h3>
-		<p style="color:#666;">Login keys allow you to authenticate with the destiny.gg chat without the need for a username or password. Keys MUST be kept a <strong><u>confidential</u></strong>.</p>
+		<p style="color:#666;">Login keys allow you to authenticate with the destiny.gg chat without the need for a username or password. Keys MUST be kept a <strong>confidential</strong>.</p>
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<form action="/profile/authtoken/create" method="post">
 					<table class="grid" style="width:100%">
 						<thead>
-							<td>Key</td>
-							<td style="width:100%;">Created</td>
+							<tr>
+								<td>Key</td>
+								<td style="width:100%;">Created</td>
+							</tr>
 						</thead>
 						<tbody>
 							<?php if(!empty($model->authTokens)): ?>

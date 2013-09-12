@@ -11,7 +11,6 @@ use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Config;
-use Destiny\Common\UserFeature;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;

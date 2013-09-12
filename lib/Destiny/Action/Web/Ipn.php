@@ -3,7 +3,6 @@ namespace Destiny\Action\Web;
 
 use Destiny\Common\HttpEntity;
 use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\Commerce\PaymentProfileStatus;
 use Destiny\Common\Commerce\SubscriptionStatus;
 use Destiny\Common\Commerce\OrderStatus;
 use Destiny\Common\Commerce\PaymentStatus;
@@ -16,8 +15,6 @@ use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
 use PayPal\IPN\PPIPNMessage;
 

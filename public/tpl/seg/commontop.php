@@ -1,5 +1,4 @@
 <?php
-use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">

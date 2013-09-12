@@ -3,10 +3,7 @@ namespace Destiny\Common;
 
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
-use Destiny\Common\Utils\String\Params;
-use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Annotations\Reader;
-use Destiny\Common\Annotation\Transactional;
 use Psr\Log\LoggerInterface;
 
 class Application extends Service {

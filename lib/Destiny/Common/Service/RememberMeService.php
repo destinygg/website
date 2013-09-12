@@ -5,7 +5,6 @@ use Destiny\Common\Service;
 use Destiny\Common\Session;
 use Destiny\Common\AppEvent;
 use Destiny\Common\Application;
-use Destiny\Common\Utils\Date;
 
 class RememberMeService extends Service {
 	

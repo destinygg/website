@@ -1,11 +1,7 @@
 <?php
-use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Http;
-use Destiny\Common\Utils\Lol;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\UserRole;
 use Destiny\Common\Session;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>

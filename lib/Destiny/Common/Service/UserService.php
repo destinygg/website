@@ -3,7 +3,6 @@ namespace Destiny\Common\Service;
 
 use Destiny\Common\Service;
 use Destiny\Common\Application;
-use Destiny\Common\Exception;
 use Destiny\Common\Utils\Date;
 
 class UserService extends Service {

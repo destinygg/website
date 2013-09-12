@@ -2,7 +2,6 @@
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Session; 
 use Destiny\Common\Config;
 ?>
 <?if((bool) Config::$a['blocks']['videos']):?>
@@ -27,7 +26,7 @@ use Destiny\Common\Config;
 				</li>
 			<?endforeach;?>
 			<?else:?>
-				<p class="loading">Loading videos ...</p>
+				<li><p class="loading">Loading videos ...</p></li>
 			<?endif;?>
 			</ul>
 		</div>

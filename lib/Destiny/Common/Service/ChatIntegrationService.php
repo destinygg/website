@@ -2,10 +2,8 @@
 namespace Destiny\Common\Service;
 
 use Destiny\Common\Session;
-use Destiny\Common\UserRole;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
-use Destiny\Common\SessionInstance;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Config;
 

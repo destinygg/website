@@ -1,6 +1,4 @@
 <?php
-use Destiny\Exception;
-
 use Monolog\Logger;
 class FileUtils {
 	

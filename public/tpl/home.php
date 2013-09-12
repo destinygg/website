@@ -1,7 +1,5 @@
 <?
 namespace Destiny;
-use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Session;
 use Destiny\Common\Config;

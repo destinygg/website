@@ -2,9 +2,6 @@
 namespace Destiny\Action\Cron;
 
 use Destiny\Common\Service\RememberMeService;
-use Destiny\Common\Application;
-use Destiny\Common\Config;
-use Destiny\Common\Utils\Date;
 use Destiny\Common\Service\SubscriptionsService;
 use Psr\Log\LoggerInterface;
 

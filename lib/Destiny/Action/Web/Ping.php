@@ -5,8 +5,6 @@ use Destiny\Common\HttpEntity;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
 
 /**
  * @Action

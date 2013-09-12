@@ -1,14 +1,12 @@
 <?php
 namespace Destiny\Action\Web\Payment;
 
-use Destiny\Common\Application;
 use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 
 /**

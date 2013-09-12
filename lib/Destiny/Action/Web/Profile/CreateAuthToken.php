@@ -4,11 +4,8 @@ namespace Destiny\Action\Web\Profile;
 use Destiny\Common\Exception;
 use Destiny\Common\Service\ApiAuthenticationService;
 use Destiny\Common\Session;
-use Destiny\Common\Utils\Http;
-use Destiny\Common\MimeType;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
 

@@ -1,9 +1,6 @@
 <?
 namespace Destiny;
-use Destiny\Common\Service\Fantasy\TeamService;
-use Destiny\Common\Service\Fantasy\LeaderboardService;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Lol;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;

@@ -1,7 +1,6 @@
 <?php
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
-use Destiny\Common\Session;
 use Destiny\Common\Scheduler;
 use Destiny\Common\Config;
 

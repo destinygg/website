@@ -4,8 +4,6 @@ namespace Destiny\Action\Web;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
 
 /**
  * @Action

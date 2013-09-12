@@ -2,7 +2,6 @@
 namespace Destiny\Action\Admin\User;
 
 use Destiny\Common\Service\ChatBanService;
-use Destiny\Common\Service\ChatlogService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Service\UserFeaturesService;
@@ -10,8 +9,6 @@ use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Exception;
 use Destiny\Common\Session;
-use Destiny\Common\Utils\Http;
-use Destiny\Common\MimeType;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;

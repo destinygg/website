@@ -1,12 +1,10 @@
 <?php
 namespace Destiny\Common\Service;
 
-use Destiny\Common\Commerce\OrderStatus;
 use Destiny\Common\Commerce\SubscriptionStatus;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
-use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 
 class SubscriptionsService extends Service {

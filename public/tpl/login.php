@@ -1,8 +1,6 @@
 <?
 namespace Destiny;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -33,7 +31,7 @@ use Destiny\Common\Config;
 		<div class="content content-dark clearfix">
 			<div class="control-group">
 				<p>No private information will ever be shown on the website. This excludes the custom destiny.gg username you specify.</p>
-				<span class="label label-inverse">Important!</span> Each login method will create a new user account <u>if they are not connected</u>.
+				<span class="label label-inverse">Important!</span> Each login method will create a new user account <em>if they are not connected</em>.
 				<br>To connect your accounts, use the method you first logged in with (twitch), and connect your other accounts within your profile.
 			</div>
 			<form id="loginForm" action="/login" method="post" style="margin:20px 0 0 0;">

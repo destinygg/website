@@ -1,6 +1,5 @@
 <?php
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Lol;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Config;
@@ -146,7 +145,7 @@ use Destiny\Common\UserRole;
 							<li style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 								<small class="subtle"><?=Tpl::moment(Date::getDateTime($line['timestamp']), Date::STRING_FORMAT, 'h:mm:ss')?></small>
 								<span><?=Tpl::out($line['username'])?>:</span> 
-								<msg><?=Tpl::out($line['data'])?></msg>
+								<p><?=Tpl::out($line['data'])?></p>
 							</li>
 							<?php endforeach; ?>
 						</ul>

@@ -1,8 +1,6 @@
 <?php
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -24,14 +22,12 @@ use Destiny\Common\Config;
 		</h1>
 		<hr size="1">
 		
-		<a name="refreshes"></a>
-		<h3>Why does the chat keep refreshing?</h3>
+		<h3 id="refreshes">Why does the chat keep refreshing?</h3>
 		<p>
 			The chat backend is being updated, no need to fret.
 		</p>
 		
-		<a name="highlight"></a>
-		<h3>What is this yellow text?</h3>
+		<h3 id="highlight">What is this yellow text?</h3>
 		<p>
 			So that is the color of the line when someone says your nick. It is called
 			a highlight, and you can also go into the settings menu and enable
@@ -43,8 +39,7 @@ use Destiny\Common\Config;
 			See the settings menu.
 		</p>
 		
-		<a name="features"></a>
-		<h3>What are the features?</h3>
+		<h3 id="features">What are the features?</h3>
 		<p>
 			We aim to be mostly on-par with the twitch chat. Meaning that you should
 			feel right at home. Just remember that this is mostly a bare essentials
@@ -56,8 +51,7 @@ use Destiny\Common\Config;
 			contribute (don't if you just want to ask for a specific feature)!
 		</p>
 		
-		<a name="emotelist"></a>
-		<h3>Is there a list of emotes?</h3>
+		<h3 id="emotelist">Is there a list of emotes?</h3>
 		<p>
 			A very ghetto-one you can see with typing /emotes in chat, some of the twitch global emotes are supported.<br/>
 			Proper list <a href="https://github.com/destinygg/website/wiki/Emotes">HERE</a><br/>
@@ -65,15 +59,13 @@ use Destiny\Common\Config;
 			<strong>HOVER OVER THE EMOTICON to see how to produce it</strong>
 		</p>
 		
-		<a name="flairs"></a>
-		<h3>How can I get my own flair? Is there a flair list?</h3>
+		<h3 id="flairs">How can I get my own flair? Is there a flair list?</h3>
 		<p>
 			There is a list, but it is a secret. Do something that is extraordinary
 			and you might be rewarded with a <strong>flair of a lifetime</strong>.
 		</p>
 		
-		<a name="bugs"></a>
-		<h3>Think you found a bug?</h3>
+		<h3 id="bugs">Think you found a bug?</h3>
 		<p>
 			Are you sure?<br/>
 			I mean sure, software has bugs no question about that, but can you
@@ -89,8 +81,7 @@ use Destiny\Common\Config;
 			bug reports will receive their own flair (maybe)!
 		</p>
 		
-		<a name="theme"></a>
-		<h3>I hate this dark theme! What do?</h3>
+		<h3 id="theme">I hate this dark theme! What do?</h3>
 		<p>
 			No theme support yet, and we are not convinced that it is worthwhile to
 			implement it. (Will it look too out of place with the website theme?
@@ -100,8 +91,7 @@ use Destiny\Common\Config;
 			Convince us.
 		</p>
 		
-		<a name="ratelimit"></a>
-		<h3>What is with this "Throttled" bullshit?</h3>
+		<h3 id="ratelimit">What is with this "Throttled" bullshit?</h3>
 		<p>
 			If you are sending messages too quickly you get more-and-more penalized.<br/>
 			So the faster you send messages, the more you have to wait between
@@ -109,8 +99,7 @@ use Destiny\Common\Config;
 			TLDR: Use the chat as a normal person.
 		</p>
 		
-		<a name="mutes"></a>
-		<h3>Got muted?</h3>
+		<h3 id="mutes">Got muted?</h3>
 		<p>
 			Mutes are ephemeral, never ever persistent. That said the user does not
 			see the duration of the mute (deliberately, ask the mod to announce the duration).
@@ -119,8 +108,7 @@ use Destiny\Common\Config;
 			TLDR: Don't worry, they are never persistent, it will pass.
 		</p>
 		
-		<a name="bans"></a>
-		<h3>Where are the bans?</h3>
+		<h3 id="bans">Where are the bans?</h3>
 		<p>
 			Bans are implemented on the chat back-end side, but lack the necessary
 			GUI.<br/>
@@ -128,8 +116,7 @@ use Destiny\Common\Config;
 			you were banned, and to easily appeal it (if you are a subscriber).
 		</p>
 		
-		<a name="irc"></a>
-		<h3>How can I connect to the chat via IRC?</h3>
+		<h3 id="irc">How can I connect to the chat via IRC?</h3>
 		<p>
 			You can't, yet!
 			The priority right now is to have a working and nice chat for the 90% and
@@ -141,16 +128,14 @@ use Destiny\Common\Config;
 			chat is echoed to Rizon IRC at <a href="http://qchat.rizon.net/?channels=#destinyecho">#destinyecho</a>. Forwarding of IRC chat to DestinyChat is available (see the topic of the IRC channel for details).
 		</p>
 		
-		<a name="changelog"></a>
-		<h3>Is there a changelog?</h3>
+		<h3 id="changelog">Is there a changelog?</h3>
 		<p>
 			Yes!<br/>
 			<a href="https://github.com/destinygg/website/commits/stable">For the website and chat front-end</a><br/>
 			<a href="https://github.com/destinygg/chat/commits/master">For the chat back-end</a>
 		</p>
 		
-		<a name="tabcomp"></a>
-		<h3>Tab completion please?</h3>
+		<h3 id="tabcomp">Tab completion please?</h3>
 		<p>
 			Now implemented and slick as fuck, don't forget to thank Ceneza!<br/>
 			Also auto-completes emoticons! Try it: hhh+Tab

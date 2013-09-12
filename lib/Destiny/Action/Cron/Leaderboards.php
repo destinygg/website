@@ -2,7 +2,6 @@
 namespace Destiny\Action\Cron;
 
 use Destiny\Common\Application;
-use Destiny\Common\Config;
 use Destiny\Common\Utils\String;
 use Destiny\Common\Service\Fantasy\LeaderboardService;
 use Destiny\Common\Service\Fantasy\ChampionService;

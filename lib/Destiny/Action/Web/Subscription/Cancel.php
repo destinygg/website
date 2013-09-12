@@ -8,7 +8,6 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Service\OrdersService;
 use Destiny\Common\Service\SubscriptionsService;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;

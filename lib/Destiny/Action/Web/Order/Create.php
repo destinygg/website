@@ -9,8 +9,6 @@ use PayPal\EBLBaseComponents\BillingAgreementDetailsType;
 use PayPal\EBLBaseComponents\PaymentDetailsItemType;
 use PayPal\EBLBaseComponents\PaymentDetailsType;
 use PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType;
-use PayPal\PayPalAPI\GetExpressCheckoutDetailsReq;
-use PayPal\PayPalAPI\GetExpressCheckoutDetailsRequestType;
 use Destiny\Common\Application;
 use Destiny\Common\Session;
 use Destiny\Common\Utils\Date;
@@ -22,7 +20,6 @@ use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
 

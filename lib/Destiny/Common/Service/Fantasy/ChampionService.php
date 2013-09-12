@@ -5,7 +5,6 @@ use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Cache;
 
 class ChampionService extends Service {
 	

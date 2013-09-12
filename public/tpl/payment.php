@@ -1,7 +1,6 @@
 <?
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Utils\Currency;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
@@ -37,8 +36,7 @@ use Destiny\Common\Config;
 					<dt>Payment:</dt>
 					<dd><?=Tpl::out($model->payment['paymentType'])?></dd>
 					<dt>Payed on:</dt>
-					<dd><?=Tpl::moment(Date::getDateTime($model->payment['paymentDate']), Date::STRING_FORMAT_YEAR)?></dd>
-					<br>
+					<dd style="margin-bottom:2em;"><?=Tpl::moment(Date::getDateTime($model->payment['paymentDate']), Date::STRING_FORMAT_YEAR)?></dd>
 					<dt title="This is the related order description">Description:</dt>
 					<dd><?=Tpl::out($model->order['description'])?></dd>
 					<dt>Order:</dt>

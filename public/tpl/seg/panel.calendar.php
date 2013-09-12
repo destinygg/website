@@ -1,8 +1,6 @@
 <?
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
-
 if (! empty ( $model->events ) && ! empty ( $model->articles )) :
 ?>
 <section class="container">

@@ -3,7 +3,6 @@ namespace Destiny\Action\Cron;
 
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
 use Destiny\Common\Service\Google\CalendarService;
 use Psr\Log\LoggerInterface;
 

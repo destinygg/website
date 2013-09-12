@@ -1,5 +1,4 @@
 <?php
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\UserRole;
 use Destiny\Common\UserFeature;
@@ -127,7 +126,7 @@ use Destiny\Common\Config;
 		<div class="wrap clearfix">
 			<h5>
 				<a href="#" class="close pull-right"><i class="icon-remove icon-white"></i></a>
-				<div class="user-tools-user"></div>
+				<span class="user-tools-user"></span>
 			</h5>
 			<div class="tools">
 				<div class="user-tools-wrap">

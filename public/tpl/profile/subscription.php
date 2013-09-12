@@ -1,10 +1,7 @@
 <?php
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\UserRole;
-use Destiny\Common\UserFeature;
 ?>
 <!DOCTYPE html>
 <html>
@@ -64,8 +61,7 @@ use Destiny\Common\UserFeature;
 							<?php endif; ?>
 							</dd>
 							<dt>Type:</dt>
-							<dd><?=Tpl::out($subType['label'])?> (T<?=Tpl::out($subType['tier'])?>)</dd>
-							<br>
+							<dd style="margin-bottom:2em;"><?=Tpl::out($subType['label'])?> (T<?=Tpl::out($subType['tier'])?>)</dd>
 							
 							<?php if(strcasecmp($model->subscription['subscriptionSource'], 'destiny.gg') !== 0): ?>
 							<dt>Source:</dt>
@@ -88,8 +84,7 @@ use Destiny\Common\UserFeature;
 							<?php endif; ?>
 							
 							<?php if(!empty($model->paymentProfile)): ?>
-								<br />
-								<dt>Billing:</dt>
+								<dt style="margin-top:2em;">Billing:</dt>
 								<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
 								<dt>Amount:</dt>
 								<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>

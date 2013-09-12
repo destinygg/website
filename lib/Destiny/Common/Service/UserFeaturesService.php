@@ -4,7 +4,6 @@ namespace Destiny\Common\Service;
 use Destiny\Common\Exception;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
-use Destiny\Common\Utils\Date;
 
 class UserFeaturesService extends Service {
 	

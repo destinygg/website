@@ -1,9 +1,6 @@
 <?
 namespace Destiny;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Utils\Date;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
@@ -22,7 +19,7 @@ use Destiny\Common\Config;
 	<?include'./tpl/seg/top.php'?>
 	
 	<section class="container">
-		<iframe style="width: 100%; height: 540px; float:left; background: #111;" frameborder="0" scrolling="no" src="/embed/chat?theme=dark"></iframe>
+		<iframe style="width: 100%; height: 540px; float:left; background: #111;border:none;" seamless="seamless" src="/embed/chat?theme=dark"></iframe>
 	</section>
 	
 	<?include'./tpl/seg/panel.videos.php'?>

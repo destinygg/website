@@ -3,18 +3,13 @@ namespace Destiny\Action\Web\Chat;
 
 use Destiny\Common\UserFeature;
 use Destiny\Common\HttpEntity;
-use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
-use Destiny\Common\Application;
-use Destiny\Common\Session;
 use Destiny\Common\MimeType;
 use Destiny\Common\Config;
 use Destiny\Common\Service\ChatlogService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
 
 /**
  * @Action

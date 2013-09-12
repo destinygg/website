@@ -1,9 +1,7 @@
 <?
 namespace Destiny;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>

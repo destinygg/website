@@ -1,6 +1,5 @@
 <? 
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Session; 
 use Destiny\Common\Config;
 ?>
 <?if((bool) Config::$a['blocks']['twitch']):?>
@@ -28,12 +27,12 @@ use Destiny\Common\Config;
 		<div id="twitch-elements" class="clearfix">
 			<div id="twitch-player" class="twitch-element-wrap pull-left">
 				<?if((bool) Config::$a['blocks']['stream']):?>
-				<iframe class="twitch-element" id="live_embed_player_flash" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" frameborder="0" scrolling="no"></iframe>
+				<iframe class="twitch-element" id="live_embed_player_flash" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none;" seamless="seamless"></iframe>
 				<?endif;?>
 			</div>
 			<div id="twitch-chat" class="twitch-element-wrap pull-left">
 				<?if((bool) Config::$a['blocks']['chat']):?>
-				<iframe class="twitch-element" frameborder="0" scrolling="no" id="chat_embed" src="/embed/chat"></iframe>
+				<iframe class="twitch-element" style="border:none;" seamless="seamless" id="chat_embed" src="/embed/chat"></iframe>
 				<?endif;?>
 			</div>
 		</div>

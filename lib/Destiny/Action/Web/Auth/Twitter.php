@@ -3,21 +3,12 @@ namespace Destiny\Action\Web\Auth;
 
 use Destiny\Common\ViewModel;
 use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\Application;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\Utils\Http;
-use Destiny\Common\MimeType;
-use Destiny\Common\Logger;
 use Destiny\Common\Service\UserService;
-use Destiny\Common\Service\Fantasy\TeamService;
-use Destiny\Common\Utils\String\Params;
 use Destiny\Common\Exception;
-use Destiny\Common\OAuthClient;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
 
 /**

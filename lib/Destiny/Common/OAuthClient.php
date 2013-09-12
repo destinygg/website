@@ -2,7 +2,6 @@
 namespace Destiny\Common;
 
 use Destiny\Common\Utils\String\Params;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
 
 /**

@@ -22,7 +22,7 @@ use Destiny\Common\Application;
 					<?php endif; ?>
 					<?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li href="/profile" class="subscribed"><a title="You have an active subscription!">Subscribed</a></li>
+					<li class="subscribed"><a title="You have an active subscription!">Subscribed</a></li>
 					<?php endif; ?>
 				</ul>
 				<ul class="nav pull-right">

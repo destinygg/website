@@ -6,12 +6,10 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\MimeType;
 use Destiny\Common\Session;
-use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 
 /**

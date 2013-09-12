@@ -9,3 +9,4 @@ config/config.local.php
 /config/sdk_config.ini
 
 /composer.lock
+/deployment.properties

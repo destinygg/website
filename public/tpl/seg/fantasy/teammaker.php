@@ -1,7 +1,5 @@
 <?
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Utils\Lol;
-use Destiny\Common\Application;
 use Destiny\Common\Config;
 $championNames = array ();
 if (! empty ( $model->champions )) {

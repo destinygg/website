@@ -4,8 +4,6 @@ namespace Destiny\Common\Service\Fantasy;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
-use Destiny\Common\Utils\Cache;
-use Destiny\Common\Service\Fantasy\GameService;
 
 class LeaderboardService extends Service {
 	protected static $instance = null;

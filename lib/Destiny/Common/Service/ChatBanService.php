@@ -1,10 +1,8 @@
 <?php
 namespace Destiny\Common\Service;
 
-use Destiny\Common\UserFeature;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
-use \PDO;
 
 class ChatBanService extends Service {
 	

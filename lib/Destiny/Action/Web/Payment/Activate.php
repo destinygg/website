@@ -11,21 +11,15 @@ use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
 use PayPal\CoreComponentTypes\BasicAmountType;
 use PayPal\PayPalAPI\SetExpressCheckoutReq;
 use PayPal\PayPalAPI\SetExpressCheckoutRequestType;
 use PayPal\EBLBaseComponents\BillingAgreementDetailsType;
-use PayPal\EBLBaseComponents\PaymentDetailsItemType;
 use PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType;
-use PayPal\EBLBaseComponents\PaymentRequestInfoType;
-use PayPal\EBLBaseComponents\AddressType;
-use PayPal\EBLBaseComponents\ActivationDetailsType;
 use PayPal\EBLBaseComponents\BillingPeriodDetailsType;
 use PayPal\EBLBaseComponents\CreateRecurringPaymentsProfileRequestDetailsType;
-use PayPal\EBLBaseComponents\CreditCardDetailsType;
 use PayPal\EBLBaseComponents\RecurringPaymentsProfileDetailsType;
 use PayPal\EBLBaseComponents\ScheduleDetailsType;
 use PayPal\PayPalAPI\CreateRecurringPaymentsProfileReq;
@@ -33,10 +27,7 @@ use PayPal\PayPalAPI\CreateRecurringPaymentsProfileRequestType;
 use PayPal\PayPalAPI\GetExpressCheckoutDetailsReq;
 use PayPal\PayPalAPI\GetExpressCheckoutDetailsRequestType;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
-use PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType;
 use PayPal\EBLBaseComponents\PaymentDetailsType;
-use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
-use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 
 /**
  * @Action

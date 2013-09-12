@@ -1,10 +1,6 @@
 <?php
-use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Lol;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Utils\Country;
 use Destiny\Common\Config;
-use Destiny\Common\UserRole;
 ?>
 <!DOCTYPE html>
 <html>
@@ -39,12 +35,15 @@ use Destiny\Common\UserRole;
 			<h3>Ban / Mute</h3>
 			<div class="content content-dark clearfix">
 				<div class="clearfix">
+					<?php 
+					if(!empty($model->ban['id'])):
+						$href='/admin/user/'. Tpl::out($model->user['userId']) .'/ban/'. Tpl::out($model->ban['id']) .'/update';
+					else:
+						$href='/admin/user/'. Tpl::out($model->user['userId']) .'/ban';
+					endif; 
+					?>
 				
-					<?php if(!empty($model->ban['id'])): ?>
-					<form action="/admin/user/<?=Tpl::out($model->user['userId'])?>/ban/<?=Tpl::out($model->ban['id'])?>/update" method="post">
-					<?php else: ?>
-					<form action="/admin/user/<?=Tpl::out($model->user['userId'])?>/ban" method="post">
-					<?php endif; ?>
+					<form action="<?=$href?>" method="post">
 						
 						<div class="control-group">
 							<label class="control-label" for="inputUsername">Banned user</label>

@@ -3,24 +3,18 @@ use Destiny\Common\Service\Fantasy\TeamService;
 
 use Destiny\Common\Application;
 use Destiny\Common\UserRole;
-use Destiny\Common\AppEvent;
-use Destiny\Common\Service\UserService;
 use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\Exception;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\SessionCookie;
 use Destiny\Common\SessionInstance;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\Service\ChatIntegrationService;
 use Destiny\Common\Router;
 use Destiny\Common\Annotation\Handler\RouteAnnotationHandler;
 use Destiny\Common\Utils\DirectoryClassIterator;
 use Destiny\Common\Service\RememberMeService;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 
 ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
 

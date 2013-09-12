@@ -2,9 +2,7 @@
 namespace Destiny\Action\Cron;
 
 use Destiny\Common\Config;
-use Destiny\Common\Service\CommonApiService;
 use Destiny\Common\Application;
-use Destiny\Common\Utils\Tpl;
 use Psr\Log\LoggerInterface;
 
 class TwitterFeed {

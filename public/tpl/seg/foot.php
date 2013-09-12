@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 		<p class="pull-left">
 			<span><?=Config::$a['meta']['shortName']?> &copy; <?=date('Y')?> </span>
 			<a><i title="There are no limits here" class="icon-bobross"></i></a>
-			<span>- <a href="/help/agreement">User Agreement</i></a></span>
+			<span>- <a href="/help/agreement">User Agreement</a></span>
 			<br>www.reddit.com<a title="www.reddit.com" href="http://www.reddit.com/r/Destiny">/r/Destiny</a>
 		</p>
 		<p class="pull-right" style="text-align: right;">

@@ -6,7 +6,6 @@ use Destiny\Common\Service;
 use Destiny\Common\Config;
 use Destiny\Common\Service\Fantasy\GameService;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\Cache;
 use Destiny\Common\Exception;
 
 class GameAggregationService extends Service {

@@ -8,7 +8,6 @@ use Destiny\Common\CurlBrowser;
 use Destiny\Common\Utils\String;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Lol;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Exception;
 
 class LeagueApiService extends Service {

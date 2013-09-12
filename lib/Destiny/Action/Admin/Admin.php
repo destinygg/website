@@ -3,7 +3,6 @@ namespace Destiny\Action\Admin;
 
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
-use Destiny\Common\Service\Fantasy\GameService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;

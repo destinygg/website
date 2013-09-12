@@ -1,15 +1,10 @@
 <?php
 namespace Destiny\Action\Web;
 
-use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
-use Destiny\Common\Session;
-use Destiny\Common\Service\Fantasy\TeamService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
 
 /**
  * @Action

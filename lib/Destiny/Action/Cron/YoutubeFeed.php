@@ -2,7 +2,6 @@
 namespace Destiny\Action\Cron;
 
 use Destiny\Common\Application;
-use Destiny\Common\Config;
 use Destiny\Common\Service\CommonApiService;
 use Psr\Log\LoggerInterface;
 
