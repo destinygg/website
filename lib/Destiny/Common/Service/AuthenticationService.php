@@ -1,8 +1,10 @@
 <?php
 namespace Destiny\Common\Service;
 
+use Destiny\Common\Utils\Options;
 use Destiny\Common\Config;
 use Destiny\Common\Application;
+use Destiny\Common\Security\AuthenticationCredentials;
 use Destiny\Common\Service\RememberMeService;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Date;
@@ -174,16 +176,17 @@ class AuthenticationService extends Service {
 	}
 
 	/**
-	 * Validate that a set of auth credentials has what it needs
+	 * Check if a auth profile exists for a user
 	 *
-	 * @param array $authCreds
-	 * @throws Exception
+	 * @param AuthenticationCredentials $authCreds
+	 * @return boolean
 	 */
-	private function validateAuthCredentials(array $authCreds) {
-		if (! isset ( $authCreds ['authId'] ) || ! isset ( $authCreds ['username'] ) || ! isset ( $authCreds ['email'] ) || ! isset ( $authCreds ['authCode'] ) || ! isset ( $authCreds ['authProvider'] )) {
-			Application::instance ()->getLogger ()->error ( sprintf ( 'Error validating auth credentials %s', var_export ( $authCreds, true ) ) );
-			throw new Exception ( 'Invalid auth credentials' );
+	public function getUserAuthProfileExists(AuthenticationCredentials $authCreds) {
+		$user = UserService::instance ()->getUserByAuthId ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
+		if (empty ( $user )) {
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -192,44 +195,41 @@ class AuthenticationService extends Service {
 	 * @param array $authCreds
 	 * @throws Exception
 	 */
-	public function handleAuthCredentials(array $authCreds) {
+	public function handleAuthCredentials(AuthenticationCredentials $authCreds) {
 		$userService = UserService::instance ();
-		$this->validateAuthCredentials ( $authCreds );
+		$user = $userService->getUserByAuthId ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
 		
-		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
-		
-		// If the user is empty stop and go to confirm / setup the user details
-		if (empty ( $profileUser )) {
-			Session::set ( 'authSession', $authCreds );
-			return 'redirect: /register?code=' . urlencode ( $authCreds ['authCode'] );
+		// Make sure there is a user
+		if (empty ( $user )) {
+			throw new Exception ( 'Invalid auth user' );
 		}
 		
 		// The user has registed before...
 		// Update the auth profile for this provider
-		$authProfile = $userService->getUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
+		$authProfile = $userService->getUserAuthProfile ( $user ['userId'], $authCreds->getAuthProvider () );
 		if (! empty ( $authProfile )) {
-			$userService->updateUserAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'], array (
-				'authCode' => $authCreds ['authCode'],
-				'authDetail' => $authCreds ['authDetail'] 
+			$userService->updateUserAuthProfile ( $user ['userId'], $authCreds->getAuthProvider (), array (
+				'authCode' => $authCreds->getAuthCode (),
+				'authDetail' => $authCreds->getAuthDetail () 
 			) );
 		}
 		
 		// Check the user status
-		if (strcasecmp ( $profileUser ['userStatus'], 'Active' ) !== 0) {
-			throw new Exception ( sprintf ( 'User status not active. Status: %s', $profileUser ['userStatus'] ) );
+		if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
+			throw new Exception ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
 		}
 		
 		// Renew the session upon successful login, makes it slightly harder to hijack
 		$session = Session::instance ();
 		$session->renew ( true );
 		
-		$credentials = $this->getUserCredentials ( $profileUser, $authCreds ['authProvider'] );
+		$credentials = $this->getUserCredentials ( $user, $authCreds->getAuthProvider () );
 		Session::updateCredentials ( $credentials );
 		ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 		
 		// Remember me (this gets and then unsets the var)
 		if (Session::set ( 'rememberme' )) {
-			$this->setRememberMe ( $profileUser );
+			$this->setRememberMe ( $user );
 		}
 		
 		Session::set ( 'authSession' );
@@ -238,43 +238,36 @@ class AuthenticationService extends Service {
 	/**
 	 * Handles the authentication and then merging of accounts
 	 *
-	 * @param array $authCreds
+	 * @param AuthenticationCredentials $authCreds
 	 * @throws Exception
 	 */
-	public function handleAuthAndMerge(array $authCreds) {
-		Session::set ( 'accountMerge' );
+	public function handleAuthAndMerge(AuthenticationCredentials $authCreds) {
 		$userService = UserService::instance ();
-		$this->validateAuthCredentials ( $authCreds );
-		$profileUser = $userService->getUserByAuthId ( $authCreds ['authId'], $authCreds ['authProvider'] );
-		
-		if (! Session::hasRole ( UserRole::USER )) {
-			throw new Exception ( 'Authentication required' );
-		}
-		
+		$user = $userService->getUserByAuthId ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
 		$sessAuth = Session::getCredentials ()->getData ();
 		// We need to merge the accounts if one exists
-		if (! empty ( $profileUser )) {
+		if (! empty ( $user )) {
 			// If the profile userId is the same as the current one, the profiles are connceted, they shouldnt be here
-			if ($profileUser ['userId'] == $sessAuth ['userId']) {
+			if ($user ['userId'] == $sessAuth ['userId']) {
 				throw new Exception ( 'These account are already connected' );
 			}
 			// If the profile user is older than the current user, prompt the user to rather login using the other profile
-			if (intval ( $profileUser ['userId'] ) < $sessAuth ['userId']) {
-				throw new Exception ( sprintf ( 'Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds ['authProvider'] ) );
+			if (intval ( $user ['userId'] ) < $sessAuth ['userId']) {
+				throw new Exception ( sprintf ( 'Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds->getAuthProvider () ) );
 			}
 			// So we have a profile for a different user to the one logged in, we delete that user, and add a profile for the current user
-			$userService->removeAuthProfile ( $profileUser ['userId'], $authCreds ['authProvider'] );
+			$userService->removeAuthProfile ( $user ['userId'], $authCreds->getAuthProvider () );
 			// Set the user profile to Merged
-			$userService->updateUser ( $profileUser ['userId'], array (
+			$userService->updateUser ( $user ['userId'], array (
 				'userStatus' => 'Merged' 
 			) );
 		}
 		$userService->addUserAuthProfile ( array (
 			'userId' => $sessAuth ['userId'],
-			'authProvider' => $authCreds ['authProvider'],
-			'authId' => $authCreds ['authId'],
-			'authCode' => $authCreds ['authCode'],
-			'authDetail' => $authCreds ['authDetail'] 
+			'authProvider' => $authCreds->getAuthProvider (),
+			'authId' => $authCreds->getAuthId (),
+			'authCode' => $authCreds->getAuthCode (),
+			'authDetail' => $authCreds->getAuthDetail () 
 		) );
 	}
 
@@ -350,7 +343,7 @@ class AuthenticationService extends Service {
 	 * @param DateTime $expireDate
 	 * @param int $expire
 	 */
-	private function setRememberMeCookie($token,\DateTime $createdDate,\DateTime $expireDate) {
+	private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
 		$value = json_encode ( array (
 			'expire' => $expireDate->getTimestamp (),
 			'created' => $createdDate->getTimestamp (),

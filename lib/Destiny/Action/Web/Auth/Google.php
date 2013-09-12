@@ -6,6 +6,8 @@ use Destiny\Common\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\OAuthClient;
+use Destiny\Common\Security\AuthenticationRedirectionFilter;
+use Destiny\Common\Security\AuthenticationCredentials;
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Annotation\Action;
@@ -44,13 +46,8 @@ class Google {
 			$accessToken = $authClient->fetchAccessToken ( $params ['code'], 'https://accounts.google.com/o/oauth2/token', sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ) );
 			$data = $authClient->fetchUserInfo ( $accessToken, 'https://www.googleapis.com/oauth2/v2/userinfo' );
 			$authCreds = $this->getAuthCredentials ( $params ['code'], $data );
-			if (Session::get ( 'accountMerge' ) === '1') {
-				$authService->handleAuthAndMerge ( $authCreds );
-				return 'redirect: /profile/authentication';
-			} else {
-				$authService->handleAuthCredentials ( $authCreds );
-				return 'redirect: /profile';
-			}
+			$authCredHandler = new AuthenticationRedirectionFilter ();
+			return $authCredHandler->execute ( $authCreds );
 		} catch ( Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
@@ -63,7 +60,7 @@ class Google {
 	 *
 	 * @param string $code
 	 * @param array $data
-	 * @return array
+	 * @return AuthenticationCredentials
 	 */
 	private function getAuthCredentials($code, array $data) {
 		if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
@@ -76,7 +73,7 @@ class Google {
 		$arr ['authDetail'] = $data ['email'];
 		$arr ['username'] = (isset ( $data ['hd'] )) ? $data ['hd'] : '';
 		$arr ['email'] = $data ['email'];
-		return $arr;
+		return new AuthenticationCredentials ( $arr );
 	}
 
 }

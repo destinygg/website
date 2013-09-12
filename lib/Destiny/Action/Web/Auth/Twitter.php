@@ -2,6 +2,8 @@
 namespace Destiny\Action\Web\Auth;
 
 use Destiny\Common\ViewModel;
+use Destiny\Common\Security\AuthenticationRedirectionFilter;
+use Destiny\Common\Security\AuthenticationCredentials;
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
@@ -43,7 +45,6 @@ class Twitter {
 			if ($params ['oauth_token'] !== $oauth ['oauth_token']) {
 				throw new Exception ( 'Invalid login session' );
 			}
-			
 			$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
 			$tmhOAuth = new \tmhOAuth ( array (
 				'consumer_key' => $twitterOAuthConf ['clientId'],
@@ -66,13 +67,8 @@ class Twitter {
 			}
 			$data = $tmhOAuth->extract_params ( $tmhOAuth->response ['response'] );
 			$authCreds = $this->getAuthCredentials ( $oauth ['oauth_token'], $data );
-			if (Session::get ( 'accountMerge' ) === '1') {
-				$authService->handleAuthAndMerge ( $authCreds );
-				return 'redirect: /profile/authentication';
-			} else {
-				$authService->handleAuthCredentials ( $authCreds );
-				return 'redirect: /profile';
-			}
+			$authCredHandler = new AuthenticationRedirectionFilter ();
+			return $authCredHandler->execute ( $authCreds );
 		} catch ( Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
@@ -85,7 +81,7 @@ class Twitter {
 	 *
 	 * @param string $code
 	 * @param array $data
-	 * @return array
+	 * @return AuthenticationCredentials
 	 */
 	private function getAuthCredentials($code, array $data) {
 		if (empty ( $data ) || ! isset ( $data ['user_id'] ) || empty ( $data ['user_id'] )) {
@@ -98,7 +94,7 @@ class Twitter {
 		$arr ['authDetail'] = $data ['screen_name'];
 		$arr ['username'] = $data ['screen_name'];
 		$arr ['email'] = '';
-		return $arr;
+		return new AuthenticationCredentials ( $arr );
 	}
 
 }

@@ -5,6 +5,8 @@ use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
+use Destiny\Common\Security\AuthenticationCredentials;
+use Destiny\Common\Security\AuthenticationRedirectionFilter;
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Service\UserService;
 use Destiny\Common\Annotation\Action;
@@ -22,18 +24,22 @@ class Register {
 	 *
 	 * @param array $params
 	 * @throws Exception
-	 * @return array
+	 * @return AuthenticationCredentials
 	 */
-	private function getAuthSession(array $params) {
+	private function getSessionAuthenticationCredentials(array $params) {
 		if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
 			throw new Exception ( 'Invalid code' );
 		}
 		$authSession = Session::get ( 'authSession' );
-		if (empty ( $authSession ) || empty ( $authSession ['authCode'] ) || ($params ['code'] != $authSession ['authCode'])) {
-			throw new Exception ( 'Invalid authentication code' );
-		}
-		if (empty ( $authSession ['authProvider'] ) || empty ( $authSession ['authCode'] ) || empty ( $authSession ['authId'] )) {
-			throw new Exception ( 'Invalid authentication information' );
+		if ($authSession instanceof AuthenticationCredentials) {
+			if (empty ( $authSession ) || ($authSession->getAuthCode () != $params ['code'])) {
+				throw new Exception ( 'Invalid authentication code' );
+			}
+			if (! $authSession->isValid ()) {
+				throw new Exception ( 'Invalid authentication information' );
+			}
+		} else {
+			throw new Exception ( 'Invalid authentication session' );
 		}
 		return $authSession;
 	}
@@ -48,17 +54,17 @@ class Register {
 	 * @throws Exception
 	 */
 	public function executeGet(array $params, ViewModel $model) {
-		$authSession = $this->getAuthSession ( $params );
-		$model->title = 'New user';
-		$model->username = $authSession ['username'];
-		
-		if (! empty ( $authSession ['username'] ) && empty ( $authSession ['email'] )) {
-			$authSession ['email'] = $authSession ['username'] . '@destiny.gg';
+		$authCreds = $this->getSessionAuthenticationCredentials ( $params );
+		$email = $authCreds->getEmail ();
+		$username = $authCreds->getUsername ();
+		if (! empty ( $username ) && empty ( $email )) {
+			$email = $username . '@destiny.gg';
 		}
-		
-		$model->email = $authSession ['email'];
-		$model->authProvider = $authSession ['authProvider'];
-		$model->code = $authSession ['authCode'];
+		$model->title = 'New user';
+		$model->username = $username;
+		$model->email = $email;
+		$model->authProvider = $authCreds->getAuthProvider ();
+		$model->code = $authCreds->getAuthCode ();
 		$model->rememberme = Session::get ( 'rememberme' );
 		return 'register';
 	}
@@ -75,12 +81,15 @@ class Register {
 	public function executePost(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
 		$authService = AuthenticationService::instance ();
-		$authSession = $this->getAuthSession ( $params );
+		$authCreds = $this->getSessionAuthenticationCredentials ( $params );
 		
 		$username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : '';
 		$email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : '';
 		$country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : '';
 		$rememberme = (isset ( $params ['rememberme'] ) && ! empty ( $params ['rememberme'] )) ? true : false;
+		
+		$authCreds->setUsername ( $username );
+		$authCreds->setEmail ( $email );
 		
 		try {
 			AuthenticationService::instance ()->validateUsername ( $username );
@@ -100,24 +109,19 @@ class Register {
 			$user ['userId'] = $userService->addUser ( $user );
 			$userService->addUserAuthProfile ( array (
 				'userId' => $user ['userId'],
-				'authProvider' => $authSession ['authProvider'],
-				'authId' => $authSession ['authId'],
-				'authCode' => $authSession ['authCode'],
-				'authDetail' => $authSession ['authDetail'] 
+				'authProvider' => $authCreds->getAuthProvider (),
+				'authId' => $authCreds->getAuthId (),
+				'authCode' => $authCreds->getAuthCode (),
+				'authDetail' => $authCreds->getAuthDetail () 
 			) );
-			if (Session::get ( 'accountMerge' ) === '1') {
-				$authService->handleAuthAndMerge ( $authSession );
-				return 'redirect: /profile/authentication';
-			} else {
-				$authService->handleAuthCredentials ( $authSession );
-				return 'redirect: /profile';
-			}
+			$authCredHandler = new AuthenticationRedirectionFilter ();
+			return $authCredHandler->execute ( $authCreds );
 		} catch ( Exception $e ) {
 			$model->title = 'Error';
 			$model->username = $username;
 			$model->email = $email;
-			$model->authProvider = $authSession ['authProvider'];
-			$model->code = $authSession ['authCode'];
+			$model->authProvider = $authCreds->getAuthProvider ();
+			$model->code = $authCreds->getAuthCode ();
 			$model->error = $e;
 			return 'register';
 		}
