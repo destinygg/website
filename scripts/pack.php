@@ -48,9 +48,7 @@ FileUtils::compress ( '/chat/js/engine.min.js' );
 FileUtils::delete ( '/web/css/style.min.css' );
 FileUtils::concat ( '/web/css/style.min.css', array (
 	'/web/css/style.css',
-	'/web/css/flags.css',
-	'/web/css/fantasy.css',
-	'/web/css/teammaker.css' 
+	'/web/css/flags.css'
 ) );
 FileUtils::compress ( '/web/css/style.min.css' );
 
@@ -60,11 +58,7 @@ FileUtils::concat ( '/web/js/destiny.min.js', array (
 	'/web/js/utils.js',
 	'/web/js/destiny.js',
 	'/web/js/feed.js',
-	'/web/js/profile.js',
 	'/web/js/twitch.js',
-	'/web/js/teambar.js',
-	'/web/js/teamcreator.js',
-	'/web/js/challenger.js',
 	'/web/js/ui.js' 
 ) );
 FileUtils::compress ( '/web/js/destiny.min.js' );

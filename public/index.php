@@ -1,6 +1,4 @@
 <?php
-use Destiny\Common\Service\Fantasy\TeamService;
-
 use Destiny\Common\Application;
 use Destiny\Common\UserRole;
 use Destiny\Common\Service\AuthenticationService;
@@ -40,20 +38,6 @@ RememberMeService::instance ()->init ();
 
 // Annotation reader and routing
 RouteAnnotationHandler::loadClasses ( new DirectoryClassIterator ( _LIBDIR . '/', 'Destiny/Action/' ), $app->getAnnotationReader () );
-
-// @TODO find a better place for this
-// If this user has no team, create a new one
-$teamId = Session::get ( 'teamId' );
-if (Session::hasRole ( UserRole::USER ) && empty ( $teamId )) {
-	$teamService = TeamService::instance ();
-	$userId = Session::getCredentials ()->getUserId ();
-	$team = $teamService->getTeamByUserId ( $userId );
-	if (empty ( $team )) {
-		$team = array ();
-		$team ['teamId'] = $teamService->addTeam ( $userId, Config::$a ['fantasy'] ['team'] ['startCredit'], Config::$a ['fantasy'] ['team'] ['startTransfers'] );
-	}
-	Session::set ( 'teamId', $team ['teamId'] );
-}
 
 // Attempts to find a route and execute it
 $app->executeRequest ( (isset ( $_SERVER ['REQUEST_URI'] )) ? $_SERVER ['REQUEST_URI'] : '', $_SERVER ['REQUEST_METHOD'] );

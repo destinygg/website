@@ -12,10 +12,6 @@ $.fn.loadImages = function(options){
 	});
 };
 
-function getChampIcon(name){
-	return destiny.cdn + '/web/img/lol/champions/'+name.replace(' ', '-').replace('\'','').replace('.','').toLowerCase()+'.png';
-};
-
 $.fn.sortElements = (function(){
 	var sort = [].sort;
 	return function(comparator, getSortable) {

@@ -7,7 +7,4 @@ use Destiny\Common\Config;
 <link href="<?=Config::cdnv()?>/web/css/style.min.css" rel="stylesheet" media="screen">
 <?php else: ?>
 <link href="<?=Config::cdnv()?>/web/css/style.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdnv()?>/web/css/flags.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdnv()?>/web/css/fantasy.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdnv()?>/web/css/teammaker.css" rel="stylesheet" media="screen">
 <?php endif; ?>

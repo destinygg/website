@@ -11,11 +11,7 @@ use Destiny\Common\Config;
 <script src="<?=Config::cdnv()?>/web/js/utils.js"></script>
 <script src="<?=Config::cdnv()?>/web/js/destiny.js"></script>
 <script src="<?=Config::cdnv()?>/web/js/feed.js"></script>
-<script src="<?=Config::cdnv()?>/web/js/profile.js"></script>
 <script src="<?=Config::cdnv()?>/web/js/twitch.js"></script>
-<script src="<?=Config::cdnv()?>/web/js/teambar.js"></script>
-<script src="<?=Config::cdnv()?>/web/js/teamcreator.js"></script>
-<script src="<?=Config::cdnv()?>/web/js/challenger.js"></script>
 <script src="<?=Config::cdnv()?>/web/js/ui.js"></script>
 <?php endif; ?>
 <script>destiny.init({cdn:'<?=Config::cdn()?>'});</script>

@@ -34,7 +34,6 @@ use Destiny\Common\Application;
 					<?php endif; ?>
 				</ul>
 				<ul class="nav pull-right">
-					<li><a href="/league" rel="league">Fantasy League</a></li>
 					<?if(Session::hasRole(UserRole::USER)):?>
 					<li><a href="/profile" rel="profile">Profile</a></li>
 					<?endif;?>

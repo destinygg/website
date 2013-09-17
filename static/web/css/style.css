@@ -932,3 +932,64 @@ height:23px;
 #appEvents .alert {
 margin:15px 0 0 0;
 }
+
+
+table.grid {
+width: 100%;
+border-collapse: collapse;
+padding: 0;
+}
+table.grid td {
+white-space: nowrap;
+padding-left: 20px;
+}
+table.grid thead td {
+color: #444;
+line-height: 35px;
+font-size: 18px;
+font-weight: normal;
+text-shadow: none;
+}
+table.grid tbody td {
+line-height: 30px;
+color: #999;
+text-shadow: 1px 1px 0 black;
+}
+table.grid thead td:first-child {
+border-top-left-radius: 6px;
+}
+table.grid thead td:last-child {
+border-top-right-radius: 6px;
+}
+table.grid thead tr td {
+background: rgba(255, 255, 255, 0.025);
+}
+table.grid thead tr td:first-child,table.grid tbody tr td:first-child {
+padding-left: 20px;
+}
+table.grid thead tr td:last-child,table.grid tbody tr td:last-child {
+padding-right: 20px;
+}
+table.grid tbody tr:nth-child(odd) td {
+background: rgba(255, 255, 255, 0.04);
+}
+table.grid tbody tr:nth-child(even) td {
+background: rgba(255, 255, 255, 0.025);
+}
+table.grid tbody tr.on>td {
+background: rgba(255, 255, 255, 0.04);
+}
+table.grid tbody tr.off>td {
+background: rgba(255, 255, 255, 0.025);
+}
+table.grid .rank {
+margin-right: 5px;
+}
+
+.content .stream:first-child table.grid thead td:last-child {
+border-top-right-radius: 0;
+}
+
+.content .stream:last-child table.grid thead td:first-child {
+border-top-left-radius: 0;
+}

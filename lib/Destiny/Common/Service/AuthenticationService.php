@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Common\Service;
 
-use Destiny\Common\Utils\Options;
 use Destiny\Common\Config;
 use Destiny\Common\Application;
 use Destiny\Common\Security\AuthenticationCredentials;

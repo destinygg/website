@@ -235,51 +235,6 @@ $(function(){
 			panel.find('[rel="tooltip"]').tooltip();
 		}
 	});
-
-	(function(){
-		
-		// Ingame
-		var currentIngameId = $('#activeGame').data('gameid');
-		new DestinyFeedConsumer({
-			url: destiny.baseUrl + 'fantasy/ingame.json',
-			polling: 30,
-			ifModified: true,
-			start: false,
-			ui: '#newInGameAlert',
-			data: {},
-			success: function(game, textStatus){
-				// this doesnt actually support modified yet
-				if(textStatus == 'notmodified') return;
-				if(game != null && game['gameId'] != null){
-					if(game['gameId'] != currentIngameId){
-						$('#newInGameAlert:hidden').fadeIn();
-						$('#activeGame:visible').fadeOut();
-					}else{
-						$('#newInGameAlert:visible').fadeOut();
-						$('#activeGame:hidden').fadeIn();
-					}
-				}else{
-					$('#activeGame:visible').fadeOut();
-				}
-			}
-		});
-		
-		// Check recent games
-		var lastChecked =  new Date(); // set on the initial page load
-		new DestinyFeedConsumer({
-			url: destiny.baseUrl + 'fantasy/recentgames.json',
-			polling: 30,
-			ifModified: true,
-			start: false,
-			ui: '#newGameAlert',
-			success: function(data, textStatus){
-				var aggregateDate = (data != null) ? new Date(data.date) : null;
-				if(textStatus != 'notmodified' && aggregateDate != null && aggregateDate > lastChecked){
-					$('#newGameAlert:hidden').fadeIn();
-				}
-			}
-		});
-	})();
 	
 	// Private ads / rotation
 	var pads = $('.private-ads .private-ad'), adRotateIndex = pads.length-1;

@@ -62,7 +62,7 @@ use Destiny\Common\Config;
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				<form id="profileSaveForm" action="/profile" method="post">
-					<input type="hidden" name="url" value="/league" />
+					<input type="hidden" name="url" value="/profile" />
 					
 					<?php if($model->user['nameChangedCount'] < Config::$a['profile']['nameChangeLimit']): ?>
 					<div class="control-group">
@@ -103,10 +103,6 @@ use Destiny\Common\Config;
 							<option value="<?=$country['alpha-2']?>"<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
 							<?endforeach;?>
 						</select>
-					</div>
-		
-					<div class="control-group">
-						<a href="#" rel="resetteam">Reset fantasy team</a>
 					</div>
 		
 					<div class="form-actions block-foot">

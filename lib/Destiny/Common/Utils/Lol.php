@@ -38,22 +38,6 @@ abstract class Lol {
 	const TEAMSIDE_PURPLE = 200;
 
 	/**
-	 * Team side name
-	 *
-	 * @param int $teamSideId
-	 * @return string $teamSideId
-	 */
-	public static function getTeamSideName($teamSideId) {
-		if ($teamSideId == self::TEAMSIDE_BLUE) {
-			return 'BLUE';
-		}
-		if ($teamSideId == self::TEAMSIDE_PURPLE) {
-			return 'PURPLE';
-		}
-		return $teamSideId;
-	}
-
-	/**
 	 * Rank to int
 	 *
 	 * @param string $rank
@@ -89,50 +73,6 @@ abstract class Lol {
 			'id' => $id,
 			'label' => Config::$a ['lol'] ['regions'] [$id] 
 		);
-	}
-
-	/**
-	 *
-	 * @param array $game
-	 * @param array $champ
-	 * @param array $scores
-	 * @return array
-	 */
-	public static function getGameChampionPoints(array $game, array $champ, array $scores) {
-		$points = 0;
-		foreach ( $scores as $score ) {
-			if (( int ) $game ['gameId'] == ( int ) $score ['gameId'] && ( int ) $score ['championId'] == ( int ) $champ ['championId']) {
-				$score = intval ( $score ['scoreValue'] );
-				$points = ($score > 0) ? '<span style="color: #1a6f00;">+' . $score . '</span>' : (($score < 0) ? '<span style="color: #8a1919;">' . $score . '</span>' : $score);
-			}
-		}
-		return $points;
-	}
-
-	/**
-	 *
-	 * @param string $name
-	 * @return string
-	 */
-	public static function getIcon($name) {
-		return Config::cdn () . '/web/img/lol/champions/' . strtolower ( preg_replace ( '/([^\d\w\-]+)/i', '', str_replace ( ' ', '-', $name ) ) ) . '.png';
-	}
-
-	/**
-	 * Find and return the champion pick
-	 * Because of the strange way lol servers give back the data
-	 *
-	 * @param array $game
-	 * @param array $summoner
-	 * @return array || NULL
-	 */
-	public static function getChampPick(array $game, array $summoner) {
-		foreach ( $game ['gameSummonerSelections'] as $selection ) {
-			if ($selection ['summonerId'] == $summoner ['summonerId']) {
-				return $selection;
-			}
-		}
-		return null;
 	}
 
 }

@@ -216,52 +216,6 @@ return array (
 			) 
 		) 
 	),
-	
-	'fantasy' => array (
-		'season' 					=> 4,
-		
-		// True: earn points for games where the champions where created before the game.
-		// False: disregard time of champion selection
-		// Should always be on in live environment
-		'timeAwareAggregation' 		=> true,
-		
-		// After each game adjust champion multipliers
-		'updateChampMultiplier'		=> false,
-		
-		'credit' => array (
-			'scoreToCreditEarnRate' => 1 
-		),
-		
-		'maxFreeChamps' 			=> 5,
-		
-		'team' => array (
-			'maxChampions'			=> 5,
-			'minChampions'			=> 5,
-			'maxAvailableTransfers' => 2,
-			'startCredit'			=> 30,
-			'startTransfers'		=> 3,
-			'freeMultiplierPenalty' => 0.5,
-			'maxPotentialChamps'	=> 5,
-			'teammateBonusModifier' => 1.2 
-		),
-		'scores' => array (
-			'PARTICIPATE'			=> 1,
-			'WIN'					=> 5,
-			'LOSE'					=> 0 
-		),
-		'milestones' => array (
-			array (
-				'type'				=> 'GAMES',
-				'startValue'		=> 0,
-				'goalValue'			=> 3,
-				'reoccuring'		=> true,
-				'reward' => array (
-					'type'			=> 'TRANSFER',
-					'value'			=> 1 
-				) 
-			) 
-		) 
-	),
 	'commerce' => array (
 		'currencies' => array (
 			'USD' => array (
@@ -319,46 +273,11 @@ return array (
 		'period' => 'minute',
 		'schedule' => array (
 			array (
-				'action' => 'Recentgames',
-				'lastExecuted' => null,
-				'frequency' => 7,
-				'period' => 'minute',
-				'executeOnNextRun'=> false
-			),
-			array (
-				'action' => 'Ingame',
-				'lastExecuted' => null,
-				'frequency' => 3,
-				'period' => 'minute',
-				'executeOnNextRun' => false
-			),
-			array (
-				'action' => 'Aggregate',
-				'lastExecuted' => null,
-				'frequency' => 5,
-				'period' => 'minute',
-				'executeOnNextRun' => false
-			),
-			array (
-				'action' => 'Freechamps',
-				'lastExecuted' => null,
-				'frequency' => 3,
-				'period' => 'day',
-				'executeOnNextRun' => false
-			),
-			array (
 				'action' => 'SubscriptionExpire',
 				'lastExecuted' => null,
 				'frequency' => 30,
 				'period' => 'minute',
 				'executeOnNextRun' => false
-			),
-			array (
-				'action' => 'LeagueStatus',
-				'lastExecuted' => null,
-				'frequency' => 5,
-				'period' => 'minute',
-				'executeOnNextRun' => true
 			),
 			array (
 				'action' => 'LastFmFeed',
@@ -413,20 +332,6 @@ return array (
 				'action' => 'StreamInfo',
 				'lastExecuted' => null,
 				'frequency' => 1,
-				'period' => 'minute',
-				'executeOnNextRun' => true
-			),
-			array (
-				'action' => 'Champions',
-				'lastExecuted' => null,
-				'frequency' => 30,
-				'period' => 'minute',
-				'executeOnNextRun' => true
-			),
-			array (
-				'action' => 'Leaderboards',
-				'lastExecuted' => null,
-				'frequency' => 30,
 				'period' => 'minute',
 				'executeOnNextRun' => true
 			)

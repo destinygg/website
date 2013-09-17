@@ -2,7 +2,6 @@
 namespace Destiny\Action\Web\Auth;
 
 use Destiny\Common\ViewModel;
-use Destiny\Common\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\OAuthClient;
