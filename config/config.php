@@ -97,20 +97,25 @@ return array (
 		'name' 			=> 'sid',
 		'path' 			=> '/' 
 	),
-	'log' => array (
-		'path' 			=> _BASEDIR . '/log/'
-	),
-	'cache' => array (
-		'path'			=> _BASEDIR . '/tmp/'
+	'tpl' => array (
+		'path' 			=> _BASEDIR . '/app/Resources/views/'
 	),
 	'geodata' => array (
-		'json'			=> _BASEDIR . '/lib/geo-ISO_3166-1-2.json'
+		'json'			=> _BASEDIR . '/app/Resources/geo-ISO_3166-1-2.json'
+	),
+	'log' => array (
+		'path' 			=> _BASEDIR . '/app/log/'
+	),
+	'cache' => array (
+		'path'			=> _BASEDIR . '/app/tmp/'
 	),
 	'db' => array (
 		'host'			=> '',
 		'username'		=> '',
 		'database'		=> '',
-		'password'		=> '' 
+		'password'		=> '',
+		'charset'		=> 'UTF8',
+		'options'		=> array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8,time_zone = \'+0:00\'')
 	),
 	'meta' => array (
 		'shortName'			=> 'Destiny',

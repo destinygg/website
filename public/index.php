@@ -1,6 +1,5 @@
 <?php
 use Destiny\Common\Application;
-use Destiny\Common\UserRole;
 use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\SessionCookie;

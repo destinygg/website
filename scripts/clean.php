@@ -13,7 +13,7 @@ $log = new \Monolog\Logger ( 'DEBUG' );
 $log->pushHandler ( $stream );
 
 // Remove annotation cache
-$directory = realpath ( _BASEDIR . '/tmp/annotation' );
+$directory = realpath ( _BASEDIR . '/app/tmp/annotation' );
 $log->info ( sprintf ( 'Deleting dir contents [%s]', $directory ) );
 $objects = new RecursiveIteratorIterator ( new RecursiveDirectoryIterator ( $directory ), RecursiveIteratorIterator::LEAVES_ONLY );
 $count = 0;

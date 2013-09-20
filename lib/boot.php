@@ -42,11 +42,7 @@ $log->pushProcessor ( new WebProcessor () );
 $log->pushProcessor ( new MemoryPeakUsageProcessor () );
 $app->setLogger ( $log );
 
-$db = DriverManager::getConnection ( Config::$a ['db'], new Configuration () );
-$db->exec ( 'SET NAMES utf8' );
-$db->exec ( 'SET CHARACTER SET utf8' );
-$db->exec ( 'SET time_zone = \'+00:00\'' );
-$app->setConnection ( $db );
+$app->setConnection ( DriverManager::getConnection ( Config::$a ['db'], new Configuration () ) );
 
 if (class_exists ( 'Redis' )) {
 	$redis = new Redis ();

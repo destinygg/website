@@ -5,6 +5,10 @@ use Destiny\Common\Utils\Country;
 use Destiny\Common\Config;
 
 class Tpl {
+	
+	public static function file($filename){
+		return Config::$a['tpl']['path'] . $filename;
+	}
 
 	public static function jsout($var) {
 		return json_encode ( $var, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP );

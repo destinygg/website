@@ -5,6 +5,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
 use Doctrine\Common\Annotations\Reader;
 use Psr\Log\LoggerInterface;
+use Destiny\Common\Utils\Tpl;
 
 class Application extends Service {
 	
@@ -100,19 +101,20 @@ class Application extends Service {
 	public function executeRequest($uri, $method) {
 		$path = parse_url ( $uri, PHP_URL_PATH );
 		$route = $this->router->findRoute ( $path, $method );
+		
 		$model = new ViewModel ();
 		
 		// No route found
 		if (! $route) {
 			$response = new HttpEntity ( Http::STATUS_NOT_FOUND );
-			$response->setBody ( $this->template ( './tpl/errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
+			$response->setBody ( $this->template ( 'errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
 			$this->handleHttpEntityResponse ( $response );
 		}
 		
 		// Security checks
 		if (! $this->hasRouteSecurity ( $route, Session::getCredentials () )) {
 			$response = new HttpEntity ( Http::STATUS_UNAUTHORIZED );
-			$response->setBody ( $this->template ( './tpl/errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
+			$response->setBody ( $this->template ( 'errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
 			$this->handleHttpEntityResponse ( $response );
 		}
 		
@@ -154,10 +156,7 @@ class Application extends Service {
 			
 			// Template response
 			if (is_string ( $response )) {
-				$tpl = './tpl/' . $response . '.php';
-				if (! is_file ( $tpl )) {
-					throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $tpl, PATHINFO_FILENAME ) ) );
-				}
+				$tpl = $response . '.php';
 				$response = new HttpEntity ( Http::STATUS_OK );
 				$response->setBody ( $this->template ( $tpl, $model ) );
 			}
@@ -175,7 +174,7 @@ class Application extends Service {
 			$reponse = new HttpEntity ( Http::STATUS_ERROR );
 			$model->error = new Exception ( 'Maximum over-rustle has been achieved' );
 			$model->code = Http::STATUS_ERROR;
-			$reponse->setBody ( $this->template ( './tpl/errors/' . Http::STATUS_ERROR . '.php', $model ) );
+			$reponse->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
 		}
 		
 		// Handle the request response
@@ -232,14 +231,18 @@ class Application extends Service {
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Include a template and return a template file
 	 *
-	 * @param string $filename
+	 * @param string $filename        	
 	 * @return string
 	 */
-	public function template($filename, ViewModel $model) {
+	protected function template($filename, ViewModel $model) {
+		$filename = Tpl::file ( $filename );
+		if (! is_file ( $filename )) {
+			throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $filename, PATHINFO_FILENAME ) ) );
+		}
 		$this->logger->debug ( 'Template: ' . $filename );
 		ob_start ();
 		include $filename;
