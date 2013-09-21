@@ -2,12 +2,12 @@
 namespace Destiny\Action\Web\Profile;
 
 use Destiny\Common\Exception;
-use Destiny\Common\Service\ApiAuthenticationService;
 use Destiny\Common\Session;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
+use Destiny\Authentication\Service\ApiAuthenticationService;
 
 /**
  * @Action

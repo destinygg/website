@@ -1,9 +1,9 @@
 <?php
 namespace Destiny\Action\Web;
 
-use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
+use Destiny\Authentication\Service\AuthenticationService;
 
 /**
  * @Action

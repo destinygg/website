@@ -1,9 +1,6 @@
 <?php
 namespace Destiny\Action\Web;
 
-use Destiny\Common\Service\ChatIntegrationService;
-use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\Service\UserService;
 use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
@@ -13,6 +10,9 @@ use Destiny\Common\AppEvent;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Chat\Service\ChatIntegrationService;
+use Destiny\Authentication\Service\AuthenticationService;
+use Destiny\User\Service\UserService;
 
 /**
  * @Action

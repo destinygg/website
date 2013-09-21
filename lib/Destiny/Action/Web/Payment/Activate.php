@@ -1,10 +1,9 @@
 <?php
 namespace Destiny\Action\Web\Payment;
 
-use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
-use Destiny\Common\Service\OrdersService;
+use Destiny\Commerce\Service\OrdersService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Config;
@@ -13,6 +12,7 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
+use Destiny\Commerce\Service\SubscriptionsService;
 use PayPal\CoreComponentTypes\BasicAmountType;
 use PayPal\PayPalAPI\SetExpressCheckoutReq;
 use PayPal\PayPalAPI\SetExpressCheckoutRequestType;

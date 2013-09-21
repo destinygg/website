@@ -1,12 +1,8 @@
 <?php
 namespace Destiny\Action\Admin\User;
 
-use Destiny\Common\Service\ChatBanService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
-use Destiny\Common\Service\UserFeaturesService;
-use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\Service\UserService;
 use Destiny\Common\Exception;
 use Destiny\Common\Session;
 use Destiny\Common\Annotation\Action;
@@ -14,6 +10,10 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
+use Destiny\Chat\Service\ChatBanService;
+use Destiny\User\Service\UserFeaturesService;
+use Destiny\User\Service\UserService;
+use Destiny\Authentication\Service\AuthenticationService;
 
 /**
  * @Action

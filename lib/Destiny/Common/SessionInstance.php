@@ -1,8 +1,8 @@
 <?php
 namespace Destiny\Common;
 
-use Destiny\Common\Service\ChatIntegrationService;
 use Destiny\Common\Utils\Options;
+use Destiny\Chat\Service\ChatIntegrationService;
 
 class SessionInstance {
 	

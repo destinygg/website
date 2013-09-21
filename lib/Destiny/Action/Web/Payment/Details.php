@@ -4,7 +4,7 @@ namespace Destiny\Action\Web\Payment;
 use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
-use Destiny\Common\Service\OrdersService;
+use Destiny\Commerce\Service\OrdersService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;

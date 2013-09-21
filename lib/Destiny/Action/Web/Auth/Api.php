@@ -3,19 +3,19 @@ namespace Destiny\Action\Web\Auth;
 
 use Destiny\Common\HttpEntity;
 use Destiny\Common\MimeType;
-use Destiny\Common\Service\SubscriptionsService;
-use Destiny\Common\Service\UserFeaturesService;
-use Destiny\Common\UserRole;
 use Destiny\Common\SessionCredentials;
-use Destiny\Common\Service\ApiAuthenticationService;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
-use Destiny\Common\Service\UserService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\UserFeature;
+use Destiny\User\UserRole;
+use Destiny\User\UserFeature;
+use Destiny\User\Service\UserService;
+use Destiny\User\Service\UserFeaturesService;
+use Destiny\Authentication\Service\ApiAuthenticationService;
+use Destiny\Commerce\Service\SubscriptionsService;
 
 /**
  * @Action

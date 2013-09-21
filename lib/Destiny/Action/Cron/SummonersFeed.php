@@ -1,8 +1,8 @@
 <?php
 namespace Destiny\Action\Cron;
 
-use Destiny\Common\Service\LeagueApiService;
 use Destiny\Common\Application;
+use Destiny\LeagueofLegends\Service\LeagueApiService;
 use Psr\Log\LoggerInterface;
 
 class SummonersFeed {

@@ -1,10 +1,10 @@
 <?php
 namespace Destiny\Action\Web\Payment;
 
-use Destiny\Common\Commerce\PaymentProfileStatus;
+use Destiny\Commerce\PaymentProfileStatus;
 use Destiny\Common\Application;
-use Destiny\Common\Service\SubscriptionsService;
-use Destiny\Common\Service\OrdersService;
+use Destiny\Commerce\Service\SubscriptionsService;
+use Destiny\Commerce\Service\OrdersService;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;

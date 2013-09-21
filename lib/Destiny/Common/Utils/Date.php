@@ -50,28 +50,24 @@ abstract class Date {
 			$end = new \DateTime ( $start );
 		}
 		$interval = $end->diff ( $start );
-		$doPlural = function ($nb, $str) {
-			return $nb > 1 ? $str . 's' : $str;
-		}; // adds plurals
-		
 		$format = array ();
 		if ($interval->y !== 0) {
-			$format [] = "%y " . $doPlural ( $interval->y, "year" );
+			$format [] = "%y " . $this->getIntervalPlural ( $interval->y, "year" );
 		}
 		if ($interval->m !== 0) {
-			$format [] = "%m " . $doPlural ( $interval->m, "month" );
+			$format [] = "%m " . $this->getIntervalPlural ( $interval->m, "month" );
 		}
 		if ($interval->d !== 0) {
-			$format [] = "%d " . $doPlural ( $interval->d, "day" );
+			$format [] = "%d " . $this->getIntervalPlural ( $interval->d, "day" );
 		}
 		if ($interval->h !== 0) {
-			$format [] = "%h " . $doPlural ( $interval->h, "hour" );
+			$format [] = "%h " . $this->getIntervalPlural ( $interval->h, "hour" );
 		}
 		if ($interval->i !== 0) {
-			$format [] = "%i " . $doPlural ( $interval->i, "minute" );
+			$format [] = "%i " . $this->getIntervalPlural ( $interval->i, "minute" );
 		}
 		if ($interval->s !== 0) {
-			$format [] = "%s " . $doPlural ( $interval->s, "second" );
+			$format [] = "%s " . $this->getIntervalPlural ( $interval->s, "second" );
 		}
 		// We use the two biggest parts
 		if (count ( $format ) > 1) {
@@ -82,9 +78,17 @@ abstract class Date {
 		// Prepend 'since ' or whatever you like
 		return (($start < $end) ? '-' : '') . $interval->format ( $format );
 	}
+	
+	/**
+	 * @param int $nb
+	 * @param string $str
+	 * @return string
+	 */
+	private function getIntervalPlural($nb, $str){
+		return $nb > 1 ? $str . 's' : $str;
+	}
 
 	/**
-	 *
 	 * @param \DateTime $date
 	 * @param \DateTime $compareTo
 	 * @return string

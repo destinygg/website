@@ -2,10 +2,6 @@
 namespace Destiny\Action\Web;
 
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\Service\UserFeaturesService;
-use Destiny\Common\Service\UserService;
-use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
@@ -16,6 +12,10 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
+use Destiny\Authentication\Service\AuthenticationService;
+use Destiny\User\Service\UserFeaturesService;
+use Destiny\User\Service\UserService;
+use Destiny\Commerce\Service\SubscriptionsService;
 
 /**
  * @Action

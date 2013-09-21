@@ -14,7 +14,6 @@ abstract class Http {
 	const HEADER_IF_MODIFIED_SINCE = 'If-Modified-Since';
 	const HEADER_LOCATION = 'Location';
 	const HEADER_PRAGMA = 'Pragma';
-	const HEADER_ACCEPT_RANGES = 'Accept-Ranges';
 	const HEADER_CONNECTION = 'Connection';
 	const STATUS_NOT_MODIFIED = 304;
 	const STATUS_FORBIDDEN = 403;
@@ -57,12 +56,11 @@ abstract class Http {
 	}
 	
 	/**
-	 * ### getBaseUrl function
-	 * // utility function that returns base url for
+	 * Utility function that returns base url for the app
 	 *
 	 * @return string
 	 */
-	public static function getBaseUrl($includePort = false) {
+	public static function getBaseUrl() {
 		$protocol = 'http';
 		if ($_SERVER ['SERVER_PORT'] == 443 || (! empty ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) == 'on')) {
 			$protocol .= 's';
@@ -72,10 +70,6 @@ abstract class Http {
 		}
 		$host = $_SERVER ['HTTP_HOST'];
 		$request = $_SERVER ['PHP_SELF'];
-		if ($includePort) {
-			$port = $_SERVER ['SERVER_PORT'];
-			return dirname ( $protocol . '://' . $host . ($port == $protocol_port ? '' : ':' . $port) . $request );
-		}
 		return dirname ( $protocol . '://' . $host . $request );
 	}
 

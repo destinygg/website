@@ -1,11 +1,11 @@
 <?php
 namespace Destiny\Action\Web\Profile;
 
-use Destiny\Common\Service\UserService;
+use Destiny\User\Service\UserService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
-use Destiny\Common\Service\OrdersService;
-use Destiny\Common\Service\SubscriptionsService;
+use Destiny\Commerce\Service\OrdersService;
+use Destiny\Commerce\Service\SubscriptionsService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;

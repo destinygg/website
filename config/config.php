@@ -98,16 +98,16 @@ return array (
 		'path' 			=> '/' 
 	),
 	'tpl' => array (
-		'path' 			=> _BASEDIR . '/app/Resources/views/'
+		'path' 			=> _BASEDIR . '/lib/Resources/views/'
 	),
 	'geodata' => array (
-		'json'			=> _BASEDIR . '/app/Resources/geo-ISO_3166-1-2.json'
+		'json'			=> _BASEDIR . '/lib/Resources/geo-ISO_3166-1-2.json'
 	),
 	'log' => array (
-		'path' 			=> _BASEDIR . '/app/log/'
+		'path' 			=> _BASEDIR . '/log/'
 	),
 	'cache' => array (
-		'path'			=> _BASEDIR . '/app/tmp/'
+		'path'			=> _BASEDIR . '/tmp/'
 	),
 	'db' => array (
 		'host'			=> '',

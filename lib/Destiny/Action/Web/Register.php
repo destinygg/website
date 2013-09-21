@@ -5,14 +5,14 @@ use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
-use Destiny\Common\Security\AuthenticationCredentials;
-use Destiny\Common\Security\AuthenticationRedirectionFilter;
-use Destiny\Common\Service\AuthenticationService;
-use Destiny\Common\Service\UserService;
+use Destiny\Authentication\AuthenticationCredentials;
+use Destiny\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Transactional;
+use Destiny\Authentication\Service\AuthenticationService;
+use Destiny\User\Service\UserService;
 
 /**
  * @Action

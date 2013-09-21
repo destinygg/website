@@ -1,8 +1,8 @@
 <?php
 namespace Destiny\Action\Cron;
 
-use Destiny\Common\Service\TwitchApiService;
 use Destiny\Common\Application;
+use Destiny\Twitch\Service\TwitchApiService;
 use Psr\Log\LoggerInterface;
 
 class StreamInfo {

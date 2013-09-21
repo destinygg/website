@@ -2,12 +2,12 @@
 namespace Destiny\Action\Web\Auth;
 
 use Destiny\Common\ViewModel;
-use Destiny\Common\Security\AuthenticationRedirectionFilter;
-use Destiny\Common\Security\AuthenticationCredentials;
-use Destiny\Common\Service\AuthenticationService;
+use Destiny\Authentication\AuthenticationRedirectionFilter;
+use Destiny\Authentication\AuthenticationCredentials;
+use Destiny\Authentication\Service\AuthenticationService;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\Service\UserService;
+use Destiny\User\Service\UserService;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;

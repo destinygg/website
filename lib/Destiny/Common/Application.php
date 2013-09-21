@@ -3,9 +3,11 @@ namespace Destiny\Common;
 
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
+use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Routing\Route;
+use Destiny\Common\Routing\Router;
 use Doctrine\Common\Annotations\Reader;
 use Psr\Log\LoggerInterface;
-use Destiny\Common\Utils\Tpl;
 
 class Application extends Service {
 	

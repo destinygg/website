@@ -158,7 +158,7 @@ class CurlBrowser {
 		}
 		$data = curl_exec ( $curl );
 		$info = curl_getinfo ( $curl );
-		$this->logger->debug ( sprintf ( 'Curl.HTTP(%s): %s %s', $info ['http_code'], \Destiny\Common\Utils\String::strictUTF8 ( $url ), json_encode ( $postData ) ) );
+		$this->logger->debug ( sprintf ( 'Curl.HTTP(%s): %s %s', $info ['http_code'], $url, json_encode ( $postData ) ) );
 		$this->responseCode = intval ( $info ['http_code'] );
 		return $data;
 	}

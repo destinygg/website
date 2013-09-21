@@ -50,19 +50,9 @@ abstract class Params {
 	}
 
 	protected static function getSearchString($pattern) {
-		$find = array (
-			'/{[^}]*}/' 
-		);
-		$replace = array (
-			'([A-z0-9\_\-\|\.]+)' 
-		);
-		$subject = str_replace ( array (
-			'/',
-			'.' 
-		), array (
-			'\\/',
-			'\\.' 
-		), $pattern );
+		$find = array ('/{[^}]*}/');
+		$replace = array ('([A-z0-9\_\-\|\.]+)');
+		$subject = str_replace ( array ('/', '.'), array ('\\/', '\\.'), $pattern );
 		return '/^' . preg_replace ( $find, $replace, $subject ) . '$/i';
 	}
 

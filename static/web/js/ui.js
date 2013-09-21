@@ -81,7 +81,7 @@ $(function(){
 					var title = htmlEncode(data.items[i].snippet.title);
 					ui.append(
 						'<li>'+
-							'<div class="thumbnail" rel="tooltip" title="'+ title + '">'+
+							'<div class="thumbnail" data-toggle="tooltip" title="'+ title + '">'+
 								'<a href="'+ 'http://www.youtube.com/watch?v='+ data.items[i].snippet.resourceId.videoId +'">'+ 
 									'<img alt="'+ title +'" src="'+destiny.cdn+'/web/img/320x240.gif" data-src="https://i.ytimg.com/vi/'+ data.items[i].snippet.resourceId.videoId +'/default.jpg" />'+
 								'</a>'+
@@ -121,7 +121,7 @@ $(function(){
 					);
 				};
 				ui.loadImages();
-				ui.find('[rel="tooltip"]').tooltip();
+				ui.find('[data-toggle="tooltip"]').tooltip();
 			};
 		}
 	});
@@ -209,13 +209,13 @@ $(function(){
 							'</div>') +
 							'<div class="pull-left summon-rank-stats">'+
 								'<div>' + htmlEncode(summoner.league.leagueName) + '</div>' +
-								'<div><span data-placement="left" rel="tooltip" title="Previous day position '+ summoner.league.previousDayLeaguePosition +'">Position '+
+								'<div><span data-placement="left" data-toggle="tooltip" title="Previous day position '+ summoner.league.previousDayLeaguePosition +'">Position '+
 									'<i class="icon-arrow-'+ ((positionOffset > 0) ? 'down':'up') +' icon-white"></i></span>' +									
-									'<span data-placement="left" rel="tooltip" title="Out of '+ (summoner.league.totalEntries) +'" style="color: #'+ ((positionOffset > 0) ? '8a1919':'1a6f00') +';">' + (position) + '</span>'+
+									'<span data-placement="left" data-toggle="tooltip" title="Out of '+ (summoner.league.totalEntries) +'" style="color: #'+ ((positionOffset > 0) ? '8a1919':'1a6f00') +';">' + (position) + '</span>'+
 									((summoner.league.hotStreak == false) ? '' :
-									' <i data-placement="left" rel="tooltip" class="icon-fire icon-white" title="HOOOOOTTT STTTRRREEEAAAAAKKKKKK!"></i> ') +
+									' <i data-placement="left" data-toggle="tooltip" class="icon-fire icon-white" title="HOOOOOTTT STTTRRREEEAAAAAKKKKKK!"></i> ') +
 									((summoner.league.freshBlood == false) ? '' : 
-									' <i data-placement="left" rel="tooltip" class="icon-tint icon-white" title="Fresh Meat!"></i> ') +
+									' <i data-placement="left" data-toggle="tooltip" class="icon-tint icon-white" title="Fresh Meat!"></i> ') +
 								'</div>'+
 							'</div>'+
 							'<div class="pull-left summon-rank-stats">'+
@@ -224,7 +224,7 @@ $(function(){
 							'</div>'+
 							'<div class="pull-left summon-rank-display">'+
 								'<div class="summoner-rank ranked pull-left"><span style="text-transform: capitalize;">'+ summoner.league.tier.toLowerCase() +'</span> '+ summoner.league.rank +'</div>' +
-								'<div class="summoner-rank-thumbnail pull-left"><i data-placement="left" rel="tooltip" title="'+ summoner.league.tier +' '+ summoner.league.rank +'" style="width:45px; height:45px; background: url('+destiny.cdn+'/web/img/lol/rank/' + summoner.league.tier.toLowerCase() + '_' + summoner.league.rankInt + '.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
+								'<div class="summoner-rank-thumbnail pull-left"><i data-placement="left" data-toggle="tooltip" title="'+ summoner.league.tier +' '+ summoner.league.rank +'" style="width:45px; height:45px; background: url('+destiny.cdn+'/web/img/lol/rank/' + summoner.league.tier.toLowerCase() + '_' + summoner.league.rankInt + '.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
 							'</div>'+
 						'</div>'
 					);
@@ -232,7 +232,7 @@ $(function(){
 				panel.find('.content:first').append(ui);
 			};
 			panel.loadImages();
-			panel.find('[rel="tooltip"]').tooltip();
+			panel.find('[data-toggle="tooltip"]').tooltip();
 		}
 	});
 	
@@ -356,7 +356,7 @@ $(function(){
 	
 	// Lazy load images
 	$(this).loadImages();
-	$(this).find('[rel="tooltip"]').tooltip();
+	$(this).find('[data-toggle="tooltip"]').tooltip();
 });
 
 // Change time on selected elements

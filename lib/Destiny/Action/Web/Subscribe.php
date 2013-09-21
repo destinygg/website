@@ -5,9 +5,9 @@ use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\Service\SubscriptionsService;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
+use Destiny\Commerce\Service\SubscriptionsService;
 
 /**
  * @Action

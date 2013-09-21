@@ -1,9 +1,9 @@
 <?php
 namespace Destiny\Action\Cron;
 
-use Destiny\Common\Service\RememberMeService;
-use Destiny\Common\Service\SubscriptionsService;
 use Psr\Log\LoggerInterface;
+use Destiny\Authentication\Service\RememberMeService;
+use Destiny\Commerce\Service\SubscriptionsService;
 
 class SubscriptionExpire {
 

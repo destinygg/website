@@ -1,8 +1,7 @@
 <?php
 namespace Destiny\Action\Web;
 
-use Destiny\Common\UserRole;
-use Destiny\Common\Service\UserService;
+use Destiny\User\UserRole;
 use Destiny\Common\Exception;
 use Destiny\Common\Config;
 use Destiny\Common\Session;
@@ -11,6 +10,7 @@ use Destiny\Common\OAuthClient;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
+use Destiny\User\Service\UserService;
 
 /**
  * @Action

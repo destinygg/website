@@ -1,13 +1,13 @@
 <?php
 namespace Destiny\Action\Web\Profile;
 
-use Destiny\Common\Service\ApiAuthenticationService;
-use Destiny\Common\Service\UserService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Authentication\Service\ApiAuthenticationService;
+use Destiny\User\Service\UserService;
 
 /**
  * @Action

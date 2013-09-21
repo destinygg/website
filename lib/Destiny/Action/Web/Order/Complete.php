@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Order;
 
-use Destiny\Common\Service\AuthenticationService;
+use Destiny\Authentication\Service\AuthenticationService;
 use PayPal\CoreComponentTypes\BasicAmountType;
 use PayPal\EBLBaseComponents\BillingPeriodDetailsType;
 use PayPal\EBLBaseComponents\CreateRecurringPaymentsProfileRequestDetailsType;
@@ -18,8 +18,8 @@ use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 use Destiny\Common\Application;
 use Destiny\Common\Session;
-use Destiny\Common\Service\SubscriptionsService;
-use Destiny\Common\Service\OrdersService;
+use Destiny\Commerce\Service\SubscriptionsService;
+use Destiny\Commerce\Service\OrdersService;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
@@ -28,9 +28,9 @@ use Destiny\Common\Annotation\Action;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
-use Destiny\Common\Commerce\OrderStatus;
-use Destiny\Common\Commerce\PaymentStatus;
-use Destiny\Common\Commerce\SubscriptionStatus;
+use Destiny\Commerce\OrderStatus;
+use Destiny\Commerce\PaymentStatus;
+use Destiny\Commerce\SubscriptionStatus;
 
 /**
  * @Action

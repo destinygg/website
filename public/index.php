@@ -1,15 +1,15 @@
 <?php
 use Destiny\Common\Application;
-use Destiny\Common\Service\AuthenticationService;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\SessionCookie;
 use Destiny\Common\SessionInstance;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\Router;
-use Destiny\Common\Annotation\Handler\RouteAnnotationHandler;
-use Destiny\Common\Utils\DirectoryClassIterator;
-use Destiny\Common\Service\RememberMeService;
+use Destiny\Common\Routing\Router;
+use Destiny\Common\Routing\RouteAnnotationHandler;
+use Destiny\Common\DirectoryClassIterator;
+use Destiny\Authentication\Service\RememberMeService;
+use Destiny\Authentication\Service\AuthenticationService;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Annotations\AnnotationReader;
 

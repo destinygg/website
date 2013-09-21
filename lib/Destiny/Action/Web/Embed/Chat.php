@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Action\Web\Embed;
 
-use Destiny\Common\UserRole;
+use Destiny\User\UserRole;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
