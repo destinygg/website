@@ -6,7 +6,7 @@ use Destiny\Common\SessionInstance;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Routing\Router;
-use Destiny\Common\Routing\RouteAnnotationHandler;
+use Destiny\Common\Routing\RouteAnnotationClassLoader;
 use Destiny\Common\DirectoryClassIterator;
 use Destiny\Authentication\Service\RememberMeService;
 use Destiny\Authentication\Service\AuthenticationService;
@@ -22,6 +22,9 @@ $app = Application::instance ();
 $app->setRouter ( new Router () );
 $app->setAnnotationReader ( new FileCacheReader ( new AnnotationReader (), realpath ( Config::$a ['cache'] ['path'] ) . '/annotation/' ) );
 
+// Annotation reader and routing
+RouteAnnotationClassLoader::loadClasses ( new DirectoryClassIterator ( _LIBDIR . '/', 'Destiny/Action/' ), $app->getAnnotationReader () );
+
 // Setup user session
 $session = new SessionInstance ();
 $session->setSessionCookie ( new SessionCookie ( Config::$a ['cookie'] ) );
@@ -34,9 +37,6 @@ Session::start ( Session::START_IFCOOKIE );
 // Startup the remember me and auth service
 AuthenticationService::instance ()->init ();
 RememberMeService::instance ()->init ();
-
-// Annotation reader and routing
-RouteAnnotationHandler::loadClasses ( new DirectoryClassIterator ( _LIBDIR . '/', 'Destiny/Action/' ), $app->getAnnotationReader () );
 
 // Attempts to find a route and execute it
 $app->executeRequest ( (isset ( $_SERVER ['REQUEST_URI'] )) ? $_SERVER ['REQUEST_URI'] : '', $_SERVER ['REQUEST_METHOD'] );

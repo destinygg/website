@@ -103,7 +103,6 @@ class Application extends Service {
 	public function executeRequest($uri, $method) {
 		$path = parse_url ( $uri, PHP_URL_PATH );
 		$route = $this->router->findRoute ( $path, $method );
-		
 		$model = new ViewModel ();
 		
 		// No route found

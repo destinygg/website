@@ -2,7 +2,6 @@
 define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
 define ( '_VENDORDIR', _BASEDIR . '/vendor' );
 define ( '_STATICDIR', _BASEDIR . '/static' );
-define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
 
 require _VENDORDIR . '/autoload.php';
 require 'include/FileUtils.php';

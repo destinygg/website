@@ -16,6 +16,17 @@ class AuthenticationCredentials {
 		Options::setOptions ( $this, $options );
 	}
 
+	function __sleep() {
+		return array (
+			'authProvider',
+			'authCode',
+			'authId',
+			'authDetail',
+			'username',
+			'email' 
+		);
+	}
+
 	public function isValid() {
 		if (empty ( $this->authId ) || empty ( $this->authCode ) || empty ( $this->authProvider )) {
 			return false;
