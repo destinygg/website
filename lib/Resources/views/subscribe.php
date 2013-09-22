@@ -1,6 +1,8 @@
 <?
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
+use Destiny\User\UserRole;
+use Destiny\Common\Session;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
@@ -15,6 +17,7 @@ use Destiny\Common\Config;
 
 	<?php include Tpl::file('seg/top.php') ?>
 	
+	<?php if (Session::hasRole ( UserRole::USER )): ?>
 	<section class="container">
 		<h1 class="title">
 			<span>Subscribe</span> <small>become one of the brave</small>
@@ -43,7 +46,6 @@ use Destiny\Common\Config;
 						<?php endif; ?>
 						
 						<?php if(empty($model->subscription)): ?>
-						<p>Choose a subscription from the selection below.</p>
 						
 						<br>
 						<div id="subscriptions" class="clearfix">
@@ -149,6 +151,24 @@ use Destiny\Common\Config;
 			</div>
 		</div>
 	</section>
+	<?php else: ?>
+	
+	<section class="container">
+		<h1 class="title">
+			<span>Subscribe</span> <small>become one of the brave</small>
+		</h1>
+		<div class="content content-dark clearfix">
+			<div class="control-group">
+				<p>Want a destiny.gg subscription?<br />You need to <a href="/login?follow=subscribe">create an account</a> or <a href="/login?follow=subscribe">login first</a> first!</p>
+			</div>
+			<div class="form-actions block-foot">
+				<a href="/login?follow=subscribe" class="btn btn-large btn-primary">Login</a>
+				<a href="/login?follow=subscribe" class="btn btn-large">Create an Account</a>
+			</div>
+		</div>
+	</section>
+	
+	<?php endif; ?>
 	
 	<?php include Tpl::file('seg/foot.php') ?>
 	<?php include Tpl::file('seg/commonbottom.php') ?>

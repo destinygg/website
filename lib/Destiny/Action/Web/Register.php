@@ -43,14 +43,14 @@ class Register {
 		}
 		return $authSession;
 	}
-
+	
 	/**
 	 * @Route ("/register")
 	 * @HttpMethod ({"GET"})
 	 *
 	 * Handle the confirmation request
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 * @throws Exception
 	 */
 	public function executeGet(array $params, ViewModel $model) {
@@ -63,6 +63,7 @@ class Register {
 		$model->title = 'New user';
 		$model->username = $username;
 		$model->email = $email;
+		$model->follow = (isset($params['follow'])) ? $params['follow']:'';
 		$model->authProvider = $authCreds->getAuthProvider ();
 		$model->code = $authCreds->getAuthCode ();
 		$model->rememberme = Session::get ( 'rememberme' );
@@ -120,6 +121,7 @@ class Register {
 			$model->title = 'Error';
 			$model->username = $username;
 			$model->email = $email;
+			$model->follow = (isset($params['follow'])) ? $params['follow']:'';
 			$model->authProvider = $authCreds->getAuthProvider ();
 			$model->code = $authCreds->getAuthCode ();
 			$model->error = $e;

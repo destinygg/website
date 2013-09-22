@@ -7,7 +7,7 @@ return array (
 		'nameChangeLimit' 	=> 0
 	),
 	'chat' => array(
-		'port'			=> 9998,
+		'port'				=> 9998,
 		'backlog' 			=> 150,
 		'maxlines' 			=> 150,
 		'customemotes' => array(

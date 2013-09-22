@@ -35,7 +35,7 @@ use Destiny\Common\Utils\Tpl;
 				<br>To connect your accounts, use the method you first logged in with (twitch), and connect your other accounts within your profile.
 			</div>
 			<form id="loginForm" action="/login" method="post" style="margin:20px 0 0 0;">
-			
+				<input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
 				<div class="control-group">
 					<div class="controls">
 						<label class="checkbox">
@@ -65,7 +65,7 @@ use Destiny\Common\Utils\Tpl;
 				</div>
 				
 				<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
-					<button type="submit" class="btn btn-primary">Login</button>
+					<button type="submit" class="btn btn-primary btn-large">Continue</button>
 				</div>
 			</form>
 		</div>

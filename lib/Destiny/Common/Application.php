@@ -104,6 +104,7 @@ class Application extends Service {
 		$path = parse_url ( $uri, PHP_URL_PATH );
 		$route = $this->router->findRoute ( $path, $method );
 		$model = new ViewModel ();
+		$response = null;
 		
 		// No route found
 		if (! $route) {
@@ -160,6 +161,11 @@ class Application extends Service {
 				$tpl = $response . '.php';
 				$response = new HttpEntity ( Http::STATUS_OK );
 				$response->setBody ( $this->template ( $tpl, $model ) );
+			}
+			
+			// Check the response type
+			if (! $response instanceof HttpEntity) {
+				throw new Exception ( 'Invalid response' );
 			}
 			
 			// Commit the DB transaction

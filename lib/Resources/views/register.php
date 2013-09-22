@@ -40,6 +40,7 @@ use Destiny\Common\Utils\Country;
 				</div>
 				<form action="/register" method="post">
 					<input type="hidden" name="code" value="<?=Tpl::out($model->code)?>" />
+					<input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
 					<div class="control-group">
 						<label class="control-label" for="inputUsername">Username / Nickname</label>
 						<div class="controls">
@@ -79,7 +80,7 @@ use Destiny\Common\Utils\Country;
 						</div>
 					</div>
 					<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
-						<button type="submit" class="btn btn-primary">Confirm</button>
+						<button type="submit" class="btn btn-primary">Continue</button>
 						<a href="/login" class="btn">Cancel</a>
 					</div>
 				</form>

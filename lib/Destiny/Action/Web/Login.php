@@ -28,6 +28,7 @@ class Login {
 	public function executeGet(array $params, ViewModel $model) {
 		Session::set ( 'accountMerge' );
 		$model->title = 'Login';
+		$model->follow = (isset($params['follow'])) ? $params['follow'] : '';
 		return 'login';
 	}
 
@@ -65,7 +66,7 @@ class Login {
 			// check if the auth provider you are trying to login with is not the same as the current
 			$currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
 			if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
-				throw new Exception ( 'You are already logged in and authenticated using this provider.' );
+				throw new Exception ( 'You are already logged in and authenticated using this provider.');
 			}
 			// Set a session var that is picked up in the AuthenticationService
 			// in the GET method, this variable is unset
@@ -73,6 +74,14 @@ class Login {
 		}
 		
 		$callback = sprintf ( Config::$a ['oauth'] ['callback'], strtolower ( $authProvider ) );
+		if (empty ( $callback )) {
+			throw new Exception ( 'Invalid callback format' );
+		}
+		
+		if (isset ( $params ['follow'] ) && ! empty ( $params ['follow'] )) {
+			Session::set ( 'follow', $params ['follow'] );
+		}
+		
 		switch (strtoupper ( $authProvider )) {
 			case 'TWITCH' :
 				$authClient = new oAuthClient ( Config::$a ['oauth'] ['providers'] ['twitch'] );
@@ -82,9 +91,7 @@ class Login {
 			case 'GOOGLE' :
 				$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] ['google'] );
 				$authClient->setHeaderTokenName ( 'Bearer' );
-				return 'redirect: '. $authClient->getAuthorisationEndPoint ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid+email', array (
-					'state' => 'security_token=' . Session::getSessionId () 
-				) );
+				return 'redirect: '. $authClient->getAuthorisationEndPoint ( 'https://accounts.google.com/o/oauth2/auth', $callback, 'openid+email', array ('state' => 'security_token=' . Session::getSessionId ()	) );
 			
 			case 'TWITTER' :
 				$twitterOAuthConf = Config::$a ['oauth'] ['providers'] ['twitter'];
@@ -118,7 +125,7 @@ class Login {
 			default :
 				$model->title = 'Login error';
 				$model->rememberme = $rememberme;
-				$model->error = new Exception ( 'Auth type not supported' );
+				$model->error = new Exception ( 'Authentication type not supported' );
 				return 'login';
 		}
 	}
