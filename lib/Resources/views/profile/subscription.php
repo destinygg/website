@@ -85,7 +85,7 @@ use Destiny\Common\Config;
 							
 							<?php if(!empty($model->paymentProfile)): ?>
 								<dt style="margin-top:2em;">Billing:</dt>
-								<dd><?=Tpl::out($model->paymentProfile['state'])?></dd>
+								<dd style="margin-top:2em;"><?=Tpl::out($model->paymentProfile['state'])?></dd>
 								<dt>Amount:</dt>
 								<dd><?=Tpl::currency($model->paymentProfile['currency'], $model->paymentProfile['amount'])?></dd>
 								
