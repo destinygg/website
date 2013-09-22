@@ -52,22 +52,22 @@ abstract class Date {
 		$interval = $end->diff ( $start );
 		$format = array ();
 		if ($interval->y !== 0) {
-			$format [] = "%y " . $this->getIntervalPlural ( $interval->y, "year" );
+			$format [] = "%y " . self::getIntervalPlural ( $interval->y, "year" );
 		}
 		if ($interval->m !== 0) {
-			$format [] = "%m " . $this->getIntervalPlural ( $interval->m, "month" );
+			$format [] = "%m " . self::getIntervalPlural ( $interval->m, "month" );
 		}
 		if ($interval->d !== 0) {
-			$format [] = "%d " . $this->getIntervalPlural ( $interval->d, "day" );
+			$format [] = "%d " . self::getIntervalPlural ( $interval->d, "day" );
 		}
 		if ($interval->h !== 0) {
-			$format [] = "%h " . $this->getIntervalPlural ( $interval->h, "hour" );
+			$format [] = "%h " . self::getIntervalPlural ( $interval->h, "hour" );
 		}
 		if ($interval->i !== 0) {
-			$format [] = "%i " . $this->getIntervalPlural ( $interval->i, "minute" );
+			$format [] = "%i " . self::getIntervalPlural ( $interval->i, "minute" );
 		}
 		if ($interval->s !== 0) {
-			$format [] = "%s " . $this->getIntervalPlural ( $interval->s, "second" );
+			$format [] = "%s " . self::getIntervalPlural ( $interval->s, "second" );
 		}
 		// We use the two biggest parts
 		if (count ( $format ) > 1) {
@@ -84,7 +84,7 @@ abstract class Date {
 	 * @param string $str
 	 * @return string
 	 */
-	private function getIntervalPlural($nb, $str){
+	private static function getIntervalPlural($nb, $str){
 		return $nb > 1 ? $str . 's' : $str;
 	}
 
