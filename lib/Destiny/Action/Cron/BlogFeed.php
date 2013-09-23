@@ -2,7 +2,7 @@
 namespace Destiny\Action\Cron;
 
 use Destiny\Common\Application;
-use Destiny\Service\CommonApiService;
+use Destiny\Common\Service\CommonApiService;
 use Psr\Log\LoggerInterface;
 
 class BlogFeed {

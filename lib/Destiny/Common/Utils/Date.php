@@ -19,13 +19,17 @@ abstract class Date {
 	 * @return \DateTime
 	 */
 	public static function getDateTime($time = 'NOW') {
-		if (! is_numeric ( $time )) {
-			$date = new \DateTime ( $time );
-		} else {
+		try {
+			if (! is_numeric ( $time )) {
+				$date = new \DateTime ( $time );
+			} else {
+				$date = new \DateTime ();
+				$date->setTimestamp ( $time );
+			}
+		} catch ( \Exception $e ) {
 			$date = new \DateTime ();
-			$date->setTimestamp ( $time );
 		}
-		$date->setTimezone ( new \DateTimeZone ( 'UTC' ) );
+		$date->setTimezone ( new \DateTimeZone ( ini_get ( 'date.timezone' ) ) );
 		return $date;
 	}
 
@@ -41,13 +45,13 @@ abstract class Date {
 	 */
 	public static function getRemainingTime($start, $end = null) {
 		if (! ($start instanceof \DateTime)) {
-			$start = new \DateTime ( $start );
+			$start = self::getDateTime ( $start );
 		}
 		if ($end === null) {
-			$end = new \DateTime ();
+			$end = self::getDateTime ();
 		}
 		if (! ($end instanceof \DateTime)) {
-			$end = new \DateTime ( $start );
+			$end = self::getDateTime ( $end );
 		}
 		$interval = $end->diff ( $start );
 		$format = array ();
@@ -95,7 +99,7 @@ abstract class Date {
 	 */
 	public static function getElapsedTime(\DateTime $date, \DateTime $compareTo = NULL) {
 		if (is_null ( $compareTo )) {
-			$compareTo = new \DateTime ( 'now' );
+			$compareTo = self::getDateTime ();
 		}
 		$diff = $compareTo->format ( 'U' ) - $date->format ( 'U' );
 		$dayDiff = floor ( $diff / 86400 );

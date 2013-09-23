@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Service;
+namespace Destiny\Common\Service;
 
 use Destiny\Common\Service;
 use Destiny\Common\CurlBrowser;
