@@ -46,7 +46,6 @@ class ChatBanService extends Service {
 				INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
 				
 			WHERE b.targetuserid = :userId AND b.starttimestamp < NOW() AND b.endtimestamp > NOW() 
-				
 			ORDER BY b.id DESC
 			LIMIT 0,1
 		' );

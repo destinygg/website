@@ -144,8 +144,7 @@ use Destiny\User\UserRole;
 							<?php foreach($model->banContext as $line): ?>
 							<li style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 								<small class="subtle"><?=Tpl::moment(Date::getDateTime($line['timestamp']), Date::STRING_FORMAT, 'h:mm:ss')?></small>
-								<span><?=Tpl::out($line['username'])?>:</span> 
-								<p><?=Tpl::out($line['data'])?></p>
+								<span>&lt;<?=Tpl::out($line['username'])?>&gt; <?=Tpl::out($line['data'])?></span> 
 							</li>
 							<?php endforeach; ?>
 						</ul>
