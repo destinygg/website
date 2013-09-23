@@ -110,12 +110,13 @@ return array (
 		'path'			=> _BASEDIR . '/tmp/'
 	),
 	'db' => array (
+		'driver'		=> 'pdo_mysql',
 		'host'			=> '',
-		'username'		=> '',
-		'database'		=> '',
+		'user'			=> '',
+		'dbname'		=> '',
 		'password'		=> '',
 		'charset'		=> 'UTF8',
-		'options'		=> array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8,time_zone = \'+0:00\'')
+		'driverOptions'	=> array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8,time_zone = \'+0:00\'')
 	),
 	'meta' => array (
 		'shortName'			=> 'Destiny',
