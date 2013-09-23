@@ -35,6 +35,7 @@ class AuthenticationRedirectionFilter {
 		// If the user profile doesnt exist, go to the register page
 		if (! $authService->getUserAuthProfileExists ( $authCreds )) {
 			Session::set ( 'authSession', $authCreds );
+			Application::instance()->getLogger()->notice ( sprintf ( 'authSession: %s', json_encode($authCreds) ) );
 			$url = 'redirect: /register?code=' . urlencode ( $authCreds->getAuthCode () );
 			if (! empty ( $follow )) {
 				$url .= '&follow=' . urlencode ( $follow );

@@ -178,10 +178,10 @@ class Application extends Service {
 			if ($transactional) {
 				$conn->rollback ();
 			}
-			$reponse = new HttpEntity ( Http::STATUS_ERROR );
+			$response = new HttpEntity ( Http::STATUS_ERROR );
 			$model->error = new Exception ( 'Maximum over-rustle has been achieved' );
 			$model->code = Http::STATUS_ERROR;
-			$reponse->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
+			$response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
 		}
 		
 		// Handle the request response

@@ -232,8 +232,6 @@ class AuthenticationService extends Service {
 		if (Session::set ( 'rememberme' )) {
 			$this->setRememberMe ( $user );
 		}
-		
-		Session::set ( 'authSession' );
 	}
 
 	/**

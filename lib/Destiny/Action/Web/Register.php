@@ -115,6 +115,7 @@ class Register {
 				'authCode' => $authCreds->getAuthCode (),
 				'authDetail' => $authCreds->getAuthDetail () 
 			) );
+			Session::set ( 'authSession' );
 			$authCredHandler = new AuthenticationRedirectionFilter ();
 			return $authCredHandler->execute ( $authCreds );
 		} catch ( Exception $e ) {
