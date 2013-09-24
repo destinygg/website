@@ -226,7 +226,7 @@ class SubscriptionsService extends Service {
 		' );
 		$stmt->bindValue ( 'subscriptionTier', $tier, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
-		$stmt->bindValue ( 'subscriptionSource', 'destiny.gg', \PDO::PARAM_STR );
+		$stmt->bindValue ( 'subscriptionSource', Config::$a['subscriptionType'], \PDO::PARAM_STR );
 		$stmt->execute ();
 		return $stmt->fetchAll ();
 	}

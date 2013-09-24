@@ -222,6 +222,7 @@ return array (
 			) 
 		) 
 	),
+	'subscriptionType'				=> 'destiny.gg',
 	'commerce' => array (
 		'currencies' => array (
 			'USD' => array (

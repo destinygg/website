@@ -46,11 +46,6 @@ class RememberMeService extends Service {
 					Session::updateCredentials ( $credentials );
 					ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 					$authService->setRememberMe ( $user );
-					$app->addEvent ( new AppEvent ( array (
-						'type' => AppEvent::EVENT_INFO,
-						'label' => 'You have been automatically logged in',
-						'message' => sprintf ( 'Nothing to worry about %s, just letting you know...', Session::getCredentials ()->getUsername () ) 
-					) ) );
 				}
 			}
 		}
