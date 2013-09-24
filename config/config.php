@@ -39,6 +39,7 @@ return array (
 			'TooSpicy',
 			'OhKrappa',
 			'SoDoge',
+			'WhoahDude',
 		),
 	),
 	'redis' => array(
