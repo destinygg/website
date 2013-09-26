@@ -29,34 +29,6 @@ CREATE TABLE `chatlog` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Table structure for table `dfl_challengers` */
-
-CREATE TABLE `dfl_challengers` (
-  `ownerTeamId` int(14) DEFAULT NULL,
-  `challengeTeamId` int(14) DEFAULT NULL,
-  `status` enum('SENT','ACCEPTED','DECLINED') DEFAULT NULL,
-  `createdDate` datetime DEFAULT NULL,
-  KEY `ownerTeamId` (`ownerTeamId`),
-  KEY `challengeTeamId` (`challengeTeamId`),
-  KEY `status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `dfl_champs` */
-
-CREATE TABLE `dfl_champs` (
-  `championId` int(14) NOT NULL,
-  `championName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `championValue` int(14) NOT NULL,
-  `championMultiplier` decimal(4,3) DEFAULT '1.000',
-  `championTypes` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
-  `championFree` tinyint(1) DEFAULT '0',
-  `gamesPlayed` int(14) DEFAULT '0',
-  `gamesWin` int(14) DEFAULT '0',
-  `gamesLost` int(14) DEFAULT '0',
-  PRIMARY KEY (`championId`),
-  KEY `championName` (`championName`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 /*Table structure for table `dfl_features` */
 
 CREATE TABLE `dfl_features` (
@@ -65,57 +37,6 @@ CREATE TABLE `dfl_features` (
   `featureLabel` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`featureId`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `dfl_games` */
-
-CREATE TABLE `dfl_games` (
-  `gameId` int(14) NOT NULL,
-  `gameCreatedDate` datetime NOT NULL,
-  `gameEndDate` datetime NOT NULL,
-  `gameType` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `gameRanked` tinyint(1) NOT NULL,
-  `gameSeason` int(14) NOT NULL,
-  `gameWinSideId` enum('100','200') COLLATE utf8_unicode_ci NOT NULL,
-  `gameLoseSideId` enum('100','200') COLLATE utf8_unicode_ci NOT NULL,
-  `gameRegion` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `aggregated` tinyint(1) NOT NULL,
-  `aggregatedDate` datetime NOT NULL,
-  `createdDate` datetime NOT NULL,
-  PRIMARY KEY (`gameId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_games_champs` */
-
-CREATE TABLE `dfl_games_champs` (
-  `gameId` int(14) NOT NULL,
-  `championId` int(14) NOT NULL,
-  `teamSideId` enum('100','200') COLLATE utf8_unicode_ci NOT NULL,
-  `summonerId` int(14) NOT NULL,
-  `summonerName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`gameId`,`championId`,`summonerId`),
-  KEY `gameId` (`gameId`),
-  KEY `championId` (`championId`),
-  KEY `summonerId` (`summonerId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_games_summoner_data` */
-
-CREATE TABLE `dfl_games_summoner_data` (
-  `gameId` int(14) NOT NULL,
-  `gameData` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `gameWin` tinyint(1) NOT NULL,
-  `summonerId` int(14) NOT NULL,
-  PRIMARY KEY (`gameId`,`summonerId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_ingame_progress` */
-
-CREATE TABLE `dfl_ingame_progress` (
-  `gameId` int(14) NOT NULL,
-  `gameStartTime` datetime NOT NULL,
-  `gameData` longtext COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`gameId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_orders` */
 
@@ -209,109 +130,6 @@ CREATE TABLE `dfl_scheduled_tasks` (
   `executeCount` int(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-/*Table structure for table `dfl_scores_champs` */
-
-CREATE TABLE `dfl_scores_champs` (
-  `gameId` int(14) NOT NULL,
-  `championId` int(14) NOT NULL,
-  `championMultiplier` decimal(4,3) NOT NULL,
-  `scoreType` enum('WIN','LOSE') COLLATE utf8_unicode_ci NOT NULL,
-  `scoreValue` int(14) NOT NULL,
-  `createdDate` datetime NOT NULL,
-  KEY `gameId` (`gameId`),
-  KEY `championId` (`championId`),
-  KEY `gameChamp` (`gameId`,`championId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_scores_teams` */
-
-CREATE TABLE `dfl_scores_teams` (
-  `gameId` int(14) DEFAULT NULL,
-  `teamId` int(14) NOT NULL,
-  `scoreValue` int(14) NOT NULL,
-  `scoreType` enum('GAME','BONUS','PARTICIPATE','POLL') COLLATE utf8_unicode_ci NOT NULL,
-  `createdDate` datetime NOT NULL,
-  KEY `gameId` (`gameId`),
-  KEY `teamId` (`teamId`),
-  KEY `createdDate` (`createdDate`),
-  KEY `teamScoreType` (`teamId`,`scoreType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_scores_teams_champs` */
-
-CREATE TABLE `dfl_scores_teams_champs` (
-  `gameId` int(14) NOT NULL,
-  `teamId` int(14) NOT NULL,
-  `championId` int(14) NOT NULL,
-  `championMultiplier` decimal(4,3) NOT NULL,
-  `penalty` decimal(4,2) NOT NULL,
-  `scoreValue` int(14) NOT NULL,
-  `createdDate` datetime NOT NULL,
-  KEY `gameId` (`gameId`),
-  KEY `teamId` (`teamId`),
-  KEY `championId` (`championId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_team_champs` */
-
-CREATE TABLE `dfl_team_champs` (
-  `teamId` int(14) NOT NULL,
-  `championId` int(14) NOT NULL,
-  `displayOrder` int(14) NOT NULL,
-  `createdDate` datetime NOT NULL,
-  PRIMARY KEY (`teamId`,`championId`),
-  KEY `teamId` (`teamId`),
-  KEY `championId` (`championId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_team_milestones` */
-
-CREATE TABLE `dfl_team_milestones` (
-  `teamId` int(14) NOT NULL,
-  `milestoneType` enum('GAMEPOINTS','TIMESPAN','GAMES') COLLATE utf8_unicode_ci NOT NULL,
-  `milestoneValue` int(14) NOT NULL,
-  `milestoneGoal` int(14) NOT NULL,
-  `createdDate` datetime NOT NULL,
-  `modifiedDate` datetime NOT NULL,
-  PRIMARY KEY (`teamId`,`milestoneType`),
-  KEY `teamId` (`teamId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_team_ranks` */
-
-CREATE TABLE `dfl_team_ranks` (
-  `teamId` int(11) NOT NULL,
-  `teamRank` int(11) NOT NULL,
-  PRIMARY KEY (`teamId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_team_transfers` */
-
-CREATE TABLE `dfl_team_transfers` (
-  `teamId` int(14) NOT NULL,
-  `championId` int(14) NOT NULL,
-  `championValue` int(14) NOT NULL,
-  `transferType` enum('IN','OUT') COLLATE utf8_unicode_ci NOT NULL,
-  `createdDate` datetime NOT NULL,
-  KEY `teamId` (`teamId`),
-  KEY `championId` (`championId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_teams` */
-
-CREATE TABLE `dfl_teams` (
-  `teamId` int(14) NOT NULL AUTO_INCREMENT,
-  `userId` int(14) NOT NULL,
-  `credits` decimal(14,2) DEFAULT '0.00',
-  `scoreValue` int(14) DEFAULT '0',
-  `transfersRemaining` int(14) DEFAULT '0',
-  `createdDate` datetime DEFAULT NULL,
-  `modifiedDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`teamId`),
-  KEY `userId` (`userId`),
-  KEY `userTeamId` (`teamId`,`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 /*Table structure for table `dfl_users` */
 
 CREATE TABLE `dfl_users` (
@@ -352,15 +170,6 @@ CREATE TABLE `dfl_users_auth_token` (
   KEY `userId` (`userId`),
   KEY `authToken` (`authToken`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users_champs` */
-
-CREATE TABLE `dfl_users_champs` (
-  `userId` int(14) NOT NULL,
-  `championId` int(14) NOT NULL,
-  `createdDate` datetime NOT NULL,
-  PRIMARY KEY (`userId`,`championId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*Table structure for table `dfl_users_features` */
 

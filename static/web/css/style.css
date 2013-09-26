@@ -261,9 +261,6 @@ border-top-left-radius: 0;
 border-top-right-radius: 0;
 border-bottom-right-radius: 0;
 }
-i.icon-loading {
-background: url(../img/busy14x14.gif) no-repeat center center;	
-}
 i.icon-bobross {
 background: url(../../favicon.png) no-repeat center center;
 margin-bottom: 1px;
@@ -767,30 +764,6 @@ opacity: 0.3;
 
 #lolpanel i[class^="icon-"]:hover {
 opacity: 1;
-}
-
-.icon-money {
-background: url(../img/ico/100.png) no-repeat center center;
-}
-
-.icon-multiplier {
-background: url(../img/ico/091.png) no-repeat center center;
-}
-
-.icon-transfers {
-background: url(../img/ico/124.png) no-repeat center center;
-}
-
-.icon-rating {
-background: url(../img/ico/092.png) no-repeat center center;
-}
-
-.icon-transfer-out {
-background: url(../img/ico/116.png) no-repeat center center;
-}
-
-.icon-transfer-in {
-background: url(../img/ico/113.png) no-repeat center center;
 }
 
 footer {
