@@ -76,8 +76,8 @@ use Destiny\Common\Config;
 						</div>
 						
 						<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
-							<button type="submit" class="btn btn-primary">Save</button>
-							<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" class="btn">Back</a>
+							<button type="submit" class="btn btn-primary  btn-large">Save</button>
+							<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" class="btn btn-link">Back</a>
 						</div>
 						
 					</form>

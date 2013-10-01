@@ -80,8 +80,8 @@ use Destiny\Common\Utils\Country;
 						</div>
 					</div>
 					<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
-						<button type="submit" class="btn btn-primary">Continue</button>
-						<a href="/login" class="btn">Cancel</a>
+						<button type="submit" class="btn btn-primary btn-large">Continue</button>
+						<a href="/login" class="btn btn-large">Cancel</a>
 					</div>
 				</form>
 			</div>

@@ -3,7 +3,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Config;
-use Destiny\User\UserRole;
+use Destiny\Common\User\UserRole;
 ?>
 <!DOCTYPE html>
 <html>
@@ -98,8 +98,8 @@ use Destiny\User\UserRole;
 						
 						
 						<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
-							<button type="submit" class="btn btn-primary">Update</button>
-							<a href="/admin" class="btn">Cancel</a>
+							<button type="submit" class="btn btn-primary btn-large">Update</button>
+							<a href="/admin" class="btn btn-large">Cancel</a>
 						</div>
 					</form>
 				</div>
@@ -152,8 +152,8 @@ use Destiny\User\UserRole;
 					<?php endif; ?>
 					
 					<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
-						<a href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/edit" class="btn btn-primary">Edit ban</a>
-						<a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/remove" class="btn btn-danger">Remove ban</a>
+						<a href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/edit" class="btn btn-primary btn-large">Edit ban</a>
+						<a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/remove" class="btn btn-danger btn-large">Remove ban</a>
 					</div>
 					
 					<?php endif; ?>

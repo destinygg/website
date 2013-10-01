@@ -178,7 +178,7 @@ class Scheduler {
 	 */
 	protected function executeTask(array $task) {
 		$this->logger->debug ( sprintf ( 'Execute start %s', $task ['action'] ) );
-		$actionClass = 'Destiny\\Action\\Cron\\' . $task ['action'];
+		$actionClass = 'Destiny\\Tasks\\' . $task ['action'];
 		if (class_exists ( $actionClass, true )) {
 			$actionObj = new $actionClass ();
 			$actionObj->execute ( $this->logger );

@@ -43,18 +43,16 @@ use Destiny\Common\Utils\Date;
 						<?php endif; ?>
 						</dd>
 						
-						<dt>Source:</dt>
-						<dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
+						<dt>Time remaining:</dt>
+						<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
 						<dt>Created date:</dt>
 						<dd><?=Tpl::moment(Date::getDateTime($model->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
 						<dt>End date:</dt>
 						<dd><?=Tpl::moment(Date::getDateTime($model->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
-						<dt>Time remaining:</dt>
-						<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
 					</dl>
 				</div>
 				<div class="form-actions" style="margin:0;">
-					<a class="btn" href="/profile">Back to profile</a>
+					<a class="btn btn-link" href="/profile">Back to profile</a>
 				</div>
 				<?php endif; ?>
 			
@@ -63,7 +61,7 @@ use Destiny\Common\Utils\Date;
 					<div class="control-group">
 						<p>
 						<label class="label label-important">WARNING</label> Cancelling an active subscription can only be undone by an administrator.
-						<br>By clicking the 'Confirm Cancel' button you are confirming you want to cancel your active subscription immediately
+						<br>By clicking the 'Cancel subscription' button you are confirming you want to cancel your active subscription immediately
 						</p>
 					</div>
 					<div class="control-group">
@@ -87,8 +85,8 @@ use Destiny\Common\Utils\Date;
 						</dl>
 					</div>
 					<div class="form-actions" style="margin:0;">
-						<button type="submit" class="btn btn-danger">Confirm cancel</button>
-						<a class="btn" href="/profile">Back to profile</a>
+						<button type="submit" class="btn btn-danger btn-large">Cancel subscription</button>
+						<a class="btn btn-link" href="/profile">Back to profile</a>
 					</div>
 				</form>
 				<?php endif; ?>

@@ -25,7 +25,6 @@ use Destiny\Common\Config;
 			<div class="navbar-inner">
 				<ul class="nav">
 					<li><a href="/profile" title="Your personal details">Details</a></li>
-					<li><a href="/profile/subscription" title="Your subscriptions">Subscription</a></li>
 					<li class="active"><a href="/profile/authentication" title="Your login methods">Authentication</a></li>
 				</ul>
 			</div>
@@ -108,7 +107,7 @@ use Destiny\Common\Config;
 					</table>
 					
 					<div class="control-group">
-						<button class="btn btn-primary">Create new key</button>
+						<button class="btn btn-primary btn-large">Create new key</button>
 					</div>
 				</form>
 			</div>

@@ -286,19 +286,6 @@ $(function(){
 		loadGoogleCalendar();
 	})();
 	
-	// Subscriptions
-	(function(){
-		var subscriptionsUi = $('#subscriptions');
-		subscriptionsUi.on('click', '.subscription:not(.active)', function(e){
-			subscriptionsUi.find('.subscription.active').each(function(){
-				$(this).removeClass('active');
-			});
-			$(this).find('input[name="subscription"]').prop('checked', true);
-			$(this).find('.payment-options input[type="radio"]:first').prop('checked', true);
-			$(this).addClass('active');
-		});
-	})();
-	
 	// Theater
 	$('body#bigscreen').each(function(){
 		var offset = 81, pc = $('.page-content');

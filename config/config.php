@@ -236,12 +236,13 @@ return array (
 		),
 		'receiver_email'			=> '',
 		'currency'					=> 'USD',
-		// The KEY is the subscriptions type
 		'subscriptions' => array (
 			'1-MONTH-SUB' => array (
 				'id'				=> '1-MONTH-SUB',
 				'tier'				=> 1,
-				'label'				=> 'Standard subscription',
+				'tierLabel'			=> 'Tier I',
+				'tierItemLabel'		=> 'Standard Tier I',
+				'itemLabel'			=> 'Standard subscription',
 				'agreement'			=> '$5.00 (per month) recurring subscription',
 				'amount'			=> '5.00',
 				'billingFrequency'	=> 1,
@@ -250,7 +251,9 @@ return array (
 			'3-MONTH-SUB' => array (
 				'id'				=> '3-MONTH-SUB',
 				'tier'				=> 1,
-				'label'				=> 'Value subscription',
+				'tierLabel'			=> 'Tier I',
+				'tierItemLabel'		=> 'Standard Tier I',
+				'itemLabel'			=> 'Value subscription',
 				'agreement'			=> '$12.00 (per 3 months) recurring subscription',
 				'amount'			=> '12.00',
 				'billingFrequency'	=> 3,
@@ -259,7 +262,9 @@ return array (
 			'1-MONTH-SUB2' => array (
 				'id'				=> '1-MONTH-SUB2',
 				'tier'				=> 2,
-				'label'				=> 'Premium subscription',
+				'tierLabel'			=> 'Tier II',
+				'tierItemLabel'		=> 'Premium Tier II',
+				'itemLabel'			=> 'Premium subscription',
 				'agreement'			=> '$10.00 (per month) recurring subscription',
 				'amount'			=> '10.00',
 				'billingFrequency'	=> 1,
@@ -268,7 +273,9 @@ return array (
 			'3-MONTH-SUB2' => array (
 				'id'				=> '3-MONTH-SUB2',
 				'tier'				=> 2,
-				'label'				=> 'Premium value subscription',
+				'tierLabel'			=> 'Tier II',
+				'tierItemLabel'		=> 'Premium Tier II',
+				'itemLabel'			=> 'Premium value subscription',
 				'agreement'			=> '$24.00 (per 3 months) recurring subscription',
 				'amount'			=> '24.00',
 				'billingFrequency'	=> 3,

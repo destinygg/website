@@ -8,8 +8,8 @@ use Destiny\Common\Config;
 use Destiny\Common\Routing\Router;
 use Destiny\Common\Routing\RouteAnnotationClassLoader;
 use Destiny\Common\DirectoryClassIterator;
-use Destiny\Authentication\Service\RememberMeService;
-use Destiny\Authentication\Service\AuthenticationService;
+use Destiny\Common\Authentication\RememberMeService;
+use Destiny\Common\Authentication\AuthenticationService;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Annotations\AnnotationReader;
 
@@ -23,7 +23,7 @@ $app->setRouter ( new Router () );
 $app->setAnnotationReader ( new FileCacheReader ( new AnnotationReader (), realpath ( Config::$a ['cache'] ['path'] ) . '/annotation/' ) );
 
 // Annotation reader and routing
-RouteAnnotationClassLoader::loadClasses ( new DirectoryClassIterator ( _LIBDIR . '/', 'Destiny/Action/' ), $app->getAnnotationReader () );
+RouteAnnotationClassLoader::loadClasses ( new DirectoryClassIterator ( _LIBDIR . '/', 'Destiny/Controllers/' ), $app->getAnnotationReader () );
 
 // Setup user session
 $session = new SessionInstance ();

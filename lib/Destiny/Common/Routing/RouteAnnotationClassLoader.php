@@ -18,7 +18,7 @@ abstract class RouteAnnotationClassLoader {
 	
 	public static function loadClass(ReflectionClass $refl, Reader $reader) {
 		$router = Application::instance ()->getRouter ();
-		$annotation = $reader->getClassAnnotation ( $refl, 'Destiny\Common\Annotation\Action' );
+		$annotation = $reader->getClassAnnotation ( $refl, 'Destiny\Common\Annotation\Controller' );
 		if (empty ( $annotation ))
 			return;
 		

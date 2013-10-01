@@ -799,30 +799,28 @@ border-top: 1px solid #000;
 border-bottom: 1px solid #222;
 }
 
-.subscription {
-margin-top: 20px;
-margin-bottom: 20px;
-}
 
-.subscription .sub-amount {
+.subscriptions .subscription {
+float:left;
+width:160px;
+margin: 20px;
+}
+.subscriptions .subscription .sub-label {
+color: #fff;
+}
+.subscriptions .subscription .sub-amount {
+color: #f2f2f2;	
 font-size: 18px;
+font-weight: bold;
 }
-
-.subscription .payment-options {
-margin-left: 20px;
-opacity: 0.25;
+.subscriptions .subscription .tier-label {
+color: #666;	
+font-size:20px;
+font-weight: bold;	
 }
-
-.subscription.active .payment-options {
-opacity: 1;
-}
-
-.subscription.active .sub-amount {
-color: #f2f2f2;
-}
-
-.subscription.active .sub-label {
-color: #fff;	
+.subscriptions .subscription .sub-billing {
+color: #666;
+margin-bottom:0.25em;
 }
 
 .ui-step-legend {
@@ -901,11 +899,6 @@ i.td-fill {
 opacity:0.5;
 height:23px;
 }
-
-#appEvents .alert {
-margin:15px 0 0 0;
-}
-
 
 table.grid {
 width: 100%;

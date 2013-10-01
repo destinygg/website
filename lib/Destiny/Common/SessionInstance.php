@@ -2,7 +2,7 @@
 namespace Destiny\Common;
 
 use Destiny\Common\Utils\Options;
-use Destiny\Chat\Service\ChatIntegrationService;
+use Destiny\Chat\ChatIntegrationService;
 
 class SessionInstance {
 	

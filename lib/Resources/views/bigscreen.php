@@ -4,7 +4,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\User\UserRole;
+use Destiny\Common\User\UserRole;
 ?>
 <!DOCTYPE html>
 <html>

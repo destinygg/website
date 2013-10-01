@@ -1,9 +1,8 @@
 <? 
 namespace Destiny; 
-use Destiny\User\UserRole;
+use Destiny\Common\User\UserRole;
 use Destiny\Common\Session; 
 use Destiny\Common\Config;
-use Destiny\Common\Application;
 ?>
 <div id="main-nav" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
@@ -18,11 +17,11 @@ use Destiny\Common\Application;
 					<li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
 					<?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li><a href="/subscribe" rel="subscribe">Subscribe</a></li>
+					<li class="subscribe"><a href="/subscribe" rel="subscribe">Subscribe</a></li>
 					<?php endif; ?>
 					<?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li class="subscribed"><a title="You have an active subscription!">Subscribed</a></li>
+					<li class="subscribe"><a href="/subscribe" rel="subscribe" title="You have an active subscription!">Subscribed</a></li>
 					<?php endif; ?>
 				</ul>
 				<ul class="nav pull-right">
@@ -51,16 +50,3 @@ use Destiny\Common\Application;
 		</header>
 	</div>
 </section>
-
-<?php $events = Application::instance()->getEvents(); ?>
-<?php if(!empty($events)): ?>
-<div id="appEvents" class="container">
-<?php foreach($events as $event): ?>
-	<div class="app-event alert alert-<?=$event->getType()?>">
-		<button type="button" class="close" data-dismiss="alert">&times;</button>
-		<h4><?=$event->getLabel()?></h4>
-		<?=$event?>
-	</div>
-<?php endforeach; ?>
-<?php endif; ?>
-</div>

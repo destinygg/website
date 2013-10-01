@@ -47,13 +47,6 @@ class Application extends Service {
 	protected $session = null;
 	
 	/**
-	 * A list of events to show the user
-	 *
-	 * @array
-	 */
-	protected $events = array ();
-	
-	/**
 	 * A connected redis instance
 	 *
 	 * @var \Redis
@@ -330,32 +323,6 @@ class Application extends Service {
 		$this->session = $session;
 	}
 
-	/**
-	 * Add to the list of events
-	 *
-	 * @param AppEvent $event
-	 */
-	public function addEvent(AppEvent $event) {
-		$this->events [] = $event;
-	}
-
-	/**
-	 * Get a list of events that have been raised
-	 *
-	 * @return array
-	 */
-	public function getEvents() {
-		return $this->events;
-	}
-
-	/**
-	 * Set the list of events
-	 *
-	 * @param array $events
-	 */
-	public function setEvents($events) {
-		$this->events = $events;
-	}
 
 	/**
 	 * Get the redis instance

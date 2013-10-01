@@ -2,6 +2,9 @@
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
+use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
+use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
@@ -25,7 +28,6 @@ use Destiny\Common\Config;
 			<div class="navbar-inner">
 				<ul class="nav">
 					<li class="active"><a href="/profile" title="Your personal details">Details</a></li>
-					<li><a href="/profile/subscription" title="Your subscriptions">Subscription</a></li>
 					<li><a href="/profile/authentication" title="Your login methods">Authentication</a></li>
 				</ul>
 			</div>
@@ -34,16 +36,70 @@ use Destiny\Common\Config;
 	
 	<?php if(empty($model->subscription)): ?>
 	<section class="container">
+		<div class="alert alert-info" style="margin-bottom:0;">
+			<button type="button" class="close persist" data-dismiss="alert">&times;</button>
+			<h4>Subscription available</h4>
+			<?php if(Session::hasRole(UserRole::USER)): ?>
+			<div><a href="/subscribe"><i class="icon-bobross" title="There are no limits here!"></i> Want to contribute?</a> Well now you can! Become the owner of your own Destiny subscription. <a target="_blank" href="http://www.reddit.com/r/Destiny/comments/1hn15x/new_subscription_system_launched/">Feedback and FAQ</a></div>
+			<?php else: ?>
+			<div><a href="/login"><i class="icon-bobross" title="There are no limits here!"></i> Want to contribute?</a> Well now you can! Create an account and become the owner of your own Destiny subscription. <a target="_blank" href="http://www.reddit.com/r/Destiny/comments/1hn15x/new_subscription_system_launched/">Feedback and FAQ</a></div>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php endif; ?>
+	
+	<?if(!empty($model->subscription) && !empty($model->subscriptionType)):?>
+	<section class="container">
+		<h3>Subscription</h3>
 		<div class="content content-dark clearfix">
-			<div class="control-group">
-				<p><span class="label label-important">Subscription</span> You have no active subscriptions. Click <a href="/subscribe">here</a> to get one!</p>
+
+			<div class="subscriptions clearfix">
+				<div class="subscription" style="width: auto;">
+				
+					<div><?=$model->subscriptionType['tierItemLabel']?></div>
+					<div><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</div>
+
+					<?php if($model->subscription['recurring'] == 0): ?>
+					<br />
+					<dl>
+						<dt>Remaining time</dt>
+						<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
+					</dl> 
+					<?php endif; ?>
+					
+					<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+					<dl>
+						<dt>Time remaining until renewal</dt>
+						<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
+					</dl> 
+					<dl>
+						<?php 
+						$billingNextDate = Date::getDateTime($model->paymentProfile['billingNextDate']);
+						$billingStartDate = Date::getDateTime($model->paymentProfile['billingStartDate']);
+						?>
+						<dt>Next billing date</dt>
+						<?php if($billingNextDate > $billingStartDate): ?>
+						<dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
+						<?php else: ?>
+						<dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
+						<?php endif; ?>
+					</dl>
+					<?php endif; ?>
+					
+				</div>
 			</div>
+		
+			<div class="form-actions block-foot" style="margin-top:0;">
+				<a class="btn btn-large btn-primary" href="/subscription/update">Update</a>
+				<a class="btn btn-link" href="/subscription/cancel">Cancel subscription</a>
+			</div>
+		
 		</div>
 	</section>
 	<?php endif; ?>
 	
 	<section class="container">
-		<h3>Account</h3>
+		<h3>Details</h3>
 		
 		<?php if(!empty($model->profileUpdated)): ?>
 		<div class="alert alert-info">
@@ -106,7 +162,7 @@ use Destiny\Common\Config;
 					</div>
 		
 					<div class="form-actions block-foot">
-						<button class="btn" type="submit">Save changes</button>
+						<button class="btn btn-large btn-primary" type="submit">Save changes</button>
 					</div>
 				</form>
 			</div>
