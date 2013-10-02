@@ -84,7 +84,7 @@ use Destiny\Common\Config;
 	<?php endif; ?>
 	
 	<section class="container">
-		<h3>Details</h3>
+		<h3>Account details</h3>
 		
 		<?php if(!empty($model->profileUpdated)): ?>
 		<div class="alert alert-info">
