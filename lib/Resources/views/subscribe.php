@@ -70,7 +70,7 @@ use Destiny\Common\Utils\Tpl;
 				<div class="span4">
 					<div class="subfeature">
 						<h1>Pro Tier III</h1>
-						<p>Wow such value so presige you should purchase it immediately.</p>
+						<p>Wow such value so prestige you should purchase it immediately.</p>
 						<div class="subfeature-options clearfix">
 							<div class="subfeature-t1">
 								<?php $sub = $model->subscriptions['1-MONTH-SUB3']?>
