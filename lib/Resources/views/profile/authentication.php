@@ -2,6 +2,8 @@
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
+use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
 ?>
 <!DOCTYPE html>
 <html>
@@ -14,14 +16,12 @@ use Destiny\Common\Config;
 <body id="authentication" class="profile">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php if(empty($model->subscription)): ?>
+	<?php include Tpl::file('seg/subscribebanner.php')?>
+	<?php endif; ?>
 	
 	<section class="container">
-		<h1 class="page-title">
-			Profile 
-			<small><a><?=Tpl::out($model->user['username'])?></a></small>
-		</h1>
-		
-		<div style="margin:20px 0 0 0;" class="navbar navbar-inverse navbar-subnav">
+		<div class="navbar navbar-inverse navbar-subnav">
 			<div class="navbar-inner">
 				<ul class="nav">
 					<li><a href="/profile" title="Your personal details">Details</a></li>

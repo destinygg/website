@@ -18,10 +18,12 @@ use Destiny\Common\Config;
 <body id="profile">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php if(empty($model->subscription)): ?>
+	<?php include Tpl::file('seg/subscribebanner.php')?>
+	<?php endif; ?>
 	
 	<section class="container">
-		<h1 class="page-title">Profile</h1>
-		<div style="margin:20px 0 0 0;" class="navbar navbar-inverse navbar-subnav">
+		<div class="navbar navbar-inverse navbar-subnav">
 			<div class="navbar-inner">
 				<ul class="nav">
 					<li class="active"><a href="/profile" title="Your personal details">Details</a></li>
@@ -30,20 +32,6 @@ use Destiny\Common\Config;
 			</div>
 		</div>
 	</section>
-	
-	<?php if(empty($model->subscription)): ?>
-	<section class="container">
-		<div class="alert alert-info" style="margin-bottom:0;">
-			<button type="button" class="close persist" data-dismiss="alert">&times;</button>
-			<h4>Subscription available</h4>
-			<?php if(Session::hasRole(UserRole::USER)): ?>
-			<div><a href="/subscribe"><i class="icon-bobross" title="There are no limits here!"></i> Want to contribute?</a> Well now you can! Become the owner of your own Destiny subscription. <a target="_blank" href="http://www.reddit.com/r/Destiny/comments/1hn15x/new_subscription_system_launched/">Feedback and FAQ</a></div>
-			<?php else: ?>
-			<div><a href="/login"><i class="icon-bobross" title="There are no limits here!"></i> Want to contribute?</a> Well now you can! Create an account and become the owner of your own Destiny subscription. <a target="_blank" href="http://www.reddit.com/r/Destiny/comments/1hn15x/new_subscription_system_launched/">Feedback and FAQ</a></div>
-			<?php endif; ?>
-		</div>
-	</section>
-	<?php endif; ?>
 	
 	<?if(!empty($model->subscription) && !empty($model->subscriptionType)):?>
 	<section class="container">
