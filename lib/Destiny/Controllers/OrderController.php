@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Controllers;
 
 use Destiny\Common\Annotation\Controller;
@@ -17,6 +18,7 @@ use Destiny\Commerce\PaymentProfileStatus;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
+use Destiny\Common\User\UserRole;
 
 /**
  * @Controller
@@ -25,18 +27,37 @@ class OrderController {
 	
 	/**
 	 * @Route ("/order/confirm")
-	 * @Secure ({"USER"})
 	 *
 	 * Create and send the order
-	 * 
+	 *
 	 * @param array $params        	
 	 */
 	public function orderConfirm(array $params, ViewModel $model) {
+		$subService = SubscriptionsService::instance ();
+		
+		// @TODO make this more solid
+		$userId = Session::getCredentials ()->getUserId ();
+		
+		// Make sure the user hasnt somehow started the process with an active subscription
+		$currentSubscription = $subService->getUserActiveSubscription ( $userId );
+		if (! empty ( $currentSubscription )) {
+			$model->error = new Exception ( 'User already has a valid subscription' );
+			return 'order/ordererror';
+		}
+		
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
 			$model->error = new Exception ( 'Empty subscription type' );
 			return 'order/ordererror';
 		}
-		$subscription = SubscriptionsService::instance ()->getSubscriptionType ( $params ['subscription'] );
+		
+		// If there is no user, save the selection, and go to the login screen
+		if (! Session::hasRole ( UserRole::USER )) {
+			Session::start ( Session::START_NOCOOKIE );
+			Session::set ( 'subscription', $params ['subscription'] );
+			return 'redirect: /login';
+		}
+		
+		$subscription = $subService->getSubscriptionType ( $params ['subscription'] );
 		$model->subscription = $subscription;
 		return 'order/orderconfirm';
 	}
@@ -47,7 +68,7 @@ class OrderController {
 	 * @Transactional
 	 *
 	 * Create and send the order
-	 * 
+	 *
 	 * @param array $params        	
 	 */
 	public function orderCreate(array $params, ViewModel $model) {
@@ -112,7 +133,7 @@ class OrderController {
 		
 		$order = $ordersService->getOrderByIdAndUserId ( $params ['orderId'], $userId );
 		if (empty ( $order )) {
-			throw new Exception ( sprintf('Invalid order record orderId:%s userId:%s', $params ['orderId'], $userId) );
+			throw new Exception ( sprintf ( 'Invalid order record orderId:%s userId:%s', $params ['orderId'], $userId ) );
 		}
 		
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
@@ -134,7 +155,7 @@ class OrderController {
 	 * @Transactional
 	 *
 	 * We were redirected here from PayPal after the buyer approved/cancelled the payment
-	 * 
+	 *
 	 * @param array $params        	
 	 */
 	public function orderProcess(array $params, ViewModel $model) {

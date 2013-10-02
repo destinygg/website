@@ -823,6 +823,46 @@ color: #666;
 margin-bottom:0.25em;
 }
 
+.subfeature {
+margin:0.5em;
+padding:0.5em;
+}
+.subfeature > p {
+color: #666;
+}
+.subfeature-options {
+margin-top:1em;
+border-radius:8px;
+box-shadow: 1px 1px 5px rgba(0,0,0,0.25);
+}
+.subfeature-t1 {
+background: #222;
+border-radius: 4px 0 0 4px;
+width:50%;
+float: left;
+text-align: center;
+padding:1.5em 0;
+}
+.subfeature-t2 {
+background: #222;
+border-radius: 0 4px 4px 0;
+width:50%;
+float: left;
+text-align: center;
+padding:1.5em 0;
+border-left:1px dashed #333;
+margin-left:-1px;
+}
+.subfeature-info {
+font-size:18px;	
+margin-bottom:1.5em;
+}
+.subfeature-price {
+font-size:58px;
+line-height:70px;
+color:#fafafa;
+}
+
 .ui-step-legend {
 margin: 15px;
 }

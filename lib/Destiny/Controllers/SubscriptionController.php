@@ -24,35 +24,12 @@ use Destiny\Common\Utils\Date;
  * @Controller
  */
 class SubscriptionController {
-
-	/**
-	 * @Route ("/subscription/update")
-	 * @Secure ({"USER"})
-	 * @HttpMethod ({"GET"})
-	 *
-	 * @param array $params
-	 */
-	public function subscriptionUpdate(array $params, ViewModel $model) {
-		$subService = SubscriptionsService::instance ();
-		$subscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
-		if (empty ( $subscription )) {
-			throw new Exception ( 'Subscription required' );
-		}
-		$subscriptionType = Config::$a ['commerce'] ['subscriptions'] [$subscription ['subscriptionType']];
-	
-		$model->title = 'Subscribe';
-		$model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
-		$model->subscription = $subscription;
-		$model->subscriptionType = $subscriptionType;
-		return 'subscription/update';
-	}
 	
 	/**
 	 * @Route ("/subscription/update/confirm")
 	 * @Secure ({"USER"})
-	 * @HttpMethod ({"POST"})
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function subscriptionUpdateConfirm(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
@@ -77,12 +54,12 @@ class SubscriptionController {
 	 * @Secure ({"USER"})
 	 * @HttpMethod ({"POST"})
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function subscriptionUpdateConfirmProcess(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
 		$orderService = OrdersService::instance ();
-		$payPalApiService = PayPalApiService::instance();
+		$payPalApiService = PayPalApiService::instance ();
 		
 		$userId = Session::getCredentials ()->getUserId ();
 		
@@ -91,13 +68,13 @@ class SubscriptionController {
 			throw new Exception ( 'Subscription required' );
 		}
 		$currentSubscriptionType = Config::$a ['commerce'] ['subscriptions'] [$currentSubscription ['subscriptionType']];
-	
+		
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
 			$model->error = new Exception ( 'Empty subscription type' );
 			return 'order/ordererror';
 		}
 		$subscription = $subService->getSubscriptionType ( $params ['subscription'] );
-	
+		
 		// Change in payment plan (When you upgrade or downgrade the same sub type)
 		if ($currentSubscriptionType ['id'] == $subscription ['id']) {
 			if ($currentSubscription ['recurring'] == 0) {
@@ -117,13 +94,13 @@ class SubscriptionController {
 				if (! empty ( $paymentProfile )) {
 					$payPalApiService->cancelPaymentProfile ( $currentSubscription, $paymentProfile );
 				}
-				$subscription['amount'] = 0;
+				$subscription ['amount'] = 0;
 				$order = $orderService->createSubscriptionOrder ( $subscription, $userId );
-				return 'redirect: /order/'. urlencode($order['orderId']) .'/complete'; // @TODO FIX
-				//
+				return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete'; // @TODO FIX
+					                                                                       //
 			}
 		}
-	
+		
 		// create profile & subscription
 		$order = $orderService->createSubscriptionOrder ( $subscription, $userId );
 		if (isset ( $params ['renew'] ) && $params ['renew'] == '1') {
@@ -135,9 +112,9 @@ class SubscriptionController {
 			$setECResponse = $payPalApiService->createECResponse ( '/subscription/update/process', $order, $subscription );
 		}
 		if (isset ( $setECResponse ) && $setECResponse->Ack == 'Success') {
-			return 'redirect: '.Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token );
+			return 'redirect: ' . Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token );
 		}
-	
+		
 		// Error
 		$orderService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
 		Application::instance ()->getLogger ()->error ( $setECResponse->Errors->ShortMessage );
@@ -149,15 +126,15 @@ class SubscriptionController {
 	 * @Route ("/subscription/update/process")
 	 * @Secure ({"USER"})
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function subscriptionUpdateProcess(array $params, ViewModel $model) {
 		$ordersService = OrdersService::instance ();
 		$subService = SubscriptionsService::instance ();
-		$payPalApiService = PayPalApiService::instance();
+		$payPalApiService = PayPalApiService::instance ();
 		$log = Application::instance ()->getLogger ();
-	
-		if (!isset ( $params ['orderId'] ) || empty($params ['orderId'])) {
+		
+		if (! isset ( $params ['orderId'] ) || empty ( $params ['orderId'] )) {
 			$model->error = new Exception ( 'Require orderId' );
 			return 'order/ordererror';
 		}
@@ -169,13 +146,13 @@ class SubscriptionController {
 			$model->error = new Exception ( 'Invalid success response' );
 			return 'order/ordererror';
 		}
-	
+		
 		$order = $ordersService->getOrderById ( $params ['orderId'] );
 		if (empty ( $order )) {
 			$model->error = new Exception ( 'Invalid order record' );
 			return 'order/ordererror';
 		}
-	
+		
 		// @TODO this should be done better
 		if ($order ['userId'] != Session::getCredentials ()->getUserId ()) {
 			$model->error = new Exception ( 'Invalid order access' );
@@ -185,11 +162,11 @@ class SubscriptionController {
 			$model->error = new Exception ( 'Invalid order status' );
 			return 'order/ordererror';
 		}
-	
+		
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
 		$subscription = $subService->getSubscriptionType ( $order ['items'] [0] ['itemSku'] ); // get the subscription off the itemSku - wierd
 		$paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
-	
+		
 		// If we got a failed response URL
 		if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {
 			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
@@ -200,10 +177,10 @@ class SubscriptionController {
 			$model->error = new Exception ( 'Order request failed' );
 			return 'order/ordererror';
 		}
-	
+		
 		// The token from paypal
 		$token = $params ['token'];
-	
+		
 		// Get the checkout info
 		$ecResponse = $payPalApiService->retrieveCheckoutInfo ( $token );
 		if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
@@ -211,7 +188,7 @@ class SubscriptionController {
 			$model->error = new Exception ( 'Failed to retrieve express checkout details' );
 			return 'order/ordererror';
 		}
-	
+		
 		if ($params ['success'] == 'true' || $params ['success'] === true) {
 			if (! empty ( $paymentProfile )) {
 				$createRPProfileResponse = $payPalApiService->createRecurringPaymentProfile ( $paymentProfile, $token, $subscription );
@@ -229,9 +206,9 @@ class SubscriptionController {
 				$ordersService->updatePaymentProfileId ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
 			}
 		}
-	
+		
 		// Complete the checkout
-		$DoECResponse = $payPalApiService->getECPaymentResponse($params ['PayerID'], $token, $order);
+		$DoECResponse = $payPalApiService->getECPaymentResponse ( $params ['PayerID'], $token, $order );
 		if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
 			if (isset ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo )) {
 				$payPalApiService->recordECPayments ( $DoECResponse, $params ['PayerID'], $order );
@@ -247,7 +224,7 @@ class SubscriptionController {
 			$model->error = new Exception ( 'Unable to retrieve response from Paypal' );
 			return 'order/ordererror';
 		}
-			
+		
 		// Current subscription
 		$currentSubscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		if (! empty ( $currentSubscription )) {
@@ -259,46 +236,37 @@ class SubscriptionController {
 			// Clear subscription
 			$subService->updateSubscriptionState ( $currentSubscription ['subscriptionId'], SubscriptionStatus::CANCELLED );
 		}
-	
+		
 		// Create new subscription
 		$subService->createSubscriptionFromOrder ( $order, $subscription, $paymentProfile );
-	
+		
 		// Update the user
 		AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
-	
-		return 'redirect: /order/'. urlencode($order['orderId']) .'/complete'; // @TODO FIX
+		
+		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete'; // @TODO FIX
 	}
 	
 	/**
 	 * @Route ("/subscribe")
 	 *
 	 * Build subscribe checkout form
-	 * 
+	 *
 	 * @param array $params        	
 	 */
 	public function subscribe(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
-		$subscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
-
-		// @TODO dirty
-		if (!empty ( $subscription )) {
-			return 'redirect: /subscription/update';
-		}
-		
 		$subscription = $subService->getUserPendingSubscription ( Session::getCredentials ()->getUserId () );
 		if (! empty ( $subscription )) {
 			throw new Exception ( 'You already have a subscription in the "pending" state. Please cancel this first.' );
 		}
-		
-		$subscriptionType = null;
+		$subscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
+		$formAction = '/order/confirm';
 		if (! empty ( $subscription )) {
-			$subscriptionType = Config::$a ['commerce'] ['subscriptions'] [$subscription ['subscriptionType']];
+			$formAction = '/subscription/update/confirm';
 		}
-		
 		$model->title = 'Subscribe';
 		$model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
-		$model->subscription = $subscription;
-		$model->subscriptionType = $subscriptionType;
+		$model->formAction = $formAction;
 		return 'subscribe';
 	}
 	
@@ -307,8 +275,8 @@ class SubscriptionController {
 	 * @Secure ({"USER"})
 	 * @HttpMethod ({"GET"})
 	 *
-	 * @param array $params
-	 * @param ViewModel $model
+	 * @param array $params        	
+	 * @param ViewModel $model        	
 	 * @throws Exception
 	 * @return string
 	 */
@@ -327,29 +295,29 @@ class SubscriptionController {
 	 * @HttpMethod ({"POST"})
 	 * @Transactional
 	 *
-	 * @param array $params
-	 * @param ViewModel $model
+	 * @param array $params        	
+	 * @param ViewModel $model        	
 	 * @throws Exception
 	 * @return string
 	 */
 	public function subscriptionCancelProcess(array $params, ViewModel $model) {
 		$orderService = OrdersService::instance ();
-		$payPalAPIService = PayPalApiService::instance();
+		$payPalAPIService = PayPalApiService::instance ();
 		$userId = Session::getCredentials ()->getUserId ();
 		$subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $userId );
 		if (! empty ( $subscription )) {
-				
+			
 			if (! empty ( $subscription ['paymentProfileId'] )) {
 				$paymentProfile = $orderService->getPaymentProfileById ( $subscription ['paymentProfileId'] );
 				if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
-					$payPalAPIService->cancelPaymentProfile($subscription, $paymentProfile);
+					$payPalAPIService->cancelPaymentProfile ( $subscription, $paymentProfile );
 				}
 			}
-				
+			
 			$subscription ['status'] = SubscriptionStatus::CANCELLED;
 			SubscriptionsService::instance ()->updateSubscriptionState ( $subscription ['subscriptionId'], $subscription ['status'] );
 			AuthenticationService::instance ()->flagUserForUpdate ( $userId );
-				
+			
 			$model->subscription = $subscription;
 			$model->subscriptionCancelled = true;
 			return 'profile/cancelsubscription';

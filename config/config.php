@@ -280,6 +280,28 @@ return array (
 				'amount'			=> '24.00',
 				'billingFrequency'	=> 3,
 				'billingPeriod'		=> 'Month' 
+			) ,
+			'1-MONTH-SUB3' => array (
+				'id'				=> '1-MONTH-SUB3',
+				'tier'				=> 3,
+				'tierLabel'			=> 'Tier III',
+				'tierItemLabel'		=> 'Magical Tier III',
+				'itemLabel'			=> 'Magical subscription',
+				'agreement'			=> '$20.00 (per month) recurring subscription',
+				'amount'			=> '20.00',
+				'billingFrequency'	=> 1,
+				'billingPeriod'		=> 'Month' 
+			),
+			'3-MONTH-SUB3' => array (
+				'id'				=> '3-MONTH-SUB3',
+				'tier'				=> 3,
+				'tierLabel'			=> 'Tier III',
+				'tierItemLabel'		=> 'Pro Tier III',
+				'itemLabel'			=> 'Pro value subscription',
+				'agreement'			=> '$64.00 (per 3 months) recurring subscription',
+				'amount'			=> '64.00',
+				'billingFrequency'	=> 3,
+				'billingPeriod'		=> 'Month' 
 			) 
 		)
 	),

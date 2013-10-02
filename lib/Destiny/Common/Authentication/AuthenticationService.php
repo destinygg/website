@@ -228,7 +228,6 @@ class AuthenticationService extends Service {
 		Session::updateCredentials ( $credentials );
 		ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
 		
-		// Remember me (this gets and then unsets the var)
 		if (Session::set ( 'rememberme' )) {
 			$this->setRememberMe ( $user );
 		}

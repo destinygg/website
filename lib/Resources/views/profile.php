@@ -87,7 +87,7 @@ use Destiny\Common\Config;
 			</div>
 		
 			<div class="form-actions block-foot" style="margin-top:0;">
-				<a class="btn btn-large btn-primary" href="/subscription/update">Update</a>
+				<a class="btn btn-large btn-primary" href="/subscribe">Update</a>
 				<a class="btn btn-link" href="/subscription/cancel">Cancel subscription</a>
 			</div>
 		

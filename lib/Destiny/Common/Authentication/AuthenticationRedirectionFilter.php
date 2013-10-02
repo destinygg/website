@@ -7,6 +7,7 @@ use Destiny\Common\User\UserRole;
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
 use Destiny\Common\Session;
+use Destiny\Commerce\SubscriptionsService;
 
 class AuthenticationRedirectionFilter {
 	
@@ -31,19 +32,32 @@ class AuthenticationRedirectionFilter {
 
 		// Follow url *notice the set, clearing the var
 		$follow = Session::set( 'follow' );
+
 		
 		// If the user profile doesnt exist, go to the register page
 		if (! $authService->getUserAuthProfileExists ( $authCreds )) {
 			Session::set ( 'authSession', $authCreds );
 			$url = 'redirect: /register?code=' . urlencode ( $authCreds->getAuthCode () );
-			if (! empty ( $follow )) {
-				$url .= '&follow=' . urlencode ( $follow );
+			if (! empty( $follow )) {
+				$url .= '&follow=' . urlencode ( $follow);
 			}
 			return $url;
 		}
 		
 		// User exists, handle the auth
 		$authService->handleAuthCredentials ( $authCreds );
+			
+		// Check for an active "cart", redirect to cart page
+		// @TODO clean this implementation up
+		$selectSubscription = Session::get ( 'subscription' );
+		if (! empty ( $selectSubscription )) {
+			$currentSubscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
+			if (empty ( $currentSubscription )) {
+				return 'redirect: /order/confirm?subscription=' . $selectSubscription;
+			}
+			return 'redirect: /subscription/update/confirm?subscription=' . $selectSubscription;
+		}
+		
 		if (! empty ( $follow )) {
 			return 'redirect: /' . $follow;
 		}
