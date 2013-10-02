@@ -20,10 +20,7 @@ use Destiny\Common\Config;
 	<?php include Tpl::file('seg/top.php') ?>
 	
 	<section class="container">
-		<h1 class="page-title">
-			Profile 
-			<small><a><?=Tpl::out($model->user['username'])?></a></small>
-		</h1>
+		<h1 class="page-title">Profile</h1>
 		<div style="margin:20px 0 0 0;" class="navbar navbar-inverse navbar-subnav">
 			<div class="navbar-inner">
 				<ul class="nav">
