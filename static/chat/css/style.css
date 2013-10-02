@@ -166,6 +166,7 @@ display: none !important;
 .chat.chat-icons .user-msg i,
 .chat-lines i.icon-subscriber,
 .chat-lines i.icon-subscribert2,
+.chat-lines i.icon-subscribert3,
 .chat-lines i.icon-administrator {
 display: inline-block !important;	
 }

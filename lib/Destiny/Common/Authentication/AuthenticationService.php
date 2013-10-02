@@ -172,6 +172,9 @@ class AuthenticationService extends Service {
 			if ($subscription ['subscriptionTier'] == 2) {
 				$credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
 			}
+			if ($subscription ['subscriptionTier'] == 3) {
+				$credentials->addFeatures ( UserFeature::SUBSCRIBERT3 );
+			}
 		}
 		return $credentials;
 	}

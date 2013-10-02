@@ -600,6 +600,7 @@
 		PROTECTED    : 'protected',
 		SUBSCRIBER   : 'subscriber',
 		SUBSCRIBERT2 : 'flair1',
+		SUBSCRIBERT3 : 'flair2',
 		VIP          : 'vip',
 		MODERATOR    : 'moderator',
 		ADMIN        : 'admin',
@@ -637,7 +638,9 @@
 					break;
 			}
 		}
-		if($.inArray(UserFeatures.SUBSCRIBERT2, this.features) >= 0){
+		if($.inArray(UserFeatures.SUBSCRIBERT3, this.features) >= 0){
+			icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
+		}else if($.inArray(UserFeatures.SUBSCRIBERT2, this.features) >= 0){
 			icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
 		}else if($.inArray(UserFeatures.SUBSCRIBER, this.features) >= 0){
 			icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';

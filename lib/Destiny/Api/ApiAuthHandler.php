@@ -49,6 +49,9 @@ class ApiAuthHandler {
 			if ($subscription ['subscriptionTier'] == 2) {
 				$credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
 			}
+			if ($subscription ['subscriptionTier'] == 3) {
+				$credentials->addFeatures ( UserFeature::SUBSCRIBERT3 );
+			}
 		}
 		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $credentials->getData () ) );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );

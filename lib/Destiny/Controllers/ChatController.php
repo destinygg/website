@@ -110,6 +110,9 @@ class ChatController {
 				if ($line ['subscriptionTier'] == 2) {
 					$line ['features'] [] = UserFeature::SUBSCRIBERT2;
 				}
+				if ($line ['subscriptionTier'] == 3) {
+					$line ['features'] [] = UserFeature::SUBSCRIBERT3;
+				}
 			}
 			$lines [] = $line;
 		}
