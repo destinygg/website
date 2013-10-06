@@ -298,8 +298,8 @@ return array (
 				'tierLabel'			=> 'Tier III',
 				'tierItemLabel'		=> 'Pro Tier III',
 				'itemLabel'			=> 'Pro value subscription',
-				'agreement'			=> '$64.00 (per 3 months) recurring subscription',
-				'amount'			=> '64.00',
+				'agreement'			=> '$48.00 (per 3 months) recurring subscription',
+				'amount'			=> '48.00',
 				'billingFrequency'	=> 3,
 				'billingPeriod'		=> 'Month' 
 			) 
