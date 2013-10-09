@@ -74,6 +74,7 @@ class AdminController {
 	 */
 	public function adminSubscribers(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
+		$model->subscribersT3 = $subService->getSubscriptionsByTier ( 3 );
 		$model->subscribersT2 = $subService->getSubscriptionsByTier ( 2 );
 		$model->subscribersT1 = $subService->getSubscriptionsByTier ( 1 );
 		return 'admin/subscribers';
