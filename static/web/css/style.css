@@ -592,11 +592,12 @@ font-size: 85%;
 }
 
 .private-ads {
-margin-left: 20px;
+margin: 0 auto;
 position: relative;
 }
 
 .private-ads,.private-ad>a {
+width: 300px;
 height: 250px;
 display: block;
 }

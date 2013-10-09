@@ -4,7 +4,7 @@ use Destiny\Common\Config;
 <section class="container">
 	<div class="content clearfix" style="position: relative;">
 
-		<div style="margin-right: 320px;" class="clearfix">
+		<div style="margin-right: 300px;" class="clearfix">
 			<div class="clearfix">
 				<div style="width: 40%; float: left;">
 					<div class="donate-block" id="paypal-donation">
@@ -34,6 +34,10 @@ use Destiny\Common\Config;
 						</div>
 						<div class="private-ad" id="open-broadcasters-software">
 							<a href="http://obsproject.com/" title="visit Open Broadcasters Software"></a>
+						</div>
+						<div class="private-ad" id="dollar-shave-club">
+							<a href="http://Dollar-Shave-Club.7eer.net/c/72409/74122/1969"><img src="http://adn.impactradius.com/display-ad/1969-74122" border="0" alt="DollarShaveClub-Shave Time Shave Money" width="300" height="250"/></a>
+							<img height="1" width="1" src="http://Dollar-Shave-Club.7eer.net/i/72409/74122/1969" border="0" />
 						</div>
 					</div>
 				</div>

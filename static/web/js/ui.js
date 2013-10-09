@@ -244,7 +244,7 @@ $(function(){
 		});
 		if(adRotateIndex < pads.length-1) adRotateIndex++; else adRotateIndex = 0;
 		$(pads[adRotateIndex]).hide().addClass('active').fadeIn(500);
-	}, 6 * 1000);
+	}, 8 * 1000);
 
 	
 	// Check if the ad has been blocked after X seconds

@@ -94,3 +94,10 @@ color: #4ba235;
 .chat-frame a.bot:hover {
 color: #7adb62;
 }
+.chat-frame a.flair2 {
+color: #0060ff;
+text-shadow:1px 1px 0 black;
+}
+.chat-frame a.flair2:hover {
+color: #0060ff;
+}
