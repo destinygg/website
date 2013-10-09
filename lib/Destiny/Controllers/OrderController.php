@@ -34,6 +34,7 @@ class OrderController {
 	 */
 	public function orderConfirm(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
+		$log = Application::instance ()->getLogger ();
 		
 		// @TODO make this more solid
 		$userId = Session::getCredentials ()->getUserId ();
@@ -42,11 +43,13 @@ class OrderController {
 		$currentSubscription = $subService->getUserActiveSubscription ( $userId );
 		if (! empty ( $currentSubscription )) {
 			$model->error = new Exception ( 'User already has a valid subscription' );
+			$log->error ( 'User already has a valid subscription' );
 			return 'order/ordererror';
 		}
 		
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
 			$model->error = new Exception ( 'Empty subscription type' );
+			$log->error ( 'Empty subscription type' );
 			return 'order/ordererror';
 		}
 		

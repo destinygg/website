@@ -31,7 +31,7 @@ use Destiny\Common\Config;
 				</div>
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
-				<form action="/order/create" method="post">
+				<form class="onceoff" action="/order/create" method="post">
 					<input type="hidden" name="subscription" value="<?=$model->subscription['id']?>">
 
 					<div class="subscriptions clearfix">
@@ -70,6 +70,12 @@ use Destiny\Common\Config;
 	
 	<?php include Tpl::file('seg/foot.php') ?>
 	<?php include Tpl::file('seg/commonbottom.php') ?>
+	
+	<script>
+	$('form.onceoff').on('submit', function(){
+		$(this).find('[type="submit"]').attr("disabled", "disabled");
+	});
+	</script>
 	
 </body>
 </html>
