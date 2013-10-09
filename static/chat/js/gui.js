@@ -600,7 +600,7 @@
 		PROTECTED    : 'protected',
 		SUBSCRIBER   : 'subscriber',
 		SUBSCRIBERT2 : 'flair1',
-		SUBSCRIBERT3 : 'flair2',
+		SUBSCRIBERT3 : 'flair3',
 		VIP          : 'vip',
 		MODERATOR    : 'moderator',
 		ADMIN        : 'admin',
