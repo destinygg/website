@@ -35,14 +35,13 @@ class SubscriptionController {
 		$subService = SubscriptionsService::instance ();
 		$currentSubscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		$log = Application::instance ()->getLogger ();
+		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
+			throw new Exception ( 'Empty subscription type' );
+		}
 		if (empty ( $currentSubscription )) {
 			throw new Exception ( 'Subscription required' );
 		}
 		$currentSubscriptionType = Config::$a ['commerce'] ['subscriptions'] [$currentSubscription ['subscriptionType']];
-		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
-			$model->error = new Exception ( 'Empty subscription type' );
-			return 'order/ordererror';
-		}
 		$subscription = SubscriptionsService::instance ()->getSubscriptionType ( $params ['subscription'] );
 		$model->currentSubscription = $currentSubscription;
 		$model->currentSubscriptionType = $currentSubscriptionType;
@@ -63,17 +62,16 @@ class SubscriptionController {
 		$payPalApiService = PayPalApiService::instance ();
 		$userId = Session::getCredentials ()->getUserId ();
 		$log = Application::instance ()->getLogger ();
+
+		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
+			throw new Exception ( 'Empty subscription type' );
+		}
 		
 		$currentSubscription = $subService->getUserActiveSubscription ( $userId );
 		if (empty ( $currentSubscription )) {
 			throw new Exception ( 'Subscription required' );
 		}
 		$currentSubscriptionType = Config::$a ['commerce'] ['subscriptions'] [$currentSubscription ['subscriptionType']];
-		
-		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
-			$model->error = new Exception ( 'Empty subscription type' );
-			return 'order/ordererror';
-		}
 		$subscription = $subService->getSubscriptionType ( $params ['subscription'] );
 		
 		// Change in payment plan (When you upgrade or downgrade the same sub type)
@@ -117,15 +115,16 @@ class SubscriptionController {
 		
 		// Error
 		$orderService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-		Application::instance ()->getLogger ()->error ( $setECResponse->Errors->ShortMessage );
-		$model->error = new Exception ( sprintf ( 'A order error has occurred. The order reference is: %s', $order ['orderId'] ) );
-		return 'order/ordererror';
+		$log->error ( $setECResponse->Errors->ShortMessage, $order );
+		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 	}
 	
 	/**
 	 * @Route ("/subscription/update/process")
 	 * @Secure ({"USER"})
 	 *
+	 * We were redirected here from PayPal after the buyer approved/cancelled the payment
+	 * 
 	 * @param array $params        	
 	 */
 	public function subscriptionUpdateProcess(array $params, ViewModel $model) {
@@ -135,32 +134,28 @@ class SubscriptionController {
 		$log = Application::instance ()->getLogger ();
 		
 		if (! isset ( $params ['orderId'] ) || empty ( $params ['orderId'] )) {
-			$model->error = new Exception ( 'Require orderId' );
-			return 'order/ordererror';
+			throw new Exception ( 'Require orderId' );
 		}
 		if (! isset ( $params ['token'] ) || empty ( $params ['token'] )) {
-			$model->error = new Exception ( 'Invalid token' );
-			return 'order/ordererror';
+			throw new Exception ( 'Invalid token' );
 		}
-		if (! isset( $params ['success'] )) {
-			$model->error = new Exception ( 'Invalid success response' );
-			return 'order/ordererror';
+		if (! isset ( $params ['success'] )) {
+			throw new Exception ( 'Invalid success response' );
 		}
 		
 		$order = $ordersService->getOrderById ( $params ['orderId'] );
 		if (empty ( $order )) {
-			$model->error = new Exception ( 'Invalid order record' );
-			return 'order/ordererror';
+			throw new Exception ( 'Invalid order record' );
 		}
 		
 		// @TODO this should be done better
 		if ($order ['userId'] != Session::getCredentials ()->getUserId ()) {
-			$model->error = new Exception ( 'Invalid order access' );
-			return 'order/ordererror';
+			throw new Exception ( 'Invalid order access' );
 		}
-		if ($order ['state'] != 'New') {
-			$model->error = new Exception ( 'Invalid order status' );
-			return 'order/ordererror';
+		
+		if ($order ['state'] != OrderStatus::_NEW) {
+			$log->error ( $setECResponse->Errors->ShortMessage, $order );
+			return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 		}
 		
 		$order ['items'] = $ordersService->getOrderItems ( $order ['orderId'] );
@@ -174,8 +169,8 @@ class SubscriptionController {
 			if (! empty ( $paymentProfile )) {
 				$ordersService->updatePaymentProfileState ( $paymentProfile ['profileId'], PaymentProfileStatus::ERROR );
 			}
-			$model->error = new Exception ( 'Order response failed' );
-			return 'order/ordererror';
+			$log->error ( 'Order response failed', $order );
+			return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 		}
 		
 		// The token from paypal
@@ -184,23 +179,22 @@ class SubscriptionController {
 		// Get the checkout info
 		$ecResponse = $payPalApiService->retrieveCheckoutInfo ( $token );
 		if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
-			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-			$model->error = new Exception ( 'Failed to retrieve express checkout details' );
-			return 'order/ordererror';
+			$log->error ( 'Failed to retrieve express checkout details', $order );
+			return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 		}
 		
 		if ($params ['success'] == 'true' || $params ['success'] === true) {
 			if (! empty ( $paymentProfile )) {
 				$createRPProfileResponse = $payPalApiService->createRecurringPaymentProfile ( $paymentProfile, $token, $subscription );
 				if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
-					$model->error = new Exception ( 'Failed to create recurring payment request' );
-					return 'order/ordererror';
+					$log->error ( 'Failed to create recurring payment request', $order );
+					return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 				}
 				$paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
 				$paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
 				if (empty ( $paymentProfileId )) {
-					$model->error = new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
-					return 'order/ordererror';
+					$log->error ( 'Invalid recurring payment profileId returned from Paypal', $order );
+					return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 				}
 				// Set the payment profile to active, and paymetProfileId
 				$ordersService->updatePaymentProfileId ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
@@ -215,14 +209,13 @@ class SubscriptionController {
 				$ordersService->updateOrderState ( $order ['orderId'], $order ['state'] );
 			} else {
 				$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-				$model->error = new Exception ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
-				return 'order/ordererror';
+				$log->error ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ), $order );
+				return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 			}
 		} else {
 			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-			$model->error = new Exception ( 'Unable to retrieve response from Paypal' );
-			$log->error ( $DoECResponse->Errors [0]->LongMessage );
-			return 'order/ordererror';
+			$log->error ( $DoECResponse->Errors [0]->LongMessage, $order );
+			return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/error';
 		}
 		
 		// Current subscription
