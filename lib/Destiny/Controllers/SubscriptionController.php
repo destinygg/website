@@ -34,6 +34,7 @@ class SubscriptionController {
 	public function subscriptionUpdateConfirm(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
 		$currentSubscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
+		$log = Application::instance ()->getLogger ();
 		if (empty ( $currentSubscription )) {
 			throw new Exception ( 'Subscription required' );
 		}
@@ -60,8 +61,8 @@ class SubscriptionController {
 		$subService = SubscriptionsService::instance ();
 		$orderService = OrdersService::instance ();
 		$payPalApiService = PayPalApiService::instance ();
-		
 		$userId = Session::getCredentials ()->getUserId ();
+		$log = Application::instance ()->getLogger ();
 		
 		$currentSubscription = $subService->getUserActiveSubscription ( $userId );
 		if (empty ( $currentSubscription )) {
@@ -97,7 +98,6 @@ class SubscriptionController {
 				$subscription ['amount'] = 0;
 				$order = $orderService->createSubscriptionOrder ( $subscription, $userId );
 				return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete'; // @TODO FIX
-					                                                                       //
 			}
 		}
 		
@@ -136,12 +136,10 @@ class SubscriptionController {
 		
 		if (! isset ( $params ['orderId'] ) || empty ( $params ['orderId'] )) {
 			$model->error = new Exception ( 'Require orderId' );
-			$log->error ( 'Require orderId' );
 			return 'order/ordererror';
 		}
 		if (! isset ( $params ['token'] ) || empty ( $params ['token'] )) {
 			$model->error = new Exception ( 'Invalid token' );
-			$log->error ( 'Invalid token' );
 			return 'order/ordererror';
 		}
 		if (! isset( $params ['success'] )) {
@@ -152,19 +150,16 @@ class SubscriptionController {
 		$order = $ordersService->getOrderById ( $params ['orderId'] );
 		if (empty ( $order )) {
 			$model->error = new Exception ( 'Invalid order record' );
-			$log->error ( 'Invalid order record');
 			return 'order/ordererror';
 		}
 		
 		// @TODO this should be done better
 		if ($order ['userId'] != Session::getCredentials ()->getUserId ()) {
 			$model->error = new Exception ( 'Invalid order access' );
-			$log->error ( 'Invalid order access');
 			return 'order/ordererror';
 		}
 		if ($order ['state'] != 'New') {
 			$model->error = new Exception ( 'Invalid order status' );
-			$log->error ( 'Invalid order status');
 			return 'order/ordererror';
 		}
 		
@@ -179,7 +174,6 @@ class SubscriptionController {
 			if (! empty ( $paymentProfile )) {
 				$ordersService->updatePaymentProfileState ( $paymentProfile ['profileId'], PaymentProfileStatus::ERROR );
 			}
-			$log->error ( 'Order response failed' );
 			$model->error = new Exception ( 'Order response failed' );
 			return 'order/ordererror';
 		}
@@ -192,7 +186,6 @@ class SubscriptionController {
 		if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
 			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
 			$model->error = new Exception ( 'Failed to retrieve express checkout details' );
-			$log->error ( 'Failed to retrieve express checkout details' );
 			return 'order/ordererror';
 		}
 		
@@ -201,14 +194,12 @@ class SubscriptionController {
 				$createRPProfileResponse = $payPalApiService->createRecurringPaymentProfile ( $paymentProfile, $token, $subscription );
 				if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
 					$model->error = new Exception ( 'Failed to create recurring payment request' );
-					$log->error ( 'Failed to create recurring payment request' );
 					return 'order/ordererror';
 				}
 				$paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
 				$paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
 				if (empty ( $paymentProfileId )) {
 					$model->error = new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
-					$log->error ( 'Invalid recurring payment profileId returned from Paypal' );
 					return 'order/ordererror';
 				}
 				// Set the payment profile to active, and paymetProfileId
@@ -225,13 +216,12 @@ class SubscriptionController {
 			} else {
 				$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
 				$model->error = new Exception ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
-				$log->error ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
 				return 'order/ordererror';
 			}
 		} else {
 			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-			$log->error ( $DoECResponse->Errors [0]->LongMessage );
 			$model->error = new Exception ( 'Unable to retrieve response from Paypal' );
+			$log->error ( $DoECResponse->Errors [0]->LongMessage );
 			return 'order/ordererror';
 		}
 		

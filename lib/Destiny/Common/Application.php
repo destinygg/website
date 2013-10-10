@@ -133,9 +133,15 @@ class Application extends Service {
 				$conn = $this->getConnection ();
 				$conn->beginTransaction ();
 			}
-			
+				
 			// Execute the class method
 			$response = $classInstance->$classMethod ( $params, $model );
+				
+			// Log any errors on the model
+			// @TODO neaten this implementation up - better than logging everywhere else
+			if (! empty ( $model->error ) && is_a ( $model->error, 'Exception' )) {
+				$this->logger->error ( $model->error->getMessage () );
+			}
 			
 			// Check if the response is valid
 			if (empty ( $response )) {

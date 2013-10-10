@@ -51,7 +51,7 @@ class IpnController {
 			
 			// Make sure this IPN is for the merchant
 			if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
-				$log->critical ( sprintf ( 'IPN originated with incorrect receiver_email' ) );
+				$log->critical ( sprintf('IPN originated with incorrect receiver_email [%s]', $data ['ipn_track_id']) );
 				return new HttpEntity ( Http::STATUS_OK, 'Invalid IPN' );
 			}
 			$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
@@ -107,6 +107,8 @@ class IpnController {
 							}
 						}
 					}
+				}else{
+					$log->info ( sprintf ( 'Express checkout IPN called, but no payment found [%s]', $txnId ) );
 				}
 				break;
 			

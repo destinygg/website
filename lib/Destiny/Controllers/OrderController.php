@@ -34,7 +34,6 @@ class OrderController {
 	 */
 	public function orderConfirm(array $params, ViewModel $model) {
 		$subService = SubscriptionsService::instance ();
-		$log = Application::instance ()->getLogger ();
 		
 		// @TODO make this more solid
 		$userId = Session::getCredentials ()->getUserId ();
@@ -43,13 +42,11 @@ class OrderController {
 		$currentSubscription = $subService->getUserActiveSubscription ( $userId );
 		if (! empty ( $currentSubscription )) {
 			$model->error = new Exception ( 'User already has a valid subscription' );
-			$log->error ( 'User already has a valid subscription' );
 			return 'order/ordererror';
 		}
 		
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
 			$model->error = new Exception ( 'Empty subscription type' );
-			$log->error ( 'Empty subscription type' );
 			return 'order/ordererror';
 		}
 		
@@ -87,13 +84,11 @@ class OrderController {
 		$currentSubscription = $subService->getUserActiveSubscription ( $userId );
 		if (! empty ( $currentSubscription )) {
 			$model->error = new Exception ( 'User already has a valid subscription' );
-			$log->error ( 'User already has a valid subscription' );
 			return 'order/ordererror';
 		}
 		
 		if (! isset ( $params ['subscription'] ) || empty ( $params ['subscription'] )) {
 			$model->error = new Exception ( 'Invalid subscription type' );
-			$log->error ( 'Invalid subscription type' );
 			return 'order/ordererror';
 		}
 		
@@ -114,8 +109,8 @@ class OrderController {
 		
 		// Error
 		$ordersService->updateOrderState ( $order ['orderId'], 'Error' );
-		$log->error ( $setECResponse->Errors->ShortMessage );
 		$model->error = new Exception ( sprintf ( 'A order error has occurred. The order reference is: %s', $order ['orderId'] ) );
+		$log->error ( $setECResponse->Errors->ShortMessage );
 		return 'order/ordererror';
 	}
 	
@@ -133,7 +128,6 @@ class OrderController {
 		
 		if (! isset ( $params ['orderId'] ) || empty ( $params ['orderId'] )) {
 			$model->error = new Exception ( 'Require orderId' );
-			$log->error ( 'Require orderId' );
 			return 'order/ordererror';
 		}
 		
@@ -141,7 +135,6 @@ class OrderController {
 		
 		$order = $ordersService->getOrderByIdAndUserId ( $params ['orderId'], $userId );
 		if (empty ( $order )) {
-			$log->error ( sprintf ( 'Invalid order record orderId:%s userId:%s', $params ['orderId'], $userId ) );
 			throw new Exception ( sprintf ( 'Invalid order record orderId:%s userId:%s', $params ['orderId'], $userId ) );
 		}
 		
@@ -175,17 +168,14 @@ class OrderController {
 		
 		if (! isset ( $params ['orderId'] ) || empty ( $params ['orderId'] )) {
 			$model->error = new Exception ( 'Require orderId' );
-			$log->error ( 'Require orderId' );
 			return 'order/ordererror';
 		}
 		if (! isset ( $params ['token'] ) || empty ( $params ['token'] )) {
 			$model->error = new Exception ( 'Invalid token' );
-			$log->error ( 'Require orderId' );
 			return 'order/ordererror';
 		}
 		if (! isset ( $params ['success'] )) {
 			$model->error = new Exception ( 'Invalid success response' );
-			$log->error ( 'Invalid success response' );
 			return 'order/ordererror';
 		}
 		
@@ -194,19 +184,16 @@ class OrderController {
 		$order = $ordersService->getOrderById ( $params ['orderId'] );
 		if (empty ( $order )) {
 			$model->error = new Exception ( 'Invalid order record' );
-			$log->error ( 'Invalid order record' );
 			return 'order/ordererror';
 		}
 		
 		// @TODO this should be done better
 		if ($order ['userId'] != Session::getCredentials ()->getUserId ()) {
 			$model->error = new Exception ( 'Invalid order access' );
-			$log->error ( 'Invalid order access' );
 			return 'order/ordererror';
 		}
 		if ($order ['state'] != 'New') {
 			$model->error = new Exception ( 'Invalid order status' );
-			$log->error ( 'Invalid order status' );
 			return 'order/ordererror';
 		}
 		
@@ -222,7 +209,6 @@ class OrderController {
 				$ordersService->updatePaymentProfileState ( $paymentProfile ['profileId'], PaymentProfileStatus::ERROR );
 			}
 			$model->error = new Exception ( 'Order request failed' );
-			$log->error ( 'Order request failed' );
 			return 'order/ordererror';
 		}
 		
@@ -231,14 +217,12 @@ class OrderController {
 		if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
 			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
 			$model->error = new Exception ( 'Failed to retrieve express checkout details' );
-			$log->error ( 'Failed to retrieve express checkout details' );
 			return 'order/ordererror';
 		}
 		
 		// Is done after the success check
 		if (! isset ( $params ['PayerID'] ) || empty ( $params ['PayerID'] )) {
 			$model->error = new Exception ( 'Invalid PayerID' );
-			$log->error ( 'Invalid PayerID' );
 			return 'order/ordererror';
 		}
 		
@@ -252,7 +236,6 @@ class OrderController {
 			if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
 				$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
 				$model->error = new Exception ( 'Failed to create recurring payment request' );
-				$log->error ( 'Failed to create recurring payment request' );
 				return 'order/ordererror';
 			}
 			$paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
@@ -260,7 +243,6 @@ class OrderController {
 			if (empty ( $paymentProfileId )) {
 				$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
 				$model->error = new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
-				$log->error ( 'Invalid recurring payment profileId returned from Paypal' );
 				return 'order/ordererror';
 			}
 			// Set the payment profile to active, and paymetProfileId
@@ -276,14 +258,12 @@ class OrderController {
 			} else {
 				$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
 				$model->error = new Exception ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
-				$log->error ( sprintf ( 'No payments for express checkout order %s', $order ['orderId'] ) );
 				return 'order/ordererror';
 			}
 		} else {
 			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-			$log->error ( $DoECResponse->Errors [0]->LongMessage );
 			$model->error = new Exception ( 'Unable to retrieve response from Paypal' );
-			$log->error ( 'Unable to retrieve response from Paypal' );
+			$log->error ( $DoECResponse->Errors [0]->LongMessage );
 			return 'order/ordererror';
 		}
 		
