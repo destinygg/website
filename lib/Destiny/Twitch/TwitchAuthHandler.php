@@ -7,6 +7,7 @@ use Destiny\Common\OAuthClient;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
+use Destiny\Common\ViewModel;
 
 class TwitchAuthHandler {
 	
@@ -21,7 +22,7 @@ class TwitchAuthHandler {
 	 * @param array $params        	
 	 * @throws Exception
 	 */
-	public function execute(array $params) {
+	public function execute(array $params, ViewModel $model) {
 		$authService = AuthenticationService::instance ();
 		if (isset ( $params ['error'] ) && ! empty ( $params ['error'] )) {
 			$model->title = 'Login error';
