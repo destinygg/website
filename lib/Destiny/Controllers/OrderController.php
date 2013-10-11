@@ -216,6 +216,10 @@ class OrderController {
 		$subscription = $subService->getSubscriptionType ( $order ['items'] [0] ['itemSku'] ); // get the subscription off the itemSku - wierd
 		$paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
 		
+		if(empty($paymentProfile)){
+			$paymentProfile = null;
+		}
+		
 		// If we got a failed response URL
 		if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {
 			$ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
