@@ -28,7 +28,7 @@ class AuthenticationController {
 	public function authApi(array $params, ViewModel $model) {
 		try {
 			$authHandler = new ApiAuthHandler ();
-			return $authHandler->execute ( $params );
+			return $authHandler->execute ( $params, $model );
 		} catch ( \Exception $e ) {
 			$response = new HttpEntity ( Http::STATUS_ERROR, $e->getMessage () );
 			return $response;
@@ -46,7 +46,7 @@ class AuthenticationController {
 	public function authTwitch(array $params, ViewModel $model) {
 		try {
 			$authHandler = new TwitchAuthHandler ();
-			return $authHandler->execute ( $params );
+			return $authHandler->execute ( $params, $model );
 		} catch ( \Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
@@ -65,7 +65,7 @@ class AuthenticationController {
 	public function authTwitter(array $params, ViewModel $model) {
 		try {
 			$authHandler = new TwitterAuthHandler ();
-			return $authHandler->execute ( $params );
+			return $authHandler->execute ( $params, $model );
 		} catch ( \Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;
@@ -84,7 +84,7 @@ class AuthenticationController {
 	public function authGoogle(array $params, ViewModel $model) {
 		try {
 			$authHandler = new GoogleAuthHandler ();
-			return $authHandler->execute ( $params );
+			return $authHandler->execute ( $params, $model );
 		} catch ( \Exception $e ) {
 			$model->title = 'Login error';
 			$model->error = $e;

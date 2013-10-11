@@ -62,7 +62,7 @@ class OrdersService extends Service {
 			'amount' => $order ['amount'],
 			'currency' => $order ['currency'],
 			'description' => $order ['description'],
-			'state' => 'New',
+			'state' => OrderStatus::_NEW,
 			'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
 		) );
 		$order ['orderId'] = $conn->lastInsertId ();
@@ -505,7 +505,7 @@ class OrdersService extends Service {
 		$paymentProfile ['billingPeriod'] = $subscription ['billingPeriod'];
 		$paymentProfile ['billingStartDate'] = $billingStartDate->format ( 'Y-m-d H:i:s' );
 		$paymentProfile ['billingNextDate'] = $billingStartDate->format ( 'Y-m-d H:i:s' );
-		$paymentProfile ['state'] = 'New';
+		$paymentProfile ['state'] = PaymentStatus::_NEW;
 		$paymentProfile ['profileId'] = $ordersService->addPaymentProfile ( $paymentProfile );
 		return $paymentProfile;
 	}
