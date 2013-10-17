@@ -240,7 +240,7 @@ class SubscriptionsService extends Service {
 	 * @param array $subscription
 	 * @param array $paymentProfile
 	 */
-	public function createSubscriptionFromOrder(array $order, array $subscription, array $paymentProfile = null) {
+	public function createSubscriptionFromOrder(array $order, array $subscription, $paymentProfile = null) {
 		$start = Date::getDateTime ();
 		$end = Date::getDateTime ();
 		$end->modify ( '+' . $subscription ['billingFrequency'] . ' ' . strtolower ( $subscription ['billingPeriod'] ) );
