@@ -220,6 +220,17 @@ return array (
 				'public'			=> true,
 				'track'				=> true,
 				'aggregate'			=> true 
+			),
+			array (
+				'name'				=> 'lllIIlIIlllIlIII',
+				'internalName'		=> 'llliiliillliliii',
+				'id'				=> '47697287',
+				'acctId'			=> '210747678',
+				'region'			=> 'na',
+				'stats'				=> true,
+				'public'			=> true,
+				'track'				=> true,
+				'aggregate'			=> true 
 			) 
 		) 
 	),
