@@ -22,7 +22,7 @@ use Destiny\Common\Utils\Tpl;
 				<div class="span4">
 					<div class="subfeature">
 						<h1>Standard Tier I</h1>
-						<p>Get access to chat features and be eligable for future subscriber events!</p>
+						<p>Get access to chat features and be eligible for future subscriber events!</p>
 						<div class="subfeature-options clearfix">
 							<div class="subfeature-t1">
 								<?php $sub = $model->subscriptions['1-MONTH-SUB']?>
