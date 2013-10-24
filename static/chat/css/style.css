@@ -374,6 +374,8 @@ display: inline-block;
 
 /* The text shown when a user is not logged in */
 .chat-login-msg {
+display: inline-block;
+width: 100%;
 padding: 0 0 0 5px;
 line-height: 25px;
 color: rgba(255,255,255,0.5);
