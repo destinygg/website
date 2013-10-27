@@ -17,6 +17,8 @@ use Destiny\Common\MimeType;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
+use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatBroadcastService;
 
 /**
  * @Controller
@@ -28,8 +30,8 @@ class AdminController {
 	 * @Secure ({"ADMIN"})
 	 * @HttpMethod ({"GET","POST"})
 	 *
-	 * @param array $params
-	 * @param ViewModel $model
+	 * @param array $params        	
+	 * @param ViewModel $model        	
 	 * @return string
 	 */
 	public function admin(array $params, ViewModel $model) {
@@ -43,7 +45,7 @@ class AdminController {
 	 * @Secure ({"ADMIN"})
 	 * @Transactional
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 * @throws Exception
 	 */
 	public function adminCron(array $params) {
@@ -69,7 +71,7 @@ class AdminController {
 	 * @Route ("/admin/subscribers")
 	 * @Secure ({"ADMIN"})
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 * @throws Exception
 	 */
 	public function adminSubscribers(array $params, ViewModel $model) {
@@ -84,7 +86,7 @@ class AdminController {
 	 * @Route ("/admin/user/find")
 	 * @Secure ({"ADMIN"})
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function adminUserFind(array $params) {
 		$s = (isset ( $params ['username'] )) ? $params ['username'] : '';
@@ -95,6 +97,24 @@ class AdminController {
 		$response = new HttpEntity ( Http::STATUS_OK );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		$response->setBody ( json_encode ( $users ) );
+		return $response;
+	}
+
+	/**
+	 * @Route ("/admin/broadcast")
+	 * @Secure ({"ADMIN"})
+	 *
+	 * @param array $params        	
+	 */
+	public function sendBroadcast(array $params) {
+		if (! isset ( $params ['message'] )) {
+			throw new Exception ( 'Message required' );
+		}
+		ChatBroadcastService::instance ()->addBroadcast ( $params ['message'], Session::getCredentials ()->getUserId () );
+		$broadcast = json_encode ( ChatIntegrationService::instance ()->sendBroadcast ( $params ['message'] ) );
+		$response = new HttpEntity ( Http::STATUS_OK );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		$response->setBody ( $broadcast );
 		return $response;
 	}
 

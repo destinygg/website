@@ -13,7 +13,7 @@ use Destiny\Common\Config;
 
 	<?php include Tpl::file('seg/top.php') ?>
 	
-	<section class="container" id="admintabs">
+	<section class="container">
 		<h1 class="page-title">
 			<span>User</span>
 			<small>update</small>
@@ -29,7 +29,7 @@ use Destiny\Common\Config;
 		</div>
 	</section>
 	
-	<section class="container" id="admintabs">
+	<section class="container">
 			
 		<div>
 			<h3>Ban / Mute</h3>

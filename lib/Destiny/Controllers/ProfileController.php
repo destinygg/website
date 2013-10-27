@@ -190,6 +190,7 @@ class ProfileController {
 	 */
 	public function profileAuthentication(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
+		$subscriptionsService = SubscriptionsService::instance ();
 		$userId = Session::getCredentials ()->getUserId ();
 		$model->title = 'Authentication';
 		$model->user = $userService->getUserById ( $userId );
@@ -204,7 +205,18 @@ class ProfileController {
 			$model->authProfiles = $authProfiles;
 			$model->authProfileTypes = $authProfileTypes;
 		}
-	
+		
+		$subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
+		if (empty ( $subscription )) {
+			$subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
+		}
+		$subscriptionType = null;
+		if(!empty($subscription)){
+			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
+		}
+
+		$model->subscription = $subscription;
+		$model->subscriptionType = $subscriptionType;
 		$model->authTokens = ApiAuthenticationService::instance ()->getAuthTokensByUserId ( $userId );
 		return 'profile/authentication';
 	}

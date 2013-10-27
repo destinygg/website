@@ -177,6 +177,11 @@ class Application extends Service {
 			if ($transactional) {
 				$conn->rollback ();
 			}
+			if (Config::$a ['showExceptions']) {
+				echo '<p>' . $e->getMessage () . '</p>';
+				echo '<pre>' . $e->getTraceAsString () . '</pre>';
+				exit ();
+			}
 			$response = new HttpEntity ( Http::STATUS_ERROR );
 			$model->error = new Exception ( 'Maximum over-rustle has been achieved' );
 			$model->code = Http::STATUS_ERROR;

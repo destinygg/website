@@ -13,13 +13,27 @@ use Destiny\Common\Config;
 
 	<?php include Tpl::file('seg/top.php') ?>
 	
-	<section class="container" id="admintabs">
+	<section class="container">
+	
 		<h1 class="page-title">Administration</h1>
 		<div class="navbar navbar-inverse navbar-subnav">
 			<div class="navbar-inner">
 				<form class="navbar-form" id="user-search">
-					&nbsp;<input type="text" class="span2" placeholder="Enter a username..." autocomplete="off">
+					&nbsp;<input type="text" class="span6" placeholder="Enter a username..." autocomplete="off">
 					<button type="submit" class="btn btn-inverse">Edit</button>
+				</form>
+			</div>
+		</div>
+		
+	</section>
+	
+	<section id="broadcastui" class="container">
+		<h2>Broadcast</h2>
+		<div class="navbar navbar-inverse navbar-subnav">
+			<div class="navbar-inner">
+				<form class="navbar-form" id="broadcast">
+					&nbsp;<input type="text" class="span6" placeholder="Enter a message..." autocomplete="off">
+					<button type="submit" class="btn btn-inverse">Send</button>
 				</form>
 			</div>
 		</div>

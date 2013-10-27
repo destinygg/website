@@ -224,6 +224,9 @@ chat.prototype.onSUBONLY = function(data) {
 	var submode = data.data == 'on'? 'enabled': 'disabled';
 	return new ChatCommandMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
 };
+chat.prototype.onBROADCAST = function(data) {
+	return new ChatMessage(data.data.message);
+};
 
 chat.prototype.handleCommand = function(str) {
 
@@ -451,6 +454,19 @@ chat.prototype.handleCommand = function(str) {
 			this.gui.saveChatOption('timestampformat', format);
 			this.gui.push(new ChatInfoMessage("New format: " + this.gui.timestampformat));
 			break;
+			
+		case "broadcast":
+			var chat = this;
+			$.ajax({
+				url: '/admin/broadcast',
+				type: 'post',
+				data: {message: str.substring(command.length+1)},
+				error: function(){
+					chat.gui.push(new ChatErrorMessage("Broadcast send failed"));
+				}
+			});
+			break;
+			
 	};
 };
 chat.prototype.parseTimeInterval = function(str) {

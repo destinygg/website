@@ -57,6 +57,9 @@ background-image: url("../img/question-white.png");
 i.icon-command {
 background-image: url("../img/exclamation-diamond.png");	
 }
+i.icon-broadcast {
+background-image: url("../img/megaphone.png");	
+}
 
 .chat-frame a.user {
 color: #CACACA;

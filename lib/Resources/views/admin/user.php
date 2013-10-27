@@ -16,7 +16,7 @@ use Destiny\Common\User\UserRole;
 
 	<?php include Tpl::file('seg/top.php') ?>
 	
-	<section class="container" id="admintabs">
+	<section class="container">
 		<h1 class="page-title">
 			<span>User</span>
 			<small>update</small>
@@ -32,7 +32,7 @@ use Destiny\Common\User\UserRole;
 		</div>
 	</section>
 	
-	<section class="container" id="admintabs">
+	<section class="container">
 			
 		<?php if(!empty($model->profileUpdated)): ?>
 		<div class="alert alert-info">

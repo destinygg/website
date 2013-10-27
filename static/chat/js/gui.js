@@ -648,7 +648,7 @@
 		return icons;
 	};
 
-	//UI MESSAGE
+	//UI MESSAGE - ability to send HTML markup to the chat
 	ChatUIMessage = function(html){
 		return this.init(html);
 	};
@@ -740,6 +740,26 @@
 	$.extend(ChatStatusMessage.prototype, ChatMessage.prototype);
 	ChatStatusMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-status"></i> ' + this.wrapMessage());
+	};
+	// BROADCAST MESSAGE
+	ChatBroadcastMessage = function(message, timestamp){
+		this.init(message, timestamp);
+		this.type = 'broadcast';
+		return this;
+	};
+	$.extend(ChatBroadcastMessage.prototype, ChatMessage.prototype);
+	ChatBroadcastMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' <i class="icon-broadcast"></i> ' + this.wrapMessage());
+	};
+	ChatBroadcastMessage.prototype.wrapMessage = function(){
+		var elem     = $('<msg/>').text(this.message),
+		    encoded  = elem.html();
+		
+		for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
+			encoded = destiny.chat.gui.formatters[i].format(encoded);
+		
+		elem.html(encoded);
+		return elem.get(0).outerHTML;
 	};
 	// USER MESSAGE
 	ChatUserMessage = function(message, user, timestamp){

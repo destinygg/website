@@ -6,6 +6,8 @@ use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Config;
+use Destiny\Common\Exception;
+use Destiny\Common\Utils\Date;
 
 class ChatIntegrationService extends Service {
 	
@@ -28,7 +30,7 @@ class ChatIntegrationService extends Service {
 	/**
 	 * Refreshes the current users session timeout
 	 *
-	 * @param string $sessionId
+	 * @param string $sessionId        	
 	 * @return void
 	 */
 	public function renewChatSessionExpiration($sessionId) {
@@ -43,8 +45,9 @@ class ChatIntegrationService extends Service {
 
 	/**
 	 * Handle the update of the credentials for chat
-	 * @param SessionCredentials $credentials
-	 * @param string $sessionId
+	 *
+	 * @param SessionCredentials $credentials        	
+	 * @param string $sessionId        	
 	 */
 	public function setChatSession(SessionCredentials $credentials, $sessionId) {
 		$redis = Application::instance ()->getRedis ();
@@ -60,15 +63,14 @@ class ChatIntegrationService extends Service {
 	/**
 	 * Update a users session
 	 *
-	 * @param SessionCredentials $credentials
+	 * @param SessionCredentials $credentials        	
 	 */
 	public function refreshChatUserSession(SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
 		if (! empty ( $redis )) {
 			$json = json_encode ( $credentials->getData () );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-			// pub/sub channels in redis are not database-specific, so make them
-			$redis->publish ( 'refreshuser-' . Config::$a ['redis'] ['database'], $json );
+			$redis->publish ( sprintf ( 'refreshuser-%s', Config::$a ['redis'] ['database'] ), $json );
 			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
 		}
 	}
@@ -81,6 +83,32 @@ class ChatIntegrationService extends Service {
 		if (! empty ( $redis )) {
 			$redis->delete ( sprintf ( 'CHAT:session-%s', Session::getSessionId () ) );
 		}
+	}
+
+	/**
+	 * Broadcast a message
+	 *
+	 * @param string $message
+	 *        	the message
+	 * @param string $sentBy
+	 *        	the username of the person who is sending the broadcast
+	 * @param string $sentOn
+	 *        	the date time
+	 * @throws Exception
+	 */
+	public function sendBroadcast($message, $sentBy, $sentOn) {
+		if (empty ( $message )) {
+			throw new Exception ( 'Message required' );
+		}
+		$redis = Application::instance ()->getRedis ();
+		$broadcast = new \stdClass ();
+		$broadcast->message = $message;
+		$broadcast->sentBy = Session::getCredentials ()->getUsername ();
+		$broadcast->sentOn = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
+		if (! empty ( $redis )) {
+			$redis->publish ( sprintf ( 'broadcast-%s', Config::$a ['redis'] ['database'] ), json_encode ( $broadcast ) );
+		}
+		return $broadcast;
 	}
 
 }
