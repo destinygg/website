@@ -97,7 +97,7 @@ class ChatIntegrationService extends Service {
 		}
 		$redis = Application::instance ()->getRedis ();
 		$broadcast = new \stdClass ();
-		$broadcast->message = $message;
+		$broadcast->data = $message;
 		if (! empty ( $redis )) {
 			$redis->publish ( sprintf ( 'broadcast-%s', Config::$a ['redis'] ['database'] ), json_encode ( $broadcast ) );
 		}

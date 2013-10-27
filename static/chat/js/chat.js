@@ -456,7 +456,7 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "broadcast":
-			payload.message = str.substring(command.length+1);
+			payload.data = str.substring(command.length+1);
 			this.emit(command.toUpperCase(), payload);
 			break;
 			
