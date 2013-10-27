@@ -225,7 +225,7 @@ chat.prototype.onSUBONLY = function(data) {
 	return new ChatCommandMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
 };
 chat.prototype.onBROADCAST = function(data) {
-	return new ChatBroadcastMessage(data.data.message, data.timestamp);
+	return new ChatBroadcastMessage(data.data, data.timestamp);
 };
 
 chat.prototype.handleCommand = function(str) {

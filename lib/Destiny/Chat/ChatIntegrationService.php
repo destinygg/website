@@ -7,7 +7,6 @@ use Destiny\Common\Service;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
-use Destiny\Common\Utils\Date;
 
 class ChatIntegrationService extends Service {
 	
@@ -90,21 +89,15 @@ class ChatIntegrationService extends Service {
 	 *
 	 * @param string $message
 	 *        	the message
-	 * @param string $sentBy
-	 *        	the username of the person who is sending the broadcast
-	 * @param string $sentOn
-	 *        	the date time
 	 * @throws Exception
 	 */
-	public function sendBroadcast($message, $sentBy, $sentOn) {
+	public function sendBroadcast($message) {
 		if (empty ( $message )) {
 			throw new Exception ( 'Message required' );
 		}
 		$redis = Application::instance ()->getRedis ();
 		$broadcast = new \stdClass ();
 		$broadcast->message = $message;
-		$broadcast->sentBy = Session::getCredentials ()->getUsername ();
-		$broadcast->sentOn = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
 		if (! empty ( $redis )) {
 			$redis->publish ( sprintf ( 'broadcast-%s', Config::$a ['redis'] ['database'] ), json_encode ( $broadcast ) );
 		}

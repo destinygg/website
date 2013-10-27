@@ -18,7 +18,7 @@ use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
-use Destiny\Chat\ChatBroadcastService;
+use Destiny\Chat\ChatlogService;
 
 /**
  * @Controller
@@ -110,8 +110,9 @@ class AdminController {
 		if (! isset ( $params ['message'] )) {
 			throw new Exception ( 'Message required' );
 		}
-		ChatBroadcastService::instance ()->addBroadcast ( $params ['message'], Session::getCredentials ()->getUserId () );
-		$broadcast = json_encode ( ChatIntegrationService::instance ()->sendBroadcast ( $params ['message'] ) );
+		$message = $params ['message'];
+		ChatlogService::instance ()->addChatEvent ( Session::getCredentials ()->getUserId (), $message, 'BROADCAST' );
+		$broadcast = json_encode ( ChatIntegrationService::instance ()->sendBroadcast ( $message ) );
 		$response = new HttpEntity ( Http::STATUS_OK );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		$response->setBody ( $broadcast );

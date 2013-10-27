@@ -3,6 +3,7 @@ namespace Destiny\Chat;
 
 use Destiny\Common\Service;
 use Destiny\Common\Application;
+use Destiny\Common\Utils\Date;
 
 class ChatlogService extends Service {
 	
@@ -66,10 +67,10 @@ class ChatlogService extends Service {
 	/**
 	 * Get the last X number of messages from a specific user starting at a specific date
 	 *
-	 * @param int $userId
-	 * @param DateTime $startRange
-	 * @param int $limit
-	 * @param int $start
+	 * @param int $userId        	
+	 * @param DateTime $startRange        	
+	 * @param int $limit        	
+	 * @param int $start        	
 	 */
 	public function getChatLogBanContext($userId,\DateTime $startRange, $limit = 10, $start = 0) {
 		$conn = Application::instance ()->getConnection ();
@@ -95,6 +96,30 @@ class ChatlogService extends Service {
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();
 		return $stmt->fetchAll ();
+	}
+
+	/**
+	 * Insert a new chat event record
+	 *
+	 * @param int $userid        	
+	 * @param string $message        	
+	 * @param string $event        	
+	 * @return string
+	 */
+	public function addChatEvent($userid, $message, $event) {
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'chatlog', array (
+				'userid' => $userid,
+				'event' => $event,
+				'data' => $message,
+				'timestamp' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
+		), array (
+				\PDO::PARAM_INT,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR,
+				\PDO::PARAM_STR 
+		) );
+		return $conn->lastInsertId ();
 	}
 
 }

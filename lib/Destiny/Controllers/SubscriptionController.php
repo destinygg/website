@@ -19,6 +19,8 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Application;
 use Destiny\Commerce\OrderStatus;
 use Destiny\Common\Utils\Date;
+use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatlogService;
 
 /**
  * @Controller
@@ -235,6 +237,10 @@ class SubscriptionController {
 		
 		// Update the user
 		AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
+		
+		$message = sprintf ( "%s just subscribed!", Session::getCredentials ()->getUsername () );
+		ChatlogService::instance ()->addChatEvent ( $order ['userId'], $message, 'BROADCAST' );
+		ChatIntegrationService::instance ()->sendBroadcast ( $message );
 		
 		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete'; // @TODO FIX
 	}
