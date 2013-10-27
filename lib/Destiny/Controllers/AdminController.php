@@ -17,8 +17,6 @@ use Destiny\Common\MimeType;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
-use Destiny\Chat\ChatIntegrationService;
-use Destiny\Chat\ChatlogService;
 
 /**
  * @Controller
@@ -97,25 +95,6 @@ class AdminController {
 		$response = new HttpEntity ( Http::STATUS_OK );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		$response->setBody ( json_encode ( $users ) );
-		return $response;
-	}
-
-	/**
-	 * @Route ("/admin/broadcast")
-	 * @Secure ({"ADMIN"})
-	 *
-	 * @param array $params        	
-	 */
-	public function sendBroadcast(array $params) {
-		if (! isset ( $params ['message'] )) {
-			throw new Exception ( 'Message required' );
-		}
-		$message = $params ['message'];
-		ChatlogService::instance ()->addChatEvent ( Session::getCredentials ()->getUserId (), $message, 'BROADCAST' );
-		$broadcast = json_encode ( ChatIntegrationService::instance ()->sendBroadcast ( $message ) );
-		$response = new HttpEntity ( Http::STATUS_OK );
-		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		$response->setBody ( $broadcast );
 		return $response;
 	}
 

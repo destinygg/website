@@ -456,15 +456,8 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "broadcast":
-			var chat = this;
-			$.ajax({
-				url: '/admin/broadcast',
-				type: 'post',
-				data: {message: str.substring(command.length+1)},
-				error: function(){
-					chat.gui.push(new ChatErrorMessage("Broadcast send failed"));
-				}
-			});
+			payload.message = str.substring(command.length+1);
+			this.emit(command.toUpperCase(), payload);
 			break;
 			
 	};

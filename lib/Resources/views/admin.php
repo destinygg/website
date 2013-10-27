@@ -27,18 +27,6 @@ use Destiny\Common\Config;
 		
 	</section>
 	
-	<section id="broadcastui" class="container">
-		<h2>Broadcast</h2>
-		<div class="navbar navbar-inverse navbar-subnav">
-			<div class="navbar-inner">
-				<form class="navbar-form" id="broadcast">
-					&nbsp;<input type="text" class="span6" placeholder="Enter a message..." autocomplete="off">
-					<button type="submit" class="btn btn-inverse">Send</button>
-				</form>
-			</div>
-		</div>
-	</section>
-	
 	<?php include Tpl::file('seg/commonbottom.php') ?>
 	
 	<script src="<?=Config::cdnv()?>/web/js/admin.js"></script>

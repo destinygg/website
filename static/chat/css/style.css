@@ -202,7 +202,7 @@ color: #838383;
 color: #dedede;
 }
 .chat-theme-dark .chat-lines > div.broadcast-msg {
-color: #ff0000;
+color: #edea12;
 }
 .chat-theme-dark .chat-lines > div.broadcast-msg {
 background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 100%);	
@@ -218,9 +218,6 @@ background: linear-gradient(to right,  rgba(0,150,255,0.5) 0%,rgba(0,150,255,0) 
 .chat-theme-dark .chat-lines > div.highlight msg,
 .chat-theme-dark .chat-lines > div.broadcast-msg msg {
 text-shadow:1px 1px 0 rgba(0,0,0,0.5);	
-}
-.chat-theme-dark .chat-lines > div.broadcast-msg msg {
-font-weight: bold;	
 }
 .chat-theme-dark .chat-input-control {
 background: #090909;

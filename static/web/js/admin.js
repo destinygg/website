@@ -37,37 +37,3 @@
 
 	
 })();
-
-(function(){
-
-	var broadcastUi = $('#broadcastui');
-		broadcastForm = $('form#broadcast'), 
-		broadcastInput = broadcastForm.find('input[type="text"]'),
-		msgUi = null;
-
-	broadcastForm.on('submit', function(e){
-		$.ajax({
-			url: '/admin/broadcast',
-			type: 'post',
-			data: {message: broadcastInput.val()},
-			success: function(data){
-				if(msgUi)
-					msgUi.remove();
-				msgUi = $(
-					'<div id="broadcast-msg" class="alert alert-info" style="margin-top: 1em;">'+
-						'<button type="button" class="close persist" data-dismiss="alert">&times;</button>'+
-						'<h4>Broadcast sent</h4>'+
-						'<p style="margin-bottom: 0;">Message: <span id="msgtext"></span></p>'+
-					'</div>'
-				);
-				msgUi.find('#msgtext').text('"' + data.message + '"');
-				broadcastUi.append(msgUi);
-				broadcastInput.val('');
-				broadcastInput.focus();
-			}
-		});
-		return false;
-	});
-
-	
-})();
