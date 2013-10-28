@@ -248,16 +248,10 @@
 			// Hints
 			this.hintPopup = new hintPopup(this);
 			
-			// When a user interacts with the chat try show a hint
-			this.input.on('click keydown', $.proxy(function(e){
-				if(chat.loaded && e.keyCode != 116 /* F5 */)
-					this.invoke();
-			}, this.hintPopup));
-			
 			// Reset event
 			this.chatsettings.find('#resethints').on('click', $.proxy(function(e){
 				e.preventDefault();
-				this.reset();
+				this.reset(chat);
 			}, this.hintPopup));
 			
 			// Hide hint when someone clicks the user tools

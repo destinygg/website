@@ -11,7 +11,9 @@
 			'highlight'      : 'Chat messages containing your username will be highlighted in blue',
 			'ignoreuser'     : 'Ignore other users by clicking their name and selecting ignore',
 			'hidehints'      : 'You can hide these types of hints in the settings menu (lower right corner, the gear icon)',
-			'moreinfo'       : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information'
+			'moreinfo'       : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information',
+			'emotewiki'      : 'For the list of available emotes type /emotes or <a href="https://github.com/destinygg/website/wiki/Emotes" target="_blank">click here</a>',
+			'mutespermanent' : 'Mutes are never persistent, don\'t worry it will pass!'
 		};
 
 		this.popupInterval   = 3600000;
@@ -31,24 +33,40 @@
 		this.ui.hintmessage = this.ui.find('.hint-message');
 		this.ui.on('click', '.hidehint', $.proxy(this.hideHint, this));
 		this.ui.on('click', '.nexthint', $.proxy(this.nextHint, this));
+		
+		if(this.enabled)
+			this.listenForInput(chat);
+		
 	};
-	hintPopup.prototype.invoke = function(){
+	hintPopup.prototype.listenForInput = function(chat){
+		chat.input.unbind('.hintpopup');
+		chat.input.on('click.hintpopup keydown.hintpopup', $.proxy(function(e){
+			if(chat.loaded && e.keyCode != 116 /* F5 */){
+				chat.input.unbind('.hintpopup');
+				this.invoke();
+			};
+		}, this));
+	};
+	hintPopup.prototype.invoke = function(chat){
 		if(this.visible || !this.enabled)
-			return;
+			return false;
 		if(!this.lasthinttime || (new Date().getTime() - this.lasthinttime)  >= this.popupInterval){
 			this.currenthint = this.getRandomHint();
 			if(!this.currenthint)
-				return;
+				return false;
 			this.show();
+			return true;
 		};
+		return false;
 	};
 	hintPopup.prototype.enable = function(enabled){
 		this.enabled = enabled;
 	};
-	hintPopup.prototype.reset = function(){
+	hintPopup.prototype.reset = function(chat){
 		this.hiddenhints = [];
 		this.updateHiddenHints();
 		this.updateLastHintTime(0);
+		this.listenForInput(chat);
 	};
 	hintPopup.prototype.getRandomHint = function(){
 		var hint = null, i = 0;
