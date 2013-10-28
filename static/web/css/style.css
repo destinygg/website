@@ -921,19 +921,15 @@ left: 50%;
 
 .alert-info a {
 color: #0097e1;
-border-bottom: 1px dashed rgba(0,0,0,0.25);
 }
 .alert-info a:hover {
 color: #00abff;
-border-bottom: none;
 }
 .alert-success a {
 color: #11b913;
-border-bottom: 1px dashed rgba(0,0,0,0.25);
 }
 .alert-success a:hover {
 color: #19d91c;
-border-bottom: none;
 }
 
 i.td-fill {

@@ -40,6 +40,7 @@
 		emoticons: [],
 		formatters: [],
 		hintPopup: null,
+		loaded: false,
 		
 		init: function(){
 			
@@ -50,7 +51,7 @@
 			this.lines = this.ui.find('.chat-lines:first').eq(0);
 			this.output = this.ui.find('.chat-output:first').eq(0);
 			this.inputwrap = this.ui.find('.chat-input:first').eq(0);
-			this.input = this.inputwrap.find('.input:first:first').eq(0);
+			this.input = this.inputwrap.find('.input:first').eq(0);
 			this.inputwrap.removeClass('hidden');
 			
 			// Message formatters
@@ -232,25 +233,8 @@
 			cMenu.addMenu(this, this.chatsettings);
 			cMenu.addMenu(this, this.userslist);
 			
-			// Hints
-			this.hintPopup = new hintPopup(this, !this.getChatOption('hidehints', false));
-			this.chatsettings.find('#resethints').on('click', function(){
-				$(this).hide();
-				chat.hintPopup.reset();
-				return false;
-			});
-			
 			// The tools for when you click on a user
 			this.cUserTools = new cUserTools(this);
-
-			$(this.cUserTools).on('show', function(){
-				chat.hintPopup.pause();
-				chat.hintPopup.hide();
-			});
-			$(this.cUserTools).on('hide', function(){
-				chat.hintPopup.unpause();
-			});
-			
 			this.userslist.on('click', '.user', function(){
 				var username = $(this).text().toLowerCase();
 				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
@@ -260,6 +244,26 @@
 				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
 				return false;
 			});
+			
+			// Hints
+			this.hintPopup = new hintPopup(this);
+			
+			// When a user interacts with the chat try show a hint
+			this.input.on('click keydown', $.proxy(function(e){
+				if(chat.loaded && e.keyCode != 116 /* F5 */)
+					this.invoke();
+			}, this.hintPopup));
+			
+			// Reset event
+			this.chatsettings.find('#resethints').on('click', $.proxy(function(e){
+				e.preventDefault();
+				this.reset();
+			}, this.hintPopup));
+			
+			// Hide hint when someone clicks the user tools
+			$(chat.cUserTools).on('show', $.proxy(function(e){
+				this.hide();
+			}, this.hintPopup));
 
 			// Bind to user input submit
 			this.ui.on('submit', 'form.chat-input', function(e){
@@ -613,6 +617,7 @@
 		},
 		'load.chat': function(){
 			destiny.chat.gui.input.focus();
+			destiny.chat.gui.loaded = true;
 		}
 	});
 	

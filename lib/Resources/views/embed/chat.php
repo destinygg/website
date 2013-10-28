@@ -189,11 +189,11 @@ use Destiny\Common\Config;
 	
 	<div class="hint-popup" style="visibility: hidden;">
 		<div class="wrap clearfix">
-			<p>
-				<a href="#" class="close pull-right"><i class="icon-remove icon-white"></i></a>
-				<span class="hint-label">HINT:</span> <span class="hint-message"></span>
-				<a class="hidehint" title="Never show me this hint">(hide)</a>
-			</p>
+			<div class="alert">
+				<button type="button" class="close">&times;</button>
+				<span class="hint-label">Hint:</span> <span class="hint-message"></span>
+				<a class="nexthint" title="Never show me this hint">next</a>
+			</div>
 		</div>
 	</div>
 	
