@@ -27,7 +27,7 @@
 		this.visible         = false;
 		this.enabled         = enabled;
 		this.hiddenhints     = [];
-		this.popupInterval   = 15000;
+		this.popupInterval   = 60000;
 		this.readingInterval = 10000;
 		this.lasthint        = '';
 		this.currenthint     = '';
