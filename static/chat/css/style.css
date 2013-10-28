@@ -254,7 +254,6 @@ left:0;
 border-radius: 4px;
 margin:5px 20px 5px 5px;
 }
-
 /** Hints **/
 .hint-popup .hint-label {
 -webkit-touch-callout: none;
@@ -268,16 +267,24 @@ user-select: none;
 box-shadow: 0 2px 6px rgba(0,0,0,0.9);	
 padding:0;	
 }
-.hint-popup a {
-cursor: pointer;
-}
 .hint-popup a:hover {
+cursor: pointer;	
 color: #6aa7f9;
 }
 .hint-popup .alert {
 margin-bottom: 0;
 padding-top:4px;	
 padding-bottom:4px;	
+}
+.hint-popup .close {
+top: 0;	
+}
+.hint-popup .nexthint {
+top: 0;	
+position: relative;
+float: right;
+right: -15px;
+line-height: 20px;
 }
 
 /** User tools **/

@@ -8,10 +8,9 @@
 		this.hints = {
 			'tabcompletion'  : 'Use the tab key to auto-complete usernames and emotes',
 			'hoveremotes'    : 'Hovering your mouse over an emote will show you the emote code',
-			'highlight'      : 'Chat messages containing your username will highlight blue',
+			'highlight'      : 'Chat messages containing your username will be highlighted in blue',
 			'ignoreuser'     : 'Ignore other users by clicking their name and selecting ignore',
-			'localstorage'   : 'Chat settings can be cleared in your browser',
-			'hidehints'      : 'You can hide these types of hints in the options menu',
+			'hidehints'      : 'You can hide these types of hints in the settings menu (lower right corner, the gear icon)',
 			'moreinfo'       : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information'
 		};
 
