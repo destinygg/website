@@ -14,11 +14,11 @@
 	hintPopup = function(chat, enabled){
 		
 		this.hints = {
-			'tabcompletion'  : 'Use the tab key to select usernames and/or emotes',
+			'tabcompletion'  : 'Use the tab key to auto-complete usernames and emotes',
 			'hoveremotes'    : 'Hovering your mouse over an emote will show you the emote code',
-			'highlight'      : 'Chat messages with your username in it will highlight',
-			'ignoreuser'     : 'You can ignore other users by clicking their name and selecting ignore',
-			'localstorage'   : 'Settings are stored in your browsers local storage',
+			'highlight'      : 'Chat messages containing your username will highlight blue',
+			'ignoreuser'     : 'Ignore other users by clicking their name and selecting ignore',
+			'localstorage'   : 'Chat settings can be cleared in your browser',
 			'hidehints'      : 'You can hide these hints at any time',
 			'moreinfo'       : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information'
 		};

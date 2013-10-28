@@ -191,7 +191,7 @@ use Destiny\Common\Config;
 		<div class="wrap clearfix">
 			<p>
 				<a href="#" class="close pull-right"><i class="icon-remove icon-white"></i></a>
-				<i class="icon-question-sign icon-white subtle" title="Hint"></i> <span class="hint-message"></span>
+				<span class="hint-message"></span>
 				<a class="hidehint" title="Never show me this hint">(hide)</a>
 			</p>
 		</div>
