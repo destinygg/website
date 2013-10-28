@@ -276,15 +276,16 @@ margin-bottom: 0;
 padding-top:4px;	
 padding-bottom:4px;	
 }
-.hint-popup .close {
-top: 0;	
-}
+.hint-popup .hidehint,
 .hint-popup .nexthint {
 top: 0;	
 position: relative;
 float: right;
-right: -15px;
+right: -23px;
 line-height: 20px;
+}
+.hint-popup .hidehint {
+right: -27px;
 }
 
 /** User tools **/
