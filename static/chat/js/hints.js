@@ -29,7 +29,7 @@
 		
 		this.ui = chat.ui.find('.hint-popup');
 		this.ui.hintmessage = this.ui.find('.hint-message');
-		this.ui.on('click', '.close', $.proxy(this.hideHint, this));
+		this.ui.on('click', '.hidehint', $.proxy(this.hideHint, this));
 		this.ui.on('click', '.nexthint', $.proxy(this.nextHint, this));
 	};
 	hintPopup.prototype.invoke = function(){

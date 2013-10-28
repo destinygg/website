@@ -255,14 +255,6 @@ border-radius: 4px;
 margin:5px 20px 5px 5px;
 }
 /** Hints **/
-.hint-popup .hint-label {
--webkit-touch-callout: none;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
-}
 .hint-popup > div {
 box-shadow: 0 2px 6px rgba(0,0,0,0.9);	
 padding:0;	
@@ -283,6 +275,12 @@ position: relative;
 float: right;
 right: -23px;
 line-height: 20px;
+-webkit-touch-callout: none;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;	
 }
 .hint-popup .hidehint {
 right: -27px;
