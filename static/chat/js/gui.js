@@ -39,6 +39,7 @@
 		timestampformat: null,
 		emoticons: [],
 		formatters: [],
+		hintPopup: null,
 		
 		init: function(){
 			
@@ -118,6 +119,11 @@
 				var name    = $(this).attr('name'),
 				    checked = $(this).is(':checked');
 				switch(name){
+				
+					case 'hidehints':
+						chat.saveChatOption(name, checked);
+						chat.hintPopup.enable(!checked);
+						break;
 				
 					case 'showtime':
 						chat.saveChatOption(name, checked);
@@ -219,7 +225,6 @@
 				appendUsers(bots, lists.filter('.bots'));
 				appendUsers(subs, lists.filter('.subs'));
 				appendUsers(plebs, lists.filter('.plebs'));
-				//chat.userslist.appendTo(chat.ui);
 
 				return cMenu.prototype.showMenu.call(chat.userslist, chat);
 			});
@@ -227,8 +232,25 @@
 			cMenu.addMenu(this, this.chatsettings);
 			cMenu.addMenu(this, this.userslist);
 			
+			// Hints
+			this.hintPopup = new hintPopup(this, !this.getChatOption('hidehints', false));
+			this.chatsettings.find('#resethints').on('click', function(){
+				$(this).hide();
+				chat.hintPopup.reset();
+				return false;
+			});
+			
 			// The tools for when you click on a user
 			this.cUserTools = new cUserTools(this);
+
+			$(this.cUserTools).on('show', function(){
+				chat.hintPopup.pause();
+				chat.hintPopup.hide();
+			});
+			$(this.cUserTools).on('hide', function(){
+				chat.hintPopup.unpause();
+			});
+			
 			this.userslist.on('click', '.user', function(){
 				var username = $(this).text().toLowerCase();
 				chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);

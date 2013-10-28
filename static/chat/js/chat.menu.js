@@ -107,6 +107,7 @@
 		this.ui.removeClass('user-ignored');
 		hideMenuUI(this.ui);
 		this.visible = false;
+		$(this).triggerHandler('hide');
 		return false;
 	};
 	cUserTools.prototype.show = function(label, username, user){
@@ -130,8 +131,8 @@
 		this.chat.ui.addClass('focus-user');
 		showMenuUI(this.ui);
 		this.visible = true;
+		$(this).triggerHandler('show');
 		return false;
 	};
-	
 	
 })();

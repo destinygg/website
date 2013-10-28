@@ -33,7 +33,7 @@ use Destiny\Common\Config;
 		<div class="chat-input-wrap clearfix">
 			<div class="chat-input-control">
 			<?php if(Session::hasRole(UserRole::USER)): ?>
-			<input type="text" placeholder="Enter a message and hit send..." class="input" autocomplete="off" />
+			<input type="text" placeholder="Enter a message..." class="input" autocomplete="off" />
 			<?php else: ?>
 			<a class="chat-login-msg" href="/login" target="_parent">You must be logged in to chat</a>
 			<input type="hidden" class="input" />
@@ -90,6 +90,11 @@ use Destiny\Common\Config;
 					<li>
 						<label class="checkbox" title="Show all user flair icons">
 							<input name="hideflairicons" type="checkbox" /> Hide flair icons
+						</label>
+					</li>
+					<li>
+						<label class="checkbox" title="Hide chat hints">
+							<input name="hidehints" type="checkbox" /> Hide chat hints <small><a id="resethints" title="Rest your hidden hints">(reset)</a></small>
 						</label>
 					</li>
 					<li>
@@ -182,6 +187,16 @@ use Destiny\Common\Config;
 		</div>
 	</div>
 	
+	<div class="hint-popup" style="visibility: hidden;">
+		<div class="wrap clearfix">
+			<p>
+				<a href="#" class="close pull-right"><i class="icon-remove icon-white"></i></a>
+				<i class="icon-question-sign icon-white subtle" title="Hint"></i> <span class="hint-message"></span>
+				<a class="hidehint" title="Never show me this hint">(hide)</a>
+			</p>
+		</div>
+	</div>
+	
 </div>
 
 <?php include Tpl::file('seg/commonbottom.php') ?>
@@ -197,6 +212,7 @@ use Destiny\Common\Config;
 <script src="<?=Config::cdnv()?>/chat/js/chat.menu.js"></script>
 <script src="<?=Config::cdnv()?>/chat/js/formatters.js"></script>
 <script src="<?=Config::cdnv()?>/chat/js/gui.js"></script>
+<script src="<?=Config::cdnv()?>/chat/js/hints.js"></script>
 <script src="<?=Config::cdnv()?>/chat/js/chat.js"></script>
 <?php endif; ?>
 <script>

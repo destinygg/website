@@ -241,16 +241,40 @@ color:#222;
 color:#222;
 }
 
-/** User tools **/
+
+/** Top menus **/
+.hint-popup,
 .user-tools {
 width:100%;
 top:-5px;
-left:0;
+left:0;	
 }
+.hint-popup > div,
 .user-tools > div {
 border-radius: 4px;
 margin:5px 20px 5px 5px;
 }
+
+/** Hints **/
+.hint-popup > div {
+box-shadow: 0 2px 6px rgba(0,0,0,0.9);	
+border-radius:4px;	
+background: rgb(79,79,79);
+background: linear-gradient(to bottom, rgba(79,79,79,1) 0%,rgba(46,46,46,1) 100%);	
+padding:0;	
+}
+.hint-popup p {
+margin:0.5em 1em;
+}
+.hint-popup p span {
+color: #DDD;
+text-shadow: 1px 1px 0 rgba(0,0,0,0.25);	
+}
+.hint-popup a.hidehint {
+cursor: pointer;
+}
+
+/** User tools **/
 .user-tools-wrap {
 margin-left:-5px;
 }
@@ -260,14 +284,16 @@ margin:0 5px;
 
 /* Chat menus */
 .chat-menu, 
-.user-tools {
+.user-tools,
+.hint-popup {
 opacity:0;
 transition: top 0.25s ease-out, bottom 0.25s ease-out, opacity 0.1s ease-in;
 position: absolute;	
 font-size: 12px;
 }
 .chat-menu.active,
-.user-tools.active {
+.user-tools.active,
+.hint-popup.active {
 opacity:1;
 }
 .chat-menu {
@@ -278,7 +304,8 @@ width:240px;
 .chat-menu.active {
 bottom:40px;
 }
-.user-tools.active {
+.user-tools.active,
+.hint-popup.active {
 top:0;
 }
 .chat-menu h5,
