@@ -27,7 +27,7 @@ use Destiny\Common\Utils\Tpl;
 			The chat backend is being updated, no need to fret.
 		</p>
 		
-		<h3 id="highlight">What is this yellow text?</h3>
+		<h3 id="highlight">What is this blue text?</h3>
 		<p>
 			So that is the color of the line when someone says your nick. It is called
 			a highlight, and you can also go into the settings menu and enable
@@ -35,7 +35,7 @@ use Destiny\Common\Utils\Tpl;
 			With that you now get notified when somebody says your nick and the
 			browser is not in focus!<br/>
 			Being able to disable any kind of highlighting is now completed, with
-			the added abbility of specifying custom words to highlight on.<br/>
+			the added ability of specifying custom words to highlight on.<br/>
 			See the settings menu.
 		</p>
 		
@@ -44,7 +44,7 @@ use Destiny\Common\Utils\Tpl;
 			We aim to be mostly on-par with the twitch chat. Meaning that you should
 			feel right at home. Just remember that this is mostly a bare essentials
 			chat right now.<br/>
-			We have twitch faces (until they DMCA the fuck out of it at least).<br/>
+			We had twitch faces (they asked us to remove them, some have been recreated).<br/>
 			Desktop notifications when someone highlights you (if your browser supports it).<br/>
 			We reload the last N (currently 150, subject to change) lines of chat.<br/>
 			There is a LOT of things on our TODO list, get in touch if you want to
