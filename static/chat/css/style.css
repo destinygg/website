@@ -271,6 +271,9 @@ padding:0;
 .hint-popup a {
 cursor: pointer;
 }
+.hint-popup a:hover {
+color: #6aa7f9;
+}
 .hint-popup .alert {
 margin-bottom: 0;
 padding-top:4px;	
