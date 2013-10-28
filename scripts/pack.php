@@ -38,8 +38,8 @@ FileUtils::concat ( '/chat/js/engine.min.js', array (
 	'/chat/js/scroll.mCustom.js',
 	'/chat/js/chat.menu.js',
 	'/chat/js/formatters.js',
-	'/chat/js/gui.js',
 	'/chat/js/hints.js',
+	'/chat/js/gui.js',
 	'/chat/js/chat.js' 
 ) );
 FileUtils::compress ( '/chat/js/engine.min.js' );

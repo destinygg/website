@@ -12,27 +12,30 @@
 	};
 	
 	hintPopup = function(chat, enabled){
-		this.paused = false;
-		this.visible = false;
-		this.enabled = enabled;
-		this.hiddenhints = [];
-		this.popupInterval = 15000;
-		this.readingInterval = 10000;
-		this.lasthint = '';
-		this.currenthint = '';
+		
 		this.hints = {
-			'tabcompletion'     : 'Use the tab key to select usernames and/or emotes',
-			'hoveremotes'       : 'Hovering your mouse over an emote will show you the emote code',
-			'highlight'         : 'Chat messages with your username in it will highlight',
-			'ignoreuser'        : 'You can ignore other users by clicking their name and selecting ignore',
-			'localstorage'      : 'Settings are stored in your browsers local storage',
-			'hidehints'         : 'You can hide these hints at any time',
-			'moreinfo'          : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information'
+			'tabcompletion'  : 'Use the tab key to select usernames and/or emotes',
+			'hoveremotes'    : 'Hovering your mouse over an emote will show you the emote code',
+			'highlight'      : 'Chat messages with your username in it will highlight',
+			'ignoreuser'     : 'You can ignore other users by clicking their name and selecting ignore',
+			'localstorage'   : 'Settings are stored in your browsers local storage',
+			'hidehints'      : 'You can hide these hints at any time',
+			'moreinfo'       : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information'
 		};
-		this.hintindex = [];
-		for(var i in this.hints){
+		
+		this.paused          = false;
+		this.visible         = false;
+		this.enabled         = enabled;
+		this.hiddenhints     = [];
+		this.popupInterval   = 15000;
+		this.readingInterval = 10000;
+		this.lasthint        = '';
+		this.currenthint     = '';
+		this.hintindex       = [];
+		
+		for(var i in this.hints)
 			this.hintindex.push(i);
-		};
+		
 		this.ui = chat.ui.find('.hint-popup');
 		this.ui.hintmessage = this.ui.find('.hint-message');
 		this.ui.on('click', 'a.close', $.proxy(this.hide, this));
