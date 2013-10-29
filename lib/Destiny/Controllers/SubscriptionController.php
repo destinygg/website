@@ -237,8 +237,8 @@ class SubscriptionController {
 		
 		// Update the user
 		AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
-		
-		$message = sprintf ( "%s just subscribed!", Session::getCredentials ()->getUsername () );
+
+		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierItemLabel'] );
 		ChatlogService::instance ()->addChatEvent ( $order ['userId'], $message, 'BROADCAST' );
 		ChatIntegrationService::instance ()->sendBroadcast ( $message );
 		
