@@ -10,7 +10,8 @@ class BroadcastsFeed {
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
 		$response = TwitchApiService::instance ()->getPastBroadcasts ()->getResponse ();
-		$app->getCacheDriver ()->save ( 'pastbroadcasts', $response );
+		if (! empty ( $response ))
+			$app->getCacheDriver ()->save ( 'pastbroadcasts', $response );
 	}
 
 }

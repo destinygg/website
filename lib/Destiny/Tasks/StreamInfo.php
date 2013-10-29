@@ -10,7 +10,8 @@ class StreamInfo {
 	public function execute(LoggerInterface $log) {
 		$cacheDriver = Application::instance ()->getCacheDriver ();
 		$response = TwitchApiService::instance ()->getStreamInfo ()->getResponse ();
-		$cacheDriver->save ( 'streaminfo', $response );
+		if (! empty ( $response ))
+			$cacheDriver->save ( 'streaminfo', $response );
 	}
 
 }

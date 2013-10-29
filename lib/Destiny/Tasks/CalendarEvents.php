@@ -14,13 +14,13 @@ class CalendarEvents {
 		$end = Date::getDateTime ();
 		$end->modify ( '+1 year' );
 		$response = CalendarService::instance ()->getEventsInRange ( array (
-			'start' => $start->format ( DATE_RFC3339 ),
-			'end' => $end->format ( DATE_RFC3339 ),
-			'limit' => 3,
-			'tz' => 'UTC' 
+				'start' => $start->format ( DATE_RFC3339 ),
+				'end' => $end->format ( DATE_RFC3339 ),
+				'limit' => 3,
+				'tz' => 'UTC' 
 		) )->getResponse ();
-		$app = Application::instance ();
-		$app->getCacheDriver ()->save ( 'calendarevents', $response );
+		if (! empty ( $response ))
+			Application::instance ()->getCacheDriver ()->save ( 'calendarevents', $response );
 	}
 
 }

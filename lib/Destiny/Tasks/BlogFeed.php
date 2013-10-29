@@ -9,8 +9,8 @@ class BlogFeed {
 
 	public function execute(LoggerInterface $log) {
 		$response = BlogApiService::instance ()->getBlogPosts ()->getResponse ();
-		$app = Application::instance ();
-		$app->getCacheDriver ()->save ( 'recentblog', $response );
+		if (! empty ( $response ))
+			Application::instance ()->getCacheDriver ()->save ( 'recentblog', $response );
 	}
 
 }

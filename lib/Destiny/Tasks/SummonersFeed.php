@@ -12,7 +12,8 @@ class SummonersFeed {
 		$streamInfo = $cacheDriver->fetch ( 'streaminfo' );
 		if (! empty ( $streamInfo ['stream'] )) {
 			$response = LeagueApiService::instance ()->getSummoners ();
-			$cacheDriver->save ( 'summoners', $response );
+			if (! empty ( $response ))
+				$cacheDriver->save ( 'summoners', $response );
 		}
 	}
 

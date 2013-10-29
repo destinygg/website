@@ -10,7 +10,8 @@ class YoutubeFeed {
 	public function execute(LoggerInterface $log) {
 		$app = Application::instance ();
 		$response = YoutubeApiService::instance ()->getYoutubePlaylist ()->getResponse ();
-		$app->getCacheDriver ()->save ( 'youtubeplaylist', $response );
+		if (! empty ( $response ))
+			$app->getCacheDriver ()->save ( 'youtubeplaylist', $response );
 	}
 
 }
