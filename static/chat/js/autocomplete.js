@@ -26,6 +26,7 @@
 		return this;
 	};
 	mAutoComplete.prototype.init = function(input, options){
+		setInterval($.proxy(this.expireUsers, this), 300000); // five minutes
 		return this;
 	};
 	mAutoComplete.prototype.getCaretWord = function(inp){
@@ -66,6 +67,19 @@
 		
 		res.sort(this.cmp);
 		return res;
+	};
+	mAutoComplete.prototype.expireUsers = function() {
+		// if the user hasnt spoken in the last five minutes, reset the weight
+		// so that emotes can be ordered before the user again
+		var fiveminutesago = Date.now() - 300000;
+		console.log(this);
+		for (var i = this.shards.length - 1; i >= 0; i--) {
+			var nicks = this.shards[i];
+			for (var j = nicks.length - 1; j >= 0; j--) {
+				if (nicks[j].weight < fiveminutesago)
+					nicks[j].weight = 1;
+			};
+		};
 	};
 
 	$.fn.mAutoComplete = function(options){
