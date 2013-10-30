@@ -72,7 +72,6 @@
 		// if the user hasnt spoken in the last five minutes, reset the weight
 		// so that emotes can be ordered before the user again
 		var fiveminutesago = Date.now() - 300000;
-		console.log(this);
 		for (var i = this.shards.length - 1; i >= 0; i--) {
 			var nicks = this.shards[i];
 			for (var j = nicks.length - 1; j >= 0; j--) {
