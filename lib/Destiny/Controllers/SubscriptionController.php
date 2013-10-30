@@ -239,7 +239,6 @@ class SubscriptionController {
 		AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
 
 		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] );
-		ChatlogService::instance ()->addChatEvent ( $order ['userId'], $message, 'BROADCAST' );
 		ChatIntegrationService::instance ()->sendBroadcast ( $message );
 		
 		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete'; // @TODO FIX

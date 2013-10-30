@@ -296,7 +296,6 @@ class OrderController {
 		
 		// Broadcast the subscription
 		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] );
-		ChatlogService::instance ()->addChatEvent ( $order ['userId'], $message, 'BROADCAST' );
 		ChatIntegrationService::instance ()->sendBroadcast ( $message );
 		
 		// Redirect to completion page
