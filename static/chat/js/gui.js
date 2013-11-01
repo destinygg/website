@@ -121,11 +121,6 @@
 				    checked = $(this).is(':checked');
 				switch(name){
 				
-					case 'hidehints':
-						chat.saveChatOption(name, checked);
-						chat.hintPopup.enable(!checked);
-						break;
-				
 					case 'showtime':
 						chat.saveChatOption(name, checked);
 						chat.ui.toggleClass('chat-time', checked);

@@ -93,11 +93,6 @@ use Destiny\Common\Config;
 						</label>
 					</li>
 					<li>
-						<label class="checkbox" title="Hide chat hints">
-							<input name="hidehints" type="checkbox" /> Hide chat hints <small><a id="resethints" title="Rest your hidden hints">(reset)</a></small>
-						</label>
-					</li>
-					<li>
 						<label class="checkbox" title="Show the timestamps next to the messages">
 							<input name="showtime" type="checkbox" /> Show time for messages
 						</label>

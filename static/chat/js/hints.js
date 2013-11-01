@@ -10,7 +10,6 @@
 			'hoveremotes'    : 'Hovering your mouse over an emote will show you the emote code',
 			'highlight'      : 'Chat messages containing your username will be highlighted in blue',
 			'ignoreuser'     : 'Ignore other users by clicking their name and selecting ignore',
-			'hidehints'      : 'You can hide these types of hints in the settings menu (lower right corner, the gear icon)',
 			'moreinfo'       : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information',
 			'emotewiki'      : 'For the list of available emotes type /emotes or <a href="https://github.com/destinygg/website/wiki/Emotes" target="_blank">click here</a>',
 			'mutespermanent' : 'Mutes are never persistent, don\'t worry it will pass!'
@@ -20,7 +19,7 @@
 		this.readingInterval = 30000;
 		this.paused          = false;
 		this.visible         = false;
-		this.enabled         = !chat.getChatOption('hidehints', false);
+		this.enabled         = true;
 		this.hiddenhints     = JSON.parse(localStorage['hiddenhints'] || '[]');
 		this.lasthinttime    = (localStorage['lasthinttime'] || null);
 		this.currenthint     = '';

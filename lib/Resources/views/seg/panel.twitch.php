@@ -27,7 +27,7 @@ use Destiny\Common\Config;
 		<div id="twitch-elements" class="clearfix">
 			<div id="twitch-player" class="twitch-element-wrap pull-left">
 				<?if((bool) Config::$a['blocks']['stream']):?>
-				<iframe class="twitch-element" id="live_embed_player_flash" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none;" seamless="seamless"></iframe>
+				<iframe class="twitch-element" id="live_embed_player_flash" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" scrolling="no" seamless="seamless"></iframe>
 				<?endif;?>
 			</div>
 			<div id="twitch-chat" class="twitch-element-wrap pull-left">
