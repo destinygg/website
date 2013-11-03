@@ -33,7 +33,7 @@ use Destiny\Common\Config;
 		<div class="chat-input-wrap clearfix">
 			<div class="chat-input-control">
 			<?php if(Session::hasRole(UserRole::USER)): ?>
-			<input type="text" placeholder="Enter a message..." class="input" autocomplete="off" />
+			<input type="text" placeholder="Enter a message..." class="input" autocomplete="off" spellcheck="true"/>
 			<?php else: ?>
 			<a class="chat-login-msg" href="/login" target="_parent">You must be logged in to chat</a>
 			<input type="hidden" class="input" />
