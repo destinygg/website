@@ -41,6 +41,8 @@ return array (
 			'OhKrappa',
 			'SoDoge',
 			'WhoahDude',
+			'DESBRO',
+			'MotherFuckinGame',
 		),
 	),
 	'redis' => array(
