@@ -142,16 +142,6 @@ return array (
 		'url'				=> '',
 		'apikey'			=> '' 
 	),
-	// All of these should be on in the live environment
-	'blocks' => array (
-		'twitch'		=> true,
-		'chat'			=> true,
-		'stream'		=> true,
-		'twittermusic'	=> true,
-		'videos'		=> true,
-		'lol'			=> true,
-		'pageads'		=> true 
-	),
 	'youtube' => array (
 		'apikey'		=> '',
 		'playlistId'	=> '',

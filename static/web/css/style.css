@@ -34,7 +34,7 @@ color: #999;
 		width: 100%;
 		height: 689px;
 	}
-	#twitchpanel.single-view #twitch-player object {
+	#twitchpanel.single-view #player-embed object {
 		height: 690px;
 	}
 }
@@ -340,15 +340,15 @@ width: 100%;
 height: 475px;
 }
 
-#twitchpanel #twitch-player object {
+#twitchpanel #player-embed object {
 height: 476px;
 }
 
-#twitchpanel.split-view #twitch-player {
+#twitchpanel.split-view #player-embed {
 width: 68%;
 }
 
-#twitchpanel.split-view #twitch-chat {
+#twitchpanel.split-view #chat-embed {
 width: 32%;
 background: white;
 }
@@ -359,7 +359,7 @@ width: 100%;
 height: 559px;
 }
 
-#twitchpanel.single-view #twitch-player object {
+#twitchpanel.single-view #player-embed object {
 height: 560px;
 }
 
@@ -369,16 +369,16 @@ height: 560px;
 	width: 100%;
 	height: 689px;
 	}
-	#twitchpanel.single-view #twitch-player object {
+	#twitchpanel.single-view #player-embed object {
 	height: 690px;
 	}
 }
 
-#twitchpanel #twitch-player.defocus {
+#twitchpanel #player-embed.defocus {
 position: relative;
 }
 
-#twitchpanel #twitch-player.defocus object {
+#twitchpanel #player-embed.defocus object {
 display: none;
 }
 
@@ -390,40 +390,6 @@ text-shadow: none;
 #twitchpanel a#popoutvideo.btn-down,
 #twitchpanel a#popoutchat.btn-down {
 color: #ccc;
-}
-
-#player-ads {
-margin: 0;
-}
-
-#player-ads-video {
-width: 100%;
-float: left;
-}
-
-#player-ads-video p {
-margin: 10px 0;
-text-align: center;
-color: #777;
-font-size: 12px;
-}
-
-#player-ads-video iframe {
-width: 100%;
-height: 415px;
-}
-
-#twitchpanel.single-view #player-ads-video iframe {
-height: 500px;
-}
-
-@media ( min-width : 1200px) {
-	#player-ads-video iframe {
-	height: 415px;
-	}
-	#twitchpanel.single-view #player-ads-video iframe {
-	height: 630px;
-	}
 }
 
 .stream {

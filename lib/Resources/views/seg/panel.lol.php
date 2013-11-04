@@ -2,7 +2,6 @@
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>
-<?if((bool) Config::$a['blocks']['lol']): ?>
 <section id="lolpanel" class="container">
 	<div class="content content-dark content-split clearfix">
 	<?if(!empty($model->summoners)):?>
@@ -96,4 +95,3 @@ use Destiny\Common\Config;
 	<?endif;?>
 	</div>
 </section>
-<?endif;?>

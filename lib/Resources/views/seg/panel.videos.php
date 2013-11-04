@@ -4,7 +4,6 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
-<?if((bool) Config::$a['blocks']['videos']):?>
 <section class="container">
 	<div class="content content-dark content-split clearfix">
 		<div id="youtube" class="stream">
@@ -53,4 +52,3 @@ use Destiny\Common\Config;
 		</div>
 	</div>
 </section>
-<?endif;?>

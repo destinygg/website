@@ -46,14 +46,12 @@ use Destiny\Common\Config;
 
 		<div class="public-ads">
 			<div id="google-ad">
-				<?if((bool) Config::$a['blocks']['pageads']):?>
 				<script type="text/javascript">
 				<? foreach ( Config::$a ['googleads'] ['300x250'] as $k => $v ) {
 					echo (is_int ( $v )) ? "$k = $v;\r\n" : "$k = \"$v\";\r\n";
 				} ?>
 				</script>
 				<script src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
-				<?endif;?>
 			</div>
 		</div>
 

@@ -3,7 +3,6 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
-<?if((bool) Config::$a['blocks']['twittermusic']):?>
 <section class="container">
 	<div class="content content-dark clearfix">
 
@@ -68,4 +67,3 @@ use Destiny\Common\Config;
 
 	</div>
 </section>
-<?endif;?>

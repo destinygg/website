@@ -20,7 +20,6 @@ use Destiny\Common\Application;
 use Destiny\Commerce\OrderStatus;
 use Destiny\Common\Utils\Date;
 use Destiny\Chat\ChatIntegrationService;
-use Destiny\Chat\ChatlogService;
 
 /**
  * @Controller

@@ -2,7 +2,6 @@
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
-<?if((bool) Config::$a['blocks']['twitch']):?>
 <section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="/embed/chat">
 	<div class="content content-dark">
 		<div class="panelheader clearfix">
@@ -25,17 +24,12 @@ use Destiny\Common\Config;
 			</div>
 		</div>
 		<div id="twitch-elements" class="clearfix">
-			<div id="twitch-player" class="twitch-element-wrap pull-left">
-				<?if((bool) Config::$a['blocks']['stream']):?>
-				<iframe class="twitch-element" id="live_embed_player_flash" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" scrolling="no" seamless="seamless"></iframe>
-				<?endif;?>
+			<div id="player-embed" class="twitch-element-wrap pull-left">
+				<iframe class="twitch-element" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" scrolling="no" seamless="seamless"></iframe>
 			</div>
-			<div id="twitch-chat" class="twitch-element-wrap pull-left">
-				<?if((bool) Config::$a['blocks']['chat']):?>
-				<iframe class="twitch-element" style="border:none;" seamless="seamless" id="chat_embed" src="/embed/chat"></iframe>
-				<?endif;?>
+			<div id="chat-embed" class="twitch-element-wrap pull-left">
+				<iframe class="twitch-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
 			</div>
 		</div>
 	</div>
 </section>
-<?endif;?>

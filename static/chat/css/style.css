@@ -381,6 +381,9 @@ margin-top:0;
 text-overflow: ellipsis;
 overflow: hidden;
 }
+#chat-user-list ul li {
+line-height:18px;
+}
 #chat-user-list h6:first-child {
 margin-top:10px;
 }

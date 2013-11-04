@@ -19,7 +19,6 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserRole;
-use Destiny\Chat\ChatlogService;
 use Destiny\Chat\ChatIntegrationService;
 
 /**

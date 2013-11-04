@@ -265,14 +265,13 @@ $(function(){
 	// Calendar
 	(function(){
 		var timezone = moment().format('ZZ'),
-			calendarFrame = $('#scheduleCalendar'),
-			iframe = calendarFrame.find('iframe'),
+			calendarFrame = $('#scheduleCalendar iframe'),
 			tzNote = $('#scheduleCalendarTimezone'),
 			timezoneSelect = tzNote.find('select'),
 			timezoneBtn = tzNote.find('button.change-timezone'),
 			timezoneLbl = tzNote.find('span.timezone');
 		var loadGoogleCalendar = function(){
-			iframe.attr('src', iframe.data('src') + '&ctz=' + encodeURIComponent(timezone));
+			calendarFrame.attr('src', calendarFrame.data('src') + '&ctz=' + encodeURIComponent(timezone));
 			timezoneLbl.html(timezone);
 		};
 		timezoneBtn.on('click', function(){
@@ -286,13 +285,13 @@ $(function(){
 		loadGoogleCalendar();
 	})();
 	
-	// Theater
+	// Bigscreen
 	$('body#bigscreen').each(function(){
 		var offset = 81, pc = $('.page-content');
 		var _resize = function(){
 			var bh = $('body').height(); 
 			pc.height( ((bh < 550) ? 550:bh) - offset );
-			pc.find('#twitch-chat-wrap .twitch-element').height( pc.height()-20 );
+			pc.find('#chat-panel .twitch-element').height( pc.height()-20 );
 			if (document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen){
 				pc.find('#twitch-stream-wrap .twitch-element').height("100%");
 			} else {

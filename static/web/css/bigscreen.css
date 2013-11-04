@@ -101,18 +101,18 @@ color: #444;
 font-size:12px;
 text-shadow:1px 1px 0 black;
 }
-body#bigscreen #twitch-chat-wrap {
+body#bigscreen #chat-panel {
 width:400px;
 height: auto;
 min-height: 100%;
 }
-body#bigscreen #twitch-chat-wrap > div {
+body#bigscreen #chat-panel > div {
 margin:10px; 
 background: white;
 border-radius:4px;
 overflow: hidden;
 }
-body#bigscreen #twitch-chat-wrap iframe {
+body#bigscreen #chat-panel iframe {
 width:380px;
 display: block;
 }

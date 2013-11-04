@@ -2,8 +2,8 @@ $(function(){
 
 	var twitch = $('#twitchpanel'), 
 		twitchElements = $('#twitch-elements'),
-		chat = twitchElements.find('#twitch-chat'), 
-		player = twitchElements.find('#twitch-player'),
+		chat = twitchElements.find('#chat-embed'), 
+		player = twitchElements.find('#player-embed'),
 		popoutChatBtn = twitch.find('#popoutchat'),
 		popoutVideoBtn = twitch.find('#popoutvideo'),
 		bigscreenmodeBtn = twitch.find('#bigscreenmode');
@@ -11,8 +11,7 @@ $(function(){
 	// Refs for standard and bigscreen mode
 	var playerWrap = $("div.twitch-element-wrap"),
 		fullscreenBtn = playerWrap.find('div.twitch-fsbtn'),
-		playerOverlays = playerWrap.find('div.twitch-overlay')
-		playerObject = playerWrap.find('object.twitch-element');
+		playerOverlays = playerWrap.find('div.twitch-overlay');
 
 	var twitchChat = {
 		popup: null,
@@ -122,55 +121,5 @@ $(function(){
 	//Bind clicks on overlay items that prevent accidental redirects to twitch
 	fullscreenBtn.click(toggleFullscreen);
 	playerOverlays.dblclick(toggleFullscreen);
-
-	// Periodically check if the stream is offline, ad show ads.
-	var offlineAdvert = {
-			
-		ui: $('<div id="player-ads" class="clearfix" />'),
-		polling: 5000,
-		intervalId: null,
-		
-		init: function(){
-			var self = this;
-			self.ui.html(
-				'<div id="player-ads-video">'+
-					'<p>The stream is offline. This screen will automatically <a href="#" id="close-player-ad" title="Close">close</a> when stream is live.<br />Click <a title="Google Calendar" href="/schedule">here</a> to see when he\'ll be streaming next</p>'+
-					'<iframe id="youtube-embed" src="http://www.youtube.com/embed/?listType=user_uploads&list='+ twitch.data('youtube-user') +'&showinfo=1" frameborder="0" allowfullscreen></iframe>'+
-				'</div>'
-			);
-			self.ui.on('click', '#close-player-ad', function(){
-				self.destroy();
-				return false;
-			});
-			self.ui.find('.thumbnail').tooltip({placement:'left'});
-			player.append(self.ui);
-			self.ui.loadImages();
-		},
-
-		initTimer: function(){
-			var self = this;
-			self.intervalId = setInterval(function(){
-				if(twitch.hasClass('offline') && false == player.hasClass('defocus')){
-					player.addClass('defocus');
-					self.ui.detach();
-					self.init();
-				}else if(twitch.hasClass('online') && player.hasClass('defocus')){
-					clearInterval(self.intervalId);
-					player.removeClass('defocus');
-					self.destroy();
-				};
-			}, 5000);
-		},
-
-		destroy: function(){
-			var self = this;
-			clearInterval(self.intervalId);
-			player.removeClass('defocus');
-			self.ui.remove();
-		}
-			
-	};
-
-	offlineAdvert.initTimer();
 
 });

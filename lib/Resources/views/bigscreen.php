@@ -61,13 +61,13 @@ use Destiny\Common\User\UserRole;
 						<div class="twitch-overlay to-botleft"></div>
 						<div class="twitch-overlay to-main"></div>
 						<div class="twitch-fsbtn"></div>
-						<iframe class="twitch-element" id="live_embed_player_flash" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" scrolling="no" seamless="seamless"></iframe>
+						<iframe class="twitch-element" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" scrolling="no" seamless="seamless"></iframe>
 					</div>
 				</div>
 			</div>
-			<div id="twitch-chat-wrap" class="pull-right">
+			<div id="chat-panel" class="pull-right">
 				<div>
-					<iframe class="twitch-element" style="border:none;" seamless="seamless" id="chat_embed" src="/embed/chat"></iframe>
+					<iframe class="twitch-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
 				</div>
 			</div>
 		</div>

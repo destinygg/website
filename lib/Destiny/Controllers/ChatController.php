@@ -2,7 +2,6 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\ViewModel;
-use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\HttpEntity;
@@ -18,18 +17,6 @@ use Destiny\Common\User\UserFeature;
  * @Controller
  */
 class ChatController {
-
-	/**
-	 * @Route ("/chat")
-	 *
-	 * @param array $params
-	 * @param ViewModel $model
-	 * @return string
-	 */
-	public function chat(array $params, ViewModel $model) {
-		$app = Application::instance ();
-		return 'chat';
-	}
 
 	/**
 	 * Get the chat params from the get request
