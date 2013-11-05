@@ -26,7 +26,8 @@
 			"(?:" + ipaddr + "|(?:"+ // match an ip address or domain
 			"(?:[\\w-]+\\.)+" + //match subdomains and domain
 			tlds + //match valid+accepted TLDs, we don't care about punycode
-			"))(?:\\/[" + urlchars + "]*)?)" + //match path and query, END URL group
+			"))(?::[0-9]{1,5})?" + //match optional port (16-bit)
+			"(?:\\/[" + urlchars + "]*)?)" + //match path and query, END URL group
 			"(?=$|[\\s\\)\\]])", // Look ahead for valid delimiters
 			"gim"
 		);
