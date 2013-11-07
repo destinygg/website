@@ -53,7 +53,7 @@ class UserAdminController {
 		}
 		$model->banContext = $banContext;
 		$model->ban = $ban;
-		$model->authSessions = ApiAuthenticationService::instance()->getAuthSessionsByUserId( Session::getCredentials ()->getUserId() );
+		$model->authSessions = ApiAuthenticationService::instance()->getAuthSessionsByUserId( $user ['userId'] );
 		return 'admin/user';
 	}
 
