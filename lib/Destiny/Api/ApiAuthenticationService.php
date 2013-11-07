@@ -119,4 +119,25 @@ class ApiAuthenticationService extends Service {
 		return ($stmt->fetchColumn () == 1) ? true : false;
 	}
 
+	/**
+	 * Get a list of authenticated sessions
+	 *
+	 * @param int $userId
+	 * @param int $limit
+	 * @param int $start
+	 */
+	public function getAuthSessionsByUserId($userId, $limit = 5, $start = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT * FROM dfl_users_auth WHERE userId = :userId
+			ORDER BY createdDate DESC
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
+	}
+
 }

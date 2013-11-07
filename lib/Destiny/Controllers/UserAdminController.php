@@ -15,6 +15,8 @@ use Destiny\Chat\ChatBanService;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Api\ApiAuthenticationService;
+use Destiny\Common\Session;
 
 /**
  * @Controller
@@ -51,6 +53,7 @@ class UserAdminController {
 		}
 		$model->banContext = $banContext;
 		$model->ban = $ban;
+		$model->authSessions = ApiAuthenticationService::instance()->getAuthSessionsByUserId( Session::getCredentials ()->getUserId() );
 		return 'admin/user';
 	}
 

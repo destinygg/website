@@ -32,7 +32,6 @@ use Destiny\Common\User\UserRole;
 	<?php endif; ?>
 	
 	<?php include Tpl::file('seg/panel.twitch.php') ?>
-	<?php include Tpl::file('seg/panel.lol.php') ?>
 	<?php include Tpl::file('seg/panel.videos.php') ?>
 	<?php include Tpl::file('seg/panel.music.php') ?>
 	<?php include Tpl::file('seg/panel.calendar.php') ?>

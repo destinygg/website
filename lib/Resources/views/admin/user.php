@@ -105,6 +105,29 @@ use Destiny\Common\User\UserRole;
 					</form>
 				</div>
 			</div>
+
+			<?php if(!empty($model->authSessions)): ?>
+			<h3>Authentication sessions</h3>
+			<div class="content content-dark clearfix" style="margin-right:5px;">
+				<table class="grid">
+					<tr>
+						<td>Provider</td>
+						<td style="width:100%;">Detail</td>
+						<td>Created</td>
+						<td>Modified</td>
+					</tr>
+					<?php foreach($model->authSessions as $auth): ?>
+					<tr>
+						<td><?= $auth['authProvider'] ?></td>
+						<td><i class="icon-info-sign icon-white" title="ID:<?= $auth['authId'] ?> Code:<?= $auth['authCode'] ?>"></i> <?= $auth['authDetail'] ?></td>
+						<td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
+						<td><?=Tpl::moment(Date::getDateTime($auth['modifiedDate']), Date::STRING_FORMAT_YEAR)?></td>
+					</tr>
+					<?php endforeach; ?>
+				</table>
+			</div>
+			<?php endif; ?>
+
 		</div>
 		<div style="float:right; width:30%;">
 			<h3 style="padding-left:5px;">Ban / Mute</h3>
