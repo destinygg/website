@@ -1,4 +1,3 @@
-
 // Document ready
 $(function(){
 	
@@ -148,91 +147,6 @@ $(function(){
 				}
 				$('#twitchpanel').removeClass('online').addClass('offline');
 			}
-		}
-	});
-	
-	// Summoner details
-	new DestinyFeedConsumer({
-		url: destiny.baseUrl + 'summoners.json',
-		polling: 70,
-		ifModified: true,
-		start: false,
-		ui: '#lolpanel',
-		success: function(summoners, textStatus){
-			if(textStatus == 'notmodified') return;
-			var panel = $('#lolpanel');
-			if(typeof summoners != 'object' || summoners == null || summoners.length == 0){
-				panel.hide(); 
-				return;
-			};
-			panel.find('.content:first').empty();
-			for(var i=0; i<summoners.length; ++i) {
-				var summoner = summoners[i],
-					ui = $('<div id="summoner-'+ summoner.summonerId +'" class="summoner-stub clearfix" />');
-				ui.append(
-					'<div class="summoner-info pull-left">'+
-						'<div class="summoner-info-stub pull-left">'+
-							'<h3 class="summoner-title">'+ 
-								htmlEncode(summoner.name) + ' <small><a title="LOLKING profile" href="http://www.lolking.net/summoner/'+ summoner.region.id +'/'+ summoner.summonerId +'">lolking.com</a></small> ' +
-							'</h3>'+
-							'<span class="summoner-region">'+
-								summoner.region.label +
-								((summoner['summonerLevel'] == undefined) ? '':
-								' - Level '+ summoner.summonerLevel)+
-								((summoner.league == null) ? '':
-								' - Elo '+ summoner.league.approximateElo) +
-							'</span>'+
-						'</div>'+
-					'</div>'
-				);
-				if(summoner.league == null){
-					// Unknown
-					ui.append(
-						'<div class="summoner-rank-info unranked pull-right">'+
-							'<div class="pull-left summon-rank-display">'+
-								'<div class="summoner-rank unranked pull-left" style="">Unknown</div>' +
-								'<div class="summoner-rank-thumbnail pull-left"><i title="Unknown" style="width:45px; height:45px; background: url('+destiny.cdn+'/web/img/lol/rank/unknown.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
-							'</div>'+
-						'</div>'
-					);
-				}else{
-					// Ranked
-					var miniSeries = (summoner.league['miniSeries'] != undefined) ? summoner.league.miniSeries : null;
-					var position = summoner.league.position,
-						positionOffset = position - summoner.league.previousDayLeaguePosition;
-					ui.append(
-						'<div class="summoner-rank-info ranked pull-right">'+
-							((miniSeries == null)  ? '' : 
-							'<div class="pull-left summon-rank-stats summon-mini-series">'+
-								'<div><span style="color: #b19e00;">'+ miniSeries.target + '</span> game series</div>' +
-								'<div><span style="color: #1a6f00;">'+ miniSeries.wins +'</span> / <span style="color: #8a1919;">'+ miniSeries.losses +'</span> Win Loss</div>' +
-							'</div>') +
-							'<div class="pull-left summon-rank-stats">'+
-								'<div>' + htmlEncode(summoner.league.leagueName) + '</div>' +
-								'<div><span data-placement="left" data-toggle="tooltip" title="Previous day position '+ summoner.league.previousDayLeaguePosition +'">Position '+
-									'<i class="icon-arrow-'+ ((positionOffset > 0) ? 'down':'up') +' icon-white"></i></span>' +									
-									'<span data-placement="left" data-toggle="tooltip" title="Out of '+ (summoner.league.totalEntries) +'" style="color: #'+ ((positionOffset > 0) ? '8a1919':'1a6f00') +';">' + (position) + '</span>'+
-									((summoner.league.hotStreak == false) ? '' :
-									' <i data-placement="left" data-toggle="tooltip" class="icon-fire icon-white" title="HOOOOOTTT STTTRRREEEAAAAAKKKKKK!"></i> ') +
-									((summoner.league.freshBlood == false) ? '' : 
-									' <i data-placement="left" data-toggle="tooltip" class="icon-tint icon-white" title="Fresh Meat!"></i> ') +
-								'</div>'+
-							'</div>'+
-							'<div class="pull-left summon-rank-stats">'+
-								'<div><span style="color: #b19e00;">' + summoner.league.leaguePoints + '</span> League Points</div>' +
-								'<div><span style="color: #1a6f00;">' + summoner.league.wins +'</span> / <span style="color: #8a1919;">'+ summoner.league.losses + '</span> Win Loss</div>' +
-							'</div>'+
-							'<div class="pull-left summon-rank-display">'+
-								'<div class="summoner-rank ranked pull-left"><span style="text-transform: capitalize;">'+ summoner.league.tier.toLowerCase() +'</span> '+ summoner.league.rank +'</div>' +
-								'<div class="summoner-rank-thumbnail pull-left"><i data-placement="left" data-toggle="tooltip" title="'+ summoner.league.tier +' '+ summoner.league.rank +'" style="width:45px; height:45px; background: url('+destiny.cdn+'/web/img/lol/rank/' + summoner.league.tier.toLowerCase() + '_' + summoner.league.rankInt + '.png) no-repeat center center; background-size: 60px 60px;"></i></div>'+
-							'</div>'+
-						'</div>'
-					);
-				};
-				panel.find('.content:first').append(ui);
-			};
-			panel.loadImages();
-			panel.find('[data-toggle="tooltip"]').tooltip();
 		}
 	});
 	
