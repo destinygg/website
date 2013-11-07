@@ -119,7 +119,7 @@ use Destiny\Common\User\UserRole;
 					<?php foreach($model->authSessions as $auth): ?>
 					<tr>
 						<td><?= $auth['authProvider'] ?></td>
-						<td><i class="icon-info-sign icon-white" title="ID:<?= $auth['authId'] ?> Code:<?= $auth['authCode'] ?>"></i> <?= $auth['authDetail'] ?></td>
+						<td><i class="icon-info-sign icon-white" title="ID:<?= $auth['authId'] ?>"></i> <?= $auth['authDetail'] ?></td>
 						<td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
 						<td><?=Tpl::moment(Date::getDateTime($auth['modifiedDate']), Date::STRING_FORMAT_YEAR)?></td>
 					</tr>
