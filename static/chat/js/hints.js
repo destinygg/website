@@ -6,6 +6,7 @@
 	hintPopup = function(chat){
 		
 		this.hints = {
+			'slashhelp'      : 'Type in /help for more advanced features, like modifying the scrollback size',
 			'tabcompletion'  : 'Use the tab key to auto-complete usernames and emotes',
 			'hoveremotes'    : 'Hovering your mouse over an emote will show you the emote code',
 			'highlight'      : 'Chat messages containing your username will be highlighted in blue',
