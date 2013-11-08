@@ -1,69 +1,36 @@
 <?php
 error_reporting(E_ALL);
 
-function genHTML($trigger) {
-	global $html;
-	$html[] = sprintf('<div class="chat-emote chat-emote-%1$s" title="%1$s"></div>', $trigger);
-}
-
-@mkdir('img', 0775, true);
-@mkdir('css', 0775, true);
-
 define('_BASEDIR', realpath ( __DIR__ . '/../../' ) );
-chdir( _BASEDIR . '/scripts/emotes');
 
-$config = require _BASEDIR . '/config/config.php';
-
+$config       = require _BASEDIR . '/config/config.php';
 $customemotes = $config ['chat'] ['customemotes'];
+$emotedir     = _BASEDIR . '/scripts/emotes/emoticons';
+$outputdir    = _BASEDIR . '/scripts/emotes';
+
+exec("glue --sprite-namespace= --namespace=chat-emote.chat-emote --optipng --crop $emotedir $outputdir", $output, $retcode );
+if ( $retcode != 0 )
+	die( implode("\n", $output ) );
+
+$basecss  = file_get_contents( $outputdir . '/base.css' );
+$emotecss = file_get_contents( $outputdir . '/emoticons.css' );
+
+$emotecss = preg_replace('/height:(\d+px);/', 'height:$1;margin-top:-$1;', $emotecss );
+file_put_contents( $outputdir . '/emoticons.css', $emotecss ); // for the preview
+
+// update the frontend
+$emotecss = str_replace("'emoticons.png'", "'../img/emoticons.png'", $emotecss );
+file_put_contents( _BASEDIR . '/static/chat/css/emoticons.css', $basecss . $emotecss );
+copy( $outputdir . '/emoticons.png', _BASEDIR . '/static/chat/img/emoticons.png' );
 
 $triggers     = array();
 $html  	      = array();
-$css          = '
-/*
-	spritemapper.output_css   = ../emoticons.css
-	spritemapper.output_image = ../emoticons.png
-	spritemapper.anneal_steps = 100
-*/
-.chat-emote {
-	display: inline-block;
-	position: relative;
-	top: 10px;
-	margin: 0 2px;
-}
-';
-$emotecss = "
-.chat-emote.chat-emote-%s {
-	width: %dpx;
-	height: %dpx;
-	margin-top: -%dpx;
-	background: url(../img/%s);
-}
-";
-
-foreach( $customemotes as $trigger ) {
-	
-	$path       = $trigger . '.png';
-	$filename   = 'img/' . $path;
-	$dimensions = getimagesize( $filename );
-	
-	$css .= sprintf(
-		$emotecss,
-		$trigger,
-		$dimensions[0],
-		$dimensions[1],
-		$dimensions[1],
-		$path
-	);
-	genHTML($trigger);
-}
-
-file_put_contents('css/emoticons_unsprited.css', $css );
 
 ob_start();
 ?>
 <html>
 <head>
-<link href="css/emoticons_unsprited.css" rel="stylesheet" media="screen">
+<link href="base.css" rel="stylesheet" media="screen">
 <link href="emoticons.css" rel="stylesheet" media="screen">
 <style>
 body {
@@ -72,7 +39,7 @@ body {
 
 div.chat-emote {
 	display: block;
-	margin: 50px 0;
+	margin: 40px 0;
 }
 </style>
 
@@ -80,36 +47,10 @@ div.chat-emote {
 <body>
 <br />
 <br />
-<?=implode("\r\n", $html);?>
+<?php foreach( $customemotes as $trigger ): ?>
+	<div class="chat-emote chat-emote-<?=$trigger?>" title="<?=$trigger?>"></div>
+<?php endforeach; ?>
 </body>
 </html>
 <?php
-file_put_contents('preview.html', ob_get_clean());
-echo
-	"Run spritemapper css/emoticons_unsprited.css --anneal=100\n"
-;
-
-/*
-	animation: rustle 100ms 7;
-	-webkit-animation: rustle 100ms 7;
-}
-.chat-emote.chat-emote-OverRustle:hover {
-	animation: rustle 100ms infinite;
-	-webkit-animation: rustle 100ms infinite;
-}
-@keyframes rustle {
-	from {
-		left: 0px;
-	}
-	to {
-		left: 2px;
-	}
-}
-@-webkit-keyframes rustle {
-	from {
-		left: 0px;
-	}
-	to {
-		left: 2px;
-	}
-*/
+file_put_contents( $outputdir . '/preview.html', ob_get_clean());
