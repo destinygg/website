@@ -16,7 +16,7 @@ if ( $retcode != 0 )
 $basecss  = file_get_contents( $outputdir . '/base.css' );
 $emotecss = file_get_contents( $outputdir . '/emoticons.css' );
 
-if (strpos('margin-top', $emotecss ) === false )
+if (strpos( $emotecss, 'margin-top' ) === false )
 	$emotecss = preg_replace('/height:(\d+px);/', 'height:$1;margin-top:-$1;', $emotecss );
 
 // for the preview, update the original emoticon.css
