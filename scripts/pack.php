@@ -1,5 +1,6 @@
 <?php
-define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
+if ( !defined( '_BASEDIR') )
+	define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
 define ( '_VENDORDIR', _BASEDIR . '/vendor' );
 define ( '_STATICDIR', _BASEDIR . '/static' );
 

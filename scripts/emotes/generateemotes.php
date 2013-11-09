@@ -8,6 +8,7 @@ $customemotes = $config ['chat'] ['customemotes'];
 $emotedir     = _BASEDIR . '/scripts/emotes/emoticons';
 $outputdir    = _BASEDIR . '/scripts/emotes';
 
+// http://glue.readthedocs.org/
 exec("glue --sprite-namespace= --namespace=chat-emote.chat-emote --optipng --crop $emotedir $outputdir", $output, $retcode );
 if ( $retcode != 0 )
 	die( implode("\n", $output ) );
@@ -15,17 +16,36 @@ if ( $retcode != 0 )
 $basecss  = file_get_contents( $outputdir . '/base.css' );
 $emotecss = file_get_contents( $outputdir . '/emoticons.css' );
 
-$emotecss = preg_replace('/height:(\d+px);/', 'height:$1;margin-top:-$1;', $emotecss );
-file_put_contents( $outputdir . '/emoticons.css', $emotecss ); // for the preview
+if (strpos('margin-top', $emotecss ) === false )
+	$emotecss = preg_replace('/height:(\d+px);/', 'height:$1;margin-top:-$1;', $emotecss );
 
-// update the frontend
+// for the preview, update the original emoticon.css
+file_put_contents( $outputdir . '/emoticons.css', $emotecss );
+
+// update the frontend: the sprite and concat the base and emote styles
 $emotecss = str_replace("'emoticons.png'", "'../img/emoticons.png'", $emotecss );
 file_put_contents( _BASEDIR . '/static/chat/css/emoticons.css', $basecss . $emotecss );
 copy( $outputdir . '/emoticons.png', _BASEDIR . '/static/chat/img/emoticons.png' );
 
-$triggers     = array();
-$html  	      = array();
+// if there is an extra arg, bump the version and prepare pack files
+if ($argc == 2) {
+	echo "Bumping the version and preparing pack files...\n";
+	$composer = file_get_contents( _BASEDIR . '/composer.json' );
+	$matched  = preg_match('/"version".+"([\d.]+)",/', $composer, $matches );
+	if (!$matched)
+		die("no version found in composer.json, update generateemotes because somethings broken\n");
 
+	$version    = explode('.', $matches[1]);
+	$version[ count($version) - 1]++;
+	$newversion = implode('.', $version);
+
+	$composer = preg_replace('/"version".*"[\d.]+",/', '"version": "' . $newversion . '",', $composer );
+	file_put_contents( _BASEDIR . '/composer.json', $composer );
+	include( _BASEDIR . '/scripts/pack.php');
+	echo "Done!\n";
+}
+
+// generate preview.html
 ob_start();
 ?>
 <html>
