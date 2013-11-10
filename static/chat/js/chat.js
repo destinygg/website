@@ -23,6 +23,8 @@ function chat(element, user, options) {
 	};
 	this.user               = new ChatUser(user);
 	this.gui                = new ChatGui(element, this, options);
+	this.previousemote      = null;
+	this.originemote        = null;
 	return this;
 };
 chat.prototype.start = function(){
@@ -34,11 +36,21 @@ chat.prototype.start = function(){
 	
 	this.gui.onSend = function(str){
 		if(this.engine.user == null || !this.engine.user.username)
-			return this.push(new ChatErrorMessage(this.errorstrings.requiresocket));
+			return this.push(new ChatErrorMessage(this.engine.errorstrings.requiresocket));
+		
+		if (str.substring(0, 4) === '/me ')
+			var message = str.substring(4);
+		else
+			var message = str;
+		
+		// If this is an emoticon spam, emit the message but don't add the line immediately
+		if ($.inArray(message, this.emoticons) != -1 && this.engine.previousemote && this.engine.previousemote.message == message)
+			return this.engine.emit('MSG', {data: str});
 		
 		if (str.substring(0, 1) === '/')
 			return this.engine.handleCommand(str.substring(1));
 
+		// Normal user message, emit
 		this.push(new ChatUserMessage(str, this.engine.user), (!this.engine.connected) ? 'unsent' : 'pending');
 		this.engine.emit('MSG', {data: str});
 	};
@@ -156,8 +168,36 @@ chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
 	if(this.user.username == data.nick && $.isArray(data.features))
 		this.user.features = data.features;
+
+	if (data.data.substring(0, 4) === '/me ')
+		var emoticon = data.data.substring(4);
+	else
+		var emoticon = data.data;
 	
-	if(this.user.username != data.nick || !this.gui.resolveMessage(data)){
+	if ($.inArray(emoticon, this.gui.emoticons) != -1) {
+		if (this.previousemote && this.previousemote.message == emoticon) {
+			if(this.previousemote.emotecount === 1){
+				this.previousemote.emotecount = 2;
+				if(this.originemote){
+					this.originemote.ui.remove();
+					this.originemote = null;
+				}
+				return this.previousemote;
+			}else{
+				this.previousemote.incEmoteCount();
+				return;
+			}
+		} else 
+			this.previousemote = new ChatEmoteMessage(emoticon, data.timestamp);
+	} else
+		this.previousemote = null;
+
+	var messageui = this.gui.resolveMessage(data);
+	
+	if(messageui && this.previousemote)
+		this.originemote = messageui;
+	
+	if(this.user.username != data.nick || !messageui){
 		if (this.ignorelist[data.nick.toLowerCase()]) // user ignored
 			return;
 		
@@ -171,8 +211,14 @@ chat.prototype.onMSG = function(data) {
 		
 		if (user && user.features.length != data.features.length)
 			this.users[data.nick] = user;
+
+		var usermessage = new ChatUserMessage(data.data, user, data.timestamp);
 		
-		return new ChatUserMessage(data.data, user, data.timestamp);
+		if(this.previousemote)
+			this.originemote = usermessage;
+
+		// Returned message gets appended to GUI
+		return usermessage;
 	}
 };
 chat.prototype.onMUTE = function(data) {

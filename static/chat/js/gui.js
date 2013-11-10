@@ -357,7 +357,10 @@
 			this.scrollPlugin.update();
 			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
 				if(this.lineCount() >= this.maxlines){
+					// Slowly get rid of excess lines
 					this.lines.children().slice(0,2+Math.floor(((this.lineCount()-this.maxlines) / this.maxlines)*100)).remove();
+					this.recalculateDimensions();
+					this.scrollPlugin.update();
 				}
 				this.scrollPlugin.scrollBottom();
 			}
@@ -400,8 +403,12 @@
 			return this;
 		},
 		
-		resize: function(){
+		recalculateDimensions: function(){
 			this.output.height(this.ui.height()-(this.inputwrap.height() + parseInt(this.inputwrap.css('margin-top'))));
+		},
+		
+		resize: function(){
+			this.recalculateDimensions();
 			this.scrollPlugin.update();
 			this.scrollPlugin.scrollBottom();
 			return this;
@@ -478,13 +485,17 @@
 			var found = false;
 			for(var i in this.userMessages){
 				if(this.userMessages[i].message == data.data){
-					this.userMessages[i].status();
+					
+					var message = this.userMessages[i];
+					message.status();
+					
 					this.userMessages[i] = null;
 					delete(this.userMessages[i]);
-					found = true;
+					
+					return message;
 				}
 			}
-			return found;
+			return null;
 		},
 		
 		setupNotifications: function() {
@@ -823,6 +834,32 @@
 			return this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
 		return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage(), 'continue');
 	};
-	
+	// Emote count
+	ChatEmoteMessage = function(emote, timestamp){
+		this.init(emote, timestamp);
+		this.emotecount = 1;
+		return this;
+	};
+	$.extend(ChatEmoteMessage.prototype, ChatMessage.prototype);
+	ChatEmoteMessage.prototype.getEmoteCountLabel = function(){
+		return "C-C-C-COMBO: " + this.emotecount + "x";
+	};
+	ChatEmoteMessage.prototype.html = function(){
+		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage() + '<span class="emotecount">'+ this.getEmoteCountLabel() +'<span>');
+	};
+	ChatEmoteMessage.prototype.wrapMessage = function(){
+		var elem     = $('<msg/>').text(this.message),
+		    encoded  = elem.html();
+		
+		for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
+			encoded = destiny.chat.gui.formatters[i].format(encoded);
+		
+		elem.html(encoded);
+		return elem.get(0).outerHTML;
+	};
+	ChatEmoteMessage.prototype.incEmoteCount = function(){
+		++this.emotecount;
+		this.ui.find('.emotecount').detach().text(this.getEmoteCountLabel()).appendTo(this.ui);
+	};
 	
 })(jQuery);
