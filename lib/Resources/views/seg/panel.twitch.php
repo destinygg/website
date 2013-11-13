@@ -25,7 +25,7 @@ use Destiny\Common\Config;
 		</div>
 		<div id="twitch-elements" class="clearfix">
 			<div id="player-embed" class="twitch-element-wrap pull-left">
-				<iframe class="twitch-element" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" scrolling="no" seamless="seamless"></iframe>
+				<iframe class="twitch-element" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" seamless="seamless"></iframe>
 			</div>
 			<div id="chat-embed" class="twitch-element-wrap pull-left">
 				<iframe class="twitch-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>

@@ -78,9 +78,10 @@ class ProfileController {
 		
 		$paymentProfile = null;
 		$subscriptionType = null;
-		if(!empty($subscription)){
+		
+		if (! empty ( $subscription ) && ! empty ( $subscription ['subscriptionType'] )) {
 			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
-			$paymentProfile = $this->getPaymentProfile($subscription);
+			$paymentProfile = $this->getPaymentProfile ( $subscription );
 		}
 		
 		$model->title = 'Profile';
@@ -262,5 +263,39 @@ class ProfileController {
 		}
 		$apiAuthService->removeAuthToken ( $authToken ['authTokenId'] );
 		return 'redirect: /profile/authentication';
+	}
+
+	/**
+	 * @Route ("/profile/games")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params
+	 */
+	public function profileGames(array $params, ViewModel $model) {
+		$userId = Session::getCredentials ()->getUserId ();
+		$subscriptionsService = SubscriptionsService::instance ();
+		$subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
+		if (empty ( $subscription )) {
+			$subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
+		}
+		$subscriptionType = null;
+		if(!empty($subscription)){
+			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
+		}
+		$model->subscription = $subscription;
+		$model->subscriptionType = $subscriptionType;
+		return 'profile/games';
+	}
+
+	/**
+	 * @Route ("/profile/games/update")
+	 * @Secure ({"USER"})
+	 * @Transactional
+	 *
+	 * @param array $params
+	 */
+	public function profileGamesUpdate(array $params) {
+		print_r($params);
+		die();
 	}
 }

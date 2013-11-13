@@ -16,7 +16,6 @@ use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Api\ApiAuthenticationService;
-use Destiny\Common\Session;
 
 /**
  * @Controller

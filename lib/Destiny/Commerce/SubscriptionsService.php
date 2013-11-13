@@ -66,7 +66,7 @@ class SubscriptionsService extends Service {
 		if (! empty ( $subscriptionId ) && isset ( $subscriptions [$subscriptionId] )) {
 			return $subscriptions [$subscriptionId];
 		}
-		throw new Exception ( 'Subscription type not found' );
+		throw new Exception ( sprintf('Subscription type [%s] not found', $subscriptionId) );
 	}
 
 	/**
