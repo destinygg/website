@@ -69,7 +69,7 @@ module.exports = function(grunt) {
 					'static/chat/css/style.min.css' : [
 						'static/chat/css/style.css',
 						'static/chat/css/emoticons.css',
-						'static/chat/css/flair.css'
+						'static/chat/css/icons.css'
 					]
 				}
 			},
@@ -86,6 +86,20 @@ module.exports = function(grunt) {
 						'scripts/emotes/css/emoticons.css'
 					]
 				}
+			},
+			
+			icons : {
+				options : {
+					compress : true,
+					yuicompress : true,
+					optimization : 2
+				},
+				files : {
+					'static/chat/css/icons.css' : [
+						'scripts/icons/css/base.css',
+						'scripts/icons/css/icons.css'
+					]
+				}
 			}
 		},
 
@@ -95,6 +109,10 @@ module.exports = function(grunt) {
 			emoticons: {
 				src: 'scripts/emotes/emoticons',
 				options: '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes/css --img=scripts/emotes --url=../img/ --each-template="%(class_name)s{background-position:%(x)s %(y)s;width:%(width)s;height:%(height)s;margin-top:-%(height)s;}" --optipng --crop'
+			},
+			icons: {
+				src: 'scripts/icons/icons',
+				options: '--sprite-namespace= --namespace=icon --css=scripts/icons/css --img=scripts/icons --url=../img/ --optipng'
 			}
 		},
 		
@@ -104,6 +122,12 @@ module.exports = function(grunt) {
 				files: [
 					{expand: true, flatten: true, src: 'scripts/emotes/css/emoticons.css', dest: 'static/chat/css/', filter: 'isFile'},
 					{expand: true, flatten: true, src: 'scripts/emotes/emoticons.png', dest: 'static/chat/img/', filter: 'isFile'}
+				]
+			},
+			icons: {
+				files: [
+					{expand: true, flatten: true, src: 'scripts/icons/css/icons.css', dest: 'static/chat/css/', filter: 'isFile'},
+					{expand: true, flatten: true, src: 'scripts/icons/icons.png', dest: 'static/chat/img/', filter: 'isFile'}
 				]
 			}
 		},
@@ -125,7 +149,7 @@ module.exports = function(grunt) {
 		watch : {
 			styles : {
 				files : [ 'static/**/*.css', 'static/**/*.js' ],
-				tasks : [ 'build' ],
+				tasks : [ 'uglify:build', 'less:build' ],
 				options : {
 					nospawn : true
 				}
@@ -148,10 +172,16 @@ module.exports = function(grunt) {
 		'copy:emoticons',
 		'less:emoticons'
 	]);
+	grunt.registerTask('icons', [
+		'glue:icons',
+		'copy:icons',
+		'less:icons'
+	]);
 	
 	// Build static resources
 	grunt.registerTask('build', [
 		'emoticons',
+		'icons',
 		'uglify:build',
 		'less:build'
 	]);

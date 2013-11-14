@@ -776,7 +776,7 @@
 	};
 	$.extend(ChatBroadcastMessage.prototype, ChatMessage.prototype);
 	ChatBroadcastMessage.prototype.html = function(){
-		return this.wrap(this.wrapTime() + ' <i class="icon-broadcast"></i> ' + this.wrapMessage());
+		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
 	};
 	ChatBroadcastMessage.prototype.wrapMessage = function(){
 		var elem     = $('<msg/>').text(this.message),

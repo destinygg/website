@@ -1,0 +1,15 @@
+.icon-subscriber,
+.icon-subscribert2,
+.icon-subscribert3 {
+	-webkit-transform: rotate(0deg);
+	-webkit-transition: rotate 0.2s ease-in-out;
+	-moz-transition: rotate 0.2s ease-in-out;
+	-o-transition: rotate 0.2s ease-in-out;
+	transition: rotate 0.2s ease-in-out;	
+}
+.icon-subscriber:hover,
+.icon-subscribert2:hover,
+.icon-subscribert3:hover {
+	-moz-animation: spin 3s infinite linear;
+	-webkit-animation: spin 3s infinite linear;
+}

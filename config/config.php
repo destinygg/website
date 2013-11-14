@@ -45,7 +45,8 @@ return array (
 			'MotherFuckinGame',
 			'DaFeels',
 			'UWOTM8',
-			'CallCatz'
+			'CallCatz',
+			'CallChad'
 		),
 	),
 	'redis' => array(

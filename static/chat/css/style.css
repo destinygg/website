@@ -23,6 +23,7 @@ position: relative;
 width:100%;
 height:100%;
 }
+
 .chat-lines > div {
 clear:both;
 word-wrap:break-word;
@@ -51,6 +52,7 @@ margin:8px 0;
 .chat-input, .chat-input-wrap, .chat-tools-wrap {
 height: 30px;
 }
+
 .chat-input {
 background: rgb(46,46,46); /* Old browsers */
 background: -moz-linear-gradient(top,  rgba(46,46,46,1) 0%, rgba(28,28,28,1) 100%); /* FF3.6+ */
@@ -201,11 +203,8 @@ color: #838383;
 .chat-theme-dark .chat-lines > div.highlight {
 color: #dedede;
 }
-.chat-theme-dark .chat-lines > div.broadcast-msg {
+.chat-theme-dark .chat-lines > div.broadcast-msg msg {
 color: #edea12;
-}
-.chat-theme-dark .chat-lines > div.broadcast-msg {
-background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 100%);	
 }
 .chat-theme-dark .chat-lines > div.own-msg {
 background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 100%);
@@ -402,36 +401,40 @@ cursor: pointer;
 }
 
 .chat.focus-user .chat-lines > div.user-msg {
-opacity:0.3;
+	opacity:0.3;
 }
 .chat.focus-user .chat-lines > div.user-msg.focused,
 .chat.focus-user .chat-lines > div.user-msg.highlight {
-opacity:1;
+	opacity:1;
 }
 
 .user-tools a#unignoreuser,
 .user-tools.user-ignored a#ignoreuser {
-display: none;
+	display: none;
 }
 .user-tools.user-ignored a#unignoreuser {
-display: inline-block;
+	display: inline-block;
 }
 
-/* The text shown when a user is not logged in */
+/**
+ * The text shown when a user is not logged in 
+ **/
 .chat-login-msg {
-display: inline-block;
-width: 100%;
-padding: 0 0 0 5px;
-line-height: 25px;
-color: rgba(255,255,255,0.5);
-text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
+	display: inline-block;
+	width: 100%;
+	padding: 0 0 0 5px;
+	line-height: 25px;
+	color: rgba(255,255,255,0.5);
+	text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
 }
 .chat-login-msg:hover {
-color: rgba(255,255,255,1);
-text-shadow:0 0 3px rgba(255,255,255,0.25);	
+	color: rgba(255,255,255,1);
+	text-shadow:0 0 3px rgba(255,255,255,0.25);	
 }
 
-/** Emote count **/
+/** 
+ * Emote combo 
+ **/
 .chat-lines .emotecount {
 	color: white;
 	text-shadow: 1px 1px 0 rgba(0,0,0,0.9);
@@ -466,4 +469,51 @@ text-shadow:0 0 3px rgba(255,255,255,0.25);
 		color: white;
 		background-color: #333;
 	}
+}
+
+/**
+ * Flair colors
+ */
+.chat-frame a.user {
+	color: #CACACA;
+}
+.chat-frame a.user:hover {
+	color: #FAFAFA;
+}
+.chat-frame a.subscriber {
+	color: #488ce7;
+}
+.chat-frame a.subscriber:hover {
+	color: #6aa7f9;
+}
+.chat-frame a.moderator {
+	color: #429A2D;
+}
+.chat-frame a.moderator:hover {
+	color: #75e85a;
+}
+.chat-frame a.vip {
+	color: #CF31E2;
+}
+.chat-frame a.vip:hover {
+	color: #E564F4;
+}
+.chat-frame a.admin {
+	color: #B91010;
+}
+.chat-frame a.admin:hover {
+	color: #FF0000;
+}
+.chat-frame a.bot {
+	color: #4BA235;
+}
+.chat-frame a.bot:hover {
+	color: #7ADB62;
+}
+.chat-frame a.flair3 {
+	color: #0060FF;
+	text-shadow:1px 1px 0 black;
+}
+.chat-frame a.flair3:hover {
+	color: #6AA7F9;
 }
