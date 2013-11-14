@@ -12,13 +12,7 @@ use Destiny\Common\Config;
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <link href="<?=Config::cdn()?>/vendor/css/jquery.mCustomScrollbar.css" rel="stylesheet" media="screen">
-<?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/chat/css/style.min.css')):?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
-<?php else: ?>
-<link href="<?=Config::cdnv()?>/chat/css/style.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdnv()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
-<?php endif; ?>
-<link href="<?=Config::cdnv()?>/chat/css/flair.css" rel="stylesheet" media="screen">
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="chat-embedded">
@@ -199,17 +193,7 @@ use Destiny\Common\Config;
 <script src="/chat/history"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mousewheel.min.js"></script>
 <script src="<?=Config::cdn()?>/vendor/js/jquery.mCustomScrollbar.min.js"></script>
-<?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/chat/js/engine.min.js')):?>
 <script src="<?=Config::cdnv()?>/chat/js/engine.min.js"></script>
-<?php else: ?>
-<script src="<?=Config::cdnv()?>/chat/js/autocomplete.js"></script>
-<script src="<?=Config::cdnv()?>/chat/js/scroll.mCustom.js"></script>
-<script src="<?=Config::cdnv()?>/chat/js/chat.menu.js"></script>
-<script src="<?=Config::cdnv()?>/chat/js/formatters.js"></script>
-<script src="<?=Config::cdnv()?>/chat/js/hints.js"></script>
-<script src="<?=Config::cdnv()?>/chat/js/gui.js"></script>
-<script src="<?=Config::cdnv()?>/chat/js/chat.js"></script>
-<?php endif; ?>
 <script>
 $('#destinychat').ChatGui(<?=Tpl::jsout($model->user)?>,<?=Tpl::jsout($model->options)?>);
 </script>

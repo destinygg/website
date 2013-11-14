@@ -2,12 +2,12 @@
 return array (
 	'cacheAnnotations'		=> true, // If TRUE, stores the annotation definitions in files /tmp/annotations/ (these need to be cleared if changes are made to annotations)
 	'allowImpersonation'	=> false, // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
-	'useMinifiedFiles'		=> false, // Prevent using minified files
-	'showExceptions'		=> false,
+	'showExceptions'		=> false, // Shows the actual exception message, instead of a generic one in the error screen
 	'profile' => array(
 		'nameChangeLimit' 	=> 0
 	),
 	'chat' => array(
+		'host'				=> $_SERVER['SERVER_NAME'],
 		'port'				=> 9998,
 		'backlog' 			=> 150,
 		'maxlines' 			=> 150,
@@ -347,13 +347,6 @@ return array (
 				'action' => 'TwitterFeed',
 				'lastExecuted' => null,
 				'frequency' => 30,
-				'period' => 'minute',
-				'executeOnNextRun' => true
-			),
-			array (
-				'action' => 'SummonersFeed',
-				'lastExecuted' => null,
-				'frequency' => 10,
 				'period' => 'minute',
 				'executeOnNextRun' => true
 			),

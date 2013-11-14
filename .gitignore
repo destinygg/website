@@ -10,3 +10,4 @@ config/config.local.php
 
 /composer.lock
 /deployment.properties
+/node_modules

@@ -21,19 +21,21 @@ use Destiny\Api\ApiAuthenticationService;
 use Destiny\Common\HttpEntity;
 use Destiny\Common\MimeType;
 use Destiny\Common\Utils\Http;
+use Destiny\Games\GamesService;
 
 /**
  * @Controller
  */
 class ProfileController {
-	
+
 	/**
 	 * Get a subscriptions payment profile
 	 * @TODO clean up
-	 * @param array $subscription
+	 *
+	 * @param array $subscription        	
 	 * @return array
 	 */
-	private function getPaymentProfile(array $subscription){
+	private function getPaymentProfile(array $subscription) {
 		$orderService = OrdersService::instance ();
 		$paymentProfile = null;
 		if (! empty ( $subscription ) && ! empty ( $subscription ['paymentProfileId'] )) {
@@ -49,14 +51,14 @@ class ProfileController {
 	 * @Route ("/profile/info")
 	 * @Secure ({"USER"})
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function profileInfo(array $params) {
 		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
 	}
-	
+
 	/**
 	 * @Route ("/profile")
 	 * @HttpMethod ({"GET"})
@@ -98,8 +100,8 @@ class ProfileController {
 	 * @Secure ({"USER"})
 	 * @Transactional
 	 *
-	 * @param array $params
-	 * @param ViewModel $model
+	 * @param array $params        	
+	 * @param ViewModel $model        	
 	 * @throws Exception
 	 * @return string
 	 */
@@ -139,9 +141,9 @@ class ProfileController {
 		
 		// Date for update
 		$userData = array (
-			'username' => $username,
-			'country' => $country,
-			'email' => $email 
+				'username' => $username,
+				'country' => $country,
+				'email' => $email 
 		);
 		
 		// Is the user changing their name?
@@ -167,9 +169,9 @@ class ProfileController {
 		
 		$paymentProfile = null;
 		$subscriptionType = null;
-		if(!empty($subscription)){
+		if (! empty ( $subscription )) {
 			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
-			$paymentProfile = $this->getPaymentProfile($subscription);
+			$paymentProfile = $this->getPaymentProfile ( $subscription );
 		}
 		
 		$model->title = 'Profile';
@@ -185,8 +187,8 @@ class ProfileController {
 	 * @Route ("/profile/authentication")
 	 * @Secure ({"USER"})
 	 *
-	 * @param array $params
-	 * @param ViewModel $model
+	 * @param array $params        	
+	 * @param ViewModel $model        	
 	 * @return string
 	 */
 	public function profileAuthentication(array $params, ViewModel $model) {
@@ -195,7 +197,7 @@ class ProfileController {
 		$userId = Session::getCredentials ()->getUserId ();
 		$model->title = 'Authentication';
 		$model->user = $userService->getUserById ( $userId );
-	
+		
 		// Build a list of profile types for UI purposes
 		$authProfiles = $userService->getAuthProfilesByUserId ( $userId );
 		$authProfileTypes = array ();
@@ -212,10 +214,10 @@ class ProfileController {
 			$subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
 		}
 		$subscriptionType = null;
-		if(!empty($subscription)){
+		if (! empty ( $subscription )) {
 			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
 		}
-
+		
 		$model->subscription = $subscription;
 		$model->subscriptionType = $subscriptionType;
 		$model->authTokens = ApiAuthenticationService::instance ()->getAuthTokensByUserId ( $userId );
@@ -227,7 +229,7 @@ class ProfileController {
 	 * @Secure ({"USER"})
 	 * @Transactional
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function profileAuthtokenCreate(array $params) {
 		$apiAuthService = ApiAuthenticationService::instance ();
@@ -246,7 +248,7 @@ class ProfileController {
 	 * @Secure ({"USER"})
 	 * @Transactional
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function profileAuthtokenDelete(array $params) {
 		if (! isset ( $params ['authToken'] ) || empty ( $params ['authToken'] )) {
@@ -269,7 +271,7 @@ class ProfileController {
 	 * @Route ("/profile/games")
 	 * @Secure ({"USER"})
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
 	public function profileGames(array $params, ViewModel $model) {
 		$userId = Session::getCredentials ()->getUserId ();
@@ -279,23 +281,67 @@ class ProfileController {
 			$subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
 		}
 		$subscriptionType = null;
-		if(!empty($subscription)){
+		if (! empty ( $subscription )) {
 			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
 		}
 		$model->subscription = $subscription;
 		$model->subscriptionType = $subscriptionType;
+		
+		$gamesService = GamesService::instance ();
+		$games = $gamesService->getGames ();
+		$userGames = $gamesService->getUserGames ( $userId );
+		foreach ( $games as &$game ) {
+			$game ['active'] = false;
+			foreach ( $userGames as $userGame ) {
+				if($game ['id'] == $userGame ['gameId']){
+					$game ['active'] = true;
+					break;
+				}
+			}
+		}
+		$model->games = $games;
+		$model->userGames = $userGames;
 		return 'profile/games';
 	}
 
 	/**
-	 * @Route ("/profile/games/update")
+	 * Add a user game
+	 * @Route ("/profile/games/{gameId}/add")
 	 * @Secure ({"USER"})
 	 * @Transactional
 	 *
-	 * @param array $params
+	 * @param array $params        	
 	 */
-	public function profileGamesUpdate(array $params) {
-		print_r($params);
-		die();
+	public function profileGamesAdd(array $params) {
+		if (empty ( $params ['gameId'] )) {
+			return;
+		}
+		$gamesService = GamesService::instance ();
+		$userId = Session::getCredentials ()->getUserId ();
+		$gamesService->addUserGame ( $userId, $params ['gameId'] );
+		$response = new HttpEntity ( Http::STATUS_OK, '{"result":true}' );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
 	}
+
+	/**
+	 * Remove a user game
+	 * @Route ("/profile/games/{gameId}/remove")
+	 * @Secure ({"USER"})
+	 * @Transactional
+	 *
+	 * @param array $params        	
+	 */
+	public function profileGamesRemove(array $params) {
+		if (empty ( $params ['gameId'] )) {
+			return;
+		}
+		$gamesService = GamesService::instance ();
+		$userId = Session::getCredentials ()->getUserId ();
+		$gamesService->removeUserGame ( $userId, $params ['gameId'] );
+		$response = new HttpEntity ( Http::STATUS_OK, '{"result":true}' );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
+	}
+
 }

@@ -217,3 +217,13 @@ CREATE TABLE `dfl_users_subscriptions` (
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+/*Table structure for table `dfl_users_subscriptions` */
+
+CREATE TABLE `users_games` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `userId` int(14) DEFAULT NULL,
+  `gameId` int(14) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci

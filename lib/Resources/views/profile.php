@@ -26,6 +26,7 @@ use Destiny\Common\Config;
 				<ul class="nav">
 					<li class="active"><a href="/profile" title="Your personal details">Details</a></li>
 					<li><a href="/profile/authentication" title="Your login methods">Authentication</a></li>
+					<li><a href="/profile/games" title="Your games">Games</a></li>
 				</ul>
 			</div>
 		</div>

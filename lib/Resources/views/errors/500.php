@@ -10,11 +10,7 @@ $word = $words [array_rand ( $words, 1 )];
 <title>Error</title>
 <meta charset="utf-8">
 <link href="<?=Config::cdn()?>/vendor/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<?php if(Config::$a['useMinifiedFiles'] && is_file(_STATICDIR .'/errors/css/style.min.css')):?>
 <link href="<?=Config::cdn()?>/errors/css/style.min.css" rel="stylesheet" media="screen">
-<?php else: ?>
-<link href="<?=Config::cdn()?>/errors/css/style.css" rel="stylesheet" media="screen">
-<?php endif; ?>
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>

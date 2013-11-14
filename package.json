@@ -1,0 +1,31 @@
+{
+  "name": "Destiny",
+  "version": "1.24.8",
+  "description": "Destiny.gg front-end",
+  "main": "GruntFile.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/destinygg/website.git"
+  },
+  "keywords": [
+    "destinygg"
+  ],
+  "author": "",
+  "license": "proprietary",
+  "bugs": {
+    "url": "https://github.com/destinygg/website/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-less": "~0.7.0",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-glue": "~0.1.1",
+    "grunt-bump": "~0.0.11"
+  }
+}

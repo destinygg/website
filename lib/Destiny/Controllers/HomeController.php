@@ -7,6 +7,7 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\HttpEntity;
 use Destiny\Common\Utils\Http;
+use Destiny\Common\Config;
 
 /**
  * @Controller
@@ -80,6 +81,18 @@ class HomeController {
 	public function bigscreen(array $params, ViewModel $model) {
 		$model->streamInfo = Application::instance ()->getCacheDriver ()->fetch ( 'streaminfo' );
 		return 'bigscreen';
+	}
+
+	/**
+	 * @Route ("/chat/emoticons")
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @return string
+	 */
+	public function emoticons(array $params, ViewModel $model) {
+		$model->emoticons = Config::$a['chat'] ['customemotes'];
+		return 'chat/emoticons';
 	}
 
 }

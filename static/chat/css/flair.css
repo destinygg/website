@@ -3,7 +3,7 @@ background-position: bottom left;
 background-repeat: no-repeat;
 }
 .chat .chat-lines i[class^="icon-"]:hover {
-background-position: top left;
+background-position: top left; 
 }
 i.icon-subscriber,
 i.icon-subscribert2,

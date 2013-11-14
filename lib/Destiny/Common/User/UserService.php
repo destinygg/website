@@ -4,6 +4,8 @@ namespace Destiny\Common\User;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
+use Destiny\Commerce\SubscriptionStatus;
+use Destiny\Common\Config;
 
 class UserService extends Service {
 	
@@ -336,6 +338,49 @@ class UserService extends Service {
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();
 		return $stmt->fetchAll ();
+	}
+
+	/**
+	 * List users
+	 * @param int $limit
+	 * @param int $start
+	 * @param array $filters
+	 * @return array
+	 */
+	public function listUsers($limit, $page = 1, $game = null) {
+		$conn = Application::instance ()->getConnection ();
+		if (empty ( $game )) {
+			$stmt = $conn->prepare ( '
+				SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,s.subscriptionType,u.createdDate,s.recurring,s.status 
+				FROM dfl_users AS u
+				LEFT JOIN dfl_users_subscriptions AS s ON (u.userId = s.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
+				ORDER BY u.userId DESC
+				LIMIT :start,:limit
+			' );
+		} else {
+			$stmt = $conn->prepare ( '
+				SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,s.subscriptionType,u.createdDate,s.recurring,s.status 
+				FROM dfl_users AS u
+				LEFT JOIN dfl_users_subscriptions AS s ON (u.userId = s.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
+				INNER JOIN users_games AS g ON (g.userId = u.userId AND g.gameId = :gameId)
+				ORDER BY u.userId DESC
+				LIMIT :start,:limit
+			' );
+			$stmt->bindValue ( 'gameId', intval ( $game ), \PDO::PARAM_INT );
+		}
+		$stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'subscriptionSource', Config::$a ['subscriptionType'], \PDO::PARAM_STR );
+		$stmt->bindValue ( 'start', ($page-1)*$limit, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		$pagination = array ();
+		$pagination ['list'] = $stmt->fetchAll ();
+		$pagination ['total'] = $conn->fetchColumn ( 'SELECT FOUND_ROWS()' );
+		$pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
+		$pagination ['pages'] = 5;
+		$pagination ['page'] = $page;
+		$pagination ['limit'] = $limit;
+		return $pagination;
 	}
 
 }

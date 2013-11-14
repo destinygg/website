@@ -1,6 +1,6 @@
 # Destiny.gg
-Source code for the website http://www.destiny.gg/
-Work in progress...
+Source code for the website [www.destiny.gg](http://www.destiny.gg/)
+This is a work in progress!
 
 ## License
 
@@ -12,34 +12,104 @@ http://creativecommons.org/licenses/by-sa/3.0/deed.en_US
 
 Illustration of Destiny used throughout [http://www.destiny.gg/] owned by @elevencyan
 
-League of Legends images owned by Riot inc.
-
 
 ## Requirements
-[composer](http://getcomposer.org/download/) is required to pull dependencies.
+
+### Building
+
+[nodejs](http://nodejs.org/) Dependency manager
+
+[grunt](http://gruntjs.com/) Project builder
+
+[composer](http://getcomposer.org/) PHP dependency manager
+
+[glue](http://glue.readthedocs.org/) Glue is a simple command line tool to generate CSS sprites
+
+### Running
+
+[Apache 2](http://httpd.apache.org/), [php 5.3](http://php.net/) , [mysql 5](http://dev.mysql.com/)
 
 
-## Installation
-Add your custom configuration file to /config/config.local.php, override what you need.
-
-Composer setup
-	>composer upgrade
-	
-Pack files build
-	>php -f "scripts/pack.php"
-
-Install the database structure
-	destiny.gg.sql
+## Getting Started
 
 
-## The cron
+Create the configuration file "config/config.local.php" and override what you need.
+
+Create and load the database using `destiny.gg.sql`
+
+
+### Dependencies
+
+Install the node dependencies
+
+```shell
+npm install
+```
+
+Install the PHP dependencies
+
+```shell
+composer install
+```
+
+Build the project
+
+```shell
+grunt build
+```
+
+## The cron job
+
 All api requests and heavy tasks are done on a single cron task (currently running every 60 seconds on the live server)
 This is controlled by the Scheduler, by running "Tasks".
 
-If you are running the website locally, you can call this file manually, or setup a cron.
-
-/cron/index.php
+If you are running the website locally, you can call this file manually, or setup a cron. `/cron/index.php`
 
 The table "[prefix_]scheduled_tasks" will show when specific tasks have been run.
 
 If you don't run this, you will get empty UI and limited functionality in the site.
+
+
+## Grunt Tasks
+
+Build the project, this is the default task
+
+```shell
+grunt emoticons
+```
+
+```shell
+grunt build
+```
+
+Grunt watches for file changes, and runs the build process automatically
+
+```shell
+grunt watch
+```
+
+Clean the tmp (php generates cached annotations files that need to be cleared)
+
+```shell
+grunt clean
+```
+
+Increase the package version
+
+```shell
+grunt bump
+```
+
+```shell
+grunt bump:minor
+```
+
+```shell
+grunt bump:major
+```
+
+Glue - create the project sprites
+
+```shell
+grunt glue
+```

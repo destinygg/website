@@ -17,6 +17,7 @@ use Destiny\Common\MimeType;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
+use Destiny\Games\GamesService;
 
 /**
  * @Controller
@@ -33,8 +34,22 @@ class AdminController {
 	 * @return string
 	 */
 	public function admin(array $params, ViewModel $model) {
+		if (empty ( $params ['page'] )) {
+			$params ['page'] = 1;
+		}
+		if (empty ( $params ['game'] )) {
+			$params ['game'] = null;
+		}
+		if (empty ( $params ['size'] )) {
+			$params ['size'] = 20;
+		}
 		$model->title = 'Administration';
 		$model->user = Session::getCredentials ()->getData ();
+		$model->users = UserService::instance ()->listUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ), $params ['game'] );
+		$model->games = GamesService::instance ()->getGames ();
+		$model->game = $params ['game'];
+		$model->size = $params ['size'];
+		$model->page = $params ['page'];
 		return 'admin';
 	}
 

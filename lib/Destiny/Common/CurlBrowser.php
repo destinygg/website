@@ -106,15 +106,16 @@ class CurlBrowser {
 	/**
 	 * Constructor
 	 *
-	 * @param array $args
+	 * @param array $args        	
 	 */
 	public function __construct(array $args = null) {
-		$this->setLogger ( Application::instance ()->getLogger () );
-		Options::setOptions ( $this, Config::$a ['curl'] );
+		if(isset(Config::$a ['curl']))
+			Options::setOptions ( $this, Config::$a ['curl'] );
 		Options::setOptions ( $this, $args );
-		if (! empty ( $this->url )) {
+		if (empty ( $this->logger ))
+			$this->setLogger ( Application::instance ()->getLogger () );
+		if (! empty ( $this->url ))
 			$this->response = $this->browse ();
-		}
 	}
 
 	/**
