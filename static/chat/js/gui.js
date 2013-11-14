@@ -409,8 +409,11 @@
 		
 		resize: function(){
 			this.recalculateDimensions();
+			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
 			this.scrollPlugin.update();
-			this.scrollPlugin.scrollBottom();
+			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
+				this.scrollPlugin.scrollBottom();
+			}
 			return this;
 		},
 		

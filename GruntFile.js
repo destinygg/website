@@ -172,6 +172,7 @@ module.exports = function(grunt) {
 		'copy:emoticons',
 		'less:emoticons'
 	]);
+	
 	grunt.registerTask('icons', [
 		'glue:icons',
 		'copy:icons',
@@ -182,6 +183,12 @@ module.exports = function(grunt) {
 	grunt.registerTask('build', [
 		'emoticons',
 		'icons',
+		'uglify:build',
+		'less:build'
+	]);
+	
+	// Build static resources
+	grunt.registerTask('build:uglify', [
 		'uglify:build',
 		'less:build'
 	]);
