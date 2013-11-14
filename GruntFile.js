@@ -10,12 +10,13 @@ module.exports = function(grunt) {
 
 		// Minify Javascript
 		uglify: {
-			options: {
-				mangle: false
-			},
-			build: {
+			web: {
+				options: {
+					mangle: false,
+					sourceMap: 'static/web/js/destiny.min.map',
+					sourceMappingURL: 'destiny.min.map'
+				},
 				files: {
-
 					// Web JS
 					'static/web/js/destiny.min.js': [
 						'static/web/js/utils.js',
@@ -23,8 +24,16 @@ module.exports = function(grunt) {
 						'static/web/js/feed.js',
 						'static/web/js/twitch.js',
 						'static/web/js/ui.js'
-					],
-
+					]
+				}
+			},
+			chat: {
+				options: {
+					mangle: false,
+					sourceMap: 'static/chat/js/engine.min.map',
+					sourceMappingURL: 'engine.min.map'
+				},
+				files: {
 					// Chat JS
 					'static/chat/js/engine.min.js': [
 						'static/chat/js/autocomplete.js',
@@ -50,19 +59,20 @@ module.exports = function(grunt) {
 				},
 				files : {
 
-					// Errors CSS
-					'static/errors/css/style.min.css' : [
-						'static/errors/css/style.css'
-					],
-
 					// Web CSS
 					'static/web/css/style.min.css' : [
 						'static/web/css/style.css',
 						'static/web/css/flags.css'
 					],
 
+					// Big screen
 					'static/web/css/bigscreen.min.css' : [
 						'static/web/css/bigscreen.css'
+					],
+
+					// Errors CSS
+					'static/errors/css/style.min.css' : [
+						'static/errors/css/style.css'
 					],
 
 					// Chat CSS
@@ -149,7 +159,7 @@ module.exports = function(grunt) {
 		watch : {
 			styles : {
 				files : [ 'static/**/*.css', 'static/**/*.js' ],
-				tasks : [ 'uglify:build', 'less:build' ],
+				tasks : [ 'build:uglify' ],
 				options : {
 					nospawn : true
 				}
@@ -172,7 +182,7 @@ module.exports = function(grunt) {
 		'copy:emoticons',
 		'less:emoticons'
 	]);
-	
+
 	grunt.registerTask('icons', [
 		'glue:icons',
 		'copy:icons',
@@ -180,17 +190,17 @@ module.exports = function(grunt) {
 	]);
 	
 	// Build static resources
-	grunt.registerTask('build', [
-		'emoticons',
-		'icons',
-		'uglify:build',
+	grunt.registerTask('build:uglify', [
+		'uglify:web',
+		'uglify:chat',
 		'less:build'
 	]);
 	
 	// Build static resources
-	grunt.registerTask('build:uglify', [
-		'uglify:build',
-		'less:build'
+	grunt.registerTask('build', [
+		'emoticons',
+		'icons',
+		'build:uglify'
 	]);
 	
 	// Default
