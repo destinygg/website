@@ -81,7 +81,7 @@ use Destiny\Common\User\UserRole;
 						<div class="control-group">
 							<label>Features:</label>
 							<?php foreach($model->features as $featureName=>$f): ?>
-							<?php if(strcasecmp($featureName, 'subscriber') === 0 || strcasecmp($featureName, 'flair1') === 0 || strcasecmp($featureName, 'flair3') === 0 ) continue;?>
+							<?php if(strcasecmp($featureName, 'subscriber') === 0 || strcasecmp($featureName, 'flair1') === 0 || strcasecmp($featureName, 'flair3') === 0 ) continue; // remove subscription flairs?>
 							<label class="checkbox">
 								<input type="checkbox" name="features[]" value="<?=$f['featureName']?>" <?=(in_array($featureName, $model->user['features']))?'checked="checked"':''?>>
 								<?=$f['featureLabel']?>
@@ -119,7 +119,7 @@ use Destiny\Common\User\UserRole;
 					<?php foreach($model->authSessions as $auth): ?>
 					<tr>
 						<td><?= $auth['authProvider'] ?></td>
-						<td><i class="icon-info-sign icon-white" title="ID:<?= $auth['authId'] ?>"></i> <?= $auth['authDetail'] ?></td>
+						<td><i class="icon-info-sign icon-white" title="ID:<?= $auth['authId'] ?>"></i> <?= (!empty($auth['authDetail'])) ? $auth['authDetail']:$auth['authId'] ?></td>
 						<td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
 						<td><?=Tpl::moment(Date::getDateTime($auth['modifiedDate']), Date::STRING_FORMAT_YEAR)?></td>
 					</tr>

@@ -636,6 +636,7 @@
 		ADMIN        : 'admin',
 		BOT          : 'bot',
 		NOTABLE      : 'flair2',
+		TRUSTED      : 'flair4',
 	};
 
 	//CHAT USER
@@ -658,13 +659,16 @@
 					icons += '<i class="icon-moderator" title="Moderator"/>';
 					break;
 				case UserFeatures.ADMIN :
-					icons += '<i class="icon-administrator" title="Administrator"/>';
+					icons += '<i class="icon-admin" title="Administrator"/>';
 					break;
 				case UserFeatures.BOT :
 					icons += '<i class="icon-bot" title="Bot"/>';
 					break;
 				case UserFeatures.NOTABLE :
 					icons += '<i class="icon-notable" title="Notable"/>';
+					break;
+				case UserFeatures.TRUSTED :
+					icons += '<i class="icon-trusted" title="Trusted"/>';
 					break;
 			}
 		}

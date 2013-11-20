@@ -3,12 +3,15 @@ namespace Destiny\Common\User;
 
 abstract class UserFeature {
 	
-	const ADMIN = 'admin';
+	const PROTECT = 'protected';
 	const SUBSCRIBER = 'subscriber';
 	const SUBSCRIBERT2 = 'flair1';
 	const SUBSCRIBERT3 = 'flair3';
-	const MODERATOR = 'moderator';
 	const VIP = 'vip';
-	const PROTECT = 'protected';
+	const MODERATOR = 'moderator';
+	const ADMIN = 'admin';
+	const BOT = 'bot';
+	const NOTABLE = 'flair2';
+	const TRUSTED = 'flair4';
 
 }

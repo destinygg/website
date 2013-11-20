@@ -144,10 +144,6 @@ return array (
 			'ipn'			=> ''
 		)
 	),
-	'lolapi' => array (
-		'url'				=> '',
-		'apikey'			=> '' 
-	),
 	'youtube' => array (
 		'apikey'		=> '',
 		'playlistId'	=> '',
