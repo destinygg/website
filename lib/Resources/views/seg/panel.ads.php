@@ -32,8 +32,9 @@ use Destiny\Common\Config;
 						<div class="private-ad" id="feenix-nascita">
 							<a href="http://www.feenixcollection.com/" title="visit Feenix Collection"></a>
 						</div>
-						<div class="private-ad" id="open-broadcasters-software">
-							<a href="http://obsproject.com/" title="visit Open Broadcasters Software"></a>
+						<div class="private-ad" id="ting">
+							<img height="1" width="1" src="http://ting.7eer.net/i/72409/87559/2020" border="0" style="position: absolute; top:0; left:0;" />
+							<a href="http://ting.7eer.net/c/72409/87559/2020" style="background-color: #00a3e0; margin: 0 auto; overflow: hidden; height:250px;"><img src="http://adn.impactradius.com/display-ad/2020-87559" border="0" alt="" width="250" height="250"/></a>
 						</div>
 						<div class="private-ad" id="dollar-shave-club">
 							<a href="http://Dollar-Shave-Club.7eer.net/c/72409/74122/1969"><img src="http://adn.impactradius.com/display-ad/1969-74122" border="0" alt="DollarShaveClub-Shave Time Shave Money" width="300" height="250"/></a>
