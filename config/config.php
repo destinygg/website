@@ -48,6 +48,7 @@ return array (
 			'CallCatz',
 			'CallChad',
 			'DatGeoff',
+			'Sheeeit'
 		),
 	),
 	'redis' => array(
