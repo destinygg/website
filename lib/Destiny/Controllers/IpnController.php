@@ -46,7 +46,7 @@ class IpnController {
 				'ipnTrackId' => $data ['ipn_track_id'],
 				'ipnTransactionId' => $data ['txn_id'],
 				'ipnTransactionType' => $data ['txn_type'],
-				'ipnData' => json_encode ( iconv("utf-8", "utf-8//IGNORE", $data) ) 
+				'ipnData' => json_encode ( $data, JSON_UNESCAPED_UNICODE ) 
 			) );
 			
 			// Make sure this IPN is for the merchant
