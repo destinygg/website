@@ -1,6 +1,7 @@
 (function(){
 
 	cMenu = function(){
+		this.scrollPlugin = null;
 		return this;
 	};
 	
@@ -15,27 +16,33 @@
 		}, 250));
 	};
 	
-	cMenu.addMenu = function(chat, e){
-		e.on('click', '.close', function(){
+	cMenu.addMenu = function(chat, el){
+		el.on('click', '.close', function(){
 			cMenu.closeMenus(chat);
 			return false;
 		});
-		cMenu.prototype.scrollable.apply(e);
-		chat.menus.push(e);
+		chat.menus.push(el);
 		return this;
 	};
 	cMenu.closeMenus = function(chat){
 		for(var i=0;i<chat.menus.length; ++i){
-			if(chat.menus[i].visible){
+			if(chat.menus[i].visible)
 				this.prototype.hideMenu.call(chat.menus[i], chat);
-			}
 		}
 	};
 	cMenu.prototype.showMenu = function(chat){
 		showMenuUI(this);
 		this.visible = true;
 		this.btn.addClass('active');
-		this.scrollable.mCustomScrollbar('update');
+		
+		// Can only init the scrollbar when the item is visible
+		if(this.scrollable){
+			if(!this.scrollPlugin)
+				this.scrollPlugin = this.scrollable.nanoScroller({disableResize: true, preventPageScrolling: true})[0].nanoscroller;
+			else
+				this.scrollPlugin.reset();
+		}
+		
 		++chat.menuOpenCount;
 	};
 	cMenu.prototype.hideMenu = function(chat){
@@ -43,15 +50,6 @@
 		this.visible = false;
 		this.btn.removeClass('active');
 		--chat.menuOpenCount;
-	};
-	cMenu.prototype.scrollable = function(){
-		this.scrollable.mCustomScrollbar({
-			theme: 'light-thin',
-			scrollInertia: 0,
-			horizontalScroll: false,
-			autoHideScrollbar: true,
-			scrollButtons:{enable:false}
-		});
 	};
 	
 	cUserTools = function(chat){

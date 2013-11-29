@@ -14,7 +14,8 @@ module.exports = function(grunt) {
 				options: {
 					mangle: false,
 					sourceMap: 'static/web/js/destiny.min.map',
-					sourceMappingURL: 'destiny.min.map'
+					sourceMappingURL: 'destiny.min.map',
+					sourceMapPrefix: 3
 				},
 				files: {
 					// Web JS
@@ -30,17 +31,17 @@ module.exports = function(grunt) {
 			chat: {
 				options: {
 					mangle: false,
-					sourceMap: 'static/chat/js/engine.min.map',
-					sourceMappingURL: 'engine.min.map'
+					sourceMap: 'static/chat/js/chat.min.map',
+					sourceMappingURL: 'chat.min.map',
+					sourceMapPrefix: 3
 				},
 				files: {
 					// Chat JS
-					'static/chat/js/engine.min.js': [
+					'static/chat/js/chat.min.js': [
 						'static/chat/js/autocomplete.js',
-						'static/chat/js/scroll.mCustom.js',
-						'static/chat/js/chat.menu.js',
 						'static/chat/js/formatters.js',
 						'static/chat/js/hints.js',
+						'static/chat/js/menu.js',
 						'static/chat/js/gui.js',
 						'static/chat/js/chat.js'
 					]
