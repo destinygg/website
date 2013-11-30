@@ -240,7 +240,7 @@ class SubscriptionController {
 		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] );
 		ChatIntegrationService::instance ()->sendBroadcast ( $message );
 		
-		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete'; // @TODO FIX
+		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete';
 	}
 	
 	/**

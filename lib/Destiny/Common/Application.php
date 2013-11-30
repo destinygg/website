@@ -139,9 +139,9 @@ class Application extends Service {
 				
 			// Log any errors on the model
 			// @TODO neaten this implementation up - better than logging everywhere else
-			if (! empty ( $model->error ) && is_a ( $model->error, 'Exception' )) {
-				$this->logger->error ( $model->error->getMessage () );
-			}
+			///if (! empty ( $model->error ) && is_a ( $model->error, 'Exception' )) {
+			///	$this->logger->error ( $model->error->getMessage () );
+			//}
 			
 			// Check if the response is valid
 			if (empty ( $response )) {
