@@ -23,7 +23,7 @@ $word = $words [array_rand ( $words, 1 )];
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
 					<h1><strong><?=$word?>!</strong> Page not found</h1>
-					<p>Could not find the page you where 'looking for'. <br />Would you like to <a href="/">return to the start</a>?</p>
+					<p>Could not find the page you were 'looking for'. <br />Would you like to <a href="/">return to the start</a>?</p>
 				</div>
 				<div id="destiny-illustration"></div>
 			</header>
