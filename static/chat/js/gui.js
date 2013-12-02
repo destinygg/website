@@ -289,9 +289,9 @@
 					return;
 				scrollbottom = (scrollbottom == undefined) ? this.isScrolledToBottom() : scrollbottom;
 				if(scrollbottom)
-					this.scrollBottom(0);
+					this.scrollPlugin.scrollBottom(0);
 				else
-					this.reset();
+					this.scrollPlugin.reset();
 			};
 			
 			// Enable toolbar
