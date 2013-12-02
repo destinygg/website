@@ -58,10 +58,6 @@
 			this.formatters.push(new destiny.fn.EmoteFormatter(this));
 			this.formatters.push(new destiny.fn.UrlFormatter(this));
 			
-			// Scrollbars and scroll locking
-			this.scrollPlugin = new destiny.fn.mCustomScrollbarPlugin(this);
-			this.scrollPlugin.lockScroll(true);
-			
 			// Input history
 			this.currenthistoryline = -1;
 			this.storedinputline = null;
@@ -90,7 +86,6 @@
 			this.chatsettings.btn = this.ui.find('.chat-settings-btn:first').eq(0);
 			this.chatsettings.list = this.chatsettings.find('ul:first').eq(0);
 			this.chatsettings.visible = false;
-			this.chatsettings.scrollable = this.chatsettings.find('.scrollable:first');
 			this.loadSettings();
 			
 			this.chatsettings.btn.on('click', function(e){
@@ -124,13 +119,13 @@
 					case 'showtime':
 						chat.saveChatOption(name, checked);
 						chat.ui.toggleClass('chat-time', checked);
-						chat.resize();
+						this.scrollPlugin.updateAndScroll();
 						break;
 					
 					case 'hideflairicons':
 						chat.saveChatOption(name, checked);
 						chat.ui.toggleClass('chat-icons', (!checked));
-						chat.resize();
+						this.scrollPlugin.updateAndScroll();
 						break;
 					
 					case 'highlight':
@@ -268,15 +263,6 @@
 			this.input.on('keydown mousedown', $.proxy(function(e){
 				if(this.menuOpenCount > 0)
 					cMenu.closeMenus(this);
-				
-				if(e.keyCode == 33 /*PGUP*/){
-					this.scrollPlugin.scroll('up');
-					return false;
-				}
-				if(e.keyCode == 34 /*PGDOWN*/){
-					this.scrollPlugin.scroll('down');
-					return false;
-				}
 			}, this));
 			// Close all menus if someone clicks on any messages
 			this.output.on('mousedown', $.proxy(function(e){
@@ -286,9 +272,31 @@
 					cMenu.closeMenus(this);
 			}, this));
 
+			// Scrollbars and scroll locking
+			this.lines.addClass('content');
+			this.scrollPlugin = this.output.nanoScroller({
+				disableResize: true,
+				preventPageScrolling: true,
+				contentClass: 'chat-lines',
+				sliderMinHeight: 40,
+				tabIndex: 1
+			})[0].nanoscroller;
+			this.scrollPlugin.isScrolledToBottom = function(){
+				return (this.contentScrollTop >= this.maxScrollTop);
+			};
+			this.scrollPlugin.updateAndScroll = function(scrollbottom){
+				if(!this.isActive) 
+					return;
+				scrollbottom = (scrollbottom == undefined) ? this.isScrolledToBottom() : scrollbottom;
+				if(scrollbottom)
+					this.scrollBottom(0);
+				else
+					this.reset();
+			};
+			
 			// Enable toolbar
 			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
-			return this.resize();
+			return this;
 		},
 		
 		loadSettings: function() {
@@ -315,11 +323,9 @@
 				switch(name){
 					case 'showtime':
 						self.ui.toggleClass('chat-time', value);
-						self.resize();
 						break;
 					case 'hideflairicons':
 						self.ui.toggleClass('chat-icons', (!value));
-						self.resize();
 						break;
 				};
 			});
@@ -336,58 +342,63 @@
 					
 					if ($.inArray(line.event, this.engine.controlevents) >= 0)
 						this.put(message);
-					else {
-						var m = this.put(message);
-						this.handleHighlight(m, true);
-					}
+					else
+						this.handleHighlight(this.put(message), true);
 				}
 				this.put(new ChatUIMessage('<hr/>'));
-				this.scrollPlugin.update();
 			};
+			this.scrollPlugin.updateAndScroll();
+			return;
 		},
 		
-		lineCount: function(){
+		getLineCount: function(){
 			return this.lines.children().length;
 		},
-		
-		push: function(message, state){
-			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
-			this.userMessages.push(message);
-			this.put(message, state);
-			this.scrollPlugin.update();
-			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
-				if(this.lineCount() >= this.maxlines){
-					// Slowly get rid of excess lines
-					this.lines.children().slice(0,2+Math.floor(((this.lineCount()-this.maxlines) / this.maxlines)*100)).remove();
-					this.recalculateDimensions();
-					this.scrollPlugin.update();
-				}
-				this.scrollPlugin.scrollBottom();
-			}
-			this.handleHighlight(message);
-			return message;
-		},
 
+		// Add a message to the UI
 		put: function(message, state){
 			if(message instanceof ChatUserMessage){
-				if(this.lastMessage && this.lastMessage.user && message.user && this.lastMessage.user.username == message.user.username){
-					//same person consecutively
-					message.ui = $(message.addonHtml());
-				}else{
-					//different person
-					message.ui = $(message.html());
-				}
-				if(message.user && this.engine.user && this.engine.user.username == message.user.username){
+				if(this.lastMessage && this.lastMessage.user && message.user && this.lastMessage.user.username == message.user.username)
+					message.ui = $(message.addonHtml()); //same person consecutively
+				else
+					message.ui = $(message.html()); //different person
+				
+				if(message.user && this.engine.user && this.engine.user.username == message.user.username)
 					message.ui.addClass('own-msg');
-				}
-			}else{
+			}else
 				message.ui = $(message.html());
-			};
+				
 			message.ui.appendTo(this.lines);
 			
 			if(state != undefined)
 				message.status(state);
+			
 			this.lastMessage = message;
+			return message;
+		},
+		
+		// Add a message
+		push: function(message, state){
+			
+			// Get the scroll position before adding the new line / removing old lines
+			var wasScrolledBottom = this.scrollPlugin.isScrolledToBottom();
+			
+			// Rid excess lines if the user is scrolled to the bottom
+			var lineCount = this.getLineCount();
+			if(wasScrolledBottom && lineCount >= this.maxlines)
+				this.lines.children().slice(0,2+Math.floor(((lineCount-this.maxlines)/this.maxlines)*100)).remove();
+			
+			this.userMessages.push(message);
+			this.put(message, state);
+
+			// Make sure a reset has been called at least once when the scroll should be enabled, but isnt yet
+			if(this.scrollPlugin.content.scrollHeight > this.scrollPlugin.el.clientHeight && !this.scrollPlugin.isActive)
+				this.scrollPlugin.reset();
+			
+			// Reset and or scroll bottom
+			this.scrollPlugin.updateAndScroll(wasScrolledBottom);
+			
+			this.handleHighlight(message);
 			return message;
 		},
 		
@@ -403,23 +414,14 @@
 			return this;
 		},
 		
-		recalculateDimensions: function(){
-			this.output.height(this.ui.height()-(this.inputwrap.height() + parseInt(this.inputwrap.css('margin-top'))));
-		},
-		
 		resize: function(){
-			this.recalculateDimensions();
-			var isScrolledBottom = this.scrollPlugin.isScrolledBottom();
-			this.scrollPlugin.update();
-			if(isScrolledBottom && this.scrollPlugin.isScrollLocked()){
-				this.scrollPlugin.scrollBottom();
-			}
+			this.scrollPlugin.updateAndScroll();
 			return this;
 		},
 		
 		setupInputHistory: function(){
-			var modifierpressed = false;
-			var chat = this;
+			var modifierpressed = false,
+				chat = this;
 			$(this.input).on('keyup', function(e) {
 				
 				if (e.shiftKey || e.metaKey || e.ctrlKey)
@@ -605,7 +607,7 @@
 		
 		removeUserMessages: function(username) {
 			this.lines.children('div[data-username="'+username.toLowerCase()+'"]').remove();
-			this.resize();
+			this.scrollPlugin.reset();
 		}
 		
 	});
@@ -623,7 +625,6 @@
 			destiny.chat.gui.loaded = true;
 		}
 	});
-	
 	
 	// USER FEATURES
 	UserFeatures = {
@@ -735,6 +736,7 @@
 	ChatMessage.prototype.wrap = function(content){
 		return '<div class="'+this.type+'-msg">'+content+'</div>';
 	};
+	
 	// ERROR MESSAGE
 	ChatErrorMessage = function(error, timestamp){
 		this.init(error, timestamp);
@@ -745,6 +747,7 @@
 	ChatErrorMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-error"></i> ' + this.wrapMessage());
 	};
+	
 	// INFO / HELP MESSAGE
 	ChatInfoMessage = function(message, timestamp){
 		this.init(message, timestamp);
@@ -755,6 +758,7 @@
 	ChatInfoMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-info"></i> ' + this.wrapMessage());
 	};
+	
 	// COMMAND MESSAGE
 	ChatCommandMessage = function(message, timestamp){
 		this.init(message, timestamp);
@@ -765,6 +769,7 @@
 	ChatCommandMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-command"></i> ' + this.wrapMessage());
 	};
+	
 	// STATUS MESSAGE
 	ChatStatusMessage = function(message, timestamp){
 		this.init(message, timestamp);
@@ -775,6 +780,7 @@
 	ChatStatusMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' <i class="icon-status"></i> ' + this.wrapMessage());
 	};
+	
 	// BROADCAST MESSAGE
 	ChatBroadcastMessage = function(message, timestamp){
 		this.init(message, timestamp);
@@ -786,7 +792,7 @@
 		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
 	};
 	ChatBroadcastMessage.prototype.wrapMessage = function(){
-		var elem     = $('<msg/>').text(this.message),
+		var elem     = $('<span class="msg"/>').text(this.message),
 		    encoded  = elem.html();
 		
 		for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
@@ -795,6 +801,7 @@
 		elem.html(encoded);
 		return elem.get(0).outerHTML;
 	};
+	
 	// USER MESSAGE
 	ChatUserMessage = function(message, user, timestamp){
 		this.init(message, timestamp);
@@ -821,7 +828,7 @@
 		return ((this.isEmote) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
 	};
 	ChatUserMessage.prototype.wrapMessage = function(){
-		var elem     = $('<msg/>').text(this.message),
+		var elem     = $('<span class="msg"/>').text(this.message),
 		    encoded  = elem.html();
 		
 		if(this.isEmote)
@@ -841,6 +848,7 @@
 			return this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
 		return this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage(), 'continue');
 	};
+	
 	// Emote count
 	ChatEmoteMessage = function(emote, timestamp){
 		this.init(emote, timestamp);
@@ -855,7 +863,7 @@
 		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage() + '<span class="emotecount">'+ this.getEmoteCountLabel() +'<span>');
 	};
 	ChatEmoteMessage.prototype.wrapMessage = function(){
-		var elem     = $('<msg/>').text(this.message),
+		var elem     = $('<span class="msg"/>').text(this.message),
 		    encoded  = elem.html();
 		
 		for(var i=0; i<destiny.chat.gui.formatters.length; ++i)

@@ -580,14 +580,6 @@ width: 100%;
 
 .private-ad>a {
 border-radius: 6px;
-border-top: 1px solid #333;
-border-left: 1px solid #333;
-border-right: 1px solid #222;
-border-bottom: 1px solid #222;
-}
-
-#open-broadcasters-software a {
-background: white url("../img/OBSbanner.jpg") no-repeat top center;
 }
 
 #feenix-nascita>a {

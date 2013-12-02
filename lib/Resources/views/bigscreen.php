@@ -44,7 +44,7 @@ use Destiny\Common\User\UserRole;
 					<div class="panelheader clearfix">
 						<div class="toolgroup clearfix">
 							<div class="pull-left channel-stat game">
-								<?php if($model->streamInfo['stream'] == null): ?>
+								<?php if(!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])): ?>
 								<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
 								<?php else: ?>
 								<i class="icon-time icon-white subtle"></i> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['channel']['updated_at']))?></span>
