@@ -281,18 +281,18 @@
 				sliderMinHeight: 40,
 				tabIndex: 1
 			})[0].nanoscroller;
-			this.scrollPlugin.isScrolledToBottom = function(){
+			this.scrollPlugin.isScrolledToBottom = $.proxy(function(){
 				return (this.contentScrollTop >= this.maxScrollTop);
-			};
-			this.scrollPlugin.updateAndScroll = function(scrollbottom){
+			}, this.scrollPlugin);
+			this.scrollPlugin.updateAndScroll = $.proxy(function(scrollbottom){
 				if(!this.isActive) 
 					return;
 				scrollbottom = (scrollbottom == undefined) ? this.isScrolledToBottom() : scrollbottom;
 				if(scrollbottom)
-					this.scrollPlugin.scrollBottom(0);
+					this.scrollBottom(0);
 				else
-					this.scrollPlugin.reset();
-			};
+					this.reset();
+			}, this.scrollPlugin);
 			
 			// Enable toolbar
 			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
