@@ -282,7 +282,7 @@
 				tabIndex: 1
 			})[0].nanoscroller;
 			this.scrollPlugin.isScrolledToBottom = $.proxy(function(){
-				return (this.contentScrollTop >= this.maxScrollTop);
+				return (this.contentScrollTop >= this.maxScrollTop - 30);
 			}, this.scrollPlugin);
 			this.scrollPlugin.updateAndScroll = $.proxy(function(scrollbottom){
 				if(!this.isActive) 
@@ -347,7 +347,7 @@
 				}
 				this.put(new ChatUIMessage('<hr/>'));
 			};
-			this.scrollPlugin.updateAndScroll();
+			this.scrollPlugin.updateAndScroll(true);
 			return;
 		},
 		
