@@ -13,7 +13,6 @@ use Destiny\Common\User\UserRole;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/opengraph.php') ?>
 <?php include Tpl::file('seg/commontop.php') ?>
-<link href="<?=Config::cdnv()?>/web/css/bigscreen.min.css" rel="stylesheet" media="screen">
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="bigscreen">

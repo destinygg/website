@@ -31,7 +31,7 @@ abstract class Config {
 	 * @param string $protocol
 	 * @return string
 	 */
-	public static function cdn($protocol = 'http://') {
+	public static function cdn($protocol = '//') {
 		$domain = self::$a ['cdn'] ['domain'];
 		return (! empty ( $domain )) ? $protocol . $domain : '';
 	}
@@ -42,8 +42,17 @@ abstract class Config {
 	 * @param string $protocol
 	 * @return string
 	 */
-	public static function cdnv($protocol = 'http://') {
+	public static function cdnv($protocol = '//') {
 		return self::cdn ( $protocol ) . '/' . Config::version ();
+	}
+
+	/**
+	 * @param double $v
+	 * @param string $protocol
+	 * @return string
+	 */
+	public static function cdnvf($v, $protocol = '//') {
+		return self::cdn ( $protocol ) . '/' . $v;
 	}
 
 	/**

@@ -23,6 +23,8 @@ use Destiny\Common\Config;
 					<li class="divider-vertical"></li>
 					<li class="subscribe"><a href="/subscribe" rel="subscribe" title="You have an active subscription!">Subscribed</a></li>
 					<?php endif; ?>
+					<li class="divider-vertical"></li>
+					<li class="bigscreen"><a title="So. Much. Girth." href="/bigscreen" rel="bigscreen"><i class="icon-bigscreen"></i> Big screen</a></li>
 				</ul>
 				<ul class="nav pull-right">
 					<?if(!Session::hasRole(UserRole::USER)):?>

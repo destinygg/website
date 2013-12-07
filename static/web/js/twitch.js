@@ -5,8 +5,7 @@ $(function(){
 		chat = twitchElements.find('#chat-embed'), 
 		player = twitchElements.find('#player-embed'),
 		popoutChatBtn = twitch.find('#popoutchat'),
-		popoutVideoBtn = twitch.find('#popoutvideo'),
-		bigscreenmodeBtn = twitch.find('#bigscreenmode');
+		popoutVideoBtn = twitch.find('#popoutvideo');
 	
 	// Refs for standard and bigscreen mode
 	var playerWrap = $("div.twitch-element-wrap"),
@@ -76,14 +75,6 @@ $(function(){
 
 	popoutChatBtn.on('click', function(){ twitchChat.toggle(); });
 	popoutVideoBtn.on('click', function(){ twitchVideo.toggle(); });
-	bigscreenmodeBtn.on('click', function(){
-		var nw = window.open('/bigscreen', 'bigscreen');
-		var tw = twitch.detach();
-		$(nw).on('beforeunload', function(){
-			$('#header-band').after(tw);
-		});
-		return false;
-	});
 	
 	/**
 	 * Iterate over browser variants of the given fullscreen API function string,

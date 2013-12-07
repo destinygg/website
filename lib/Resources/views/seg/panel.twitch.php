@@ -17,7 +17,6 @@ use Destiny\Common\Config;
 					<?php endif; ?>
 				</div>
 				<div class="btn-group pull-right">
-					<a id="bigscreenmode" title="Big screen mode" class="btn btn-mini btn-link">[Bigscreen mode]</a>
 					<a id="popoutvideo" title="Pop-out video" class="btn btn-mini btn-link">Pop-out player</a>
 					<a id="popoutchat" title="Pop-out chat" class="btn btn-mini btn-link">Pop-out chat</a>
 				</div>

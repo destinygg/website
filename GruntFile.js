@@ -10,15 +10,39 @@ module.exports = function(grunt) {
 
 		// Minify Javascript
 		uglify: {
-			web: {
+			
+			// Common external libraries
+			libs: {
 				options: {
-					mangle: false,
-					sourceMap: 'static/web/js/destiny.min.map',
-					sourceMappingURL: 'destiny.min.map',
-					sourceMapPrefix: 3
+					mangle           : false,
+					sourceMap        : 'static/vendor/libs.min.map',
+					sourceMappingURL : 'libs.min.map',
+					sourceMapPrefix  : 2,
+					preserveComments : 'all'
 				},
 				files: {
-					// Web JS
+					'static/vendor/libs.min.js': [
+						'static/vendor/jquery/jquery-1.10.2.min.js',
+						'static/vendor/jquery.cookie/jquery.cookie.js',
+						'static/vendor/jquery.mousewheel/jquery.mousewheel.min.js',
+						'static/vendor/bootstrap/bootstrap.js',
+						'static/vendor/moment/moment-2.4.0.min.js',
+						'static/vendor/overthrow/overthrow.min.js',
+						'static/vendor/nanoscrollerjs/jquery.nanoscroller.js'// We currently dont use the min file, because of custom mods
+					]
+				}
+			},
+			
+			// General web libs
+			web: {
+				options: {
+					mangle           : false,
+					preserveComments : 'some', //will preserve all comments that start with a bang (!) or include a closure compiler style
+					sourceMap        : 'static/web/js/destiny.min.map',
+					sourceMappingURL : 'destiny.min.map',
+					sourceMapPrefix  : 3 
+				},
+				files: {
 					'static/web/js/destiny.min.js': [
 						'static/web/js/utils.js',
 						'static/web/js/destiny.js',
@@ -28,15 +52,17 @@ module.exports = function(grunt) {
 					]
 				}
 			},
+			
+			// Chat libs
 			chat: {
 				options: {
-					mangle: false,
-					sourceMap: 'static/chat/js/chat.min.map',
-					sourceMappingURL: 'chat.min.map',
-					sourceMapPrefix: 3
+					mangle           : false,
+					preserveComments : 'some',
+					sourceMap        : 'static/chat/js/chat.min.map',
+					sourceMappingURL : 'chat.min.map',
+					sourceMapPrefix  : 3
 				},
 				files: {
-					// Chat JS
 					'static/chat/js/chat.min.js': [
 						'static/chat/js/autocomplete.js',
 						'static/chat/js/formatters.js',
@@ -54,8 +80,8 @@ module.exports = function(grunt) {
 			
 			build : {
 				options : {
-					compress : true,
-					yuicompress : true,
+					compress     : true,
+					yuicompress  : true,
 					optimization : 2
 				},
 				files : {
@@ -64,11 +90,6 @@ module.exports = function(grunt) {
 					'static/web/css/style.min.css' : [
 						'static/web/css/style.css',
 						'static/web/css/flags.css'
-					],
-
-					// Big screen
-					'static/web/css/bigscreen.min.css' : [
-						'static/web/css/bigscreen.css'
 					],
 
 					// Errors CSS
@@ -87,8 +108,8 @@ module.exports = function(grunt) {
 			
 			emoticons : {
 				options : {
-					compress : true,
-					yuicompress : true,
+					compress     : true,
+					yuicompress  : true,
 					optimization : 2
 				},
 				files : {
@@ -101,8 +122,8 @@ module.exports = function(grunt) {
 			
 			icons : {
 				options : {
-					compress : true,
-					yuicompress : true,
+					compress     : true,
+					yuicompress  : true,
 					optimization : 2
 				},
 				files : {
@@ -118,12 +139,12 @@ module.exports = function(grunt) {
 		glue: {
 			// Emoticons - you should run less:emoticons after running this
 			emoticons: {
-				src: 'scripts/emotes/emoticons',
-				options: '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes/css --img=scripts/emotes --url=../img/ --each-template="%(class_name)s{background-position:%(x)s %(y)s;width:%(width)s;height:%(height)s;margin-top:-%(height)s;}" --optipng --crop'
+				src     : 'scripts/emotes/emoticons',
+				options : '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes/css --img=scripts/emotes --url=../img/ --each-template="%(class_name)s{background-position:%(x)s %(y)s;width:%(width)s;height:%(height)s;margin-top:-%(height)s;}" --optipng --crop'
 			},
 			icons: {
-				src: 'scripts/icons/icons',
-				options: '--sprite-namespace= --namespace=icon --css=scripts/icons/css --img=scripts/icons --url=../img/ --optipng'
+				src     : 'scripts/icons/icons',
+				options : '--sprite-namespace= --namespace=icon --css=scripts/icons/css --img=scripts/icons --url=../img/ --optipng'
 			}
 		},
 		
@@ -150,9 +171,9 @@ module.exports = function(grunt) {
 					'package.json',
 					'composer.json'
 				],
-				commit: false,
-				createTag: false,
-				push: false
+				commit    : false,
+				createTag : false,
+				push      : false
 			}
 		},
 
@@ -192,6 +213,7 @@ module.exports = function(grunt) {
 	
 	// Build static resources
 	grunt.registerTask('build:uglify', [
+        'uglify:libs',
 		'uglify:web',
 		'uglify:chat',
 		'less:build'
