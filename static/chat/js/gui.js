@@ -857,7 +857,7 @@
 	};
 	$.extend(ChatEmoteMessage.prototype, ChatMessage.prototype);
 	ChatEmoteMessage.prototype.getEmoteCountLabel = function(){
-		return "C-C-C-COMBO: " + this.emotecount + "x";
+		return "C-C-C-COMBO: <span>" + this.emotecount + "x</span>";
 	};
 	ChatEmoteMessage.prototype.html = function(){
 		return this.wrap(this.wrapTime() + ' ' + this.wrapMessage() + '<span class="emotecount">'+ this.getEmoteCountLabel() +'<span>');
@@ -874,7 +874,20 @@
 	};
 	ChatEmoteMessage.prototype.incEmoteCount = function(){
 		++this.emotecount;
-		this.ui.find('.emotecount').detach().text(this.getEmoteCountLabel()).appendTo(this.ui);
+
+		var stepClass = '';
+		if(this.emotecount >= 50)
+			stepClass = ' x50';
+		else if(this.emotecount >= 30)
+			stepClass = ' x30';
+		else if(this.emotecount >= 20)
+			stepClass = ' x20';
+		else if(this.emotecount >= 10)
+			stepClass = ' x10';
+		else if(this.emotecount >= 5)
+			stepClass = ' x5';
+		
+		this.ui.find('.emotecount').detach().attr('class', 'emotecount' + stepClass).html(this.getEmoteCountLabel()).appendTo(this.ui);
 	};
 	
 })(jQuery);

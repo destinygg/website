@@ -573,6 +573,25 @@
 	}
 }
 
+.chat-lines .emotecount.x5 > span {
+	font-size: 10px;
+}
+.chat-lines .emotecount.x10 > span {
+	font-size: 16px;
+}
+.chat-lines .emotecount.x20 > span {
+	font-size: 25px;
+	vertical-align: middle;	
+}
+.chat-lines .emotecount.x30 > span {
+	font-size: 35px;
+	vertical-align: middle;	
+}
+.chat-lines .emotecount.x50 > span {
+	font-size: 40px;
+	vertical-align: middle;	
+}
+
 /**
  * Flair colors
  */
