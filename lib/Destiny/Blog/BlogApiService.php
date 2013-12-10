@@ -34,12 +34,12 @@ class BlogApiService extends Service {
 		return new CurlBrowser ( array_merge ( array (
 			'timeout' => 25,
 			'url' => new String ( 'http://blog.destiny.gg/?feed=json&limit={limit}', array (
-				'limit' => 3 
+				'limit' => 6 
 			) ),
 			'contentType' => MimeType::JSON,
 			'onfetch' => function ($json) {
 				if ($json != null) {
-					$json = array_slice ( $json, 0, 3 );
+					$json = array_slice ( $json, 0, 6 );
 				}
 				return $json;
 			} 

@@ -196,6 +196,17 @@ border-bottom: 1px solid #000;
 #main-nav .subscribed a {
 opacity:0.4;
 }
+#main-nav .subscribe > a > span {
+	background-color: #b91010;
+	border-radius: 8px;
+	color: #fafafa;
+	text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+	padding: 1px 4px;
+}
+#main-nav .subscribe > a:hover > span {
+	color: #fafafa;	
+	background-color: #f00;	
+}
 
 .content-dark {
 box-shadow: 0 3px 1px rgba(0, 0, 0, 0.5);
@@ -292,6 +303,11 @@ i.icon-google {
 width:16px;
 height:16px;	
 background: url(../img/ico/google_16.png) no-repeat center center;
+}
+i.icon-reddit {
+width:16px;
+height:16px;	
+background: url(../img/ico/reddit_16.png) no-repeat center center;
 }
 
 #twitchpanel .panelheader .game>div {
@@ -407,11 +423,12 @@ margin-top: 0;
 }
 
 .stream .title {
-border-bottom: 1px solid black;
-padding-top: 5px;
-padding-bottom: 0;
-padding-left: 20px;
-margin: 0;
+	border-bottom: 1px solid black;
+	padding-top: 5px;
+	padding-bottom: 0;
+	padding-left: 20px;
+	margin: 0;
+	min-height: 42px;
 }
 
 .stream .title a {
@@ -955,10 +972,10 @@ border-top-left-radius: 0;
 }
 
 .icon-bigscreen {
-	background: url("../img/ico/icon-bigscreen.gif") no-repeat top left;	
-	width: 30px;
+	background: url("../img/ico/tv_32.png") no-repeat top left;	
+	width: 32px;
 	height: 19px;
-	margin: -1px 5px 0 0;
+	margin: -1px 5px -2px 0;
 }
 
 /**

@@ -25,7 +25,6 @@ class HomeController {
 	public function home(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
-		$model->events = $cacheDriver->fetch ( 'calendarevents' );
 		$model->articles = $cacheDriver->fetch ( 'recentblog' );
 		$model->summoners = $cacheDriver->fetch ( 'summoners' );
 		$model->tweets = $cacheDriver->fetch ( 'twitter' );
@@ -46,18 +45,6 @@ class HomeController {
 	public function helpAgreement(array $params, ViewModel $model) {
 		$model->title = 'User agreement';
 		return 'help/agreement';
-	}
-
-	/**
-	 * @Route ("/schedule")
-	 *
-	 * @param array $params
-	 * @param ViewModel $model
-	 * @return string
-	 */
-	public function schedule(array $params, ViewModel $model) {
-		$model->title = 'Schedule';
-		return 'schedule';
 	}
 
 	/**

@@ -20,9 +20,6 @@ use Destiny\Common\Utils\Tpl;
 <body id="authentication" class="profile">
 
 	<?php include Tpl::file('seg/top.php') ?>
-	<?php if(empty($model->subscription)): ?>
-	<?php include Tpl::file('seg/subscribebanner.php')?>
-	<?php endif; ?>
 	
 	<section class="container">
 		<div class="navbar navbar-inverse navbar-subnav">

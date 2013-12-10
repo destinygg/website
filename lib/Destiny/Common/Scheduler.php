@@ -180,7 +180,7 @@ class Scheduler {
 		$this->logger->debug ( sprintf ( 'Execute start %s', $task ['action'] ) );
 		$actionClass = 'Destiny\\Tasks\\' . $task ['action'];
 		if (class_exists ( $actionClass, true )) {
-			$actionObj = new $actionClass ();
+			$actionObj = new $actionClass ($task);
 			$actionObj->execute ( $this->logger );
 		} else {
 			throw new Exception ( sprintf ( 'Action not found: %s', $actionClass ) );

@@ -175,29 +175,6 @@ $(function(){
 			window.location.href = destiny.baseUrl + 'Logout';
 		};
 	});
-
-	// Calendar
-	(function(){
-		var timezone = moment().format('ZZ'),
-			calendarFrame = $('#scheduleCalendar iframe'),
-			tzNote = $('#scheduleCalendarTimezone'),
-			timezoneSelect = tzNote.find('select'),
-			timezoneBtn = tzNote.find('button.change-timezone'),
-			timezoneLbl = tzNote.find('span.timezone');
-		var loadGoogleCalendar = function(){
-			calendarFrame.attr('src', calendarFrame.data('src') + '&ctz=' + encodeURIComponent(timezone));
-			timezoneLbl.html(timezone);
-		};
-		timezoneBtn.on('click', function(){
-			$('#scheduleCalendarForm').toggle('hide');
-		});
-		timezoneSelect.on('change', function(){
-			timezone = timezoneSelect.val();
-			loadGoogleCalendar();
-			return false;
-		});
-		loadGoogleCalendar();
-	})();
 	
 	// Bigscreen
 	$('body#bigscreen').each(function(){

@@ -2,9 +2,9 @@
 use Destiny\Common\Config;
 use Destiny\Common\Application;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Configuration;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Cache\RedisCache;
-use Doctrine\DBAL\Configuration;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;

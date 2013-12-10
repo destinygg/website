@@ -17,27 +17,22 @@ use Destiny\Common\Config;
 					<li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
 					<?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li class="subscribe"><a href="/subscribe" rel="subscribe">Subscribe</a></li>
+					<li class="subscribe"><a href="/subscribe" rel="subscribe"><span>Subscribe</span></a></li>
 					<?php endif; ?>
 					<?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li class="subscribe"><a href="/subscribe" rel="subscribe" title="You have an active subscription!">Subscribed</a></li>
+					<li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribed</span></a></li>
 					<?php endif; ?>
-					<li class="divider-vertical"></li>
+				</ul>
+				<ul class="nav pull-right">
 					<li class="bigscreen"><a title="So. Much. Girth." href="/bigscreen" rel="bigscreen"><i class="icon-bigscreen"></i> Big screen</a></li>
-				</ul>
-				<ul class="nav pull-right">
-					<?if(!Session::hasRole(UserRole::USER)):?>
-					<li><a href="/login" rel="login">Login - Register</a></li>
-					<?endif;?>
-					<?if(Session::hasRole(UserRole::USER)):?>
-					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
-					<?php endif; ?>
-				</ul>
-				<ul class="nav pull-right">
-					<?if(Session::hasRole(UserRole::USER)):?>
+					<li class="divider-vertical"></li>
+					<?php if(Session::hasRole(UserRole::USER)): ?>
 					<li><a href="/profile" rel="profile">Profile</a></li>
-					<?endif;?>
+					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
+					<?php else:?>
+					<li><a href="/login" rel="login">Sign In</a></li>
+					<?php endif; ?>
 				</ul>
 			</div>
 		</div>
