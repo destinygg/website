@@ -17,7 +17,7 @@ use Destiny\Common\Config;
 					<li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
 					<?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
-					<li class="subscribe"><a href="/subscribe" rel="subscribe"><span>Subscribe</span></a></li>
+					<li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe</span></a></li>
 					<?php endif; ?>
 					<?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
