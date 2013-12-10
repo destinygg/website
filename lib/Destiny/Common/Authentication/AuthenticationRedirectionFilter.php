@@ -30,10 +30,9 @@ class AuthenticationRedirectionFilter {
 			return 'redirect: /profile/authentication';
 		}
 
-		// Follow url *notice the set, clearing the var
+		// Follow url *notice the set, returning and clearing the var
 		$follow = Session::set( 'follow' );
 
-		
 		// If the user profile doesnt exist, go to the register page
 		if (! $authService->getUserAuthProfileExists ( $authCreds )) {
 			Session::set ( 'authSession', $authCreds );

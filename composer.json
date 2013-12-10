@@ -12,7 +12,8 @@
 		"paypal/merchant-sdk-php" : "3.5.*",
 		"monolog/monolog" : "1.5.0",
 		"doctrine/dbal": "2.4.*@dev",
-		"themattharris/tmhoauth": "dev-master"
+		"themattharris/tmhoauth": "dev-master",
+		"adoy/oauth2": "dev-master"
 	},
 	"autoload": {
 		"psr-0": {"Destiny":"lib/"}

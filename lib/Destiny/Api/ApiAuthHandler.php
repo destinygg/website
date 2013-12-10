@@ -25,7 +25,7 @@ class ApiAuthHandler {
 	 * @param array $params
 	 * @throws Exception
 	 */
-	public function execute(array $params) {
+	public function authenticate(array $params) {
 		if (! isset ( $params ['authtoken'] ) || empty ( $params ['authtoken'] )) {
 			return new HttpEntity ( Http::STATUS_FORBIDDEN, 'Invalid or empty authToken' );
 		}

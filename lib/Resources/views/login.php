@@ -31,8 +31,6 @@ use Destiny\Common\Utils\Tpl;
 		<div class="content content-dark clearfix">
 			<div class="control-group">
 				<p>No private information will ever be shown on the website. This excludes the custom destiny.gg username you specify.</p>
-				<span class="label label-inverse">Important!</span> Each login method will create a new user account <em>if they are not connected</em>.
-				<br>To connect your accounts, use the method you first logged in with (twitch), and connect your other accounts within your profile.
 			</div>
 			<form id="loginForm" action="/login" method="post" style="margin:20px 0 0 0;">
 				<input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
@@ -46,21 +44,31 @@ use Destiny\Common\Utils\Tpl;
 				</div>
 				
 				<div class="control-group">
+				<h3>Login with ...</h3>
+				</div>
+				
+				<div class="control-group">
 					<label class="radio">
 						<input type="radio" name="authProvider" value="twitch">
-						<i class="icon-twitch"></i> Login with twitch
+						<i class="icon-twitch"></i> Twitch
+					</label>
+				</div>
+				<div class="control-group">
+					<label class="radio">
+						<input type="radio" name="authProvider" value="reddit">
+						<i class="icon-reddit"></i> Reddit
 					</label>
 				</div>
 				<div class="control-group">
 					<label class="radio">
 						<input type="radio" name="authProvider" value="google">
-						<i class="icon-google"></i> Login with google
+						<i class="icon-google"></i> Google
 					</label>
 				</div>
 				<div class="control-group">
 					<label class="radio">
 						<input type="radio" name="authProvider" value="twitter">
-						<i class="icon-twitter"></i> Login with twitter
+						<i class="icon-twitter"></i> Twitter
 					</label>
 				</div>
 				

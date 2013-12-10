@@ -1,15 +1,13 @@
 <?php
 namespace Destiny\Twitch;
 
-use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Exception;
-use Destiny\Common\OAuthClient;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\ViewModel;
 
-class TwitchAuthHandler {
+class TwitchAuthHandler{
 	
 	/**
 	 * The current auth type
@@ -19,21 +17,50 @@ class TwitchAuthHandler {
 	protected $authProvider = 'twitch';
 	
 	/**
+	 * Redirects the user to the auth provider
+	 *
+	 * @return void
+	 */
+	public function getAuthenticationUrl() {
+		$authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
+		$callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
+		$client = new \OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
+		$client->setAccessTokenType ( \OAuth2\Client::ACCESS_TOKEN_OAUTH );
+		return $client->getAuthenticationUrl ( 'https://api.twitch.tv/kraken/oauth2/authorize', $callback, array (
+				'scope' => 'user_read' 
+		) );
+	}
+	
+	/**
 	 * @param array $params        	
 	 * @throws Exception
 	 */
-	public function execute(array $params, ViewModel $model) {
-		$authService = AuthenticationService::instance ();
-		if (isset ( $params ['error'] ) && ! empty ( $params ['error'] )) {
-			$model->title = 'Login error';
-			$model->error = new Exception ( 'Authentication failed' );
-			return 'login';
+	public function authenticate(array $params, ViewModel $model) {
+		if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
+			throw new Exception ( 'Authentication failed, invalid or empty code.' );
 		}
-		$authClient = new OAuthClient ( Config::$a ['oauth'] ['providers'] [$this->authProvider] );
-		$authClient->setHeaderTokenName ( 'OAuth' );
-		$accessToken = $authClient->fetchAccessToken ( $params ['code'], 'https://api.twitch.tv/kraken/oauth2/token', sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ) );
-		$data = $authClient->fetchUserInfo ( $accessToken, 'https://api.twitch.tv/kraken/user' );
-		$authCreds = $this->getAuthCredentials ( $params ['code'], $data );
+		
+		$oAuthConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
+		$client = new \OAuth2\Client ( $oAuthConf ['clientId'], $oAuthConf ['clientSecret'] );
+		$client->setAccessTokenType ( \OAuth2\Client::ACCESS_TOKEN_OAUTH );
+		$response = $client->getAccessToken ( 'https://api.twitch.tv/kraken/oauth2/token', 'authorization_code', array (
+				'redirect_uri' => sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ),
+				'code' => $params ['code']
+		) );
+		
+		if (empty ( $response ) || isset ( $response ['error'] ))
+			throw new Exception ( 'Invalid access_token response' );
+		
+		if (! isset ( $response ['result'] ) || empty ( $response ['result'] ) || ! isset ( $response ['result'] ['access_token'] ))
+			throw new Exception ( 'Failed request for access token' );
+		
+		$client->setAccessToken ( $response ['result'] ['access_token'] );
+		$response = $client->fetch ( 'https://api.twitch.tv/kraken/user' );
+		
+		if (empty ( $response ['result'] ) || isset ( $response ['error'] ))
+			throw new Exception ( 'Invalid user details response' );
+		
+		$authCreds = $this->getAuthCredentials ( $params ['code'], $response ['result'] );
 		$authCredHandler = new AuthenticationRedirectionFilter ();
 		return $authCredHandler->execute ( $authCreds );
 	}

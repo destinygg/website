@@ -7,7 +7,7 @@ return array (
 		'nameChangeLimit' 	=> 0
 	),
 	'chat' => array(
-		'host'				=> $_SERVER['SERVER_NAME'],
+		'host'				=> @$_SERVER['SERVER_NAME'],
 		'port'				=> 9998,
 		'backlog' 			=> 150,
 		'maxlines' 			=> 150,
@@ -66,7 +66,8 @@ return array (
 	'authProfiles' => array (
 		'twitch',
 		'google',
-		'twitter'
+		'twitter',
+		'reddit'
 	),
 	'oauth' => array(
 		'callback' 						=> '/%s',
@@ -80,6 +81,12 @@ return array (
 				'clientSecret'			=> ''
 			),
 			'twitter' => array (
+				'clientId'				=> '',
+				'clientSecret'			=> '',
+				'token' 				=> '',
+				'secret'				=> ''
+			),
+			'reddit' => array (
 				'clientId'				=> '',
 				'clientSecret'			=> '',
 				'token' 				=> '',
@@ -181,53 +188,6 @@ return array (
 		'consumer_key'			=> '',
 		'consumer_secret'		=> '' 
 	),
-	'lol' => array (
-		'regions' => array (
-				'na'			=> 'North America',
-				'euw'			=> 'Europe West',
-				'eune'			=> 'Europe Nordic & East',
-				'br'			=> 'Brazil',
-				'kr'			=> 'Korea' 
-		),
-		'trackedRegions' => array (
-				'na' 
-		),
-		'summoners' => array (
-			array (
-				'name'				=> 'NeoDéstiny',
-				'internalName'		=> 'neodéstiny',
-				'id'				=> '26077457',
-				'acctId'			=> '40774766',
-				'region'			=> 'na',
-				'stats'				=> true,
-				'public'			=> true,
-				'track'				=> true,
-				'aggregate'			=> true 
-			),
-			array (
-				'name'				=> 'UltimaDestiny',
-				'internalName'		=> 'ultimadestiny',
-				'id'				=> '37544949',
-				'acctId'			=> '200557964',
-				'region'			=> 'na',
-				'stats'				=> true,
-				'public'			=> true,
-				'track'				=> true,
-				'aggregate'			=> true 
-			),
-			array (
-				'name'				=> 'lllIIlIIlllIlIII',
-				'internalName'		=> 'llliiliillliliii',
-				'id'				=> '47697287',
-				'acctId'			=> '210747678',
-				'region'			=> 'na',
-				'stats'				=> true,
-				'public'			=> true,
-				'track'				=> true,
-				'aggregate'			=> true 
-			) 
-		) 
-	),
 	'subscriptionType'				=> 'destiny.gg',
 	'commerce' => array (
 		'currencies' => array (
@@ -310,65 +270,66 @@ return array (
 			) 
 		)
 	),
-	'scheduler'=>array(
+	'scheduler' => array(
 		'frequency' => 1,
 		'period' => 'minute',
 		'schedule' => array (
-			array (
+			'SubscriptionExpire' => array (
 				'action' => 'SubscriptionExpire',
 				'lastExecuted' => null,
 				'frequency' => 30,
 				'period' => 'minute',
 				'executeOnNextRun' => false
 			),
-			array (
+			'LastFmFeed' => array (
 				'action' => 'LastFmFeed',
 				'lastExecuted' => null,
 				'frequency' => 1,
 				'period' => 'minute',
 				'executeOnNextRun' => true
 			),
-			array (
+			'YoutubeFeed' => array (
 				'action' => 'YoutubeFeed',
 				'lastExecuted' => null,
 				'frequency' => 30,
 				'period' => 'minute',
 				'executeOnNextRun' => true
 			),
-			array (
+			'BroadcastsFeed' => array (
 				'action' => 'BroadcastsFeed',
 				'lastExecuted' => null,
 				'frequency' => 30,
 				'period' => 'minute',
 				'executeOnNextRun' => true
 			),
-			array (
+			'TwitterFeed' => array (
 				'action' => 'TwitterFeed',
 				'lastExecuted' => null,
 				'frequency' => 30,
 				'period' => 'minute',
 				'executeOnNextRun' => true
 			),
-			array (
-				'action' => 'CalendarEvents',
-				'lastExecuted' => null,
-				'frequency' => 60,
-				'period' => 'minute',
-				'executeOnNextRun' => true
-			),
-			array (
+			'BlogFeed' => array (
 				'action' => 'BlogFeed',
 				'lastExecuted' => null,
 				'frequency' => 60,
 				'period' => 'minute',
 				'executeOnNextRun' => true
 			),
-			array (
+			'StreamInfo' => array (
 				'action' => 'StreamInfo',
 				'lastExecuted' => null,
 				'frequency' => 1,
 				'period' => 'minute',
 				'executeOnNextRun' => true
+			),
+			'RedditSubscribers' => array (
+				'action' => 'RedditSubscribers',
+				'lastExecuted' => null,
+				'frequency' => 1,
+				'period' => 'hour',
+				'executeOnNextRun' => true,
+				'output' => ''
 			)
 		)
 	)

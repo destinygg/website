@@ -14,9 +14,6 @@ use Destiny\Common\Config;
 <body id="authentication" class="profile">
 
 	<?php include Tpl::file('seg/top.php') ?>
-	<?php if(empty($model->subscription)): ?>
-	<?php include Tpl::file('seg/subscribebanner.php')?>
-	<?php endif; ?>
 	
 	<section class="container">
 		<div class="navbar navbar-inverse navbar-subnav">
@@ -38,35 +35,31 @@ use Destiny\Common\Config;
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
 				
-				<form action="/login" method="post">
-					<input type="hidden" id="inputAuthProvider" name="authProvider" value="" />
-					<input type="hidden" id="inputAccountMerge" name="accountMerge" value="1" />
-					<table class="grid" style="width:100%">
-						<thead>
-							<tr>
-								<td>Profile</td>
-								<td style="width:100%;">Status</td>
-							</tr>
-						</thead>
-						<tbody>
-							<?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
-							<tr>
-								<td>
-									<i class="icon-<?=$profileType?>"></i> <?=ucwords($profileType)?>
-								</td>
-								<td>
-									<?php if(in_array($profileType, $model->authProfileTypes)): ?>
-									<?php $model->requireConnections = true; ?>
-									<span class="subtle"><i class="icon-ok icon-white"></i> Connected</span>
-									<?php else: ?>
-									<a onclick="$('#inputAuthProvider').val('<?=$profileType?>'); $(this).closest('form').submit(); return false;" href="/login"><i class="icon-heart icon-white subtle"></i> Connect</a>
-									<?php endif; ?>
-								</td>
-							</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-				</form>
+				<table class="grid" style="width:100%">
+					<thead>
+						<tr>
+							<td>Profile</td>
+							<td style="width:100%;">Status</td>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
+						<tr>
+							<td>
+								<i class="icon-<?=$profileType?>"></i> <?=ucwords($profileType)?>
+							</td>
+							<td>
+								<?php if(in_array($profileType, $model->authProfileTypes)): ?>
+								<?php $model->requireConnections = true; ?>
+								<span class="subtle"><i class="icon-ok icon-white"></i> Connected</span>
+								<?php else: ?>
+								<a href="/profile/connect/<?=$profileType?>"><i class="icon-heart icon-white subtle"></i> Connect</a>
+								<?php endif; ?>
+							</td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
 				
 				<?php if($model->requireConnections): ?>
 				<div class="control-group">

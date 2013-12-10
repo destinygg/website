@@ -22,6 +22,10 @@ use Destiny\Common\HttpEntity;
 use Destiny\Common\MimeType;
 use Destiny\Common\Utils\Http;
 use Destiny\Games\GamesService;
+use Destiny\Twitch\TwitchAuthHandler;
+use Destiny\Google\GoogleAuthHandler;
+use Destiny\Twitter\TwitterAuthHandler;
+use Destiny\Reddit\RedditAuthHandler;
 
 /**
  * @Controller
@@ -323,7 +327,7 @@ class ProfileController {
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
 	}
-
+	
 	/**
 	 * Remove a user game
 	 * @Route ("/profile/games/{gameId}/remove")
@@ -342,6 +346,51 @@ class ProfileController {
 		$response = new HttpEntity ( Http::STATUS_OK, '{"result":true}' );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
+	}
+	
+	/**
+	 * @Route ("/profile/connect/{provider}")
+	 * @Secure ({"USER"})
+	 *
+	 * @param array $params        	
+	 * @param ViewModel $model        	
+	 * @return string
+	 */
+	public function profileConnect(array $params, ViewModel $model) {
+		if (! isset ( $params ['provider'] ) || empty ( $params ['provider'] )) {
+			throw new Exception ( 'Invalid provider' );
+		}
+		$authProvider = $params ['provider'];
+		
+		// check if the auth provider you are trying to login with is not the same as the current
+		$currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
+		if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
+			throw new Exception ( 'Provider already authenticated' );
+		}
+		// Set a session var that is picked up in the AuthenticationService
+		// in the GET method, this variable is unset
+		Session::set ( 'accountMerge', '1' );
+		
+		switch (strtoupper ( $authProvider )) {
+			case 'TWITCH' :
+				$authHandler = new TwitchAuthHandler ();
+				return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+			
+			case 'GOOGLE' :
+				$authHandler = new GoogleAuthHandler ();
+				return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+			
+			case 'TWITTER' :
+				$authHandler = new TwitterAuthHandler ();
+				return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+			
+			case 'REDDIT' :
+				$authHandler = new RedditAuthHandler ();
+				return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+			
+			default :
+				throw new Exception ( 'Authentication type not supported' );
+		}
 	}
 
 }

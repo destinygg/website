@@ -19,11 +19,46 @@ class TwitterAuthHandler {
 	protected $authProvider = 'twitter';
 	
 	/**
+	 * Redirects the user to the auth provider
 	 *
+	 * @return void
+	 */
+	public function getAuthenticationUrl() {
+		$authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
+		$callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
+		$tmhOAuth = new \tmhOAuth ( array (
+				'consumer_key' => $authConf ['clientId'],
+				'consumer_secret' => $authConf ['clientSecret'],
+				'token' => $authConf ['token'],
+				'secret' => $authConf ['secret'],
+				'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
+				'curl_timeout' => Config::$a ['curl'] ['timeout'],
+				'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
+		) );
+		$code = $tmhOAuth->apponly_request ( array (
+				'without_bearer' => true,
+				'method' => 'POST',
+				'url' => $tmhOAuth->url ( 'oauth/request_token', '' ),
+				'params' => array (
+						'oauth_callback' => $callback 
+				) 
+		) );
+		if ($code != 200) {
+			throw new Exception ( 'There was an error communicating with Twitter.' );
+		}
+		$response = $tmhOAuth->extract_params ( $tmhOAuth->response ['response'] );
+		if ($response ['oauth_callback_confirmed'] !== 'true') {
+			throw new Exception ( 'The callback was not confirmed by Twitter so we cannot continue.' );
+		}
+		Session::set ( 'oauth', $response );
+		return $tmhOAuth->url ( 'oauth/authorize', '' ) . "?oauth_token={$response['oauth_token']}";
+	}
+	
+	/**
 	 * @param array $params        	
 	 * @throws Exception
 	 */
-	public function execute(array $params) {
+	public function authenticate(array $params) {
 		$UserService = UserService::instance ();
 		$authService = AuthenticationService::instance ();
 		if ((! isset ( $params ['oauth_token'] ) || empty ( $params ['oauth_token'] )) || ! isset ( $params ['oauth_verifier'] ) || empty ( $params ['oauth_verifier'] )) {
