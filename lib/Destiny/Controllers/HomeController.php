@@ -82,4 +82,22 @@ class HomeController {
 		return 'chat/emoticons';
 	}
 
+	/**
+	 * @Route ("/shave")
+	 *
+	 * @return string
+	 */
+	public function shave() {
+		return 'redirect: http://dollar-shave-club.7eer.net/c/72409/74122/1969';
+	}
+
+	/**
+	 * @Route ("/ting")
+	 *
+	 * @return string
+	 */
+	public function ting() {
+		return 'redirect: http://ting.7eer.net/c/72409/87559/2020';
+	}
+
 }
