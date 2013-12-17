@@ -28,7 +28,7 @@ class GoogleAuthHandler {
 		$client = new \OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
 		$client->setAccessTokenType ( \OAuth2\Client::ACCESS_TOKEN_BEARER );
 		return $client->getAuthenticationUrl ( 'https://accounts.google.com/o/oauth2/auth', $callback, array (
-				'scope' => 'openid+email',
+				'scope' => 'openid email',
 				'state' => 'security_token=' . Session::getSessionId () 
 		) );
 	}
@@ -45,7 +45,6 @@ class GoogleAuthHandler {
 		$authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
 		$callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
 		$client = new \OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
-		$client->setAccessTokenType ( \OAuth2\Client::ACCESS_TOKEN_BEARER );
 		$response = $client->getAccessToken ( 'https://accounts.google.com/o/oauth2/token', 'authorization_code', array (
 				'redirect_uri' => $callback,
 				'code' => $params ['code'] 
