@@ -1,9 +1,7 @@
 <?
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\User\UserRole;
 ?>
 <!DOCTYPE html>
 <html>
