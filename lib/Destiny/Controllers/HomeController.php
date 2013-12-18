@@ -100,4 +100,13 @@ class HomeController {
 		return 'redirect: http://ting.7eer.net/c/72409/87559/2020';
 	}
 
+	/**
+	 * @Route ("/amazon")
+	 *
+	 * @return string
+	 */
+	public function amazon() {
+		return 'redirect: http://www.amazon.com/?tag=des000-20';
+	}
+
 }
