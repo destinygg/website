@@ -63,7 +63,7 @@ class ProfileController {
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
 	}
-
+	
 	/**
 	 * @Route ("/profile")
 	 * @HttpMethod ({"GET"})
@@ -95,6 +95,13 @@ class ProfileController {
 		$address = $userService->getAddressByUserId ( $userId );
 		if (empty ( $address )) {
 			$address = array ();
+			$address ['fullName'] = '';
+			$address ['line1'] = '';
+			$address ['line2'] = '';
+			$address ['city'] = '';
+			$address ['region'] = '';
+			$address ['zip'] = '';
+			$address ['country'] = '';
 		}
 		
 		if (Session::get ( 'modelSuccess' )) {
