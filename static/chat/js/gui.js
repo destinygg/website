@@ -638,6 +638,7 @@
 		BOT          : 'bot',
 		NOTABLE      : 'flair2',
 		TRUSTED      : 'flair4',
+		CONTRIBUTOR  : 'flair5'
 	};
 
 	//CHAT USER
@@ -670,6 +671,9 @@
 					break;
 				case UserFeatures.TRUSTED :
 					icons += '<i class="icon-trusted" title="Trusted"/>';
+					break;
+				case UserFeatures.CONTRIBUTOR :
+					icons += '<i class="icon-contributor" title="Contributor"/>';
 					break;
 			}
 		}

@@ -13,5 +13,6 @@ abstract class UserFeature {
 	const BOT = 'bot';
 	const NOTABLE = 'flair2';
 	const TRUSTED = 'flair4';
+	const CONTRIBUTOR = 'flair5';
 
 }
