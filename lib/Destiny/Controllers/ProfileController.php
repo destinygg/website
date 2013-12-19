@@ -26,6 +26,7 @@ use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
+use Destiny\Common\Utils\FilterParams;
 
 /**
  * @Controller
@@ -76,10 +77,11 @@ class ProfileController {
 		$userService = UserService::instance ();
 		$orderService = OrdersService::instance ();
 		$subscriptionsService = SubscriptionsService::instance ();
+		$userId = Session::getCredentials ()->getUserId ();
 		
-		$subscription = $subscriptionsService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
+		$subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
 		if (empty ( $subscription )) {
-			$subscription = $subscriptionsService->getUserPendingSubscription ( Session::getCredentials ()->getUserId () );
+			$subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
 		}
 		
 		$paymentProfile = null;
@@ -90,16 +92,31 @@ class ProfileController {
 			$paymentProfile = $this->getPaymentProfile ( $subscription );
 		}
 		
+		$address = $userService->getAddressByUserId ( $userId );
+		if (empty ( $address )) {
+			$address = array ();
+		}
+		
+		if (Session::get ( 'modelSuccess' )) {
+			$model->success = Session::get ( 'modelSuccess' );
+			Session::set ( 'modelSuccess' );
+		}
+		if (Session::get ( 'modelError' )) {
+			$model->error = Session::get ( 'modelError' );
+			Session::set ( 'modelError' );
+		}
+		
 		$model->title = 'Profile';
-		$model->user = $userService->getUserById ( Session::getCredentials ()->getUserId () );
+		$model->user = $userService->getUserById ( $userId );
 		$model->subscription = $subscription;
 		$model->subscriptionType = $subscriptionType;
 		$model->paymentProfile = $paymentProfile;
+		$model->address = $address;
 		return 'profile';
 	}
 
 	/**
-	 * @Route ("/profile")
+	 * @Route ("/profile/update")
 	 * @HttpMethod ({"POST"})
 	 * @Secure ({"USER"})
 	 * @Transactional
@@ -109,7 +126,7 @@ class ProfileController {
 	 * @throws Exception
 	 * @return string
 	 */
-	public function profileUpdate(array $params, ViewModel $model) {
+	public function profileSave(array $params, ViewModel $model) {
 		// Get user
 		$userService = UserService::instance ();
 		$userFeaturesService = UserFeaturesService::instance ();
@@ -117,7 +134,9 @@ class ProfileController {
 		$subscriptionsService = SubscriptionsService::instance ();
 		$authenticationService = AuthenticationService::instance ();
 		
-		$user = $userService->getUserById ( Session::getCredentials ()->getUserId () );
+		$userId = Session::getCredentials ()->getUserId ();
+		$user = $userService->getUserById ( $userId);
+		
 		if (empty ( $user )) {
 			throw new Exception ( 'Invalid user' );
 		}
@@ -137,10 +156,8 @@ class ProfileController {
 				$country = $countryArr ['alpha-2'];
 			}
 		} catch ( Exception $e ) {
-			$model->title = 'Profile';
-			$model->user = $user;
-			$model->error = $e;
-			return 'profile';
+			Session::set ( 'modelError', $e->getMessage () );
+			return 'redirect: /profile';
 		}
 		
 		// Date for update
@@ -166,25 +183,8 @@ class ProfileController {
 		$userService->updateUser ( $user ['userId'], $userData );
 		$authService->flagUserForUpdate ( $user ['userId'] );
 		
-		$subscription = $subscriptionsService->getUserActiveSubscription ( $user ['userId'] );
-		if (empty ( $subscription )) {
-			$subscription = $subscriptionsService->getUserPendingSubscription ( $user ['userId'] );
-		}
-		
-		$paymentProfile = null;
-		$subscriptionType = null;
-		if (! empty ( $subscription )) {
-			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
-			$paymentProfile = $this->getPaymentProfile ( $subscription );
-		}
-		
-		$model->title = 'Profile';
-		$model->user = $userService->getUserById ( $user ['userId'] );
-		$model->subscription = $subscription;
-		$model->subscriptionType = $subscriptionType;
-		$model->paymentProfile = $paymentProfile;
-		$model->profileUpdated = true;
-		return 'profile';
+		Session::set ( 'modelSuccess', 'Your profile has been updated' );
+		return 'redirect: /profile';
 	}
 
 	/**
@@ -255,9 +255,8 @@ class ProfileController {
 	 * @param array $params        	
 	 */
 	public function profileAuthtokenDelete(array $params) {
-		if (! isset ( $params ['authToken'] ) || empty ( $params ['authToken'] )) {
-			throw new Exception ( 'Invalid auth token' );
-		}
+		FilterParams::isRequired ( $params, 'authToken' );
+		
 		$userId = Session::getCredentials ()->getUserId ();
 		$apiAuthService = ApiAuthenticationService::instance ();
 		$authToken = $apiAuthService->getAuthToken ( $params ['authToken'] );
@@ -317,9 +316,8 @@ class ProfileController {
 	 * @param array $params        	
 	 */
 	public function profileGamesAdd(array $params) {
-		if (empty ( $params ['gameId'] )) {
-			return;
-		}
+		FilterParams::isRequired ( $params, 'gameId' );
+		
 		$gamesService = GamesService::instance ();
 		$userId = Session::getCredentials ()->getUserId ();
 		$gamesService->addUserGame ( $userId, $params ['gameId'] );
@@ -337,9 +335,8 @@ class ProfileController {
 	 * @param array $params        	
 	 */
 	public function profileGamesRemove(array $params) {
-		if (empty ( $params ['gameId'] )) {
-			return;
-		}
+		FilterParams::isRequired ( $params, 'gameId' );
+		
 		$gamesService = GamesService::instance ();
 		$userId = Session::getCredentials ()->getUserId ();
 		$gamesService->removeUserGame ( $userId, $params ['gameId'] );
@@ -357,9 +354,8 @@ class ProfileController {
 	 * @return string
 	 */
 	public function profileConnect(array $params, ViewModel $model) {
-		if (! isset ( $params ['provider'] ) || empty ( $params ['provider'] )) {
-			throw new Exception ( 'Invalid provider' );
-		}
+		FilterParams::isRequired ( $params, 'provider' );
+		
 		$authProvider = $params ['provider'];
 		
 		// check if the auth provider you are trying to login with is not the same as the current
@@ -367,8 +363,8 @@ class ProfileController {
 		if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
 			throw new Exception ( 'Provider already authenticated' );
 		}
-		// Set a session var that is picked up in the AuthenticationService
-		// in the GET method, this variable is unset
+			// Set a session var that is picked up in the AuthenticationService
+			// in the GET method, this variable is unset
 		Session::set ( 'accountMerge', '1' );
 		
 		switch (strtoupper ( $authProvider )) {
@@ -391,6 +387,53 @@ class ProfileController {
 			default :
 				throw new Exception ( 'Authentication type not supported' );
 		}
+	}
+
+	/**
+	 * Update/add a address
+	 * 
+	 * @Route ("/profile/address/update")
+	 * @Secure ({"USER"})
+	 * @Transactional
+	 *
+	 * @param array $params        	
+	 */
+	public function updateAddress(array $params){
+		
+		FilterParams::isRequired ( $params, 'fullName' );
+		FilterParams::isRequired ( $params, 'line1' );
+		FilterParams::isRequired ( $params, 'line2' );
+		FilterParams::isRequired ( $params, 'city' );
+		FilterParams::isRequired ( $params, 'region' );
+		FilterParams::isRequired ( $params, 'zip' );
+		FilterParams::isRequired ( $params, 'country' );
+
+		$userService = UserService::instance ();
+		$userId = Session::getCredentials ()->getUserId ();
+		
+		$address = $userService->getAddressByUserId ( $userId );
+		if (empty ( $address )) {
+			$address = array ();
+			$address ['userId'] = $userId;
+		}
+		
+		$address ['fullName'] = $params ['fullName'];
+		$address ['line1'] = $params ['line1'];
+		$address ['line2'] = $params ['line2'];
+		$address ['city'] = $params ['city'];
+		$address ['region'] = $params ['region'];
+		$address ['zip'] = $params ['zip'];
+		$address ['country'] = $params ['country'];
+		
+		if (! isset ( $address ['id'] ) || empty ( $address ['id'] )) {
+			$userService->addAddress ( $address );
+		} else {
+			$userService->updateAddress ( $address );
+		}
+		
+		Session::set ( 'modelSuccess', 'Your address has been updated' );
+		
+		return 'redirect: /profile';
 	}
 
 }

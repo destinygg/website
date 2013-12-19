@@ -34,10 +34,10 @@ use Destiny\Common\User\UserRole;
 	
 	<section class="container">
 			
-		<?php if(!empty($model->profileUpdated)): ?>
+		<?php if(!empty($model->success)): ?>
 		<div class="alert alert-info">
 			<strong>Success!</strong>
-			Profile updated
+			<?=Tpl::out($model->success)?>
 		</div>
 		<?php endif; ?>
 		
@@ -106,6 +106,33 @@ use Destiny\Common\User\UserRole;
 				</div>
 			</div>
 
+			<?php if(!empty($model->address)): ?>
+			<h3>Address</h3>
+			<div class="content content-dark clearfix" style="margin-right:5px;">
+				<div class="vcard control-group">
+					<div class="fn"><?=Tpl::out($model->address['fullName'])?></div>
+					<br />
+					<div class="adr">
+						<div class="street-address">
+							<?=Tpl::out($model->address['line1'])?>, <?=Tpl::out($model->address['line2'])?>
+						</div>
+						<div>
+							<span class="city"><?=Tpl::out($model->address['city'])?></span>,
+							<span class="region"><?=Tpl::out($model->address['region'])?></span>,
+							<span class="postal-code"><?=Tpl::out($model->address['zip'])?></span>
+							<?php 
+							$country = Country::getCountryByCode ( $model->address['country'] );
+							if(!empty($country)):
+							?>
+							<br />
+							<abbr class="country"><?=Tpl::out($country['name'])?> <small>(<?=Tpl::out($country['alpha-2'])?>)</small></abbr>
+							<?php endif; ?>
+						</div>
+					</div> 
+				</div>
+			</div>
+			<?php endif; ?>
+
 			<?php if(!empty($model->authSessions)): ?>
 			<h3>Authentication sessions</h3>
 			<div class="content content-dark clearfix" style="margin-right:5px;">
@@ -119,7 +146,7 @@ use Destiny\Common\User\UserRole;
 					<?php foreach($model->authSessions as $auth): ?>
 					<tr>
 						<td><?= $auth['authProvider'] ?></td>
-						<td><i class="icon-info-sign icon-white" title="ID:<?= $auth['authId'] ?>"></i> <?= (!empty($auth['authDetail'])) ? $auth['authDetail']:$auth['authId'] ?></td>
+						<td><?= (!empty($auth['authDetail'])) ? Tpl::out($auth['authDetail']):Tpl::out($auth['authId']) ?></td>
 						<td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
 						<td><?=Tpl::moment(Date::getDateTime($auth['modifiedDate']), Date::STRING_FORMAT_YEAR)?></td>
 					</tr>

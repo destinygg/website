@@ -110,7 +110,7 @@ class UserService extends Service {
 	 */
 	public function getIsUsernameTaken($username, $excludeUserId = 0) {
 		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( 'SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId AND userStatus IN (\'Active\',\'Suspended\',\'Inactive\')' );
+		$stmt = $conn->prepare ( 'SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId AND userStatus IN (\'Active\',\'Suspended\',\'Inactive\')');
 		$stmt->bindValue ( 'username', $username, \PDO::PARAM_STR );
 		$stmt->bindValue ( 'excludeUserId', $excludeUserId, \PDO::PARAM_INT );
 		$stmt->execute ();
@@ -342,6 +342,7 @@ class UserService extends Service {
 
 	/**
 	 * List users
+	 * 
 	 * @param int $limit
 	 * @param int $start
 	 * @param array $filters
@@ -381,6 +382,71 @@ class UserService extends Service {
 		$pagination ['page'] = $page;
 		$pagination ['limit'] = $limit;
 		return $pagination;
+	}
+	
+	/**
+	 * Get a user address by user
+	 *
+	 * @param number $userId        	
+	 * @param number $limit        	
+	 * @param number $start        	
+	 */
+	public function getAddressByUserId($userId, $limit = 1, $start = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT * FROM users_address AS a 
+			WHERE a.userId = :userId
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
+	}
+	
+	/**
+	 * Add a user address
+	 * 
+	 * @param array $address
+	 */
+	public function addAddress(array $address){
+		$conn = Application::instance ()->getConnection ();
+		$conn->insert ( 'users_address', 
+		array (
+			'userId'       => $address ['userId'],
+			'fullName'     => $address ['fullName'],
+			'line1'        => $address ['line1'],
+			'line2'        => $address ['line2'],
+			'city'         => $address ['city'],
+			'region'       => $address ['region'],
+			'zip'          => $address ['zip'],
+			'country'      => $address ['country'],
+			'createdDate'  => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
+			'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
+		), array (
+			\PDO::PARAM_INT,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR,
+			\PDO::PARAM_STR 
+		) );
+	}
+	
+	/**
+	 * Update a user address
+	 * 
+	 * @param array $address
+	 */
+	public function updateAddress(array $address){
+		$conn = Application::instance ()->getConnection ();
+		$address ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
+		$conn->update ( 'users_address', $address, array ('id' => $address['id']) );
 	}
 
 }

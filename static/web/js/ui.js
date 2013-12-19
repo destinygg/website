@@ -222,6 +222,24 @@ $(function(){
 	// Add collapses
 	$(".collapse").collapse();
 	
+	// Section collapse
+	$(".collapsible").each(function(){
+		var $c = $(this),
+			$t = $c.find('> h3'),
+			$v = $c.find('> content');
+		$t.on('click', function(){
+			if($c.hasClass('active')){
+				$t.find('.icon-minus-sign').removeClass('icon-minus-sign').addClass('icon-plus-sign');
+				$v.hide();
+			}else{
+				$t.find('.icon-plus-sign').removeClass('icon-plus-sign').addClass('icon-minus-sign');
+				$v.show();
+			}
+			$c.toggleClass('active');
+			return false;
+		});
+	});
+	
 	// Tabs selector - dont know why I need this
 	if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
 

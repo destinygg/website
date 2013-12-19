@@ -30,10 +30,29 @@ use Destiny\Common\Config;
 			</div>
 		</div>
 	</section>
-	
-	<?if(!empty($model->subscription) && !empty($model->subscriptionType)):?>
+		
+	<?php if(!empty($model->error)): ?>
 	<section class="container">
-		<h3>Subscription</h3>
+		<div class="alert alert-error" style="margin:0;">
+			<strong>Error!</strong>
+			<?=Tpl::out($model->error)?>
+		</div>
+	</section>
+	<?php endif; ?>
+		
+	<?php if(!empty($model->success)): ?>
+	<section class="container">
+		<div class="alert alert-info" style="margin:0;">
+			<strong>Success!</strong>
+			<?=Tpl::out($model->success)?>
+		</div>
+	</section>
+	<?php endif; ?>
+	
+	<section class="container collapsible">
+		<h3><i class="icon-plus-sign icon-white"></i> Subscription</h3>
+		
+		<?if(!empty($model->subscription) && !empty($model->subscriptionType)):?>
 		<div class="content content-dark clearfix">
 
 			<div class="subscriptions clearfix">
@@ -78,37 +97,27 @@ use Destiny\Common\Config;
 			</div>
 		
 		</div>
+		<?php else: ?>
+		<div class="content content-dark clearfix">
+			<div class="control-group">Not subscribed? <a title="Subscribe" href="/subscribe">Try it out</a></div>
+		</div>
+		<?php endif; ?>
+		
 	</section>
-	<?php endif; ?>
 	
-	<section class="container">
-		<h3>Account details</h3>
-		
-		<?php if(!empty($model->profileUpdated)): ?>
-		<div class="alert alert-info">
-			<strong>Success!</strong>
-			Your profile has been updated
-		</div>
-		<?php endif; ?>
-		
-		<?php if(!empty($model->error)): ?>
-		<div class="alert alert-error">
-			<strong>Error!</strong>
-			<?=Tpl::out($model->error->getMessage())?>
-		</div>
-		<?php endif; ?>
+	<section class="container collapsible">
+		<h3><i class="icon-plus-sign icon-white"></i> Account</h3>
 		
 		<div class="content content-dark clearfix">
 			<div style="width: 100%;" class="clearfix stream">
-				<form id="profileSaveForm" action="/profile" method="post">
-					<input type="hidden" name="url" value="/profile" />
+				<form id="profileSaveForm" action="/profile/update" method="post">
 					
 					<?php if($model->user['nameChangedCount'] < Config::$a['profile']['nameChangeLimit']): ?>
 					<div class="control-group">
 						<label>Username:
 						<br><small style="opacity:0.5;">(You have <?=Tpl::n(Config::$a['profile']['nameChangeLimit'] - $model->user['nameChangedCount'])?> name changes left)</small>
 						</label> 
-						<input type="text" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
+						<input class="input-xlarge" type="text" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
 						<span class="help-block">A-z 0-9 and underscores. Must contain at least 4 and at most 20 characters</span>
 					</div>
 					<?php endif; ?>
@@ -118,18 +127,22 @@ use Destiny\Common\Config;
 						<label>Username:
 						<br><small style="opacity:0.5;">(You have no more name changes available)</small>
 						</label> 
-						<input type="text" disabled="disabled" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
+						<input class="input-xlarge" type="text" disabled="disabled" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
 					</div>
 					<?php endif; ?>
 					
 					<div class="control-group">
-						<label>Email:</label> 
-						<input type="text" name="email" value="<?=Tpl::out($model->user['email'])?>" placeholder="Email" />
-						<span class="help-block">Be it valid or not, it will be safe with us.</span>
+						<label>Email:
+						<br><small style="opacity:0.5;">Be it valid or not, it will be safe with us.</small>
+						</label> 
+						<input class="input-xlarge" type="text" name="email" value="<?=Tpl::out($model->user['email'])?>" placeholder="Email" />
 					</div>
+					
 					<div class="control-group">
-						<label>Country:</label> 
-						<select name="country">
+						<label>Nationality:
+						<br><small style="opacity:0.5;">The country you indentify with</small>
+						</label> 
+						<select class="input-xlarge" name="country">
 							<option value="">Select your country</option>
 							<?$countries = Country::getCountries();?>
 							<option value="">&nbsp;</option>
@@ -145,12 +158,83 @@ use Destiny\Common\Config;
 					</div>
 		
 					<div class="form-actions block-foot">
-						<button class="btn btn-large btn-primary" type="submit">Save changes</button>
+						<button class="btn btn-large btn-primary" type="submit">Save details</button>
 					</div>
+					
 				</form>
 			</div>
 		</div>
 	</section>
+	
+	<section class="container collapsible">
+		<h3><i class="icon-plus-sign icon-white"></i> Address <small>(optional)</small></h3>
+		
+		<div class="content content-dark clearfix">
+			<div style="width: 100%;" class="clearfix stream">
+				<form id="addressSaveForm" action="/profile/address/update" method="post">
+				
+					<div class="control-group">
+						<i class="icon-info-sign icon-white"></i> All fields are required
+					</div>
+					
+					<div class="control-group">
+						<label>Full Name:
+						<br><small style="opacity:0.5;">The name of the person for this address</small>
+						</label>
+						<input class="input-xlarge" type="text" name="fullName" value="<?=Tpl::out($model->address['fullName'])?>" placeholder="Full Name" />
+					</div>
+					<div class="control-group">
+						<label>Address Line 1:
+						<br><small style="opacity:0.5;">Street address, P.O box, company name, c/o</small>
+						</label>
+						<input class="input-xlarge" type="text" name="line1" value="<?=Tpl::out($model->address['line1'])?>" placeholder="Address Line 1" />
+					</div>
+					<div class="control-group">
+						<label>Address Line 2:
+						<br><small style="opacity:0.5;">Apartment, Suite, Building, Unit, Floor etc.</small>
+						</label>
+						<input class="input-xlarge" type="text" name="line2" value="<?=Tpl::out($model->address['line2'])?>" placeholder="Address Line 2" />
+					</div>
+				
+					<div class="control-group">
+						<label>City:</label>
+						<input class="input-xlarge" type="text" name="city" value="<?=Tpl::out($model->address['city'])?>" placeholder="City" />
+					</div>
+					<div class="control-group">
+						<label>State/Province/Region:</label>
+						<input class="input-xlarge" type="text" name="region" value="<?=Tpl::out($model->address['region'])?>" placeholder="Region" />
+					</div>
+					<div class="control-group">
+						<label>ZIP/Postal Code:</label>
+						<input class="input-xlarge" type="text" name="zip" value="<?=Tpl::out($model->address['zip'])?>" placeholder="Zip/Postal Code" />
+					</div>
+					<div class="control-group">
+						<label>Country:</label> 
+						<select class="input-xlarge" name="country">
+							<option value="">Select your country</option>
+							<?$countries = Country::getCountries();?>
+							<option value="">&nbsp;</option>
+							<option value="US" <?if($model->address['country'] == 'US'):?>
+								selected="selected" <?endif;?>>United States</option>
+							<option value="GB" <?if($model->address['country'] == 'GB'):?>
+								selected="selected" <?endif;?>>United Kingdom</option>
+							<option value="">&nbsp;</option>
+							<?foreach($countries as $country):?>
+							<option value="<?=$country['alpha-2']?>"<?if($model->address['country'] != 'US' && $model->address['country'] != 'GB' && $model->address['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
+							<?endforeach;?>
+						</select>
+					</div>
+						
+					<div class="form-actions block-foot">
+						<button class="btn btn-large btn-primary" type="submit">Save address</button>
+					</div>
+					
+				</form>
+			</div>
+		</div>
+	</section>
+	
+	<br />
 	
 	<?php include Tpl::file('seg/foot.php') ?>
 	<?php include Tpl::file('seg/commonbottom.php') ?>

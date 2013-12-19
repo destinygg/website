@@ -16,6 +16,7 @@ use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Api\ApiAuthenticationService;
+use Destiny\Common\Session;
 
 /**
  * @Controller
@@ -41,18 +42,32 @@ class UserAdminController {
 		if (empty ( $user )) {
 			throw new Exception ( 'User was not found' );
 		}
-		$user ['roles'] = UserService::instance ()->getUserRolesByUserId ( $user ['userId'] );
-		$user ['features'] = UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] );
+		
+		$userService = UserService::instance ();
+		$userFeaturesService = UserFeaturesService::instance ();
+		$apiAuthenticationService = ApiAuthenticationService::instance();
+		$chatlogService = ChatlogService::instance ();
+		$chatBanService = ChatBanService::instance ();
+		
+		$user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
+		$user ['features'] = $userFeaturesService->getUserFeatures ( $user ['userId'] );
 		$model->user = $user;
-		$model->features = UserFeaturesService::instance ()->getDetailedFeatures ();
-		$ban = ChatBanService::instance ()->getUserActiveBan ( $user ['userId'] );
+		$model->features = $userFeaturesService->getDetailedFeatures ();
+		$ban = $chatBanService->getUserActiveBan ( $user ['userId'] );
 		$banContext = array ();
 		if (! empty ( $ban )) {
-			$banContext = ChatlogService::instance ()->getChatLogBanContext ( $user ['userId'], Date::getDateTime ( $ban ['starttimestamp'] ), 18 );
+			$banContext = $chatlogService->getChatLogBanContext ( $user ['userId'], Date::getDateTime ( $ban ['starttimestamp'] ), 18 );
 		}
 		$model->banContext = $banContext;
 		$model->ban = $ban;
-		$model->authSessions = ApiAuthenticationService::instance()->getAuthSessionsByUserId( $user ['userId'] );
+		$model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId( $user ['userId'] );
+		$model->address = $userService->getAddressByUserId($user ['userId']);
+		
+		if (Session::get ( 'modelSuccess' )) {
+			$model->success = Session::get ( 'modelSuccess' );
+			Session::set ( 'modelSuccess' );
+		}
+		
 		return 'admin/user';
 	}
 
@@ -106,28 +121,20 @@ class UserAdminController {
 		$user = $userService->getUserById ( $params ['id'] );
 		
 		// Features
-		if (! isset ( $params ['features'] )) $params ['features'] = array ();
-		$userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
+		if (! isset ( $params ['features'] )) 
+			$params ['features'] = array ();
 		
 		// Roles
-		if (! isset ( $params ['roles'] )) $params ['roles'] = array ();
+		if (! isset ( $params ['roles'] )) 
+			$params ['roles'] = array ();
+
+		$userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
 		$userService->setUserRoles ( $user ['userId'], $params ['roles'] );
-		
 		$authService->flagUserForUpdate ( $user ['userId'] );
 		
-		$user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
-		$user ['features'] = $userFeatureService->getUserFeatures ( $user ['userId'] );
-		$ban = ChatBanService::instance ()->getUserActiveBan ( $user ['userId'] );
-		$banContext = array ();
-		if (! empty ( $ban )) {
-			$banContext = ChatlogService::instance ()->getChatLogBanContext ( $user ['userId'], Date::getDateTime ( $ban ['starttimestamp'] ), 18 );
-		}
-		$model->banContext = $banContext;
-		$model->ban = $ban;
-		$model->user = $user;
-		$model->features = $userFeatureService->getDetailedFeatures ();
-		$model->profileUpdated = true;
-		return 'admin/user';
+		Session::set('modelSuccess', 'User profile updated');
+		
+		return 'redirect: /admin/user';
 	}
 
 }

@@ -227,3 +227,21 @@ CREATE TABLE `users_games` (
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+/*Table structure for table `users_address` */
+
+CREATE TABLE `users_address` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `userId` int(14) NOT NULL,
+  `fullName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `line1` text COLLATE utf8_unicode_ci,
+  `line2` text COLLATE utf8_unicode_ci,
+  `city` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `region` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `zip` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `country` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `createdDate` datetime DEFAULT NULL,
+  `modifiedDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
