@@ -602,40 +602,51 @@
 .chat a.user:hover {
 	color: #FAFAFA;
 }
+
+/**
+ * T1,T2
+ */
 .chat a.subscriber {
 	color: #488ce7;
 }
 .chat a.subscriber:hover {
 	color: #6aa7f9;
 }
-.chat a.moderator {
-	color: #429A2D;
-}
-.chat a.moderator:hover {
-	color: #75e85a;
-}
-.chat a.vip {
-	color: #CF31E2;
-}
-.chat a.vip:hover {
-	color: #E564F4;
-}
-.chat a.admin {
-	color: #B91010;
-}
-.chat a.admin:hover {
-	color: #FF0000;
-}
-.chat a.bot {
-	color: #4BA235;
-}
-.chat a.bot:hover {
-	color: #7ADB62;
-}
+/**
+ * T3
+ */
 .chat a.flair3 {
 	color: #0060FF;
 	text-shadow:1px 1px 0 black;
 }
 .chat a.flair3:hover {
 	color: #6AA7F9;
+}
+
+.chat a.vip {
+	color: #CF31E2;
+}
+.chat a.vip:hover {
+	color: #E564F4;
+}
+
+.chat a.moderator {
+	color: #429A2D;
+}
+.chat a.moderator:hover {
+	color: #75e85a;
+}
+
+.chat a.bot {
+	color: #4BA235;
+}
+.chat a.bot:hover {
+	color: #7ADB62;
+}
+
+.chat a.admin {
+	color: #B91010;
+}
+.chat a.admin:hover {
+	color: #FF0000;
 }
