@@ -102,10 +102,7 @@ class UserAdminController {
 		$email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
 		$country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
 		
-		$authService->validateUsername ( $username, $user, array (
-				'min' => 3,
-				'max' => 20 
-		) );
+		$authService->validateUsername ( $username, $user );
 		$authService->validateEmail ( $email, $user );
 		if (! empty ( $country )) {
 			$countryArr = Country::getCountryByCode ( $country );

@@ -67,14 +67,7 @@ class AuthenticationService extends Service {
 		if (preg_match ( '/\\b(' . join ( '|', Config::$a ['chat'] ['customemotes'] ) . ')\\b/i', preg_quote ( $username ) ) > 0)
 			throw new Exception ( 'That username has been blacklisted' );
 
-		$min = 4;
-		$max = 20;
-		if (isset ( $params ['min'] ) && isset ( $params ['max'] )) {
-			$min = $params ['min'];
-			$max = $params ['max'];
-		}
-		
-		if (preg_match ( '/^[A-Za-z0-9_]{'. $min .','. $max .'}$/', $username ) == 0)
+		if (preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $username ) == 0)
 			throw new Exception ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
 		
 		if (preg_match_all ( '/[0-9]{4}/', $username, $m ) > 0)

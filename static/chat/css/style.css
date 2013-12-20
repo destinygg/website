@@ -221,10 +221,11 @@
 	color: #02C2FF;
 }
 .chat-lines a.externallink:visited {
-	color: #0088cc;
+	color: #004D74;	
 }
-.chat-lines a.externallink:hover, .chat-lines a.externallink:focus {
-	color: #004D74;
+.chat-lines a.externallink:hover, 
+.chat-lines a.externallink:focus {
+	color: #0088cc;	
 }
 .chat-lines a.nsfw-link {
 	border-bottom: 1px dashed red;

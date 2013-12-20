@@ -118,7 +118,7 @@ use Destiny\Common\Config;
 						<br><small style="opacity:0.5;">(You have <?=Tpl::n(Config::$a['profile']['nameChangeLimit'] - $model->user['nameChangedCount'])?> name changes left)</small>
 						</label> 
 						<input class="input-xlarge" type="text" name="username" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username" />
-						<span class="help-block">A-z 0-9 and underscores. Must contain at least 4 and at most 20 characters</span>
+						<span class="help-block">A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters</span>
 					</div>
 					<?php endif; ?>
 					

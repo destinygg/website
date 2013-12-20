@@ -286,7 +286,7 @@ chat.prototype.handleCommand = function(str) {
 
 	var parts     = str.split(" ");
 	    command   = parts[0].toLowerCase(),
-	    nickregex = /^[a-zA-Z0-9_]{4,20}$/,
+	    nickregex = /^[a-zA-Z0-9_]{3,20}$/,
 	    payload   = {};
 	
 	if (str.substring(0, 1) === '/') {
