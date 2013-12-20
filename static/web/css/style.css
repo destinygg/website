@@ -1054,13 +1054,6 @@ body#bigscreen #twitch-stream-wrap > div {
 	padding:10px 0 5px 10px;
 	overflow: hidden;
 }
-body#bigscreen #twitch-stream-wrap object {
-	width:100%; 
-	height:100%; 
-	display: block;
-	border-bottom-left-radius:4px;	
-	border-bottom-right-radius:4px;
-}
 body#bigscreen #twitch-stream-wrap .panelheader {
 	border-top-left-radius:4px;	
 	border-top-right-radius:4px;

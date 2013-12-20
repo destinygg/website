@@ -60,7 +60,13 @@ use Destiny\Common\User\UserRole;
 						<div class="twitch-overlay to-botleft"></div>
 						<div class="twitch-overlay to-main"></div>
 						<div class="twitch-fsbtn"></div>
-						<iframe class="twitch-element" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%" style="border:none; overflow: hidden;" seamless="seamless"></iframe>
+						<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=destiny" height="100%" width="100%">
+							<param name="allowFullScreen" value="true">
+							<param name="allowScriptAccess" value="always">
+							<param name="allowNetworking" value="all">
+							<param name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf">
+							<param name="flashvars" value="hostname=www.twitch.tv&amp;channel=<?=Config::$a['twitch']['user']?>&amp;auto_play=true&amp">
+						</object>
 					</div>
 				</div>
 			</div>

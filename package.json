@@ -1,6 +1,6 @@
 {
   "name": "Destiny",
-  "version": "1.24.29",
+  "version": "1.24.30",
   "description": "Destiny.gg front-end",
   "main": "GruntFile.js",
   "scripts": {
