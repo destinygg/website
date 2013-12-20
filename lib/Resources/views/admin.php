@@ -82,7 +82,7 @@ use Destiny\Common\Utils\Date;
 					</thead>
 					<tbody>
 					<?php foreach($model->users['list'] as $user): ?>
-					<?php $subType = Config::$a['commerce']['subscriptions'][$user['subscriptionType']];?>
+					<?php $subType = (isset(Config::$a['commerce']['subscriptions'][$user['subscriptionType']])) ? Config::$a['commerce']['subscriptions'][$user['subscriptionType']] : null;?>
 					<tr>
 						<td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a></td>
 						<td>

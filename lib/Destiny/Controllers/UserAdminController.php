@@ -1,4 +1,5 @@
 <?php
+
 namespace Destiny\Controllers;
 
 use Destiny\Common\Utils\Date;
@@ -22,14 +23,14 @@ use Destiny\Common\Session;
  * @Controller
  */
 class UserAdminController {
-
+	
 	/**
 	 * @Route ("/admin/user/{id}/edit")
 	 * @Secure ({"ADMIN"})
 	 * @HttpMethod ({"GET"})
 	 *
-	 * @param array $params
-	 * @param ViewModel $model
+	 * @param array $params        	
+	 * @param ViewModel $model        	
 	 * @throws Exception
 	 * @return string
 	 */
@@ -45,7 +46,7 @@ class UserAdminController {
 		
 		$userService = UserService::instance ();
 		$userFeaturesService = UserFeaturesService::instance ();
-		$apiAuthenticationService = ApiAuthenticationService::instance();
+		$apiAuthenticationService = ApiAuthenticationService::instance ();
 		$chatlogService = ChatlogService::instance ();
 		$chatBanService = ChatBanService::instance ();
 		
@@ -60,8 +61,8 @@ class UserAdminController {
 		}
 		$model->banContext = $banContext;
 		$model->ban = $ban;
-		$model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId( $user ['userId'] );
-		$model->address = $userService->getAddressByUserId($user ['userId']);
+		$model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
+		$model->address = $userService->getAddressByUserId ( $user ['userId'] );
 		
 		if (Session::get ( 'modelSuccess' )) {
 			$model->success = Session::get ( 'modelSuccess' );
@@ -70,15 +71,15 @@ class UserAdminController {
 		
 		return 'admin/user';
 	}
-
+	
 	/**
 	 * @Route ("/admin/user/{id}/edit")
 	 * @Secure ({"ADMIN"})
 	 * @HttpMethod ({"POST"})
 	 * @Transactional
 	 *
-	 * @param array $params
-	 * @param ViewModel $model
+	 * @param array $params        	
+	 * @param ViewModel $model        	
 	 * @throws Exception
 	 * @return string
 	 */
@@ -101,7 +102,10 @@ class UserAdminController {
 		$email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
 		$country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
 		
-		$authService->validateUsername ( $username, $user );
+		$authService->validateUsername ( $username, $user, array (
+				'min' => 3,
+				'max' => 20 
+		) );
 		$authService->validateEmail ( $email, $user );
 		if (! empty ( $country )) {
 			$countryArr = Country::getCountryByCode ( $country );
@@ -113,28 +117,27 @@ class UserAdminController {
 		
 		// Data for update
 		$userData = array (
-			'username' => $username,
-			'country' => $country,
-			'email' => $email 
+				'username' => $username,
+				'country' => $country,
+				'email' => $email 
 		);
 		$userService->updateUser ( $user ['userId'], $userData );
 		$user = $userService->getUserById ( $params ['id'] );
 		
 		// Features
-		if (! isset ( $params ['features'] )) 
+		if (! isset ( $params ['features'] ))
 			$params ['features'] = array ();
-		
-		// Roles
-		if (! isset ( $params ['roles'] )) 
+			
+			// Roles
+		if (! isset ( $params ['roles'] ))
 			$params ['roles'] = array ();
-
+		
 		$userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
 		$userService->setUserRoles ( $user ['userId'], $params ['roles'] );
 		$authService->flagUserForUpdate ( $user ['userId'] );
 		
-		Session::set('modelSuccess', 'User profile updated');
+		Session::set ( 'modelSuccess', 'User profile updated' );
 		
-		return 'redirect: /admin/user';
+		return 'redirect: /admin/user/'.$user ['userId'].'/edit';
 	}
-
 }

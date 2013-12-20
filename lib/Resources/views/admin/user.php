@@ -51,7 +51,7 @@ use Destiny\Common\User\UserRole;
 							<label class="control-label" for="inputUsername">Username / Nickname</label>
 							<div class="controls">
 								<input type="text" name="username" id="inputUsername" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username">
-								<span class="help-block">A-z 0-9 and underscores. Must contain at least 4 and at most 20 characters</span>
+								<span class="help-block">A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters</span>
 							</div>
 						</div>
 						<div class="control-group">

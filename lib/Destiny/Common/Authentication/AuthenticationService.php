@@ -31,7 +31,7 @@ class AuthenticationService extends Service {
 	 *
 	 * @var string
 	 */
-	protected $remembermeId = '';
+	protected $remembermeId= '';
 	
 	/**
 	 * The salt for the token
@@ -39,7 +39,7 @@ class AuthenticationService extends Service {
 	 * @var string
 	 */
 	protected $remembermeSalt = 'r3xCdvd_sqe';
-
+	
 	/**
 	 * Singleton
 	 *
@@ -60,29 +60,34 @@ class AuthenticationService extends Service {
 	 * @param array $user
 	 * @throws Exception
 	 */
-	public function validateUsername($username, array $user = null) {
-		if (empty ( $username )) {
+	public function validateUsername($username, array $user = null, array $params = array()) {
+		if (empty ( $username ))
 			throw new Exception ( 'Username required' );
+		
+		if (preg_match ( '/\\b(' . join ( '|', Config::$a ['chat'] ['customemotes'] ) . ')\\b/i', preg_quote ( $username ) ) > 0)
+			throw new Exception ( 'That username has been blacklisted' );
+
+		$min = 4;
+		$max = 20;
+		if (isset ( $params ['min'] ) && isset ( $params ['max'] )) {
+			$min = $params ['min'];
+			$max = $params ['max'];
 		}
 		
-		if (preg_match ( '/\\b(' . join ( '|', Config::$a ['chat'] ['customemotes'] ) . ')\\b/i', preg_quote ( $username ) ) > 0) {
-			throw new Exception ( 'That username has been blacklisted' );
-		}
-		if (preg_match ( '/^[A-Za-z0-9_]{4,20}$/', $username ) == 0) {
+		if (preg_match ( '/^[A-Za-z0-9_]{'. $min .','. $max .'}$/', $username ) == 0)
 			throw new Exception ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
-		}
-		if (preg_match_all ( '/[0-9]{4}/', $username, $m ) > 0) {
+		
+		if (preg_match_all ( '/[0-9]{4}/', $username, $m ) > 0)
 			throw new Exception ( 'Too many numbers in a row' );
-		}
-		if (preg_match_all ( '/[\_]{2}/', $username, $m ) > 0 || preg_match_all ( "/[_]+/", $username, $m ) > 2) {
+		
+		if (preg_match_all ( '/[\_]{2}/', $username, $m ) > 0 || preg_match_all ( "/[_]+/", $username, $m ) > 2)
 			throw new Exception ( 'Too many underscores' );
-		}
-		if (preg_match_all ( "/[0-9]/", $username, $m ) > round ( strlen ( $username ) / 2 )) {
+		
+		if (preg_match_all ( "/[0-9]/", $username, $m ) > round ( strlen ( $username ) / 2 ))
 			throw new Exception ( 'Number ratio is too damn high' );
-		}
-		if (UserService::instance ()->getIsUsernameTaken ( $username, ((! empty ( $user )) ? $user ['userId'] : 0) )) {
+		
+		if (UserService::instance ()->getIsUsernameTaken ( $username, ((! empty ( $user )) ? $user ['userId'] : 0) ))
 			throw new Exception ( 'The username you asked for is already being used' );
-		}
 	}
 
 	/**
@@ -93,17 +98,15 @@ class AuthenticationService extends Service {
 	 * @throws Exception
 	 */
 	public function validateEmail($email, array $user = null) {
-		if (! filter_var ( $email, FILTER_VALIDATE_EMAIL )) {
+		if (! filter_var ( $email, FILTER_VALIDATE_EMAIL ))
 			throw new Exception ( 'A valid email is required' );
-		}
+		
 		if (! empty ( $user )) {
-			if (UserService::instance ()->getIsEmailTaken ( $email, $user ['userId'] )) {
+			if (UserService::instance ()->getIsEmailTaken ( $email, $user ['userId'] ))
 				throw new Exception ( 'The email you asked for is already being used' );
-			}
 		} else {
-			if (UserService::instance ()->getIsEmailTaken ( $email )) {
+			if (UserService::instance ()->getIsEmailTaken ( $email ))
 				throw new Exception ( 'The email you asked for is already being used' );
-			}
 		}
 	}
 
