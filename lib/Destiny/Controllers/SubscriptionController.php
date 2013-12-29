@@ -20,6 +20,7 @@ use Destiny\Common\Application;
 use Destiny\Commerce\OrderStatus;
 use Destiny\Common\Utils\Date;
 use Destiny\Chat\ChatIntegrationService;
+use Destiny\Common\User\UserService;
 
 /**
  * @Controller
@@ -237,9 +238,16 @@ class SubscriptionController {
 		// Update the user
 		AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
 
+		$chat = ChatIntegrationService::instance ();
 		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] );
-		ChatIntegrationService::instance ()->sendBroadcast ( $message );
-		
+		$chat->sendBroadcast ( $message );
+
+		$ban = UserService::getUserActiveBan( $order['userId'] )
+		// only unban the user if the ban is non-permanent
+		// we unban the user if no ban is found because it also unmutes
+		if ( empty( $ban ) or $ban['endtimestamp'] )
+			$chat->sendUnban ( $order['userId'] );
+
 		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete';
 	}
 	

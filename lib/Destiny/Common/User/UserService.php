@@ -449,4 +449,29 @@ class UserService extends Service {
 		$conn->update ( 'users_address', $address, array ('id' => $address['id']) );
 	}
 
+	/**
+	 * Return the active ban for the user
+	 *
+	 * @param string $userId
+	 * @return array
+	 */
+	public static function getUserActiveBan($userId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT *
+			FROM bans
+			WHERE
+				targetuserid = :userId AND
+				starttimestamp <= NOW() AND
+				(
+					endtimestamp IS NULL OR
+					endtimestamp >= NOW()
+				)
+			LIMIT 1
+		' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
+	}
+
 }

@@ -104,4 +104,22 @@ class ChatIntegrationService extends Service {
 		return $broadcast;
 	}
 
+	/**
+	 * Unban and unmute a userId
+	 *
+	 * @param int $userId
+	 *        	the userId
+	 * @throws Exception
+	 */
+	public function sendUnban($userId) {
+		if (!$userId) {
+			throw new Exception ( 'UserId required' );
+		}
+		$redis = Application::instance ()->getRedis ();
+		if (! empty ( $redis )) {
+			$redis->publish ( sprintf ( 'unbanuserid-%s', Config::$a ['redis'] ['database'] ), (string)$userId );
+		}
+		return $userId;
+	}
+
 }
