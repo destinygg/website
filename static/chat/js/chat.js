@@ -12,10 +12,10 @@ function chat(element, user, options) {
 		"invalidmsg"        : "The message was invalid",
 		"throttled"         : "Throttled! You were trying to send messages too fast",
 		"duplicate"         : "The message is identical to the last one you sent",
-		"muted"             : "You are muted",
+		"muted"             : "You are muted (subscribing auto-removes mutes)",
 		"submode"           : "The channel is currently in subscriber only mode",
 		"needbanreason"     : "Providing a reason for the ban is mandatory",
-		"banned"            : "You have been banned, disconnecting",
+		"banned"            : "You have been banned (subscribing auto-removes non-permanent bans), disconnecting",
 		"requiresocket"     : "This chat requires WebSockets",
 		"toomanyconnections": "Only 5 concurrent connections allowed",
 		"socketerror"       : "Error contacting server",
@@ -244,15 +244,16 @@ chat.prototype.onUNMUTE = function(data) {
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
 	var suppressednick = data.data;
-	if (this.user.username.toLowerCase() == data.data.toLowerCase())
+	if (this.user.username.toLowerCase() == data.data.toLowerCase()) {
 		suppressednick = 'You have been';
-	else if (
+		setTimeout( function() { location.href = "/banned"; }, 1500);
+	} else if (
 	          $.inArray('admin', this.user.features) == -1 &&
 	          $.inArray('moderator', this.user.features) == -1 &&
 	          $.inArray('flair3', this.user.features) == -1
 	)
 		this.gui.removeUserMessages(data.data);
-	
+
 	return new ChatCommandMessage(suppressednick + " banned by " + data.nick, data.timestamp);
 };
 chat.prototype.onUNBAN = function(data) {
@@ -265,7 +266,10 @@ chat.prototype.onUNBAN = function(data) {
 chat.prototype.onERR = function(data) {
 	if (data == "toomanyconnections" || data == "banned")
 		this.dontconnect = true;
-	
+
+	if (data == "banned")
+		location.href = "/banned";
+
 	return new ChatErrorMessage(this.errorstrings[data]);
 };
 chat.prototype.onREFRESH = function() {

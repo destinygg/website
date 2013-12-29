@@ -242,7 +242,7 @@ class SubscriptionController {
 		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] );
 		$chat->sendBroadcast ( $message );
 
-		$ban = UserService::getUserActiveBan( $order['userId'] )
+		$ban = UserService::getUserActiveBan( $order['userId'] );
 		// only unban the user if the ban is non-permanent
 		// we unban the user if no ban is found because it also unmutes
 		if ( empty( $ban ) or $ban['endtimestamp'] )
