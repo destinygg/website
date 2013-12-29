@@ -246,7 +246,9 @@ chat.prototype.onBAN = function(data) {
 	var suppressednick = data.data;
 	if (this.user.username.toLowerCase() == data.data.toLowerCase()) {
 		suppressednick = 'You have been';
-		setTimeout( function() { location.href = "/banned"; }, 1500);
+		setTimeout( function() {
+			(window.parent? window.parent.location: window.location).href = "/banned";
+		}, 1500);
 	} else if (
 	          $.inArray('admin', this.user.features) == -1 &&
 	          $.inArray('moderator', this.user.features) == -1 &&
@@ -268,7 +270,7 @@ chat.prototype.onERR = function(data) {
 		this.dontconnect = true;
 
 	if (data == "banned")
-		location.href = "/banned";
+		(window.parent? window.parent.location: window.location).href = "/banned";
 
 	return new ChatErrorMessage(this.errorstrings[data]);
 };
