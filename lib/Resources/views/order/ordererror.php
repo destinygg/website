@@ -31,7 +31,7 @@ use Destiny\Common\Config;
 				</div>
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
-				<form action="/order/confirm" method="post">
+				<form action="/subscription/confirm" method="post">
 					<div class="control-group">
 						<p>An error has occurred during the subscription process.
 						

@@ -52,7 +52,7 @@ class AuthenticationRedirectionFilter {
 		if (! empty ( $selectSubscription )) {
 			$currentSubscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 			if (empty ( $currentSubscription )) {
-				return 'redirect: /order/confirm?subscription=' . $selectSubscription;
+				return 'redirect: /subscription/confirm?subscription=' . $selectSubscription;
 			}
 			return 'redirect: /subscription/update/confirm?subscription=' . $selectSubscription;
 		}

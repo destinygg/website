@@ -31,7 +31,7 @@ use Destiny\Common\Config;
 				</div>
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
-				<form class="onceoff" action="/order/create" method="post">
+				<form class="onceoff" action="/subscription/create" method="post">
 					<input type="hidden" name="subscription" value="<?=$model->subscription['id']?>">
 
 					<div class="subscriptions clearfix">
