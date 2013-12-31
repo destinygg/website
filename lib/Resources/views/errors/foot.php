@@ -7,7 +7,7 @@
 		</p>
 		<p class="pull-right" style="text-align: right;">
 			Illustration feature by <a title="Many thanks!" href="http://guilhemsalines.blogspot.com/">@elevencyan</a>
-			<br>League of Legends images owned by Riot inc.
+			<br><a href="https://github.com/destinygg/website">website</a> and <a href="https://github.com/destinygg/chat">chat</a> @ <a href="https://github.com/destinygg">Github</a>
 		</p>
 	</footer>
 </section>
