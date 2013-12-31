@@ -12,7 +12,6 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
 use Destiny\Chat\ChatlogService;
-use Destiny\Chat\ChatBanService;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
@@ -48,13 +47,12 @@ class UserAdminController {
 		$userFeaturesService = UserFeaturesService::instance ();
 		$apiAuthenticationService = ApiAuthenticationService::instance ();
 		$chatlogService = ChatlogService::instance ();
-		$chatBanService = ChatBanService::instance ();
 		
 		$user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = $userFeaturesService->getUserFeatures ( $user ['userId'] );
 		$model->user = $user;
 		$model->features = $userFeaturesService->getDetailedFeatures ();
-		$ban = $chatBanService->getUserActiveBan ( $user ['userId'] );
+		$ban = $userService->getUserActiveBan ( $user ['userId'] );
 		$banContext = array ();
 		if (! empty ( $ban )) {
 			$banContext = $chatlogService->getChatLogBanContext ( $user ['userId'], Date::getDateTime ( $ban ['starttimestamp'] ), 18 );

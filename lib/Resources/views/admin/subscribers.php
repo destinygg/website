@@ -14,6 +14,17 @@ use Destiny\Common\Config;
 
 	<?php include Tpl::file('seg/top.php') ?>
 	
+	<section class="container">
+		<div class="navbar navbar-inverse navbar-subnav">
+			<div class="navbar-inner">
+				<ul class="nav pull-left">
+					<li><a href="/admin">Users</a></li>
+					<li class="active"><a href="/admin/subscribers">Subscribers</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
 	<?php function buildSubscribersTier(array $tier = null, $num){?>
 	<?php if(!empty($tier)): ?>
 	<section class="container">

@@ -96,7 +96,7 @@ chat.prototype.loadIgnoreList = function() {
 
 // websocket stuff
 chat.prototype.parseAndDispatch = function(e) {
-	var eventname = e.data.split(' ', 1)[0],
+	var eventname     = e.data.split(' ', 1)[0],
 			handler   = 'on' + eventname,
 			obj       = JSON.parse(e.data.substring(eventname.length+1));
 	
@@ -142,7 +142,7 @@ chat.prototype.onCLOSE = function() {
 	var rand = ((this.connected) ? getRandomInt(501,3000) : getRandomInt(5000,30000));
 	setTimeout($.proxy(this.onRECONNECT, this), rand);
 	this.connected = false;
-	return new ChatStatusMessage("Disconnected... reconnecting in "+(Math.round(rand/1000))+" seconds");
+	return new ChatStatusMessage("Disconnected... reconnecting in "+ Math.round(rand/1000) +" seconds");
 };
 chat.prototype.onNAMES = function(data) {
 	if (!data.users || data.users.length <= 0)
@@ -246,8 +246,8 @@ chat.prototype.onBAN = function(data) {
 	var suppressednick = data.data;
 	if (this.user.username.toLowerCase() == data.data.toLowerCase()) {
 		suppressednick = 'You have been';
-		setTimeout( function() {
-			(window.parent? window.parent.location: window.location).href = "/banned";
+		setTimeout(function() {
+			window.location.href = "/banned";
 		}, 1500);
 	} else if (
 	          $.inArray('admin', this.user.features) == -1 &&
@@ -270,7 +270,7 @@ chat.prototype.onERR = function(data) {
 		this.dontconnect = true;
 
 	if (data == "banned")
-		(window.parent? window.parent.location: window.location).href = "/banned";
+		window.location.href = "/banned";
 
 	return new ChatErrorMessage(this.errorstrings[data]);
 };

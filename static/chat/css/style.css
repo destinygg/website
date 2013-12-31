@@ -68,7 +68,6 @@
 	padding: 0;
 	height: 100%;
 	overflow: hidden;
-	min-height: 300px;
 	min-width: 300px;
 }
 .chat {

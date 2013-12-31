@@ -23,7 +23,7 @@ $word = $words [array_rand ( $words, 1 )];
 			<header class="hero-unit" id="overview">
 				<div class="clearfix">
 					<h1><strong><?=$word?>!</strong> Authentication required</h1>
-					<p>This request requires you to login. <br />Would you like to <a href="/">return to the start</a>?</p>
+					<p>You need to login to see this page. <br />Would you like to <a href="/login">login</a>?</p>
 				</div>
 				<div id="destiny-illustration"></div>
 			</header>

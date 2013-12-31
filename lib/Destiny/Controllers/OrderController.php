@@ -20,6 +20,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserRole;
 use Destiny\Chat\ChatIntegrationService;
+use Destiny\Common\User\UserService;
 
 /**
  * @Controller
@@ -184,6 +185,10 @@ class OrderController {
 		$ordersService = OrdersService::instance ();
 		$subService = SubscriptionsService::instance ();
 		$payPalApiService = PayPalApiService::instance ();
+		$chat = ChatIntegrationService::instance ();
+		$userService = UserService::instance ();
+		$authService = AuthenticationService::instance ();
+		
 		$log = Application::instance ()->getLogger ();
 		
 		if (! isset ( $params ['orderId'] ) || empty ( $params ['orderId'] )) {
@@ -290,12 +295,17 @@ class OrderController {
 		// Create new subscription
 		$subService->createSubscriptionFromOrder ( $order, $subscription, $paymentProfile );
 		
+		$ban = $userService->getUserActiveBan ( $order ['userId'] );
+		// only unban the user if the ban is non-permanent
+		// we unban the user if no ban is found because it also unmutes
+		if (empty ( $ban ) || $ban ['endtimestamp'])
+			$chat->sendUnban ( $order ['userId'] );
+			
 		// Update the user
-		AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
-		
+		$authService->flagUserForUpdate ( $order ['userId'] );
+
 		// Broadcast the subscription
-		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] );
-		ChatIntegrationService::instance ()->sendBroadcast ( $message );
+		$chat->sendBroadcast ( sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription ['tierLabel'] ) );
 		
 		// Redirect to completion page
 		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete';

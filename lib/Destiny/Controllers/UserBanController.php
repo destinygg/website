@@ -10,7 +10,6 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
-use Destiny\Chat\ChatBanService;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
@@ -33,7 +32,6 @@ class UserBanController {
 			throw new Exception ( 'userId required' );
 		}
 		
-		$authService = AuthenticationService::instance ();
 		$userService = UserService::instance ();
 		$userFeatureService = UserFeaturesService::instance ();
 		
@@ -70,12 +68,11 @@ class UserBanController {
 		$ban ['ipaddress'] = '';
 		$ban ['targetuserid'] = $params ['userId'];
 		$ban ['starttimestamp'] = Date::getDateTime ( $params ['starttimestamp'] )->format ( 'Y-m-d H:i:s' );
-		$ban ['endtimestamp'] = '';
 		if (! empty ( $params ['endtimestamp'] )) {
 			$ban ['endtimestamp'] = Date::getDateTime ( $params ['endtimestamp'] )->format ( 'Y-m-d H:i:s' );
 		}
-		$chatBanService = ChatBanService::instance ();
-		$ban ['id'] = $chatBanService->insertBan ( $ban );
+		$userService = UserService::instance ();
+		$ban ['id'] = $userService->insertBan ( $ban );
 		AuthenticationService::instance ()->flagUserForUpdate ( $ban ['targetuserid'] );
 		return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $ban ['id'] . '/edit';
 	}
@@ -96,7 +93,7 @@ class UserBanController {
 			throw new Exception ( 'userId required' );
 		}
 		
-		$authService = AuthenticationService::instance ();
+		$authenticationService = AuthenticationService::instance ();
 		$userService = UserService::instance ();
 		$userFeatureService = UserFeaturesService::instance ();
 		
@@ -106,7 +103,7 @@ class UserBanController {
 		}
 		
 		$model->user = $user;
-		$model->ban = ChatBanService::instance ()->getBanById ( $params ['id'] );
+		$model->ban = $userService->getBanById ( $params ['id'] );
 		return 'admin/userban';
 	}
 
@@ -126,8 +123,9 @@ class UserBanController {
 			throw new Exception ( 'userId required' );
 		}
 		
-		$chatBanService = ChatBanService::instance ();
-		$eBan = $chatBanService->getBanById ( $params ['id'] );
+		$userService = UserService::instance ();
+		$authenticationService = AuthenticationService::instance ();
+		$eBan = $userService->getBanById ( $params ['id'] );
 		
 		$ban = array ();
 		$ban ['id'] = $eBan ['id'];
@@ -140,8 +138,8 @@ class UserBanController {
 		if (! empty ( $params ['endtimestamp'] )) {
 			$ban ['endtimestamp'] = Date::getDateTime ( $params ['endtimestamp'] )->format ( 'Y-m-d H:i:s' );
 		}
-		$chatBanService->updateBan ( $ban );
-		AuthenticationService::instance ()->flagUserForUpdate ( $ban ['targetuserid'] );
+		$userService->updateBan ( $ban );
+		$authenticationService->flagUserForUpdate ( $ban ['targetuserid'] );
 		
 		return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit';
 	}
@@ -159,13 +157,16 @@ class UserBanController {
 		if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
 			throw new Exception ( 'userId required' );
 		}
+
+		$userService = UserService::instance ();
+		$authenticationService = AuthenticationService::instance ();
 		
-		$chatBanService = ChatBanService::instance ();
-		$ban = $chatBanService->getBanById ( $params ['id'] );
+		$ban = $userService->getBanById ( $params ['id'] );
 		$ban ['starttimestamp'] = Date::getDateTime ( $ban ['starttimestamp'] );
 		$ban ['endtimestamp'] = Date::getDateTime ( 'NOW' );
-		$chatBanService->updateBan ( $ban );
-		AuthenticationService::instance ()->flagUserForUpdate ( $ban ['targetuserid'] );
+		
+		$userService->updateBan ( $ban );
+		$authenticationService->flagUserForUpdate ( $ban ['targetuserid'] );
 		
 		return 'redirect: /admin/user/' . $params ['userId'] . '/edit';
 	}

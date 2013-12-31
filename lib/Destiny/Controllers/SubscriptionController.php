@@ -133,6 +133,11 @@ class SubscriptionController {
 		$ordersService = OrdersService::instance ();
 		$subService = SubscriptionsService::instance ();
 		$payPalApiService = PayPalApiService::instance ();
+		
+		$authService = AuthenticationService::instance ();
+		$userService = UserService::instance();
+		$chat = ChatIntegrationService::instance ();
+		
 		$log = Application::instance ()->getLogger ();
 		
 		if (! isset ( $params ['orderId'] ) || empty ( $params ['orderId'] )) {
@@ -221,6 +226,7 @@ class SubscriptionController {
 		}
 		
 		// Current subscription
+		$isSubscriptionUpgrade = false;
 		$currentSubscription = $subService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
 		if (! empty ( $currentSubscription )) {
 			// Clear profile
@@ -230,24 +236,30 @@ class SubscriptionController {
 			}
 			// Clear subscription
 			$subService->updateSubscriptionState ( $currentSubscription ['subscriptionId'], SubscriptionStatus::CANCELLED );
+			
+			// If the current sub tier is lower than the new sub tier, its an upgrade
+			if (floatval ( $currentSubscription ['subscriptionTier'] ) < floatval ( $subscription ['tier'] ))
+				$isSubscriptionUpgrade = true;
 		}
 		
 		// Create new subscription
 		$subService->createSubscriptionFromOrder ( $order, $subscription, $paymentProfile );
 		
+		// If this is a sub upgrade, clear bans
+		if ($isSubscriptionUpgrade) {
+			$ban = $userService->getUserActiveBan( $order['userId'] );
+			// only unban the user if the ban is non-permanent
+			// we unban the user if no ban is found because it also unmutes
+			if ( empty( $ban ) || $ban['endtimestamp'] )
+				$chat->sendUnban ( $order['userId'] );
+		}
+
 		// Update the user
-		AuthenticationService::instance ()->flagUserForUpdate ( $order ['userId'] );
+		$authService->flagUserForUpdate ( $order ['userId'] );
 
-		$chat = ChatIntegrationService::instance ();
-		$message = sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] );
-		$chat->sendBroadcast ( $message );
-
-		$ban = UserService::getUserActiveBan( $order['userId'] );
-		// only unban the user if the ban is non-permanent
-		// we unban the user if no ban is found because it also unmutes
-		if ( empty( $ban ) or $ban['endtimestamp'] )
-			$chat->sendUnban ( $order['userId'] );
-
+		// Broadcast the subscription
+		$chat->sendBroadcast ( sprintf ( "%s has just become a %s subscriber! FeedNathan", Session::getCredentials ()->getUsername (), $subscription['tierLabel'] ) );
+		
 		return 'redirect: /order/' . urlencode ( $order ['orderId'] ) . '/complete';
 	}
 	

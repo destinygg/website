@@ -9,7 +9,7 @@ use Destiny\Common\Config;
 		<div class="container">
 			<div class="nav-collapse collapse">
 				<ul id="top-left-nav" class="nav">
-					<li><a title="Home Page" href="/"><i class="icon-home icon-white subtle"></i></a></li>
+					<li class="home"><a title="Home Page" href="/"><i class="icon-home icon-white subtle"></i></a></li>
 					<li><a title="Blog @ destiny.gg" href="http://blog.destiny.gg">Blog</a></li>
 					<li><a title="twitter.com" href="https://twitter.com/Steven_Bonnell/">Twitter</a></li>
 					<li><a title="youtube.com" href="http://www.youtube.com/user/Destiny">Youtube</a></li>

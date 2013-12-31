@@ -15,6 +15,17 @@ use Destiny\Common\Utils\Date;
 	<?php include Tpl::file('seg/top.php') ?>
 	
 	<section class="container">
+		<div class="navbar navbar-inverse navbar-subnav">
+			<div class="navbar-inner">
+				<ul class="nav pull-left">
+					<li class="active"><a href="/admin">Users</a></li>
+					<li><a href="/admin/subscribers">Subscribers</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	<section class="container">
 	
 		<h1 class="page-title">Administration</h1>
 		<div class="navbar navbar-inverse navbar-subnav">
@@ -22,7 +33,6 @@ use Destiny\Common\Utils\Date;
 				<form class="navbar-form" id="user-search">
 					&nbsp;<input type="text" class="span5" placeholder="Enter a username..." autocomplete="off">
 					<button type="submit" class="btn btn-inverse">Edit</button>
-					<a href="/admin/subscribers" class="btn btn-primary">Subscribers</a>
 				</form>
 			</div>
 		</div>

@@ -17,6 +17,17 @@ use Destiny\Common\User\UserRole;
 	<?php include Tpl::file('seg/top.php') ?>
 	
 	<section class="container">
+		<div class="navbar navbar-inverse navbar-subnav">
+			<div class="navbar-inner">
+				<ul class="nav pull-left">
+					<li><a href="/admin">Users</a></li>
+					<li><a href="/admin/subscribers">Subscribers</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	<section class="container">
 		<h1 class="page-title">
 			<span>User</span>
 			<small>update</small>
@@ -185,7 +196,7 @@ use Destiny\Common\User\UserRole;
 						</p>
 						<blockquote>
 							<p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($model->ban['reason'])?></p>
-							<small class="subtle"><?=Tpl::out($model->ban['username'])?></small>
+							<small class="subtle"><?=Tpl::out((!empty($model->ban['username'])) ? $model->ban['username']:'System')?></small>
 						</blockquote>
 					</div>
 					
