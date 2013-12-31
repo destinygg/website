@@ -21,7 +21,9 @@ use Destiny\Common\Utils\Date;
 			<?php else: ?>
 			You have been banned!
 			<?php endif; ?>
+			<?php if($model->banType != 'none'): ?>
 			<br /><small><?=ucwords($model->banType)?> ban</small>
+			<?php endif; ?>
 		</h1>
 		
 		<?php if(!empty($model->ban)): ?>
