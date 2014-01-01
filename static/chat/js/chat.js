@@ -312,7 +312,7 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "emotes":
-			this.gui.push(new ChatInfoMessage("Available emoticons: "+this.gui.emoticons.join(", ")));
+			this.gui.push(new ChatInfoMessage("Available emoticons: "+this.gui.emoticons.join(", ")+" (www.destiny.gg/emotes)"));
 			break;
 			
 		case "help":

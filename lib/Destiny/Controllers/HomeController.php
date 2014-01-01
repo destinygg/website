@@ -71,7 +71,7 @@ class HomeController {
 	}
 
 	/**
-	 * @Route ("/chat/emoticons")
+	 * @Route ("/emotes")
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
