@@ -30,6 +30,7 @@
 		onSend: $.noop,
 		userMessages: [],
 		backlog: backlog,
+		backlogLoading: false,
 		highlightregex: {},
 		highlightnicks: {},
 		notifications: true,
@@ -332,6 +333,7 @@
 		},
 		
 		loadBacklog: function() {
+			this.backlogLoading = true;
 			if(this.backlog.length > 0){
 				for (var i = this.backlog.length - 1; i >= 0; i--) {
 					var line    = this.backlog[i],
@@ -348,6 +350,7 @@
 				this.put(new ChatUIMessage('<hr/>'));
 			};
 			this.scrollPlugin.updateAndScroll(true);
+			this.backlogLoading = false;
 			return;
 		},
 		
