@@ -238,6 +238,28 @@ use Destiny\Common\Config;
 	
 	<?php include Tpl::file('seg/foot.php') ?>
 	<?php include Tpl::file('seg/commonbottom.php') ?>
+	<script src="<?=Config::cdnv()?>/vendor/jquery.validate/jquery.validate.min.js"></script>
+	<script>
+	$(function(){
+		$('form#addressSaveForm').validate({
+			rules: {
+				fullName : { required: true },
+				line1    : { required: true },
+				line2    : { required: true },
+				city     : { required: true },
+				region   : { required: true },
+				zip      : { required: true },
+				country  : { required: true }
+			},
+			highlight: function(element) {
+				$(element).closest('.control-group').addClass('error');
+			},
+			unhighlight: function(element) {
+				$(element).closest('.control-group').removeClass('error');
+			}
+		});
+	});
+	</script>
 	
 </body>
 </html>

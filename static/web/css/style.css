@@ -1191,3 +1191,14 @@ body#banned .bantype-temporary small {
 body#banned .bantype-permanent small {
 	background-color: #b94a48;
 }
+
+form label.error {
+	background-color: #b94a48;
+	display: inline-block;
+	color: white;
+	line-height: 30px;
+	margin: 0 0 0 -3px;
+	vertical-align: top;
+	padding: 0 5px;
+	border-radius: 0 4px 4px 0;
+}
