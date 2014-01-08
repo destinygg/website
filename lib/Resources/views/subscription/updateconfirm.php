@@ -32,7 +32,7 @@ use Destiny\Common\Config;
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
 				<form class="onceoff" action="/subscription/update" method="post">
-					<input type="hidden" name="subscription" value="<?=$model->subscription['id']?>">
+					<input type="hidden" name="subscription" value="<?=$model->subscriptionType['id']?>">
 
 					<div class="clearfix">
 					
@@ -50,8 +50,8 @@ use Destiny\Common\Config;
 							<div class="subscription-tier clearfix">
 								<div class="subscription" style="width: auto;">
 									<div><span class="label label-success">TO</span></div>
-									<h2><?=$model->subscription['tierItemLabel']?></h2>
-									<div><span class="sub-amount">$<?=$model->subscription['amount']?></span> (<?=$model->subscription['billingFrequency']?> <?=strtolower($model->subscription['billingPeriod'])?>)</div>
+									<h2><?=$model->subscriptionType['tierItemLabel']?></h2>
+									<div><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</div>
 								</div>
 							</div>
 						</div>
@@ -60,7 +60,7 @@ use Destiny\Common\Config;
 						
 					<div class="control-group">
 					
-						<?php if($model->currentSubscriptionType['id'] == $model->subscription['id']): ?>
+						<?php if($model->currentSubscriptionType['id'] == $model->subscriptionType['id']): ?>
 						<?php if($model->currentSubscription['recurring'] == 0): ?>
 						<div><i class="icon-ok icon-white"></i> Automatically renew this subscription</div>
 						<?php else: ?>
@@ -73,7 +73,7 @@ use Destiny\Common\Config;
 						<?php endif; ?>
 						<br />
 						
-						<?php if($model->currentSubscriptionType['id'] != $model->subscription['id']): ?>
+						<?php if($model->currentSubscriptionType['id'] != $model->subscriptionType['id']): ?>
 						<p><strong>NOTE</strong> The remaining time on your current subscription will not be carried over, and your new subscription will begin immediately.</p>
 						<?php else: ?>
 						<p><strong>NOTE</strong> You are about to change your automatic renewal on your current subscription.</p>

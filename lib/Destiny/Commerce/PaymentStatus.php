@@ -7,5 +7,6 @@ abstract class PaymentStatus {
 	const ACTIVE = 'Active';
 	const PENDING = 'Pending';
 	const COMPLETED = 'Completed';
+	const ERROR = 'Error';
 
 }

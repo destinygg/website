@@ -10,20 +10,10 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 </head>
-<body id="admin">
+<body id="admin" class="thin">
 
 	<?php include Tpl::file('seg/top.php') ?>
-	
-	<section class="container">
-		<div class="navbar navbar-inverse navbar-subnav">
-			<div class="navbar-inner">
-				<ul class="nav pull-left">
-					<li><a href="/admin">Users</a></li>
-					<li class="active"><a href="/admin/subscribers">Subscribers</a></li>
-				</ul>
-			</div>
-		</div>
-	</section>
+	<?php include Tpl::file('admin/seg/top.php') ?>
 	
 	<?php function buildSubscribersTier(array $tier = null, $num){?>
 	<?php if(!empty($tier)): ?>
@@ -65,8 +55,7 @@ use Destiny\Common\Config;
 	<?php buildSubscribersTier($model->subscribersT2, 2) ?>
 	<?php buildSubscribersTier($model->subscribersT1, 1) ?>
 	
-	<br>
-	<?php include Tpl::file('seg/foot.php') ?>
+	<br />
 	<?php include Tpl::file('seg/commonbottom.php') ?>
 	
 	<script src="<?=Config::cdnv()?>/web/js/admin.js"></script>

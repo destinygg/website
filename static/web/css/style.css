@@ -17,15 +17,17 @@
 	100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
 }
 
-html,body{
+html,
+body{
 	height:100%;
 }
 
 body {
 	background: #111 url("../img/bodybg.png") repeat top center;
 	position: relative;
-	padding-top: 40px;
 	color: #999;
+	margin: 0;
+	padding: 0;
 }
 
 section {
@@ -144,13 +146,16 @@ body#home #top-left-nav li.home a:hover {
 	color: #999;
 }
 
+/**
+ * Header band
+ **/
 #header-band {
 	overflow: hidden;
 	border-bottom: 1px solid #191919;
 	background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x -400px -50px;
+	padding: 40px 0 0 0;
 	margin: 0;
 }
-
 #overview,
 #overview h1 {
 	height: 110px;	
@@ -178,6 +183,60 @@ body#home #top-left-nav li.home a:hover {
 	top: 0;
 	right: 0;
 }
+
+/**
+ * Smaller header band
+ */
+body.thin #header-band h1 {
+	margin-left:10px;
+}
+body.thin #header-band #overview,
+body.thin #header-band #overview h1 {
+	height: 80px;
+}
+body.thin #header-band #destiny-illustration {
+	background-position: 0 -20px;
+	height: 79px;
+}
+body.thin #header-band > .container {
+	position: relative;
+	margin:0 auto;
+}
+body.thin #header-band .nav-pills {
+	font-size:12px;
+}
+body.thin #header-band .nav-pills>li>a {
+	color:#666;
+	background-color:rgba(255,255,255,0.05);
+	margin-left:10px;
+}
+body.thin #header-band .nav-pills>.active>a,
+body.thin #header-band .nav-pills>.active>a:hover,
+body.thin #header-band .nav-pills>.active>a:focus{
+	color:#fafafa;
+	background-color:rgba(255,255,255,0.05);
+}
+body.thin #header-band .nav-pills>li>a:hover,
+body.thin #header-band .nav-pills>li>a:focus {
+	color:#fff;
+	background-color:rgba(255,255,255,0.1);
+}
+body.thin #header-band .nav-pills li a {
+	padding: 0 5px;
+}
+body.thin #header-band .nav-pills li {
+	float:left;
+}
+body.thin #header-band #top-navigation {
+	position: absolute;
+	width:400px;
+	top:25px;
+	right:0;
+}
+
+/**
+ * Top navigation
+ */
 #main-nav .navbar-inner {
 	border-bottom: 1px solid #000;
 }
@@ -242,8 +301,6 @@ body#home #top-left-nav li.home a:hover {
 
 .content-embed {
 	padding: 5px;
-	-webkit-border-radius: 6px;
-	-moz-border-radius: 6px;
 	border-radius: 6px;
 	background: white;
 }
@@ -262,6 +319,7 @@ body#home #top-left-nav li.home a:hover {
 	border-bottom-right-radius: 0;
 	clear: both;
 }
+
 i.icon-bobross {
 	background: url(../../favicon.png) no-repeat center center;
 	margin-bottom: 1px;
@@ -294,13 +352,13 @@ i.icon-twitch {
 	background-image: url(../img/ico/twitch_16.png);
 }
 i.icon-twitter {
-	background-image: url(../img/ico/twitter_16.png);	
+	background-image: url(../img/ico/twitter_16.png);
 }
 i.icon-google {
-	background-image: url(../img/ico/google_16.png);	
+	background-image: url(../img/ico/google_16.png);
 }
 i.icon-reddit {
-	background-image: url(../img/ico/reddit_16.png);	
+	background-image: url(../img/ico/reddit_16.png);
 }
 
 #twitchpanel .panelheader .game>div {
@@ -324,8 +382,8 @@ i.icon-reddit {
 	font-weight: normal;
 }
 
-#twitchpanel.split-view>.content,
-#twitchpanel.single-view>.content {
+#twitchpanel.split-view > .content,
+#twitchpanel.single-view > .content {
 	border-bottom: 0;
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
@@ -574,11 +632,11 @@ i.icon-reddit {
 	width: 100%;
 }
 
-.private-ad>a {
+.private-ad > a {
 	border-radius: 6px;
 }
 
-#feenix-nascita>a {
+#feenix-nascita > a {
 	background: black url("../img/feenixnascita.jpg") no-repeat top center;
 }
 
@@ -655,71 +713,6 @@ i.icon-reddit {
 	padding: 0 30px;
 }
 
-#lolpanel>.content {
-	height: 65px;
-	overflow: hidden;
-}
-
-#lolpanel .summoner-rank-info .summon-rank-stats {
-	font-size: 12px;
-	text-align: right;
-	line-height: 16px;
-	padding-right: 20px;
-	margin: 16px 15px 16px 0;
-	border-right: 1px solid #222;
-	color: #444;
-}
-
-#lolpanel .summon-rank-display {
-	margin: 10px 10px 10px 0;
-}
-
-#lolpanel .summoner-info .summoner-info-stub {
-	margin: 10px 10px 10px 20px;
-	position: relative;
-}
-
-#lolpanel .summoner-info .summoner-title {
-	font-weight: normal;
-	margin: 0;
-	line-height: 25px;
-	font-size: 25px;
-}
-
-#lolpanel .summoner-info .summoner-region {
-	margin: 0;
-	color: #444;
-}
-
-#lolpanel .summoner-rank-info .summoner-rank-thumbnail i {
-	display: block;
-}
-
-#lolpanel .summoner-rank-info .summoner-rank {
-	font-size: 24px;
-	line-height: 45px;
-	padding-right: 10px;
-}
-
-#lolpanel .summoner-rank-info .summoner-rank.unranked {
-	font-size: 28px;
-	opacity: 0.5;
-}
-
-#lolpanel .summoner-info .summoner-revision-date {
-	text-shadow: none;
-	font-size: 11px;
-	color: #333;
-}
-
-#lolpanel i[class^="icon-"] {
-	opacity: 0.3;
-}
-
-#lolpanel i[class^="icon-"]:hover {
-	opacity: 1;
-}
-
 footer {
 	position: relative;
 	font-size: 12px;
@@ -731,7 +724,9 @@ footer p.pull-right {
 	text-align: right;
 }
 
-/* Bootstrap overrides */
+/**
+ * Bootstrap overrides 
+ */
 .popover-title,.popover-content {
 	color: #444;
 	text-shadow: none;
@@ -889,6 +884,9 @@ i.td-fill {
 	height:23px;
 }
 
+/**
+ * Grid
+ */
 table.grid {
 	width: 100%;
 	border-collapse: collapse;
@@ -941,6 +939,45 @@ table.grid .rank {
 	margin-right: 5px;
 }
 
+/**
+ * Collapsible
+ */
+.collapsible {
+	border-bottom: 1px solid #010101;
+}
+.collapsible > h3 {
+	margin-bottom: 0;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #222;	
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.collapsible > h3 > i {
+	margin-top: 8px;	
+	margin-left: 8px;	
+	opacity: 0.5;
+}
+.collapsible > h3:hover {
+	cursor: pointer;
+}
+.collapsible > h3:hover > i {
+	opacity: 1;	
+}
+.collapsible.active,
+.collapsible.active > h3 {
+	border-bottom: none;
+}
+.collapsible > .content {
+	display: none;
+}
+.collapsible.active > .content {
+	display: block;
+}
+
 .content .stream:first-child table.grid thead td:last-child {
 	border-top-right-radius: 0;
 }
@@ -950,18 +987,15 @@ table.grid .rank {
 }
 
 .icon-bigscreen {
-	background: url("../img/ico/tv_32.png") no-repeat top left;	
-	width: 32px;
-	height: 19px;
-	margin: -1px 5px -2px 0;
+	background: url("../img/ico/tv_32.png") no-repeat top left !important;	
+	width: 32px !important;
+	height: 19px !important;
+	margin: -1px 5px -2px 0 !important;
 }
 
 /**
  *  Bigscreen page
  */
-body#bigscreen {
-	padding-top:0;
-}
 body#bigscreen .page-wrap {
 	height: auto !important;
 	min-height: 100%;
@@ -970,56 +1004,40 @@ body#bigscreen .page-wrap {
 body#bigscreen .page-content {
 	height:100%;
 }
-body#bigscreen #footer {
-	display:none;
-	padding: 10px 10px 0 10px;
-	margin:0;
-}
-body#bigscreen #header-band h1 {
-	margin-left:10px;
-}
-body#bigscreen #header-band #overview,
-body#bigscreen #header-band #overview h1 {
-	height: 80px;
-}
-body#bigscreen #header-band #destiny-illustration {
-	background-position: 0 -20px;
-	height: 79px;
-}
 body#bigscreen #twitch-stream-wrap {
 	width:100%; 
 	margin-left:-400px; 
 	height: auto; 
 	min-height: 100%;
 }
-body#bigscreen #twitch-stream-wrap .twitch-element-wrap{
+body#bigscreen #twitch-stream-wrap .twitch-element-wrap {
 	position: relative;
 	width: 100%;
 	height: 100%;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay{
+body#bigscreen #twitch-stream-wrap .twitch-overlay {
 	position: absolute;
 	z-index: 10;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay.to-botright{
+body#bigscreen #twitch-stream-wrap .twitch-overlay.to-botright {
 	height: 130px;
 	width: 50px;
 	right: 0px;
 	bottom: 29px;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay.to-botleft{
+body#bigscreen #twitch-stream-wrap .twitch-overlay.to-botleft {
 	height: 130px;
 	right: 123px;
 	left: 0px;
 	bottom: 29px;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay.to-main{
+body#bigscreen #twitch-stream-wrap .twitch-overlay.to-main {
 	left: 0px;
 	top: 0px;
 	bottom: 155px;
 	right: 0px;
 }
-body#bigscreen #twitch-stream-wrap .twitch-fsbtn{
+body#bigscreen #twitch-stream-wrap .twitch-fsbtn {
 	position: absolute;
 	z-index: 10;
 	right: 0px;
@@ -1031,7 +1049,7 @@ body#bigscreen #twitch-stream-wrap .twitch-fsbtn{
 }
 body#bigscreen #twitch-stream-wrap > div {
 	margin:0 0 0 400px;	
-	padding:10px 0 5px 10px;
+	padding:5px 0 5px 5px;
 	overflow: hidden;
 }
 body#bigscreen #twitch-stream-wrap .panelheader {
@@ -1057,13 +1075,13 @@ body#bigscreen #chat-panel {
 	min-height: 100%;
 }
 body#bigscreen #chat-panel > div {
-	margin:10px; 
+	margin:5px; 
 	background: white;
 	border-radius:4px;
 	overflow: hidden;
 }
 body#bigscreen #chat-panel iframe {
-	width:380px;
+	width:100%;
 	display: block;
 	background: black;
 }
@@ -1072,75 +1090,6 @@ body#bigscreen .container {
 	width: auto;
 	max-width: 100%;
 	min-width: 900px;
-}
-
-body#bigscreen #main-nav {
-	display: none;
-}
-body#bigscreen #header-band .nav-pills {
-	font-size:12px;
-}
-body#bigscreen #header-band .nav-pills>li>a {
-	color:#666;
-	background-color:rgba(255,255,255,0.05);
-	margin-left:10px;
-}
-body#bigscreen #header-band .nav-pills>.active>a,
-body#bigscreen #header-band .nav-pills>.active>a:hover,
-body#bigscreen #header-band .nav-pills>.active>a:focus{
-	color:#fafafa;
-	background-color:rgba(255,255,255,0.05);
-}
-body#bigscreen #header-band .nav-pills>li>a:hover,
-body#bigscreen #header-band .nav-pills>li>a:focus {
-	color:#fff;
-	background-color:rgba(255,255,255,0.1);
-}
-
-body#bigscreen #header-band .nav-pills li a {
-	padding: 0 5px;
-}
-body#bigscreen #header-band .nav-pills li {
-	float:left;
-}
-
-/**
- * Profile
- */
-body#profile .collapsible {
-	border-bottom: 1px solid #010101;
-}
-body#profile .collapsible > h3 {
-	margin-bottom: 0;
-	padding-bottom: 10px;
-	border-bottom: 1px solid #222;	
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-body#profile .collapsible > h3 > i {
-	margin-top: 8px;	
-	margin-left: 8px;	
-	opacity: 0.5;
-}
-body#profile .collapsible > h3:hover {
-	cursor: pointer;
-}
-body#profile .collapsible > h3:hover > i {
-	opacity: 1;	
-}
-body#profile .collapsible.active,
-body#profile .collapsible.active > h3 {
-	border-bottom: none;
-}
-body#profile .collapsible > .content {
-	display: none;
-}
-body#profile .collapsible.active > .content {
-	display: block;
 }
 
 /**
@@ -1201,4 +1150,19 @@ form label.error {
 	vertical-align: top;
 	padding: 0 5px;
 	border-radius: 0 4px 4px 0;
+}
+
+/**
+ * Administration
+ */
+@media (min-width: 1200px) {
+	body#admin .container {
+		width: auto;
+		margin-left: 20px;	
+		margin-right: 20px;	
+	}
+}
+
+body#admin #main-nav .container {
+	margin: 0;
 }

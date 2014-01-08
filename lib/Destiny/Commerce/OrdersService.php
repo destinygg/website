@@ -27,25 +27,18 @@ class OrdersService extends Service {
 	/**
 	 * Create a new order and item based on subscription
 	 *
-	 * @param array $subscription        	
+	 * @param array $subscriptionType        	
 	 * @param int $userId        	
 	 * @return array
 	 */
-	public function createSubscriptionOrder(array $subscription, $userId) {
+	public function createSubscriptionOrder(array $subscriptionType, $userId) {
 		$ordersService = OrdersService::instance ();
 		$order = array ();
 		$order ['userId'] = $userId;
-		$order ['description'] = $subscription ['tierItemLabel'];
-		$order ['amount'] = $subscription ['amount'];
+		$order ['description'] = $subscriptionType ['tierItemLabel'];
+		$order ['amount'] = $subscriptionType ['amount'];
 		$order ['currency'] = Config::$a ['commerce'] ['currency'];
 		$order ['orderId'] = $ordersService->addOrder ( $order );
-		$order ['items'] = array ();
-		$orderItem = array ();
-		$orderItem ['orderId'] = $order ['orderId'];
-		$orderItem ['itemSku'] = $subscription ['id'];
-		$orderItem ['itemPrice'] = $subscription ['amount'];
-		$order ['items'] [] = $orderItem;
-		$ordersService->addOrderItems ( $order ['items'] );
 		return $order;
 	}
 
@@ -113,26 +106,6 @@ class OrdersService extends Service {
 	}
 
 	/**
-	 * Get a list of order items
-	 *
-	 * @param int $orderId
-	 * @param int $limit
-	 * @param int $start
-	 */
-	public function getOrderItems($orderId, $limit = 10, $start = 0) {
-		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( '
-			SELECT * FROM dfl_orders_items WHERE orderId = :orderId
-			LIMIT :start,:limit
-		' );
-		$stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
-		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-		$stmt->execute ();
-		return $stmt->fetchAll ();
-	}
-
-	/**
 	 * Get a list of order items by the userId
 	 *
 	 * @param int $userId
@@ -178,22 +151,6 @@ class OrdersService extends Service {
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();
 		return $stmt->fetchAll ();
-	}
-
-	/**
-	 * Add a list of items to an order
-	 *
-	 * @param array $items
-	 */
-	public function addOrderItems(array $items) {
-		$conn = Application::instance ()->getConnection ();
-		foreach ( $items as $item ) {
-			$conn->insert ( 'dfl_orders_items', array (
-				'orderId' => $item ['orderId'],
-				'itemSku' => $item ['itemSku'],
-				'itemPrice' => $item ['itemPrice'] 
-			) );
-		}
 	}
 
 	/**
@@ -390,9 +347,7 @@ class OrdersService extends Service {
 	 * @param int $start
 	 */
 	public function getPaymentsByOrderId($orderId, $limit = 1, $start = 0, $order = 'ASC') {
-		if ($order != 'ASC' && $order != 'DESC') {
-			$order = 'ASC';
-		}
+		$order = ($order != 'ASC' && $order != 'DESC') ? 'ASC' : $order;
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT payments.* FROM dfl_orders_payments AS `payments`
@@ -452,15 +407,15 @@ class OrdersService extends Service {
 	/**
 	 * Update an existing payments status
 	 *
-	 * @param array $payment
+	 * @param number $paymentId
 	 * @param string $state
 	 */
-	public function updatePaymentStatus(array $payment, $state) {
+	public function updatePaymentStatus($paymentId, $state) {
 		$conn = Application::instance ()->getConnection ();
 		$conn->update ( 'dfl_orders_payments', array (
 			'paymentStatus' => $state 
 		), array (
-			'paymentId' => $payment ['paymentId'] 
+			'paymentId' => $paymentId 
 		) );
 	}
 
@@ -489,11 +444,11 @@ class OrdersService extends Service {
 	 * 
 	 * @param unknown $userId
 	 * @param array $order
-	 * @param array $subscription
+	 * @param array $subscriptionType
 	 * @param \DateTime $billingStartDate
 	 * @return array
 	 */
-	public function createPaymentProfile($userId, array $order, array $subscription, \DateTime $billingStartDate) {
+	public function createPaymentProfile($userId, array $order, array $subscriptionType, \DateTime $billingStartDate) {
 		$ordersService = OrdersService::instance ();
 		$paymentProfile = array ();
 		$paymentProfile ['paymentProfileId'] = '';
@@ -501,8 +456,8 @@ class OrdersService extends Service {
 		$paymentProfile ['orderId'] = $order ['orderId'];
 		$paymentProfile ['amount'] = $order ['amount'];
 		$paymentProfile ['currency'] = $order ['currency'];
-		$paymentProfile ['billingFrequency'] = $subscription ['billingFrequency'];
-		$paymentProfile ['billingPeriod'] = $subscription ['billingPeriod'];
+		$paymentProfile ['billingFrequency'] = $subscriptionType ['billingFrequency'];
+		$paymentProfile ['billingPeriod'] = $subscriptionType ['billingPeriod'];
 		$paymentProfile ['billingStartDate'] = $billingStartDate->format ( 'Y-m-d H:i:s' );
 		$paymentProfile ['billingNextDate'] = $billingStartDate->format ( 'Y-m-d H:i:s' );
 		$paymentProfile ['state'] = PaymentStatus::_NEW;

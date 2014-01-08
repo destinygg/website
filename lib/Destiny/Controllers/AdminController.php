@@ -50,7 +50,7 @@ class AdminController {
 		$model->game = $params ['game'];
 		$model->size = $params ['size'];
 		$model->page = $params ['page'];
-		return 'admin';
+		return 'admin/admin';
 	}
 
 	/**
@@ -79,7 +79,7 @@ class AdminController {
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
 	}
-
+	
 	/**
 	 * @Route ("/admin/subscribers")
 	 * @Secure ({"ADMIN"})
@@ -102,11 +102,8 @@ class AdminController {
 	 * @param array $params        	
 	 */
 	public function adminUserFind(array $params) {
-		$s = (isset ( $params ['username'] )) ? $params ['username'] : '';
-		if (! isset ( $params ['exact'] )) {
-			$s .= '%';
-		}
-		$users = UserService::instance ()->findUsersByUsername ( $s, 10 );
+		$s = (isset ( $params ['s'] )) ? '%' . $params ['s'] . '%' : '';
+		$users = UserService::instance ()->findUsers ( $s, 10 );
 		$response = new HttpEntity ( Http::STATUS_OK );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		$response->setBody ( json_encode ( $users ) );

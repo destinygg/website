@@ -32,13 +32,13 @@ use Destiny\Common\Config;
 			</div>
 			<div style="width: 100%;" class="clearfix stream">
 				<form class="onceoff" action="/subscription/create" method="post">
-					<input type="hidden" name="subscription" value="<?=$model->subscription['id']?>">
+					<input type="hidden" name="subscription" value="<?=$model->subscriptionType['id']?>">
 
 					<div class="subscriptions clearfix">
 						<div class="subscription-tier clearfix">
 							<div class="subscription" style="width: auto;">
-								<h2><?=$model->subscription['tierItemLabel']?></h2>
-								<div><span class="sub-amount">$<?=$model->subscription['amount']?></span> (<?=$model->subscription['billingFrequency']?> <?=strtolower($model->subscription['billingPeriod'])?>)</div>
+								<h2><?=$model->subscriptionType['tierItemLabel']?></h2>
+								<div><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</div>
 								<br />
 								<label class="checkbox">
 									<input type="checkbox" name="renew" value="1" checked="checked" /> Automatically renew this subscription

@@ -17,6 +17,10 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Api\ApiAuthenticationService;
 use Destiny\Common\Session;
+use Destiny\Commerce\SubscriptionsService;
+use Destiny\Common\Utils\FilterParams;
+use Destiny\Common\Config;
+use Destiny\Commerce\OrdersService;
 
 /**
  * @Controller
@@ -35,9 +39,9 @@ class UserAdminController {
 	 */
 	public function adminUserEdit(array $params, ViewModel $model) {
 		$model->title = 'User';
-		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new Exception ( 'userId required' );
-		}
+		
+		FilterParams::isRequired($params, 'id');
+		
 		$user = UserService::instance ()->getUserById ( $params ['id'] );
 		if (empty ( $user )) {
 			throw new Exception ( 'User was not found' );
@@ -47,9 +51,11 @@ class UserAdminController {
 		$userFeaturesService = UserFeaturesService::instance ();
 		$apiAuthenticationService = ApiAuthenticationService::instance ();
 		$chatlogService = ChatlogService::instance ();
+		$subscriptionsService = SubscriptionsService::instance();
 		
 		$user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = $userFeaturesService->getUserFeatures ( $user ['userId'] );
+		
 		$model->user = $user;
 		$model->features = $userFeaturesService->getDetailedFeatures ();
 		$ban = $userService->getUserActiveBan ( $user ['userId'] );
@@ -61,12 +67,12 @@ class UserAdminController {
 		$model->ban = $ban;
 		$model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
 		$model->address = $userService->getAddressByUserId ( $user ['userId'] );
-		
+		$model->subscriptions = $subscriptionsService->getUserSubscriptions($user ['userId']);
+
 		if (Session::get ( 'modelSuccess' )) {
 			$model->success = Session::get ( 'modelSuccess' );
 			Session::set ( 'modelSuccess' );
 		}
-		
 		return 'admin/user';
 	}
 	
@@ -83,9 +89,8 @@ class UserAdminController {
 	 */
 	public function adminUserEditProcess(array $params, ViewModel $model) {
 		$model->title = 'User';
-		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new Exception ( 'userId required' );
-		}
+		
+		FilterParams::isRequired($params, 'id');
 		
 		$authService = AuthenticationService::instance ();
 		$userService = UserService::instance ();
@@ -132,7 +137,107 @@ class UserAdminController {
 		$authService->flagUserForUpdate ( $user ['userId'] );
 		
 		Session::set ( 'modelSuccess', 'User profile updated' );
-		
 		return 'redirect: /admin/user/'.$user ['userId'].'/edit';
 	}
+	
+	/**
+	 * @Route ("/admin/user/{id}/subscription/add")
+	 * @Secure ({"ADMIN"})
+	 * @HttpMethod ({"GET"})
+	 *
+	 * @param array $params        	
+	 * @param ViewModel $model        	
+	 * @throws Exception
+	 * @return string
+	 */
+	public function subscriptionAdd(array $params, ViewModel $model) {
+		FilterParams::isRequired ( $params, 'id');
+		
+		$userService = UserService::instance ();
+
+		$model->user = $userService->getUserById ( $params ['id'] );
+		$model->subscription = array ();
+		return "admin/subscription";
+	}
+	
+	/**
+	 * @Route ("/admin/user/{id}/subscription/{subscriptionId}/edit")
+	 * @Secure ({"ADMIN"})
+	 * @HttpMethod ({"GET"})
+	 *
+	 * @param array $params        	
+	 * @param ViewModel $model        	
+	 * @throws Exception
+	 * @return string
+	 */
+	public function subscriptionEdit(array $params, ViewModel $model) {
+		FilterParams::isRequired ( $params, 'id' );
+		FilterParams::isRequired ( $params, 'subscriptionId' );
+		
+		$subscriptionsService = SubscriptionsService::instance ();
+		$userService = UserService::instance ();
+		$ordersService = OrdersService::instance();
+		
+		$subscription = array ();
+		$payments = array ();
+		$order = array ();
+		
+		if (! empty ( $params ['subscriptionId'] )) {
+			$subscription = $subscriptionsService->getSubscriptionById ( $params ['subscriptionId'] );
+			$order = $ordersService->getOrderById ( $subscription ['orderId'] );
+			$payments = $ordersService->getPaymentsByOrderId ( $subscription ['orderId'] );
+		}
+		
+		if (Session::get ( 'modelSuccess' )) {
+			$model->success = Session::get ( 'modelSuccess' );
+			Session::set ( 'modelSuccess' );
+		}
+		
+		$model->user = $userService->getUserById ( $params ['id'] );
+		$model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
+		$model->subscription = $subscription;
+		$model->order = $order;
+		$model->payments = $payments;
+		return "admin/subscription";
+	}
+	
+	/**
+	 * @Route ("/admin/user/{id}/subscription/{subscriptionId}/save")
+	 * @Route ("/admin/user/{id}/subscription/save")
+	 * @Secure ({"ADMIN"})
+	 * @HttpMethod ({"POST"})
+	 *
+	 * @param array $params        	
+	 * @param ViewModel $model        	
+	 * @throws Exception
+	 * @return string
+	 */
+	public function subscriptionSave(array $params, ViewModel $model) {
+		FilterParams::isRequired ( $params, 'subscriptionType' );
+		FilterParams::isRequired ( $params, 'status' );
+		FilterParams::isRequired ( $params, 'createdDate' );
+		FilterParams::isRequired ( $params, 'endDate' );
+		
+		$subscriptionsService = SubscriptionsService::instance ();
+		
+		$subscription = array ();
+		$subscription ['subscriptionType'] = $params ['subscriptionType'];
+		$subscription ['status'] = $params ['status'];
+		$subscription ['createdDate'] = $params ['createdDate'];
+		$subscription ['endDate'] = $params ['endDate'];
+		$subscription ['userId'] = $params ['id'];
+		$subscription ['subscriptionSource'] = (isset ( $params ['subscriptionSource'] ) && ! empty ( $params ['subscriptionSource'] )) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
+		
+		if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {
+			$subscription ['subscriptionId'] = $params ['subscriptionId'];
+			$subscriptionsService->updateSubscription ( $subscription );
+		} else {
+			$subscriptionsService->addSubscription ( $subscription );
+		}
+		
+		Session::set ( 'modelSuccess', 'Subscription updated' );
+		
+		return 'redirect: /admin/user/'. urlencode($params['id']) .'/subscription/'. urlencode($params['subscriptionId']) .'/edit';
+	}
+
 }

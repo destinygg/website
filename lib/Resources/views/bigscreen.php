@@ -2,9 +2,7 @@
 namespace Destiny;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
-use Destiny\Common\User\UserRole;
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,28 +13,11 @@ use Destiny\Common\User\UserRole;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="bigscreen">
-	<div class="page-wrap">
-	
-		<section id="header-band">
-			<div class="container" style="position: relative;">
-				<header class="hero-unit" id="overview">
-					<h1><?=Config::$a['meta']['title']?></h1>
-					<div id="destiny-illustration"></div>
-					<div style="top:25px; right:0; width:400px; position: absolute;">
-						<ul class="nav nav-pills">
-							<?php if(!Session::hasRole(UserRole::USER)): ?>
-							<li><a href="/login"><i class="icon-heart icon-white subtle"></i> Register</a></li>
-							<?php elseif(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
-							<li><a href="/subscribe"><i class="icon-heart icon-white subtle"></i> Subscribe</a></li>
-							<?php endif; ?>
-							<li><a href="/"><i class="icon-home icon-white subtle"></i> Home</a></li>
-						</ul>
-					</div>
-				</header>
-			</div>
-		</section>
+<body id="bigscreen" class="thin">
+	<div class="page-wrap clearfix">
 		
+		<?php include Tpl::file('seg/top.php') ?>
+	
 		<div class="page-content container clearfix">		
 			<div id="twitch-stream-wrap" class="pull-left">
 				<div>
@@ -79,7 +60,6 @@ use Destiny\Common\User\UserRole;
 	
 	</div>
 	
-	<?php include Tpl::file('seg/foot.php') ?>
 	<?php include Tpl::file('seg/commonbottom.php') ?>
 	
 </body>

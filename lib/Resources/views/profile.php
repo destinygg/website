@@ -4,6 +4,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
+use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
 <html>
@@ -60,6 +61,7 @@ use Destiny\Common\Config;
 				
 					<div><?=$model->subscriptionType['tierItemLabel']?></div>
 					<div><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</div>
+					<div><span class="label label-success">Recurring</span></div>
 
 					<?php if($model->subscription['recurring'] == 0): ?>
 					<br />
@@ -69,7 +71,7 @@ use Destiny\Common\Config;
 					</dl> 
 					<?php endif; ?>
 					
-					<?if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0):?>
+					<?php if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0): ?>
 					<dl>
 						<dt>Time remaining until renewal</dt>
 						<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
@@ -86,6 +88,17 @@ use Destiny\Common\Config;
 						<dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
 						<?php endif; ?>
 					</dl>
+					<?php endif; ?>
+					
+					<?php if(strcasecmp($model->subscription['status'], SubscriptionStatus::PENDING)===0): ?>
+					<dl>
+						<dt>This subscription is currently</dt>
+						<dd><span class="label label-warning"><?=Tpl::out(strtoupper($model->subscription['status']))?></span></dd>
+					</dl> 
+					<?php endif; ?>
+					
+					<?php if($model->subscription['recurring'] == 1): ?>
+					<p><span class="label label-warning">NOTE</span> if you want to cancel the automatic renewal, <a href="/subscribe">update</a> your subscription do not cancel it.</p>
 					<?php endif; ?>
 					
 				</div>

@@ -178,19 +178,25 @@ $(function(){
 	
 	// Bigscreen
 	$('body#bigscreen').each(function(){
-		var offset = 81, pc = $('.page-content');
+		
+		var pc     = $('.page-content'),
+			offset = $('#header-band').outerHeight();
+		
 		var _resize = function(){
-			var bh = $('body').height(); 
-			pc.height( ((bh < 550) ? 550:bh) - offset );
-			pc.find('#chat-panel .twitch-element').height( pc.height()-20 );
+			var bodyHeight = $('body').height(),
+				pcHeight   = ((bodyHeight < 550) ? 550:bodyHeight) - offset; 
+			pc.height( pcHeight );
+			pc.find('#chat-panel .twitch-element').height( pcHeight - 10 );
 			if (document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen){
 				pc.find('#twitch-stream-wrap .twitch-element').height("100%");
 			} else {
-				pc.find('#twitch-stream-wrap .twitch-element').height( pc.height() - 20 - 30 );
+				pc.find('#twitch-stream-wrap .twitch-element').height( pcHeight - 10 - 30 );
 			}
 		};
+		
 		$(window).on('resize', _resize);
 		_resize();
+		
 		new DestinyFeedConsumer({
 			url: destiny.baseUrl + 'stream.json',
 			polling: 30,
@@ -210,6 +216,7 @@ $(function(){
 				}
 			}
 		});
+		
 	});
 	
 	// refresh-form captcha

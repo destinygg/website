@@ -99,10 +99,10 @@ class PayPalApiService extends Service {
 	 *
 	 * @param array $order        	
 	 * @param string $token        	
-	 * @param array $subscription        	
+	 * @param array $subscriptionType        	
 	 * @return \PayPalAPI\CreateRecurringPaymentsProfileResponseType
 	 */
-	public function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscription) {
+	public function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscriptionType) {
 		$billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
 		
 		$RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
@@ -116,7 +116,7 @@ class PayPalApiService extends Service {
 		$paymentBillingPeriod->Amount = new BasicAmountType ( $paymentProfile ['currency'], $paymentProfile ['amount'] );
 		
 		$scheduleDetails = new ScheduleDetailsType ();
-		$scheduleDetails->Description = $subscription ['agreement'];
+		$scheduleDetails->Description = $subscriptionType ['agreement'];
 		$scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
 		
 		$createRPProfileRequestDetail = new CreateRecurringPaymentsProfileRequestDetailsType ();
@@ -137,10 +137,9 @@ class PayPalApiService extends Service {
 	 * Execute the setExpressCheckout process, forwards to paypal
 	 *
 	 * @param string $responseUrl        	
-	 * @param array $subscription        	
-	 * @param array $paymentProfile        	
+	 * @param array $subscriptionType        	
 	 */
-	public function getNoPaymentECResponse($responseUrl, array $order, array $subscription, array $paymentProfile) {
+	public function getNoPaymentECResponse($responseUrl, array $order, array $subscriptionType) {
 		$returnUrl = Http::getBaseUrl () . $responseUrl .'?success=true&orderId=' . urlencode ( $order ['orderId'] );
 		$cancelUrl = Http::getBaseUrl () . $responseUrl .'?success=false&orderId=' . urlencode ( $order ['orderId'] );
 		
@@ -154,14 +153,15 @@ class PayPalApiService extends Service {
 		
 		// Create billing agreement for recurring payment
 		$billingAgreementDetails = new BillingAgreementDetailsType ( 'RecurringPayments' );
-		$billingAgreementDetails->BillingAgreementDescription = $subscription ['agreement'];
+		$billingAgreementDetails->BillingAgreementDescription = $subscriptionType ['agreement'];
 		$setECReqDetails->BillingAgreementDetails [0] = $billingAgreementDetails;
 		
 		$paymentDetails = new PaymentDetailsType ();
 		$paymentDetails->PaymentAction = 'Sale';
 		$paymentDetails->NotifyURL = Config::$a ['paypal'] ['api'] ['ipn'];
-		$paymentDetails->OrderTotal = new BasicAmountType ( $paymentProfile ['currency'], $paymentProfile ['amount'] );
-		$paymentDetails->ItemTotal = new BasicAmountType ( $paymentProfile ['currency'], $paymentProfile ['amount'] );
+		
+		$paymentDetails->OrderTotal = new BasicAmountType ( $order ['currency'], $order ['amount'] );
+		$paymentDetails->ItemTotal = new BasicAmountType ( $order ['currency'], $order ['amount'] );
 		$paymentDetails->Recurring = 0;
 		$setECReqDetails->PaymentDetails [0] = $paymentDetails;
 		
@@ -183,9 +183,9 @@ class PayPalApiService extends Service {
 	 *
 	 * @param array $order        	
 	 * @param array $subscription        	
-	 * @param array $paymentProfile        	
+	 * @param bool $recurring        	
 	 */
-	public function createECResponse($responseUrl, array $order, array $subscription, array $paymentProfile = null) {
+	public function createECResponse($responseUrl, array $order, array $subscriptionType, $recurring = false) {
 		// @todo should pass these urls in
 		$returnUrl = Http::getBaseUrl () . $responseUrl .'?success=true&orderId=' . urlencode ( $order ['orderId'] );
 		$cancelUrl = Http::getBaseUrl () . $responseUrl .'?success=false&orderId=' . urlencode ( $order ['orderId'] );
@@ -198,10 +198,10 @@ class PayPalApiService extends Service {
 		$setECReqDetails->CancelURL = $cancelUrl;
 		$setECReqDetails->SolutionType = 'Sole';
 		
-		if (! empty ( $paymentProfile )) {
+		if ($recurring) {
 			// Create billing agreement for recurring payment
 			$billingAgreementDetails = new BillingAgreementDetailsType ( 'RecurringPayments' );
-			$billingAgreementDetails->BillingAgreementDescription = $subscription ['agreement'];
+			$billingAgreementDetails->BillingAgreementDescription = $subscriptionType ['agreement'];
 			$setECReqDetails->BillingAgreementDetails [0] = $billingAgreementDetails;
 		}
 		
@@ -212,12 +212,12 @@ class PayPalApiService extends Service {
 		$paymentDetails->ItemTotal = new BasicAmountType ( $order ['currency'], $order ['amount'] );
 		$paymentDetails->Recurring = 0;
 		$itemDetails = new PaymentDetailsItemType ();
-		$itemDetails->Name = $subscription ['itemLabel'];
+		$itemDetails->Name = $subscriptionType ['itemLabel'];
 		$itemDetails->Amount = new BasicAmountType ( $order ['currency'], $order ['amount'] );
 		$itemDetails->Quantity = 1;
 		// TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
 		$itemDetails->ItemCategory = 'Physical';
-		$itemDetails->Number = $subscription ['id'];
+		$itemDetails->Number = $subscriptionType ['id'];
 		$paymentDetails->PaymentDetailsItem [0] = $itemDetails;
 		$setECReqDetails->PaymentDetails [0] = $paymentDetails;
 		

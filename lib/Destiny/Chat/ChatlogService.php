@@ -3,7 +3,7 @@ namespace Destiny\Chat;
 
 use Destiny\Common\Service;
 use Destiny\Common\Application;
-use Destiny\Common\Utils\Date;
+use Destiny\Commerce\SubscriptionStatus;
 
 class ChatlogService extends Service {
 	
@@ -52,7 +52,7 @@ class ChatlogService extends Service {
 				chatlog AS l
 				LEFT JOIN dfl_users AS u ON u.userId = l.userid
 				LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
-				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = u.userId AND subs.status = \'Active\') 
+				LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = u.userId AND subs.status = :status) 
 			WHERE
 				l.event NOT IN("JOIN", "QUIT")
 			ORDER BY l.id DESC
@@ -60,6 +60,7 @@ class ChatlogService extends Service {
 		' );
 		
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_INT );
 		$stmt->execute ();
 		return $stmt->fetchAll ();
 	}
@@ -96,30 +97,6 @@ class ChatlogService extends Service {
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();
 		return $stmt->fetchAll ();
-	}
-
-	/**
-	 * Insert a new chat event record
-	 *
-	 * @param int $userid        	
-	 * @param string $message        	
-	 * @param string $event        	
-	 * @return string
-	 */
-	public function addChatEvent($userid, $message, $event) {
-		$conn = Application::instance ()->getConnection ();
-		$conn->insert ( 'chatlog', array (
-				'userid' => $userid,
-				'event' => $event,
-				'data' => $message,
-				'timestamp' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
-		), array (
-				\PDO::PARAM_INT,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR 
-		) );
-		return $conn->lastInsertId ();
 	}
 
 }

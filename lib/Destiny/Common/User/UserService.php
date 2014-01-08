@@ -339,6 +339,28 @@ class UserService extends Service {
 		$stmt->execute ();
 		return $stmt->fetchAll ();
 	}
+	
+	/**
+	 * Find a user by search string
+	 *
+	 * @param string $string        	
+	 * @param number $limit        	
+	 * @param number $start        	
+	 */
+	public function findUsers($string, $limit = 10, $start = 0) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT u.userId,u.username,u.email FROM dfl_users AS u 
+			WHERE u.username LIKE :string OR email LIKE :string
+			ORDER BY u.username DESC
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'string', $string, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetchAll ();
+	}
 
 	/**
 	 * List users

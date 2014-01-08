@@ -88,7 +88,7 @@ class IpnController {
 					}
 					
 					// Update the payment status
-					$orderService->updatePaymentStatus ( $payment, $data ['payment_status'] );
+					$orderService->updatePaymentStatus ( $payment ['paymentId'], $data ['payment_status'] );
 					$log->notice ( sprintf ( 'Updated payment status %s status %s', $data ['txn_id'], $data ['payment_status'] ) );
 					
 					// If the payment status WAS PENDING, and the IPN payment status is COMPLETED
