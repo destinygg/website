@@ -178,19 +178,23 @@ $(function(){
 	
 	// Bigscreen
 	$('body#bigscreen').each(function(){
-		
-		var pc     = $('.page-content'),
-			offset = $('#header-band').outerHeight();
-		
+		var offset = $('#main-nav').outerHeight();
 		var _resize = function(){
-			var bodyHeight = $('body').height(),
-				pcHeight   = ((bodyHeight < 550) ? 550:bodyHeight) - offset; 
-			pc.height( pcHeight );
-			pc.find('#chat-panel .twitch-element').height( pcHeight - 10 );
+			var bodyHeight    = $('body').height(),
+				offset        = $('#main-nav').outerHeight(),
+				contentUi     = $('#page-content'), 
+				chatUi        = $('#chat-panel .twitch-element'),
+				streamPlayer  = $('#stream-panel .twitch-element'),
+				streamHeader  = $('#stream-panel .panelheader');
+			
+			// If we are in fullscreen mode
 			if (document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen){
-				pc.find('#twitch-stream-wrap .twitch-element').height("100%");
-			} else {
-				pc.find('#twitch-stream-wrap .twitch-element').height( pcHeight - 10 - 30 );
+				streamPlayer.height("100%");
+			}else{
+				var offsetHeight = bodyHeight - 10;
+				contentUi.height(offsetHeight - offset);
+				chatUi.height(offsetHeight - offset);
+				streamPlayer.height(offsetHeight - (offset + streamHeader.height()));
 			}
 		};
 		
@@ -200,11 +204,11 @@ $(function(){
 		new DestinyFeedConsumer({
 			url: destiny.baseUrl + 'stream.json',
 			polling: 30,
-			ui: '#twitch-stream-wrap .panelheader .game',
+			ui: '#stream-panel .panelheader .game',
 			ifModified: true,
 			success: function(data, textStatus){
 				if(textStatus == 'notmodified') return;
-				var ui = $('#twitch-stream-wrap .panelheader .game');
+				var ui = $('#stream-panel .panelheader .game');
 				if(data != null && data.stream != null){
 					ui.html( '<i class="icon-time icon-white subtle"></i> <span>Started '+ moment(data.stream.channel.updated_at).fromNow() +'</span>' + ((data.stream.channel.delay > 0) ? ' - ' + parseInt((data.stream.channel.delay/60)) + 'm delay':'')).show();
 					return;

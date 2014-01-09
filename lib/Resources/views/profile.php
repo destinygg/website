@@ -17,6 +17,7 @@ use Destiny\Commerce\SubscriptionStatus;
 <body id="profile">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 		<div class="navbar navbar-inverse navbar-subnav">
@@ -61,8 +62,10 @@ use Destiny\Commerce\SubscriptionStatus;
 				
 					<div><?=$model->subscriptionType['tierItemLabel']?></div>
 					<div><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</div>
+					<?php if($model->subscription['recurring'] == 1): ?>
 					<div><span class="label label-success">Recurring</span></div>
-
+					<?php endif; ?>
+					
 					<?php if($model->subscription['recurring'] == 0): ?>
 					<br />
 					<dl>

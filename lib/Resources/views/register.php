@@ -14,6 +14,7 @@ use Destiny\Common\Utils\Country;
 <body id="register">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 	

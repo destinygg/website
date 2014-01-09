@@ -12,6 +12,7 @@ use Destiny\Common\Utils\Tpl;
 </head>
 <body id="login">
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 	

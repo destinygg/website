@@ -17,6 +17,7 @@ use Destiny\Common\Config;
 </head>
 <body id="home">
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	<?php include Tpl::file('seg/panel.twitch.php') ?>
 	<?php include Tpl::file('seg/panel.videos.php') ?>
 	<?php include Tpl::file('seg/panel.music.php') ?>

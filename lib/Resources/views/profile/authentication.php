@@ -14,6 +14,7 @@ use Destiny\Common\Config;
 <body id="authentication" class="profile">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 		<div class="navbar navbar-inverse navbar-subnav">

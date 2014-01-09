@@ -124,7 +124,10 @@ class IpnController {
 				}
 				
 				$paymentProfile = $this->getPaymentProfile ( $data );
-				$subscription = $subService->getUserActiveSubscription ( $paymentProfile ['userId'] );
+				
+				// We dont care about what state the sub is in.... 
+				$subscription = $subService->getUserSubscription ( $paymentProfile ['userId'] );
+				
 				if (empty ( $subscription )) {
 					throw new Exception ( 'Invalid subscription for recurring payment' );
 				}

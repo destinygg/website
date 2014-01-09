@@ -13,6 +13,7 @@ use Destiny\Common\Utils\Tpl;
 <body id="subscribe">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 		<div class="row">

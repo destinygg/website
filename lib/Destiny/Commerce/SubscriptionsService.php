@@ -78,6 +78,22 @@ class SubscriptionsService extends Service {
 	}
 
 	/**
+	 * Get the first subscription
+	 * Note: This does not take into account end date.
+	 * It relies on the subscription status Active
+	 *
+	 * @param int $userId
+	 * @return array
+	 */
+	public function getUserSubscription($userId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId ORDER BY createdDate DESC LIMIT 0,1' );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->execute ();
+		return $stmt->fetch ();
+	}
+
+	/**
 	 * Get the first active subscription
 	 * Note: This does not take into account end date.
 	 * It relies on the subscription status Active

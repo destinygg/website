@@ -96,6 +96,12 @@ input[disabled] {
 
 .navbar {
 	box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+	margin: 0;
+}
+@media (min-width: 1200px) {
+	.navbar .container {
+		width: 1170px;
+	}
 }
 
 .form-actions {
@@ -153,7 +159,7 @@ body#home #top-left-nav li.home a:hover {
 	overflow: hidden;
 	border-bottom: 1px solid #191919;
 	background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x -400px -50px;
-	padding: 40px 0 0 0;
+	padding: 0;
 	margin: 0;
 }
 #overview,
@@ -256,6 +262,9 @@ body.thin #header-band #top-navigation {
 #main-nav .admin > a:hover > span {
 	color: #fafafa;	
 	background-color: #f00;	
+}
+#main-nav .brand {
+	display: none;
 }
 
 .content-dark {
@@ -996,48 +1005,40 @@ table.grid .rank {
 /**
  *  Bigscreen page
  */
-body#bigscreen .page-wrap {
-	height: auto !important;
-	min-height: 100%;
-	position: relative;
-}
-body#bigscreen .page-content {
-	height:100%;
-}
-body#bigscreen #twitch-stream-wrap {
+body#bigscreen #stream-panel {
 	width:100%; 
 	margin-left:-400px; 
 	height: auto; 
 	min-height: 100%;
 }
-body#bigscreen #twitch-stream-wrap .twitch-element-wrap {
+body#bigscreen #stream-panel .twitch-element-wrap {
 	position: relative;
 	width: 100%;
 	height: 100%;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay {
+body#bigscreen #stream-panel .twitch-overlay {
 	position: absolute;
 	z-index: 10;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay.to-botright {
+body#bigscreen #stream-panel .twitch-overlay.to-botright {
 	height: 130px;
 	width: 50px;
 	right: 0px;
 	bottom: 29px;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay.to-botleft {
+body#bigscreen #stream-panel .twitch-overlay.to-botleft {
 	height: 130px;
 	right: 123px;
 	left: 0px;
 	bottom: 29px;
 }
-body#bigscreen #twitch-stream-wrap .twitch-overlay.to-main {
+body#bigscreen #stream-panel .twitch-overlay.to-main {
 	left: 0px;
 	top: 0px;
 	bottom: 155px;
 	right: 0px;
 }
-body#bigscreen #twitch-stream-wrap .twitch-fsbtn {
+body#bigscreen #stream-panel .twitch-fsbtn {
 	position: absolute;
 	z-index: 10;
 	right: 0px;
@@ -1047,12 +1048,12 @@ body#bigscreen #twitch-stream-wrap .twitch-fsbtn {
 	background: transparent;
 	cursor: pointer;
 }
-body#bigscreen #twitch-stream-wrap > div {
+body#bigscreen #stream-panel > div {
 	margin:0 0 0 400px;	
 	padding:5px 0 5px 5px;
 	overflow: hidden;
 }
-body#bigscreen #twitch-stream-wrap .panelheader {
+body#bigscreen #stream-panel .panelheader {
 	border-top-left-radius:4px;	
 	border-top-right-radius:4px;
 	background: rgba(0,0,0,0.5);
@@ -1060,7 +1061,7 @@ body#bigscreen #twitch-stream-wrap .panelheader {
 	padding:0 15px;
 	z-index: 6;
 }
-body#bigscreen #twitch-stream-wrap .panelheader .channel-stat {
+body#bigscreen #stream-panel .panelheader .channel-stat {
 	width:50%;
 	white-space: nowrap;
 	overflow: hidden;
@@ -1090,6 +1091,12 @@ body#bigscreen .container {
 	width: auto;
 	max-width: 100%;
 	min-width: 900px;
+}
+body#bigscreen #main-nav .brand {
+	text-indent: -999em;
+	background: url("../img/destinygg.small.png") no-repeat center center;
+	display: block;
+	width: 224px;
 }
 
 /**
@@ -1165,4 +1172,15 @@ form label.error {
 
 body#admin #main-nav .container {
 	margin: 0;
+}
+
+
+/**
+ * Profile/Games
+ */
+body#games .games {
+	padding: 15px;
+}
+body#games .game.active label {
+	color: white;
 }

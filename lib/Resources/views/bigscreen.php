@@ -13,13 +13,13 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="bigscreen" class="thin">
+<body id="bigscreen" class="thin" style="overflow: hidden;">
 	<div class="page-wrap clearfix">
 		
 		<?php include Tpl::file('seg/top.php') ?>
 	
-		<div class="page-content container clearfix">		
-			<div id="twitch-stream-wrap" class="pull-left">
+		<div id="page-content" class="container clearfix">
+			<div id="stream-panel" class="pull-left">
 				<div>
 					<div class="panelheader clearfix">
 						<div class="toolgroup clearfix">

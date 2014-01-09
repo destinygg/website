@@ -2,12 +2,12 @@
 namespace Destiny; 
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Session; 
-use Destiny\Common\Config;
 ?>
-<div id="main-nav" class="navbar navbar-inverse navbar-fixed-top">
+<div id="main-nav" class="navbar navbar-inverse ">
 	<div class="navbar-inner">
 		<div class="container">
 			<div class="nav-collapse collapse">
+				<a class="brand pull-left">Destiny.gg</a>
 				<ul id="top-left-nav" class="nav">
 					<li class="home"><a title="Home Page" href="/"><i class="icon-home icon-white subtle"></i></a></li>
 					<li><a title="Blog @ destiny.gg" href="http://blog.destiny.gg">Blog</a></li>
@@ -38,12 +38,3 @@ use Destiny\Common\Config;
 		</div>
 	</div>
 </div>
-
-<section id="header-band">
-	<div class="container">
-		<header class="hero-unit" id="overview">
-			<h1><?=Config::$a['meta']['title']?></h1>
-			<div id="destiny-illustration"></div>
-		</header>
-	</div>
-</section>

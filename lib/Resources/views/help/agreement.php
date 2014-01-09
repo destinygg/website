@@ -15,6 +15,7 @@ use Destiny\Common\Utils\Tpl;
 <body id="agreement">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 		<h1 class="title">

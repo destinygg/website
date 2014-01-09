@@ -8,18 +8,11 @@ use Destiny\Common\Utils\Tpl;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
-<style>
-.games {
-	padding: 15px;
-}
-.game.active label {
-	color: white;
-}
-</style>
 </head>
-<body id="authentication" class="profile">
+<body id="games" class="profile">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 		<div class="navbar navbar-inverse navbar-subnav">

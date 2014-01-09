@@ -14,6 +14,7 @@ use Destiny\Common\Config;
 <body id="orderconfirm">
 
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 	
 	<section class="container">
 		<h1 class="title">
