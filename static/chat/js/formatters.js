@@ -8,7 +8,7 @@
 		return this;
 	}
 	destiny.fn.GreenTextFormatter.prototype.format = function(str, user){
-		var loc = str.indexOf(">") // cheap
+		var loc = str.indexOf("&gt;") // cheap
 		if(loc != -1 && loc == 0){
 			// without a css class
 			str = '<span style="color:#789922">'+str+'</span>';
