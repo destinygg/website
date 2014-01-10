@@ -58,6 +58,7 @@
 			// Message formatters
 			this.formatters.push(new destiny.fn.EmoteFormatter(this));
 			this.formatters.push(new destiny.fn.UrlFormatter(this));
+			this.formatters.push(new destiny.fn.GreenTextFormatter(this));
 			
 			// Input history
 			this.currenthistoryline = -1;
