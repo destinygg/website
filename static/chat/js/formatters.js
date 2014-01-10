@@ -3,6 +3,22 @@
 	// Chat message formatters
 	// must have two methods, a constructor and a .format(message, user) method
 	
+	// Green Text formatter
+	destiny.fn.GreenTextFormatter = function(chat){
+		return this;
+	}
+	destiny.fn.GreenTextFormatter.prototype.format = function(str, user){
+		var loc = str.indexOf(">") // cheap
+		if(loc != -1 && loc == 0){
+			// without a css class
+			str = '<span style="color:#789922">'+str+'</span>';
+			// with a css class
+			//str = '<span class="greentext">'+str+'</span>';
+			console.log("formatting greentext")
+		}
+		return str;
+	}
+	
 	// Emote line formatter
 	destiny.fn.EmoteFormatter = function(chat){
 		this.emoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+')($|\\s)');
