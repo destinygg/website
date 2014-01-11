@@ -644,3 +644,10 @@
 .chat a.admin:hover {
 	color: #FF0000;
 }
+
+/**
+ * Greentext
+ */
+.chat .greentext {
+	color:#789922;
+}
