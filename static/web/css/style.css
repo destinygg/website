@@ -107,7 +107,8 @@ input[disabled] {
 .form-actions {
 	border-top-color: #222;
 	background: rgba(255, 255, 255, 0.05);
-	border-radius: 6px;
+	border-radius:0 0 4px 4px;
+	margin-bottom:0;	
 }
 
 .loading {
@@ -129,7 +130,7 @@ input[disabled] {
 	padding-left:0;
 }
 .navbar-subnav .navbar-inner ul > li:first-child a {
-	border-radius:4px 0 0 4px;
+	border-radius: 4px 0 0 4px;
 }
 
 body#home #top-left-nav li.home {
@@ -656,7 +657,8 @@ i.icon-reddit {
 	right: 0;
 }
 
-.public-ads,.donate-block {
+.public-ads,
+.donate-block {
 	height: 250px;
 	float: left;
 	margin-left: 20px;
@@ -788,8 +790,8 @@ hr {
 	color: #666;
 }
 .subfeature-options {
-	margin-top:1em;
-	border-radius:8px;
+	margin-top: 1em;
+	border-radius: 8px;
 	box-shadow: 1px 1px 5px rgba(0,0,0,0.25);
 }
 .subfeature-t1 {
@@ -1010,6 +1012,7 @@ body#bigscreen #stream-panel {
 	margin-left:-400px; 
 	height: auto; 
 	min-height: 100%;
+	position: relative;
 }
 body#bigscreen #stream-panel .twitch-element-wrap {
 	position: relative;
@@ -1076,10 +1079,8 @@ body#bigscreen #chat-panel {
 	min-height: 100%;
 }
 body#bigscreen #chat-panel > div {
-	margin:5px; 
-	background: white;
-	border-radius:4px;
 	overflow: hidden;
+	margin: 5px;	
 }
 body#bigscreen #chat-panel iframe {
 	width:100%;
@@ -1092,6 +1093,8 @@ body#bigscreen .container {
 	max-width: 100%;
 	min-width: 900px;
 }
+
+body#admin #main-nav .brand,
 body#bigscreen #main-nav .brand {
 	text-indent: -999em;
 	background: url("../img/destinygg.small.png") no-repeat center center;
@@ -1182,5 +1185,42 @@ body#games .games {
 	padding: 15px;
 }
 body#games .game.active label {
+	color: white;
+}
+
+/**
+ * Emoticons
+ */
+body#emoticons .content {
+	background-color: #080808;
+}
+body#emoticons .emoticons {
+	margin: 30px 0;
+}
+body#emoticons .emote {
+	height: 85px;
+	width: 20%;
+	float: left;
+}
+body#emoticons .emote > div {
+	margin: 10px;
+}
+body#emoticons .chat-emote {
+	top: auto;
+	position: static;
+	display: block;
+	margin: 0 auto !important;
+}
+body#emoticons .emote-label {
+	font-size: 12px;
+	text-align: center;
+	color: rgba(255,255,255,0.7);
+	text-overflow: ellipsis;
+	overflow: hidden;
+	margin-top: 5px;
+	line-height: 30px;
+	display: block;
+}
+body#emoticons .emote-label:hover {
 	color: white;
 }

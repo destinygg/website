@@ -80,7 +80,7 @@ use Destiny\Common\Utils\Country;
 							<span class="help-block">(this should only be used if you are on a private computer)</span>
 						</div>
 					</div>
-					<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
+					<div class="form-actions">
 						<button type="submit" class="btn btn-primary btn-large">Continue</button>
 						<a href="/login" class="btn btn-large">Cancel</a>
 					</div>

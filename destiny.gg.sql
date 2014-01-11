@@ -65,15 +65,6 @@ CREATE TABLE `dfl_orders_ipn` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-/*Table structure for table `dfl_orders_items` */
-
-CREATE TABLE `dfl_orders_items` (
-  `orderId` int(11) NOT NULL,
-  `itemSku` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `itemPrice` float NOT NULL,
-  KEY `orderId` (`orderId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 /*Table structure for table `dfl_orders_payment_profiles` */
 
 CREATE TABLE `dfl_orders_payment_profiles` (
@@ -212,6 +203,7 @@ CREATE TABLE `dfl_users_subscriptions` (
   `endDate` DATETIME DEFAULT NULL,
   `status` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `recurring` TINYINT(4) DEFAULT NULL,
+  `orderId` INT(14) DEFAULT NULL,
   `paymentProfileId` INT(14) DEFAULT NULL,
   PRIMARY KEY (`subscriptionId`),
   KEY `userId` (`userId`),

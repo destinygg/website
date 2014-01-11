@@ -84,7 +84,7 @@ use Destiny\Commerce\SubscriptionStatus;
 					</div>
 					
 					
-					<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
+					<div class="form-actions">
 						<button type="submit" class="btn btn-primary">Update</button>
 						<a href="/admin" class="btn">Cancel</a>
 					</div>
@@ -181,7 +181,7 @@ use Destiny\Commerce\SubscriptionStatus;
 				<?php if(empty($model->ban)): ?>
 				
 				<div class="control-group">No active bans found</div>
-				<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
+				<div class="form-actions">
 					<a href="/admin/user/<?=$model->user['userId']?>/ban" class="btn btn-danger">Ban user</a>
 				</div>
 				
@@ -219,7 +219,7 @@ use Destiny\Commerce\SubscriptionStatus;
 				</div>
 				<?php endif; ?>
 				
-				<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
+				<div class="form-actions">
 					<a href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/edit" class="btn btn-primary">Edit ban</a>
 					<a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/remove" class="btn btn-danger">Remove ban</a>
 				</div>

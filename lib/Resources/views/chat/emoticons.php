@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
@@ -12,44 +12,11 @@ use Destiny\Common\Utils\Tpl;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 <link href="<?=Config::cdnv()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
-<style>
-.content {
-	background-color: #080808;
-}
-.emoticons {
-	margin: 30px 0;
-}
-.emote {
-	height: 85px;
-	width: 20%;
-	float: left;
-}
-.emote > div {
-	margin: 10px;
-}
-.chat-emote {
-	top: auto;
-	position: static;
-	display: block;
-	margin: 0 auto !important;
-}
-.emote-label {
-	font-size: 12px;
-	text-align: center;
-	color: rgba(255,255,255,0.7);
-	text-overflow: ellipsis;
-	overflow: hidden;
-	margin-top: 5px;
-	line-height: 30px;
-	display: block;
-}
-.emote-label:hover {
-	color: white;
-}
-</style>
 </head>
 <body id="emoticons">
+
 	<?php include Tpl::file('seg/top.php') ?>
+	<?php include Tpl::file('seg/headerband.php') ?>
 
 	<section class="container">
 		<h1 class="title">Emoticons</h1>

@@ -73,7 +73,7 @@ use Destiny\Common\Utils\Tpl;
 					</label>
 				</div>
 				
-				<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
+				<div class="form-actions">
 					<button type="submit" class="btn btn-primary btn-large">Continue</button>
 				</div>
 			</form>

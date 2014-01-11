@@ -79,7 +79,7 @@ use Destiny\Common\Utils\Date;
 						<input readonly="readonly" type="text" value="<?=($model->subscription['recurring'] == '1') ? 'Yes':'No'?>" placeholder="">
 					</div>
 					
-					<div class="form-actions" style="margin-bottom:0; border-radius:0 0 4px 4px;">
+					<div class="form-actions">
 						<button type="submit" class="btn btn-primary">Save</button>
 						<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" class="btn">Cancel</a>
 					</div>
