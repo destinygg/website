@@ -646,8 +646,9 @@
 }
 
 /**
- * Greentext
+ * Greentext #789922
  */
 .chat .greentext {
-	color:#789922;
+	color: #6ca528;
+	/*  */
 }
