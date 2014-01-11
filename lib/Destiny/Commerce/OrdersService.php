@@ -346,7 +346,7 @@ class OrdersService extends Service {
 	 * @param int $limit
 	 * @param int $start
 	 */
-	public function getPaymentsByOrderId($orderId, $limit = 1, $start = 0, $order = 'ASC') {
+	public function getPaymentsByOrderId($orderId, $limit = 100, $start = 0, $order = 'ASC') {
 		$order = ($order != 'ASC' && $order != 'DESC') ? 'ASC' : $order;
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
