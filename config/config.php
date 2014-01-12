@@ -3,6 +3,7 @@ return array (
 	'cacheAnnotations'		=> true, // If TRUE, stores the annotation definitions in files /tmp/annotations/ (these need to be cleared if changes are made to annotations)
 	'allowImpersonation'	=> false, // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
 	'showExceptions'		=> false, // Shows the actual exception message, instead of a generic one in the error screen
+	'maintenance'			=> false,
 	'profile' => array(
 		'nameChangeLimit' 	=> 0
 	),

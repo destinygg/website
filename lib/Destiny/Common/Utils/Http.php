@@ -20,6 +20,7 @@ abstract class Http {
 	const STATUS_NOT_FOUND = 404;
 	const STATUS_UNAUTHORIZED = 401;
 	const STATUS_ERROR = 500;
+	const STATUS_SERVICE_UNAVAILABLE = 503;
 	const STATUS_OK = 200;
 	const STATUS_NO_CONTENT = 204;
 	
@@ -30,7 +31,8 @@ abstract class Http {
 		304 => 'Not Modified',
 		200 => 'OK',
 		204 => 'No Content',
-		403 => 'Forbidden' 
+		403 => 'Forbidden',
+		503 => 'Service Unavailable' 
 	);
 
 	public static function header($name, $value, $replace = true) {

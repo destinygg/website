@@ -99,6 +99,13 @@ class Application extends Service {
 		$model = new ViewModel ();
 		$response = null;
 		
+		// Maintenance mode
+		if(Config::$a['maintenance']){
+			$response = new HttpEntity ( Http::STATUS_SERVICE_UNAVAILABLE );
+			$response->setBody ( $this->template ( 'maintenance.php', $model ) );
+			$this->handleHttpEntityResponse ( $response );
+		}
+		
 		// No route found
 		if (! $route) {
 			$response = new HttpEntity ( Http::STATUS_NOT_FOUND );
