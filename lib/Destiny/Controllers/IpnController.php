@@ -40,7 +40,7 @@ class IpnController {
 				return new HttpEntity ( Http::STATUS_OK, 'Got a invalid IPN' );
 			}
 			$data = $ipnMessage->getRawData ();
-			$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
+			$log->debug ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
 			$orderService = OrdersService::instance ();
 			$orderService->addIPNRecord ( array (
 				'ipnTrackId' => $data ['ipn_track_id'],
@@ -98,7 +98,7 @@ class IpnController {
 						$order = $orderService->getOrderByPaymentId ( $payment ['paymentId'] );
 						if (! empty ( $order )) {
 							$orderService->updateOrderState ( $order ['orderId'], OrderStatus::COMPLETED );
-							$log->notice ( sprintf ( 'Updated order status %s status %s', $order ['orderId'], OrderStatus::COMPLETED ) );
+							$log->debug ( sprintf ( 'Updated order status %s status %s', $order ['orderId'], OrderStatus::COMPLETED ) );
 							$subscription = $subService->getUserPendingSubscription ( $order ['userId'] );
 							if (! empty ( $subscription )) {
 								$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
@@ -140,15 +140,15 @@ class IpnController {
 				$end->modify ( '+' . $paymentProfile ['billingFrequency'] . ' ' . strtolower ( $paymentProfile ['billingPeriod'] ) );
 				
 				$subService->updateSubscriptionDateEnd ( $subscription ['subscriptionId'], $end );
-				$log->notice ( sprintf ( 'Update Subscription end date %s [%s]', $subscription ['subscriptionId'], $end->format ( Date::FORMAT ) ) );
+				$log->debug ( sprintf ( 'Update Subscription end date %s [%s]', $subscription ['subscriptionId'], $end->format ( Date::FORMAT ) ) );
 				
 				// Change the subscription state depending on the payment state
 				if (strcasecmp ( $data ['payment_status'], PaymentStatus::PENDING ) === 0) {
 					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::PENDING );
-					$log->notice ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], SubscriptionStatus::PENDING ) );
+					$log->debug ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], SubscriptionStatus::PENDING ) );
 				} else if (strcasecmp ( $data ['payment_status'], PaymentStatus::COMPLETED ) !== 0) {
 					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], $data ['payment_status'] );
-					$log->notice ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], $data ['payment_status'] ) );
+					$log->debug ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], $data ['payment_status'] ) );
 				}
 				
 				// Add a payment to the order
@@ -171,7 +171,7 @@ class IpnController {
 			case 'recurring_payment_profile_cancel' :
 				$paymentProfile = $this->getPaymentProfile ( $data );
 				$orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], $data ['profile_status'] );
-				$log->notice ( sprintf ( 'Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
+				$log->debug ( sprintf ( 'Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				break;
 			
 			// sent on first postback when the user subscribes
@@ -181,7 +181,7 @@ class IpnController {
 					$data ['profile_status'] = 'ActiveProfile';
 				}
 				$orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], $data ['profile_status'] );
-				$log->notice ( sprintf ( 'Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
+				$log->debug ( sprintf ( 'Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
 				break;
 		}
 	}
