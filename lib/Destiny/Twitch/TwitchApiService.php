@@ -29,19 +29,6 @@ class TwitchApiService extends Service {
 	}
 
 	/**
-	 * Get the broadcasters latest token
-	 *
-	 * @return string
-	 */
-	private function getBroadcasterToken() {
-		if (empty ( $this->token )) {
-			$this->token = trim ( file_get_contents ( Config::$a ['cache'] ['path'] . 'BROADCASTERTOKEN.tmp' ) );
-		}
-		return $this->token;
-	}
-
-	/**
-	 *
 	 * @param array $options
 	 * @return ApiConsumer
 	 */
@@ -57,7 +44,6 @@ class TwitchApiService extends Service {
 	}
 
 	/**
-	 *
 	 * @return ApiConsumer
 	 */
 	public function getStreamInfo(array $options = array()) {
@@ -68,7 +54,7 @@ class TwitchApiService extends Service {
 			'contentType' => MimeType::JSON,
 			'onfetch' => function ($json) {
 				if (isset ( $json ['status'] ) && $json ['status'] == 503) {
-					throw new Exception ( 'Stream api down' );
+					throw new Exception ( 'Twitch api down' );
 				}
 				if (is_object ( $json ) && isset ( $json ['stream'] ) && $json ['stream'] != null) {
 					$json ['stream'] ['channel'] ['updated_at'] = Date::getDateTime ( $json ['stream'] ['channel'] ['updated_at'] )->format ( Date::FORMAT );
@@ -76,6 +62,11 @@ class TwitchApiService extends Service {
 				// Last broadcast if the stream is offline
 				// Called via static method, because we are in a closure
 				$channel = self::instance ()->getChannel ()->getResponse ();
+			
+				if (empty ( $channel ) || ! is_array ( $channel )) {
+					throw new Exception ( sprintf('Invalid stream channel response %s', $channel) );
+				}
+				
 				$json ['lastbroadcast'] = Date::getDateTime ( $channel ['updated_at'] )->format ( Date::FORMAT );
 				$json ['status'] = $channel ['status'];
 				$json ['game'] = $channel ['game'];
@@ -102,30 +93,4 @@ class TwitchApiService extends Service {
 			'contentType' => MimeType::JSON 
 		), $options ) );
 	}
-
-	/**
-	 * Get channel subscription info from Twitch
-	 *
-	 * @param string $channel
-	 * @param int $limit
-	 * @param int $offset
-	 * @return array
-	 */
-	public function getChannelSubscriptions($channel, $limit, $offset) {
-		$token = $this->getBroadcasterToken ();
-		if (! empty ( $token )) {
-			$curlBrowser = new CurlBrowser ( array (
-				'url' => new String ( 'https://api.twitch.tv/kraken/channels/{channel}/subscriptions?limit={limit}&offset={offset}&oauth_token={oauth_token}', array (
-					'channel' => urlencode ( $channel ),
-					'limit' => intval ( $limit ),
-					'offset' => intval ( $offset ),
-					'oauth_token' => urlencode ( $token ) 
-				) ),
-				'contentType' => MimeType::JSON 
-			) );
-			return $curlBrowser->getResponse ();
-		}
-		return null;
-	}
-
 }

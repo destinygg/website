@@ -60,6 +60,9 @@ class TwitchAuthHandler{
 		if (empty ( $response ['result'] ) || isset ( $response ['error'] ))
 			throw new Exception ( 'Invalid user details response' );
 		
+		if (is_string ( $response ['result'] ))
+			throw new Exception ( sprintf ( 'Invalid auth result %s', $response ['result'] ) );
+		
 		$authCreds = $this->getAuthCredentials ( $params ['code'], $response ['result'] );
 		$authCredHandler = new AuthenticationRedirectionFilter ();
 		return $authCredHandler->execute ( $authCreds );

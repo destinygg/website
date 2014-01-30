@@ -7,6 +7,7 @@ use Destiny\Common\Config;
 		<div class="panelheader clearfix">
 			<div class="toolgroup clearfix">
 				<div class="pull-left channel-stat game">
+				<?php if(!empty($model->streamInfo)): ?>
 					<?php if(!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])): ?>
 					<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
 					<?php else: ?>
@@ -15,6 +16,7 @@ use Destiny\Common\Config;
 					- <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay
 					<?php endif; ?>
 					<?php endif; ?>
+				<?php endif; ?>
 				</div>
 				<div class="btn-group pull-right">
 					<a id="popoutvideo" title="Pop-out video" class="btn btn-mini btn-link">Pop-out player</a>

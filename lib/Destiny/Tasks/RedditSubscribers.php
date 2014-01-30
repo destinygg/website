@@ -71,7 +71,7 @@ class RedditSubscribers {
 		file_put_contents ( $tmpFilename, json_encode ( $json, JSON_NUMERIC_CHECK ) );
 		@unlink ( $this->output );
 		rename ( $tmpFilename, $this->output );
-		$log->notice ( sprintf ( 'Output subscribers json "%s"', $this->output ) );
+		$log->debug ( sprintf ( 'Output subscribers json "%s"', $this->output ) );
 	}
 	
 	/**
