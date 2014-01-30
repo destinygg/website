@@ -515,7 +515,6 @@ class SubscriptionController {
 		FilterParams::isRequired ( $params, 'orderId' );
 		FilterParams::isRequired ( $params, 'token' );
 		FilterParams::isThere ( $params, 'success' );
-		FilterParams::isRequired ( $params, 'PayerID' );
 			
 		$ordersService = OrdersService::instance ();
 		$subscriptionsService = SubscriptionsService::instance ();
@@ -550,6 +549,9 @@ class SubscriptionController {
 			if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
 				throw new Exception ( 'Failed to retrieve express checkout details' );
 			}
+			
+			// Moved this down here, as if the order status is error, the payerID is not returned
+			FilterParams::isRequired ( $params, 'PayerID' );
 			
 			// Point of no return - we only every want a person to get here if their order was a successful sequence
 			Session::set ( 'token' );
