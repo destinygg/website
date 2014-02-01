@@ -21,7 +21,6 @@ use Destiny\Api\ApiAuthenticationService;
 use Destiny\Common\HttpEntity;
 use Destiny\Common\MimeType;
 use Destiny\Common\Utils\Http;
-use Destiny\Games\GamesService;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -277,81 +276,6 @@ class ProfileController {
 		return 'redirect: /profile/authentication';
 	}
 
-	/**
-	 * @Route ("/profile/games")
-	 * @Secure ({"USER"})
-	 *
-	 * @param array $params        	
-	 */
-	public function profileGames(array $params, ViewModel $model) {
-		$userId = Session::getCredentials ()->getUserId ();
-		$subscriptionsService = SubscriptionsService::instance ();
-		$subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
-		if (empty ( $subscription )) {
-			$subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
-		}
-		$subscriptionType = null;
-		if (! empty ( $subscription )) {
-			$subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
-		}
-		$model->subscription = $subscription;
-		$model->subscriptionType = $subscriptionType;
-		
-		$gamesService = GamesService::instance ();
-		$games = $gamesService->getGames ();
-		$userGames = $gamesService->getUserGames ( $userId );
-		foreach ( $games as &$game ) {
-			$game ['active'] = false;
-			foreach ( $userGames as $userGame ) {
-				if($game ['id'] == $userGame ['gameId']){
-					$game ['active'] = true;
-					break;
-				}
-			}
-		}
-		$model->games = $games;
-		$model->userGames = $userGames;
-		return 'profile/games';
-	}
-
-	/**
-	 * Add a user game
-	 * @Route ("/profile/games/{gameId}/add")
-	 * @Secure ({"USER"})
-	 * @Transactional
-	 *
-	 * @param array $params        	
-	 */
-	public function profileGamesAdd(array $params) {
-		FilterParams::isRequired ( $params, 'gameId' );
-		
-		$gamesService = GamesService::instance ();
-		$userId = Session::getCredentials ()->getUserId ();
-		$gamesService->addUserGame ( $userId, $params ['gameId'] );
-		$response = new HttpEntity ( Http::STATUS_OK, '{"result":true}' );
-		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		return $response;
-	}
-	
-	/**
-	 * Remove a user game
-	 * @Route ("/profile/games/{gameId}/remove")
-	 * @Secure ({"USER"})
-	 * @Transactional
-	 *
-	 * @param array $params        	
-	 */
-	public function profileGamesRemove(array $params) {
-		FilterParams::isRequired ( $params, 'gameId' );
-		
-		$gamesService = GamesService::instance ();
-		$userId = Session::getCredentials ()->getUserId ();
-		$gamesService->removeUserGame ( $userId, $params ['gameId'] );
-		$response = new HttpEntity ( Http::STATUS_OK, '{"result":true}' );
-		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		return $response;
-	}
-	
 	/**
 	 * @Route ("/profile/connect/{provider}")
 	 * @Secure ({"USER"})

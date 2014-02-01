@@ -18,19 +18,11 @@ use Destiny\Common\Utils\Date;
 	<section class="container">
 	
 		<div class="content content-dark stream-grids clearfix">
-			<div id="userlist" data-game="<?=Tpl::out($model->game)?>" data-size="<?=Tpl::out($model->size)?>" data-page="<?=Tpl::out($model->page)?>" class="stream stream-grid" style="width:100%;">
+			<div id="userlist" data-size="<?=Tpl::out($model->size)?>" data-page="<?=Tpl::out($model->page)?>" class="stream stream-grid" style="width:100%;">
 				
 				<div style="margin:15px;" class="clearfix">
 					<div class="pull-right" style="margin: 0 0 0 0;">
 						<button id="resetuserlist" class="btn btn-warning">Reset</button>
-					</div>
-					<div class="pull-right">
-						<select name="game" style="margin: 0 15px 0 0;">
-							<option value="">Game: </option>
-							<?php foreach ($model->games as $game): ?>
-							<option value="<?=Tpl::out($game['id'])?>"><?=Tpl::out($game['label'])?></option>
-							<?php endforeach; ?>
-						</select>
 					</div>
 					<div class="pull-right">
 						<select name="size" style="margin: 0 15px 0 0; width: 120px;">

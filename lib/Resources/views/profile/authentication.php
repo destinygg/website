@@ -21,7 +21,6 @@ use Destiny\Common\Config;
 			<div class="navbar-inner">
 				<ul class="nav pull-left">
 					<li><a href="/profile" title="Your personal details">Details</a></li>
-					<li><a href="/profile/games" title="Your games">Games</a></li>
 				</ul>
 				<ul class="nav pull-right">
 					<li class="active"><a href="/profile/authentication" title="Your login methods">Authentication</a></li>

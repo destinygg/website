@@ -1179,16 +1179,6 @@ body#admin #main-nav .container {
 
 
 /**
- * Profile/Games
- */
-body#games .games {
-	padding: 15px;
-}
-body#games .game.active label {
-	color: white;
-}
-
-/**
  * Emoticons
  */
 body#emoticons .content {

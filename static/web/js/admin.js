@@ -39,16 +39,14 @@
 	$('#userlist').each(function(){
 		
 		var usrlist    = $(this),
-			gamesl     = usrlist.find('select[name="game"]'),
 			pagination = usrlist.find('.pagination'),
 			sizesl     = usrlist.find('select[name="size"]'),
-			game       = usrlist.data('game'), 
 			page       = usrlist.data('page'), 
 			size       = usrlist.data('size'),
 			reset      = usrlist.find('#resetuserlist');
 		
 		var update = function(){
-			window.location.href = '/admin/?game='+encodeURIComponent(game)+'&size='+encodeURIComponent(size)+'&page='+encodeURIComponent(page);
+			window.location.href = '/admin/?size='+encodeURIComponent(size)+'&page='+encodeURIComponent(page);
 		};
 		
 		pagination.on('click', 'a', function(){
@@ -56,13 +54,6 @@
 			update();
 			return false;
 		});
-		
-		gamesl.on('change', function(){
-			page = 1;
-			game = $(this).val();
-			update();
-			return false;
-		}).val(game);
 		
 		sizesl.on('change', function(){
 			page = 1;
@@ -72,7 +63,6 @@
 		}).val(size);
 		
 		reset.on('click', function(){
-			game = '';
 			size = '';
 			page = 1;
 			update();
