@@ -14,7 +14,7 @@ use Destiny\Common\Config;
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="chat-embedded">
+<body class="embed">
 
 <div id="destinychat" class="chat chat-theme-dark chat-icons">
 

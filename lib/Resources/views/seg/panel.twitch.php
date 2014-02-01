@@ -26,7 +26,7 @@ use Destiny\Common\Config;
 		</div>
 		<div id="twitch-elements" class="clearfix">
 			<div id="player-embed" class="twitch-element-wrap pull-left">
-				<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=destiny" height="100%" width="100%">
+				<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%">
 					<param name="allowFullScreen" value="true">
 					<param name="allowScriptAccess" value="always">
 					<param name="allowNetworking" value="all">

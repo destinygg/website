@@ -30,6 +30,16 @@ body {
 	padding: 0;
 }
 
+/**
+ * Embed's
+ */
+body.embed {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	overflow: hidden;
+}
+
 section {
 	margin-top: 15px;
 }
