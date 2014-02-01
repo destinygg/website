@@ -109,4 +109,13 @@ class HomeController {
 		return 'redirect: http://www.amazon.com/?tag=des000-20';
 	}
 
+	/**
+	 * @Route ("/eve")
+	 *
+	 * @return string
+	 */
+	public function eve() {
+		return 'redirect: https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
+	}
+
 }
