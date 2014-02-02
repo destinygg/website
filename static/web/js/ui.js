@@ -212,7 +212,6 @@ $(function(){
 			if(chatframe){
 				
 				chatframe.destiny.chat.gui.on('names join quit', function(e, data){
-					console.log(data);
 					$('#chat-panel-usercount').text(Object.keys(this.engine.users).length);
 				});
 

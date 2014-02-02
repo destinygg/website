@@ -56,7 +56,7 @@ use Destiny\Common\Config;
 					<div class="panelheader clearfix">
 						<div class="toolgroup clearfix">
 							<div id="chat-panel-users" class="pull-left">
-								<span title="Total users"><i class="icon-user icon-white subtle"></i> <span id="chat-panel-usercount">Loading...</span></span>
+								<span title="Total users"><i class="icon-user icon-white subtle"></i> <span id="chat-panel-usercount"></span></span>
 							</div>
 							<div id="chat-panel-tools" class="pull-right">
 								<a title="Refresh"><i class="icon-refresh icon-white subtle"></i></a>
