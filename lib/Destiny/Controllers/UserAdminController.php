@@ -57,6 +57,7 @@ class UserAdminController {
 		$user ['features'] = $userFeaturesService->getUserFeatures ( $user ['userId'] );
 		
 		$model->user = $user;
+		$model->smurfs = $userService->findSameIPUsers( $user ['userId'] );
 		$model->features = $userFeaturesService->getDetailedFeatures ();
 		$ban = $userService->getUserActiveBan ( $user ['userId'] );
 		$banContext = array ();
