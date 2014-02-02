@@ -21,7 +21,7 @@ use Destiny\Common\Utils\Date;
 	<?php include Tpl::file('seg/top.php') ?>
 	<?php include Tpl::file('seg/headerband.php') ?>
 	
-	<section id="live-banner-view" class="container">
+	<section id="live-banner-view" class="container" <?php (empty($model->streamInfo['stream'])) ? 'style="display: none"' : '' ?>>
 		<div class="content">
 			<div id="live-banner">
 				<div id="live-preview">
