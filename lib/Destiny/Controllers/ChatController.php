@@ -71,4 +71,16 @@ class ChatController {
 		return $response;
 	}
 
+	/**
+	 * @Route ("/chat/emotes.json")
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 */
+	public function emotes(array $params, ViewModel $model) {
+		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( Config::$a ['chat'] ['customemotes'] ) );
+		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+		return $response;
+	}
+
 }
