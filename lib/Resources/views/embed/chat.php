@@ -31,7 +31,7 @@ use Destiny\Common\Config;
 				<?php if(Session::hasRole(UserRole::USER)): ?>
 				<input type="text" placeholder="Enter a message..." class="input" autocomplete="off" spellcheck="true"/>
 				<?php else: ?>
-				<a class="chat-login-msg" href="/login" target="_parent">You must be logged in to chat</a>
+				<a class="chat-login-msg" href="/login?follow=<?php echo rawurlencode( $_SERVER['REQUEST_URI'] );?>" target="_parent">You must be logged in to chat</a>
 				<input type="hidden" class="input" />
 				<?php endif; ?>
 				</div>
