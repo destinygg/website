@@ -196,7 +196,7 @@ use Destiny\Commerce\SubscriptionStatus;
 				<tbody>
 				<?php foreach($model->smurfs as $user): ?>
 					<tr>
-						<td><a href="/admin/user/<?=$user['userId']?>/edit><?=Tpl::out($user['username'])?></a></td>
+						<td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a></td>
 						<td><?=Tpl::out($user['email'])?></td>
 						<td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
 					</tr>
