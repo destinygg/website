@@ -342,6 +342,7 @@ class UserService extends Service {
 	
 	/**
 	 * Find a user by search string
+	 * @TODO Complicated order query to emulate "relavency"
 	 *
 	 * @param string $string        	
 	 * @param number $limit        	
@@ -351,11 +352,19 @@ class UserService extends Service {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT u.userId,u.username,u.email FROM dfl_users AS u 
-			WHERE u.username LIKE :string OR email LIKE :string
-			ORDER BY u.username DESC
+			WHERE u.username LIKE :wildcard1 OR email LIKE :wildcard1
+			ORDER BY CASE 
+			WHEN u.username LIKE :wildcard2 THEN 0
+			WHEN u.username LIKE :wildcard3 THEN 1
+			WHEN u.username LIKE :wildcard4 THEN 2
+			ELSE 3
+			END, u.username
 			LIMIT :start,:limit
 		' );
-		$stmt->bindValue ( 'string', $string, \PDO::PARAM_STR );
+		$stmt->bindValue ( 'wildcard1', '%' . $string . '%', \PDO::PARAM_STR );
+		$stmt->bindValue ( 'wildcard2', $string . ' %', \PDO::PARAM_STR );
+		$stmt->bindValue ( 'wildcard3', $string . '%', \PDO::PARAM_STR );
+		$stmt->bindValue ( 'wildcard4', '% %' . $string . '% %', \PDO::PARAM_STR );
 		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->execute ();

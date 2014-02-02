@@ -18,6 +18,7 @@ use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
+use Destiny\Common\Utils\FilterParams;
 
 /**
  * @Controller
@@ -123,8 +124,8 @@ class AdminController {
 	 * @param array $params        	
 	 */
 	public function adminUserFind(array $params) {
-		$s = (isset ( $params ['s'] )) ? '%' . $params ['s'] . '%' : '';
-		$users = UserService::instance ()->findUsers ( $s, 10 );
+		FilterParams::isRequired($params, 's');
+		$users = UserService::instance ()->findUsers ( $params ['s'], 10 );
 		$response = new HttpEntity ( Http::STATUS_OK );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		$response->setBody ( json_encode ( $users ) );
