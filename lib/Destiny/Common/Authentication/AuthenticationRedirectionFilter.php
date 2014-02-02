@@ -57,8 +57,8 @@ class AuthenticationRedirectionFilter {
 			return 'redirect: /subscription/update/confirm?subscription=' . $selectSubscription;
 		}
 		
-		if (! empty ( $follow )) {
-			return 'redirect: /' . $follow;
+		if (! empty ( $follow ) and substr( $follow, 0, 1 ) == '/' ) {
+			return 'redirect: ' . $follow;
 		}
 		return 'redirect: /profile';
 	}
