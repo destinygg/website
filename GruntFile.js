@@ -47,7 +47,6 @@ module.exports = function(grunt) {
 						'static/web/js/utils.js',
 						'static/web/js/destiny.js',
 						'static/web/js/feed.js',
-						'static/web/js/twitch.js',
 						'static/web/js/ui.js'
 					]
 				}

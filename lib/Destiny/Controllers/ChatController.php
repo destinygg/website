@@ -9,8 +9,6 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Chat\ChatlogService;
 use Destiny\Common\Config;
-use Destiny\Common\Session;
-use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserFeature;
 
 /**

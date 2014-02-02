@@ -279,15 +279,9 @@ body.thin #header-band #top-navigation {
 }
 
 .content-dark {
-	box-shadow: 0 3px 1px rgba(0, 0, 0, 0.5);
 	border-radius: 6px;
 	background-color: #111;
 	background-color: rgba(0, 0, 0, 0.6);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-	border-top: 1px solid #333;
-	border-left: 1px solid #333;
-	border-right: 1px solid #222;
-	border-bottom: 1px solid #222;
 }
 .content-dark h4 {
 	color: #444;
@@ -381,88 +375,6 @@ i.icon-reddit {
 	background-image: url(../img/ico/reddit_16.png);
 }
 
-#twitchpanel .panelheader .game>div {
-	padding: 0 0 0 10px;
-	display: inline-block;
-}
-
-#twitchpanel .panelheader {
-	border-radius: 6px 6px 0 0;
-}
-
-#twitchpanel .panelheader .toolgroup {
-	padding: 5px;
-	color: #777;
-	font-size: 12px;
-	line-height: 22px;
-}
-
-#twitchpanel .panelheader .toolgroup strong {
-	color: #ececec;
-	font-weight: normal;
-}
-
-#twitchpanel.split-view > .content,
-#twitchpanel.single-view > .content {
-	border-bottom: 0;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-}
-
-#twitchpanel.split-view .panelheader .toolgroup,
-#twitchpanel.single-view .panelheader .toolgroup {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-#twitchpanel #twitch-elements {
-	overflow: hidden;
-}
-
-#twitchpanel .twitch-element,#twitchpanel .twitch-element-wrap {
-	width: 100%;
-	height: 475px;
-}
-
-#twitchpanel #player-embed object {
-	height: 476px;
-}
-
-#twitchpanel.split-view #player-embed {
-	width: 68%;
-}
-
-#twitchpanel.split-view #chat-embed {
-	width: 32%;
-	background: white;
-}
-
-#twitchpanel.single-view .twitch-element,
-#twitchpanel.single-view .twitch-element-wrap {
-	width: 100%;
-	height: 559px;
-}
-
-#twitchpanel.single-view #player-embed object {
-	height: 560px;
-}
-
-#twitchpanel #player-embed.defocus {
-	position: relative;
-}
-
-#twitchpanel #player-embed.defocus object {
-	display: none;
-}
-
-#twitchpanel a#popoutvideo,
-#twitchpanel a#popoutchat {
-	text-shadow: none;
-}
-
-#twitchpanel a#popoutvideo.btn-down,
-#twitchpanel a#popoutchat.btn-down {
-	color: #ccc;
-}
 
 .stream {
 	width: 50%;
@@ -591,7 +503,9 @@ i.icon-reddit {
 	font-weight: normal;
 }
 
-#stream-lastfm .media-heading,#stream-lastfm .album,#stream-lastfm .artist {
+#stream-lastfm .media-heading,
+#stream-lastfm .album,
+#stream-lastfm .artist {
 	overflow: ellipsis;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -674,10 +588,6 @@ i.icon-reddit {
 	margin-left: 20px;
 	background: rgba(0, 0, 0, 0.5);
 	border-radius: 6px;
-	border-top: 1px solid #333;
-	border-left: 1px solid #333;
-	border-right: 1px solid #222;
-	border-bottom: 1px solid #222;
 }
 
 .public-ads:first-child,.donate-block:first-child {
@@ -1007,11 +917,17 @@ table.grid .rank {
 	border-top-left-radius: 0;
 }
 
+#main-nav .icon-bigscreen {
+	margin: -1px 5px -2px 0 !important;
+}
+
 .icon-bigscreen {
 	background: url("../img/ico/tv_32.png") no-repeat top left !important;	
 	width: 32px !important;
 	height: 19px !important;
-	margin: -1px 5px -2px 0 !important;
+}
+.icon-bigscreen.animated {
+	background: url("../img/ico/tv_32.anim.gif") no-repeat top left !important;	
 }
 
 /**
@@ -1066,22 +982,23 @@ body#bigscreen #stream-panel > div {
 	padding:5px 0 5px 5px;
 	overflow: hidden;
 }
-body#bigscreen #stream-panel .panelheader {
+body#bigscreen .panelheader {
 	border-top-left-radius:4px;	
 	border-top-right-radius:4px;
 	background: rgba(0,0,0,0.5);
+	border-bottom: 1px solid #040404;	
 	line-height:30px;
-	padding:0 15px;
+	padding:0 10px;
 	z-index: 6;
+	color: #444;
+	font-size:12px;	
+	text-shadow:1px 1px 0 black;
 }
-body#bigscreen #stream-panel .panelheader .channel-stat {
+body#bigscreen .panelheader .channel-stat {
 	width:50%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	color: #444;
-	font-size:12px;
-	text-shadow:1px 1px 0 black;
 }
 body#bigscreen #chat-panel {
 	width:400px;
@@ -1098,6 +1015,25 @@ body#bigscreen #chat-panel iframe {
 	background: black;
 }
 
+body#bigscreen #chat-panel .panel-header {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+body#bigscreen #chat-panel-tools a {
+	cursor: pointer;
+	opacity: 0.35;
+}
+body#bigscreen #chat-panel-tools a:hover {
+	opacity: 0.75;
+}
+body#bigscreen #chat-panel-users span {
+	cursor: pointer;
+}
+
 body#bigscreen .container {
 	width: auto;
 	max-width: 100%;
@@ -1110,6 +1046,14 @@ body#bigscreen #main-nav .brand {
 	background: url("../img/destinygg.small.png") no-repeat center center;
 	display: block;
 	width: 224px;
+}
+
+body#bigscreen.nochat #stream-panel > div {
+	padding: 5px;	
+	margin: 0;
+}
+body#bigscreen.nochat #stream-panel {
+	margin: 0;
 }
 
 /**
@@ -1223,4 +1167,47 @@ body#emoticons .emote-label {
 }
 body#emoticons .emote-label:hover {
 	color: white;
+}
+
+/**
+ * Banner shows if the stream is live
+ */
+#live-banner {
+	margin: 0; 
+	position: relative; 
+	min-height: 200px; 
+	background: rgba(0,0,0,0.5); 
+	border-radius: 6px;
+}
+#live-banner #live-preview {
+	position: absolute;
+	padding: 10px;	
+	top:0;
+	left:0;
+}
+#live-banner #live-preview a {
+	display: block;
+}
+#live-banner #live-preview img {
+	border-radius: 6px;
+	width: 300px;
+	height: 180px;
+}
+#live-banner #live-info-wrap {
+	margin-left: 305px;
+}
+#live-banner #live-info-wrap > div {
+	padding: 15px 20px;
+}
+#live-banner #live-info-wrap h1 {
+	letter-spacing: -0.05em;
+	white-space: nowrap;
+	overflow: hidden; 
+	text-overflow: ellipsis; 
+	font-size: 36px; 
+	margin:0 0 10px 0; 
+}
+#live-banner #live-info-wrap #live-info {
+	margin-bottom: 1em;
+	color: #666;
 }

@@ -7,7 +7,7 @@ use Destiny\Common\Session;
 	<div class="navbar-inner">
 		<div class="container">
 			<div class="nav-collapse collapse">
-				<a class="brand pull-left">Destiny.gg</a>
+				<a class="brand pull-left" href="/">Destiny.gg</a>
 				<ul id="top-left-nav" class="nav">
 					<li class="home"><a title="Home Page" href="/"><i class="icon-home icon-white subtle"></i></a></li>
 					<li><a title="Blog @ destiny.gg" href="http://blog.destiny.gg">Blog</a></li>

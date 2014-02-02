@@ -6,7 +6,7 @@ $(function(){
 		url: destiny.baseUrl + 'lastfm.json',
 		polling: 40,
 		ifModified: true,
-		start: true,
+		start: false,
 		ui: '#stream-lastfm',
 		success: function(data, textStatus){
 			if(textStatus == 'notmodified') return;
@@ -43,7 +43,7 @@ $(function(){
 		url: destiny.baseUrl + 'twitter.json',
 		polling: 300,
 		ifModified: true,
-		start: true,
+		start: false,
 		ui: '#stream-twitter',
 		success: function(tweets, textStatus){
 			if(textStatus == 'notmodified') return;
@@ -69,7 +69,7 @@ $(function(){
 	new DestinyFeedConsumer({
 		url: destiny.baseUrl + 'youtube.json',
 		ifModified: true,
-		start: true,
+		start: false,
 		ui: '#youtube',
 		success: function(data, textStatus){
 			if(textStatus == 'notmodified') return;
@@ -99,7 +99,7 @@ $(function(){
 		url: destiny.baseUrl + 'broadcasts.json',
 		polling: 600,
 		ifModified: true,
-		start: true,
+		start: false,
 		ui: '#broadcasts',
 		success: function(data, textStatus){
 			if(textStatus == 'notmodified') return;
@@ -131,24 +131,27 @@ $(function(){
 		polling: 30,
 		ifModified: true,
 		start: false,
-		ui: '#twitchpanel',
+		ui: '#live-banner-view',
 		success: function(data, textStatus){
-			if(textStatus == 'notmodified') return;
-			var ui = $('#twitchpanel .panelheader .game');
+
+			var ui = $('#live-banner-view');
+			
+			if(textStatus == 'notmodified') 
+				return;
+			
 			if(data != null && data.stream != null){
-				
-				ui.html( '<i class="icon-time icon-white subtle"></i> <span>Started '+ moment(data.stream.channel.updated_at).fromNow() +'</span>' + ((data.stream.channel.delay > 0) ? ' - ' + parseInt((data.stream.channel.delay/60)) + 'm delay':'')).show();
-				$('#twitchpanel').removeClass('offline').addClass('online');
+				ui.find('#live-preview a').attr('title', data.status);
+				ui.find('#live-preview img').attr('src', data.stream.preview.medium);
+				ui.find('#live-info-wrap .live-info-game').text(data.game);
+				ui.find('#live-info-wrap .live-info-updated').text(moment(data.stream.channel.updated_at).fromNow());
+				ui.find('#live-info-wrap .live-info-viewers').text(data.stream.viewers);
+				ui.show();
 			}else{
-				try{
-					ui.html( '<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended '+ moment(data.lastbroadcast).fromNow() +'</span>').show();
-				}catch(e){
-					ui.html( '<i class="icon-time icon-white subtle"></i> <span>Broadcast has ended</span>').show();
-				}
-				$('#twitchpanel').removeClass('online').addClass('offline');
+				ui.hide();
 			}
 		}
 	});
+	
 	
 	// Private ads / rotation
 	var pads = $('.private-ads .private-ad'), adRotateIndex = pads.length-1;
@@ -180,6 +183,7 @@ $(function(){
 	$('body#bigscreen').each(function(){
 		var offset = $('#main-nav').outerHeight();
 		var _resize = function(){
+			
 			var bodyHeight    = $('body').height(),
 				offset        = $('#main-nav').outerHeight(),
 				contentUi     = $('#page-content'), 
@@ -193,20 +197,46 @@ $(function(){
 			}else{
 				var offsetHeight = bodyHeight - 10;
 				contentUi.height(offsetHeight - offset);
-				chatUi.height(offsetHeight - offset);
+				chatUi.height(offsetHeight - (offset + streamHeader.height()));
 				streamPlayer.height(offsetHeight - (offset + streamHeader.height()));
 			}
 		};
 		
+		
+		
 		$(window).on('resize', _resize);
 		_resize();
+		
+		$('iframe#chat-frame').on('load', function(){
+			var chatframe = this.contentWindow;
+			if(chatframe){
+				
+				chatframe.destiny.chat.gui.on('names join quit', function(e, data){
+					console.log(data);
+					$('#chat-panel-usercount').text(Object.keys(this.engine.users).length);
+				});
+
+				$('#chat-panel-tools').each(function(){
+					$(this).on('click', '.icon-refresh', function(){
+						chatframe.location.reload();
+					});
+					$(this).on('click', '.icon-remove', function(){
+						$('body').addClass('nochat');
+						$('#chat-panel').remove();
+					});
+				});
+				
+			};
+		});
 		
 		new DestinyFeedConsumer({
 			url: destiny.baseUrl + 'stream.json',
 			polling: 30,
+			start: true,
 			ui: '#stream-panel .panelheader .game',
 			ifModified: true,
 			success: function(data, textStatus){
+				
 				if(textStatus == 'notmodified') return;
 				var ui = $('#stream-panel .panelheader .game');
 				if(data != null && data.stream != null){

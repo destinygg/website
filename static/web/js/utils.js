@@ -46,6 +46,11 @@ String.prototype.trim = function(){
 	return $.trim(this);
 };
 
+String.prototype.replaceAll = function (find, replace) {
+	var str = this;
+	return str.replace(new RegExp(find, 'g'), replace);
+};
+
 if (!String.prototype.format) {
 	String.prototype.format = function() {
 		var args = arguments;

@@ -140,7 +140,7 @@
 }
 .chat-input-wrap {
 	margin:0;
-	margin-right:90px;
+	margin-right: 60px;
 }
 .chat-input-control {
 	padding:3px 0 0 5px;
@@ -236,7 +236,7 @@
 /* Theme - Dark */
 .chat-theme-dark {
 	background: #080808;
-	border-radius: 4px 4px 0 0;
+	border-radius: 0;
 }
 .chat-theme-dark .chat-input-wrap {
 	border:none;

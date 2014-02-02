@@ -53,7 +53,18 @@ use Destiny\Common\Config;
 			</div>
 			<div id="chat-panel" class="pull-right">
 				<div>
-					<iframe class="twitch-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
+					<div class="panelheader clearfix">
+						<div class="toolgroup clearfix">
+							<div id="chat-panel-users" class="pull-left">
+								<span title="Total users"><i class="icon-user icon-white subtle"></i> <span id="chat-panel-usercount">Loading...</span></span>
+							</div>
+							<div id="chat-panel-tools" class="pull-right">
+								<a title="Refresh"><i class="icon-refresh icon-white subtle"></i></a>
+								<a title="Close"><i class="icon-remove icon-white subtle"></i></a>
+							</div>
+						</div>
+					</div>
+					<iframe id="chat-frame" class="twitch-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
 				</div>
 			</div>
 		</div>

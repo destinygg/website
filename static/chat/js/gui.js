@@ -43,6 +43,14 @@
 		hintPopup: null,
 		loaded: false,
 		
+		trigger: function(name, data){
+			$(this).trigger(name, data);
+		},
+		
+		on: function(name, fn){
+			$(this).on(name, fn);
+		},
+		
 		init: function(){
 			
 			// local var for this instance
@@ -253,10 +261,6 @@
 
 			// Bind to user input submit
 			this.ui.on('submit', 'form.chat-input', function(e){
-				e.preventDefault();
-				chat.send();
-			});
-			this.ui.on('click', '.chat-send-btn', function(e){
 				e.preventDefault();
 				chat.send();
 			});

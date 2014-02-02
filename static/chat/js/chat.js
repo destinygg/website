@@ -153,15 +153,18 @@ chat.prototype.onNAMES = function(data) {
 		this.users[u.nick] = new ChatUser(u);
 		this.gui.autoCompletePlugin.addData(u.nick, 1);
 	};
+	this.gui.trigger('names', data);
 	return new ChatStatusMessage("Connected. Server connections: " + data.connectioncount);
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
 	this.gui.autoCompletePlugin.addData(data.nick, 1);
+	this.gui.trigger('join', data);
 };
 chat.prototype.onQUIT = function(data) {
 	if (this.users[data.nick]) {
-		delete(this.users[data.nick])
+		delete(this.users[data.nick]);
+		this.gui.trigger('quit', data);
 	}
 };
 chat.prototype.onMSG = function(data) {
