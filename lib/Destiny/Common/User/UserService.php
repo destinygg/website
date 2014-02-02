@@ -638,6 +638,7 @@ class UserService extends Service {
 			WHERE userId IN('" . implode("', '", $userids ) . "')
 			ORDER BY username
 		");
+		$stmt->execute();
 		return $stmt->fetchAll();
 
 	}
