@@ -545,4 +545,27 @@ class UserService extends Service {
 		return $conn->lastInsertId ();
 	}
 
+	/**
+	 * Get a chat ban by ID
+	 *
+	 * @param int $userId
+	 * @return int $count The number of rows modified
+	 */
+	public function removeUserBan( $userid ) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( "
+			UPDATE bans
+			SET endtimestamp = NOW()
+			WHERE
+				targetuserid = :targetuserid AND
+				(
+					endtimestamp IS NULL OR
+					endtimestamp >= NOW()
+				)
+		");
+		$stmt->bindValue ( 'targetuserid', $userid, \PDO::PARAM_INT );
+		$stmt->execute();
+		return $stmt->rowCount();
+	}
+
 }

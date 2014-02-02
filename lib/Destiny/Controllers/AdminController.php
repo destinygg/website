@@ -17,6 +17,8 @@ use Destiny\Common\MimeType;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
+use Destiny\Games\GamesService;
+use Destiny\Chat\ChatIntegrationService;
 
 /**
  * @Controller
@@ -87,6 +89,32 @@ class AdminController {
 		$model->subscribersT2 = $subService->getSubscriptionsByTier ( 2 );
 		$model->subscribersT1 = $subService->getSubscriptionsByTier ( 1 );
 		return 'admin/subscribers';
+	}
+
+	/**
+	 * @Route ("/admin/bans")
+	 * @Secure ({"ADMIN"})
+	 *
+	 * @param array $params        	
+	 * @throws Exception
+	 */
+	public function adminBans(array $params, ViewModel $model) {
+		$chatService = ChatIntegrationService::instance ();
+		$model->activeBans = $chatService->getActiveBans();
+		return 'admin/bans';
+	}
+
+	/**
+	 * @Route ("/admin/bans/purgeall")
+	 * @Secure ({"ADMIN"})
+	 *
+	 * @param array $params        	
+	 * @throws Exception
+	 */
+	public function adminPurgeBans(array $params, ViewModel $model) {
+		$chatService = ChatIntegrationService::instance ();
+		$chatService->purgeBans();
+		return 'redirect: /admin/bans';
 	}
 
 	/**

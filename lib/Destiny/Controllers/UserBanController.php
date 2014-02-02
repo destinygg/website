@@ -145,15 +145,12 @@ class UserBanController {
 	}
 
 	/**
-	 * @Route ("/admin/user/{userId}/ban/{id}/remove")
+	 * @Route ("/admin/user/{userId}/ban/remove")
 	 * @Secure ({"ADMIN"})
 	 *
 	 * @param array $params
 	 */
 	public function removeBan(array $params) {
-		if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-			throw new Exception ( 'id required' );
-		}
 		if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
 			throw new Exception ( 'userId required' );
 		}
@@ -161,13 +158,14 @@ class UserBanController {
 		$userService = UserService::instance ();
 		$authenticationService = AuthenticationService::instance ();
 		
-		$ban = $userService->getBanById ( $params ['id'] );
-		$ban ['starttimestamp'] = Date::getDateTime ( $ban ['starttimestamp'] );
-		$ban ['endtimestamp'] = Date::getDateTime ( 'NOW' );
-		
-		$userService->updateBan ( $ban );
-		$authenticationService->flagUserForUpdate ( $ban ['targetuserid'] );
-		
+		// if there were rows modified there were bans removed, so an update is
+		// required, removeUserBan returns the number of rows modified
+		if ( $userService->removeUserBan ( $params ['userId'] ) )
+			$authenticationService->flagUserForUpdate ( $params ['userId'] );
+
+		if ( isset( $params['follow'] ) and substr( $params['follow'], 0, 1 ) == '/' )
+			return 'redirect: ' . $params['follow'];
+
 		return 'redirect: /admin/user/' . $params ['userId'] . '/edit';
 	}
 

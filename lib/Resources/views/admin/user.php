@@ -221,7 +221,7 @@ use Destiny\Commerce\SubscriptionStatus;
 				
 				<div class="form-actions">
 					<a href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/edit" class="btn btn-primary">Edit ban</a>
-					<a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/remove" class="btn btn-danger">Remove ban</a>
+					<a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$model->user['userId']?>/ban/remove" class="btn btn-danger">Remove ban</a>
 				</div>
 				
 				<?php endif; ?>

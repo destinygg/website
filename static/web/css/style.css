@@ -827,6 +827,9 @@ table.grid td {
 	white-space: nowrap;
 	padding-left: 20px;
 }
+table.grid td.wrap {
+	white-space: normal;
+}
 table.grid thead td {
 	color: #444;
 	line-height: 35px;
