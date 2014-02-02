@@ -174,6 +174,44 @@ use Destiny\Commerce\SubscriptionStatus;
 	</section>
 
 	<section class="container collapsible">
+		<h3><i class="icon-plus-sign icon-white"></i> Smurfs</h3>
+		<div class="content content-dark clearfix">
+			<div class="control-group">
+				Smurfs are alternative accounts of the user based on the fact that the
+				user is using the same IP address on every one of them.<br/>
+				The algorithm is the following:<br/>
+				We know the last 3 IP addresses of the user and we go and search for any
+				other user who has at least one in common.<br/>
+				This is <b>not</b> a sure thing.
+			</div>
+			<?php if(!empty($model->smurfs)): ?>
+			<table class="grid">
+				<thead>
+					<tr>
+						<td>Username</td>
+						<td>Email</td>
+						<td>Created</td>
+					</tr>
+				</thead>
+				<tbody>
+				<?php foreach($model->smurfs as $user): ?>
+					<tr>
+						<td><a href="/admin/user/<?=$user['userId']?>/edit><?=Tpl::out($user['username'])?></a></td>
+						<td><?=Tpl::out($user['email'])?></td>
+						<td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+			<?php else: ?>
+			<div class="control-group">
+				No smurfs found
+			</div>
+			<?php endif; ?>
+		</div>
+	</section>
+
+	<section class="container collapsible">
 		<h3><i class="icon-plus-sign icon-white"></i>  Ban / Mute</h3>
 		<div class="content content-dark clearfix">
 			<div class="clearfix">

@@ -557,4 +557,116 @@ class UserService extends Service {
 		return $conn->lastInsertId ();
 	}
 
+	/**
+	 * Get a chat ban by ID
+	 *
+	 * @param int $userId
+	 * @return int $count The number of rows modified
+	 */
+	public function removeUserBan( $userid ) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( "
+			UPDATE bans
+			SET endtimestamp = NOW()
+			WHERE
+				targetuserid = :targetuserid AND
+				(
+					endtimestamp IS NULL OR
+					endtimestamp >= NOW()
+				)
+		");
+		$stmt->bindValue ( 'targetuserid', $userid, \PDO::PARAM_INT );
+		$stmt->execute();
+		return $stmt->rowCount();
+	}
+
+	/**
+	 * Find users with the same IP as this user
+	 *
+	 * @param int $userId
+	 * @return array $users The users found
+	 */
+	public function findSameIPUsers( $userid ) {
+		$redis   = Application::instance ()->getRedis ();
+		$keys    = $this->callRedisScript('check-sameip-users', array( $userid ) );
+		return $this->getUsersFromRedisKeys('CHAT:userips-', $keys );
+	}
+
+	/**
+	 * Find users with the given IP
+	 *
+	 * @param string $ipaddress
+	 * @return array $users The users found
+	 */
+	public function findUsersWithIP( $ipaddress ) {
+		$redis   = Application::instance ()->getRedis ();
+		$keys    = $this->callRedisScript('check-ip', array( $ipaddress ) );
+		return $this->getUsersFromRedisKeys('CHAT:userips-', $keys );
+	}
+
+	/**
+	 * Get the users from the given redis keys, strip off the beginning of the keys
+	 * and parse the remaining string into an int, CHAT:userips-123 will be
+	 * transformed into (int)123 and than later users with the given ids
+	 * queried from the database ordered by username in ascending order
+	 *
+	 * @param string $ipaddress
+	 * @return array $users The users found
+	 */
+	private function getUsersFromRedisKeys( $keyprefix, $keys ) {
+		$userids = array();
+
+		foreach( $keys as $key ) {
+			$id = intval( substr( $key, strlen( $keyprefix ) ) );
+			if ( !$id )
+				throw new \Exception("Invalid id: $id from key: $key");
+
+			$userids[] = $id;
+		}
+		
+		if ( empty( $userids ) )
+			return $userids;
+
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare("
+			SELECT
+				userId,
+				username,
+				email,
+				createdDate
+			FROM dfl_users
+			WHERE userId IN('" . implode("', '", $userids ) . "')
+			ORDER BY username
+		");
+		return $stmt->fetchAll();
+
+	}
+
+	/**
+	 * Loads the given redis script if needed and calls it with the $arguments param
+	 *
+	 * @param string $scriptname
+	 * @param array $arguments
+	 * @return array $users The users found
+	 */
+	private function callRedisScript( $scriptname, $argument ) {
+		$redis = Application::instance ()->getRedis ();
+		$dir   = Config::$a ['redis'] ['scriptdir'];
+		$hash  = @file_get_contents( $dir . $scriptname . '.hash' );
+
+		if ( $hash ) {
+			$ret = $redis->evalSha( $hash, $argument );
+			if ( $ret ) return $ret;
+		}
+
+		$hash = $redis->script('load', file_get_contents( $dir . $scriptname . '.lua' ) );
+		if ( !$hash )
+			throw new \Exception('Unable to load script');
+
+		if ( !file_put_contents( $dir . $scriptname . '.hash', $hash ) )
+			throw new \Exception('Unable to save hash');
+
+		return $redis->evalSha( $hash, $argument );
+	}
+
 }
