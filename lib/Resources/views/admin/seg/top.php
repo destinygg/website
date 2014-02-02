@@ -3,6 +3,7 @@
 		<div class="navbar-inner">
 			<a class="brand">Administration</a>
 			<ul class="nav">
+				<li><a href="/admin/chat">Chat</a></li>
 				<li><a href="/admin">Users</a></li>
 				<li><a href="/admin/subscribers">Subscribers</a></li>
 				<li><a href="/admin/bans">Bans</a></li>

@@ -17,7 +17,6 @@ use Destiny\Common\MimeType;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
-use Destiny\Games\GamesService;
 use Destiny\Chat\ChatIntegrationService;
 
 /**

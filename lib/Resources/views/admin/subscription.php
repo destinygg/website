@@ -26,7 +26,7 @@ use Destiny\Common\Utils\Date;
 	<?php endif; ?>
 	
 	<section class="container">
-		<h3>Subscription <small>(<?=Tpl::out($model->user['username'])?>)</small></h3>
+		<h3>Subscription <small>(<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit"><?=Tpl::out($model->user['username'])?></a>)</small></h3>
 		<div class="content content-dark clearfix">
 			<div class="clearfix">
 				<?php 

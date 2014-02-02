@@ -276,7 +276,6 @@ $(function(){
 				$v.show();
 			}
 			$c.toggleClass('active');
-			return false;
 		});
 	});
 	

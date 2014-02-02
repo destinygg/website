@@ -15,7 +15,7 @@ use Destiny\Common\Config;
 	<?php include Tpl::file('admin/seg/top.php') ?>
 	
 	<section class="container">
-		<h3>Ban / Mute</h3>
+		<h3>Ban / Mute <small>(<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit"><?=Tpl::out($model->user['username'])?></a>)</small></h3>
 		<div class="content content-dark clearfix">
 			<div class="clearfix">
 				<?php 
