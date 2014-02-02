@@ -55,7 +55,7 @@ use Destiny\Common\Config;
 				<div>
 					<div class="panelheader clearfix">
 						<div class="toolgroup clearfix">
-							<div id="chat-panel-users" class="pull-left">
+							<div id="chat-panel-users" class="pull-left" style="display: none">
 								<span title="Total users"><i class="icon-user icon-white subtle"></i> <span id="chat-panel-usercount"></span></span>
 							</div>
 							<div id="chat-panel-tools" class="pull-right">
