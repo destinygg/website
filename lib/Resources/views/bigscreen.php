@@ -37,10 +37,7 @@ use Destiny\Common\Config;
 						</div>
 					</div>
 					<div class="twitch-element-wrap">
-						<div class="twitch-overlay to-botright"></div>
-						<div class="twitch-overlay to-botleft"></div>
 						<div class="twitch-overlay to-main"></div>
-						<div class="twitch-fsbtn"></div>
 						<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=destiny" height="100%" width="100%">
 							<param name="allowFullScreen" value="true">
 							<param name="allowScriptAccess" value="always">
