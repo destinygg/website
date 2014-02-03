@@ -13,8 +13,8 @@ use Destiny\Common\Utils\Date;
 				<div id="live-info-wrap">
 					<div>
 						<div class="pull-right">
-							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-inverse">Pop-out chat</a>
-							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-inverse">Pop-out stream</a>
+							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-link">Pop-out chat</a>
+							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-link">Pop-out stream</a>
 						</div>
 						<h1 title="<?=Tpl::out($model->streamInfo['status'])?>"><?=Tpl::out($model->streamInfo['status'])?></h1>
 						<div id="live-info">
@@ -23,6 +23,7 @@ use Destiny\Common\Utils\Date;
 							~<span class="live-info-viewers"><?=Tpl::out((!empty($model->streamInfo['stream'])) ? $model->streamInfo['stream']['viewers'] : 0)?></span> viewers
 						</div>
 						<a id="live-link" href="/bigscreen" class="btn btn-primary btn-large"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>
+						<small>&nbsp; Prefer the old layout? <a href="/stream">try this</a></small>
 					</div>
 				</div>
 			</div>
@@ -38,8 +39,8 @@ use Destiny\Common\Utils\Date;
 				<div id="live-info-wrap">
 					<div>
 						<div class="pull-right">
-							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-inverse">Pop-out chat</a>
-							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-inverse">Pop-out stream</a>
+							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-link">Pop-out chat</a>
+							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-link">Pop-out stream</a>
 						</div>
 						<h1>Stream currently offline</h1>
 						<div id="live-info">
@@ -48,6 +49,7 @@ use Destiny\Common\Utils\Date;
 							Was playing <strong class="offline-info-game"><?=(!empty($model->streamInfo['game'])) ? Tpl::out($model->streamInfo['game']) : ''?></strong><br />
 						</div>
 						<a href="/bigscreen" class="btn btn-large btn-inverse">Join the chat while you wait!</a>
+						<small>&nbsp; Prefer the old layout? <a href="/stream">try this</a></small>
 					</div>
 				</div>
 			</div>
