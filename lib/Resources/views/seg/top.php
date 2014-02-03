@@ -29,7 +29,7 @@ use Destiny\Common\Session;
 					<li class="divider-vertical"></li>
 					<?php if(Session::hasRole(UserRole::USER)): ?>
 					<li><a href="/profile" rel="profile">Profile</a></li>
-					<li><a href="#" rel="signout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
+					<li><a href="/logout" title="Sign out"><i class="icon-off icon-white subtle"></i></a></li>
 					<?php else:?>
 					<li><a href="/login" rel="login">Sign In</a></li>
 					<?php endif; ?>

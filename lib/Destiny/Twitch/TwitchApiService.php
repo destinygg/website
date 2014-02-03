@@ -8,6 +8,7 @@ use Destiny\Common\MimeType;
 use Destiny\Common\CurlBrowser;
 use Destiny\Common\Utils\String;
 use Destiny\Common\Utils\Date;
+use Destiny\Common\Application;
 
 class TwitchApiService extends Service {
 	
@@ -56,20 +57,36 @@ class TwitchApiService extends Service {
 				if (empty($json) || isset ( $json ['status'] ) && $json ['status'] == 503) {
 					throw new Exception ( 'Twitch api down' );
 				}
-				if (is_object ( $json ) && isset ( $json ['stream'] ) && $json ['stream'] != null) {
-					$json ['stream'] ['channel'] ['updated_at'] = Date::getDateTime ( $json ['stream'] ['channel'] ['updated_at'] )->format ( Date::FORMAT );
-				}
+				
 				// Last broadcast if the stream is offline
 				// Called via static method, because we are in a closure
 				$channel = self::instance ()->getChannel ()->getResponse ();
-			
 				if (empty ( $channel ) || ! is_array ( $channel )) {
 					throw new Exception ( sprintf('Invalid stream channel response %s', $channel) );
 				}
 				
+				if (is_object ( $json ) && isset ( $json ['stream'] ) && $json ['stream'] != null) {
+					$json ['stream'] ['channel'] ['updated_at'] = Date::getDateTime ( $json ['stream'] ['channel'] ['updated_at'] )->format ( Date::FORMAT );
+				}
+				
 				$json ['lastbroadcast'] = Date::getDateTime ( $channel ['updated_at'] )->format ( Date::FORMAT );
+				$json ['video_banner'] = $channel ['video_banner'];
+				$json ['previousbroadcast'] = null;
 				$json ['status'] = $channel ['status'];
 				$json ['game'] = $channel ['game'];
+						
+				// Previous broadcast
+				$app = Application::instance ();
+				$broadcasts = $app->getCacheDriver ()->fetch ( 'pastbroadcasts' );
+				if (! empty ( $broadcasts ) && ! empty ( $broadcasts ['videos'] )) {
+					$broadcast = array ();
+					$broadcast ['length'] = $broadcasts ['videos'] [0] ['length'];
+					$broadcast ['preview'] = $broadcasts ['videos'] [0] ['preview'];
+					$broadcast ['url'] = $broadcasts ['videos'] [0] ['url'];
+					$broadcast ['recorded_at'] = $broadcasts ['videos'] [0] ['recorded_at'];
+					$broadcast ['views'] = $broadcasts ['videos'] [0] ['views'];
+					$json ['previousbroadcast'] = $broadcast;
+				}
 				
 				// Just some clean up
 				if (isset ( $json ['_links'] )) {

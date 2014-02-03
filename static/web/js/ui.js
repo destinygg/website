@@ -125,30 +125,44 @@ $(function(){
 		}
 	});
 	
+	var onlinebanner  = $('#online-banner-view'),
+		offlinebanner = $('#offline-banner-view'),
+		statusbanners = $('#status-banners');
+	
 	// Stream details
 	new DestinyFeedConsumer({
 		url: destiny.baseUrl + 'stream.json',
 		polling: 30,
 		ifModified: true,
 		start: false,
-		ui: '#live-banner-view',
+		ui: 'body#home',
 		success: function(data, textStatus){
-
-			var ui = $('#live-banner-view');
 			
-			if(textStatus == 'notmodified') 
+			if(!data || textStatus == 'notmodified') 
 				return;
 			
 			if(data != null && data.stream != null){
-				ui.find('#live-preview a').attr('title', data.status);
-				ui.find('#live-preview img').attr('src', data.stream.preview.medium);
-				ui.find('#live-info-wrap .live-info-game').text(data.game);
-				ui.find('#live-info-wrap .live-info-updated').text(moment(data.stream.channel.updated_at).fromNow());
-				ui.find('#live-info-wrap .live-info-viewers').text(data.stream.viewers);
-				ui.show();
+				onlinebanner.find('.preview a').attr('title', data.status);
+				onlinebanner.find('.preview a').css('background-image', 'url('+data.stream.preview.medium+')');
+				onlinebanner.find('.live-info-game').text(data.game);
+				onlinebanner.find('.live-info-updated').text(moment(data.stream.channel.updated_at).fromNow());
+				onlinebanner.find('.live-info-viewers').text(data.stream.viewers);
+				onlinebanner.show().appendTo(statusbanners);
+				offlinebanner.detach();
 			}else{
-				ui.hide();
+				offlinebanner.find('.offline-status').text(data.status);
+				offlinebanner.find('.offline-info-lastbroadcast').text(moment(data.lastbroadcast).fromNow());
+				offlinebanner.find('.offline-info-game').text(data.game);
+				
+				if(data.previousbroadcast)
+					offlinebanner.find('.preview a').css('background-image', 'url('+data.previousbroadcast.preview+')');
+				else
+					offlinebanner.find('.preview a').css('background-image', 'url('+data.video_banner+')');
+				
+				offlinebanner.show().appendTo(statusbanners);
+				onlinebanner.detach();
 			}
+			
 		}
 	});
 	
@@ -172,13 +186,6 @@ $(function(){
 		}
 	}, 8000);
 	
-	// Navigation
-	$('.nav a[rel="signout"]').click(function(){
-		if(confirm('Are you sure?')){
-			window.location.href = destiny.baseUrl + 'Logout';
-		};
-	});
-	
 	// Bigscreen
 	$('body#bigscreen').each(function(){
 		var offset = $('#main-nav').outerHeight();
@@ -201,8 +208,6 @@ $(function(){
 				streamPlayer.height(offsetHeight - (offset + streamHeader.height()));
 			}
 		};
-		
-		
 		
 		$(window).on('resize', _resize);
 		_resize();
@@ -234,7 +239,6 @@ $(function(){
 					$('#chat-panel').remove();
 				});
 			});
-				
 		});
 		
 		new DestinyFeedConsumer({
@@ -261,13 +265,6 @@ $(function(){
 		
 	});
 	
-	// refresh-form captcha
-	$('form .refresh-captcha').click(function(){
-		var img = $(this).prev(), src = img.attr('src');
-		img.removeAttr('str').attr('src', src);
-		return false;
-	});
-	
 	// Add collapses
 	$(".collapse").collapse();
 	
@@ -289,7 +286,8 @@ $(function(){
 	});
 	
 	// Tabs selector - dont know why I need this
-	if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
+	if (location.hash !== '') 
+		$('a[href="' + location.hash + '"]').tab('show');
 
 	// Set the top nav selection
 	$('body').each(function(){
