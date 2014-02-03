@@ -54,14 +54,37 @@ class Route {
 	 */
 	public function testPath($path, $method) {
 		if (empty ( $this->httpMethod ) || in_array ( $method, $this->httpMethod )) {
-			if (strcasecmp ( $this->getPath (), $path ) === 0) {
+
+			// Remove trailing slash
+			if (strlen ( $path ) > 1 && substr ( $path, - 1 ) === '/')
+				$path = substr ( $path, 0, - 1 );
+				
+			// Path without extention
+			$extlessPath = $this->stripPathExtention($path);
+
+			// Exact
+			if (strcasecmp ( $this->getPath (), $path ) === 0 || strcasecmp ( $this->getPath (), $extlessPath ) === 0)
 				return true;
-			}
-			if (Params::match ( $this->getPath (), $path )) {
+
+			// Regex match
+			if (Params::match ( $this->getPath (), $path ) || Params::match ( $this->getPath (), $extlessPath ))
 				return true;
-			}
+			
 		}
 		return false;
+	}
+	
+	/**
+	 * @param string $path
+	 * @return string
+	 */
+	private function stripPathExtention($path){
+		// Remove ext
+		$ext = pathinfo ( $path, PATHINFO_EXTENSION );
+		if (! empty ( $ext )) {
+			$path = substr ( $path, 0, - (strlen ( $ext ) + 1) );
+		}
+		return $path;
 	}
 
 	public function getPath() {

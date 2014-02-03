@@ -45,13 +45,6 @@ class Router {
 	 * @return Route
 	 */
 	public function findRoute($path, $method) {
-		$ext = pathinfo ( $path, PATHINFO_EXTENSION );
-		if (! empty ( $ext )) {
-			$path = substr ( $path, 0, - (strlen ( $ext ) + 1) );
-		}
-		if (strlen ( $path ) > 1 && substr ( $path, - 1 ) === '/') {
-			$path = substr ( $path, 0, - 1 );
-		}
 		for($i = 0; $i < count ( $this->routes ); ++ $i) {
 			if ($this->routes [$i]->testPath ( $path, $method )) {
 				return $this->routes [$i];
