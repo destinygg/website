@@ -8,7 +8,7 @@ use Destiny\Common\Utils\Date;
 		<div class="content">
 			<div id="live-banner">
 				<div class="preview">
-					<a href="/bigscreen" title="<?=Tpl::out($model->streamInfo['status'])?>" <?=(!empty($model->streamInfo['stream'])) ? 'background: url('. Tpl::out($model->streamInfo['stream']['preview']['medium']) .') no-repeat center center;' : ''?>></a>
+					<a href="/bigscreen" title="<?=Tpl::out($model->streamInfo['status'])?>" style="<?=(!empty($model->streamInfo['stream'])) ? 'background: url('. Tpl::out($model->streamInfo['stream']['preview']['medium']) .') no-repeat center center;' : ''?>"></a>
 				</div>
 				<div id="live-info-wrap">
 					<div>
@@ -23,7 +23,7 @@ use Destiny\Common\Utils\Date;
 							~<span class="live-info-viewers"><?=Tpl::out((!empty($model->streamInfo['stream'])) ? $model->streamInfo['stream']['viewers'] : 0)?></span> viewers
 						</div>
 						<a id="live-link" href="/bigscreen" class="btn btn-primary btn-large"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>
-						<small>&nbsp; Prefer the old layout? <a href="/stream">try this</a></small>
+						<small>&nbsp; Prefer the old layout? <a href="/screen">try this</a></small>
 					</div>
 				</div>
 			</div>
@@ -49,7 +49,7 @@ use Destiny\Common\Utils\Date;
 							Was playing <strong class="offline-info-game"><?=(!empty($model->streamInfo['game'])) ? Tpl::out($model->streamInfo['game']) : ''?></strong><br />
 						</div>
 						<a href="/bigscreen" class="btn btn-large btn-inverse">Join the chat while you wait!</a>
-						<small>&nbsp; Prefer the old layout? <a href="/stream">try this</a></small>
+						<small>&nbsp; Prefer the old layout? <a href="/screen">try this</a></small>
 					</div>
 				</div>
 			</div>
