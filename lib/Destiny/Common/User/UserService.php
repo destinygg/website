@@ -474,7 +474,7 @@ class UserService extends Service {
 	 *
 	 * @return array
 	 */
-	public function getUserActiveBan($userId) {
+	public function getUserActiveBan($userId, $ipaddress = null) {
 		$conn = Application::instance ()->getConnection ();
 		$stmt = $conn->prepare ( '
 			SELECT
@@ -491,12 +491,23 @@ class UserService extends Service {
 				bans AS b
 				INNER JOIN dfl_users AS u ON u.userId = b.userid
 				INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
-			WHERE b.targetuserid = :userId AND b.starttimestamp < NOW() AND (b.endtimestamp > NOW() OR b.endtimestamp IS NULL)
+			WHERE
+				(
+					b.targetuserid = :userId
+					' . ( $ipaddress? 'OR b.ipaddress = :ipaddress': '' ) . '
+				) AND
+				b.starttimestamp < NOW() AND
+				(
+					b.endtimestamp > NOW() OR
+					b.endtimestamp IS NULL
+				)
 			GROUP BY b.targetuserid
 			ORDER BY b.id DESC
 			LIMIT 0,1
 		' );
 		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		if ( $ipaddress )
+			$stmt->bindValue ( 'ipaddress', $ipaddress, \PDO::PARAM_STR );
 		$stmt->execute ();
 		return $stmt->fetch ();
 	}

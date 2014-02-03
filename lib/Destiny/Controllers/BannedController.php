@@ -24,7 +24,7 @@ class BannedController {
 	public function banned(array $params, ViewModel $model) {
 		$userService = UserService::instance ();
 		$creds = Session::getCredentials ();
-		$model->ban = $userService->getUserActiveBan ( $creds->getUserId () );
+		$model->ban = $userService->getUserActiveBan ( $creds->getUserId (), $_SERVER['REMOTE_ADDR'] );
 		$model->banType = 'none';
 		if (! empty ( $model->ban )) {
 			if (! $model->ban ['endtimestamp']) {
