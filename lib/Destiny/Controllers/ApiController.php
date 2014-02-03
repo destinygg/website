@@ -14,7 +14,7 @@ use Destiny\Common\Annotation\Route;
 class ApiController {
 
 	/**
-	 * @Route ("/youtube")
+	 * @Route ("/youtube.json")
 	 *
 	 * @param array $params
 	 */
@@ -29,7 +29,7 @@ class ApiController {
 	}
 
 	/**
-	 * @Route ("/twitter")
+	 * @Route ("/twitter.json")
 	 *
 	 * @param array $params
 	 */
@@ -44,22 +44,7 @@ class ApiController {
 	}
 
 	/**
-	 * @Route ("/summoners")
-	 *
-	 * @param array $params
-	 */
-	public function summoners(array $params) {
-		$app = Application::instance ();
-		$summoners = $app->getCacheDriver ()->fetch ( 'summoners' );
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $summoners ) );
-		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
-		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
-		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-		return $response;
-	}
-
-	/**
-	 * @Route ("/stream")
+	 * @Route ("/stream.json")
 	 *
 	 * @param array $params
 	 */
@@ -74,7 +59,7 @@ class ApiController {
 	}
 
 	/**
-	 * @Route ("/lastfm")
+	 * @Route ("/lastfm.json")
 	 *
 	 * @param array $params
 	 */
@@ -89,7 +74,7 @@ class ApiController {
 	}
 
 	/**
-	 * @Route ("/broadcasts")
+	 * @Route ("/broadcasts.json")
 	 *
 	 * @param array $params
 	 */

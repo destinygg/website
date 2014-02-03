@@ -19,26 +19,37 @@ abstract class RouteAnnotationClassLoader {
 	public static function loadClass(ReflectionClass $refl, Reader $reader) {
 		$router = Application::instance ()->getRouter ();
 		$annotation = $reader->getClassAnnotation ( $refl, 'Destiny\Common\Annotation\Controller' );
-		if (empty ( $annotation ))
+		if (empty ( $annotation))
 			return;
 		
 		$methods = $refl->getMethods ( ReflectionMethod::IS_PUBLIC );
 		foreach ( $methods as $method ) {
-			$routeAnnotation = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Route' );
-			if (! ($routeAnnotation instanceof \Destiny\Common\Annotation\Route))
+			// Get all the route annotations
+			$routes = array ();
+			$annotations = $reader->getMethodAnnotations ( $method );
+			for($i=0; $i < count($annotations); ++$i){
+				if($annotations[$i] instanceof \Destiny\Common\Annotation\Route){
+					$routes[] = $annotations[$i];
+				}
+			}
+			// No routes, continue
+			if(count($routes) <= 0)
 				continue;
 			
+			// We have 1 or many routes, add to the router
 			$httpMethod = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\HttpMethod' );
 			$secure = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Secure' );
 			$feature = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Feature' );
-			$router->addRoute ( new Route ( array (
-					'path' => $routeAnnotation->path,
+			for($i=0; $i < count($routes); ++$i){
+				$router->addRoute ( new Route ( array (
+					'path' => $routes[$i]->path,
 					'classMethod' => $method->name,
 					'class' => $refl->name,
 					'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
 					'secure' => ($secure) ? $secure->roles : null,
-					'feature' => ($feature) ? $feature->features : null 
-			) ) );
+					'feature' => ($feature) ? $feature->features : null
+				) ) );
+			}
 		}
 	}
 }

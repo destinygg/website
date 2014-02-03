@@ -208,25 +208,33 @@ $(function(){
 		_resize();
 		
 		$('iframe#chat-frame').on('load', function(){
-			var chatframe = this.contentWindow;
-			if(chatframe){
+			var chatframe           = this.contentWindow,
+				chatUsersPanel      = $('#chat-panel-users'),
+				chatUsersPanelCount = chatUsersPanel.find('#chat-panel-usercount');
+			
+			if(!chatframe)
+				return;
 				
-				chatframe.destiny.chat.gui.on('names join quit', function(e, data){
-					$('#chat-panel-users').show();
-					$('#chat-panel-usercount').text(Object.keys(this.engine.users).length);
-				});
+			chatframe.destiny.chat.gui.on('names join quit', function(e, data){
+				var userCount = Object.keys(this.engine.users).length;
+				if(userCount > 0){
+					chatUsersPanel.show();
+					chatUsersPanelCount.text("~"+userCount);
+				}else{
+					chatUsersPanel.hide();
+				}
+			});
 
-				$('#chat-panel-tools').each(function(){
-					$(this).on('click', '.icon-refresh', function(){
-						chatframe.location.reload();
-					});
-					$(this).on('click', '.icon-remove', function(){
-						$('body').addClass('nochat');
-						$('#chat-panel').remove();
-					});
+			$('#chat-panel-tools').each(function(){
+				$(this).on('click', '.icon-refresh', function(){
+					chatframe.location.reload();
 				});
+				$(this).on('click', '.icon-remove', function(){
+					$('body').addClass('nochat');
+					$('#chat-panel').remove();
+				});
+			});
 				
-			};
 		});
 		
 		new DestinyFeedConsumer({
