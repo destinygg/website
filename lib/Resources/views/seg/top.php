@@ -3,13 +3,13 @@ namespace Destiny;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Session; 
 ?>
-<div id="main-nav" class="navbar navbar-inverse ">
+<div id="main-nav" class="navbar navbar-inverse">
 	<div class="navbar-inner">
 		<div class="container">
 			<div class="nav-collapse collapse">
 				<a class="brand pull-left" href="/">Destiny.gg</a>
 				<ul id="top-left-nav" class="nav">
-					<li class="home"><a title="Home Page" href="/"><i class="icon-home icon-white subtle"></i></a></li>
+					<li><a title="Contact me by email" target="_blank" href="mailto:steven.bonnell.ii@gmail.com">@Contact</a></li>
 					<li><a title="Blog @ destiny.gg" href="http://blog.destiny.gg">Blog</a></li>
 					<li><a title="twitter.com" href="https://twitter.com/Steven_Bonnell/">Twitter</a></li>
 					<li><a title="youtube.com" href="http://www.youtube.com/user/Destiny">Youtube</a></li>

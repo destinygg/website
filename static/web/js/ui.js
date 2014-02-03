@@ -1,6 +1,25 @@
 // Document ready
 $(function(){
 	
+	// Generic popup defaults
+	var popupDefaults = {
+		height     :500,
+		width      :420,
+		scrollbars :0,
+		toolbar    :0,
+		location   :0,
+		status     :'no',
+		menubar    :0,
+		resizable  :0,
+		dependent  :0
+	};
+	var buildPopupOptionsString = (function(options){
+		var str = '';
+		for(var i in options)
+			str += i + options[i] +',';
+		return str;
+	});
+	
 	// Lastfm
 	new DestinyFeedConsumer({
 		url: destiny.baseUrl + 'lastfm.json',
@@ -230,13 +249,21 @@ $(function(){
 				}
 			});
 
-			$('#chat-panel-tools').each(function(){
+			$('#chat-panel-tools').each(function(e){
+				$(this).on('click', '.icon-share', function(){
+					window.open('/embed/chat','_blank',buildPopupOptionsString(popupDefaults));
+					$('body').addClass('nochat');
+					$('#chat-panel').remove();
+					return false;
+				});
 				$(this).on('click', '.icon-refresh', function(){
 					chatframe.location.reload();
+					return false;
 				});
 				$(this).on('click', '.icon-remove', function(){
 					$('body').addClass('nochat');
 					$('#chat-panel').remove();
+					return false;
 				});
 			});
 		});
@@ -296,27 +323,10 @@ $(function(){
 	});
 	
 	// Generic popup links
-	var popupDefaults = {
-		height     :500,
-		width      :420,
-		scrollbars :0,
-		toolbar    :0,
-		location   :0,
-		status     :'no',
-		menubar    :0,
-		resizable  :0,
-		dependent  :0
-	};
 	$('body').on('click', 'a.popup', function(e){
 		var a   = $(this),
-			opt = $.extend({}, a.data('options'), popupDefaults),
-			optstr = (function(){
-				var str = '';
-				for(var i in opt)
-					str+= i + opt[i] +',';
-				return str;
-			});
-		a.data('popup', window.open(a.attr('href'),'_blank',optstr));
+			opt = $.extend({}, a.data('options'), popupDefaults);
+		a.data('popup', window.open(a.attr('href'), '_blank', buildPopupOptionsString(opt)));
 		e.preventDefault();
 	});
 	

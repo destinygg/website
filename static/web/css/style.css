@@ -108,6 +108,9 @@ input[disabled] {
 	box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 	margin: 0;
 }
+.navbar .container {
+	min-width:940px;
+}
 @media (min-width: 1200px) {
 	.navbar .container {
 		width: 1170px;
@@ -1033,14 +1036,11 @@ body#bigscreen #chat-panel-tools a {
 body#bigscreen #chat-panel-tools a:hover {
 	opacity: 0.75;
 }
-body#bigscreen #chat-panel-users span {
-	cursor: pointer;
-}
 
 body#bigscreen .container {
 	width: auto;
 	max-width: 100%;
-	min-width: 900px;
+	min-width: 940px;
 }
 
 body#admin #main-nav .brand,
@@ -1049,6 +1049,14 @@ body#bigscreen #main-nav .brand {
 	background: url("../img/destinygg.small.png") no-repeat center center;
 	display: block;
 	width: 224px;
+	display: none;
+}
+
+@media (min-width: 1160px) {
+	body#admin #main-nav .brand,
+	body#bigscreen #main-nav .brand {
+		display: block;
+	}
 }
 
 body#bigscreen.nochat #stream-panel > div {
