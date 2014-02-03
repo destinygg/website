@@ -59,13 +59,13 @@ class HomeController {
 	}
 
 	/**
-	 * @Route ("/stream")
+	 * @Route ("/screen")
 	 *
 	 * @param array $params
 	 * @param ViewModel $model
 	 * @return string
 	 */
-	public function stream(array $params, ViewModel $model) {
+	public function screen(array $params, ViewModel $model) {
 		$app = Application::instance ();
 		$cacheDriver = $app->getCacheDriver ();
 		$model->articles = $cacheDriver->fetch ( 'recentblog' );
@@ -75,7 +75,7 @@ class HomeController {
 		$model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
 		$model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
 		$model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
-		return 'stream';
+		return 'screen';
 	}
 
 	/**
