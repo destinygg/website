@@ -15,7 +15,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="stream">
+<body id="screen">
 	<?php include Tpl::file('seg/top.php') ?>
 	<?php include Tpl::file('seg/headerband.php') ?>
 	<?php include Tpl::file('seg/panel.twitch.php') ?>
