@@ -1220,3 +1220,89 @@ body#emoticons .emote-label:hover {
 	margin-bottom: 1em;
 	color: #666;
 }
+
+/**
+ * The panels on the /stream page
+ */
+#twitchpanel .panelheader .game>div {
+	padding: 0 0 0 10px;
+	display: inline-block;
+}
+
+#twitchpanel .panelheader {
+	border-radius: 6px 6px 0 0;
+}
+
+#twitchpanel .panelheader .toolgroup {
+	padding: 5px;
+	color: #777;
+	font-size: 12px;
+	line-height: 22px;
+}
+
+#twitchpanel .panelheader .toolgroup strong {
+	color: #ececec;
+	font-weight: normal;
+}
+
+#twitchpanel.split-view > .content,
+#twitchpanel.single-view > .content {
+	border-bottom: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+#twitchpanel.split-view .panelheader .toolgroup,
+#twitchpanel.single-view .panelheader .toolgroup {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#twitchpanel #twitch-elements {
+	overflow: hidden;
+}
+
+#twitchpanel .twitch-element,#twitchpanel .twitch-element-wrap {
+	width: 100%;
+	height: 475px;
+}
+
+#twitchpanel #player-embed object {
+	height: 476px;
+}
+
+#twitchpanel.split-view #player-embed {
+	width: 68%;
+}
+
+#twitchpanel.split-view #chat-embed {
+	width: 32%;
+	background: white;
+}
+
+#twitchpanel.single-view .twitch-element,
+#twitchpanel.single-view .twitch-element-wrap {
+	width: 100%;
+	height: 559px;
+}
+
+#twitchpanel.single-view #player-embed object {
+	height: 560px;
+}
+
+#twitchpanel #player-embed.defocus {
+	position: relative;
+}
+
+#twitchpanel #player-embed.defocus object {
+	display: none;
+}
+
+#twitchpanel a#popoutvideo,
+#twitchpanel a#popoutchat {
+	text-shadow: none;
+}
+
+#twitchpanel a#popoutvideo.btn-down,
+#twitchpanel a#popoutchat.btn-down {
+	color: #ccc;
+}
