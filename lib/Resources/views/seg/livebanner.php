@@ -13,8 +13,8 @@ use Destiny\Common\Utils\Date;
 				<div id="live-info-wrap">
 					<div>
 						<div class="pull-right">
-							<a target="_blank" href="/embed/chat" class="btn btn-mini btn-inverse">Pop-out chat</a>
-							<a target="_blank" href="/embed/stream" class="btn btn-mini btn-inverse">Pop-out stream</a>
+							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-inverse">Pop-out chat</a>
+							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-inverse">Pop-out stream</a>
 						</div>
 						<h1 title="<?=Tpl::out($model->streamInfo['status'])?>"><?=Tpl::out($model->streamInfo['status'])?></h1>
 						<div id="live-info">
@@ -38,8 +38,8 @@ use Destiny\Common\Utils\Date;
 				<div id="live-info-wrap">
 					<div>
 						<div class="pull-right">
-							<a target="_blank" href="/embed/chat" class="btn btn-mini btn-inverse">Pop-out chat</a>
-							<a target="_blank" href="/embed/stream" class="btn btn-mini btn-inverse">Pop-out stream</a>
+							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-inverse">Pop-out chat</a>
+							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-inverse">Pop-out stream</a>
 						</div>
 						<h1>Stream currently offline</h1>
 						<div id="live-info">

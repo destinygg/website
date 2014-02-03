@@ -295,6 +295,31 @@ $(function(){
 		$('.navbar a[rel="'+$('body').attr('class')+'"]').closest('li').addClass('active');
 	});
 	
+	// Generic popup links
+	var popupDefaults = {
+		height     :500,
+		width      :420,
+		scrollbars :0,
+		toolbar    :0,
+		location   :0,
+		status     :'no',
+		menubar    :0,
+		resizable  :0,
+		dependent  :0
+	};
+	$('body').on('click', 'a.popup', function(e){
+		var a   = $(this),
+			opt = $.extend({}, a.data('options'), popupDefaults),
+			optstr = (function(){
+				var str = '';
+				for(var i in opt)
+					str+= i + opt[i] +',';
+				return str;
+			});
+		a.data('popup', window.open(a.attr('href'),'_blank',optstr));
+		e.preventDefault();
+	});
+	
 	// Lazy load images
 	$(this).loadImages();
 	$(this).find('[data-toggle="tooltip"]').tooltip();
