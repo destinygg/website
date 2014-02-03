@@ -36,9 +36,10 @@ use Destiny\Common\Config;
 							<div class="pull-right channel-stat" style="text-align:right;"><?=Tpl::out($model->streamInfo['status'])?></div>
 						</div>
 					</div>
-					<div class="twitch-element-wrap">
-						<div class="twitch-overlay to-main"></div>
-						<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=destiny" height="100%" width="100%">
+					<div class="stream-element-wrap">
+						<div class="stream-overlay main"></div>
+						<div class="stream-overlay fsbtn" title="Fullscreen"></div>
+						<object class="stream-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=destiny" height="100%" width="100%">
 							<param name="allowFullScreen" value="true">
 							<param name="allowScriptAccess" value="always">
 							<param name="allowNetworking" value="all">
@@ -65,7 +66,7 @@ use Destiny\Common\Config;
 							</div>
 						</div>
 					</div>
-					<iframe id="chat-frame" class="twitch-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
+					<iframe id="chat-frame" class="stream-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
 				</div>
 			</div>
 		</div>

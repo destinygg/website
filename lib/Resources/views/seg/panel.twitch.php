@@ -24,9 +24,11 @@ use Destiny\Common\Config;
 				</div>
 			</div>
 		</div>
-		<div id="twitch-elements" class="clearfix">
-			<div id="player-embed" class="twitch-element-wrap pull-left">
-				<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%">
+		<div class="clearfix">
+			<div id="player-embed" class="stream-element-wrap pull-left">
+				<div class="stream-overlay main"></div>
+				<div class="stream-overlay fsbtn" title="Fullscreen"></div>
+				<object class="stream-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%">
 					<param name="allowFullScreen" value="true">
 					<param name="allowScriptAccess" value="always">
 					<param name="allowNetworking" value="all">
@@ -34,8 +36,8 @@ use Destiny\Common\Config;
 					<param name="flashvars" value="hostname=www.twitch.tv&amp;channel=<?=Config::$a['twitch']['user']?>&amp;auto_play=true&amp">
 				</object>
 			</div>
-			<div id="chat-embed" class="twitch-element-wrap pull-left">
-				<iframe class="twitch-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
+			<div id="chat-embed" class="stream-element-wrap pull-left">
+				<iframe class="stream-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>
 			</div>
 		</div>
 	</div>
