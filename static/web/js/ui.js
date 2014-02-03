@@ -213,8 +213,8 @@ $(function(){
 			var bodyHeight    = $('body').height(),
 				offset        = $('#main-nav').outerHeight(),
 				contentUi     = $('#page-content'), 
-				chatUi        = $('#chat-panel .twitch-element'),
-				streamPlayer  = $('#stream-panel .twitch-element'),
+				chatUi        = $('#chat-panel .stream-element'),
+				streamPlayer  = $('#stream-panel .stream-element'),
 				streamHeader  = $('#stream-panel .panelheader');
 			
 			// If we are in fullscreen mode
@@ -395,5 +395,60 @@ $(function(){
 			parent.remove();
 		
 	})
+	
+})();
+
+(function(){
+
+	/**
+	 * Iterate over browser variants of the given fullscreen API function string,
+	 * and if found, call it on the given element.
+	 */	
+	var fullscreenFn = function(fn, elem) {
+		var agents = ["webkit", "moz", "ms", "o", ""];
+		for (var i = agents.length - 1; i >= 0; i--) {
+			var agent  = agents[i],
+			    fullFn = null;
+			
+			if (!agent) // if no agent the function starts with a lower case letter
+				fullFn = fn.substr(0,1).toLowerCase() + fn.substr(1);
+			else // just preprend the agent to the function
+				fullFn = agent + fn;
+			
+			if (typeof elem[fullFn] != "function")
+				continue;
+			
+			elem[fullFn]();
+			break;
+		};
+	};
+	
+	// Toggles player fullscreen using the global fullscreen flag
+	var toggleFullscreen = function(event, element) {
+		if(document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen){
+			fullscreenFn("CancelFullScreen", document);
+			$(element).removeClass('fullscreened');
+		} else {
+			fullscreenFn("RequestFullScreen", element);
+			$(element).addClass('fullscreened');
+		}
+	}
+	
+	// Global fullscreen change event (using ESC to cancel fullscreen
+	$(document).on("fullscreenchange mozfullscreenchange webkitfullscreenchange", function () {
+		if(!(document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen)){
+			$('.fullscreened').removeClass('fullscreened');
+		}
+	});
+	
+	// Stream overloays
+	$('.stream-overlay.main').on('dblclick', function(e){
+		toggleFullscreen(e, $(this).parent().get(0));
+		return false;
+	});
+	$('.stream-overlay.fsbtn').on('click', function(e){
+		toggleFullscreen(e, $(this).parent().get(0));
+		return false;
+	});
 	
 })();

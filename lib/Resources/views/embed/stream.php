@@ -11,7 +11,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body class="embed">
-	<object class="twitch-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%">
+	<object class="stream-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%">
 		<param name="allowFullScreen" value="true">
 		<param name="allowScriptAccess" value="always">
 		<param name="allowNetworking" value="all">

@@ -937,6 +937,37 @@ table.grid .rank {
 }
 
 /**
+ * Used to stop embedded player from linking to an external site when accidentally clicked
+ **/
+.stream-overlay {
+	position: absolute;
+	z-index: 10;
+}
+.stream-overlay.main {
+	left: 0px;
+	right: 0px;	
+	top: 0px;
+	bottom: 34px;	
+}
+.stream-overlay.fsbtn {
+	cursor: pointer;
+	width: 30px;
+	height: 34px;
+	right: 0;
+	bottom: 0;	
+}
+.stream-element-wrap {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.fullscreened,
+.fullscreened object {
+	width: 100% !important;
+	height: 100% !important;
+}
+
+/**
  *  Bigscreen page
  */
 body#bigscreen #stream-panel {
@@ -945,21 +976,6 @@ body#bigscreen #stream-panel {
 	height: auto; 
 	min-height: 100%;
 	position: relative;
-}
-body#bigscreen #stream-panel .twitch-element-wrap {
-	position: relative;
-	width: 100%;
-	height: 100%;
-}
-body#bigscreen #stream-panel .twitch-overlay {
-	position: absolute;
-	z-index: 10;
-}
-body#bigscreen #stream-panel .twitch-overlay.to-main {
-	left: 0px;
-	top: 0px;
-	bottom: 34px;
-	right: 0px;
 }
 body#bigscreen #stream-panel > div {
 	margin:0 0 0 400px;	
@@ -1235,11 +1251,8 @@ body#emoticons .emote-label:hover {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-#twitchpanel #twitch-elements {
-	overflow: hidden;
-}
-
-#twitchpanel .twitch-element,#twitchpanel .twitch-element-wrap {
+#twitchpanel .stream-element,
+#twitchpanel .stream-element-wrap {
 	width: 100%;
 	height: 475px;
 }
@@ -1257,8 +1270,8 @@ body#emoticons .emote-label:hover {
 	background: white;
 }
 
-#twitchpanel.single-view .twitch-element,
-#twitchpanel.single-view .twitch-element-wrap {
+#twitchpanel.single-view .stream-element,
+#twitchpanel.single-view .stream-element-wrap {
 	width: 100%;
 	height: 559px;
 }
