@@ -59,6 +59,26 @@ class HomeController {
 	}
 
 	/**
+	 * @Route ("/stream")
+	 *
+	 * @param array $params
+	 * @param ViewModel $model
+	 * @return string
+	 */
+	public function stream(array $params, ViewModel $model) {
+		$app = Application::instance ();
+		$cacheDriver = $app->getCacheDriver ();
+		$model->articles = $cacheDriver->fetch ( 'recentblog' );
+		$model->summoners = $cacheDriver->fetch ( 'summoners' );
+		$model->tweets = $cacheDriver->fetch ( 'twitter' );
+		$model->music = $cacheDriver->fetch ( 'recenttracks' );
+		$model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
+		$model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
+		$model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
+		return 'stream';
+	}
+
+	/**
 	 * @Route ("/bigscreen")
 	 *
 	 * @param array $params
