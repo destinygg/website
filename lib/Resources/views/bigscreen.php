@@ -63,6 +63,7 @@ use Destiny\Common\Config;
 							</div>
 							<div id="chat-panel-tools" class="pull-right">
 								<a title="Refresh"><i class="icon-refresh icon-white subtle"></i></a>
+								<a title="Popout"><i class="icon-share icon-white subtle"></i></a>
 								<a title="Close"><i class="icon-remove icon-white subtle"></i></a>
 							</div>
 						</div>

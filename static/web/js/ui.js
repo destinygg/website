@@ -1,6 +1,25 @@
 // Document ready
 $(function(){
 	
+	// Generic popup defaults
+	var popupDefaults = {
+		height     :500,
+		width      :420,
+		scrollbars :0,
+		toolbar    :0,
+		location   :0,
+		status     :'no',
+		menubar    :0,
+		resizable  :0,
+		dependent  :0
+	};
+	var buildPopupOptionsString = (function(options){
+		var str = '';
+		for(var i in options)
+			str += i + options[i] +',';
+		return str;
+	});
+	
 	// Lastfm
 	new DestinyFeedConsumer({
 		url: destiny.baseUrl + 'lastfm.json',
@@ -230,13 +249,21 @@ $(function(){
 				}
 			});
 
-			$('#chat-panel-tools').each(function(){
+			$('#chat-panel-tools').each(function(e){
+				$(this).on('click', '.icon-share', function(){
+					window.open('/embed/chat','_blank',buildPopupOptionsString(popupDefaults));
+					$('body').addClass('nochat');
+					$('#chat-panel').remove();
+					return false;
+				});
 				$(this).on('click', '.icon-refresh', function(){
 					chatframe.location.reload();
+					return false;
 				});
 				$(this).on('click', '.icon-remove', function(){
 					$('body').addClass('nochat');
 					$('#chat-panel').remove();
+					return false;
 				});
 			});
 		});
@@ -293,6 +320,14 @@ $(function(){
 	$('body').each(function(){
 		$('.navbar a[rel="'+$('body').attr('id')+'"]').closest('li').addClass('active');
 		$('.navbar a[rel="'+$('body').attr('class')+'"]').closest('li').addClass('active');
+	});
+	
+	// Generic popup links
+	$('body').on('click', 'a.popup', function(e){
+		var a   = $(this),
+			opt = $.extend({}, a.data('options'), popupDefaults);
+		a.data('popup', window.open(a.attr('href'), '_blank', buildPopupOptionsString(opt)));
+		e.preventDefault();
 	});
 	
 	// Lazy load images
