@@ -955,33 +955,11 @@ body#bigscreen #stream-panel .twitch-overlay {
 	position: absolute;
 	z-index: 10;
 }
-body#bigscreen #stream-panel .twitch-overlay.to-botright {
-	height: 130px;
-	width: 50px;
-	right: 0px;
-	bottom: 29px;
-}
-body#bigscreen #stream-panel .twitch-overlay.to-botleft {
-	height: 130px;
-	right: 123px;
-	left: 0px;
-	bottom: 29px;
-}
 body#bigscreen #stream-panel .twitch-overlay.to-main {
 	left: 0px;
 	top: 0px;
-	bottom: 155px;
+	bottom: 34px;
 	right: 0px;
-}
-body#bigscreen #stream-panel .twitch-fsbtn {
-	position: absolute;
-	z-index: 10;
-	right: 0px;
-	bottom: 0px;
-	height: 30px;
-	width: 62px;
-	background: transparent;
-	cursor: pointer;
 }
 body#bigscreen #stream-panel > div {
 	margin:0 0 0 400px;	
