@@ -628,7 +628,7 @@ class SubscriptionController {
 		$user = $userService->getUserById ( $userId );
 		if (! empty ( $user )) {
 			if ($unban) {
-				$ban = $userService->getUserActiveBan ( $userId );
+				$ban = $userService->getUserActiveBan ( $userId, $_SERVER['REMOTE_ADDR'] );
 				// only unban the user if the ban is non-permanent
 				// we unban the user if no ban is found because it also unmutes
 				if (empty ( $ban ) || $ban ['endtimestamp']) {
