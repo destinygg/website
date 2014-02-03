@@ -1182,19 +1182,17 @@ body#emoticons .emote-label:hover {
 	background: rgba(0,0,0,0.5); 
 	border-radius: 6px;
 }
-#live-banner #live-preview {
+#live-banner .preview {
 	position: absolute;
 	padding: 10px;	
 	top:0;
 	left:0;
 }
-#live-banner #live-preview a {
+#live-banner .preview a {
 	display: block;
-}
-#live-banner #live-preview img {
 	border-radius: 6px;
 	width: 300px;
-	height: 180px;
+	height: 180px;	
 }
 #live-banner #live-info-wrap {
 	margin-left: 305px;
