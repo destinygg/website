@@ -442,7 +442,7 @@ $(function(){
 	});
 	
 	// Stream overloays
-	$('.stream-overlay.main').on('dblclick', function(e){
+	$('.stream-overlay.to-main').on('dblclick', function(e){
 		toggleFullscreen(e, $(this).parent().get(0));
 		return false;
 	});

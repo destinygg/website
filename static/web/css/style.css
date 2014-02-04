@@ -943,11 +943,23 @@ table.grid .rank {
 	position: absolute;
 	z-index: 10;
 }
-.stream-overlay.main {
-	left: 0px;
-	right: 0px;	
-	top: 0px;
+.stream-overlay.to-botright {
+	height: 100px;
+	width: 43px;	
+	right: 0;
+	bottom: 34px;		
+}
+.stream-overlay.to-botleft {
+	height: 100px;	
+	left: 0;
+	right: 108px;	
 	bottom: 34px;	
+}
+.stream-overlay.to-main {
+	left: 0;
+	right: 0;	
+	top: 0;
+	bottom: 132px;	
 }
 .stream-overlay.fsbtn {
 	cursor: pointer;

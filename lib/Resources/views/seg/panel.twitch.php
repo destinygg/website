@@ -26,7 +26,9 @@ use Destiny\Common\Config;
 		</div>
 		<div class="clearfix">
 			<div id="player-embed" class="stream-element-wrap pull-left">
-				<div class="stream-overlay main"></div>
+				<div class="stream-overlay to-botright"></div>
+				<div class="stream-overlay to-botleft"></div>
+				<div class="stream-overlay to-main"></div>
 				<div class="stream-overlay fsbtn" title="Fullscreen"></div>
 				<object class="stream-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%">
 					<param name="allowFullScreen" value="true">
