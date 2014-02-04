@@ -13,10 +13,15 @@ $(function(){
 		resizable  :0,
 		dependent  :0
 	};
-	var buildPopupOptionsString = (function(options){
+	
+	window.getOptionsString = (function(options){
+		if(!options)
+			options = popupDefaults;
+		else
+			options = $.extend({}, popupDefaults, options);
 		var str = '';
 		for(var i in options)
-			str += i + options[i] +',';
+			str += i + '='+ options[i] +',';
 		return str;
 	});
 	
@@ -251,7 +256,7 @@ $(function(){
 
 			$('#chat-panel-tools').each(function(e){
 				$(this).on('click', '.icon-share', function(){
-					window.open('/embed/chat','_blank',buildPopupOptionsString(popupDefaults));
+					window.open('/embed/chat', '_blank', window.getOptionsString());
 					$('body').addClass('nochat');
 					$('#chat-panel').remove();
 					return false;
@@ -324,16 +329,92 @@ $(function(){
 	
 	// Generic popup links
 	$('body').on('click', 'a.popup', function(e){
-		var a   = $(this),
-			opt = $.extend({}, a.data('options'), popupDefaults);
-		a.data('popup', window.open(a.attr('href'), '_blank', buildPopupOptionsString(opt)));
+		var a = $(this)
+		a.data('popup', window.open(a.attr('href'), '_blank', window.getOptionsString(a.data('options'))) );
 		e.preventDefault();
+		return false;
 	});
 	
 	// Lazy load images
 	$(this).loadImages();
 	$(this).find('[data-toggle="tooltip"]').tooltip();
 });
+
+(function(){
+	
+	var twitch         = $('#twitchpanel'),
+		popoutChatBtn  = twitch.find('#popoutchat'),
+		popoutVideoBtn = twitch.find('#popoutvideo'), 
+		twitchElements = twitch.find('#stream-element-wrap'),
+		chat           = twitch.find('#chat-embed'), 
+		player         = twitch.find('#player-embed');
+	
+	var twitchChat = {
+		popup: null,
+		toggle: function(){
+			if(this.popup == null) 
+				this.popOut(); 
+			else 
+				this.popIn();
+		},
+		popOut: function(){
+			if(twitchElements.children().length <= 1)
+				twitch.removeClass('split-view single-view').addClass('no-view');
+			else
+				twitch.removeClass('split-view').addClass('single-view');
+			chat.detach();
+			this.popup = window.open('/embed/chat','_blank',window.getOptionsString({height:500, width:420}));
+		},
+		popIn: function(){
+			if(twitchElements.children().length <= 0)
+				twitch.removeClass('split-view').addClass('single-view');
+			else
+				twitch.addClass('split-view').removeClass('single-view');
+			
+			if(this.popup != null){
+				this.popup.close();
+				this.popup = null;
+			}
+			chat.appendTo(twitchElements);
+		}
+	};
+
+	var twitchVideo = {
+		popup: null,
+		toggle: function(){
+			if(this.popup == null) this.popOut(); else this.popIn();
+		},
+		popOut: function(){
+			if(twitchElements.children().length <= 1)
+				twitch.removeClass('split-view single-view').addClass('no-view');
+			else
+				twitch.removeClass('split-view').addClass('single-view');
+			player.detach();
+			this.popup = window.open('/embed/stream','_blank',window.getOptionsString({height:420, width:720}));
+		},
+		popIn: function(){
+			if(twitchElements.children().length <= 0)
+				twitch.removeClass('split-view').addClass('single-view');
+			else
+				twitch.addClass('split-view').removeClass('single-view');
+			if(this.popup != null){
+				this.popup.close();
+				this.popup = null;
+			}
+			player.prependTo(twitchElements);
+		}
+	};
+
+	popoutChatBtn.on('click', function(){ 
+		twitchChat.toggle(); 
+		return false; 
+	});
+	popoutVideoBtn.on('click', function(){ 
+		twitchVideo.toggle(); 
+		return false; 
+	});
+	
+})();
 
 // Change time on selected elements
 (function(){

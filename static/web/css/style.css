@@ -176,18 +176,21 @@ body#home #top-left-nav li.home a:hover {
 	padding: 0;
 	margin: 0;
 }
+#overview {
+	color: white;
+	position: relative;
+}
 #overview,
-#overview h1 {
+#overview a {
 	height: 110px;	
 	margin:0;
 	padding: 0;
 	background: none;
 }
-#overview {
-	color: white;
-	position: relative;
-}
 #overview h1 {
+	margin:0;
+}
+#overview a {
 	left:0;
 	top:0;
 	background: url("../img/destinylogotop.png") no-repeat -25px center;
@@ -1290,14 +1293,6 @@ body#emoticons .emote-label:hover {
 
 #twitchpanel.single-view #player-embed object {
 	height: 560px;
-}
-
-#twitchpanel #player-embed.defocus {
-	position: relative;
-}
-
-#twitchpanel #player-embed.defocus object {
-	display: none;
 }
 
 #twitchpanel a#popoutvideo,

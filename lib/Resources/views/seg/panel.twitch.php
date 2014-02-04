@@ -1,6 +1,7 @@
 <? 
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
+use Destiny\Common\Utils\Tpl;
 ?>
 <section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="/embed/chat">
 	<div class="content content-dark">
@@ -19,12 +20,12 @@ use Destiny\Common\Config;
 				<?php endif; ?>
 				</div>
 				<div class="btn-group pull-right">
-					<a id="popoutvideo" title="Pop-out video" href="/embed/stream" class="popup btn btn-mini btn-link">Pop-out player</a>
-					<a id="popoutchat" title="Pop-out chat" href="/embed/chat" class="popup btn btn-mini btn-link">Pop-out chat</a>
+					<a id="popoutchat" title="Pop-out chat" href="/embed/chat" class="btn btn-mini btn-link">Pop-out chat</a>
+					<a id="popoutvideo" title="Pop-out video" href="/embed/stream" class="btn btn-mini btn-link">Pop-out stream</a>
 				</div>
 			</div>
 		</div>
-		<div class="clearfix">
+		<div class="clearfix" id="stream-element-wrap">
 			<div id="player-embed" class="stream-element-wrap pull-left">
 				<div class="stream-overlay to-botright"></div>
 				<div class="stream-overlay to-botleft"></div>
