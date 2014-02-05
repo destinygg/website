@@ -1,7 +1,6 @@
 <? 
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
-use Destiny\Common\Utils\Tpl;
 ?>
 <section id="twitchpanel" class="container split-view" data-youtube-user="<?=Config::$a['youtube']['user']?>" data-youtube-playlist="<?=Config::$a['youtube']['playlistId']?>" data-video-embed="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-chat-embed="/embed/chat">
 	<div class="content content-dark">
