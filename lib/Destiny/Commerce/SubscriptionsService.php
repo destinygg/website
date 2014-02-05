@@ -298,6 +298,34 @@ class SubscriptionsService extends Service {
 	}
 	
 	/**
+	 * Get a subscription by userId, orderId
+	 * 
+	 * @param string $userId
+	 * @param string $orderId
+	 * @return array
+	 */
+	public function getUserSubscriptionByOrderId($userId, $orderId) {
+		$conn = Application::instance ()->getConnection ();
+		$stmt = $conn->prepare ( '
+			SELECT * FROM dfl_users_subscriptions 
+			WHERE userId = :userId AND orderId = :orderId 
+			ORDER BY createdDate DESC 
+			LIMIT :start,:limit
+		' );
+		$stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'limit', 1, \PDO::PARAM_INT );
+		$stmt->bindValue ( 'start', 0, \PDO::PARAM_INT );
+		$stmt->execute ();
+		$subscription = $stmt->fetch ();
+		if (! empty ( $subscription )) {
+			$subType = $this->getSubscriptionType ( $subscription ['subscriptionType'] );
+			$subscription ['tierItemLabel'] = $subType ['tierItemLabel'];
+		}
+		return $subscription;
+	}
+	
+	/**
 	 * Get all user subscriptions
 	 *
 	 * @param number $userId        	
@@ -305,11 +333,15 @@ class SubscriptionsService extends Service {
 	 */
 	public function getUserSubscriptions($userId, $limit = 100, $start = 0) {
 		$conn = Application::instance ()->getConnection ();
-		$stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND subscriptionSource = :subscriptionSource ORDER BY createdDate DESC LIMIT :start,:limit' );
+		$stmt = $conn->prepare ( '
+			SELECT * FROM dfl_users_subscriptions 
+			WHERE userId = :userId
+			AND status != \'New\'
+			ORDER BY createdDate DESC LIMIT :start,:limit
+		' );
 		$stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
 		$stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-		$stmt->bindValue ( 'subscriptionSource', Config::$a ['subscriptionType'], \PDO::PARAM_STR );
 		$stmt->execute ();
 		$subscriptions = $stmt->fetchAll ();
 		for($i = 0; $i < count ( $subscriptions ); $i ++) {

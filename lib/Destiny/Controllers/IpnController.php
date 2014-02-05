@@ -32,15 +32,15 @@ class IpnController {
 	 */
 	public function ipn(array $params) {
 		Http::status ( Http::STATUS_OK );
+		$log = Application::instance ()->getLogger ();
 		try {
-			$log = Application::instance ()->getLogger ();
 			$ipnMessage = new PPIPNMessage ();
 			if (! $ipnMessage->validate ()) {
 				$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
 				return new HttpEntity ( Http::STATUS_OK, 'Got a invalid IPN' );
 			}
 			$data = $ipnMessage->getRawData ();
-			$log->debug ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
+			$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
 			$orderService = OrdersService::instance ();
 			$orderService->addIPNRecord ( array (
 				'ipnTrackId' => $data ['ipn_track_id'],
@@ -126,7 +126,7 @@ class IpnController {
 				$paymentProfile = $this->getPaymentProfile ( $data );
 				
 				// We dont care about what state the sub is in.... 
-				$subscription = $subService->getUserSubscription ( $paymentProfile ['userId'] );
+				$subscription = $subService->getUserSubscriptionByOrderId ( $paymentProfile ['userId'], $paymentProfile ['orderId'] );
 				
 				if (empty ( $subscription )) {
 					throw new Exception ( 'Invalid subscription for recurring payment' );
