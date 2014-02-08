@@ -119,7 +119,7 @@ input[disabled] {
 
 .form-actions {
 	border-top-color: #222;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(255, 255, 255, 0.02);
 	border-radius:0 0 4px 4px;
 	margin-bottom:0;	
 }
@@ -336,7 +336,6 @@ body.thin #header-band #top-navigation {
 	margin: 15px 0 0 0;
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
 	clear: both;
 }
 
