@@ -12,6 +12,7 @@ use Destiny\Common\Authentication\RememberMeService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Destiny\Common\Request;
 
 ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
 
@@ -39,5 +40,5 @@ AuthenticationService::instance ()->init ();
 RememberMeService::instance ()->init ();
 
 // Attempts to find a route and execute it
-$app->executeRequest ( (isset ( $_SERVER ['REQUEST_URI'] )) ? $_SERVER ['REQUEST_URI'] : '', $_SERVER ['REQUEST_METHOD'] );
+$app->executeRequest ( new Request() );
 ?>

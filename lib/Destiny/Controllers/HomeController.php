@@ -5,7 +5,7 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\HttpEntity;
+use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Config;
 
@@ -53,7 +53,7 @@ class HomeController {
 	 * @param array $params
 	 */
 	public function ping(array $params) {
-		$response = new HttpEntity ( Http::STATUS_OK );
+		$response = new Response ( Http::STATUS_OK );
 		$response->addHeader ( 'X-Pong', 'Destiny' );
 		return $response;
 	}

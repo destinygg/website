@@ -85,7 +85,7 @@ class Application extends Service {
 	 *
 	 * @param array $args
 	 */
-	public function __construct(array $args = null) {
+	public function __construct(array $args= null) {
 		self::$instance = $this;
 		Options::setOptions ( $this, $args );
 	}
@@ -93,37 +93,38 @@ class Application extends Service {
 	/**
 	 * Executes the action if a route is found
 	 */
-	public function executeRequest($uri, $method) {
-		$path = parse_url ( $uri, PHP_URL_PATH );
-		$route = $this->router->findRoute ( $path, $method );
+	public function executeRequest(Request $request) {
+		
+		$route = $this->router->findRoute ( $request );
+		
 		$model = new ViewModel ();
 		$response = null;
 		
 		// Maintenance mode
 		if(Config::$a['maintenance']){
-			$response = new HttpEntity ( Http::STATUS_SERVICE_UNAVAILABLE );
+			$response = new Response ( Http::STATUS_SERVICE_UNAVAILABLE );
 			$response->setBody ( $this->template ( 'maintenance.php', $model ) );
-			$this->handleHttpEntityResponse ( $response );
+			$this->handleResponse ( $response );
 		}
 		
 		// No route found
 		if (! $route) {
-			$response = new HttpEntity ( Http::STATUS_NOT_FOUND );
+			$response = new Response ( Http::STATUS_NOT_FOUND );
 			$response->setBody ( $this->template ( 'errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
-			$this->handleHttpEntityResponse ( $response );
+			$this->handleResponse ( $response );
 		}
 		
 		// Security checks
 		if (! $this->hasRouteSecurity ( $route, Session::getCredentials () )) {
-			$response = new HttpEntity ( Http::STATUS_UNAUTHORIZED );
+			$response = new Response ( Http::STATUS_UNAUTHORIZED );
 			$response->setBody ( $this->template ( 'errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
-			$this->handleHttpEntityResponse ( $response );
+			$this->handleResponse ( $response );
 		}
 		
 		try {
 			
 			// Parameters
-			$params = array_merge ( $_GET, $_POST, $route->getPathParams ( $path ) );
+			$params = array_merge ( $_GET, $_POST, $route->getPathParams ( $request->path() ) );
 			
 			// Get and init action class
 			$className = $route->getClass ();
@@ -142,7 +143,7 @@ class Application extends Service {
 			}
 				
 			// Execute the class method
-			$response = $classInstance->$classMethod ( $params, $model );
+			$response = $classInstance->$classMethod ( $params, $model, $request );
 				
 			// Log any errors on the model
 			// @TODO neaten this implementation up - better than logging everywhere else
@@ -158,19 +159,19 @@ class Application extends Service {
 			// Redirect response
 			if (is_string ( $response ) && substr ( $response, 0, 10 ) === 'redirect: ') {
 				$redirect = substr ( $response, 10 );
-				$response = new HttpEntity ( Http::STATUS_OK );
+				$response = new Response ( Http::STATUS_OK );
 				$response->setLocation ( $redirect );
 			}
 			
 			// Template response
 			if (is_string ( $response )) {
 				$tpl = $response . '.php';
-				$response = new HttpEntity ( Http::STATUS_OK );
+				$response = new Response ( Http::STATUS_OK );
 				$response->setBody ( $this->template ( $tpl, $model ) );
 			}
 			
 			// Check the response type
-			if (! $response instanceof HttpEntity) {
+			if (! $response instanceof Response) {
 				throw new Exception ( 'Invalid response' );
 			}
 			
@@ -189,23 +190,23 @@ class Application extends Service {
 				echo '<pre>' . $e->getTraceAsString () . '</pre>';
 				exit ();
 			}
-			$response = new HttpEntity ( Http::STATUS_ERROR );
+			$response = new Response ( Http::STATUS_ERROR );
 			$model->error = new Exception ( 'Maximum over-rustle has been achieved' );
 			$model->code = Http::STATUS_ERROR;
 			$response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
 		}
 		
 		// Handle the request response
-		$this->handleHttpEntityResponse ( $response );
+		$this->handleResponse ( $response );
 	}
 
 	/**
-	 * Handle the HttpEntity response
-	 * @param HttpEntity $response
+	 * Handle the Response response
+	 * @param Response $response
 	 * @throws Exception
 	 * @return void
 	 */
-	private function handleHttpEntityResponse(HttpEntity $response) {
+	private function handleResponse(Response $response) {
 		$location = $response->getLocation ();
 		if (! empty ( $location )) {
 			Http::header ( Http::HEADER_LOCATION, $location );

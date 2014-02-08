@@ -9,7 +9,7 @@ use Destiny\Common\ViewModel;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Api\ApiAuthHandler;
-use Destiny\Common\HttpEntity;
+use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Common\Exception;
@@ -32,7 +32,7 @@ class AuthenticationController {
 			$authHandler = new ApiAuthHandler ();
 			return $authHandler->authenticate ( $params, $model );
 		} catch ( \Exception $e ) {
-			$response = new HttpEntity ( Http::STATUS_ERROR, $e->getMessage () );
+			$response = new Response ( Http::STATUS_ERROR, $e->getMessage () );
 			return $response;
 		}
 	}

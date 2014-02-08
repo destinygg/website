@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Common\HttpEntity;
+use Destiny\Common\Response;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Commerce\OrderStatus;
 use Destiny\Commerce\PaymentStatus;
@@ -37,7 +37,7 @@ class IpnController {
 			$ipnMessage = new PPIPNMessage ();
 			if (! $ipnMessage->validate ()) {
 				$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
-				return new HttpEntity ( Http::STATUS_OK, 'Got a invalid IPN' );
+				return new Response ( Http::STATUS_OK, 'Got a invalid IPN' );
 			}
 			$data = $ipnMessage->getRawData ();
 			$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
@@ -52,15 +52,15 @@ class IpnController {
 			// Make sure this IPN is for the merchant
 			if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
 				$log->critical ( sprintf('IPN originated with incorrect receiver_email [%s]', $data ['ipn_track_id']) );
-				return new HttpEntity ( Http::STATUS_OK, 'Invalid IPN' );
+				return new Response ( Http::STATUS_OK, 'Invalid IPN' );
 			}
 			$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
-			return new HttpEntity ( Http::STATUS_OK );
+			return new Response ( Http::STATUS_OK );
 		} catch ( \Exception $e ) {
 			$log->critical ( $e->getMessage () );
-			return new HttpEntity ( Http::STATUS_OK, 'Error' );
+			return new Response ( Http::STATUS_OK, 'Error' );
 		}
-		return new HttpEntity ( Http::STATUS_OK, 'Unhandled IPN' );
+		return new Response ( Http::STATUS_OK, 'Unhandled IPN' );
 	}
 
 	/**

@@ -2,6 +2,7 @@
 namespace Destiny\Common\Routing;
 
 use Destiny\Common\Routing\Route;
+use Destiny\Common\Request;
 
 class Router {
 
@@ -40,11 +41,13 @@ class Router {
 	}
 
 	/**
-	 * Find a route by path
+	 * Find a route
 	 *
 	 * @return Route
 	 */
-	public function findRoute($path, $method) {
+	public function findRoute(Request $request) {
+		$path = $request->path ();
+		$method = $request->method ();
 		for($i = 0; $i < count ( $this->routes ); ++ $i) {
 			if ($this->routes [$i]->testPath ( $path, $method )) {
 				return $this->routes [$i];

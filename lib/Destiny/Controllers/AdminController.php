@@ -11,7 +11,7 @@ use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Exception;
 use Destiny\Common\Application;
 use Destiny\Common\Scheduler;
-use Destiny\Common\HttpEntity;
+use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Config;
@@ -71,7 +71,7 @@ class AdminController {
 		$scheduler->executeTaskByName ( $params ['id'] );
 		$response ['message'] = sprintf ( 'Execute %s', $params ['id'] );
 		
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $response ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
 	}
@@ -126,7 +126,7 @@ class AdminController {
 	public function adminUserFind(array $params) {
 		FilterParams::isRequired($params, 's');
 		$users = UserService::instance ()->findUsers ( $params ['s'], 10 );
-		$response = new HttpEntity ( Http::STATUS_OK );
+		$response = new Response ( Http::STATUS_OK );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		$response->setBody ( json_encode ( $users ) );
 		return $response;

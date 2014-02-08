@@ -7,6 +7,7 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserService;
+use Destiny\Common\Request;
 
 /**
  * @Controller
@@ -21,10 +22,10 @@ class BannedController {
 	 * @param ViewModel $model        	
 	 * @return string
 	 */
-	public function banned(array $params, ViewModel $model) {
+	public function banned(array $params, ViewModel $model, Request $request) {
 		$userService = UserService::instance ();
 		$creds = Session::getCredentials ();
-		$model->ban = $userService->getUserActiveBan ( $creds->getUserId (), $_SERVER['REMOTE_ADDR'] );
+		$model->ban = $userService->getUserActiveBan ( $creds->getUserId (), $request->ipAddress() );
 		$model->banType = 'none';
 		if (! empty ( $model->ban )) {
 			if (! $model->ban ['endtimestamp']) {

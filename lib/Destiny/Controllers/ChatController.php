@@ -4,7 +4,7 @@ namespace Destiny\Controllers;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\HttpEntity;
+use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Chat\ChatlogService;
@@ -66,7 +66,7 @@ class ChatController {
 			$lines [] = $line;
 		}
 		
-		$response = new HttpEntity ( Http::STATUS_OK, 'var backlog = ' . json_encode ( $lines ) );
+		$response = new Response ( Http::STATUS_OK, 'var backlog = ' . json_encode ( $lines ) );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
 		return $response;
 	}
@@ -78,7 +78,7 @@ class ChatController {
 	 * @param ViewModel $model
 	 */
 	public function emotes(array $params, ViewModel $model) {
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( Config::$a ['chat'] ['customemotes'] ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( Config::$a ['chat'] ['customemotes'] ) );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
 	}

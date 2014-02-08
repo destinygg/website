@@ -35,10 +35,19 @@ abstract class Http {
 		503 => 'Service Unavailable' 
 	);
 
+	/**
+	 * @param string $name
+	 * @param string $value
+	 * @param bool $replace
+	 */
 	public static function header($name, $value, $replace = true) {
 		header ( $name . ': ' . $value, $replace );
 	}
 
+	/**
+	 * @param int $status
+	 * @throws Exception
+	 */
 	public static function status($status) {
 		if (! isset ( self::$HEADER_STATUSES [intval ( $status )] )) {
 			throw new Exception ( sprintf ( 'HTTP status not supported %s', $status ) );
@@ -46,7 +55,12 @@ abstract class Http {
 		header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
 	}
 		
-	// Return FALSE if unmodified | TRUE if modified or we can't tell
+	/**
+	 * Return FALSE if unmodified | TRUE if modified or we can't tell
+	 * 
+	 * @param int $mtime
+	 * @return boolean
+	 */
 	public static function checkIfModifiedSince($mtime) {
 		global $_SERVER;
 		if (isset ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] ) && ! empty ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] )) {

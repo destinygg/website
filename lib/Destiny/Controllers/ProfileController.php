@@ -18,7 +18,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Commerce\OrdersService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Api\ApiAuthenticationService;
-use Destiny\Common\HttpEntity;
+use Destiny\Common\Response;
 use Destiny\Common\MimeType;
 use Destiny\Common\Utils\Http;
 use Destiny\Twitch\TwitchAuthHandler;
@@ -58,7 +58,7 @@ class ProfileController {
 	 * @param array $params        	
 	 */
 	public function profileInfo(array $params) {
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 		return $response;
 	}

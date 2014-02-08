@@ -2,7 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Application;
-use Destiny\Common\HttpEntity;
+use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Common\Annotation\Controller;
@@ -21,7 +21,7 @@ class ApiController {
 	public function youtube(array $params) {
 		$app = Application::instance ();
 		$playlist = $app->getCacheDriver ()->fetch ( 'youtubeplaylist' );
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $playlist ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( $playlist ) );
 		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
 		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
@@ -36,7 +36,7 @@ class ApiController {
 	public function twitter(array $params) {
 		$app = Application::instance ();
 		$tweets = $app->getCacheDriver ()->fetch ( 'twitter' );
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $tweets ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( $tweets ) );
 		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
 		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
@@ -51,7 +51,7 @@ class ApiController {
 	public function stream(array $params) {
 		$app = Application::instance ();
 		$info = $app->getCacheDriver ()->fetch ( 'streaminfo' );
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $info ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( $info ) );
 		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
 		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
@@ -66,7 +66,7 @@ class ApiController {
 	public function lastfm(array $params) {
 		$app = Application::instance ();
 		$tracks = $app->getCacheDriver ()->fetch ( 'recenttracks' );
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $tracks ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( $tracks ) );
 		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
 		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
@@ -81,7 +81,7 @@ class ApiController {
 	public function broadcasts(array $params) {
 		$app = Application::instance ();
 		$broadcasts = $app->getCacheDriver ()->fetch ( 'pastbroadcasts' );
-		$response = new HttpEntity ( Http::STATUS_OK, json_encode ( $broadcasts ) );
+		$response = new Response ( Http::STATUS_OK, json_encode ( $broadcasts ) );
 		$response->addHeader ( Http::HEADER_CACHE_CONTROL, 'private' );
 		$response->addHeader ( Http::HEADER_PRAGMA, 'public' );
 		$response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
