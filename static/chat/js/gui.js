@@ -302,6 +302,19 @@
 			
 			// Enable toolbar
 			this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
+			
+			// The login click
+			this.ui.find('.chat-login-msg a[href="/login"]').on('click', function(){
+				try {
+					if(window.self !== window.top){
+						window.parent.location.href = $(this).attr('href') + '?follow=' + encodeURIComponent(window.parent.location.pathname);
+					}else{
+						window.location.href = $(this).attr('href') + '?follow=' + encodeURIComponent(window.location.pathname);
+					}
+					return false;
+				} catch (e) {}
+			});
+			
 			return this;
 		},
 		

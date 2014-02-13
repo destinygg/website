@@ -24,16 +24,12 @@ use Destiny\Common\Config;
 		</div>
 	</div>
 	
+	<?php if(Session::hasRole(UserRole::USER)): ?>
 	<form class="chat-input">
 		<div class="clearfix">
 			<div class="chat-input-wrap">
 				<div class="chat-input-control">
-				<?php if(Session::hasRole(UserRole::USER)): ?>
-				<input type="text" placeholder="Enter a message..." class="input" autocomplete="off" spellcheck="true"/>
-				<?php else: ?>
-				<a class="chat-login-msg" href="/login?follow=<?php echo rawurlencode( $_SERVER['REQUEST_URI'] );?>" target="_parent">You must be logged in to chat</a>
-				<input type="hidden" class="input" />
-				<?php endif; ?>
+					<input type="text" placeholder="Enter a message..." class="input" autocomplete="off" spellcheck="true"/>
 				</div>
 			</div>
 			<div class="chat-tools-wrap">
@@ -42,6 +38,19 @@ use Destiny\Common\Config;
 			</div>
 		</div>
 	</form>
+	<?php else: ?>
+	<form class="chat-input">
+		<div class="clearfix">
+			<div class="chat-input-wrap">
+				<span class="chat-login-msg">You must <a href="/login" target="_parent">log in</a> to chat</span>
+				<input type="hidden" class="input" />
+			</div>
+			<div class="chat-tools-wrap">
+				<a class="iconbtn chat-users-btn" title="Users"><i class="icon-user icon-white subtle"></i></a>
+			</div>
+		</div>
+	</form>
+	<?php endif; ?>
 	
 	<div id="chat-user-list" class="chat-menu" style="visibility: hidden;">
 		<div class="list-wrap clearfix">

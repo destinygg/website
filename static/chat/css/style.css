@@ -57,6 +57,10 @@
 	background: #eee;	
 }
 
+.serif {
+	font-family: "Trebuchet MS", sans-serif;
+}
+
 /**
  * Chat frame and layout
  **/
@@ -104,6 +108,7 @@
 .chat-lines a.user {
 	font-weight:bold;
 	cursor: pointer;
+	.serif;
 }
 .chat-lines hr {
 	margin:8px 0;
@@ -341,6 +346,10 @@
 	margin:5px 20px 5px 5px;
 }
 
+.user-tools .user-tools-user {
+	.serif;
+}
+
 /** 
  * Hints 
  **/
@@ -490,6 +499,7 @@
 }
 #chat-user-list .user {
 	cursor: pointer;
+	.serif;
 }
 
 .user-tools a#unignoreuser,
@@ -514,13 +524,9 @@
 	display: inline-block;
 	width: 100%;
 	padding: 0 0 0 5px;
-	line-height: 25px;
+	line-height: 30px;
 	color: rgba(255,255,255,0.5);
 	text-shadow:-1px -1px 0 rgba(0,0,0,0.25);
-}
-.chat-login-msg:hover {
-	color: rgba(255,255,255,1);
-	text-shadow:0 0 3px rgba(255,255,255,0.25);	
 }
 
 /** 
