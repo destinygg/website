@@ -55,7 +55,8 @@ class UserAdminController {
 		
 		$user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
 		$user ['features'] = $userFeaturesService->getUserFeatures ( $user ['userId'] );
-		
+		$user ['ips'] = $userService->getIPByUserId( $user ['userId'] );
+
 		$model->user = $user;
 		$model->smurfs = $userService->findSameIPUsers( $user ['userId'] );
 		$model->features = $userFeaturesService->getDetailedFeatures ();
