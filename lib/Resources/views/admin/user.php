@@ -217,7 +217,7 @@ use Destiny\Commerce\SubscriptionStatus;
 			<div class="control-group">
 				The last seen 3 IP addresses of the user (as seen by the chat)
 			</div>
-			<?php if(!empty($user['ips'])): ?>
+			<?php if(!empty($model->user['ips'])): ?>
 			<table class="grid">
 				<thead>
 					<tr>
@@ -225,7 +225,7 @@ use Destiny\Commerce\SubscriptionStatus;
 					</tr>
 				</thead>
 				<tbody>
-				<?php foreach($user['ips'] as $ip): ?>
+				<?php foreach($model->user['ips'] as $ip): ?>
 					<tr>
 						<td><?=Tpl::out($ip)?></td>
 					</tr>
