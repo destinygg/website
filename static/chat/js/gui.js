@@ -649,17 +649,19 @@
 	
 	// USER FEATURES
 	UserFeatures = {
-		PROTECTED    : 'protected',
-		SUBSCRIBER   : 'subscriber',
-		SUBSCRIBERT2 : 'flair1',
-		SUBSCRIBERT3 : 'flair3',
-		VIP          : 'vip',
-		MODERATOR    : 'moderator',
-		ADMIN        : 'admin',
-		BOT          : 'bot',
-		NOTABLE      : 'flair2',
-		TRUSTED      : 'flair4',
-		CONTRIBUTOR  : 'flair5'
+		PROTECTED     : 'protected',
+		SUBSCRIBER    : 'subscriber',
+		SUBSCRIBERT2  : 'flair1',
+		SUBSCRIBERT3  : 'flair3',
+		VIP           : 'vip',
+		MODERATOR     : 'moderator',
+		ADMIN         : 'admin',
+		BOT           : 'bot',
+		NOTABLE       : 'flair2',
+		TRUSTED       : 'flair4',
+		CONTRIBUTOR   : 'flair5',
+		COMPCHALLENGE : 'flair6',
+		EVENOTABLE    : 'flair7'
 	};
 
 	//CHAT USER
@@ -695,6 +697,12 @@
 					break;
 				case UserFeatures.CONTRIBUTOR :
 					icons += '<i class="icon-contributor" title="Contributor"/>';
+					break;
+				case UserFeatures.COMPCHALLENGE :
+					icons += '<i class="icon-compchallenge" title="Composition Challenge Winner"/>';
+					break;
+				case UserFeatures.EVENOTABLE :
+					icons += '<i class="icon-evenotable" title="Eve Notable"/>';
 					break;
 			}
 		}

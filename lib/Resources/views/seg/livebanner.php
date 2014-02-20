@@ -14,7 +14,7 @@ use Destiny\Common\Utils\Date;
 					<div>
 						<div class="pull-right">
 							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-link" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Pop-out chat</a>
-							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
+							<a target="_blank" href="http://www.twitch.tv/destiny/popout" class="popup btn btn-mini btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
 						</div>
 						<h1 title="<?=Tpl::out($model->streamInfo['status'])?>"><?=Tpl::out($model->streamInfo['status'])?></h1>
 						<div id="live-info">
@@ -40,7 +40,7 @@ use Destiny\Common\Utils\Date;
 					<div>
 						<div class="pull-right">
 							<a target="_blank" href="/embed/chat" class="popup btn btn-mini btn-link" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Pop-out chat</a>
-							<a target="_blank" href="/embed/stream" class="popup btn btn-mini btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
+							<a target="_blank" href="http://www.twitch.tv/destiny/popout" class="popup btn btn-mini btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
 						</div>
 						<h1>Stream currently offline</h1>
 						<div id="live-info">

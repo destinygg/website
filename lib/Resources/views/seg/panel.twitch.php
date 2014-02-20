@@ -20,7 +20,7 @@ use Destiny\Common\Config;
 				</div>
 				<div class="btn-group pull-right">
 					<a id="popoutchat" title="Pop-out chat" href="/embed/chat" class="btn btn-mini btn-link">Pop-out chat</a>
-					<a id="popoutvideo" title="Pop-out video" href="/embed/stream" class="btn btn-mini btn-link">Pop-out stream</a>
+					<a id="popoutvideo" title="Pop-out video" href="http://www.twitch.tv/destiny/popout" class="btn btn-mini btn-link">Pop-out stream</a>
 				</div>
 			</div>
 		</div>

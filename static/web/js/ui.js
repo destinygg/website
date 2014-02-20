@@ -390,7 +390,7 @@ $(function(){
 			else
 				twitch.removeClass('split-view').addClass('single-view');
 			player.detach();
-			this.popup = window.open('/embed/stream','_blank',window.getOptionsString({height:420, width:720}));
+			this.popup = window.open('http://www.twitch.tv/destiny/popout','_blank',window.getOptionsString({height:420, width:720}));
 		},
 		popIn: function(){
 			if(twitchElements.children().length <= 0)

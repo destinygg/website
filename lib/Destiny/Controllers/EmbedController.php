@@ -62,10 +62,10 @@ class EmbedController {
 		$emotes = Config::$a ['chat'] ['customemotes'];
 		natcasesort( $emotes );
 		return array (
-				'host' => Config::$a ['chat'] ['host'],
-				'port' => Config::$a ['chat'] ['port'],
-				'maxlines' => Config::$a ['chat'] ['maxlines'],
-				'emoticons' => array_values( $emotes ),
+			'host' => Config::$a ['chat'] ['host'],
+			'port' => Config::$a ['chat'] ['port'],
+			'maxlines' => Config::$a ['chat'] ['maxlines'],
+			'emoticons' => array_values( $emotes ),
 		);
 	}
 }

@@ -14,5 +14,7 @@ abstract class UserFeature {
 	const NOTABLE = 'flair2';
 	const TRUSTED = 'flair4';
 	const CONTRIBUTOR = 'flair5';
+	const COMPCHALLENGE = 'flair6';
+	const EVENOTABLE = 'flair7';
 
 }
