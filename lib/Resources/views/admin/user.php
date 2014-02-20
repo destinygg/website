@@ -212,6 +212,35 @@ use Destiny\Commerce\SubscriptionStatus;
 	</section>
 
 	<section class="container collapsible">
+		<h3><i class="icon-plus-sign icon-white"></i> IPs</h3>
+		<div class="content content-dark clearfix">
+			<div class="control-group">
+				The last seen 3 IP addresses of the user (as seen by the chat)
+			</div>
+			<?php if(!empty($model->user['ips'])): ?>
+			<table class="grid">
+				<thead>
+					<tr>
+						<td>IP</td>
+					</tr>
+				</thead>
+				<tbody>
+				<?php foreach($model->user['ips'] as $ip): ?>
+					<tr>
+						<td><?=Tpl::out($ip)?></td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+			<?php else: ?>
+			<div class="control-group">
+				No IPs found
+			</div>
+			<?php endif; ?>
+		</div>
+	</section>
+
+	<section class="container collapsible">
 		<h3><i class="icon-plus-sign icon-white"></i>  Ban / Mute</h3>
 		<div class="content content-dark clearfix">
 			<div class="clearfix">

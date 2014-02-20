@@ -613,6 +613,17 @@ class UserService extends Service {
 	}
 
 	/**
+	 * Find the addresses of the user
+	 *
+	 * @param int $userid
+	 * @return array $ipaddresses The addresses found
+	 */
+	public function getIPByUserId( $userid ) {
+		$redis   = Application::instance ()->getRedis ();
+		return $redis->zrange('CHAT:userips-' . $userid, 0, -1);
+	}
+
+	/**
 	 * Get the users from the given redis keys, strip off the beginning of the keys
 	 * and parse the remaining string into an int, CHAT:userips-123 will be
 	 * transformed into (int)123 and than later users with the given ids
