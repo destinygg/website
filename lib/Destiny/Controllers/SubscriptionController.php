@@ -335,9 +335,11 @@ class SubscriptionController {
 				}
 			}
 			
-			$subscription ['status'] = SubscriptionStatus::CANCELLED;
-			$subscriptionsService->updateSubscriptionState ( $subscription ['subscriptionId'], $subscription ['status'] );
-			$authenticationService->flagUserForUpdate ( $userId );
+			if(isset($params['cancelRemainingTime']) && $params['cancelRemainingTime'] == '1'){
+				$subscription ['status'] = SubscriptionStatus::CANCELLED;
+				$subscriptionsService->updateSubscriptionState ( $subscription ['subscriptionId'], $subscription ['status'] );
+				$authenticationService->flagUserForUpdate ( $userId );
+			}
 			
 			$model->subscription = $subscription;
 			$model->subscriptionCancelled = true;

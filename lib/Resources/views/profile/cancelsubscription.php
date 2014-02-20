@@ -58,12 +58,9 @@ use Destiny\Common\Utils\Date;
 				<?php endif; ?>
 			
 				<?php if(!$model->subscriptionCancelled): ?>
-				<form action="/subscription/cancel" method="post">
+				<form action="/subscription/cancel" method="post" autocomplete="off">
 					<div class="control-group">
-						<p>
 						<label class="label label-important">WARNING</label> Cancelling an active subscription can only be undone by an administrator.
-						<br>By clicking the 'Cancel subscription' button you are confirming you want to cancel your active subscription immediately
-						</p>
 					</div>
 					<div class="control-group">
 						<dl class="dl-horizontal">
@@ -83,7 +80,13 @@ use Destiny\Common\Utils\Date;
 							<dd><?=Tpl::moment(Date::getDateTime($model->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
 							<dt>Time remaining:</dt>
 							<dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
+							
 						</dl>
+					</div>
+					<div class="control-group">
+						<label class="checkbox">
+							<input name="cancelRemainingTime" type="checkbox" value="1" /> Cancel the remaining subscription time
+						</label>
 					</div>
 					<div class="form-actions" style="margin:0;">
 						<button type="submit" class="btn btn-danger btn-large">Cancel subscription</button>
