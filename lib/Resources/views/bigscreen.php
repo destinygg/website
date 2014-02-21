@@ -25,7 +25,12 @@ use Destiny\Common\Config;
 						<div class="toolgroup clearfix">
 							<div class="pull-left channel-stat game">
 								<?php if(!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])): ?>
-								<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
+								<i class="icon-time icon-white subtle"></i> 
+								<span>
+								<?php if(isset($model->streamInfo['lastbroadcast'])): ?>
+								Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?>
+								<?php endif; ?>
+								</span>
 								<?php else: ?>
 								<i class="icon-time icon-white subtle"></i> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['channel']['updated_at']))?></span>
 								<?php if(intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
@@ -33,7 +38,7 @@ use Destiny\Common\Config;
 								<?php endif; ?>
 							<?php endif; ?>
 							</div>
-							<div class="pull-right channel-stat" style="text-align:right;"><?=Tpl::out($model->streamInfo['status'])?></div>
+							<div class="pull-right channel-stat" style="text-align:right;"><?=(isset($model->streamInfo['status'])) ? Tpl::out($model->streamInfo['status']) : ''?></div>
 						</div>
 					</div>
 					<div class="stream-element-wrap">
