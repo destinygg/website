@@ -1,6 +1,7 @@
 <?php
 use Destiny\Common\Config;
 use Destiny\Common\Application;
+use Destiny\Common\Log\SessionRequestProcessor;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -37,6 +38,8 @@ $log = new Logger ( $context->log );
 $log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->log . '.log', Logger::INFO ) );
 $log->pushProcessor ( new WebProcessor () );
 $log->pushProcessor ( new MemoryPeakUsageProcessor () );
+$log->pushProcessor ( new SessionRequestProcessor () );
+
 $app->setLogger ( $log );
 
 $app->setConnection ( DriverManager::getConnection ( Config::$a ['db'], new Configuration () ) );

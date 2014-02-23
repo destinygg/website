@@ -5,6 +5,7 @@ use Destiny\Common\Service;
 use Destiny\Common\CurlBrowser;
 use Destiny\Common\Utils\String;
 use Destiny\Common\MimeType;
+use Destiny\Common\Exception;
 
 class BlogApiService extends Service {
 	
@@ -38,10 +39,10 @@ class BlogApiService extends Service {
 			) ),
 			'contentType' => MimeType::JSON,
 			'onfetch' => function ($json) {
-				if ($json != null) {
-					$json = array_slice ( $json, 0, 6 );
+				if (empty($json) || !is_array($json)) {
+					throw new Exception('Invalid blog API response');
 				}
-				return $json;
+				return array_slice ( $json, 0, 6 );
 			} 
 		), $options ) );
 	}
