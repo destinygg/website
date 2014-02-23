@@ -31,13 +31,12 @@ class IpnController {
 	 * @param array $params
 	 */
 	public function ipn(array $params) {
-		Http::status ( Http::STATUS_OK );
 		$log = Application::instance ()->getLogger ();
 		try {
 			$ipnMessage = new PPIPNMessage ();
 			if (! $ipnMessage->validate ()) {
 				$log->error ( 'Got a invalid IPN ' . json_encode ( $ipnMessage->getRawData () ) );
-				return new Response ( Http::STATUS_OK, 'Got a invalid IPN' );
+				return new Response ( Http::STATUS_ERROR, 'Got a invalid IPN' );
 			}
 			$data = $ipnMessage->getRawData ();
 			$log->info ( sprintf ( 'Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId (), $data ['txn_type'] ) );
@@ -52,15 +51,24 @@ class IpnController {
 			// Make sure this IPN is for the merchant
 			if (strcasecmp ( Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email'] ) !== 0) {
 				$log->critical ( sprintf('IPN originated with incorrect receiver_email [%s]', $data ['ipn_track_id']) );
-				return new Response ( Http::STATUS_OK, 'Invalid IPN' );
+				return new Response ( Http::STATUS_ERROR, 'Invalid IPN' );
 			}
+
+			// Handle the IPN
 			$this->handleIPNTransaction ( $data ['txn_id'], $data ['txn_type'], $data );
+
+			// Return success response
 			return new Response ( Http::STATUS_OK );
+
 		} catch ( \Exception $e ) {
+
 			$log->critical ( $e->getMessage () );
-			return new Response ( Http::STATUS_OK, 'Error' );
+			return new Response ( Http::STATUS_ERROR, 'Error' );
+
 		}
-		return new Response ( Http::STATUS_OK, 'Unhandled IPN' );
+		
+		$log->critical ( 'Unhandled IPN' );
+		return new Response ( Http::STATUS_ERROR, 'Unhandled IPN' );
 	}
 
 	/**

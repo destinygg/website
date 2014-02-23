@@ -33,7 +33,7 @@ use Destiny\Common\Config;
 								</span>
 								<?php else: ?>
 								<i class="icon-time icon-white subtle"></i> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['channel']['updated_at']))?></span>
-								<?php if(intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
+								<?php if(isset($model->streamInfo['stream']) && intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
 								- <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay
 								<?php endif; ?>
 							<?php endif; ?>

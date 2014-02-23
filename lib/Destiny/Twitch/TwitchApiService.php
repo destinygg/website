@@ -54,7 +54,8 @@ class TwitchApiService extends Service {
 			) ),
 			'contentType' => MimeType::JSON,
 			'onfetch' => function ($json) {
-				if (empty($json) || isset ( $json ['status'] ) && $json ['status'] == 503) {
+
+				if (empty($json) || (isset ( $json ['status'] ) && $json ['status'] == 503)) {
 					throw new Exception ( 'Twitch api down' );
 				}
 				
