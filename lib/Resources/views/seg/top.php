@@ -14,7 +14,7 @@ use Destiny\Common\Session;
 					<li><a title="youtube.com" href="http://www.youtube.com/user/Destiny">Youtube</a></li>
 					<li><a title="reddit.com" href="http://www.reddit.com/r/Destiny/">Reddit</a></li>
 					<li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
-					<li><a title="Schedule" href="https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com">Schedule</a></li>
+					<li><a title="Schedule" href="/schedule">Schedule</a></li>
 					<?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
 					<li class="divider-vertical"></li>
 					<li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe</span></a></li>

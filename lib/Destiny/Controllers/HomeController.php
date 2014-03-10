@@ -138,4 +138,13 @@ class HomeController {
 		return 'redirect: https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
 	}
 
+	/**
+	 * @Route ("/schedule")
+	 *
+	 * @return string
+	 */
+	public function schedule() {
+		return 'redirect: https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com';
+	}
+	
 }
