@@ -36,9 +36,7 @@ class ChatIntegrationService extends Service {
 		if (! empty ( $sessionId )) {
 			$redis = Application::instance ()->getRedis ();
 			$id = sprintf ( 'CHAT:session-%s', $sessionId );
-			if (! empty ( $redis )) {
-				$redis->expire ( $id, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
-			}
+			$redis->expire ( $id, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
 		}
 	}
 
@@ -50,13 +48,11 @@ class ChatIntegrationService extends Service {
 	 */
 	public function setChatSession(SessionCredentials $credentials, $sessionId) {
 		$redis = Application::instance ()->getRedis ();
-		if (! empty ( $redis )) {
-			$json = json_encode ( $credentials->getData () );
-			$id = sprintf ( 'CHAT:session-%s', $sessionId );
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-			$redis->set ( $id, $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
-		}
+		$json = json_encode ( $credentials->getData () );
+		$id = sprintf ( 'CHAT:session-%s', $sessionId );
+		$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
+		$redis->set ( $id, $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
+		$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
 	}
 
 	/**
@@ -66,12 +62,10 @@ class ChatIntegrationService extends Service {
 	 */
 	public function refreshChatUserSession(SessionCredentials $credentials) {
 		$redis = Application::instance ()->getRedis ();
-		if (! empty ( $redis )) {
-			$json = json_encode ( $credentials->getData () );
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-			$redis->publish ( sprintf ( 'refreshuser-%s', Config::$a ['redis'] ['database'] ), $json );
-			$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
-		}
+		$json = json_encode ( $credentials->getData () );
+		$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
+		$redis->publish ( sprintf ( 'refreshuser-%s', Config::$a ['redis'] ['database'] ), $json );
+		$redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
 	}
 
 	/**
@@ -79,9 +73,7 @@ class ChatIntegrationService extends Service {
 	 */
 	public function deleteChatSession() {
 		$redis = Application::instance ()->getRedis ();
-		if (! empty ( $redis )) {
-			$redis->delete ( sprintf ( 'CHAT:session-%s', Session::getSessionId () ) );
-		}
+		$redis->delete ( sprintf ( 'CHAT:session-%s', Session::getSessionId () ) );
 	}
 
 	/**
@@ -98,9 +90,7 @@ class ChatIntegrationService extends Service {
 		$redis = Application::instance ()->getRedis ();
 		$broadcast = new \stdClass ();
 		$broadcast->data = $message;
-		if (! empty ( $redis )) {
-			$redis->publish ( sprintf ( 'broadcast-%s', Config::$a ['redis'] ['database'] ), json_encode ( $broadcast ) );
-		}
+		$redis->publish ( sprintf ( 'broadcast-%s', Config::$a ['redis'] ['database'] ), json_encode ( $broadcast ) );
 		return $broadcast;
 	}
 
@@ -116,9 +106,7 @@ class ChatIntegrationService extends Service {
 			throw new Exception ( 'UserId required' );
 		}
 		$redis = Application::instance ()->getRedis ();
-		if (! empty ( $redis )) {
-			$redis->publish ( sprintf ( 'unbanuserid-%s', Config::$a ['redis'] ['database'] ), (string)$userId );
-		}
+		$redis->publish ( sprintf ( 'unbanuserid-%s', Config::$a ['redis'] ['database'] ), (string)$userId );
 		return $userId;
 	}
 
@@ -171,9 +159,6 @@ class ChatIntegrationService extends Service {
 			TRUNCATE TABLE bans
 		");
 		$stmt->execute();
-
-		if (! empty ( $redis )) {
-			return $redis->publish ( sprintf ( 'refreshbans-%s', Config::$a ['redis'] ['database'] ), "doesnotmatter" );
-		}
+		return $redis->publish ( sprintf ( 'refreshbans-%s', Config::$a ['redis'] ['database'] ), "doesnotmatter" );
 	}
 }

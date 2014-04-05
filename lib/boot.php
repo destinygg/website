@@ -4,7 +4,6 @@ use Destiny\Common\Application;
 use Destiny\Common\Log\SessionRequestProcessor;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Configuration;
-use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Monolog\Logger;
@@ -26,9 +25,9 @@ $loader = require _VENDORDIR . '/autoload.php';
 AnnotationRegistry::registerLoader ( array ($loader,'loadClass') );
 
 Config::load ( array_replace_recursive ( 
-	require _BASEDIR . '/config/config.php', 
-	require _BASEDIR . '/config/config.local.php', 
-	json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) 
+  require _BASEDIR . '/config/config.php', 
+  require _BASEDIR . '/config/config.local.php', 
+  json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) 
 ) );
 
 $app = new Application ();
@@ -39,20 +38,16 @@ $log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->
 $log->pushProcessor ( new WebProcessor () );
 $log->pushProcessor ( new MemoryPeakUsageProcessor () );
 $log->pushProcessor ( new SessionRequestProcessor () );
-
 $app->setLogger ( $log );
 
 $app->setConnection ( DriverManager::getConnection ( Config::$a ['db'], new Configuration () ) );
 
-if (class_exists ( 'Redis' )) {
-	$redis = new Redis ();
-	$redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );
-	$redis->select ( Config::$a ['redis'] ['database'] );
-	$app->setRedis ( $redis );
-	$cache = new RedisCache ();
-	$cache->setRedis ( $app->getRedis () );
-} else {
-	$cache = new FilesystemCache ( Config::$a ['cache'] ['path'] );
-}
+$redis = new Redis ();
+$redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );
+$redis->select ( Config::$a ['redis'] ['database'] );
+$app->setRedis ( $redis );
+$cache = new RedisCache ();
+$cache->setRedis ( $app->getRedis () );
+	
 $app->setCacheDriver ( $cache );
 ?>

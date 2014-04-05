@@ -672,9 +672,6 @@ class UserService extends Service {
 	private function callRedisScript( $scriptname, $argument ) {
 		$redis = Application::instance ()->getRedis ();
 		
-		if(empty($redis))
-			return array();
-		
 		$dir   = Config::$a ['redis'] ['scriptdir'];
 		$hash  = @file_get_contents( $dir . $scriptname . '.hash' );
 

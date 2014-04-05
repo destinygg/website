@@ -77,6 +77,7 @@ class IpnController {
 	 * @param PPIPNMessage $ipnMessage
 	 */
 	protected function handleIPNTransaction($txnId, $txnType, array $data) {
+		
 		$log = Application::instance ()->getLogger ();
 		$orderService = OrdersService::instance ();
 		$subService = SubscriptionsService::instance ();
@@ -87,6 +88,7 @@ class IpnController {
 			// Post back from checkout, make sure the payment lines up
 			// This is sent when a express checkout has been performed by a user
 			case 'express_checkout' :
+				
 				$payment = $orderService->getPaymentByTransactionId ( $txnId );
 				if (! empty ( $payment )) {
 					
@@ -144,6 +146,7 @@ class IpnController {
 				$orderService->updatePaymentProfileNextPayment ( $paymentProfile ['profileId'], $nextPaymentDate );
 				
 				// Update the subscription end date regardless if the payment was successful or not
+				// We dont actually know if paypal moves the automatic payment forward if one fails and is then manually processed
 				$end = Date::getDateTime ( $subscription ['endDate'] );
 				$end->modify ( '+' . $paymentProfile ['billingFrequency'] . ' ' . strtolower ( $paymentProfile ['billingPeriod'] ) );
 				
@@ -155,8 +158,8 @@ class IpnController {
 					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::PENDING );
 					$log->debug ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], SubscriptionStatus::PENDING ) );
 				} else if (strcasecmp ( $data ['payment_status'], PaymentStatus::COMPLETED ) !== 0) {
-					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], $data ['payment_status'] );
-					$log->debug ( sprintf ( 'Updated subscription state %s status %s', $subscription ['subscriptionId'], $data ['payment_status'] ) );
+					$subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
+					$log->debug ( sprintf ( 'Updated subscription %s status %s', $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE ) );
 				}
 				
 				// Add a payment to the order
