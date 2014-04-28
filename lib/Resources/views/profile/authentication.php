@@ -56,12 +56,6 @@ use Destiny\Common\Config;
         </tbody>
       </table>
       
-      <?php if($model->requireConnections): ?>
-      <div class="form-group">
-        <p><span class="label label-default">Important!</span> Connecting profiles will merge destiny.gg accounts if duplicates are found.</p>
-      </div>
-      <?php endif; ?>
-        
     </div>
   </section>
   

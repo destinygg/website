@@ -211,6 +211,11 @@ class SubscriptionController {
         }
       
         $userId = Session::getCredentials ()->getUserId ();
+        $subscriptionType = $subscriptionsService->getSubscriptionType ( $params ['subscription'] );
+        
+        if(empty($subscriptionType)){
+            throw new Exception('Invalid subscription specified');
+        }
       
         // If this is a gift, there is no need to check the current subscription
         if(isset($params['gift']) && !empty($params['gift'])){
@@ -219,16 +224,21 @@ class SubscriptionController {
 
         }else{
 
-          // Already existing subscription
+          // Existing subscription
           $currentSubscription = $subscriptionsService->getUserActiveSubscription ( $userId );
           if (! empty ( $currentSubscription )) {
              $model->currentSubscription = $currentSubscription;
              $model->currentSubscriptionType = $subscriptionsService->getSubscriptionType ( $currentSubscription ['subscriptionType'] );
+             
+             // Warn about identical subscription overwrite
+             if($model->currentSubscriptionType['id'] == $subscriptionType ['id']){
+                $model->warning = new Exception('you are about to overwrite your existing subscription with a duplicate one.');
+             }
+             
           }
 
         }
 
-        $subscriptionType = $subscriptionsService->getSubscriptionType ( $params ['subscription'] );
         $model->subscriptionType = $subscriptionType;
         return 'order/orderconfirm';
     }
