@@ -512,7 +512,7 @@ class SubscriptionController {
 
             // Handle the subscription broadcast
             $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
-            $chatIntegrationService->sendBroadcast ( sprintf ( "%s has just become a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
+            $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
 
             // Redirect to completion page
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/complete';
