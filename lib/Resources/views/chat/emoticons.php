@@ -15,26 +15,26 @@ use Destiny\Common\Utils\Tpl;
 </head>
 <body id="emoticons">
 
-	<?php include Tpl::file('seg/top.php') ?>
-	<?php include Tpl::file('seg/headerband.php') ?>
+  <?php include Tpl::file('seg/top.php') ?>
+  <?php include Tpl::file('seg/headerband.php') ?>
 
-	<section class="container">
-		<h1 class="title">Emoticons</h1>
-		<div class="content content-dark">
-			<div class="emoticons clearfix">
-				<?php foreach( $model->emoticons as $trigger ): ?>
-				<div class="emote">
-					<div>
-						<div class="chat-emote chat-emote-<?=$trigger?>" title="<?=$trigger?>"></div>
-						<a class="emote-label"><?=Tpl::out($trigger)?></a>
-					</div>
-				</div>
-				<?php endforeach; ?>
-			</div>
-		</div>
-	</section>
+  <section class="container">
+    <h1 class="title">Emoticons</h1>
+    <div class="content content-dark">
+      <div class="emoticons clearfix">
+        <?php foreach( $model->emoticons as $trigger ): ?>
+        <div class="emote">
+          <div>
+            <div class="chat-emote chat-emote-<?=$trigger?>" title="<?=$trigger?>"></div>
+            <a class="emote-label"><?=Tpl::out($trigger)?></a>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </section>
 
-	<?php include Tpl::file('seg/foot.php') ?>
-	<?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include Tpl::file('seg/foot.php') ?>
+  <?php include Tpl::file('seg/commonbottom.php') ?>
 </body>
 </html>

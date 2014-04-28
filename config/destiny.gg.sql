@@ -133,6 +133,7 @@ CREATE TABLE `dfl_users` (
   `userStatus` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nameChangedCount` tinyint(4) DEFAULT '0',
   `nameChangedDate` datetime DEFAULT NULL,
+  `allowGifting` tinyint(4) DEFAULT '1',
   PRIMARY KEY (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -205,6 +206,7 @@ CREATE TABLE `dfl_users_subscriptions` (
   `recurring` TINYINT(4) DEFAULT NULL,
   `orderId` INT(14) DEFAULT NULL,
   `paymentProfileId` INT(14) DEFAULT NULL,
+  `gifter` INT(14) DEFAULT NULL,
   PRIMARY KEY (`subscriptionId`),
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
@@ -227,3 +229,31 @@ CREATE TABLE `users_address` (
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+/* INSERT DEFAULT DATA */
+
+INSERT INTO `dfl_users` (userId, username, email, country, createdDate, modifiedDate, userStatus, nameChangedCount, nameChangedDate) VALUES 
+(NULL, 'Admin', 'admin@destiny.gg', '', NOW(), NOW(), 'Active', 0, NULL);
+
+INSERT INTO `dfl_roles` (roleId, roleName) VALUES 
+(1, 'ADMIN');
+
+INSERT INTO `dfl_users_roles` (userId, roleId) VALUES 
+(1, 1);
+
+INSERT  INTO `dfl_features`(`featureId`,`featureName`,`featureLabel`) VALUES 
+(1, 'protected', 'Protected'),
+(2, 'subscriber', 'Subscriber'),
+(3, 'vip', 'Vip'),
+(4, 'moderator', 'Moderator'),
+(5, 'admin', 'Admin'),
+(6, 'bot', 'Bot'),
+(7, 'flair1', 'Subscriber Tier 2'),
+(8, 'flair2', 'Notable'),
+(9, 'flair3', 'Subscriber Tier 3'),
+(10, 'flair4', 'Trusted'),
+(11, 'flair5', 'Contributor'),
+(12, 'flair6', 'Composition Challenge Winner'),
+(13, 'flair7', 'Eve Notable');
+(14, 'flair8', 'Subscriber Tier 4');

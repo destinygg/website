@@ -18,30 +18,33 @@
 	};
 	$.extend(ChatGui.prototype, {
 
-		theme: 'dark',
-		maxlines: 500,
-		lineCount: 0,
-		scrollPlugin: null,
-		autoCompletePlugin: null,
-		ui: null,
-		lines: null,
-		output: null,
-		input: null,
-		onSend: $.noop,
-		userMessages: [],
-		backlog: backlog,
-		backlogLoading: false,
-		highlightregex: {},
-		highlightnicks: {},
-		notifications: true,
-		lastMessage: null,
-		menus: [],
-		menuOpenCount: 0,
-		timestampformat: null,
-		emoticons: [],
-		formatters: [],
-		hintPopup: null,
-		loaded: false,
+		theme              : 'dark',
+		maxlines           : 500,
+		lineCount          : 0,
+		scrollPlugin       : null,
+		autoCompletePlugin : null,
+		ui                 : null,
+		lines              : null,
+		output             : null,
+		input              : null,
+		onSend             : $.noop,
+		userMessages       : [],
+		backlog            : backlog,
+		broadcasts         : broadcasts,
+		backlogLoading     : false,
+		highlightregex     : {},
+		highlightnicks     : {},
+		notifications      : true,
+		lastMessage        : null,
+		menus              : [],
+		menuOpenCount      : 0,
+		timestampformat    : null,
+		emoticons          : [],
+		formatters         : [],
+		hintPopup          : null,
+		loaded             : false,
+		maxbroadcasts      : 1,
+		broadcastdisplaytime: 300000,
 		
 		trigger: function(name, data){
 			$(this).trigger(name, data);
@@ -129,13 +132,13 @@
 					case 'showtime':
 						chat.saveChatOption(name, checked);
 						chat.ui.toggleClass('chat-time', checked);
-						this.scrollPlugin.updateAndScroll();
+						chat.scrollPlugin.updateAndScroll();
 						break;
 					
 					case 'hideflairicons':
 						chat.saveChatOption(name, checked);
 						chat.ui.toggleClass('chat-icons', (!checked));
-						this.scrollPlugin.updateAndScroll();
+						chat.scrollPlugin.updateAndScroll();
 						break;
 					
 					case 'highlight':
@@ -253,11 +256,6 @@
 				e.preventDefault();
 				this.reset(chat);
 			}, this.hintPopup));
-			
-			// Hide hint when someone clicks the user tools
-			$(chat.cUserTools).on('show', $.proxy(function(e){
-				this.hide();
-			}, this.hintPopup));
 
 			// Bind to user input submit
 			this.ui.on('submit', 'form.chat-input', function(e){
@@ -270,6 +268,7 @@
 				if(this.menuOpenCount > 0)
 					cMenu.closeMenus(this);
 			}, this));
+			
 			// Close all menus if someone clicks on any messages
 			this.output.on('mousedown', $.proxy(function(e){
 				if(this.cUserTools.visible)
@@ -364,10 +363,22 @@
 						this.put(message);
 					else
 						this.handleHighlight(this.put(message), true);
+					
 				}
 				this.put(new ChatUIMessage('<hr/>'));
 			};
 			this.scrollPlugin.updateAndScroll(true);
+			this.backlogLoading = false;
+			return;
+		},
+		
+		loadBroadcasts: function(){
+			this.backlogLoading = true;
+			if(this.broadcasts.length > 0){
+				for (var i = this.broadcasts.length - 1; i >= 0; i--) {
+					this.addBroadcastUI( this.broadcasts[i].data );
+				}
+			}
 			this.backlogLoading = false;
 			return;
 		},
@@ -394,6 +405,9 @@
 			if(state != undefined)
 				message.status(state);
 			
+			//if($.isFunction(message['onAPPEND']))
+			//	message.onAPPEND(this);
+			
 			this.lastMessage = message;
 			return message;
 		},
@@ -407,7 +421,7 @@
 			// Rid excess lines if the user is scrolled to the bottom
 			var lineCount = this.getLineCount();
 			if(wasScrolledBottom && lineCount >= this.maxlines)
-				this.lines.children().slice(0,2+Math.floor(((lineCount-this.maxlines)/this.maxlines)*100)).remove();
+				this.lines.children().slice( 0, 2+Math.floor(((lineCount-this.maxlines)/this.maxlines)*100) ).remove();
 			
 			this.userMessages.push(message);
 			this.put(message, state);
@@ -420,6 +434,10 @@
 			this.scrollPlugin.updateAndScroll(wasScrolledBottom);
 			
 			this.handleHighlight(message);
+			
+			if($.isFunction(message['onAPPEND']))
+				message.onAPPEND(this);
+			
 			return message;
 		},
 		
@@ -629,6 +647,29 @@
 		removeUserMessages: function(username) {
 			this.lines.children('div[data-username="'+username.toLowerCase()+'"]').remove();
 			this.scrollPlugin.reset();
+		},
+		
+		addBroadcastUI: function(message){
+			var encoded = message;
+			
+			for(var i=0; i< this.formatters.length; ++i)
+				encoded = this.formatters[i].format(encoded, this.user);
+			
+			var broadcasts     = this.ui.find('#chat-broadcasts'),
+				prevbroadcasts = broadcasts.find('.chat-broadcast:not(.template)');
+				broadcasttpl   = broadcasts.find('.chat-broadcast.template:first');
+			
+			if(prevbroadcasts.length >= this.maxbroadcasts){
+				prevbroadcasts[prevbroadcasts.length-1].remove();
+			};
+			
+			var broadcastui  = broadcasttpl.clone().removeClass('template');
+			broadcastui.find('.message').html(encoded);
+			broadcastui.appendTo(broadcasts);
+			setTimeout(function(){
+				broadcastui.fadeOut('fast', broadcastui.remove);
+			}, this.broadcastdisplaytime);
+			broadcastui.removeClass('hidden');
 		}
 		
 	});
@@ -653,6 +694,7 @@
 		SUBSCRIBER    : 'subscriber',
 		SUBSCRIBERT2  : 'flair1',
 		SUBSCRIBERT3  : 'flair3',
+		SUBSCRIBERT4  : 'flair8',
 		VIP           : 'vip',
 		MODERATOR     : 'moderator',
 		ADMIN         : 'admin',
@@ -706,7 +748,9 @@
 					break;
 			}
 		}
-		if($.inArray(UserFeatures.SUBSCRIBERT3, this.features) >= 0){
+		if($.inArray(UserFeatures.SUBSCRIBERT4, this.features) >= 0){
+			icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
+		}else if($.inArray(UserFeatures.SUBSCRIBERT3, this.features) >= 0){
 			icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
 		}else if($.inArray(UserFeatures.SUBSCRIBERT2, this.features) >= 0){
 			icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';

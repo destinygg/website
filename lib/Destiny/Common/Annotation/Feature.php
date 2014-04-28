@@ -8,20 +8,20 @@ namespace Destiny\Common\Annotation;
  * @Target({"CLASS","METHOD"})
  */
 class Feature {
-	
-	/**
-	 * The features list
-	 * @var array<string>
-	 */
-	public $features;
+    
+    /**
+     * The features list
+     * @var array<string>
+     */
+    public $features;
 
-	/**
-	 * A list of allowed features
-	 * @param array $params
-	 */
-	public function __construct(array $params) {
-		$this->features = $params ['value'];
-	}
+    /**
+     * A list of allowed features
+     * @param array $params
+     */
+    public function __construct(array $params) {
+        $this->features = $params ['value'];
+    }
 
 }
 ?>

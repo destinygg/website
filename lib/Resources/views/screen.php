@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
@@ -16,14 +16,14 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="screen">
-	<?php include Tpl::file('seg/top.php') ?>
-	<?php include Tpl::file('seg/headerband.php') ?>
-	<?php include Tpl::file('seg/panel.twitch.php') ?>
-	<?php include Tpl::file('seg/panel.videos.php') ?>
-	<?php include Tpl::file('seg/panel.music.php') ?>
-	<?php include Tpl::file('seg/panel.calendar.php') ?>
-	<?php include Tpl::file('seg/panel.ads.php') ?>
-	<?php include Tpl::file('seg/foot.php') ?>
-	<?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include Tpl::file('seg/top.php') ?>
+  <?php include Tpl::file('seg/headerband.php') ?>
+  <?php include Tpl::file('seg/panel.twitch.php') ?>
+  <?php include Tpl::file('seg/panel.videos.php') ?>
+  <?php include Tpl::file('seg/panel.music.php') ?>
+  <?php include Tpl::file('seg/panel.calendar.php') ?>
+  <?php include Tpl::file('seg/panel.ads.php') ?>
+  <?php include Tpl::file('seg/foot.php') ?>
+  <?php include Tpl::file('seg/commonbottom.php') ?>
 </body>
 </html>

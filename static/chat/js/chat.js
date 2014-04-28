@@ -54,8 +54,9 @@ chat.prototype.start = function(){
 		this.push(new ChatUserMessage(str, this.engine.user), (!this.engine.connected) ? 'unsent' : 'pending');
 		this.engine.emit('MSG', {data: str});
 	};
-	
+
 	this.gui.loadBacklog();
+	this.gui.loadBroadcasts();
 	this.loadIgnoreList();
 	this.dispatchBacklog = $.proxy(this.dispatchBacklog, this);
 	this.gui.push(new ChatStatusMessage("Connecting..."));
@@ -96,9 +97,9 @@ chat.prototype.loadIgnoreList = function() {
 
 // websocket stuff
 chat.prototype.parseAndDispatch = function(e) {
-	var eventname     = e.data.split(' ', 1)[0],
-			handler   = 'on' + eventname,
-			obj       = JSON.parse(e.data.substring(eventname.length+1));
+	var eventname   = e.data.split(' ', 1)[0],
+			handler = 'on' + eventname,
+			obj     = JSON.parse(e.data.substring(eventname.length+1));
 	
 	this.l(handler, obj);
 	if (eventname == 'PING') { // handle pinging in-line, cant parse 64bit ints
@@ -153,6 +154,7 @@ chat.prototype.onNAMES = function(data) {
 		this.users[u.nick] = new ChatUser(u);
 		this.gui.autoCompletePlugin.addData(u.nick, 1);
 	};
+	
 	this.gui.trigger('names', data);
 	return new ChatStatusMessage("Connected. Server connections: " + data.connectioncount);
 };
@@ -172,6 +174,7 @@ chat.prototype.onMSG = function(data) {
 	if(this.user.username == data.nick && $.isArray(data.features))
 		this.user.features = data.features;
 
+	// Emote
 	if (data.data.substring(0, 4) === '/me ')
 		var emoticon = data.data.substring(4);
 	else
@@ -194,7 +197,8 @@ chat.prototype.onMSG = function(data) {
 			this.previousemote = new ChatEmoteMessage(emoticon, data.timestamp);
 	} else
 		this.previousemote = null;
-
+	// End emote
+	
 	var messageui = this.gui.resolveMessage(data);
 	
 	if(messageui && this.previousemote)
@@ -290,7 +294,11 @@ chat.prototype.onSUBONLY = function(data) {
 	return new ChatCommandMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
 };
 chat.prototype.onBROADCAST = function(data) {
-	return new ChatBroadcastMessage(data.data, data.timestamp);
+	var message = new ChatBroadcastMessage(data.data, data.timestamp);
+	message.onAPPEND = function(gui){
+		gui.addBroadcastUI(message.message);
+	};
+	return message;
 };
 
 chat.prototype.handleCommand = function(str) {

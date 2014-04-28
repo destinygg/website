@@ -33,7 +33,7 @@
 		this.ui.hintmessage = this.ui.find('.hint-message');
 		this.ui.on('click', '.hidehint', $.proxy(this.hideHint, this));
 		this.ui.on('click', '.nexthint', $.proxy(this.nextHint, this));
-		
+
 		if(this.enabled)
 			this.listenForInput(chat);
 		
@@ -50,13 +50,13 @@
 	hintPopup.prototype.invoke = function(chat){
 		if(this.visible || !this.enabled)
 			return false;
-		if(!this.lasthinttime || (new Date().getTime() - this.lasthinttime)  >= this.popupInterval){
+		//if(!this.lasthinttime || (new Date().getTime() - this.lasthinttime)  >= this.popupInterval){
 			this.currenthint = this.getRandomHint();
 			if(!this.currenthint)
 				return false;
 			this.show();
 			return true;
-		};
+		//};
 		return false;
 	};
 	hintPopup.prototype.enable = function(enabled){
@@ -69,7 +69,8 @@
 		this.listenForInput(chat);
 	};
 	hintPopup.prototype.getRandomHint = function(){
-		var hint = null, i = 0;
+		var hint = null, 
+			i    = 0;
 		while(++i){
 			var id = this.hintindex[Math.floor(Math.random()*this.hintindex.length)];
 			if(this.hiddenhints.indexOf(id) == -1)
@@ -100,7 +101,7 @@
 		this.hideTimeoutId = setTimeout($.proxy(this.hide, this), this.readingInterval);
 		this.ui.hintmessage.html(this.hints[this.currenthint]);
 		this.updateLastHintTime(new Date().getTime());
-		this.ui.addClass('active').css('visibility', 'visible');
+		this.ui.addClass('active');
 		this.visible = true;
 	};
 	hintPopup.prototype.hide = function(){
@@ -108,9 +109,7 @@
 		clearTimeout(this.hideTimeoutId);
 		this.currenthint = '';
 		this.visible = false;
-		this.ui.removeClass('active').data('hide-timeout', setTimeout($.proxy(function(){
-			this.ui.css('visibility', 'hidden');
-		}, this), 250));
+		this.ui.removeClass('active');
 	};
 	hintPopup.prototype.updateHiddenHints = function(){
 		localStorage['hiddenhints'] = JSON.stringify(this.hiddenhints);

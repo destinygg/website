@@ -9,9 +9,11 @@ use Destiny\Common\Config;
 				<div class="pull-left channel-stat game">
 				<?php if(!empty($model->streamInfo)): ?>
 					<?php if(!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])): ?>
-					<i class="icon-time icon-white subtle"></i> <span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
+					<span class="glyphicon glyphicon-time"></span> 
+					<span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
 					<?php else: ?>
-					<i class="icon-time icon-white subtle"></i> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['channel']['updated_at']))?></span>
+					<span class="glyphicon glyphicon-time"></span> 
+					<span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['channel']['updated_at']))?></span>
 					<?php if(intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
 					- <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay
 					<?php endif; ?>
@@ -19,8 +21,8 @@ use Destiny\Common\Config;
 				<?php endif; ?>
 				</div>
 				<div class="btn-group pull-right">
-					<a id="popoutchat" title="Pop-out chat" href="/embed/chat" class="btn btn-mini btn-link">Pop-out chat</a>
-					<a id="popoutvideo" title="Pop-out video" href="http://www.twitch.tv/destiny/popout" class="btn btn-mini btn-link">Pop-out stream</a>
+					<a id="popoutchat" title="Pop-out chat" href="/embed/chat" class="btn btn-xs btn-link">Pop-out chat</a>
+					<a id="popoutvideo" title="Pop-out video" href="http://www.twitch.tv/destiny/popout" class="btn btn-xs btn-link">Pop-out stream</a>
 				</div>
 			</div>
 		</div>

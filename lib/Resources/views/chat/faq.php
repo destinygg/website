@@ -142,6 +142,8 @@ use Destiny\Common\Utils\Tpl;
 			Also auto-completes emoticons! Try it: hhh+Tab
 		</p>
 	</section>
+
+	<br />
 	
 	<?php include Tpl::file('seg/panel.ads.php') ?>
 	<?php include Tpl::file('seg/foot.php') ?>

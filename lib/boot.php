@@ -1,53 +1,35 @@
 <?php
-use Destiny\Common\Config;
-use Destiny\Common\Application;
-use Destiny\Common\Log\SessionRequestProcessor;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Configuration;
-use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Destiny\Common\Config;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\Common\Cache\RedisCache;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Monolog\Processor\WebProcessor;
-use Monolog\Processor\MemoryPeakUsageProcessor;
-use \Redis;
 
+// This should be in the server config
 ini_set ( 'date.timezone', 'UTC' );
 
-// Used when the full path is needed to the base directory
-define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
-define ( '_LIBDIR', _BASEDIR . '/lib' );
-define ( '_VENDORDIR', _BASEDIR . '/vendor' );
-define ( '_STATICDIR', _BASEDIR . '/static' );
-define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
-$loader = require _VENDORDIR . '/autoload.php';
+$loader = require_once realpath ( __DIR__ ) . '/autoload.php';
+AnnotationRegistry::registerLoader ( array ($loader, 'loadClass') );
 
-AnnotationRegistry::registerLoader ( array ($loader,'loadClass') );
-
-Config::load ( array_replace_recursive ( 
-  require _BASEDIR . '/config/config.php', 
-  require _BASEDIR . '/config/config.local.php', 
-  json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) 
-) );
-
-$app = new Application ();
+$app = new Destiny\Common\Application ();
 $app->setLoader ( $loader );
 
 $log = new Logger ( $context->log );
 $log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->log . '.log', Logger::INFO ) );
-$log->pushProcessor ( new WebProcessor () );
-$log->pushProcessor ( new MemoryPeakUsageProcessor () );
-$log->pushProcessor ( new SessionRequestProcessor () );
+$log->pushProcessor ( new Monolog\Processor\WebProcessor () );
+$log->pushProcessor ( new Monolog\Processor\MemoryPeakUsageProcessor () );
+$log->pushProcessor ( new Destiny\Common\Log\SessionRequestProcessor () );
 $app->setLogger ( $log );
 
-$app->setConnection ( DriverManager::getConnection ( Config::$a ['db'], new Configuration () ) );
+$app->setConnection ( DriverManager::getConnection ( Config::$a ['db'], new Doctrine\DBAL\Configuration () ) );
 
-$redis = new Redis ();
+$redis = new \Redis ();
 $redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );
 $redis->select ( Config::$a ['redis'] ['database'] );
 $app->setRedis ( $redis );
+
 $cache = new RedisCache ();
 $cache->setRedis ( $app->getRedis () );
-	
 $app->setCacheDriver ( $cache );
 ?>

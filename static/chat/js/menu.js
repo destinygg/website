@@ -7,13 +7,10 @@
 	
 	var showMenuUI = function(ui){
 		clearTimeout(ui.data('hide-timeout'));
-		ui.addClass('active').css('visibility', 'visible');
+		ui.addClass('active');
 	};
 	var hideMenuUI = function(ui){
 		ui.removeClass('active');
-		ui.data('hide-timeout', setTimeout(function(){
-			ui.css('visibility', 'hidden');
-		}, 250));
 	};
 	
 	cMenu.addMenu = function(chat, el){
@@ -45,6 +42,8 @@
 		
 		++chat.menuOpenCount;
 	};
+	
+	
 	cMenu.prototype.hideMenu = function(chat){
 		hideMenuUI(this);
 		this.visible = false;
@@ -52,25 +51,36 @@
 		--chat.menuOpenCount;
 	};
 	
+	
 	cUserTools = function(chat){
 		var self = this;
-		this.chat = chat;
-		this.visible = false;
-		this.label = '';
-		this.user = null;
-		this.username = '';
-		this.ui = chat.ui.find('.user-tools');
-		this.ui.user = this.ui.find('.user-tools-user');
-		this.ui.muteForm = this.ui.find('#user-mute-form');
-		this.ui.muteForm.on('submit', function(){
+		
+		self.chat = chat;
+		self.visible = false;
+		self.label = '';
+		self.user = null;
+		self.username = '';
+		
+		self.ui = chat.ui.find('.user-tools');
+		self.ui.user = self.ui.find('.user-tools-user');
+		
+		self.ui.muteForm = this.ui.find('#user-mute-form');
+		self.ui.banForm = this.ui.find("#user-ban-form");
+		
+		self.ui.muteForm.on('submit', function(){
 			var time = $(this).find('#banTimeLength');
 			chat.engine.handleCommand('mute ' + self.username + ' ' + time.val() + 'm');
 			time.val('0');
 			self.hide();
 			return false;
 		});
-		this.ui.banForm = this.ui.find("#user-ban-form");
-		this.ui.banForm.on('submit', function(){
+		self.ui.muteForm.find('button#cancelmute').on('click', function(){
+			self.ui.muteForm.hide();
+			return false;
+		});
+		
+		
+		self.ui.banForm.on('submit', function(){
 			var time = $(this).find('#banTimeLength'),
 				reason = $(this).find('#banReason'),
 				ipBan = $(this).find('#ipBan'),
@@ -82,21 +92,54 @@
 			self.hide();
 			return false;
 		});
-		this.ui.on('click', 'a#ignoreuser,a#unignoreuser', function(){
+		
+		self.ui.banForm.find('select#banTimeLength').on('change', function(){
+			self.ui.banForm.find('#banReason').focus();
+			return false;
+		});
+		self.ui.banForm.find('button#ipbanuser').on('click', function(){
+			self.ui.banForm.find('input[name="ipBan"]').val('1');
+			self.ui.banForm.submit();
+			return false;
+		});
+		self.ui.banForm.find('button#cancelban').on('click', function(){
+			self.ui.banForm.hide();
+			return false;
+		});
+		
+		
+		self.ui.on('click', 'a#ignoreuser,a#unignoreuser', function(){
 			var cmd = $(this).attr('href').substring(1);
 			chat.engine.handleCommand(cmd + ' ' + self.username);
 			self.hide();
 			self.show(self.label, self.username, self.user);
 			return false;
 		});
-		this.ui.on('click', 'a#clearmessages', function(){
+		
+		self.ui.on('click', 'a[href="#clearmessages"]', function(){
 			chat.engine.handleCommand('mute ' + self.username + ' 1ms');
 			self.hide();
 			return false;
 		});
-		this.ui.on('click', 'a.close', $.proxy(this.hide, this));
+
+		self.ui.on('click', 'a[href="#togglemute"]', function(){
+			self.ui.muteForm.toggle();
+			self.ui.banForm.hide();
+			return false;
+		});
+		
+		self.ui.on('click', 'a[href="#toggleban"]', function(){
+			self.ui.banForm.toggle();
+			self.ui.banForm.hide();
+			return false;
+		});
+		
+		self.ui.on('click', '.close', $.proxy(self.hide, self));
+		
 		return this;
 	};
+	
+	
 	cUserTools.prototype.hide = function(){
 		if(!this.visible)
 			return;

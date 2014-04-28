@@ -7,10 +7,10 @@ use Destiny\Commerce\SubscriptionsService;
 
 class SubscriptionExpire {
 
-	public function execute(LoggerInterface $log) {
-		RememberMeService::instance ()->clearExpiredRememberMe ();
-		$expiredSubscriptionCount = SubscriptionsService::instance ()->expiredSubscriptions ();
-		$log->debug ( sprintf ( 'Expired (%s)', $expiredSubscriptionCount ) );
-	}
+    public function execute(LoggerInterface $log) {
+        RememberMeService::instance ()->clearExpiredRememberMe ();
+        $expiredSubscriptionCount = SubscriptionsService::instance ()->expiredSubscriptions ();
+        $log->debug ( sprintf ( 'Expired (%s)', $expiredSubscriptionCount ) );
+    }
 
 }

@@ -53,7 +53,7 @@ return array (
 		),
 	),
 	'redis' => array(
-		'host' 				=> '127.0.0.1',
+		'host' 				=> 'localhost',
 		'port' 				=> 6379,
 		'database'			=> 0,
 		'scriptdir'			=> _BASEDIR . '/scripts/redis/',
@@ -117,7 +117,8 @@ return array (
 		'path' 			=> '/' 
 	),
 	'tpl' => array (
-		'path' 			=> _BASEDIR . '/lib/Resources/views/'
+		'path' 			=> _BASEDIR . '/lib/Resources/views/',
+		'error.path' 	=> _BASEDIR . '/',
 	),
 	'geodata' => array (
 		'json'			=> _BASEDIR . '/lib/Resources/geo-ISO_3166-1-2.json'
@@ -209,7 +210,6 @@ return array (
 				'id'				=> '1-MONTH-SUB',
 				'tier'				=> 1,
 				'tierLabel'			=> 'Tier I',
-				'tierItemLabel'		=> 'Standard Tier I',
 				'itemLabel'			=> 'Standard subscription',
 				'agreement'			=> '$5.00 (per month) recurring subscription',
 				'amount'			=> '5.00',
@@ -220,7 +220,6 @@ return array (
 				'id'				=> '3-MONTH-SUB',
 				'tier'				=> 1,
 				'tierLabel'			=> 'Tier I',
-				'tierItemLabel'		=> 'Standard Tier I',
 				'itemLabel'			=> 'Value subscription',
 				'agreement'			=> '$12.00 (per 3 months) recurring subscription',
 				'amount'			=> '12.00',
@@ -231,8 +230,7 @@ return array (
 				'id'				=> '1-MONTH-SUB2',
 				'tier'				=> 2,
 				'tierLabel'			=> 'Tier II',
-				'tierItemLabel'		=> 'Premium Tier II',
-				'itemLabel'			=> 'Premium subscription',
+				'itemLabel'			=> 'Standard subscription',
 				'agreement'			=> '$10.00 (per month) recurring subscription',
 				'amount'			=> '10.00',
 				'billingFrequency'	=> 1,
@@ -242,8 +240,7 @@ return array (
 				'id'				=> '3-MONTH-SUB2',
 				'tier'				=> 2,
 				'tierLabel'			=> 'Tier II',
-				'tierItemLabel'		=> 'Premium Tier II',
-				'itemLabel'			=> 'Premium value subscription',
+				'itemLabel'			=> 'Value subscription',
 				'agreement'			=> '$24.00 (per 3 months) recurring subscription',
 				'amount'			=> '24.00',
 				'billingFrequency'	=> 3,
@@ -253,8 +250,7 @@ return array (
 				'id'				=> '1-MONTH-SUB3',
 				'tier'				=> 3,
 				'tierLabel'			=> 'Tier III',
-				'tierItemLabel'		=> 'Pro Tier III',
-				'itemLabel'			=> 'Pro subscription',
+				'itemLabel'			=> 'Standard subscription',
 				'agreement'			=> '$20.00 (per month) recurring subscription',
 				'amount'			=> '20.00',
 				'billingFrequency'	=> 1,
@@ -264,10 +260,29 @@ return array (
 				'id'				=> '3-MONTH-SUB3',
 				'tier'				=> 3,
 				'tierLabel'			=> 'Tier III',
-				'tierItemLabel'		=> 'Pro Tier III',
-				'itemLabel'			=> 'Pro value subscription',
+				'itemLabel'			=> 'Value subscription',
 				'agreement'			=> '$48.00 (per 3 months) recurring subscription',
 				'amount'			=> '48.00',
+				'billingFrequency'	=> 3,
+				'billingPeriod'		=> 'Month' 
+			) ,
+			'1-MONTH-SUB4' => array (
+				'id'				=> '1-MONTH-SUB4',
+				'tier'				=> 4,
+				'tierLabel'			=> 'Tier IIII',
+				'itemLabel'			=> 'Standard subscription',
+				'agreement'			=> '$40.00 (per month) recurring subscription',
+				'amount'			=> '40.00',
+				'billingFrequency'	=> 1,
+				'billingPeriod'		=> 'Month' 
+			),
+			'3-MONTH-SUB4' => array (
+				'id'				=> '3-MONTH-SUB4',
+				'tier'				=> 4,
+				'tierLabel'			=> 'Tier IIII',
+				'itemLabel'			=> 'Value subscription',
+				'agreement'			=> '$96.00 (per 3 months) recurring subscription',
+				'amount'			=> '96.00',
 				'billingFrequency'	=> 3,
 				'billingPeriod'		=> 'Month' 
 			) 

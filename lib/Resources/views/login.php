@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 ?>
@@ -11,78 +11,84 @@ use Destiny\Common\Utils\Tpl;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="login">
-	<?php include Tpl::file('seg/top.php') ?>
-	<?php include Tpl::file('seg/headerband.php') ?>
-	
-	<section class="container">
-	
-		<h1 class="title">
-			<span>Login</span>
-			<small>with your preferred login method</small>
-		</h1>
-		<hr size="1">
-		
-		<?php if(!empty($model->error)): ?>
-		<div class="alert alert-error">
-			<strong>Error!</strong>
-			<?=Tpl::out($model->error->getMessage())?>
-		</div>
-		<?php endif; ?>
-		
-		<div class="content content-dark clearfix">
-			<div class="control-group">
-				<p>No private information will ever be shown on the website. This excludes the custom destiny.gg username you specify.</p>
-			</div>
-			<form id="loginForm" action="/login" method="post" style="margin:20px 0 0 0;">
-				<input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
-				<div class="control-group">
-					<div class="controls">
-						<label class="checkbox">
-							<input type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember my login
-						</label>
-						<span class="help-block">(this should only be used if you are on a private computer)</span>
-					</div>
-				</div>
-				
-				<div class="control-group">
-				<h3>Login with ...</h3>
-				</div>
-				
-				<div class="control-group">
-					<label class="radio">
-						<input type="radio" name="authProvider" value="twitch">
-						<i class="icon-twitch"></i> Twitch
-					</label>
-				</div>
-				<div class="control-group">
-					<label class="radio">
-						<input type="radio" name="authProvider" value="reddit">
-						<i class="icon-reddit"></i> Reddit
-					</label>
-				</div>
-				<div class="control-group">
-					<label class="radio">
-						<input type="radio" name="authProvider" value="google">
-						<i class="icon-google"></i> Google
-					</label>
-				</div>
-				<div class="control-group">
-					<label class="radio">
-						<input type="radio" name="authProvider" value="twitter">
-						<i class="icon-twitter"></i> Twitter
-					</label>
-				</div>
-				
-				<div class="form-actions">
-					<button type="submit" class="btn btn-primary btn-large">Continue</button>
-				</div>
-			</form>
-		</div>
-		
-	</section>
-	
-	<?php include Tpl::file('seg/foot.php') ?>
-	<?php include Tpl::file('seg/commonbottom.php') ?>
-	
+
+  <?php include Tpl::file('seg/top.php') ?>
+  <?php include Tpl::file('seg/headerband.php') ?>
+  
+  <section class="container">
+  
+    <h1 class="title">
+      <span>Login</span>
+      <small>with your preferred login method</small>
+    </h1>
+    
+    <?php if(!empty($model->error)): ?>
+    <div class="alert alert-error">
+      <strong>Error!</strong>
+      <?=Tpl::out($model->error->getMessage())?>
+    </div>
+    <?php endif; ?>
+    
+    <div class="content content-dark clearfix">
+
+      <div class="ds-block">
+        <p>No private information will ever be shown on the website. This excludes the custom destiny.gg username you specify.</p>
+      </div>
+
+      <form id="loginForm" action="/login" method="post">
+        <input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
+        <div class="ds-block">
+
+          <div class="form-group">
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember my login
+              </label>
+              <span class="help-block">(this should only be used if you are on a private computer)</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <h3>Login with ...</h3>
+          </div>
+          
+          <div class="form-group">
+            <label class="radio">
+              <input type="radio" name="authProvider" value="twitch">
+              <i class="icon-twitch"></i> Twitch
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="radio">
+              <input type="radio" name="authProvider" value="reddit">
+              <i class="icon-reddit"></i> Reddit
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="radio">
+              <input type="radio" name="authProvider" value="google">
+              <i class="icon-google"></i> Google
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="radio">
+              <input type="radio" name="authProvider" value="twitter">
+              <i class="icon-twitter"></i> Twitter
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-lg">Continue</button>
+        </div>
+        
+      </form>
+    </div>
+    
+  </section>
+  
+  <?php include Tpl::file('seg/foot.php') ?>
+  <?php include Tpl::file('seg/commonbottom.php') ?>
+  
 </body>
 </html>

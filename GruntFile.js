@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 						'static/vendor/jquery/jquery-1.10.2.min.js',
 						'static/vendor/jquery.cookie/jquery.cookie.js',
 						'static/vendor/jquery.mousewheel/jquery.mousewheel.min.js',
-						'static/vendor/bootstrap/bootstrap.js',
+						'static/vendor/bootstrap-3.1.1/js/bootstrap.js',
 						'static/vendor/moment/moment-2.4.0.min.js',
 						'static/vendor/overthrow/overthrow.min.js',
 						'static/vendor/nanoscrollerjs/jquery.nanoscroller.js'// We currently dont use the min file, because of custom mods

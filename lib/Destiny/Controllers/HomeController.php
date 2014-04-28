@@ -14,137 +14,137 @@ use Destiny\Common\Config;
  */
 class HomeController {
 
-	/**
-	 * @Route ("/")
-	 * @Route ("/home")
-	 *
-	 * @param array $params
-	 * @param ViewModel $model
-	 * @return string
-	 */
-	public function home(array $params, ViewModel $model) {
-		$app = Application::instance ();
-		$cacheDriver = $app->getCacheDriver ();
-		$model->articles = $cacheDriver->fetch ( 'recentblog' );
-		$model->summoners = $cacheDriver->fetch ( 'summoners' );
-		$model->tweets = $cacheDriver->fetch ( 'twitter' );
-		$model->music = $cacheDriver->fetch ( 'recenttracks' );
-		$model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
-		$model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
-		$model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
-		return 'home';
-	}
+    /**
+     * @Route ("/")
+     * @Route ("/home")
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function home(array $params, ViewModel $model) {
+        $app = Application::instance ();
+        $cacheDriver = $app->getCacheDriver ();
+        $model->articles = $cacheDriver->fetch ( 'recentblog' );
+        $model->summoners = $cacheDriver->fetch ( 'summoners' );
+        $model->tweets = $cacheDriver->fetch ( 'twitter' );
+        $model->music = $cacheDriver->fetch ( 'recenttracks' );
+        $model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
+        $model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
+        $model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
+        return 'home';
+    }
 
-	/**
-	 * @Route ("/help/agreement")
-	 *
-	 * @param array $params
-	 * @param ViewModel $model
-	 * @return string
-	 */
-	public function helpAgreement(array $params, ViewModel $model) {
-		$model->title = 'User agreement';
-		return 'help/agreement';
-	}
+    /**
+     * @Route ("/help/agreement")
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function helpAgreement(array $params, ViewModel $model) {
+        $model->title = 'User agreement';
+        return 'help/agreement';
+    }
 
-	/**
-	 * @Route ("/ping")
-	 *
-	 * @param array $params
-	 */
-	public function ping(array $params) {
-		$response = new Response ( Http::STATUS_OK );
-		$response->addHeader ( 'X-Pong', 'Destiny' );
-		return $response;
-	}
+    /**
+     * @Route ("/ping")
+     *
+     * @param array $params
+     */
+    public function ping(array $params) {
+        $response = new Response ( Http::STATUS_OK );
+        $response->addHeader ( 'X-Pong', 'Destiny' );
+        return $response;
+    }
 
-	/**
-	 * @Route ("/screen")
-	 *
-	 * @param array $params
-	 * @param ViewModel $model
-	 * @return string
-	 */
-	public function screen(array $params, ViewModel $model) {
-		$app = Application::instance ();
-		$cacheDriver = $app->getCacheDriver ();
-		$model->articles = $cacheDriver->fetch ( 'recentblog' );
-		$model->summoners = $cacheDriver->fetch ( 'summoners' );
-		$model->tweets = $cacheDriver->fetch ( 'twitter' );
-		$model->music = $cacheDriver->fetch ( 'recenttracks' );
-		$model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
-		$model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
-		$model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
-		return 'screen';
-	}
+    /**
+     * @Route ("/screen")
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function screen(array $params, ViewModel $model) {
+        $app = Application::instance ();
+        $cacheDriver = $app->getCacheDriver ();
+        $model->articles = $cacheDriver->fetch ( 'recentblog' );
+        $model->summoners = $cacheDriver->fetch ( 'summoners' );
+        $model->tweets = $cacheDriver->fetch ( 'twitter' );
+        $model->music = $cacheDriver->fetch ( 'recenttracks' );
+        $model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
+        $model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
+        $model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
+        return 'screen';
+    }
 
-	/**
-	 * @Route ("/bigscreen")
-	 *
-	 * @param array $params
-	 * @param ViewModel $model
-	 * @return string
-	 */
-	public function bigscreen(array $params, ViewModel $model) {
-		$model->streamInfo = Application::instance ()->getCacheDriver ()->fetch ( 'streaminfo' );
-		return 'bigscreen';
-	}
+    /**
+     * @Route ("/bigscreen")
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function bigscreen(array $params, ViewModel $model) {
+        $model->streamInfo = Application::instance ()->getCacheDriver ()->fetch ( 'streaminfo' );
+        return 'bigscreen';
+    }
 
-	/**
-	 * @Route ("/emotes")
-	 *
-	 * @param array $params
-	 * @param ViewModel $model
-	 * @return string
-	 */
-	public function emoticons(array $params, ViewModel $model) {
-		$model->emoticons = Config::$a['chat'] ['customemotes'];
-		return 'chat/emoticons';
-	}
+    /**
+     * @Route ("/emotes")
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function emoticons(array $params, ViewModel $model) {
+        $model->emoticons = Config::$a['chat'] ['customemotes'];
+        return 'chat/emoticons';
+    }
 
-	/**
-	 * @Route ("/shave")
-	 *
-	 * @return string
-	 */
-	public function shave() {
-		return 'redirect: http://dollar-shave-club.7eer.net/c/72409/74122/1969';
-	}
+    /**
+     * @Route ("/shave")
+     *
+     * @return string
+     */
+    public function shave() {
+        return 'redirect: http://dollar-shave-club.7eer.net/c/72409/74122/1969';
+    }
 
-	/**
-	 * @Route ("/ting")
-	 *
-	 * @return string
-	 */
-	public function ting() {
-		return 'redirect: http://ting.7eer.net/c/72409/87559/2020';
-	}
+    /**
+     * @Route ("/ting")
+     *
+     * @return string
+     */
+    public function ting() {
+        return 'redirect: http://ting.7eer.net/c/72409/87559/2020';
+    }
 
-	/**
-	 * @Route ("/amazon")
-	 *
-	 * @return string
-	 */
-	public function amazon() {
-		return 'redirect: http://www.amazon.com/?tag=des000-20';
-	}
+    /**
+     * @Route ("/amazon")
+     *
+     * @return string
+     */
+    public function amazon() {
+        return 'redirect: http://www.amazon.com/?tag=des000-20';
+    }
 
-	/**
-	 * @Route ("/eve")
-	 *
-	 * @return string
-	 */
-	public function eve() {
-		return 'redirect: https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
-	}
+    /**
+     * @Route ("/eve")
+     *
+     * @return string
+     */
+    public function eve() {
+        return 'redirect: https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
+    }
 
-	/**
-	 * @Route ("/schedule")
-	 *
-	 * @return string
-	 */
-	public function schedule() {
-		return 'redirect: https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com';
-	}
-	
+    /**
+     * @Route ("/schedule")
+     *
+     * @return string
+     */
+    public function schedule() {
+        return 'redirect: https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com';
+    }
+    
 }
