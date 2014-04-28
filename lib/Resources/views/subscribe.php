@@ -35,7 +35,7 @@ use Destiny\Common\User\UserRole;
 
     <div class="subfeature">
       <div class="subfeature-desc">
-        <h1>Premier Tier IIII</h1>
+        <h1>Tier IIII</h1>
         <p>Literally the best investment available on the market.</p>
       </div>
       <div class="subfeature-options clearfix">
@@ -72,7 +72,7 @@ use Destiny\Common\User\UserRole;
 
     <div class="subfeature active">
       <div class="subfeature-desc">
-        <h1>Pro Tier III</h1>
+        <h1>Tier III</h1>
         <p>Wow such value so prestige you should purchase immediately.</p>
       </div>
       <div class="subfeature-options clearfix">
@@ -109,7 +109,7 @@ use Destiny\Common\User\UserRole;
 
     <div class="subfeature">
       <div class="subfeature-desc">
-        <h1>Premium Tier II</h1>
+        <h1>Tier II</h1>
         <p>Got a bit more to contribute? Probably the best investment of all time.</p>
       </div>
       <div class="subfeature-options clearfix">
@@ -146,7 +146,7 @@ use Destiny\Common\User\UserRole;
 
     <div class="subfeature">
      <div class="subfeature-desc">
-        <h1>Standard Tier I</h1>
+        <h1>Tier I</h1>
         <p>Get access to chat features and be eligible for future subscriber events!</p>
       </div>
       <div class="subfeature-options clearfix">
