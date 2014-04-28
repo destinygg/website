@@ -66,7 +66,7 @@ class ChatlogService extends Service {
     }
 
     /**
-     * Get the last X number of messages from a specific user starting at a specific date
+     * Get the last X number of messages from a specific user starting at a specific date (going backwards)
      *
      * @param int $userId           
      * @param DateTime $startRange          
@@ -106,7 +106,7 @@ class ChatlogService extends Service {
      * @param number $limit
      * @param number $start
      */
-    public function getBroadcasts($limit=1, $start=0){
+    public function getBroadcasts(\DateTime $startRange, $limit=1, $start=0){
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
             SELECT
@@ -121,9 +121,11 @@ class ChatlogService extends Service {
                 LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
             WHERE
                 l.event IN("BROADCAST")
+                AND l.timestamp >= :startRange
             ORDER BY l.id DESC
             LIMIT :start,:limit
         ' );
+        $stmt->bindValue ( 'startRange', $startRange, \Doctrine\DBAL\Types\DateTimeType::DATETIME );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->execute ();

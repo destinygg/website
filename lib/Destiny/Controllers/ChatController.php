@@ -10,6 +10,7 @@ use Destiny\Common\MimeType;
 use Destiny\Chat\ChatlogService;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserFeature;
+use Destiny\Common\Utils\Date;
 
 /**
  * @Controller
@@ -27,18 +28,18 @@ class ChatController {
         $model->title = 'Frequently Asked Questions';
         return 'chat/faq';
     }
-
+    
     /**
      * @Route ("/chat/history")
      *
-     * @param array $params
-     * @param ViewModel $model
+     * @param array $params            
+     * @param ViewModel $model            
      */
     public function history(array $params, ViewModel $model) {
         $chatLogService = ChatlogService::instance ();
         
         $chatlog    = $chatLogService->getChatLog ( Config::$a ['chat'] ['backlog'] );
-        $broadcasts = $chatLogService->getBroadcasts();
+        $broadcasts = $chatLogService->getBroadcasts ( Date::getDateTime ( strtotime ( '5 minutes ago' ) ) );
         
         $b = '';
         $lines = array ();
