@@ -136,8 +136,8 @@ use Destiny\Commerce\SubscriptionStatus;
 
             <h3><?= Tpl::out( $gift['type']['tierLabel'] ) ?> <small>Gifted to <span class="label label-primary"><?= $gift['gifterUsername'] ?></span></small></h3>
             <p>
-              <span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> 
-              <span>(<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif; ?>)</span>
+              <span class="sub-amount">$<?=$gift['type']['amount']?></span> 
+              <span>(<?=$gift['type']['billingFrequency']?> <?=strtolower($gift['type']['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif; ?>)</span>
               <small>started on <?=Tpl::moment(Date::getDateTime($gift['createdDate']), Date::FORMAT)?></small>
             </p>
             

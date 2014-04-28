@@ -162,6 +162,10 @@ class UserAdminController {
         $model->subscription = array (
           'createdDate' => gmdate('Y-m-d H:i:s')
         );
+        
+        $authService = AuthenticationService::instance ();
+        $authService->flagUserForUpdate ( $params ['id'] );
+        
         return "admin/subscription";
     }
     
@@ -241,6 +245,9 @@ class UserAdminController {
         }
         
         Session::set ( 'modelSuccess', 'Subscription updated' );
+        
+        $authService = AuthenticationService::instance ();
+        $authService->flagUserForUpdate ( $params ['id'] );
         
         return 'redirect: /admin/user/'. urlencode($params['id']) .'/subscription/'. urlencode($subscription['subscriptionId']) .'/edit';
     }
