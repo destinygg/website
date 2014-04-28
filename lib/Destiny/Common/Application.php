@@ -181,16 +181,30 @@ class Application extends Service {
           $conn->commit ();
         }
         //
-      } catch ( \Exception $e ) {
-        $this->logger->critical ( $e->getMessage () );
+      } catch ( Exception $e ) {
+        // Destiny\Exceptions are caught and displayed
+        
+        $this->logger->error ( $e->getMessage () );
+        
         if ($transactional) {
           $conn->rollback ();
         }
-        if (Config::$a ['showExceptions']) {
-          echo '<p>' . $e->getMessage () . '</p>';
-          echo '<pre>' . $e->getTraceAsString () . '</pre>';
-          exit ();
+        
+        $response = new Response ( Http::STATUS_ERROR );
+        $model->error = new Exception ( $e->getMessage () );
+        $model->code = Http::STATUS_ERROR;
+
+        $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
+          
+      } catch ( \Exception $e ) {
+        // \Exceptions are caught and generic message is shown
+          
+        $this->logger->critical ( $e->getMessage () );
+        
+        if ($transactional) {
+          $conn->rollback ();
         }
+        
         $response = new Response ( Http::STATUS_ERROR );
         $model->error = new Exception ( 'Maximum over-rustle has been achieved' );
         $model->code = Http::STATUS_ERROR;

@@ -18,25 +18,25 @@ use Destiny\Common\User\UserRole;
   <?php include Tpl::file('seg/headerband.php') ?>
   
   <section class="container">
-
+  
     <?php if(Session::hasRole(UserRole::USER)): ?>
     <div id="giftSubscriptionSelect" class="alert alert-info" style="text-align: center;">
-      Would you like to gift someone a subscription? 
-      <button class="btn btn-primary" data-toggle="modal" data-target="#userSearchModal">Yes, gift a subscription <span class="glyphicon glyphicon-gift"></span></button>
+        Would you like to gift someone a subscription? 
+        <button class="btn btn-primary" data-toggle="modal" data-target="#userSearchModal">Yes, gift a subscription <span class="glyphicon glyphicon-gift"></span></button>
     </div>
 
     <div id="giftSubscriptionConfirm" class="alert alert-info hidden" style="text-align: center;">
-      You are gifting your subscription to <strong id="subscriptionGiftUsername"></strong>!
-      <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#userSearchModal">Change <span class="glyphicon glyphicon-gift"></span></button>
-      <button class="btn btn-default" id="cancelGiftSubscription">No thanks!</button>
+        You are gifting your subscription to <strong id="subscriptionGiftUsername"></strong>!
+        <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#userSearchModal">Change <span class="glyphicon glyphicon-gift"></span></button>
+        <button class="btn btn-default" id="cancelGiftSubscription">No thanks!</button>
     </div>
-  <? endif; ?>
+    <? endif; ?>
 
 
     <div class="subfeature">
       <div class="subfeature-desc">
         <h1>Tier IIII</h1>
-        <p>Literally the best investment available on the market.</p>
+        <p>Know in your heart you have made the right choice here.</p>
       </div>
       <div class="subfeature-options clearfix">
         <div class="subfeature-t1">

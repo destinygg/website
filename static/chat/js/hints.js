@@ -50,13 +50,13 @@
 	hintPopup.prototype.invoke = function(chat){
 		if(this.visible || !this.enabled)
 			return false;
-		//if(!this.lasthinttime || (new Date().getTime() - this.lasthinttime)  >= this.popupInterval){
+		if(!this.lasthinttime || (new Date().getTime() - this.lasthinttime)  >= this.popupInterval){
 			this.currenthint = this.getRandomHint();
 			if(!this.currenthint)
 				return false;
 			this.show();
 			return true;
-		//};
+		};
 		return false;
 	};
 	hintPopup.prototype.enable = function(enabled){

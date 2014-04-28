@@ -42,11 +42,20 @@ class SubscriptionController {
      */
     public function subscribe(array $params, ViewModel $model) {
         $subscriptionsService = SubscriptionsService::instance ();
-        $subscription = $subscriptionsService->getUserPendingSubscription ( Session::getCredentials ()->getUserId () );
-        if (! empty ( $subscription )) {
-            throw new Exception ( 'You already have a subscription in the "pending" state. Please cancel this first.' );
+        
+        if(Session::hasRole(UserRole::USER)){
+            $userId = Session::getCredentials ()->getUserId ();
+            
+            // Pending subscription
+            $subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
+            if (! empty ( $subscription )) {
+                throw new Exception ( 'You already have a subscription in the "pending" state.' );
+            }
+            
+            // Active subscription
+            $model->subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
         }
-        $subscription = $subscriptionsService->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
+        
         $model->title = 'Subscribe';
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         return 'subscribe';
@@ -123,15 +132,15 @@ class SubscriptionController {
         $subscription = $subscriptionsService->getSubscriptionById ( $params['subscriptionId'] );
 
         if(empty($subscription)){
-           throw new \Exception( 'Invalid subscription' );
+           throw new Exception( 'Invalid subscription' );
         }
 
         if($subscription['userId'] != $userId && $subscription['gifter'] != $userId){
-            throw new \Exception( 'Invalid subscription owner' );
+            throw new Exception( 'Invalid subscription owner' );
         }
 
         if($subscription['status'] != SubscriptionStatus::ACTIVE){
-           throw new \Exception( 'Invalid subscription status' );
+           throw new Exception( 'Invalid subscription status' );
         }
 
         // Cancel the payment profile
