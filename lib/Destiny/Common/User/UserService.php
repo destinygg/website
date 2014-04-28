@@ -6,6 +6,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Config;
+use Destiny\Common\Exception;
 
 class UserService extends Service {
   
@@ -682,7 +683,7 @@ class UserService extends Service {
     foreach( $keys as $key ) {
       $id = intval( substr( $key, strlen( $keyprefix ) ) );
       if ( !$id )
-        throw new \Exception("Invalid id: $id from key: $key");
+        throw new Exception("Invalid id: $id from key: $key");
 
       $userids[] = $id;
     }
@@ -725,10 +726,10 @@ class UserService extends Service {
 
     $hash = $redis->script('load', file_get_contents( $dir . $scriptname . '.lua' ) );
     if ( !$hash )
-      throw new \Exception('Unable to load script');
+      throw new Exception('Unable to load script');
 
     if ( !file_put_contents( $dir . $scriptname . '.hash', $hash ) )
-      throw new \Exception('Unable to save hash');
+      throw new Exception('Unable to save hash');
 
     return $redis->evalSha( $hash, $argument );
   }

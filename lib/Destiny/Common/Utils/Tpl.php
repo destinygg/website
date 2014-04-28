@@ -7,8 +7,8 @@ use Destiny\Common\Config;
 class Tpl {
     
     public static function file($filename){
-        // Dodgy... solves the weird issue where nginx wants to use the error pages without going through the index
-        // So we store the /error/ pages in the public folder
+        // Dodgy... this is done so that gnix can use the error pages too
+        // So we store the /error/ pages in the root folder of the project
         if(strpos($filename, 'errors/') === 0){
             return Config::$a['tpl']['error.path'] . $filename;
         }else{
