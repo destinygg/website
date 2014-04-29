@@ -428,7 +428,7 @@ class SubscriptionController {
             }
 
             // Make sure the subscription is either owned or gifted by the user
-            if($subscriptionUser['userId'] != $userId && $subscriptionUser['gifter'] != $userId){
+            if($subscriptionUser['userId'] != $userId && $orderSubscription['gifter'] != $userId){
                 throw new Exception ( 'Invalid order subscription' );
             }
             

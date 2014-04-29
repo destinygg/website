@@ -538,10 +538,19 @@ $(function(){
       data: {s: username},
       type: 'GET',
       success: function(data){
-        success.call(this, data);
+          success.call(this, data);
+      },
+      error: function(){
+          showLookupError('Error looking up user. Try again');
       }
     });
   };
+  
+  var showLookupError = function(message){
+      hasErrors = true;
+      usrSelectBtn.button('reset').attr('disabled', true);
+      usrSearch.find('label.error').text(message).removeClass('hidden');
+  }
 
   var selectUser = function(username){
     usrSelectBtn.button('loading');
@@ -555,13 +564,9 @@ $(function(){
         usrSelectBtn.button('reset').attr('disabled', false);
         hasErrors = false;
       }else if(!response.valid){
-        hasErrors = true;
-        usrSelectBtn.button('reset').attr('disabled', true);
-        usrSearch.find('label.error').text('Invalid user').removeClass('hidden');
+          showLookupError('This user was not found. Try again.');
       }else if(!response.cangift){
-        hasErrors = true;
-        usrSelectBtn.button('reset').attr('disabled', true);
-        usrSearch.find('label.error').text('Cannot gift this user').removeClass('hidden');
+          showLookupError('This user is not eligible for a gift.');
       }
     });
   };
