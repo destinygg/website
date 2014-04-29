@@ -512,8 +512,13 @@ class SubscriptionController {
 
             // Handle the subscription broadcast
             $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
-            $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
-
+            if(!empty($orderSubscription['gifter'])){
+                $gifter = $userService->getUserById( $orderSubscription['gifter'] );
+                $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
+            }else{
+                $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
+            }
+            
             // Redirect to completion page
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/complete';
           
