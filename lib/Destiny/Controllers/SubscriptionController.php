@@ -151,15 +151,16 @@ class SubscriptionController {
             }
         }
         
-        if(isset($params['cancelRemainingTime']) && $params['cancelRemainingTime'] == '1' && empty($subscription['gifter'])){
-            $subscriptionsService->updateSubscriptionState ( $subscription ['subscriptionId'], $subscription ['status'] );
-            $authenticationService->flagUserForUpdate ( $userId );
+        if(isset($params['cancelRemainingTime']) && $params['cancelRemainingTime'] == '1'){
             $subscription ['status'] = SubscriptionStatus::CANCELLED;
+            $subscriptionsService->updateSubscriptionState ( $subscription ['subscriptionId'], $subscription ['status'] );
         }
-
+        
         $subscription ['recurring'] = false;
         $subscriptionsService->updateSubscriptionRecurring ( $subscription ['subscriptionId'], false );
-
+        
+        $authenticationService->flagUserForUpdate ( $subscription ['userId'] );
+        
         $model->subscription = $subscription;
         $model->subscriptionCancelled = true;
         return 'profile/cancelsubscription';

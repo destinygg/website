@@ -101,13 +101,11 @@ use Destiny\Common\Utils\Date;
             </dl>
           </div>
 
-          <?php if(empty($model->giftee)): ?>
           <div class="form-group">
             <label class="checkbox">
               <input name="cancelRemainingTime" type="checkbox" value="1" /> Cancel the remaining subscription time <em>immediately</em>
             </label>
           </div>
-          <?php endif; ?>
 
         </div>
 
