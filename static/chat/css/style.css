@@ -676,10 +676,10 @@
 }
 
 .chat a.bot {
-  color: #A6C8F5;
+  color: #e79015;
 }
 .chat a.bot:hover {
-  color: #6aa7f9;
+  color: #e79015;
 }
 
 .chat a.admin {
