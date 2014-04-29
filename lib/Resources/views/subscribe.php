@@ -35,7 +35,7 @@ use Destiny\Common\User\UserRole;
 
     <div class="subfeature">
       <div class="subfeature-desc">
-        <h1>Tier IIII</h1>
+        <h1>Tier IV</h1>
         <p>Know in your heart you have made the right choice here.</p>
       </div>
       <div class="subfeature-options clearfix">

@@ -268,7 +268,7 @@ return array (
 			'1-MONTH-SUB4' => array (
 				'id'				=> '1-MONTH-SUB4',
 				'tier'				=> 4,
-				'tierLabel'			=> 'Tier IIII',
+				'tierLabel'			=> 'Tier IV',
 				'itemLabel'			=> 'Tier 4 (1 month)',
 				'agreement'			=> '$40.00 (per month) recurring subscription',
 				'amount'			=> '40.00',
@@ -278,7 +278,7 @@ return array (
 			'3-MONTH-SUB4' => array (
 				'id'				=> '3-MONTH-SUB4',
 				'tier'				=> 4,
-				'tierLabel'			=> 'Tier IIII',
+				'tierLabel'			=> 'Tier IV',
 				'itemLabel'			=> 'Tier 4 (3 month)',
 				'agreement'			=> '$96.00 (per 3 months) recurring subscription',
 				'amount'			=> '96.00',
