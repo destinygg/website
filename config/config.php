@@ -50,6 +50,7 @@ return array (
 			'DatGeoff',
 			'Disgustiny',
 			'FerretLOL',
+			'Sippy',
 		),
 	),
 	'redis' => array(
