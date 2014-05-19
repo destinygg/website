@@ -232,11 +232,13 @@ chat.prototype.onMUTE = function(data) {
 	var suppressednick = data.data;
 	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
-	else if (
-	          $.inArray('admin', this.user.features) == -1 &&
-	          $.inArray('moderator', this.user.features) == -1 &&
-	          $.inArray('flair3', this.user.features) == -1
-	)
+    else if (
+        $.inArray('flair3', this.user.features) !== -1 &&
+        $.inArray('flair8', this.user.features) !== -1 &&
+        $.inArray('flair1', this.user.features) !== -1 &&
+        $.inArray('admin', this.user.features) !== -1 &&
+        $.inArray('moderator', this.user.features) !== -1 
+    )
 		this.gui.removeUserMessages(data.data);
 	
 	return new ChatCommandMessage(suppressednick + " muted by " + data.nick, data.timestamp);
@@ -258,11 +260,13 @@ chat.prototype.onBAN = function(data) {
 				window.location.href = "/banned";
 			}, 1500);
 		}
-	} else if (
-	          $.inArray('admin', this.user.features) == -1 &&
-	          $.inArray('moderator', this.user.features) == -1 &&
-	          $.inArray('flair3', this.user.features) == -1
-	)
+    } else if(
+        $.inArray('flair3', this.user.features) !== -1 &&
+        $.inArray('flair8', this.user.features) !== -1 &&
+        $.inArray('flair1', this.user.features) !== -1 &&
+        $.inArray('admin', this.user.features) !== -1 &&
+        $.inArray('moderator', this.user.features) !== -1 
+    )
 		this.gui.removeUserMessages(data.data);
 
 	return new ChatCommandMessage(suppressednick + " banned by " + data.nick, data.timestamp);

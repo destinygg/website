@@ -9,13 +9,13 @@
 	}
 	destiny.fn.GreenTextFormatter.prototype.format = function(str, user){
 		if(str.indexOf("&gt;") === 0){
-			if(
-				$.inArray('flair3', user.features) !== -1 ||
+            if(
+                $.inArray('flair3', user.features) !== -1 ||
                 $.inArray('flair8', user.features) !== -1 ||
-				$.inArray('flair1', user.features) !== -1 ||
-				$.inArray('admin', user.features) !== -1 ||
-				$.inArray('moderator', user.features) !== -1 
-			)
+                $.inArray('flair1', user.features) !== -1 ||
+                $.inArray('admin', user.features) !== -1 ||
+                $.inArray('moderator', user.features) !== -1 
+            )
 				str = '<span class="greentext">'+str+'</span>';
 		}
 		return str;
