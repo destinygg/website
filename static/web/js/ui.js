@@ -406,6 +406,7 @@ $(function(){
 
 // Change time on selected elements
 (function(){
+
   var applyMomentToElement = function(e){
     
     var ui = $(e), 
@@ -421,14 +422,17 @@ $(function(){
     
     ui.data('datetime', datetime).addClass('moment-set');
   };
+
   window.setInterval(function(){
     $('time.moment-update').each(function(){
       applyMomentToElement(this);
     });
   }, 30000);
+
   $('time[data-moment="true"]:not(.moment-set)').each(function(){
     applyMomentToElement(this);
   });
+
 })();
 
 
@@ -523,6 +527,7 @@ $(function(){
 })();
 
 
+// Gifting / user search
 (function(){
 
   var users      = {}, 

@@ -709,24 +709,6 @@
             destiny.chat.gui.loaded = true;
         }
     });
-    
-    // USER FEATURES
-    UserFeatures = {
-        PROTECTED     : 'protected',
-        SUBSCRIBER    : 'subscriber',
-        SUBSCRIBERT2  : 'flair1',
-        SUBSCRIBERT3  : 'flair3',
-        SUBSCRIBERT4  : 'flair8',
-        VIP           : 'vip',
-        MODERATOR     : 'moderator',
-        ADMIN         : 'admin',
-        BOT           : 'bot',
-        NOTABLE       : 'flair2',
-        TRUSTED       : 'flair4',
-        CONTRIBUTOR   : 'flair5',
-        COMPCHALLENGE : 'flair6',
-        EVENOTABLE    : 'flair7'
-    };
 
     //CHAT USER
     ChatUser = function(args){
@@ -741,42 +723,42 @@
         var icons = '';
         for (var i = 0; i < this.features.length; i++) {
             switch(this.features[i]){
-                case UserFeatures.VIP :
+                case destiny.UserFeatures.VIP :
                     icons += '<i class="icon-vip" title="VIP"/>';
                     break;
-                case UserFeatures.MODERATOR :
+                case destiny.UserFeatures.MODERATOR :
                     icons += '<i class="icon-moderator" title="Moderator"/>';
                     break;
-                case UserFeatures.ADMIN :
+                case destiny.UserFeatures.ADMIN :
                     icons += '<i class="icon-admin" title="Administrator"/>';
                     break;
-                case UserFeatures.BOT :
+                case destiny.UserFeatures.BOT :
                     icons += '<i class="icon-bot" title="Bot"/>';
                     break;
-                case UserFeatures.NOTABLE :
+                case destiny.UserFeatures.NOTABLE :
                     icons += '<i class="icon-notable" title="Notable"/>';
                     break;
-                case UserFeatures.TRUSTED :
+                case destiny.UserFeatures.TRUSTED :
                     icons += '<i class="icon-trusted" title="Trusted"/>';
                     break;
-                case UserFeatures.CONTRIBUTOR :
+                case destiny.UserFeatures.CONTRIBUTOR :
                     icons += '<i class="icon-contributor" title="Contributor"/>';
                     break;
-                case UserFeatures.COMPCHALLENGE :
+                case destiny.UserFeatures.COMPCHALLENGE :
                     icons += '<i class="icon-compchallenge" title="Composition Challenge Winner"/>';
                     break;
-                case UserFeatures.EVENOTABLE :
+                case destiny.UserFeatures.EVENOTABLE :
                     icons += '<i class="icon-evenotable" title="Eve Notable"/>';
                     break;
             }
         }
-        if($.inArray(UserFeatures.SUBSCRIBERT4, this.features) >= 0){
+        if($.inArray(destiny.UserFeatures.SUBSCRIBERT4, this.features) >= 0){
             icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
-        }else if($.inArray(UserFeatures.SUBSCRIBERT3, this.features) >= 0){
+        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT3, this.features) >= 0){
             icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
-        }else if($.inArray(UserFeatures.SUBSCRIBERT2, this.features) >= 0){
+        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, this.features) >= 0){
             icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
-        }else if($.inArray(UserFeatures.SUBSCRIBER, this.features) >= 0){
+        }else if($.inArray(destiny.UserFeatures.SUBSCRIBER, this.features) >= 0){
             icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
         }
         return icons;

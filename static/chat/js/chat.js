@@ -1,3 +1,22 @@
+
+// USER FEATURES
+destiny.UserFeatures = {
+    PROTECTED     : 'protected',
+    SUBSCRIBER    : 'subscriber',
+    SUBSCRIBERT2  : 'flair1',
+    SUBSCRIBERT3  : 'flair3',
+    SUBSCRIBERT4  : 'flair8',
+    VIP           : 'vip',
+    MODERATOR     : 'moderator',
+    ADMIN         : 'admin',
+    BOT           : 'bot',
+    NOTABLE       : 'flair2',
+    TRUSTED       : 'flair4',
+    CONTRIBUTOR   : 'flair5',
+    COMPCHALLENGE : 'flair6',
+    EVENOTABLE    : 'flair7'
+};
+
 function chat(element, user, options) {
 	this.server             = 'ws://' + options.host + ':' + options.port + '/ws';
 	this.connected          = false;
@@ -233,11 +252,11 @@ chat.prototype.onMUTE = function(data) {
 	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
     else if (
-        $.inArray('flair3', this.user.features) !== -1 &&
-        $.inArray('flair8', this.user.features) !== -1 &&
-        $.inArray('flair1', this.user.features) !== -1 &&
-        $.inArray('admin', this.user.features) !== -1 &&
-        $.inArray('moderator', this.user.features) !== -1 
+        $.inArray(destiny.UserFeatures.SUBSCRIBERT3, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.SUBSCRIBERT4, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.SUBSCRIBERT2, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.ADMIN, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.MODERATOR, this.user.features) == -1 
     )
 		this.gui.removeUserMessages(data.data);
 	
@@ -261,11 +280,11 @@ chat.prototype.onBAN = function(data) {
 			}, 1500);
 		}
     } else if(
-        $.inArray('flair3', this.user.features) !== -1 &&
-        $.inArray('flair8', this.user.features) !== -1 &&
-        $.inArray('flair1', this.user.features) !== -1 &&
-        $.inArray('admin', this.user.features) !== -1 &&
-        $.inArray('moderator', this.user.features) !== -1 
+        $.inArray(destiny.UserFeatures.SUBSCRIBERT3, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.SUBSCRIBERT4, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.SUBSCRIBERT2, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.ADMIN, this.user.features) == -1 &&
+        $.inArray(destiny.UserFeatures.MODERATOR, this.user.features) == -1 
     )
 		this.gui.removeUserMessages(data.data);
 
