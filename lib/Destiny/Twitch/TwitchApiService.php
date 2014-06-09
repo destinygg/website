@@ -87,6 +87,10 @@ class TwitchApiService extends Service {
                     $broadcast ['recorded_at'] = $broadcasts ['videos'] [0] ['recorded_at'];
                     $broadcast ['views'] = $broadcasts ['videos'] [0] ['views'];
                     $json ['previousbroadcast'] = $broadcast;
+
+                    // If there are previous broadcasts, base the last broadcast time on it, twitch seems to update the channel at random
+                    $json ['lastbroadcast'] = Date::getDateTime( $broadcast ['recorded_at'] )->add(new \DateInterval('PT'. $broadcast ['length'] .'S'))->format ( Date::FORMAT );
+                    
                 }
                 
                 // Just some clean up

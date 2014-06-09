@@ -13,7 +13,7 @@ use Destiny\Common\Config;
 					<span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
 					<?php else: ?>
 					<span class="glyphicon glyphicon-time"></span> 
-					<span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['channel']['updated_at']))?></span>
+					<span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
 					<?php if(intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
 					- <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay
 					<?php endif; ?>
