@@ -73,7 +73,7 @@ class AuthenticationService extends Service {
             // only check the levenshtein distance if the first two characters match
             // and if that is true, require that more than 5 characters need to be
             // different for it to not be a blacklisted username
-            if ( $front == $emotefront and levenshtein( $emote, $username ) <= 5 )
+            if ( $front == $emotefront and levenshtein( $emote, $username ) <= 15 )
                 throw new Exception ( 'That username has been blacklisted' );
         }
 
