@@ -71,14 +71,11 @@ class AuthenticationService extends Service {
         $front = substr( $normalizeduname, 0, 2 );
         foreach( Config::$a ['chat'] ['customemotes'] as $emote ) {
             $normalizedemote = strtolower( $emote );
-            if ( strpos( $username, $emote ) !== false )
+            if ( strpos( $normalizeduname, $normalizedemote ) === 0 )
                 throw new Exception ( 'That username has been blacklisted' );
 
-            // truncate the username to the length of the emote
-            // and check if its different enough
-            $shortuname = substr( $normalizeduname, 0, strlen( $emote ) );
             $emotefront = substr( $normalizedemote, 0, 2 );
-            if ( $front == $emotefront and levenshtein( $normalizedemote, $shortuname ) <= 5 )
+            if ( $front == $emotefront and levenshtein( $normalizedemote, $normalizeduname ) <= 2 )
                 throw new Exception ( 'That username has been blacklisted' );
         }
 
