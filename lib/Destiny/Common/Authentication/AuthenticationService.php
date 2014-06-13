@@ -67,6 +67,7 @@ class AuthenticationService extends Service {
         if (preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $username ) == 0)
             throw new Exception ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
 
+        // nick-to-emote similarity heuristics, not perfect sadly ;(
         $normalizeduname = strtolower( $username );
         $front = substr( $normalizeduname, 0, 2 );
         foreach( Config::$a ['chat'] ['customemotes'] as $emote ) {
@@ -74,8 +75,12 @@ class AuthenticationService extends Service {
             if ( strpos( $normalizeduname, $normalizedemote ) === 0 )
                 throw new Exception ( 'That username has been blacklisted' );
 
+            if ( $emote == 'LUL' )
+                continue;
+
+            $shortuname = substr( $normalizeduname, 0, strlen( $emote ) );
             $emotefront = substr( $normalizedemote, 0, 2 );
-            if ( $front == $emotefront and levenshtein( $normalizedemote, $normalizeduname ) <= 2 )
+            if ( $front == $emotefront and levenshtein( $normalizedemote, $shortuname ) <= 2 )
                 throw new Exception ( 'That username has been blacklisted' );
         }
 
