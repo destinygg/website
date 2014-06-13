@@ -63,14 +63,21 @@ class AuthenticationService extends Service {
     public function validateUsername($username, array $user = null, array $params = array()) {
         if (empty ( $username ))
             throw new Exception ( 'Username required' );
-        
-        if (preg_match ( '/\\b(' . join ( '|', Config::$a ['chat'] ['customemotes'] ) . ')\\b/i', preg_quote ( $username ) ) > 0)
-            throw new Exception ( 'That username has been blacklisted' );
 
         if (preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $username ) == 0)
             throw new Exception ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
         
-        if (preg_match_all ( '/[0-9]{4}/', $username, $m ) > 0)
+        $front = strtolower( substr( $username, 0, 2 ) );
+        foreach( Config::$a ['chat'] ['customemotes'] as $emote ) {
+            $emotefront = strtolower( substr( $emote, 0, 2 ) );
+            // only check the levenshtein distance if the first two characters match
+            // and if that is true, require that more than 5 characters need to be
+            // different for it to not be a blacklisted username
+            if ( $front == $emotefront and levenshtein( $emote, $username ) <= 5 )
+                throw new Exception ( 'That username has been blacklisted' );
+        }
+
+        if (preg_match_all ( '/[0-9]{3}/', $username, $m ) > 0)
             throw new Exception ( 'Too many numbers in a row' );
         
         if (preg_match_all ( '/[\_]{2}/', $username, $m ) > 0 || preg_match_all ( "/[_]+/", $username, $m ) > 2)
