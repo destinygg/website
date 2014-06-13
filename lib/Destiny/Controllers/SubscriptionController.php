@@ -502,9 +502,10 @@ class SubscriptionController {
 
             // Unban the user if a ban is found
             $ban = $userService->getUserActiveBan ( $subscriptionUser['userId'] );
-            // only unban the user if the ban is non-permanent
+            // only unban the user if the ban is non-permanent or the tier
+            // of the subscription is >= 2
             // we unban the user if no ban is found because it also unmutes
-            if (!empty ( $ban ) and !empty( $ban ['endtimestamp'] )) {
+            if (empty ( $ban ) or ( !empty( $ban ['endtimestamp'] ) or $orderSubscription['subscriptionTier'] >= 2 ) ) {
                $chatIntegrationService->sendUnban ( $subscriptionUser['userId'] );
             }
 
