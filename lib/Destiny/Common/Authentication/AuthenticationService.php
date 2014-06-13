@@ -73,7 +73,7 @@ class AuthenticationService extends Service {
         foreach( Config::$a ['chat'] ['customemotes'] as $emote ) {
             $normalizedemote = strtolower( $emote );
             if ( strpos( $normalizeduname, $normalizedemote ) === 0 )
-                throw new Exception ( 'That username has been blacklisted' );
+                throw new Exception ( 'Username too similar to an emote, try changing the first characters' );
 
             if ( $emote == 'LUL' )
                 continue;
@@ -81,7 +81,7 @@ class AuthenticationService extends Service {
             $shortuname = substr( $normalizeduname, 0, strlen( $emote ) );
             $emotefront = substr( $normalizedemote, 0, 2 );
             if ( $front == $emotefront and levenshtein( $normalizedemote, $shortuname ) <= 2 )
-                throw new Exception ( 'That username has been blacklisted' );
+                throw new Exception ( 'Username too similar to an emote, try changing the first characters' );
         }
 
         if (preg_match_all ( '/[0-9]{3}/', $username, $m ) > 0)
