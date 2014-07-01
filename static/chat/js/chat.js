@@ -384,6 +384,7 @@ chat.prototype.handleCommand = function(str) {
 			}
 			
 			this.ignorelist[nick] = true;
+			this.gui.removeUserMessages(nick);
 			this.gui.push(new ChatStatusMessage("Ignoring "+nick));
 			
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
