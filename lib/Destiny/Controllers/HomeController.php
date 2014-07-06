@@ -146,5 +146,17 @@ class HomeController {
     public function schedule() {
         return 'redirect: https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com';
     }
+
+    /**
+     * @Route ("/i")
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function tournament(array $params, ViewModel $model) {
+        $model->title = 'Destiny I | Starcraft 2: Heart of the Swarm tournament';
+        return 'tournament/i';
+    }
     
 }

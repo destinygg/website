@@ -1303,3 +1303,69 @@ body#emoticons .emote-label:hover {
 #twitchpanel a#popoutchat.btn-down {
   color: #ccc;
 }
+
+
+@-moz-keyframes slidelogo {
+    0% { opacity: 0; }
+    30% { -moz-transform: translateY(20px); opacity: 0; }
+    50% { -moz-transform: translateY(-5px); opacity: 1; }
+    70% { -moz-transform: translateY(0); }
+    100% { -moz-transform: translateY(0); opacity: 1; }
+}
+@-webkit-keyframes slidelogo {
+    0% { opacity: 0; }
+    30% { -webkit-transform: translateY(20px); opacity: 0; }
+    50% { -webkit-transform: translateY(-5px); opacity: 1; }
+    70% { -webkit-transform: translateY(0); }
+    100% { -webkit-transform: translateY(0); opacity: 1; }
+}
+@keyframes slidelogo {
+    0% { opacity: 0; }
+    30% { transform: translateY(20px); opacity: 0; }
+    50% { transform: translateY(-5px); opacity: 1; }
+    70% { transform: translateY(0); }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+body#tournament-i {
+  background: url("../img/t/bg.tile.light.png") repeat center center;
+}
+#tournament-i-page {
+  background: url("../img/t/destiny_i_bg.png") no-repeat center -90px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+#tournament-i-logo {
+  display: block;
+  margin-top: 280px;
+  background: url("../img/t/destiny_i_logo.png") no-repeat top left;
+  height: 186px;
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  -webkit-transition: -webkit-transform 0.3s ease-in;
+  -webkit-transform: translateY(0);
+}
+#tournament-i-logo.in {
+  -moz-animation-name: slidelogo;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-timing-function: ease-out;
+  -moz-animation-duration: 2s;
+
+  -webkit-animation-name: slidelogo;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-duration: .4s;
+  
+  animation-name: slidelogo;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  animation-duration: 2s;
+}
+#tournament-i-logo:hover {
+  -webkit-transition: -webkit-transform 0.1s ease-out;
+  -webkit-transform: translateY(-5px);
+}
