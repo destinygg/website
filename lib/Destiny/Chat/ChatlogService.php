@@ -46,13 +46,22 @@ class ChatlogService extends Service {
                     INNER JOIN dfl_features AS fn ON (fn.featureId = uf.featureId)
                     WHERE uf.userId = u.userId
                     ORDER BY fn.featureId ASC
-                    
                 ) AS `features`
             FROM
                 chatlog AS l
                 LEFT JOIN dfl_users AS u ON u.userId = l.userid
                 LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
-                LEFT JOIN dfl_users_subscriptions AS `subs` ON (subs.userId = u.userId AND subs.status = :status) 
+                LEFT JOIN dfl_users_subscriptions AS `subs` ON (
+                    subs.subscriptionId = (
+                        SELECT subs2.subscriptionId
+                        FROM dfl_users_subscriptions AS subs2
+                        WHERE
+                            subs2.userId = u.userId AND
+                            subs2.status = :status
+                        ORDER BY subs2.subscriptionId DESC
+                        LIMIT 1
+                    )
+                )
             WHERE
                 l.event NOT IN("JOIN", "QUIT")
             ORDER BY l.id DESC
