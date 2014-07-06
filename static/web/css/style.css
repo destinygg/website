@@ -1328,7 +1328,7 @@ body#emoticons .emote-label:hover {
 }
 
 body#tournament-i {
-  background: url("../img/t/bg.tile.light.png") repeat center center;
+  background: #edebea url("../img/t/bg.tile.light.png") repeat center center;
 }
 #tournament-i-page {
   background: url("../img/t/destiny_i_bg.png") no-repeat center -90px;
