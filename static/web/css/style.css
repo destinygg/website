@@ -1304,33 +1304,10 @@ body#emoticons .emote-label:hover {
   color: #ccc;
 }
 
-
-@-moz-keyframes slidelogo {
-    0% { opacity: 0; }
-    30% { -moz-transform: translateY(20px); opacity: 0; }
-    50% { -moz-transform: translateY(-5px); opacity: 1; }
-    70% { -moz-transform: translateY(0); }
-    100% { -moz-transform: translateY(0); opacity: 1; }
-}
-@-webkit-keyframes slidelogo {
-    0% { opacity: 0; }
-    30% { -webkit-transform: translateY(20px); opacity: 0; }
-    50% { -webkit-transform: translateY(-5px); opacity: 1; }
-    70% { -webkit-transform: translateY(0); }
-    100% { -webkit-transform: translateY(0); opacity: 1; }
-}
-@keyframes slidelogo {
-    0% { opacity: 0; }
-    30% { transform: translateY(20px); opacity: 0; }
-    50% { transform: translateY(-5px); opacity: 1; }
-    70% { transform: translateY(0); }
-    100% { transform: translateY(0); opacity: 1; }
-}
-
-body#tournament-i {
+body#trnmt-i {
   background: #edebea url("../img/t/bg.tile.light.png") repeat center center;
 }
-#tournament-i-page {
+#trnmt-i-page {
   background: url("../img/t/destiny_i_bg.png") no-repeat center -90px;
   position: absolute;
   top: 0;
@@ -1338,34 +1315,50 @@ body#tournament-i {
   right: 0;
   bottom: 0;
 }
-#tournament-i-logo {
-  display: block;
+#trnmt-i-info {
   margin-top: 280px;
-  background: url("../img/t/destiny_i_logo.png") no-repeat top left;
-  height: 198px;
   width: 394px;
   margin-left: auto;
   margin-right: auto;
+}
+#trnmt-i-logo {
+  display: block;
+  height: 198px;
+  background: url("../img/t/destiny_i_logo.png") no-repeat top left;
   -webkit-transition: -webkit-transform 0.3s ease-in;
   -webkit-transform: translateY(0);
+  -moz-transition: -moz-transform 0.3s ease-in;
+  -moz-transform: translateY(0);
+  transition: transform 0.3s ease-in;
+  transform: translateY(0);
 }
-#tournament-i-logo.in {
-  -moz-animation-name: slidelogo;
-  -moz-animation-iteration-count: 1;
-  -moz-animation-timing-function: ease-out;
-  -moz-animation-duration: 2s;
+#trnmt-i-coming {
+  opacity: 0;
+  display: block;
+  height: 70px;
+  background: url("../img/t/destiny_i_coming.png") no-repeat top left;
+  -webkit-transition: -webkit-transform 0.3s ease-in, -webkit-opacity .1s ease-in;
+  -webkit-transform: translateY(-40px);
+  -moz-transition: -moz-transform 0.3s ease-in, -moz-opacity .1s ease-in;
+  -moz-transform: translateY(-40px);
+  transition: transform 0.3s ease-in, opacity .1s ease-in;
+  transform: translateY(-40px);
+}
 
-  -webkit-animation-name: slidelogo;
-  -webkit-animation-iteration-count: 1;
-  -webkit-animation-timing-function: ease-in-out;
-  -webkit-animation-duration: .4s;
-  
-  animation-name: slidelogo;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-out;
-  animation-duration: 2s;
-}
-#tournament-i-logo:hover {
+#trnmt-i-info:hover #trnmt-i-logo {
   -webkit-transition: -webkit-transform 0.1s ease-out;
-  -webkit-transform: translateY(-5px);
+  -webkit-transform: translateY(-30px);
+  -moz-transition: -moz-transform 0.1s ease-out;
+  -moz-transform: translateY(-30px);
+  transition: transform 0.1s ease-out;
+  transform: translateY(-30px);
+}
+#trnmt-i-info:hover #trnmt-i-coming {
+  opacity: 1;
+  -webkit-transition: -webkit-transform 0.1s ease-out;
+  -webkit-transform: translateY(-30px);
+  -moz-transition: -moz-transform 0.1s ease-out;
+  -moz-transform: translateY(-30px);
+  transition: transform 0.1s ease-out;
+  transform: translateY(-30px);
 }

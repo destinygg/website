@@ -11,18 +11,20 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="tournament-i">
+<body id="trnmt-i">
 
-    <div id="tournament-i-page" style="display: none;">
-        <a title="Support us! Indigogo" href="https://www.indiegogo.com/projects/destiny-i" id="tournament-i-logo"></a>
+    <div id="trnmt-i-page" style="display: none;">
+        <div id="trnmt-i-info">
+            <a title="Support us! Indigogo" href="https://www.indiegogo.com/projects/destiny-i" id="trnmt-i-logo"></a>
+            <a title="Support us! Indigogo"  href="https://www.indiegogo.com/projects/destiny-i" id="trnmt-i-coming"></a>
+        </div>
     </div>
 
     <?php include Tpl::file('seg/commonbottom.php') ?>
 
     <script>
     $(window).on('load', function(){
-        $('#tournament-i-page').show();
-        $('#tournament-i-logo').addClass('in');
+        $('#trnmt-i-page').show();
     });
     </script>
   
