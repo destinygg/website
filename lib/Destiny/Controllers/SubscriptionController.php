@@ -222,6 +222,7 @@ class SubscriptionController {
         if(isset($params['gift']) && !empty($params['gift'])){
 
           $model->gift = $params['gift'];
+          $model->warning = new Exception('If the giftee has a subscription by the time this payment is completed the subscription will be marked as failed, but your payment will still go through. You will have to manually reverse the order... :(');
 
         }else{
 
@@ -275,7 +276,7 @@ class SubscriptionController {
                 if(empty($giftReceiver)){
                    throw new Exception ( 'Invalid giftee' );
                 }
-                if(!$subscriptionsService->getCanUserReceiveGift ( $userId, $giftReceiver['userId'], null )){
+                if(!$subscriptionsService->getCanUserReceiveGift ( $userId, $giftReceiver['userId'] )){
                    throw new Exception ( 'Invalid giftee, cannot accept gifts' );
                 }
             }
@@ -451,25 +452,28 @@ class SubscriptionController {
             
             // Recurring payment
             if (! empty ( $paymentProfile )) {
-              $createRPProfileResponse = $payPalApiService->createRecurringPaymentProfile ( $paymentProfile, $params ['token'], $subscriptionType );
-              if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
-                 throw new Exception ( 'Failed to create recurring payment request' );
-              }
-              $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
-              $paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
-              if (empty ( $paymentProfileId )) {
-                  throw new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
-              }
-              // Set the payment profile to active, and paymetProfileId
-              $ordersService->updatePaymentProfileId ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
+                $createRPProfileResponse = $payPalApiService->createRecurringPaymentProfile ( $paymentProfile, $params ['token'], $subscriptionType );
+                if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success') {
+                    throw new Exception ( 'Failed to create recurring payment request' );
+                }
+                $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
+                $paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
+                if (empty ( $paymentProfileId )) {
+                    throw new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
+                }
+                // Set the payment profile to active, and paymetProfileId
+                $ordersService->updatePaymentProfileId ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
+
+                // Update the payment profile
+                $subscriptionsService->updateSubscriptionPaymentProfile ( $orderSubscription ['subscriptionId'], $paymentProfile ['profileId'], true );
             }
             
             // Complete the checkout
             $DoECResponse = $payPalApiService->getECPaymentResponse ( $params ['PayerID'], $params ['token'], $order );
             if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
                 if (isset ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo )) {
-                  $payPalApiService->recordECPayments ( $DoECResponse, $params ['PayerID'], $order );
-                  $ordersService->updateOrderState ( $order ['orderId'], $order ['state'] );
+                    $payPalApiService->recordECPayments ( $DoECResponse, $params ['PayerID'], $order );
+                    $ordersService->updateOrderState ( $order ['orderId'], $order ['state'] );
                 } else {
                     throw new Exception ( 'No payments for express checkout order' );
                 }
@@ -487,8 +491,8 @@ class SubscriptionController {
                     $ordersService = OrdersService::instance ();
                     $paymentProfile = $ordersService->getPaymentProfileById ( $activeSubscription ['paymentProfileId'] );
                     if (! empty ( $paymentProfile )) {
-                      $payPalApiService->cancelPaymentProfile ( $activeSubscription, $paymentProfile );
-                      $subscriptionsService->updateSubscriptionRecurring ( $activeSubscription ['subscriptionId'], false );
+                        $payPalApiService->cancelPaymentProfile ( $activeSubscription, $paymentProfile );
+                        $subscriptionsService->updateSubscriptionRecurring ( $activeSubscription ['subscriptionId'], false );
                     }
 
                     // Cancel the active subscription
@@ -496,31 +500,42 @@ class SubscriptionController {
                 }
             }
 
-            // Update the subscription status
-            $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
-            $subscriptionsService->updateSubscriptionPaymentProfile ( $orderSubscription ['subscriptionId'], $paymentProfile ['profileId'], true );
+            // Check if this is a gift, check that the giftee is still eligable
+            if(!empty($orderSubscription['gifter']) && !$subscriptionsService->getCanUserReceiveGift ( $userId, $subscriptionUser['userId'] )){
 
-            // Unban the user if a ban is found
-            $ban = $userService->getUserActiveBan ( $subscriptionUser['userId'] );
-            // only unban the user if the ban is non-permanent or the tier
-            // of the subscription is >= 2
-            // we unban the user if no ban is found because it also unmutes
-            if (empty ( $ban ) or ( !empty( $ban ['endtimestamp'] ) or $orderSubscription['subscriptionTier'] >= 2 ) ) {
-               $chatIntegrationService->sendUnban ( $subscriptionUser['userId'] );
-            }
+                // Update the state to ERROR and log a critical error
+                Application::instance ()->getLogger ()->critical ( 'Duplicate subscription attempt, Gifter: %d GifteeId: %d, OrderId: %d', $userId, $subscriptionUser['userId'], $order ['orderId'] );
+                $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ERROR );
 
-            // Flag the user for 'update'
-            $authenticationService->flagUserForUpdate ( $subscriptionUser['userId'] );
-
-            // Handle the subscription broadcast
-            $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
-            if(!empty($orderSubscription['gifter'])){
-                $gifter = $userService->getUserById( $orderSubscription['gifter'] );
-                $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
             }else{
-                $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
+
+                // Unban the user if a ban is found
+                $ban = $userService->getUserActiveBan ( $subscriptionUser['userId'] );
+                // only unban the user if the ban is non-permanent or the tier of the subscription is >= 2
+                // we unban the user if no ban is found because it also unmutes
+                if (empty ( $ban ) or ( !empty( $ban ['endtimestamp'] ) or $orderSubscription['subscriptionTier'] >= 2 ) ) {
+                   $chatIntegrationService->sendUnban ( $subscriptionUser['userId'] );
+                }
+
+                // Activate the subscription (state)
+                $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
+
+                // Flag the user for 'update'
+                $authenticationService->flagUserForUpdate ( $subscriptionUser['userId'] );
+
+                // Random emote
+                $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
+
+                // Broadcast
+                if(!empty($orderSubscription['gifter'])){
+                    $gifter = $userService->getUserById( $orderSubscription['gifter'] );
+                    $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
+                }else{
+                    $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
+                }
+
             }
-            
+
             // Redirect to completion page
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/complete';
           
