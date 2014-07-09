@@ -317,7 +317,9 @@ chat.prototype.onSUBONLY = function(data) {
 	return new ChatCommandMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
 };
 chat.prototype.onBROADCAST = function(data) {
-	if (!this.gui.backlogLoading && data.data.substring(0, 9) == 'redirect:') {
+	if (data.data.substring(0, 9) == 'redirect:') {
+		if (this.gui.backlogLoading) return;
+
 		var url = data.data.substring(9);
 		var message = new ChatBroadcastMessage("Redirecting in 5 seconds to " + url, data.timestamp);
 		setTimeout(function() {
@@ -327,6 +329,7 @@ chat.prototype.onBROADCAST = function(data) {
 
 			window.location = url;
 		}, 5000 );
+
 	} else { // dont add a broadcastui for it
 		var message = new ChatBroadcastMessage(data.data, data.timestamp);
 		message.onAPPEND = function(gui){
