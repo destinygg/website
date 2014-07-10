@@ -67,6 +67,7 @@
 		});
 	};
 	destiny.fn.UrlFormatter.prototype.format = function(str, user){
+		if (!str) return;
 		var nsfw      = (/\b(?:NSFW|NSFL|SPOILER)\b/i.test(str)),
 		    css       = [],
 		    formatter = this;

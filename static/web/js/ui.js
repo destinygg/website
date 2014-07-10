@@ -77,7 +77,7 @@ $(function(){
         entries.append(
           '<div class="media">'+ 
             '<div class="media-body">'+ 
-              '<div class="media-heading"><a target="_blank" href="'+ 'https://twitter.com/'+ tweets[i].user.screen_name +'/status/' + tweets[i].id_str +'"><i class="icon-share icon-white subtle"></i></a> '+ 
+              '<div class="media-heading"><a target="_blank" href="'+ 'https://twitter.com/'+ tweets[i].user.screen_name +'/status/' + tweets[i].id_str +'"><span class="glyphicon glyphicon-share"></span></a> '+ 
                 tweets[i].html +
               '</div>'+ 
               '<time datetime="'+ tweets[i].created_at +'" pubdate>'+ moment(tweets[i].created_at).fromNow() +'</time>'+ 
