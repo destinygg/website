@@ -15,16 +15,23 @@ use Destiny\Common\Config;
 
     <div id="trnmt-i-page" style="display: none;">
         <div id="trnmt-i-info">
-            <a title="Support us! Indigogo" href="https://www.indiegogo.com/projects/destiny-i" id="trnmt-i-logo"></a>
-            <a title="Support us! Indigogo"  href="https://www.indiegogo.com/projects/destiny-i" id="trnmt-i-coming"></a>
+            <a title="Support us! Indigogo" href="javascript;" id="trnmt-i-logo"></a>
+            <a title="Support us! Indigogo"  href="javascript;" id="trnmt-i-coming"></a>
         </div>
     </div>
 
     <?php include Tpl::file('seg/commonbottom.php') ?>
 
     <script>
-    $(window).on('load', function(){
-        $('#trnmt-i-page').show();
+    $(function(){
+        $(window).on('load', function(){
+            $('#trnmt-i-page').show();
+        });
+        $('#trnmt-i-info a').on('click', function(){
+            _gaq.push(['_trackEvent', 'outbound', 'indiegogo', 'https://www.indiegogo.com/projects/destiny-i']);
+            window.location.href = 'https://www.indiegogo.com/projects/destiny-i';
+            return false;
+        });
     });
     </script>
   

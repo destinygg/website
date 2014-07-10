@@ -105,37 +105,49 @@ class HomeController {
     /**
      * @Route ("/shave")
      *
+     * @param array $params
+     * @param ViewModel $model
      * @return string
      */
-    public function shave() {
-        return 'redirect: http://dollar-shave-club.7eer.net/c/72409/74122/1969';
+    public function shave(array $params, ViewModel $model) {
+        $model->url = 'http://dollar-shave-club.7eer.net/c/72409/74122/1969';
+        return 'outbound';
     }
 
     /**
      * @Route ("/ting")
      *
+     * @param array $params
+     * @param ViewModel $model
      * @return string
      */
-    public function ting() {
-        return 'redirect: http://ting.7eer.net/c/72409/87559/2020';
+    public function ting(array $params, ViewModel $model) {
+        $model->url = 'http://ting.7eer.net/c/72409/87559/2020';
+        return 'outbound';
     }
 
     /**
      * @Route ("/amazon")
      *
+     * @param array $params
+     * @param ViewModel $model
      * @return string
      */
-    public function amazon() {
-        return 'redirect: http://www.amazon.com/?tag=des000-20';
+    public function amazon(array $params, ViewModel $model) {
+        $model->url = 'http://www.amazon.com/?tag=des000-20';
+        return 'outbound';
     }
 
     /**
      * @Route ("/eve")
      *
+     * @param array $params
+     * @param ViewModel $model
      * @return string
      */
-    public function eve() {
-        return 'redirect: https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
+    public function eve(array $params, ViewModel $model) {
+        $model->url = 'https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
+        return 'outbound';
     }
 
     /**
