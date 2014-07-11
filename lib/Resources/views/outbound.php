@@ -18,7 +18,7 @@ _gaq.push(function(){
 </script>
 </head>
 <body>
-    <p>Please wait a few while we redirect you &hellip;</p>
+    <p>Please wait while we redirect you &hellip;</p>
     <noscript>
        <p>No javascript present >:( &hellip; Click the link <a rel="nofollow" href="<?= Tpl::out($model->url) ?>"><?= Tpl::out($model->url) ?></a></p>
     </noscript>
