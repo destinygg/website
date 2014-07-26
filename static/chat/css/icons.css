@@ -1,1 +1,39 @@
-.icon-subscriber,.icon-subscribert2,.icon-subscribert3,.icon-subscribert4{-webkit-transform:rotate(0deg);-webkit-transition:rotate .2s ease-in-out;-moz-transition:rotate .2s ease-in-out;-o-transition:rotate .2s ease-in-out;transition:rotate .2s ease-in-out}.icon-subscriber:hover,.icon-subscribert2:hover,.icon-subscribert3:hover,.icon-subscribert4:hover{-moz-animation:spin 3s infinite linear;-webkit-animation:spin 3s infinite linear}.icon-vip,.icon-trusted,.icon-subscribert4,.icon-subscribert3,.icon-subscribert2,.icon-subscriber,.icon-status,.icon-notable,.icon-moderator,.icon-info,.icon-evenotable,.icon-error,.icon-contributor,.icon-compchallenge,.icon-command,.icon-bot,.icon-admin{background-image:url('../img/icons.png');background-repeat:no-repeat}.icon-vip:hover{background-position:0 0;width:16px;height:16px}.icon-vip{background-position:-16px 0;width:16px;height:16px}.icon-trusted{background-position:0 -16px;width:16px;height:16px}.icon-subscribert4{background-position:-16px -16px;width:16px;height:16px}.icon-subscribert3{background-position:-32px 0;width:16px;height:16px}.icon-subscribert2{background-position:-32px -16px;width:16px;height:16px}.icon-subscriber{background-position:0 -32px;width:16px;height:16px}.icon-status{background-position:-16px -32px;width:16px;height:16px}.icon-notable{background-position:-32px -32px;width:16px;height:16px}.icon-moderator{background-position:-48px 0;width:16px;height:16px}.icon-info{background-position:-48px -16px;width:16px;height:16px}.icon-evenotable{background-position:-48px -32px;width:16px;height:16px}.icon-error{background-position:0 -48px;width:16px;height:16px}.icon-contributor{background-position:-16px -48px;width:16px;height:16px}.icon-compchallenge:hover{background-position:-32px -48px;width:16px;height:16px}.icon-compchallenge{background-position:-48px -48px;width:16px;height:16px}.icon-command{background-position:-64px 0;width:16px;height:16px}.icon-bot:hover{background-position:-64px -16px;width:16px;height:16px}.icon-bot{background-position:-64px -32px;width:16px;height:16px}.icon-admin:hover{background-position:-64px -48px;width:16px;height:16px}.icon-admin{background-position:0 -64px;width:16px;height:16px}
+/* glue: 0.4 hash: 74b37ec6f7 */
+.icon-vip,
+.icon-trusted,
+.icon-subscribert4,
+.icon-subscribert3,
+.icon-subscribert2,
+.icon-subscriber,
+.icon-status,
+.icon-notable,
+.icon-moderator,
+.icon-info,
+.icon-evenotable,
+.icon-error,
+.icon-contributor,
+.icon-compchallenge,
+.icon-command,
+.icon-bot,
+.icon-admin{background-image:url('../img/icons.png');background-repeat:no-repeat}
+.icon-vip:hover{background-position:0px 0px;width:16px;height:16px;}
+.icon-vip{background-position:-16px 0px;width:16px;height:16px;}
+.icon-trusted{background-position:0px -16px;width:16px;height:16px;}
+.icon-subscribert4{background-position:-16px -16px;width:16px;height:16px;}
+.icon-subscribert3{background-position:-32px 0px;width:16px;height:16px;}
+.icon-subscribert2{background-position:-32px -16px;width:16px;height:16px;}
+.icon-subscriber{background-position:0px -32px;width:16px;height:16px;}
+.icon-status{background-position:-16px -32px;width:16px;height:16px;}
+.icon-notable{background-position:-32px -32px;width:16px;height:16px;}
+.icon-moderator{background-position:-48px 0px;width:16px;height:16px;}
+.icon-info{background-position:-48px -16px;width:16px;height:16px;}
+.icon-evenotable{background-position:-48px -32px;width:16px;height:16px;}
+.icon-error{background-position:0px -48px;width:16px;height:16px;}
+.icon-contributor{background-position:-16px -48px;width:16px;height:16px;}
+.icon-compchallenge:hover{background-position:-32px -48px;width:16px;height:16px;}
+.icon-compchallenge{background-position:-48px -48px;width:16px;height:16px;}
+.icon-command{background-position:-64px 0px;width:16px;height:16px;}
+.icon-bot:hover{background-position:-64px -16px;width:16px;height:16px;}
+.icon-bot{background-position:-64px -32px;width:16px;height:16px;}
+.icon-admin:hover{background-position:-64px -48px;width:16px;height:16px;}
+.icon-admin{background-position:0px -64px;width:16px;height:16px;}

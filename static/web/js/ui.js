@@ -638,3 +638,83 @@ $(function(){
         }
     });
 });
+
+$(function(){
+    $('body#tournament').each(function(){
+
+        var dates = [ 
+            new Date('2014-08-03T14:00:00+00:00'), 
+            new Date('2014-08-05T14:00:00+00:00'), 
+            new Date('2014-08-08T14:00:00+00:00') 
+        ]
+
+        var tui  = $('#t-timer'),
+            tday = tui.find('#t-timer-day .t-number'),
+            thr  = tui.find('#t-timer-hour .t-number'),
+            tmin = tui.find('#t-timer-minute .t-number'),
+            tsec = tui.find('#t-timer-second .t-number');
+
+        var npad = function (n, width)
+        {
+            n = n + '';
+            return n.length >= width ? n : new Array(width - n.length + 1).join(0) + n;
+        };
+
+        var updatetimer = function()
+        {
+            for(var i in dates)
+            {
+                var then = moment(dates[i]),
+                    now  = moment();
+
+                if(then > now)
+                {
+                    var ms     = then.diff(now, 'milliseconds', true),
+                        months = Math.floor(moment.duration(ms).asMonths());
+                 
+                    // subtract months from the original moment (not sure why I had to offset by 1 day)
+                    then = then.subtract('months', months);
+                    ms = then.diff(now, 'milliseconds', true);
+                    var days = Math.floor(moment.duration(ms).asDays());
+                 
+                    then = then.subtract('days', days);
+                    ms = then.diff(now, 'milliseconds', true);
+                    var hours = Math.floor(moment.duration(ms).asHours());
+                 
+                    then = then.subtract('hours', hours);
+                    ms = then.diff(now, 'milliseconds', true);
+                    var minutes = Math.floor(moment.duration(ms).asMinutes());
+                 
+                    then = then.subtract('minutes', minutes);
+                    ms = then.diff(now, 'milliseconds', true);
+                    var seconds = Math.floor(moment.duration(ms).asSeconds());
+
+                    tday.text(npad(days, 2));
+                    thr.text(npad(hours, 2));
+                    tmin.text(npad(minutes, 2));
+                    tsec.text(npad(seconds, 2));
+                    break;
+                }
+            }
+        };
+
+        var interval = window.setInterval(updatetimer, 1000);
+        updatetimer();
+
+    });
+
+    var tscroller = $('#t-scroller'),
+        mainnav   = $('#main-nav');
+    var centerSlides = function(){
+        var wh = $(window).height() - mainnav.height();
+        if(wh > parseInt(tscroller.css('min-height')) && wh < parseInt(tscroller.css('max-height'))){  
+            tscroller.css('height', wh);
+            tscroller.find('.t-scroller-slide').each(function(){
+                $(this).css('top', wh/2 - $(this).height()/2);
+            });
+        }
+    };
+
+    centerSlides();
+    $(window).on('resize', centerSlides);
+});

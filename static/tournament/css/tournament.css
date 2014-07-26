@@ -1,0 +1,201 @@
+@import url(http://fonts.googleapis.com/css?family=Quicksand:300,400,700);
+
+@accent: #4f6db3;
+@darkaccent: #354978;
+@fontbase: #989695;
+
+body {
+    font-family: "Quicksand", "Trebuchet MS", sans-serif;
+    background-color: white;
+    background-image: none;
+    white-space: normal;
+}
+
+h1, h2, h3 {
+    font-family: "Quicksand", "Trebuchet MS", sans-serif;
+}
+
+h1 {
+    color: @fontbase;
+    font-weight: 400;
+    font-size: 36px;
+    text-align: center;
+    margin: 50px 0;
+}
+h2 {
+    color: @accent;
+    font-size: 30px;
+    line-height: 30px;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.05em;
+}
+h3 {
+    color: @fontbase;
+    font-size: 24px;
+    line-height: 24px;
+    margin: 0 0 15px 0;
+}
+
+section {
+    margin: 0;
+}
+
+.t-btn {
+    display: inline-block;
+    border: 3px solid white;
+    border-radius: 13px;
+    background: none;
+    color: white;
+    font-size: 18px;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 48px;
+    padding: 0 10px;
+    margin: 0 5px;
+}
+.t-btn:hover,
+.t-btn.active {
+    color: @accent;
+    background: white;
+    text-decoration: none;
+}
+
+#t-timer {
+    border-top: 2px solid @darkaccent;
+    background-color: @accent;
+    font-weight: 400;
+    color: white;
+    text-align: center;
+}
+#t-timer .t-timer-unit {
+    display: inline-block;
+    float: none;
+    margin: 50px 30px;
+}
+#t-timer .t-number {
+    font-size: 48px;
+    font-weight: 300;
+}
+#t-timer .t-number {
+    font-size: 48px;
+    min-width: 68px;
+    text-align: center;
+}
+#t-timer .t-label {
+    font-size: 18px;
+    text-align: center;
+}
+
+#t-dates {
+    background: #f0f0f0 url("../img/zerg-bg-light.png") repeat-x center center;
+}
+#t-dates .row > div {
+    margin-bottom: 35px;
+}
+
+#t-scroller {
+    background: #9c9a98 url("../img/destiny-t-planetbg.gif") repeat-x center center;
+    text-align: center;
+    min-height: 400px;
+    max-height: 1080px;
+}
+#t-scroller .container {
+    position: relative;
+}
+#t-scroller .t-scroller-slide {
+    width: 100%;
+    position: absolute;
+}
+
+#t-alpha-logo {
+    width: 373px;
+    height: 197px;
+    background: url("../img/destiny_logo_alpha.png") no-repeat top left;
+    display: inline-block;
+    margin: 0 0 60px 0;
+    text-indent: -999em;
+}
+
+#t-alpha-buttons .t-btn {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#main-nav {
+    border-bottom: 0;
+}
+#main-nav .brand {
+    width: 160px;
+    height: 100px;
+    display: block !important;
+    text-indent: -999em;
+    background: url("../img/destiny_logo_brand.png") no-repeat top left;
+}
+#main-nav .nav li a,
+#main-nav .nav li:hover a {
+    line-height: 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: black;
+    border-bottom: 3px solid white;
+    background-color: white;
+    padding: 40px 15px;
+}
+#main-nav .nav li.active a {
+    border-bottom: 4px solid @accent;
+}
+#main-nav .icon-nav-home,
+#main-nav .icon-nav-arrow-down {
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+#tournament .t-person {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+} 
+#tournament .t-name {
+    font-size: 28px;
+    color: @accent;
+    text-align: center;
+    letter-spacing: -0.08em;
+}
+#tournament .t-portrait {
+    display: inline-block;
+}
+#tournament .t-portrait,
+#tournament .t-name {
+    text-align: center;
+    margin: 0 auto;
+}
+#tournament .t-person .t-portrait {
+    -webkit-transition: -webkit-transform 0.15s ease-out;
+    -moz-transition: -moz-transform 0.15s ease-out;
+    -o-transition: -o-transform 0.15s ease-out;
+    transition: transform 0.15s ease-out;
+}
+#tournament .t-person:hover .t-portrait {
+    -webkit-transform: translate(0, -2px);
+    -moz-transform: translate(0, -2px);
+    -ms-transform: translate(0, -2px);
+    -o-transform: translate(0, -2px);
+    transform: translate(0, -2px);
+}
+#tournament .t-person .t-social a {
+    display: inline-block;
+}
+
+#t-foot {
+    margin-top: 50px;
+    padding: 50px 0;
+    background: #383838;
+}
+#t-foot footer {
+    font-size: 14px;
+    color: #ccc;
+    text-shadow: none;
+}
+#t-foot footer a {
+    color: white;
+}

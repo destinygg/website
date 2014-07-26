@@ -1,0 +1,47 @@
+/* glue: {{ version }} hash: {{ hash }} */
+
+/* start destiny.gg */
+.chat-emote {
+    display: inline-block;
+    position: relative;
+    top: 10px;
+    margin: 0 2px;
+}
+.chat-emote.chat-emote-OverRustle {
+    animation: rustle 100ms 7;
+    -webkit-animation: rustle 100ms 7;  
+}
+.chat-emote.chat-emote-OverRustle:hover {
+    animation: rustle1 100ms infinite;
+    -webkit-animation: rustle1 100ms infinite;
+}
+@keyframes rustle {
+    from { left: 0px; }
+    to { left: 2px; }
+}
+@-webkit-keyframes rustle {
+    from { left: 0px; }
+    to { left: 2px; }
+}
+@keyframes rustle1 {
+    from { left: 0px; }
+    to { left: 2px; }
+}
+@-webkit-keyframes rustle1 {
+    from { left: 0px; }
+    to { left: 2px; }
+}
+/* end destiny.gg */
+
+{% for image in images %}.{{ image.label }}{{ image.pseudo }}{%- if not image.last %}, {%- endif %}{%- endfor %}{
+    background-image:url('{{ sprite_path }}');
+    background-repeat:no-repeat;
+}
+{% for image in images %}
+.{{ image.label }}{{ image.pseudo }}{
+    background-position:{{ image.x ~ ('px' if image.x) }} {{ image.y ~ ('px' if image.y) }};
+    width:{{ image.width }}px;
+    height:{{ image.height }}px;
+    margin-top:-{{ image.height }}px;
+}
+{% endfor %}

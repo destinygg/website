@@ -15,27 +15,21 @@ Illustration of Destiny used throughout [http://www.destiny.gg/] owned by @eleve
 
 ## Requirements
 
-### Vagrant
-
-Install Vagrant and Oracle VM
-
-```shell
-vagrant plugin install vagrant-hosts
-```
 
 ### Building
 
 [nodejs](http://nodejs.org/) Dependency manager
 
-[grunt](http://gruntjs.com/) Project builder
+[grunt 0.9+](http://gruntjs.com/) Project builder
 
 [composer](http://getcomposer.org/) PHP dependency manager
 
 [glue](http://glue.readthedocs.org/) Glue is a simple command line tool to generate CSS sprites
 
+
 ### Running
 
-[Apache 2](http://httpd.apache.org/), [php 5.3](http://php.net/), [mysql 5](http://dev.mysql.com/), [Redis](http://redis.io/download)
+[Apache 2](http://httpd.apache.org/) or [Nginx](http://nginx.org/en/), [php 5.3](http://php.net/), [mysql 5](http://dev.mysql.com/), [Redis](http://redis.io/download)
 
 
 ## Getting Started
@@ -78,7 +72,7 @@ The table "[prefix_]scheduled_tasks" will show when specific tasks have been run
 If you don't run this, you will get empty UI and limited functionality in the site.
 
 
-## Grunt Tasks
+## Grunt Task
 
 Build the project
 
@@ -86,14 +80,10 @@ Build the project
 grunt
 ```
 
-Clean the tmp (php generates cached annotations files that need to be cleared)
+## Installing Glue 0.9.4
+
+Download [glue](https://pypi.python.org/pypi/glue/0.9.4), extract the archive.
 
 ```shell
-grunt clean
-```
-
-Glue - create the project sprites
-
-```shell
-grunt glue
-```
+python setup.py install
+``` 
