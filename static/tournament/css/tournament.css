@@ -141,6 +141,9 @@ section {
     background-color: white;
     padding: 40px 15px;
 }
+#main-nav .nav li:hover a {
+    border-bottom: 4px solid #CCC;
+}
 #main-nav .nav li.active a {
     border-bottom: 4px solid @accent;
 }
