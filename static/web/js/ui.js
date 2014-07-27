@@ -662,6 +662,7 @@ $(function(){
 
         var updatetimer = function()
         {
+            var nextdateavailable = false;
             for(var i in dates)
             {
                 var then = moment(dates[i]),
@@ -693,16 +694,22 @@ $(function(){
                     thr.text(npad(hours, 2));
                     tmin.text(npad(minutes, 2));
                     tsec.text(npad(seconds, 2));
+                    nextdateavailable = true;
                     break;
                 }
             }
         };
 
-        var interval = window.setInterval(updatetimer, 1000);
-        updatetimer();
+        if(nextdateavailable){
+            var interval = window.setInterval(updatetimer, 1000);
+            updatetimer();
+        }else{
+            tui.hide();
+        }
 
     });
 
+    // Auto sizing the scroller
     var tscroller = $('#t-scroller'),
         mainnav   = $('#main-nav');
     var centerSlides = function(){

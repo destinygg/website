@@ -20,9 +20,9 @@ use Destiny\Common\Session;
         <div class="container">
             <a class="brand pull-left" href="/">Destiny.gg</a>
             <ul class="nav pull-right navbar-nav">
-                <li class="active"><a title="Home" href="#tournament"><i class="icon-nav-home"></i> Home <i class="icon-nav-arrow-down"></i></a></li>
-                <li><a title="About" href="#about">About <i class="icon-nav-arrow-down"></i></a></li>
-                <li><a title="Brackets" href="#brackets">Youtube <i class="icon-nav-arrow-down"></i></a></li>
+                <li class="active"><a title="Home" href="/"><i class="icon-nav-home"></i> Home <i class="icon-nav-arrow-down"></i></a></li>
+                <li><a title="About" href="#t-about">About <i class="icon-nav-arrow-down"></i></a></li>
+                <li><a title="Brackets" href="#t-brackets">Brackets <i class="icon-nav-arrow-down"></i></a></li>
                 <li><a title="Schedule" href="#t-dates">Schedule <i class="icon-nav-arrow-down"></i></a></li>
             </ul>
         </div>
@@ -101,8 +101,7 @@ use Destiny\Common\Session;
                     <div class="t-name">Liquid’HerO</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/Liquid_HerO" target="_blank"></a>
                     </div>
                 </div>
 
@@ -111,8 +110,7 @@ use Destiny\Common\Session;
                     <div class="t-name">Acer INnoVation</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/AcerINnoVation" target="_blank"></a>
                     </div>
                 </div>
 
@@ -121,8 +119,7 @@ use Destiny\Common\Session;
                     <div class="t-name">StarTale Life</div>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/Startale_Life" target="_blank"></a>
                     </div>
                 </div>
 
@@ -131,8 +128,7 @@ use Destiny\Common\Session;
                     <div class="t-name">MC</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/MCtoss2" target="_blank"></a>
                     </div>
                 </div>
 
@@ -141,8 +137,7 @@ use Destiny\Common\Session;
                     <div class="t-name">CM Storm Polt</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/CMStormPolt" target="_blank"></a>
                     </div>
                 </div>
 
@@ -151,8 +146,7 @@ use Destiny\Common\Session;
                     <div class="t-name">Acer Scarlett</div>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/acerscarlett" target="_blank"></a>
                     </div>
                 </div>
 
@@ -161,8 +155,7 @@ use Destiny\Common\Session;
                     <div class="t-name">Liquid’Snute</div>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/LiquidSnute" target="_blank"></a>
                     </div>
                 </div>
 
@@ -171,8 +164,7 @@ use Destiny\Common\Session;
                     <div class="t-name">viOLet</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/viOLetstarcraft" target="_blank"></a>
                     </div>
                 </div>
             
@@ -192,8 +184,8 @@ use Destiny\Common\Session;
                     <div class="t-portrait t-portrait-incontrol"></div>
                     <div class="t-name">iNcontroL</div>
                     <div class="t-social">
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-protoss" title="Protoss" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/EGiNcontroL" target="_blank"></a>
                     </div>
                 </div>
 
@@ -201,8 +193,8 @@ use Destiny\Common\Session;
                     <div class="t-portrait t-portrait-minigun"></div>
                     <div class="t-name">Minigun</div>
                     <div class="t-social">
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-protoss" title="Protoss" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/ROOT_Minigun" target="_blank"></a>
                     </div>
                 </div>
 
@@ -210,8 +202,8 @@ use Destiny\Common\Session;
                     <div class="t-portrait t-portrait-nathanias"></div>
                     <div class="t-name">Nathanias</div>
                     <div class="t-social">
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-terran" title="Terran" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/nathaniastv" target="_blank"></a>
                     </div>
                 </div>
 
@@ -219,8 +211,8 @@ use Destiny\Common\Session;
                     <div class="t-portrait t-portrait-rotterdam"></div>
                     <div class="t-name">RotterdaM</div>
                     <div class="t-social">
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-protoss" title="Protoss" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/RotterdaM08" target="_blank"></a>
                     </div>
                 </div>
 
@@ -228,8 +220,8 @@ use Destiny\Common\Session;
                     <div class="t-portrait t-portrait-tod"></div>
                     <div class="t-name">Tod</div>
                     <div class="t-social">
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-protoss" title="Protoss" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/XMGToD" target="_blank"></a>
                     </div>
                 </div>
 
@@ -237,9 +229,48 @@ use Destiny\Common\Session;
                     <div class="t-portrait t-portrait-tb"></div>
                     <div class="t-name">TotalBiscuit</div>
                     <div class="t-social">
-                        <a class="icon-twitch" title="Twitch" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="#"></a>
+                        <a class="icon-terran" title="Terran" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/Totalbiscuit" target="_blank"></a>
                     </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section id="t-sponsers">
+        <div class="container">
+            <h1>Sponsers</h1>
+
+            <div class="row">
+
+                <div id="jordwoodwatches" class="t-sponser col-md-3">
+                    <a class="t-logo sponser-jordwoodwatches" href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com"></a>
+                    <div class="t-name">Wood Watches</div>
+                    <div class="t-sponser-link"><a href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com">www.woodwatches.com</a></div>
+                    <p>It's about time someone delivered an unconventional answer to age-old wrist candy. JORD watches are designed to take people back to nature and away from today's metal &amp; rubber. We want to challenge the norm by making unique time pieces as a focal point for everyday fashion.</p>
+                </div>
+
+                <div id="breakingoutinvitational" class="t-sponser col-md-3">
+                    <a class="t-logo sponser-breakingoutinvitational" href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net"></a>
+                    <div class="t-name">Breaking Out</div>
+                    <div class="t-sponser-link"><a href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net">www.teamliquid.net</a></div>
+                    <p>Breaking Out is a show about up &amp; coming North American Starcraft 2 players. The show aims to highlight the next "breakout" players while they're still making a name for themself through coverage of their games, some interviews, and a little bit of fun.</p>
+                </div>
+
+                <div id="videogamevotersnetwork" class="t-sponser col-md-3">
+                    <a class="t-logo sponser-videogamevotersnetwork" href="http://videogamevoters.org/" target="_blank" title="videogamevoters.org"></a>
+                    <div class="t-name">Video Game Voters</div>
+                    <div class="t-sponser-link"><a href="http://videogamevoters.org/" target="_blank" title="videogamevoters.org">videogamevoters.org</a></div>
+                    <p>The Video Game Voters Network is a place for American gamers to organize and defend against threats to video games by registering to vote and letting Congress know how important this issue is to the community.</p>
+                </div>
+
+                <div id="letskungfu" class="t-sponser col-md-3">
+                    <a class="t-logo sponser-letskungfu" href="http://www.teamliquid.net/forum/starcraft-2/370530-show-lets-kung-fu" target="_blank" title="www.teamliquid.net"></a>
+                    <div class="t-name">LetsKungFu</div>
+                    <div class="t-sponser-link"><a href="http://www.teamliquid.net/forum/starcraft-2/370530-show-lets-kung-fu" target="_blank" title="www.teamliquid.net">www.teamliquid.net</a></div>
+                    <p>Web TV Series, focusing on eSports (StarCraft, League of Legends, etc)</p>
                 </div>
 
             </div>

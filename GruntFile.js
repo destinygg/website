@@ -106,7 +106,8 @@ module.exports = function(grunt) {
 					'static/tournament/css/tournament.min.css' : [
 						'static/tournament/css/tournament.css',
 						'scripts/tournament/icons.css',
-						'scripts/tournament/portraits.css'
+						'scripts/tournament/portraits.css',
+						'scripts/tournament/sponsers.css'
 					]
 					
 				}
@@ -118,19 +119,23 @@ module.exports = function(grunt) {
 			// Emoticons - you should run less:emoticons after running this
 			emoticons: {
 				src     : 'scripts/emotes/emoticons',
-				options : '--force --sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes --css-template=scripts/emotes/emoticons.jinja --img=scripts/emotes --url=../img/ --crop --pseudo-class-separator=_'
+				options : '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes --css-template=scripts/emotes/emoticons.jinja --img=scripts/emotes --url=../img/ --crop --pseudo-class-separator=_'
 			},
 			icons: {
 				src     : 'scripts/icons/icons',
-				options : '--force --sprite-namespace= --namespace=icon --css=scripts/icons --img=scripts/icons --css-template=scripts/icons/icons.jinja --url=../img/ --pseudo-class-separator=_'
+				options : '--sprite-namespace= --namespace=icon --css=scripts/icons --img=scripts/icons --css-template=scripts/icons/icons.jinja --url=../img/ --pseudo-class-separator=_'
 			},
 			tournament: {
 				src     : 'scripts/tournament/portraits',
-				options : '--force --sprite-namespace= --namespace=t-portrait --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/portraits.jinja --url=../img/ --pseudo-class-separator=_'
+				options : '--sprite-namespace= --namespace=t-portrait --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/portraits.jinja --url=../img/ --pseudo-class-separator=_'
 			},
 			tournamenticons: {
 				src     : 'scripts/tournament/icons',
-				options : '--force --sprite-namespace= --namespace=icon --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/tournamenticons.jinja --url=../img/ --pseudo-class-separator=_'
+				options : '--sprite-namespace= --namespace=icon --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/tournamenticons.jinja --url=../img/ --pseudo-class-separator=_'
+			},
+			tournamentsponsers: {
+				src     : 'scripts/tournament/sponsers',
+				options : '--sprite-namespace= --namespace=sponser --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/tournamentsponsers.jinja --url=../img/ --pseudo-class-separator=_'
 			}
 		},
 		
@@ -141,7 +146,8 @@ module.exports = function(grunt) {
 					{expand: true, flatten: true, src: 'scripts/emotes/emoticons.png', dest: 'static/chat/img/', filter: 'isFile'},
 					{expand: true, flatten: true, src: 'scripts/icons/icons.png', dest: 'static/chat/img/', filter: 'isFile'},
 					{expand: true, flatten: true, src: 'scripts/tournament/portraits.png', dest: 'static/tournament/img/', filter: 'isFile'},
-					{expand: true, flatten: true, src: 'scripts/tournament/icons.png', dest: 'static/tournament/img/', filter: 'isFile'}
+					{expand: true, flatten: true, src: 'scripts/tournament/icons.png', dest: 'static/tournament/img/', filter: 'isFile'},
+					{expand: true, flatten: true, src: 'scripts/tournament/sponsers.png', dest: 'static/tournament/img/', filter: 'isFile'}
 				]
 			}
 		},
@@ -174,6 +180,7 @@ module.exports = function(grunt) {
 		'glue:icons',
 		'glue:tournament',
 		'glue:tournamenticons',
+		'glue:tournamentsponsers',
         'uglify:libs',
 		'uglify:web',
 		'uglify:chat',

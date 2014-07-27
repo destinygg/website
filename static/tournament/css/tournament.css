@@ -21,6 +21,7 @@ h1 {
     font-size: 36px;
     text-align: center;
     margin: 50px 0;
+    text-transform: uppercase;
 }
 h2 {
     color: @accent;
@@ -189,8 +190,23 @@ section {
     display: inline-block;
 }
 
+
+#t-sponsers .t-name {
+    text-align: left;
+}
+#t-sponsers .t-sponser {
+    margin-bottom: 50px;
+}
+#t-sponsers .t-logo {
+    display: block;
+    text-align: center;
+    margin:0 auto 15px auto;
+}
+#t-sponsers {
+    background: #fafafa url("../img/terran-bg-light.png") repeat-x center center;
+}
+
 #t-foot {
-    margin-top: 50px;
     padding: 50px 0;
     background: #383838;
 }
