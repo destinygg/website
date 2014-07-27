@@ -190,7 +190,9 @@ section {
     display: inline-block;
 }
 
-
+#t-sponsers {
+    margin-top: 30px;
+}
 #t-sponsers .t-name {
     text-align: left;
 }
