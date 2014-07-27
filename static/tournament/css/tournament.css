@@ -190,22 +190,20 @@ section {
     display: inline-block;
 }
 
-#t-sponsers {
+#t-sponsors {
     margin-top: 30px;
+    background: #fafafa url("../img/terran-bg-light.png") repeat-x center center;
 }
-#t-sponsers .t-name {
+#t-sponsors .t-name {
     text-align: left;
 }
-#t-sponsers .t-sponser {
+#t-sponsors .t-sponsor {
     margin-bottom: 50px;
 }
-#t-sponsers .t-logo {
+#t-sponsors .t-logo {
     display: block;
     text-align: center;
     margin:0 auto 15px auto;
-}
-#t-sponsers {
-    background: #fafafa url("../img/terran-bg-light.png") repeat-x center center;
 }
 
 #t-foot {

@@ -107,7 +107,7 @@ module.exports = function(grunt) {
 						'static/tournament/css/tournament.css',
 						'scripts/tournament/icons.css',
 						'scripts/tournament/portraits.css',
-						'scripts/tournament/sponsers.css'
+						'scripts/tournament/sponsors.css'
 					]
 					
 				}
@@ -133,9 +133,9 @@ module.exports = function(grunt) {
 				src     : 'scripts/tournament/icons',
 				options : '--sprite-namespace= --namespace=icon --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/tournamenticons.jinja --url=../img/ --pseudo-class-separator=_'
 			},
-			tournamentsponsers: {
-				src     : 'scripts/tournament/sponsers',
-				options : '--sprite-namespace= --namespace=sponser --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/tournamentsponsers.jinja --url=../img/ --pseudo-class-separator=_'
+			tournamentsponsors: {
+				src     : 'scripts/tournament/sponsors',
+				options : '--sprite-namespace= --namespace=sponsor --css=scripts/tournament --img=scripts/tournament --css-template=scripts/tournament/tournamentsponsors.jinja --url=../img/ --pseudo-class-separator=_'
 			}
 		},
 		
@@ -147,7 +147,7 @@ module.exports = function(grunt) {
 					{expand: true, flatten: true, src: 'scripts/icons/icons.png', dest: 'static/chat/img/', filter: 'isFile'},
 					{expand: true, flatten: true, src: 'scripts/tournament/portraits.png', dest: 'static/tournament/img/', filter: 'isFile'},
 					{expand: true, flatten: true, src: 'scripts/tournament/icons.png', dest: 'static/tournament/img/', filter: 'isFile'},
-					{expand: true, flatten: true, src: 'scripts/tournament/sponsers.png', dest: 'static/tournament/img/', filter: 'isFile'}
+					{expand: true, flatten: true, src: 'scripts/tournament/sponsors.png', dest: 'static/tournament/img/', filter: 'isFile'}
 				]
 			}
 		},
@@ -180,7 +180,7 @@ module.exports = function(grunt) {
 		'glue:icons',
 		'glue:tournament',
 		'glue:tournamenticons',
-		'glue:tournamentsponsers',
+		'glue:tournamentsponsors',
         'uglify:libs',
 		'uglify:web',
 		'uglify:chat',

@@ -239,37 +239,37 @@ use Destiny\Common\Session;
         </div>
     </section>
 
-    <section id="t-sponsers">
+    <section id="t-sponsors">
         <div class="container">
-            <h1>Sponsers</h1>
+            <h1>sponsors</h1>
 
             <div class="row">
 
-                <div id="jordwoodwatches" class="t-sponser col-md-3">
-                    <a class="t-logo sponser-jordwoodwatches" href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com"></a>
+                <div id="jordwoodwatches" class="t-sponsor col-md-3">
+                    <a class="t-logo sponsor-jordwoodwatches" href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com"></a>
                     <div class="t-name">Wood Watches</div>
-                    <div class="t-sponser-link"><a href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com">www.woodwatches.com</a></div>
+                    <div class="t-sponsor-link"><a href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com">www.woodwatches.com</a></div>
                     <p>It's about time someone delivered an unconventional answer to age-old wrist candy. JORD watches are designed to take people back to nature and away from today's metal &amp; rubber. We want to challenge the norm by making unique time pieces as a focal point for everyday fashion.</p>
                 </div>
 
-                <div id="breakingoutinvitational" class="t-sponser col-md-3">
-                    <a class="t-logo sponser-breakingoutinvitational" href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net"></a>
+                <div id="breakingoutinvitational" class="t-sponsor col-md-3">
+                    <a class="t-logo sponsor-breakingoutinvitational" href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net"></a>
                     <div class="t-name">Breaking Out</div>
-                    <div class="t-sponser-link"><a href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net">www.teamliquid.net</a></div>
+                    <div class="t-sponsor-link"><a href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net">www.teamliquid.net</a></div>
                     <p>Breaking Out is a show about up &amp; coming North American Starcraft 2 players. The show aims to highlight the next "breakout" players while they're still making a name for themself through coverage of their games, some interviews, and a little bit of fun.</p>
                 </div>
 
-                <div id="videogamevotersnetwork" class="t-sponser col-md-3">
-                    <a class="t-logo sponser-videogamevotersnetwork" href="http://videogamevoters.org/" target="_blank" title="videogamevoters.org"></a>
+                <div id="videogamevotersnetwork" class="t-sponsor col-md-3">
+                    <a class="t-logo sponsor-videogamevotersnetwork" href="http://videogamevoters.org/" target="_blank" title="videogamevoters.org"></a>
                     <div class="t-name">Video Game Voters</div>
-                    <div class="t-sponser-link"><a href="http://videogamevoters.org/" target="_blank" title="videogamevoters.org">videogamevoters.org</a></div>
+                    <div class="t-sponsor-link"><a href="http://videogamevoters.org/" target="_blank" title="videogamevoters.org">videogamevoters.org</a></div>
                     <p>The Video Game Voters Network is a place for American gamers to organize and defend against threats to video games by registering to vote and letting Congress know how important this issue is to the community.</p>
                 </div>
 
-                <div id="letskungfu" class="t-sponser col-md-3">
-                    <a class="t-logo sponser-letskungfu" href="http://www.teamliquid.net/forum/starcraft-2/370530-show-lets-kung-fu" target="_blank" title="www.teamliquid.net"></a>
+                <div id="letskungfu" class="t-sponsor col-md-3">
+                    <a class="t-logo sponsor-letskungfu" href="http://www.teamliquid.net/forum/starcraft-2/370530-show-lets-kung-fu" target="_blank" title="www.teamliquid.net"></a>
                     <div class="t-name">LetsKungFu</div>
-                    <div class="t-sponser-link"><a href="http://www.teamliquid.net/forum/starcraft-2/370530-show-lets-kung-fu" target="_blank" title="www.teamliquid.net">www.teamliquid.net</a></div>
+                    <div class="t-sponsor-link"><a href="http://www.teamliquid.net/forum/starcraft-2/370530-show-lets-kung-fu" target="_blank" title="www.teamliquid.net">www.teamliquid.net</a></div>
                     <p>Web TV Series, focusing on eSports (StarCraft, League of Legends, etc)</p>
                 </div>
 

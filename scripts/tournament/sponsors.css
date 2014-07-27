@@ -1,29 +1,29 @@
-﻿/* glue: 0.9.4 hash: 092fb7b21e */
+﻿/* glue: 0.9.4 hash: d0bc0a85ba */
 /* start destiny.gg */
-.sponser-videogamevotersnetwork,.sponser-jordwoodwatches,.sponser-breakingoutinvitational,.sponser-letskungfu{
-    background-image:url('../img/sponsers.png');
+.sponsor-videogamevotersnetwork,.sponsor-jordwoodwatches,.sponsor-breakingoutinvitational,.sponsor-letskungfu{
+    background-image:url('../img/sponsors.png');
     background-repeat:no-repeat;
 }
 
-.sponser-videogamevotersnetwork{
+.sponsor-videogamevotersnetwork{
     background-position:0 0;
     width:230px;
     height:220px;
 }
 
-.sponser-jordwoodwatches{
+.sponsor-jordwoodwatches{
     background-position:-230px 0;
     width:230px;
     height:220px;
 }
 
-.sponser-breakingoutinvitational{
+.sponsor-breakingoutinvitational{
     background-position:0 -220px;
     width:230px;
     height:220px;
 }
 
-.sponser-letskungfu{
+.sponsor-letskungfu{
     background-position:-230px -220px;
     width:204px;
     height:220px;
