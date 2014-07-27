@@ -648,6 +648,8 @@ $(function(){
             new Date('2014-08-08T14:00:00+00:00') 
         ]
 
+        var nextdateavailable = false;
+
         var tui  = $('#t-timer'),
             tday = tui.find('#t-timer-day .t-number'),
             thr  = tui.find('#t-timer-hour .t-number'),
@@ -662,7 +664,6 @@ $(function(){
 
         var updatetimer = function()
         {
-            var nextdateavailable = false;
             for(var i in dates)
             {
                 var then = moment(dates[i]),
@@ -695,17 +696,17 @@ $(function(){
                     tmin.text(npad(minutes, 2));
                     tsec.text(npad(seconds, 2));
                     nextdateavailable = true;
+                    window.setTimeout(updatetimer, 1000);
                     break;
                 }
             }
+
+            if(!nextdateavailable){
+                tui.hide();
+            }
         };
 
-        if(nextdateavailable){
-            var interval = window.setInterval(updatetimer, 1000);
-            updatetimer();
-        }else{
-            tui.hide();
-        }
+        updatetimer();
 
     });
 
