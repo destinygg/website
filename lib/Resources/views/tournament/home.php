@@ -278,8 +278,8 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="breakingoutinvitational" class="t-sponsor col-md-3">
-                    <a class="t-logo sponsor-breakingoutinvitational" href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net"></a>
-                    <a href="http://www.teamliquid.net/forum/sc2-tournaments/449573-the-breakout-invitational-2-north-america" target="_blank" title="www.teamliquid.net" class="t-name">Breaking Out</a>
+                    <a class="t-logo sponsor-breakingoutinvitational" href="http://www.twitch.tv/feardragon64" target="_blank" title="www.teamliquid.net"></a>
+                    <a href="http://www.twitch.tv/feardragon64" target="_blank" title="www.teamliquid.net" class="t-name">Breaking Out</a>
                     <p>Breaking Out is a show about up &amp; coming North American Starcraft 2 players. The show aims to highlight the next "breakout" players while they're still making a name for themself through coverage of their games, some interviews, and a little bit of fun.</p>
                 </div>
 
@@ -290,8 +290,8 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="letskungfu" class="t-sponsor col-md-3">
-                    <a class="t-logo sponsor-letskungfu" href="http://www.twitch.tv/feardragon64" target="_blank" title="LetsKungFu"></a>
-                    <a class="t-name" href="http://www.twitch.tv/feardragon64"  target="_blank" title="LetsKungFu">LetsKungFu</a>
+                    <a class="t-logo sponsor-letskungfu" href="https://www.facebook.com/LetsKungFu" target="_blank" title="LetsKungFu"></a>
+                    <a class="t-name" href="https://www.facebook.com/LetsKungFu"  target="_blank" title="LetsKungFu">LetsKungFu</a>
                     <p>Web TV Series, focusing on eSports (StarCraft, League of Legends, etc)</p>
                 </div>
 
