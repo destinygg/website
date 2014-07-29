@@ -77,7 +77,7 @@ use Destiny\Common\Session;
             <div class="row">
                 <div class="col-md-3">
                     <h2>Sunday 3 August</h2>
-                    <h3>Starting @10:00AM EDT<br />Finishing @12:00 PM EDT</h3>
+                    <h3>Closing @11:59 PM EDT</h3>
                     <p>The 8 qualified players from the ladder will be selected at this time. I will go through and make sure no one name-changed from a barcode account and verify that the games played were legitimate games.</p>
                 </div>
                 <div class="col-md-3">
