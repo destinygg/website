@@ -278,3 +278,10 @@ section {
     bottom: 30px;
     right: 30px;
 }
+
+
+#tournament .icon-protoss,
+#tournament .icon-zerg,
+#tournament .icon-terran {
+    display: none !important;
+}
