@@ -654,7 +654,7 @@ $(function(){
 $(function(){
     $('body#tournament').each(function(){
 
-        var dates = [new Date('2014-08-03T14:00:00+00:00')],
+        var dates = [new Date('2014-08-05T14:00:00+00:00')],
             nextdateavailable = false,
             tui  = $('#timer'),
             tday = tui.find('#t-timer-day .t-number'),
