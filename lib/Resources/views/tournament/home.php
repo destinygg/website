@@ -40,8 +40,8 @@ use Destiny\Common\Session;
             <div id="slide1" class="t-scroller-slide">
                 <div id="t-alpha-logo">Destiny.gg Tournament 1</div>
                 <div id="t-alpha-buttons">
-                    <a class="t-btn" href="#t-timer">More Information</a>
-                    <a class="t-btn"  href="http://www.destiny.gg/bigscreen">View on Destiny.gg</a>
+                    <a class="t-btn" href="#dates">More Information</a>
+                    <a class="t-btn" href="http://www.destiny.gg/bigscreen">View on Destiny.gg</a>
                 </div>
             </div>
 
