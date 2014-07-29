@@ -276,8 +276,8 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="letskungfu" class="t-sponsor col-md-3">
-                    <a class="t-logo sponsor-letskungfu" href="https://www.facebook.com/LetsKungFu" target="_blank" title="LetsKungFu"></a>
-                    <a class="t-name" href="https://www.facebook.com/LetsKungFu"  target="_blank" title="LetsKungFu">LetsKungFu</a>
+                    <a class="t-logo sponsor-letskungfu" href="http://www.twitch.tv/feardragon64" target="_blank" title="LetsKungFu"></a>
+                    <a class="t-name" href="http://www.twitch.tv/feardragon64"  target="_blank" title="LetsKungFu">LetsKungFu</a>
                     <p>Web TV Series, focusing on eSports (StarCraft, League of Legends, etc)</p>
                 </div>
 
