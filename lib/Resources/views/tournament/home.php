@@ -117,7 +117,7 @@ use Destiny\Common\Session;
             <div class="row">
 
                 <div id="hero" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-hero"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/HerO" target="_blank" class="t-portrait t-portrait-hero"></a>
                     <div class="t-name">Liquid’HerO</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
@@ -126,7 +126,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="innovation" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-innovation"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/INnoVation" target="_blank" class="t-portrait t-portrait-innovation"></a>
                     <div class="t-name">Acer INnoVation</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
@@ -135,7 +135,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="life" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-life"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-portrait t-portrait-life"></a>
                     <div class="t-name">StarTale Life</div>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
@@ -144,7 +144,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="mc" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-mc"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/MC" target="_blank" class="t-portrait t-portrait-mc"></a>
                     <div class="t-name">MC</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
@@ -153,7 +153,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="polt" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-polt"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-portrait t-portrait-polt"></a>
                     <div class="t-name">CM Storm Polt</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
@@ -162,7 +162,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="scarlett" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-scarlett"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Scarlett" target="_blank" class="t-portrait t-portrait-scarlett"></a>
                     <div class="t-name">Acer Scarlett</div>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
@@ -171,7 +171,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="snute" class="t-person col-md-3 col-md-offset-0 col-sm-4 col-sm-offset-2">
-                    <div class="t-portrait t-portrait-snute"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-portrait t-portrait-snute"></a>
                     <div class="t-name">Liquid’Snute</div>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
@@ -180,7 +180,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="violet" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-violet"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/ViOLet" target="_blank" class="t-portrait t-portrait-violet"></a>
                     <div class="t-name">viOLet</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
@@ -201,7 +201,7 @@ use Destiny\Common\Session;
             <div class="row">
 
                 <div id="incontrol" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-incontrol"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/INcontroL" target="_blank" class="t-portrait t-portrait-incontrol"></a>
                     <div class="t-name">iNcontroL</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
@@ -210,7 +210,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="minigun" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-minigun"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-portrait t-portrait-minigun"></a>
                     <div class="t-name">Minigun</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
@@ -219,7 +219,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="nathanias" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-nathanias"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Nathanias" target="_blank" class="t-portrait t-portrait-nathanias"></a>
                     <div class="t-name">Nathanias</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
@@ -228,7 +228,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="rotterdam" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-rotterdam"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/RotterdaM" target="_blank" class="t-portrait t-portrait-rotterdam"></a>
                     <div class="t-name">RotterdaM</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
@@ -237,7 +237,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="tod" class="t-person col-md-3 col-md-offset-3 col-sm-4 col-sm-offset-0">
-                    <div class="t-portrait t-portrait-tod"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/ToD" target="_blank" class="t-portrait t-portrait-tod"></a>
                     <div class="t-name">Tod</div>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
@@ -246,7 +246,7 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="tb" class="t-person col-md-3 col-sm-4">
-                    <div class="t-portrait t-portrait-tb"></div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/TotalBiscuit" target="_blank" class="t-portrait t-portrait-tb"></a>
                     <div class="t-name">TotalBiscuit</div>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
