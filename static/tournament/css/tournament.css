@@ -32,7 +32,7 @@ h2 {
 }
 h3 {
     color: @fontbase;
-    font-size: 24px;
+    font-size: 20px;
     line-height: 24px;
     margin: 0 0 15px 0;
 }
@@ -61,49 +61,49 @@ section {
     text-decoration: none;
 }
 
-#t-timer {
+#tournament #timer {
     border-top: 2px solid @darkaccent;
     background-color: @accent;
     font-weight: 400;
     color: white;
     text-align: center;
 }
-#t-timer .t-timer-unit {
+#tournament #timer .t-timer-unit {
     display: inline-block;
     float: none;
     margin: 50px 30px;
 }
-#t-timer .t-number {
+#tournament #timer .t-number {
     font-size: 48px;
     font-weight: 300;
 }
-#t-timer .t-number {
+#tournament #timer .t-number {
     font-size: 48px;
     min-width: 68px;
     text-align: center;
 }
-#t-timer .t-label {
+#tournament #timer .t-label {
     font-size: 18px;
     text-align: center;
 }
 
-#t-dates {
+#tournament #dates {
     background: #f0f0f0 url("../img/zerg-bg-light.png") repeat-x center center;
 }
-#t-dates .row > div {
+#tournament #dates .row > div {
     margin-bottom: 35px;
 }
 
-#t-scroller {
+#tournament #scroller {
     background: #9c9a98 url("../img/destiny-t-planetbg.gif") repeat-x center center;
     text-align: center;
     min-height: 400px;
     max-height: 1080px;
 }
-#t-scroller .container {
+#tournament #scroller .container {
     position: relative;
 }
-#t-scroller .t-scroller-slide {
+#tournament #scroller .t-scroller-slide {
     width: 100%;
     position: absolute;
 }
@@ -190,31 +190,91 @@ section {
     display: inline-block;
 }
 
-#t-sponsors {
-    margin-top: 30px;
+#tournament #sponsors {
     background: #fafafa url("../img/terran-bg-light.png") repeat-x center center;
 }
-#t-sponsors .t-name {
+#tournament #sponsors .t-name {
     text-align: left;
 }
-#t-sponsors .t-sponsor {
+#tournament #sponsors .t-sponsor {
     margin-bottom: 50px;
 }
-#t-sponsors .t-logo {
+#tournament #sponsors .t-logo {
     display: block;
     text-align: center;
     margin:0 auto 15px auto;
 }
 
+#tournament #casters {
+    padding-bottom: 30px;
+}
+
+#tournament #brackets {
+    background: #eeeeee url("../img/brackets-bg-tba.png") repeat-x center center;
+    /*height: 1080px;*/
+    height: 600px;
+}
+
 #t-foot {
-    padding: 50px 0;
+    padding: 50px 0 20px 0;
     background: #383838;
 }
-#t-foot footer {
-    font-size: 14px;
-    color: #ccc;
+#t-foot #t-foot-links {
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 12px;
+    color: #989695;
     text-shadow: none;
+    margin-top: 30px;
 }
-#t-foot footer a {
-    color: white;
+#t-foot #t-foot-nav {
+    font-size: 24px;
+    color: #989695;
+    text-shadow: none;
+    margin: 20px -5px;
+}
+#t-foot #t-foot-nav a {
+    color: #989695;
+    margin: 0 5px;
+    text-decoration: none;
+}
+#t-foot #t-foot-nav a:hover {
+    color: #fafafa;
+}
+
+#t-foot #destiny-i-logo {
+    opacity: 0.6;
+    width: 150px;
+    height: 90px;
+    background: url("../img/destiny_logo_alpha.png") no-repeat top left;
+    background-size: 150px auto;
+    display: inline-block;
+}
+#t-foot #t-foot-social a {
+    text-indent: -999em;
+    display: inline-block;
+}
+#t-foot .icon-f-indiegogo {
+    margin-right: 13px;
+}
+#t-foot .icon-f-twitter {
+    margin-right: 4px;
+}
+#t-foot .icon-f-facebook {
+    margin-right: 6px;
+}
+#t-foot .icon-f-facebook {
+    margin-right: 6px;
+}
+#t-foot .icon-f-twitch {
+    margin-right: 9px;
+}
+#t-foot .icon-f-youtube {
+    margin-right: 6px;
+}
+
+#back-to-top {
+    display: block;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
 }

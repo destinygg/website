@@ -1,3 +1,15 @@
+destiny = {
+    cdn:     '',
+    token:   '',
+    baseUrl: '/',
+    timeout: 15000,
+    fn:      {}
+};
+
+destiny.init = function(args){
+    $.extend(destiny, args);
+};
+
 // Document ready
 $(function(){
     
@@ -642,15 +654,9 @@ $(function(){
 $(function(){
     $('body#tournament').each(function(){
 
-        var dates = [ 
-            new Date('2014-08-03T14:00:00+00:00'), 
-            new Date('2014-08-05T14:00:00+00:00'), 
-            new Date('2014-08-08T14:00:00+00:00') 
-        ]
-
-        var nextdateavailable = false;
-
-        var tui  = $('#t-timer'),
+        var dates = [new Date('2014-08-03T14:00:00+00:00')],
+            nextdateavailable = false,
+            tui  = $('#timer'),
             tday = tui.find('#t-timer-day .t-number'),
             thr  = tui.find('#t-timer-hour .t-number'),
             tmin = tui.find('#t-timer-minute .t-number'),
@@ -708,21 +714,37 @@ $(function(){
 
         updatetimer();
 
+        // Navigation highlight
+        var items = $('#main-nav .nav > li');
+        $('#main-nav').on('click', 'li', function(){
+            items.removeClass('active');
+            $(this).addClass('active');
+        });
+
+        // Auto sizing the scroller
+        var tscroller = $('#scroller'),
+            mainnav   = $('#main-nav');
+        var centerSlides = function(){
+            var wh = $(window).height() - mainnav.height();
+            if(wh > parseInt(tscroller.css('min-height')) && wh < parseInt(tscroller.css('max-height'))){  
+                tscroller.css('height', wh);
+                tscroller.find('.t-scroller-slide').each(function(){
+                    $(this).css('top', wh/2 - $(this).height()/2);
+                });
+            }
+        };
+        centerSlides();
+        $(window).on('resize', centerSlides);
+
+        // Top icon
+        var topicon = $('#back-to-top');
+        $(window).on('scroll', function(e){
+            if($(this).scrollTop() >= 100){
+                topicon.fadeIn();
+            }else{
+                topicon.fadeOut();
+            }
+        });
+
     });
-
-    // Auto sizing the scroller
-    var tscroller = $('#t-scroller'),
-        mainnav   = $('#main-nav');
-    var centerSlides = function(){
-        var wh = $(window).height() - mainnav.height();
-        if(wh > parseInt(tscroller.css('min-height')) && wh < parseInt(tscroller.css('max-height'))){  
-            tscroller.css('height', wh);
-            tscroller.find('.t-scroller-slide').each(function(){
-                $(this).css('top', wh/2 - $(this).height()/2);
-            });
-        }
-    };
-
-    centerSlides();
-    $(window).on('resize', centerSlides);
 });

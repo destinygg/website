@@ -45,7 +45,6 @@ module.exports = function(grunt) {
 				files: {
 					'static/web/js/destiny.min.js': [
 						'static/web/js/utils.js',
-						'static/web/js/destiny.js',
 						'static/web/js/feed.js',
 						'static/web/js/ui.js'
 					]
