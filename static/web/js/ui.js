@@ -738,6 +738,7 @@ $(function(){
 
         // Top icon
         var topicon = $('#back-to-top');
+        topicon.fadeOut();
         $(window).on('scroll', function(e){
             if($(this).scrollTop() >= 100){
                 topicon.fadeIn();
