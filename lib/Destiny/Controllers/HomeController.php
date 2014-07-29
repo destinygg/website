@@ -167,8 +167,7 @@ class HomeController {
      * @return string
      */
     public function tournament(array $params, ViewModel $model) {
-        $model->title = 'Destiny I | Starcraft 2: Heart of the Swarm tournament';
-        return 'tournament/i';
+        return 'redirect: http://i.destiny.gg/';
     }
     
 }
