@@ -69,6 +69,8 @@ use Destiny\Common\Session;
         </div>
     </section>
 
+
+
     <section id="dates">
         <div class="container">
             <h1>Important Dates</h1>
@@ -81,16 +83,28 @@ use Destiny\Common\Session;
                 <div class="col-md-3">
                     <h2>Tues-Fri 5-8 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
+                    <ul class="dates-list">
+                        <li><strong>Tues 5th</strong> Incontrol &amp; Destiny</li>
+                        <li><strong>Wed 6th</strong> Minigun &amp; Destiny</li>
+                        <li><strong>Thurs 7th</strong> Nathanias &amp; Destiny <i title="Pending confirmation" class="glyphicon glyphicon-time"></i></li>
+                        <li><strong>Fri 8th</strong> Rotterdam &amp; Destiny <i title="Pending confirmation" class="glyphicon glyphicon-time"></i></li>
+                    </ul>
                     <p>Group stages will start here. They will be played in a round robin style, with 5 best of 3's being played and a possible extra match if there is a three-way tie.</p>
                 </div>
                 <div class="col-md-3">
                     <h2>Saturday 9 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
+                    <ul class="dates-list">
+                        <li>Totalbiscuit &amp; Destiny</li>
+                    </ul>
                     <p>Quarter-finals.</p>
                 </div>
                 <div class="col-md-3">
                     <h2>Sunday 10 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
+                    <ul class="dates-list">
+                        <li>Tod &amp; Destiny</li>
+                    </ul>
                     <p>Semifinals and finals.</p>
                 </div>
             </div>
