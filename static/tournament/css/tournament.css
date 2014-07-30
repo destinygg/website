@@ -88,14 +88,14 @@ section {
 }
 
 #tournament #dates {
-    background: #f0f0f0 url("../img/zerg-bg-light.png") repeat-x center center;
+    background: #f0f0f0 url("../img/zerg-bg-light.jpg") repeat-x center center;
 }
 #tournament #dates .row > div {
     margin-bottom: 35px;
 }
 
 #tournament #scroller {
-    background: #9c9a98 url("../img/destiny-t-planetbg.gif") repeat-x center center;
+    background: #9c9a98 url("../img/destiny-t-planetbg.jpg") repeat-x center center;
     text-align: center;
     min-height: 400px;
     max-height: 1080px;
@@ -191,7 +191,7 @@ section {
 }
 
 #tournament #sponsors {
-    background: #fafafa url("../img/terran-bg-light.png") repeat-x center center;
+    background: #fafafa url("../img/terran-bg-light.jpg") repeat-x center center;
 }
 #tournament #sponsors .t-name {
     text-align: left;
@@ -210,7 +210,7 @@ section {
 }
 
 #tournament #brackets {
-    background: #eeeeee url("../img/brackets-bg-tba.png") repeat-x center center;
+    background: #eeeeee url("../img/brackets-bg-tba.jpg") repeat-x center center;
     /*height: 1080px;*/
     height: 600px;
 }
