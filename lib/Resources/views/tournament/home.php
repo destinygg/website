@@ -118,7 +118,7 @@ use Destiny\Common\Session;
 
                 <div id="hero" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/HerO" target="_blank" class="t-portrait t-portrait-hero"></a>
-                    <div class="t-name">Liquid’HerO</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/HerO" target="_blank" class="t-name">Liquid’HerO</a>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/Liquid_HerO" target="_blank"></a>
@@ -127,7 +127,7 @@ use Destiny\Common\Session;
 
                 <div id="innovation" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/INnoVation" target="_blank" class="t-portrait t-portrait-innovation"></a>
-                    <div class="t-name">Acer INnoVation</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/INnoVation" target="_blank" class="t-name">Acer INnoVation</a>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/AcerINnoVation" target="_blank"></a>
@@ -136,7 +136,7 @@ use Destiny\Common\Session;
 
                 <div id="life" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-portrait t-portrait-life"></a>
-                    <div class="t-name">StarTale Life</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-name">StarTale Life</a>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/Startale_Life" target="_blank"></a>
@@ -145,7 +145,7 @@ use Destiny\Common\Session;
 
                 <div id="mc" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/MC" target="_blank" class="t-portrait t-portrait-mc"></a>
-                    <div class="t-name">MC</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/MC" target="_blank" class="t-name">MC</a>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/MCtoss2" target="_blank"></a>
@@ -154,7 +154,7 @@ use Destiny\Common\Session;
 
                 <div id="polt" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-portrait t-portrait-polt"></a>
-                    <div class="t-name">CM Storm Polt</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-name">CM Storm Polt</a>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/CMStormPolt" target="_blank"></a>
@@ -163,7 +163,7 @@ use Destiny\Common\Session;
 
                 <div id="scarlett" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/Scarlett" target="_blank" class="t-portrait t-portrait-scarlett"></a>
-                    <div class="t-name">Acer Scarlett</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Scarlett" target="_blank" class="t-name">Acer Scarlett</a>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/acerscarlett" target="_blank"></a>
@@ -172,7 +172,7 @@ use Destiny\Common\Session;
 
                 <div id="snute" class="t-person col-md-3 col-md-offset-0 col-sm-4 col-sm-offset-2">
                     <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-portrait t-portrait-snute"></a>
-                    <div class="t-name">Liquid’Snute</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-name">Liquid’Snute</a>
                     <div class="t-social">
                         <a class="icon-zerg" title="Zerg" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/LiquidSnute" target="_blank"></a>
@@ -181,7 +181,7 @@ use Destiny\Common\Session;
 
                 <div id="violet" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/ViOLet" target="_blank" class="t-portrait t-portrait-violet"></a>
-                    <div class="t-name">viOLet</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/ViOLet" target="_blank" class="t-name">viOLet</a>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/viOLetstarcraft" target="_blank"></a>
@@ -202,7 +202,7 @@ use Destiny\Common\Session;
 
                 <div id="incontrol" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/INcontroL" target="_blank" class="t-portrait t-portrait-incontrol"></a>
-                    <div class="t-name">iNcontroL</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/INcontroL" target="_blank" class="t-name">iNcontroL</a>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/EGiNcontroL" target="_blank"></a>
@@ -211,7 +211,7 @@ use Destiny\Common\Session;
 
                 <div id="minigun" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-portrait t-portrait-minigun"></a>
-                    <div class="t-name">Minigun</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-name">Minigun</a>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/ROOT_Minigun" target="_blank"></a>
@@ -220,7 +220,7 @@ use Destiny\Common\Session;
 
                 <div id="nathanias" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/Nathanias" target="_blank" class="t-portrait t-portrait-nathanias"></a>
-                    <div class="t-name">Nathanias</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Nathanias" target="_blank" class="t-name">Nathanias</a>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/nathaniastv" target="_blank"></a>
@@ -229,7 +229,7 @@ use Destiny\Common\Session;
 
                 <div id="rotterdam" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/RotterdaM" target="_blank" class="t-portrait t-portrait-rotterdam"></a>
-                    <div class="t-name">RotterdaM</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/RotterdaM" target="_blank" class="t-name">RotterdaM</a>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/RotterdaM08" target="_blank"></a>
@@ -238,7 +238,7 @@ use Destiny\Common\Session;
 
                 <div id="tod" class="t-person col-md-3 col-md-offset-3 col-sm-4 col-sm-offset-0">
                     <a href="http://wiki.teamliquid.net/starcraft2/ToD" target="_blank" class="t-portrait t-portrait-tod"></a>
-                    <div class="t-name">Tod</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/ToD" target="_blank" class="t-name">Tod</a>
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/XMGToD" target="_blank"></a>
@@ -247,7 +247,7 @@ use Destiny\Common\Session;
 
                 <div id="tb" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/TotalBiscuit" target="_blank" class="t-portrait t-portrait-tb"></a>
-                    <div class="t-name">TotalBiscuit</div>
+                    <a href="http://wiki.teamliquid.net/starcraft2/TotalBiscuit" target="_blank" class="t-name">TotalBiscuit</a>
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/Totalbiscuit" target="_blank"></a>

@@ -182,8 +182,10 @@ section {
 }
 #tournament .t-portrait,
 #tournament .t-name {
+    text-decoration: none;
     text-align: center;
     margin: 0 auto;
+    display: block;
 }
 #tournament .t-person .t-portrait {
     -webkit-transition: -webkit-transform 0.15s ease-out;
