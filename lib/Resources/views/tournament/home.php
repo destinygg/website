@@ -75,12 +75,12 @@ use Destiny\Common\Session;
         <div class="container">
             <h1>Important Dates</h1>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <h2>Sunday 3 August</h2>
                     <h3>Closing @11:59 PM EDT</h3>
                     <p>The 8 qualified players from the ladder will be selected at this time. I will go through and make sure no one name-changed from a barcode account and verify that the games played were legitimate games.</p>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <h2>Tues-Fri 5-8 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
                     <ul class="dates-list">
@@ -91,7 +91,7 @@ use Destiny\Common\Session;
                     </ul>
                     <p>Group stages will start here. They will be played in a round robin style, with 5 best of 3's being played and a possible extra match if there is a three-way tie.</p>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <h2>Saturday 9 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
                     <ul class="dates-list">
@@ -99,7 +99,7 @@ use Destiny\Common\Session;
                     </ul>
                     <p>Quarter-finals.</p>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <h2>Sunday 10 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
                     <ul class="dates-list">

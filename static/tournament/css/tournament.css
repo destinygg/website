@@ -1,18 +1,30 @@
-@import url(http://fonts.googleapis.com/css?family=Quicksand:300,400,700);
+/*@import url(http://fonts.googleapis.com/css?family=Quicksand:300,400,700);*/
+
+@font-face {
+    font-family: 'quicksandregular';
+    src: url('../fonts/quicksand-regular-webfont.eot');
+    src: url('../fonts/fonts/quicksand-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/quicksand-regular-webfont.woff') format('woff'),
+         url('../fonts/quicksand-regular-webfont.ttf') format('truetype'),
+         url('../fonts/quicksand-regular-webfont.svg#quicksandregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
 
 @accent: #4f6db3;
 @darkaccent: #354978;
 @fontbase: #989695;
 
 body {
-    font-family: "Quicksand", "Trebuchet MS", sans-serif;
+    font-family: "quicksandregular", "Trebuchet MS", sans-serif;
+    color: #666;
     background-color: white;
     background-image: none;
     white-space: normal;
 }
 
 h1, h2, h3 {
-    font-family: "Quicksand", "Trebuchet MS", sans-serif;
+    font-family: "quicksandregular", "Trebuchet MS", sans-serif;
 }
 
 h1 {
