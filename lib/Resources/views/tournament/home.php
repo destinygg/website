@@ -84,10 +84,10 @@ use Destiny\Common\Session;
                     <h2>Tues-Fri 5-8 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
                     <ul class="dates-list">
-                        <li><strong>Tues 5th</strong> Incontrol &amp; Destiny</li>
-                        <li><strong>Wed 6th</strong> Minigun &amp; Destiny</li>
-                        <li><strong>Thurs 7th</strong> Nathanias &amp; Destiny <i title="Pending confirmation" class="glyphicon glyphicon-time"></i></li>
-                        <li><strong>Fri 8th</strong> Rotterdam &amp; Destiny <i title="Pending confirmation" class="glyphicon glyphicon-time"></i></li>
+                        <li><strong>Tues 5th</strong> Tod &amp; Destiny</li>
+                        <li><strong>Wed 6th</strong> Nathanias &amp; Destiny</li>
+                        <li><strong>Thurs 7th</strong> Incontrol &amp; Destiny</li>
+                        <li><strong>Fri 8th</strong> Destiny</li>
                     </ul>
                     <p>Group stages will start here. They will be played in a round robin style, with 5 best of 3's being played and a possible extra match if there is a three-way tie.</p>
                 </div>
@@ -103,7 +103,7 @@ use Destiny\Common\Session;
                     <h2>Sunday 10 August</h2>
                     <h3>Starting @10:00AM EDT</h3>
                     <ul class="dates-list">
-                        <li>Tod &amp; Destiny</li>
+                        <li>Minigun &amp; Destiny</li>
                     </ul>
                     <p>Semifinals and finals.</p>
                 </div>
@@ -200,6 +200,15 @@ use Destiny\Common\Session;
 
             <div class="row">
 
+                <div id="destiny" class="t-person col-md-3 col-sm-4">
+                    <a href="http://wiki.teamliquid.net/starcraft2/Destiny" target="_blank" class="t-portrait t-portrait-destiny"></a>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Destiny" target="_blank" class="t-name">Destiny</a>
+                    <div class="t-social">
+                        <a class="icon-protoss" title="Zerg" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/Steven_Bonnell" target="_blank"></a>
+                    </div>
+                </div>
+
                 <div id="incontrol" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/INcontroL" target="_blank" class="t-portrait t-portrait-incontrol"></a>
                     <a href="http://wiki.teamliquid.net/starcraft2/INcontroL" target="_blank" class="t-name">iNcontroL</a>
@@ -224,15 +233,6 @@ use Destiny\Common\Session;
                     <div class="t-social">
                         <a class="icon-terran" title="Terran" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/nathaniastv" target="_blank"></a>
-                    </div>
-                </div>
-
-                <div id="rotterdam" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/RotterdaM" target="_blank" class="t-portrait t-portrait-rotterdam"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/RotterdaM" target="_blank" class="t-name">RotterdaM</a>
-                    <div class="t-social">
-                        <a class="icon-protoss" title="Protoss" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/RotterdaM08" target="_blank"></a>
                     </div>
                 </div>
 
