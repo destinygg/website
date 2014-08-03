@@ -160,7 +160,11 @@ class UserAdminController {
         $model->user = $userService->getUserById ( $params ['id'] );
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         $model->subscription = array (
-          'createdDate' => gmdate('Y-m-d H:i:s')
+          'subscriptionType' => '',
+          'createdDate' => gmdate('Y-m-d H:i:s'),
+          'endDate' => gmdate('Y-m-d H:i:s'),
+          'status' => 'Active',
+          'recurring' => false
         );
         
         $authService = AuthenticationService::instance ();
@@ -228,9 +232,11 @@ class UserAdminController {
         FilterParams::isRequired ( $params, 'endDate' );
         
         $subscriptionsService = SubscriptionsService::instance ();
-        
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);
+
         $subscription = array ();
-        $subscription ['subscriptionType'] = $params ['subscriptionType'];
+        $subscription ['subscriptionType'] = $subscriptionType ['id'];
+        $subscription ['subscriptionTier'] = $subscriptionType ['tier'];
         $subscription ['status'] = $params ['status'];
         $subscription ['createdDate'] = $params ['createdDate'];
         $subscription ['endDate'] = $params ['endDate'];
@@ -239,17 +245,19 @@ class UserAdminController {
         
         if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {
             $subscription ['subscriptionId'] = $params ['subscriptionId'];
+            $subscriptionId = $subscription ['subscriptionId'];
             $subscriptionsService->updateSubscription ( $subscription );
+            Session::set ( 'modelSuccess', 'Subscription updated!' );
         } else {
-            $subscriptionsService->addSubscription ( $subscription );
+            $subscriptionId = $subscriptionsService->addSubscription ( $subscription );
+            Session::set ( 'modelSuccess', 'Subscription created!' );
         }
         
-        Session::set ( 'modelSuccess', 'Subscription updated' );
         
         $authService = AuthenticationService::instance ();
         $authService->flagUserForUpdate ( $params ['id'] );
         
-        return 'redirect: /admin/user/'. urlencode($params['id']) .'/subscription/'. urlencode($subscription['subscriptionId']) .'/edit';
+        return 'redirect: /admin/user/'. urlencode($params['id']) .'/subscription/'. urlencode($subscriptionId) .'/edit';
     }
 
 }
