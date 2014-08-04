@@ -18,6 +18,17 @@ use Destiny\Common\Config;
 <body id="home">
 	<?php include Tpl::file('seg/top.php') ?>
 	<?php include Tpl::file('seg/headerband.php') ?>
+
+	<section class="container">
+		<a id="destiny-i-link" href="http://i.destiny.gg" title="Destiny I Tournament Information">
+			<div id="destiny-i-banner">
+				<p>Destiny I: Starcraft 2 Tournament.<br />
+				16 players.  $4,000.  6 days.  August 5th.</p>
+				<div id="destiny-i-logo">Destiny I</div>
+			</div>
+		</a>
+	</section>
+
 	<?php include Tpl::file('seg/livebanner.php') ?>
 	<?php include Tpl::file('seg/panel.videos.php') ?>
 	<?php include Tpl::file('seg/panel.music.php') ?>

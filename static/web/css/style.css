@@ -1304,63 +1304,50 @@ body.novideo #twitchpanel #chat-embed {
   width: 100%;
 }
 
-// Tournament
-body#trnmt-i {
-  background: #edebea url("../img/t/bg.tile.light.png") repeat center center;
+/** tournament banner */
+#destiny-i-link {
+  display: block;
 }
-#trnmt-i-page {
-  background: url("../img/t/destiny_i_bg.png") no-repeat center -90px;
+#destiny-i-link:hover {
+  text-decoration: none;
+}
+#destiny-i-banner {
+  min-width: 720px;
+  height: 200px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: white url(//local.destiny.cdn:8181/web/img/destiny-i-banner.jpg) no-repeat top right;
+  position: relative;
+  cursor: pointer;
+}
+#destiny-i-banner p {
+  color: #2a6496;
+  font-size: 24px;
+  margin: 68px 0 0 60px;
+  text-shadow: 1px 1px 0 rgba(255,255,255,.5);
+}
+#destiny-i-logo {
+  width: 300px;
+  height: 170px;
+  text-indent: -999em;
+  background: url(//local.destiny.cdn:8181/web/img/destiny-i-logo.png) no-repeat top right;
+  margin: 15px 0;
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  background-size: 70%;
+  right: 10px;
+  top: 20px;
 }
-#trnmt-i-info {
-  margin-top: 280px;
-  width: 394px;
-  margin-left: auto;
-  margin-right: auto;
+@media (min-width: 990px) {
+  #destiny-i-logo {
+    background-size: 100%;
+    right: 100px;
+    top: 0;
+  }
 }
-#trnmt-i-logo {
-  display: block;
-  height: 198px;
-  background: url("../img/t/destiny_i_logo.png") no-repeat top left;
-  -webkit-transition: -webkit-transform 0.3s ease-in;
-  -webkit-transform: translateY(0);
-  -moz-transition: -moz-transform 0.3s ease-in;
-  -moz-transform: translateY(0);
-  transition: transform 0.3s ease-in;
-  transform: translateY(0);
+@media (min-width: 1200px) {
+  #destiny-i-logo {
+    background-size: 100%;
+    right: 175px;
+    top: 0;
+  }
 }
-#trnmt-i-coming {
-  opacity: 0;
-  display: block;
-  height: 70px;
-  background: url("../img/t/destiny_i_coming.png") no-repeat top left;
-  -webkit-transition: -webkit-transform 0.3s ease-in, -webkit-opacity .1s ease-in;
-  -webkit-transform: translateY(-40px);
-  -moz-transition: -moz-transform 0.3s ease-in, -moz-opacity .1s ease-in;
-  -moz-transform: translateY(-40px);
-  transition: transform 0.3s ease-in, opacity .1s ease-in;
-  transform: translateY(-40px);
-}
-
-#trnmt-i-info:hover #trnmt-i-logo {
-  -webkit-transition: -webkit-transform 0.1s ease-out;
-  -webkit-transform: translateY(-30px);
-  -moz-transition: -moz-transform 0.1s ease-out;
-  -moz-transform: translateY(-30px);
-  transition: transform 0.1s ease-out;
-  transform: translateY(-30px);
-}
-#trnmt-i-info:hover #trnmt-i-coming {
-  opacity: 1;
-  -webkit-transition: -webkit-transform 0.1s ease-out;
-  -webkit-transform: translateY(-30px);
-  -moz-transition: -moz-transform 0.1s ease-out;
-  -moz-transform: translateY(-30px);
-  transition: transform 0.1s ease-out;
-  transform: translateY(-30px);
-}
-// end tournament
