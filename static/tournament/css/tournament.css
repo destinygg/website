@@ -223,11 +223,78 @@ section {
     padding-bottom: 30px;
 }
 
-#tournament #brackets {
-    background: #eeeeee url("../img/brackets-bg-tba.jpg") repeat-x center center;
-    /*height: 1080px;*/
-    height: 600px;
+
+
+
+#tournament #casters {
+    background: #eeeeee url("../img/bracket-bg.jpg") repeat-x center center;
 }
+#tournament #brackets .t-bracket-row {
+    margin: 50px 0;
+}
+#tournament #brackets .t-bracket-info {
+    margin: 55px 0 0 0;
+    width: 25%;
+    float: left;
+}
+#tournament #brackets .t-bracket-info h2 {
+    color: #5d5d5d;
+    font-size: 38px;
+    letter-spacing: 0.25em;
+}
+#tournament #brackets .t-bracket-info .t-bracket-date {
+    font-size: 22px;
+}
+#tournament #brackets .t-bracket-players {
+    width: 75%;
+    float: left;
+    background: url("../img/bracket-blue-line.jpg") repeat-x center 75px;
+}
+#tournament #brackets .t-person {
+    margin: 0;
+    float: left;
+    width: 25%;
+}
+#tournament #brackets .t-person a {
+    font-size: 20px;
+    color: #5d5d5d;
+}
+
+@media (max-width: 1220px) {
+
+    #tournament #brackets .t-bracket-info {
+        text-align: center;
+        margin: 0 0 30px 0;
+        width: 100%;
+        float: none;
+    }
+    #tournament #brackets .t-bracket-players {
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 720px) {
+    #tournament #brackets .t-bracket-players { 
+        background: none;
+    }
+    #tournament #brackets .t-person {
+        margin: 30px 0;
+        width: 50%;
+    }
+}
+
+@media (max-width: 350px) {
+    #tournament #brackets .t-bracket-players { 
+        background: none;
+    }
+    #tournament #brackets .t-person {
+        margin: 30px 0;
+        width: 100%;
+    }
+}
+
+
 
 #t-foot {
     padding: 50px 0 20px 0;

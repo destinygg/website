@@ -111,87 +111,135 @@ use Destiny\Common\Session;
         </div>
     </section>
 
-    <section id="players">
+    <section id="brackets">
         <div class="container">
-            <h1>Invited Players</h1>
-            <div class="row">
+            <h1>Brackets</h1>
 
-                <div id="hero" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/HerO" target="_blank" class="t-portrait t-portrait-hero"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/HerO" target="_blank" class="t-name">Liquid’HerO</a>
-                    <div class="t-social">
-                        <a class="icon-protoss" title="Protoss" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/Liquid_HerO" target="_blank"></a>
-                    </div>
+            <div class="t-bracket-row clearfix">
+                <div class="t-bracket-info">
+                    <h2>GROUP 1</h2>
+                    <p><span class="t-bracket-date">Tuesday, August 5th</span><br />
+                    Starting @10:00AM EDT</p>
                 </div>
+                <div class="t-bracket-players">
 
-                <div id="innovation" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/INnoVation" target="_blank" class="t-portrait t-portrait-innovation"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/INnoVation" target="_blank" class="t-name">Acer INnoVation</a>
-                    <div class="t-social">
-                        <a class="icon-terran" title="Terran" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/AcerINnoVation" target="_blank"></a>
+                    <div id="major" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-portrait t-portrait-major"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-name">ROOTMajOr</a>
                     </div>
-                </div>
 
-                <div id="life" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-portrait t-portrait-life"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-name">StarTale Life</a>
-                    <div class="t-social">
-                        <a class="icon-zerg" title="Zerg" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/Startale_Life" target="_blank"></a>
+                    <div id="polt" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-portrait t-portrait-polt"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-name">CMStorm Polt</a>
                     </div>
-                </div>
 
-                <div id="mc" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/MC" target="_blank" class="t-portrait t-portrait-mc"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/MC" target="_blank" class="t-name">MC</a>
-                    <div class="t-social">
-                        <a class="icon-protoss" title="Protoss" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/MCtoss2" target="_blank"></a>
+                    <div id="minigun" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-portrait t-portrait-minigun"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-name">ROOT Minigun</a>
                     </div>
-                </div>
 
-                <div id="polt" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-portrait t-portrait-polt"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-name">CM Storm Polt</a>
-                    <div class="t-social">
-                        <a class="icon-terran" title="Terran" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/CMStormPolt" target="_blank"></a>
+                    <div id="jonsnow" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/JonSnow" target="_blank" class="t-portrait t-portrait-jonsnow"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/JonSnow" target="_blank" class="t-name">soLJonSnow</a>
                     </div>
-                </div>
 
-                <div id="scarlett" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/Scarlett" target="_blank" class="t-portrait t-portrait-scarlett"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/Scarlett" target="_blank" class="t-name">Acer Scarlett</a>
-                    <div class="t-social">
-                        <a class="icon-zerg" title="Zerg" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/acerscarlett" target="_blank"></a>
-                    </div>
                 </div>
+            </div>
 
-                <div id="snute" class="t-person col-md-3 col-md-offset-0 col-sm-4 col-sm-offset-2">
-                    <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-portrait t-portrait-snute"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-name">Liquid’Snute</a>
-                    <div class="t-social">
-                        <a class="icon-zerg" title="Zerg" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/LiquidSnute" target="_blank"></a>
-                    </div>
+            <div class="t-bracket-row clearfix">
+                <div class="t-bracket-info">
+                    <h2>GROUP 2</h2>
+                    <p><span class="t-bracket-date">Wednesday, August 6th</span><br />
+                    Starting @10:00AM EDT</p>
                 </div>
+                <div class="t-bracket-players">
 
-                <div id="violet" class="t-person col-md-3 col-sm-4">
-                    <a href="http://wiki.teamliquid.net/starcraft2/ViOLet" target="_blank" class="t-portrait t-portrait-violet"></a>
-                    <a href="http://wiki.teamliquid.net/starcraft2/ViOLet" target="_blank" class="t-name">viOLet</a>
-                    <div class="t-social">
-                        <a class="icon-terran" title="Terran" href="#"></a>
-                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/viOLetstarcraft" target="_blank"></a>
+                    <div id="hero" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Hero" target="_blank" class="t-portrait t-portrait-hero"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Hero" target="_blank" class="t-name">Liquid`HerO</a>
                     </div>
+
+                    <div id="life" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-portrait t-portrait-life"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-name">StarTale Life</a>
+                    </div>
+
+                    <div id="kane" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Kane" target="_blank" class="t-portrait t-portrait-kane"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Kane" target="_blank" class="t-name">mYi Kane</a>
+                    </div>
+
+                    <div id="guitarcheese" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Guitarcheese" target="_blank" class="t-portrait t-portrait-guitarcheese"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Guitarcheese" target="_blank" class="t-name">soLGuitarcheese</a>
+                    </div>
+
                 </div>
-            
+            </div>
+
+            <div class="t-bracket-row clearfix">
+                <div class="t-bracket-info">
+                    <h2>GROUP 3</h2>
+                    <p><span class="t-bracket-date">Thursday, August 7th</span><br />
+                    Starting @10:00AM EDT</p>
+                </div>
+                <div class="t-bracket-players">
+
+                    <div id="snute" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-portrait t-portrait-snute"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-name">Liquid`Snute</a>
+                    </div>
+
+                    <div id="innovation" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Innovation" target="_blank" class="t-portrait t-portrait-innovation"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Innovation" target="_blank" class="t-name">Acer INnoVation</a>
+                    </div>
+
+                    <div id="adonminus" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Adonminus" target="_blank" class="t-portrait t-portrait-adonminus"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Adonminus" target="_blank" class="t-name">Cascade Adonminus</a>
+                    </div>
+
+                    <div id="petraeus" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Petraeus" target="_blank" class="t-portrait t-portrait-petraeus"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Petraeus" target="_blank" class="t-name">ROOT Petraeus</a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="t-bracket-row clearfix">
+                <div class="t-bracket-info">
+                    <h2>GROUP 4</h2>
+                    <p><span class="t-bracket-date">Friday, August 8th</span><br />
+                    Starting @10:00AM EDT</p>
+                </div>
+                <div class="t-bracket-players">
+
+                    <div id="mc" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Mc" target="_blank" class="t-portrait t-portrait-mc"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Mc" target="_blank" class="t-name">MC</a>
+                    </div>
+
+                    <div id="huk" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Huk" target="_blank" class="t-portrait t-portrait-huk"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Huk" target="_blank" class="t-name">EG Huk</a>
+                    </div>
+
+                    <div id="apocalypse" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Apocalypse" target="_blank" class="t-portrait t-portrait-apocalypse"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Apocalypse" target="_blank" class="t-name">IvD Apocalypse</a>
+                    </div>
+
+                    <div id="violet" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Violet" target="_blank" class="t-portrait t-portrait-violet"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Violet" target="_blank" class="t-name">viOlet</a>
+                    </div>
+
+                </div>
             </div>
 
         </div>
-
     </section>
 
     <section id="casters">
@@ -259,12 +307,6 @@ use Destiny\Common\Session;
         </div>
     </section>
 
-    <section id="brackets">
-        <div class="container">
-            <h1>Brackets</h1>
-        </div>
-    </section>
-
     <section id="sponsors">
         <div class="container">
             <h1>Sponsors</h1>
@@ -278,8 +320,8 @@ use Destiny\Common\Session;
                 </div>
 
                 <div id="breakingoutinvitational" class="t-sponsor col-md-3">
-                    <a class="t-logo sponsor-breakingoutinvitational" href="http://www.twitch.tv/feardragon64" target="_blank" title="www.teamliquid.net"></a>
-                    <a href="http://www.twitch.tv/feardragon64" target="_blank" title="www.teamliquid.net" class="t-name">Breaking Out</a>
+                    <a class="t-logo sponsor-breakingoutinvitational" href="http://www.teamliquid.net/forum/starcraft-2/462765-now-announcing-breaking-out-na-season-3" target="_blank" title="www.teamliquid.net"></a>
+                    <a href="http://www.teamliquid.net/forum/starcraft-2/462765-now-announcing-breaking-out-na-season-3" target="_blank" title="www.teamliquid.net" class="t-name">Breaking Out</a>
                     <p>Breaking Out is a show about up &amp; coming North American Starcraft 2 players. The show aims to highlight the next "breakout" players while they're still making a name for themself through coverage of their games, some interviews, and a little bit of fun.</p>
                 </div>
 
