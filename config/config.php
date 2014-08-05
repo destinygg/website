@@ -53,6 +53,7 @@ return array (
 			'Sippy',
 			'DestiSenpaii',
 			'KINGSLY',
+			'Nappa',
 		),
 	),
 	'redis' => array(
