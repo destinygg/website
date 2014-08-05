@@ -87,8 +87,7 @@ module.exports = function(grunt) {
 
 					// Web CSS
 					'static/web/css/style.min.css' : [
-						'static/web/css/style.css',
-						'static/web/css/flags.css'
+						'static/web/css/style.css'
 					],
 
 					// Errors CSS
@@ -99,8 +98,8 @@ module.exports = function(grunt) {
 					// Chat CSS
 					'static/chat/css/style.min.css' : [
 						'static/chat/css/style.css',
-						'static/chat/css/emoticons.css',
-						'static/chat/css/icons.css'
+						'scripts/emotes/emoticons.css',
+						'scripts/icons/icons.css'
 					]
 				}
 			},
@@ -139,25 +138,19 @@ module.exports = function(grunt) {
 			// Emoticons - you should run less:emoticons after running this
 			emoticons: {
 				src     : 'scripts/emotes/emoticons',
-				options : '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes/css --img=scripts/emotes --url=../img/ --each-template="%(class_name)s{background-position:%(x)s %(y)s;width:%(width)s;height:%(height)s;margin-top:-%(height)s;}" --optipng --crop'
+				options : '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes --css-template=scripts/emotes/emoticons.jinja --img=scripts/emotes --url=../img/ --crop --pseudo-class-separator=_'
 			},
 			icons: {
 				src     : 'scripts/icons/icons',
-				options : '--sprite-namespace= --namespace=icon --css=scripts/icons/css --img=scripts/icons --url=../img/ --optipng'
-			}
+				options : '--sprite-namespace= --namespace=icon --css=scripts/icons --img=scripts/icons --css-template=scripts/icons/icons.jinja --url=../img/ --pseudo-class-separator=_'
+			},
 		},
 		
 		// Copy the emoticon.png to static dir
 		copy: {
-			emoticons: {
+			gluedimages: {
 				files: [
-					{expand: true, flatten: true, src: 'scripts/emotes/css/emoticons.css', dest: 'static/chat/css/', filter: 'isFile'},
-					{expand: true, flatten: true, src: 'scripts/emotes/emoticons.png', dest: 'static/chat/img/', filter: 'isFile'}
-				]
-			},
-			icons: {
-				files: [
-					{expand: true, flatten: true, src: 'scripts/icons/css/icons.css', dest: 'static/chat/css/', filter: 'isFile'},
+					{expand: true, flatten: true, src: 'scripts/emotes/emoticons.png', dest: 'static/chat/img/', filter: 'isFile'},
 					{expand: true, flatten: true, src: 'scripts/icons/icons.png', dest: 'static/chat/img/', filter: 'isFile'}
 				]
 			}
@@ -174,17 +167,6 @@ module.exports = function(grunt) {
 				createTag : false,
 				push      : false
 			}
-		},
-
-		// Watch for file changes, automatically run various build commands
-		watch : {
-			styles : {
-				files : [ 'static/**/*.css', 'static/**/*.js' ],
-				tasks : [ 'build:uglify' ],
-				options : {
-					nospawn : true
-				}
-			}
 		}
 
 	});
@@ -197,32 +179,15 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-glue');
 	grunt.loadNpmTasks('grunt-bump');
 
-	// Glue and update emoticons
-	grunt.registerTask('emoticons', [
-		'glue:emoticons',
-		'copy:emoticons',
-		'less:emoticons'
-	]);
-
-	grunt.registerTask('icons', [
-		'glue:icons',
-		'copy:icons',
-		'less:icons'
-	]);
-	
 	// Build static resources
-	grunt.registerTask('build:uglify', [
+	grunt.registerTask('build', [
+		'glue:emoticons',
+		'glue:icons',
         'uglify:libs',
 		'uglify:web',
 		'uglify:chat',
-		'less:build'
-	]);
-	
-	// Build static resources
-	grunt.registerTask('build', [
-		'emoticons',
-		'icons',
-		'build:uglify'
+		'less:build',
+		'copy:gluedimages'
 	]);
 	
 	// Default
