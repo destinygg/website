@@ -229,27 +229,34 @@ $(function(){
     
     // Bigscreen
     $('body#bigscreen').each(function(){
+
+        var chatpanel   = $('#chat-panel'),
+            streampanel = $('#stream-panel'),
+            chatframe   = $('iframe#chat-frame'),
+            overlay     = $('<div class="overlay" />');
         
         $('iframe#chat-frame').on('load', function(){
-            var chatframe = this.contentWindow;
+            var chatwindow = this.contentWindow;
             
-            if(!chatframe)
+            if(!chatwindow)
                 return;
 
             $('#chat-panel-tools').each(function(e){
                 $(this).on('click', '#popout', function(){
                     window.open('/embed/chat', '_blank', window.getOptionsString());
                     $('body').addClass('nochat');
-                    $('#chat-panel').remove();
+                    chatpanel.remove();
+                    streampanel.removeAttr('style');
                     return false;
                 });
                 $(this).on('click', '#refresh', function(){
-                    chatframe.location.reload();
+                    chatwindow.location.reload();
                     return false;
                 });
                 $(this).on('click', '#close', function(){
                     $('body').addClass('nochat');
-                    $('#chat-panel').remove();
+                    chatpanel.remove();
+                    streampanel.removeAttr('style');
                     return false;
                 });
             });
@@ -258,10 +265,6 @@ $(function(){
         // Bigscreen resize
         $('#chat-panel-resize-bar').each(function(){
             var resizebar   = $(this),
-                chatpanel   = $('#chat-panel'),
-                streampanel = $('#stream-panel'),
-                chatframe   = $('iframe#chat-frame'),
-                overlay     = $('<div class="overlay" />');
                 minwidth    = 320;
 
             // Resize the stream / chat frames
