@@ -11,7 +11,7 @@ use Destiny\Common\Utils\Tpl;
 <?php include Tpl::file('seg/opengraph.php') ?>
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
-<link href="<?=Config::cdnv()?>/chat/css/emoticons.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
 <body id="emoticons">
 
