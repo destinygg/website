@@ -372,3 +372,10 @@ ul.dates-list {
     margin: 0 0 10px 0;
     padding: 0;
 }
+
+.t-person .knocked-out {
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    color: #990000;
+}

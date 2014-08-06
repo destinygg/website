@@ -136,11 +136,13 @@ use Destiny\Common\Session;
                     <div id="minigun" class="t-person">
                         <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-portrait t-portrait-minigun"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-name">ROOT Minigun</a>
+                        <span class="knocked-out">Knocked Out - 2-5</span>
                     </div>
 
                     <div id="jonsnow" class="t-person">
                         <a href="http://wiki.teamliquid.net/starcraft2/JonSnow" target="_blank" class="t-portrait t-portrait-jonsnow"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/JonSnow" target="_blank" class="t-name">soLJonSnow</a>
+                        <span class="knocked-out">Knocked Out - 1-4</span>
                     </div>
 
                 </div>
