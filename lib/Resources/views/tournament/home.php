@@ -117,32 +117,30 @@ use Destiny\Common\Session;
 
             <div class="t-bracket-row clearfix">
                 <div class="t-bracket-info">
-                    <h2>GROUP 1</h2>
+                    <h2><a href="http://i.destiny.gg/replays/Day1Replays.zip" title="Day 1 Replays (SC2 format)">GROUP 1</a></h2>
                     <p><span class="t-bracket-date">Tuesday, August 5th</span><br />
                     Starting @10:00AM EDT</p>
                 </div>
                 <div class="t-bracket-players">
 
-                    <div id="major" class="t-person">
+                    <div id="major" class="t-person group-advance">
                         <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-portrait t-portrait-major"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-name">ROOTMajOr</a>
                     </div>
 
-                    <div id="polt" class="t-person">
+                    <div id="polt" class="t-person group-advance">
                         <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-portrait t-portrait-polt"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-name">CMStorm Polt</a>
                     </div>
 
-                    <div id="minigun" class="t-person">
+                    <div id="minigun" class="t-person group-ko">
                         <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-portrait t-portrait-minigun"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Minigun" target="_blank" class="t-name">ROOT Minigun</a>
-                        <span class="knocked-out">Knocked Out - 2-5</span>
                     </div>
 
-                    <div id="jonsnow" class="t-person">
+                    <div id="jonsnow" class="t-person group-ko">
                         <a href="http://wiki.teamliquid.net/starcraft2/JonSnow" target="_blank" class="t-portrait t-portrait-jonsnow"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/JonSnow" target="_blank" class="t-name">soLJonSnow</a>
-                        <span class="knocked-out">Knocked Out - 1-4</span>
                     </div>
 
                 </div>

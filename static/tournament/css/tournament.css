@@ -242,6 +242,9 @@ section {
     font-size: 38px;
     letter-spacing: 0.25em;
 }
+#tournament #brackets .t-bracket-info h2 a:hover {
+    text-decoration: none;
+}
 #tournament #brackets .t-bracket-info .t-bracket-date {
     font-size: 22px;
 }
@@ -256,8 +259,17 @@ section {
     width: 25%;
 }
 #tournament #brackets .t-person a {
-    font-size: 20px;
     color: #5d5d5d;
+    font-size: 20px;
+}
+#tournament #brackets .t-person a:hover {
+    text-decoration: none;
+}
+#tournament #brackets .t-person.group-advance a {
+    color: #4f6db3;
+}
+#tournament #brackets .t-person.group-ko a {
+    color: #9d9d9d;
 }
 
 @media (max-width: 1220px) {
@@ -371,11 +383,4 @@ ul.dates-list {
     list-style: none;
     margin: 0 0 10px 0;
     padding: 0;
-}
-
-.t-person .knocked-out {
-    font-size: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    color: #990000;
 }
