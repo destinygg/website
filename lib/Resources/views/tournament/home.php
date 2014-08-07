@@ -284,7 +284,7 @@ use Destiny\Common\Session;
                     </div>
                 </div>
 
-                <div id="tod" class="t-person col-md-3 col-md-offset-3 col-sm-4 col-sm-offset-0">
+                <div id="tod" class="t-person col-md-3 col-md-offset-2 col-sm-4 col-sm-offset-0">
                     <a href="http://wiki.teamliquid.net/starcraft2/ToD" target="_blank" class="t-portrait t-portrait-tod"></a>
                     <a href="http://wiki.teamliquid.net/starcraft2/ToD" target="_blank" class="t-name">Tod</a>
                     <div class="t-social">
