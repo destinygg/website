@@ -185,22 +185,22 @@ use Destiny\Common\Session;
                 </div>
                 <div class="t-bracket-players">
 
-                    <div id="snute" class="t-person">
+                    <div id="snute" class="t-person group-ko">
                         <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-portrait t-portrait-snute"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Snute" target="_blank" class="t-name">Liquid`Snute</a>
                     </div>
 
-                    <div id="innovation" class="t-person">
+                    <div id="innovation" class="t-person group-advance">
                         <a href="http://wiki.teamliquid.net/starcraft2/Innovation" target="_blank" class="t-portrait t-portrait-innovation"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Innovation" target="_blank" class="t-name">Acer INnoVation</a>
                     </div>
 
-                    <div id="adonminus" class="t-person">
+                    <div id="adonminus" class="t-person group-advance">
                         <a href="http://wiki.teamliquid.net/starcraft2/Adonminus" target="_blank" class="t-portrait t-portrait-adonminus"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Adonminus" target="_blank" class="t-name">Cascade Adonminus</a>
                     </div>
 
-                    <div id="petraeus" class="t-person">
+                    <div id="petraeus" class="t-person group-kon">
                         <a href="http://wiki.teamliquid.net/starcraft2/Petraeus" target="_blank" class="t-portrait t-portrait-petraeus"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Petraeus" target="_blank" class="t-name">ROOT Petraeus</a>
                     </div>
@@ -290,6 +290,15 @@ use Destiny\Common\Session;
                     <div class="t-social">
                         <a class="icon-protoss" title="Protoss" href="#"></a>
                         <a class="icon-twitter" title="Twitter" href="https://twitter.com/XMGToD" target="_blank"></a>
+                    </div>
+                </div>
+
+                <div id="qxc" class="t-person col-md-3 col-sm-4">
+                    <a href="http://wiki.teamliquid.net/starcraft2/Qxc" target="_blank" class="t-portrait t-portrait-qxc"></a>
+                    <a href="http://wiki.teamliquid.net/starcraft2/Qxc" target="_blank" class="t-name">Qxc</a>
+                    <div class="t-social">
+                        <a class="icon-terran" title="Terran" href="#"></a>
+                        <a class="icon-twitter" title="Twitter" href="https://twitter.com/coL_qxc" target="_blank"></a>
                     </div>
                 </div>
 
