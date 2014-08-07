@@ -284,7 +284,7 @@ use Destiny\Common\Session;
                     </div>
                 </div>
 
-                <div id="qxc" class="t-person col-md-3 col-sm-4">
+                <div id="qxc" class="t-person col-md-3 col-sm-4 col-md-offset-2 col-sm-offset-0">
                     <a href="http://wiki.teamliquid.net/starcraft2/Qxc" target="_blank" class="t-portrait t-portrait-qxc"></a>
                     <a href="http://wiki.teamliquid.net/starcraft2/Qxc" target="_blank" class="t-name">Qxc</a>
                     <div class="t-social">
@@ -293,7 +293,7 @@ use Destiny\Common\Session;
                     </div>
                 </div>
 
-                <div id="tod" class="t-person col-md-3 col-md-offset-2 col-sm-4 col-sm-offset-0">
+                <div id="tod" class="t-person col-md-3 col-sm-4">
                     <a href="http://wiki.teamliquid.net/starcraft2/ToD" target="_blank" class="t-portrait t-portrait-tod"></a>
                     <a href="http://wiki.teamliquid.net/starcraft2/ToD" target="_blank" class="t-name">Tod</a>
                     <div class="t-social">
