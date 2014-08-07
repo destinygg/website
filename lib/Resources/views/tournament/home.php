@@ -314,8 +314,8 @@ use Destiny\Common\Session;
             <div class="row">
 
                 <div id="jordwoodwatches" class="t-sponsor col-md-3">
-                    <a class="t-logo sponsor-jordwoodwatches" href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com"></a>
-                    <a href="http://www.woodwatches.com/" target="_blank" title="www.woodwatches.com" class="t-name">Wood Watches</a>
+                    <a class="t-logo sponsor-jordwoodwatches" href="http://www.woodwatches.com/#destiny" target="_blank" title="www.woodwatches.com"></a>
+                    <a href="http://www.woodwatches.com/#destiny" target="_blank" title="www.woodwatches.com" class="t-name">Wood Watches</a>
                     <p>It's about time someone delivered an unconventional answer to age-old wrist candy. JORD watches are designed to take people back to nature and away from today's metal &amp; rubber. We want to challenge the norm by making unique time pieces as a focal point for everyday fashion.</p>
                 </div>
 
