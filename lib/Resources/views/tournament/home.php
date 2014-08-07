@@ -117,7 +117,7 @@ use Destiny\Common\Session;
 
             <div class="t-bracket-row clearfix">
                 <div class="t-bracket-info">
-                    <h2><a href="http://i.destiny.gg/replays/Day1Replays.zip" title="Day 1 Replays (SC2 format)">GROUP 1</a></h2>
+                    <h2><a href="http://blog.destiny.gg/destiny-i-day-1-vods-and-replays/" title="Day 1 Replays">GROUP 1</a></h2>
                     <p><span class="t-bracket-date">Tuesday, August 5th</span><br />
                     Starting @10:00AM EDT</p>
                 </div>
@@ -148,28 +148,28 @@ use Destiny\Common\Session;
 
             <div class="t-bracket-row clearfix">
                 <div class="t-bracket-info">
-                    <h2>GROUP 2</h2>
+                    <h2><a href="http://blog.destiny.gg/destiny-i-day-2-vods-and-replays/" title="Day 2 Replays">GROUP 2</a></h2>
                     <p><span class="t-bracket-date">Wednesday, August 6th</span><br />
                     Starting @10:00AM EDT</p>
                 </div>
                 <div class="t-bracket-players">
 
-                    <div id="hero" class="t-person">
+                    <div id="hero" class="t-person group-ko">
                         <a href="http://wiki.teamliquid.net/starcraft2/Hero" target="_blank" class="t-portrait t-portrait-hero"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Hero" target="_blank" class="t-name">Liquid`HerO</a>
                     </div>
 
-                    <div id="life" class="t-person">
+                    <div id="life" class="t-person group-advance">
                         <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-portrait t-portrait-life"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-name">StarTale Life</a>
                     </div>
 
-                    <div id="kane" class="t-person">
+                    <div id="kane" class="t-person group-advance">
                         <a href="http://wiki.teamliquid.net/starcraft2/Kane" target="_blank" class="t-portrait t-portrait-kane"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Kane" target="_blank" class="t-name">mYi Kane</a>
                     </div>
 
-                    <div id="guitarcheese" class="t-person">
+                    <div id="guitarcheese" class="t-person group-ko">
                         <a href="http://wiki.teamliquid.net/starcraft2/Guitarcheese" target="_blank" class="t-portrait t-portrait-guitarcheese"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Guitarcheese" target="_blank" class="t-name">soLGuitarcheese</a>
                     </div>
