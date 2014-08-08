@@ -145,7 +145,14 @@ module.exports = function(grunt) {
 				options : '--sprite-namespace= --namespace=icon --css=scripts/icons --img=scripts/icons --css-template=scripts/icons/icons.jinja --url=../img/ --pseudo-class-separator=_'
 			},
 		},
-		
+		tldFetcher: {
+			options: {
+				targetFile: 'static/chat/js/chat.min.js'
+			},
+			defaults: {}, // no-op target for convenience
+			fetch: {} // does a fetch + replace on targetFile
+		},
+
 		// Copy the emoticon.png to static dir
 		copy: {
 			gluedimages: {
@@ -177,6 +184,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-glue');
 	grunt.loadNpmTasks('grunt-bump');
+	grunt.loadTasks('tasks');
 
 	// Build static resources
 	grunt.registerTask('build', [
@@ -185,6 +193,7 @@ module.exports = function(grunt) {
         'uglify:libs',
 		'uglify:web',
 		'uglify:chat',
+		'tldFetcher:fetch',
 		'less:build',
 		'copy:gluedimages'
 	]);
