@@ -87,7 +87,7 @@ use Destiny\Common\Session;
                         <li><strong>Tues 5th</strong> Tod &amp; Destiny</li>
                         <li><strong>Wed 6th</strong> Nathanias &amp; Destiny</li>
                         <li><strong>Thurs 7th</strong> Incontrol &amp; Destiny</li>
-                        <li><strong>Fri 8th</strong> Destiny</li>
+                        <li><strong>Fri 8th</strong> Destiny &amp; Qxc</li>
                     </ul>
                     <p>Group stages will start here. They will be played in a round robin style, with 5 best of 3's being played and a possible extra match if there is a three-way tie.</p>
                 </div>
