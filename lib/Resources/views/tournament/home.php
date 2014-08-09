@@ -125,7 +125,7 @@ use Destiny\Common\Session;
 
                     <div id="major" class="t-person group-advance">
                         <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-portrait t-portrait-major"></a>
-                        <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-name">ROOTMajOr</a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-name">ROOT MajOr</a>
                     </div>
 
                     <div id="polt" class="t-person group-advance">
@@ -179,7 +179,7 @@ use Destiny\Common\Session;
 
             <div class="t-bracket-row clearfix">
                 <div class="t-bracket-info">
-                    <h2>GROUP 3</h2>
+                    <h2><a href="http://blog.destiny.gg/destiny-i-day-3-vods-and-replays/" title="Day 3 Replays">GROUP 3</a></h2>
                     <p><span class="t-bracket-date">Thursday, August 7th</span><br />
                     Starting @10:00AM EDT</p>
                 </div>
@@ -200,7 +200,7 @@ use Destiny\Common\Session;
                         <a href="http://wiki.teamliquid.net/starcraft2/Adonminus" target="_blank" class="t-name">Cascade Adonminus</a>
                     </div>
 
-                    <div id="petraeus" class="t-person group-kon">
+                    <div id="petraeus" class="t-person group-ko">
                         <a href="http://wiki.teamliquid.net/starcraft2/Petraeus" target="_blank" class="t-portrait t-portrait-petraeus"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Petraeus" target="_blank" class="t-name">ROOT Petraeus</a>
                     </div>
@@ -216,9 +216,40 @@ use Destiny\Common\Session;
                 </div>
                 <div class="t-bracket-players">
 
-                    <div id="mc" class="t-person">
+                    <div id="mc" class="t-person group-ko">
                         <a href="http://wiki.teamliquid.net/starcraft2/Mc" target="_blank" class="t-portrait t-portrait-mc"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Mc" target="_blank" class="t-name">MC</a>
+                    </div>
+
+                    <div id="huk" class="t-person group-advance">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Huk" target="_blank" class="t-portrait t-portrait-huk"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Huk" target="_blank" class="t-name">EG Huk</a>
+                    </div>
+
+                    <div id="apocalypse" class="t-person group-advance">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Apocalypse" target="_blank" class="t-portrait t-portrait-apocalypse"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Apocalypse" target="_blank" class="t-name">IvD Apocalypse</a>
+                    </div>
+
+                    <div id="violet" class="t-person group-ko">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Violet" target="_blank" class="t-portrait t-portrait-violet"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Violet" target="_blank" class="t-name">viOlet</a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="t-bracket-row clearfix t-bracket-row-2">
+                <div class="t-bracket-info">
+                    <h2>QUARTER FINALS</h2>
+                    <p><span class="t-bracket-date">Saturday, August 9th</span><br />
+                    Starting @10:00AM EDT</p>
+                </div>
+                <div class="t-bracket-players">
+
+                    <div id="major" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-portrait t-portrait-major"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Major" target="_blank" class="t-name">ROOT MajOr</a>
                     </div>
 
                     <div id="huk" class="t-person">
@@ -226,14 +257,37 @@ use Destiny\Common\Session;
                         <a href="http://wiki.teamliquid.net/starcraft2/Huk" target="_blank" class="t-name">EG Huk</a>
                     </div>
 
+                    <div id="kane" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Kane" target="_blank" class="t-portrait t-portrait-kane"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Kane" target="_blank" class="t-name">mYi Kane</a>
+                    </div>
+
+                    <div id="adonminus" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Adonminus" target="_blank" class="t-portrait t-portrait-adonminus"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Adonminus" target="_blank" class="t-name">Cascade Adonminus</a>
+                    </div>
+
+                </div>
+                <div class="t-bracket-players">
+
+                    <div id="innovation" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Innovation" target="_blank" class="t-portrait t-portrait-innovation"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Innovation" target="_blank" class="t-name">Acer INnoVation</a>
+                    </div>
+
+                    <div id="life" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-portrait t-portrait-life"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Life" target="_blank" class="t-name">StarTale Life</a>
+                    </div>
+
                     <div id="apocalypse" class="t-person">
                         <a href="http://wiki.teamliquid.net/starcraft2/Apocalypse" target="_blank" class="t-portrait t-portrait-apocalypse"></a>
                         <a href="http://wiki.teamliquid.net/starcraft2/Apocalypse" target="_blank" class="t-name">IvD Apocalypse</a>
                     </div>
 
-                    <div id="violet" class="t-person">
-                        <a href="http://wiki.teamliquid.net/starcraft2/Violet" target="_blank" class="t-portrait t-portrait-violet"></a>
-                        <a href="http://wiki.teamliquid.net/starcraft2/Violet" target="_blank" class="t-name">viOlet</a>
+                    <div id="polt" class="t-person">
+                        <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-portrait t-portrait-polt"></a>
+                        <a href="http://wiki.teamliquid.net/starcraft2/Polt" target="_blank" class="t-name">CMStorm Polt</a>
                     </div>
 
                 </div>

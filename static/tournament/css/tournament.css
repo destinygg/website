@@ -233,13 +233,14 @@ section {
     margin: 50px 0;
 }
 #tournament #brackets .t-bracket-info {
-    margin: 55px 0 0 0;
+    margin: 30px 0 0 0;
     width: 25%;
     float: left;
 }
 #tournament #brackets .t-bracket-info h2 {
     color: #5d5d5d;
     font-size: 38px;
+    line-height: 38px;
     letter-spacing: 0.25em;
 }
 #tournament #brackets .t-bracket-info h2 a:hover {
@@ -253,6 +254,14 @@ section {
     float: left;
     background: url("../img/bracket-blue-line.jpg") repeat-x center 75px;
 }
+
+#tournament #brackets .t-bracket-row-2 .t-bracket-info {
+    margin-top: 100px;
+}
+#tournament #brackets .t-bracket-row-2 .t-bracket-players {
+    margin-bottom: 15px;
+}
+
 #tournament #brackets .t-person {
     margin: 0;
     float: left;
