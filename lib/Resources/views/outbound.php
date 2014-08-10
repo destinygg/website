@@ -10,7 +10,7 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/google.tracker.php') ?>
 <script>
-var url = '<?= Tpl::out($model->url) ?>';
+var url = '<?= $model->url ?>';
 _gaq.push(['_trackEvent', 'outbound', 'redirect', url]);
 _gaq.push(function(){
     window.location.replace(url);
@@ -20,7 +20,7 @@ _gaq.push(function(){
 <body>
     <p>Please wait while we redirect you &hellip;</p>
     <noscript>
-       <p>No javascript present >:( &hellip; Click the link <a rel="nofollow" href="<?= Tpl::out($model->url) ?>"><?= Tpl::out($model->url) ?></a></p>
+       <p>No javascript present >:( &hellip; Click the link <a rel="nofollow" href="<?= $model->url ?>"><?= Tpl::out($model->url) ?></a></p>
     </noscript>
 </body>
 </html>
