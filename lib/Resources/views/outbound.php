@@ -18,7 +18,7 @@ var to = window.setTimeout(function(){
 }, 3500);
 
 // Normal analytics
-var url = '<?= Tpl::out($model->url) ?>';
+var url = '<?= $model->url ?>';
 _gaq.push(['_trackEvent', 'outbound', 'redirect', url]);
 _gaq.push(function(){
     window.clearTimeout(to);
@@ -28,9 +28,9 @@ _gaq.push(function(){
 </script>
 </head>
 <body>
-    <p>Please wait while we redirect you to <a rel="nofollow" href="<?= Tpl::out($model->url) ?>"><?= Tpl::out($model->url) ?></a> &hellip;</p>
+    <p>Please wait while we redirect you to <a rel="nofollow" href="<?= $model->url ?>"><?= Tpl::out($model->url) ?></a> &hellip;</p>
     <noscript>
-       <p>No javascript present >:( &hellip; Click the link <a rel="nofollow" href="<?= Tpl::out($model->url) ?>"><?= Tpl::out($model->url) ?></a></p>
+       <p>No javascript present >:( &hellip; Click the link <a rel="nofollow" href="<?= $model->url ?>"><?= Tpl::out($model->url) ?></a></p>
     </noscript>
 </body>
 </html>
