@@ -89,26 +89,17 @@ module.exports = function(grunt) {
     function replaceTLDs(file, tlds, callback) {
         grunt.log.writeln('Writing TLDs to ' + file + '.');
 
-        // Read target file's contents
-        fs.readFile(file, 'utf8', function(err, data) {
+        var output = 
+        '/** Generated file do not edit manually **/' + "\r\n" +
+        'destiny.tlds = "(?:'+ tlds +')(?!\\w)";';
+
+        fs.writeFile(file, output, 'utf8', function(err) {
             if (err) {
-                grunt.log.writeln('IO error reading ' + file + ' skipping write.');
-                callback();
+                grunt.log.writeln('IO error writing to ' + file + ' skipping write.');
+            } else {
+                grunt.log.writeln('Wrote new tlds to file ' + file + '!');
             }
-
-            // Update TLD regex with updated TLD list
-            var result = data.replace(/(\s*tlds\s*=\s*"\(\?:)[^\)]*([^"]*"\s*,)/g, '$1' + tlds + '$2');
-            var diff = data.length - result.length;
-
-            // Write replaced contents back to the targetFile
-            fs.writeFile(file, result, 'utf8', function(err) {
-                if (err) {
-                    grunt.log.writeln('IO error writing to ' + file + ' skipping write.');
-                } else {
-                    grunt.log.writeln('Wrote new tlds to file ' + file + '!');
-                }
-                callback();
-            });
+            callback();
         });
     }
 };

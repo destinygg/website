@@ -63,6 +63,7 @@ module.exports = function(grunt) {
 				},
 				files: {
 					'static/chat/js/chat.min.js': [
+						'scripts/chat/tld.js',
 						'static/chat/js/autocomplete.js',
 						'static/chat/js/formatters.js',
 						'static/chat/js/hints.js',
@@ -147,7 +148,7 @@ module.exports = function(grunt) {
 		},
 		tldFetcher: {
 			options: {
-				targetFile: 'static/chat/js/chat.min.js'
+				targetFile: 'scripts/chat/tld.js'
 			},
 			defaults: {}, // no-op target for convenience
 			fetch: {} // does a fetch + replace on targetFile
@@ -192,8 +193,8 @@ module.exports = function(grunt) {
 		'glue:icons',
         'uglify:libs',
 		'uglify:web',
-		'uglify:chat',
 		'tldFetcher:fetch',
+		'uglify:chat',
 		'less:build',
 		'copy:gluedimages'
 	]);
