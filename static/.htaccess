@@ -1,7 +1,0 @@
-RewriteEngine on
-Options -indexes +FollowSymLinks
-
-Order allow,deny
-Allow from all
-
-RewriteRule ^[0-9]+\.[0-9]+\.[0-9]+/(.*)$ /$1

@@ -49,8 +49,15 @@ use Destiny\Common\Config;
     <form class="chat-input">
         <div class="clearfix">
           <div class="chat-input-wrap">
-            <span class="chat-login-msg">You must <a href="/login" target="_parent">sign in</a> to chat</span>
+            <span class="chat-login-msg">
+              <?php if(!empty($model->follow)): ?>
+              You must <a href="/login?follow=<?= Tpl::out($model->follow) ?>" target="_parent">sign in</a> to chat
+              <?php else: ?>
+              You must <a href="/login" target="_parent">sign in</a> to chat
+              <?php endif; ?>
+            </span>
             <input type="hidden" class="input" />
+
           </div>
           <div class="chat-tools-wrap">
             <a class="iconbtn chat-users-btn" title="Users">
@@ -277,5 +284,6 @@ use Destiny\Common\Config;
 <script src="/chat/history"></script>
 <script src="<?=Config::cdnv()?>/chat/js/chat.min.js"></script>
 <script>$('#destinychat').ChatGui(<?=Tpl::jsout($model->user)?>,<?=Tpl::jsout($model->options)?>);</script>
+
 </body>
 </html>

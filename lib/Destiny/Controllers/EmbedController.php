@@ -49,6 +49,12 @@ class EmbedController {
         }
         $model->options = $this->getChatOptionParams ( $params );
         $model->user = $user;
+
+        // Login follow url
+        if(isset($params['follow']) && !empty($params['follow']) && substr( $params['follow'], 0, 1 ) == '/') {
+            $model->follow = $params['follow'];
+        }
+
         return 'embed/chat';
     }
     

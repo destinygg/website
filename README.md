@@ -15,14 +15,6 @@ Illustration of Destiny used throughout [http://www.destiny.gg/] owned by @eleve
 
 ## Requirements
 
-### Vagrant
-
-Install Vagrant and Oracle VM
-
-```shell
-vagrant plugin install vagrant-hosts
-```
-
 ### Building
 
 [nodejs](http://nodejs.org/) Dependency manager
@@ -35,7 +27,7 @@ vagrant plugin install vagrant-hosts
 
 ### Running
 
-[Apache 2](http://httpd.apache.org/), [php 5.3](http://php.net/), [mysql 5](http://dev.mysql.com/), [Redis](http://redis.io/download)
+[nginx](http://httpd.apache.org/), [php 5.3+](http://php.net/), [mysql 5](http://dev.mysql.com/), [Redis](http://redis.io/download)
 
 
 ## Getting Started
@@ -84,12 +76,6 @@ Build the project
 
 ```shell
 grunt
-```
-
-Clean the tmp (php generates cached annotations files that need to be cleared)
-
-```shell
-grunt clean
 ```
 
 Glue - create the project sprites
