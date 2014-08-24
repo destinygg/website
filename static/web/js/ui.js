@@ -532,12 +532,14 @@ $(function(){
 // Gifting / user search
 (function(){
 
-    var users      = {}, 
+    var users        = {}, 
         usrSearch    = $('#userSearchModal'), 
         usrInput     = usrSearch.find('input#userSearchInput'),
         usrSelectBtn = usrSearch.find('button#userSearchSelect'),
         usrSearchFrm = usrSearch.find('form#userSearchForm'),
-        hasErrors    = false;
+        giftMsgInput = usrSearch.find('textarea#giftmessage'),
+        hasErrors    = false,
+        giftUsername = '';
 
     var checkUser = function(username, success){
         $.ajax({
@@ -545,46 +547,51 @@ $(function(){
             data: {s: username},
             type: 'GET',
             success: function(data){
-                    success.call(this, data);
+                success.call(this, data);
             },
             error: function(){
-                    showLookupError('Error looking up user. Try again');
+                showLookupError('Error looking up user. Try again');
             }
         });
     };
     
     var showLookupError = function(message){
-            hasErrors = true;
-            usrSelectBtn.button('reset').attr('disabled', true);
-            usrSearch.find('label.error').text(message).removeClass('hidden');
-    }
+        hasErrors = true;
+        usrSelectBtn.button('reset').attr('disabled', true);
+        usrSearch.find('label.error').text(message).removeClass('hidden');
+    };
+
+    var cancelUserSelect = function(){
+        usrSearch.modal('hide');
+        usrInput.val('');
+        giftMsgInput.val('');
+        $('#subscriptionGiftUsername').text('');
+        $('#giftSubscriptionConfirm').addClass('hidden');
+        $('#giftSubscriptionSelect').removeClass('hidden');
+        $('input[name="gift"]').val('');
+        $('input[name="gift-message"]').val('');
+    };
 
     var selectUser = function(username){
         usrSelectBtn.button('loading');
         checkUser(username, function(response){
             if(response.valid && response.cangift){
-                usrSearch.modal('hide');
-                $('#giftSubscriptionConfirm').removeClass('hidden');
-                $('#giftSubscriptionSelect').addClass('hidden');
-                $('#subscriptionGiftUsername').text(username);
-                $('input[name="gift"]').val(username);
+                giftUsername = username;
+
+                if(giftMsgInput.val() == ''){
+                    giftMsgInput.focus();
+                }else{
+                    usrSearchFrm.submit();
+                }
+
                 usrSelectBtn.button('reset').attr('disabled', false);
                 hasErrors = false;
             }else if(!response.valid){
-                    showLookupError('This user was not found. Try again.');
+                showLookupError('This user was not found. Try again.');
             }else if(!response.cangift){
-                    showLookupError('This user is not eligible for a gift.');
+                showLookupError('This user is not eligible for a gift.');
             }
         });
-    };
-
-    var cancelUserSelect = function(){
-        usrSearch.modal('hide');
-        $('#giftSubscriptionConfirm').addClass('hidden');
-        $('#giftSubscriptionSelect').removeClass('hidden');
-        $('#subscriptionGiftUsername').text('');
-        $('input[name="gift"]').val('');
-        usrSearch.val('');
     };
 
     usrInput.on('keydown change', function(){
@@ -597,14 +604,17 @@ $(function(){
     });
 
     usrSearchFrm.on('submit', function(){
-        usrSearch.find('label.error').addClass('hidden')
-        selectUser(usrInput.val());
-        return false;
-    });
-
-    $('#cancelGiftSubscription').on('click', function(){
         usrSearch.find('label.error').addClass('hidden');
-        cancelUserSelect();
+        if(giftUsername != usrInput.val()) {
+            selectUser(usrInput.val());
+        } else {
+            $('#subscriptionGiftUsername').text(usrInput.val());
+            $('#giftSubscriptionConfirm').removeClass('hidden');
+            $('#giftSubscriptionSelect').addClass('hidden');
+            $('input[name="gift"]').val(usrInput.val());
+            $('input[name="gift-message"]').val(giftMsgInput.val());
+            usrSearch.modal('hide');
+        }
         return false;
     });
 
@@ -615,9 +625,17 @@ $(function(){
     usrSearch.on('hidden.bs.modal', function (e) {
         if(hasErrors){
             hasErrors = false;
+            giftUsername = '';
             usrInput.val('');
+            giftMsgInput.val('');
             usrSearch.find('label.error').addClass('hidden');
         };
+    });
+
+    $('#cancelGiftSubscription').on('click', function(){
+        usrSearch.find('label.error').addClass('hidden');
+        cancelUserSelect();
+        return false;
     });
 
 })();

@@ -23,6 +23,15 @@ use Destiny\Common\Config;
     </h1>
     
     <div class="content content-dark clearfix">
+    
+      <?php if(!empty($model->warning)): ?>
+      <div style="margin: 15px 15px 0 15px;">
+        <div class="alert alert-warning" style="margin: 0;">
+          <strong><span class="glyphicon glyphicon-warning-sign"></span> Warning!</strong>
+          <?=Tpl::out($model->warning->getMessage())?>
+        </div>
+      </div>
+      <?php endif; ?>
 
       <div class="ui-step-legend-wrap clearfix">
         <div class="ui-step-legend clearfix">
@@ -34,21 +43,13 @@ use Destiny\Common\Config;
           </ul>
         </div>
       </div>
-    
-      <?php if(!empty($model->warning)): ?>
-      <div style="margin: 15px 15px 0 15px;">
-        <div class="alert alert-warning" style="margin: 0;">
-          <strong><span class="glyphicon glyphicon-warning-sign"></span> Warning!</strong>
-          <?=Tpl::out($model->warning->getMessage())?>
-        </div>
-      </div>
-      <?php endif; ?>
 
       <div style="width: 100%;" class="clearfix stream">
         <form class="onceoff" action="/subscription/create" method="post">
 
           <input type="hidden" name="subscription" value="<?= $model->subscriptionType['id'] ?>">
           <input type="hidden" name="gift" value="<?= $model->gift ?>">
+          <input type="hidden" name="gift-message" value="<?= $model->giftMessage ?>">
 
           <?php if(!empty($model->currentSubscription)): ?>
 
@@ -84,6 +85,11 @@ use Destiny\Common\Config;
 
               <?php if(!empty($model->gift)): ?>
               <p><span class="glyphicon glyphicon-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($model->gift)?></span></p>
+              <?php if(!empty($model->giftMessage)): ?>
+              <blockquote class="gift-message">
+                <p><?= Tpl::out($model->giftMessage) ?></blockquote></p>
+              </blockquote>
+              <?php endif; ?>
               <?php endif; ?>
 
               <p><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</p>

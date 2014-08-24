@@ -44,6 +44,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -58,6 +59,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -81,6 +83,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -95,6 +98,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -118,6 +122,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -132,6 +137,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -155,6 +161,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -169,6 +176,7 @@ use Destiny\Common\User\UserRole;
           <form action="/subscription/confirm" method="post">
             <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
             <input type="hidden" name="gift" value="" />
+            <input type="hidden" name="gift-message" value="" />
             <div class="subfeature-info">
               <div class="subfeature-price">$<?=floatval($sub['amount'])?></div>
             </div>
@@ -189,13 +197,24 @@ use Destiny\Common\User\UserRole;
         <div class="modal-body">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <form id="userSearchForm">
-            <div class="form-group">
-              <label>Enter a username</label>
-              <input type="text" id="userSearchInput" class="form-control" placeholder="E.g. Destiny" />
+          
+            <div id="usrFrmGrp" class="form-group">
+              <label>Who do you want to gift?</label>
+              <input tabindex="1" type="text" id="userSearchInput" class="form-control" placeholder="E.g. Destiny" />
               <label class="error hidden"></label>
             </div>
-            <button type="button" class="btn btn-default" data-dismiss="modal" id="userSearchCancel">Cancel</button>
-            <button type="submit" class="btn btn-primary" id="userSearchSelect" data-loading-text="Checking user...">Select</button>
+          
+            <div id="gftFrmGrp" class="form-group">
+              <label>Send a message with your gift</label>
+              <textarea tabindex="2" id="giftmessage" autocomplete="off" maxlength="250" class="form-control" placeholder="" style="resize:vertical;"></textarea>
+              <div class="clearfix">
+                <small class="pull-left">Warning: This message will be broadcast to the chat.</small>
+                <small class="pull-right">Maximum length 250 characters</small>
+              </div>
+            </div>
+
+            <button tabindex="4" type="button" class="btn btn-default" data-dismiss="modal" id="userSearchCancel">Cancel</button>
+            <button tabindex="3" type="submit" class="btn btn-primary" id="userSearchSelect" data-loading-text="Checking user...">Select</button>
           </form>
         </div>
       </div>

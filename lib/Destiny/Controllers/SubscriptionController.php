@@ -222,7 +222,8 @@ class SubscriptionController {
         if(isset($params['gift']) && !empty($params['gift'])){
 
           $model->gift = $params['gift'];
-          $model->warning = new Exception('If the giftee has a subscription by the time this payment is completed the subscription will be marked as failed, but your payment will still go through. You will have to manually reverse the order... :(');
+          $model->giftMessage = (isset($params['gift-message']) && !empty($params['gift-message'])) ? $params['gift-message'] : '';
+          $model->warning = new Exception('If the giftee has a subscription by the time this payment is completed the subscription will be marked as failed, but your payment will still go through.');
 
         }else{
 
@@ -305,6 +306,7 @@ class SubscriptionController {
             if(!empty($giftReceiver)){
                 $subscription['userId'] = $giftReceiver['userId'];
                 $subscription['gifter'] = $userId;
+                $subscription['message'] = substr($params ['gift-message'], 0, 250);
             }
 
             // Insert subscription
@@ -326,12 +328,15 @@ class SubscriptionController {
           
         }catch (Exception $e){
 
-            if (! empty ( $order ))
+            if (! empty ( $order )){
                 $ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-            if (! empty ( $paymentProfile ))
+            }
+            if (! empty ( $paymentProfile )){
                 $ordersService->updatePaymentStatus ( $paymentProfile ['paymentId'], PaymentStatus::ERROR );
-            if (! empty ( $subscriptionId ))
+            }
+            if (! empty ( $subscriptionId )){
                 $subscriptionsService->updateSubscriptionState ( $subscriptionId, SubscriptionStatus::ERROR );
+            }
 
             $log = Application::instance ()->getLogger ();
             $log->error ( $e->getMessage(), $order );
@@ -529,7 +534,11 @@ class SubscriptionController {
                 // Broadcast
                 if(!empty($orderSubscription['gifter'])){
                     $gifter = $userService->getUserById( $orderSubscription['gifter'] );
-                    $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
+                    if(!isset( $orderSubscription['message']) || empty($orderSubscription['message'])){
+                        $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
+                    }else{
+                        $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s. Message: %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote, $orderSubscription['message'] ) );
+                    }
                 }else{
                     $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
                 }
