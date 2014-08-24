@@ -85,13 +85,6 @@ use Destiny\Common\Utils\Date;
           </div>
           
           <div class="form-group">
-            <label class="control-label" for="inputMessage">Message</label>
-            <div class="controls">
-              <textarea type="text" class="form-control" name="message" id="inputMessage" placeholder="" style="resize: vertical;"><?=Tpl::out($model->subscription['message'])?></textarea>
-            </div>
-          </div>
-          
-          <div class="form-group">
             <label>Recurring:</label>
             <strong><?=($model->subscription['recurring'] == '1') ? 'Yes':'No'?></strong>
             <span class="help-block">Cannot set recurring subscription via admin.</span>

@@ -304,9 +304,9 @@ class SubscriptionController {
 
             // If this is a gift, change the user and the gifter
             if(!empty($giftReceiver)){
+                Session::set('giftMessage', mb_substr($params ['gift-message'], 0, 250));
                 $subscription['userId'] = $giftReceiver['userId'];
                 $subscription['gifter'] = $userId;
-                $subscription['message'] = substr($params ['gift-message'], 0, 250);
             }
 
             // Insert subscription
@@ -533,11 +533,14 @@ class SubscriptionController {
 
                 // Broadcast
                 if(!empty($orderSubscription['gifter'])){
+
+                    // Get the gift message, and remove it from the session
+                    $giftMessage = Session::set('giftMessage');
                     $gifter = $userService->getUserById( $orderSubscription['gifter'] );
-                    if(!isset( $orderSubscription['message']) || empty($orderSubscription['message'])){
+                    if(empty($giftMessage)){
                         $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
                     }else{
-                        $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s. Message: %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote, $orderSubscription['message'] ) );
+                        $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s. Message: %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote, $giftMessage ) );
                     }
                 }else{
                     $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );

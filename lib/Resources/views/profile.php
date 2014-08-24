@@ -99,16 +99,7 @@ use Destiny\Commerce\SubscriptionStatus;
             <?php if(!empty($model->subscription['gifterUsername'])): ?>
             <p>
               <span class="glyphicon glyphicon-gift"></span> This subscription was gifted by <span class="label label-success"><?=Tpl::out($model->subscription['gifterUsername'])?></span>
-              <?php if(!empty($model->subscription['message'])): ?>
-              <br /><button class="btn-link" data-toggle="collapse" data-target="#submsg">(show gift message)</button>
-              <?php endif; ?>
             </p>
-            <?php endif; ?>
-
-            <?php if(!empty($model->subscription['message'])): ?>
-            <blockquote id="submsg" class="gift-message collapse in">
-              <p><?= Tpl::out($model->subscription['message']) ?></blockquote></p>
-            </blockquote>
             <?php endif; ?>
             
           </div>

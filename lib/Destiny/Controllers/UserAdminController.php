@@ -241,7 +241,6 @@ class UserAdminController {
         $subscription ['createdDate'] = $params ['createdDate'];
         $subscription ['endDate'] = $params ['endDate'];
         $subscription ['userId'] = $params ['id'];
-        $subscription ['message'] = $params ['message'];
         $subscription ['subscriptionSource'] = (isset ( $params ['subscriptionSource'] ) && ! empty ( $params ['subscriptionSource'] )) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
         
         if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {

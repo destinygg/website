@@ -1,1 +1,0 @@
-ALTER TABLE `dfl_users_subscriptions` ADD COLUMN `message` TEXT NULL AFTER `gifter`; 
