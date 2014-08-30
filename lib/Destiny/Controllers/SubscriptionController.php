@@ -277,10 +277,13 @@ class SubscriptionController {
                 // make sure the receiver is valid
                 $giftReceiver = $userService->getUserByUsername( $giftReceiverUsername );
                 if(empty($giftReceiver)){
-                   throw new Exception ( 'Invalid giftee' );
+                   throw new Exception ( 'Invalid giftee (user not found)' );
+                }
+                if ($userId == $giftReceiver['userId']){
+                   throw new Exception ( 'Invalid giftee (cannot gift yourself)' );
                 }
                 if(!$subscriptionsService->getCanUserReceiveGift ( $userId, $giftReceiver['userId'] )){
-                   throw new Exception ( 'Invalid giftee, cannot accept gifts' );
+                   throw new Exception ( 'Invalid giftee (user does not accept gifts)' );
                 }
             }
 
