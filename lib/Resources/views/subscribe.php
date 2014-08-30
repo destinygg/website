@@ -28,10 +28,9 @@ use Destiny\Common\User\UserRole;
     <div id="giftSubscriptionConfirm" class="alert alert-info hidden" style="text-align: center;">
         You are gifting your subscription to <strong id="subscriptionGiftUsername"></strong>!
         <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#userSearchModal">Change <span class="glyphicon glyphicon-gift"></span></button>
-        <button class="btn btn-default" id="cancelGiftSubscription">No thanks!</button>
+        <button class="btn btn-default" id="cancelGiftSubscription">Abort!</button>
     </div>
     <? endif; ?>
-
 
     <div class="subfeature">
       <div class="subfeature-desc">
