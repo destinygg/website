@@ -1304,50 +1304,7 @@ body.novideo #twitchpanel #chat-embed {
   width: 100%;
 }
 
-/** tournament banner */
-#destiny-i-link {
-  display: block;
-}
-#destiny-i-link:hover {
-  text-decoration: none;
-}
-#destiny-i-banner {
-  min-width: 720px;
-  height: 200px;
-  border-radius: 4px;
-  overflow: hidden;
-  background: white url(../img/destiny-i-banner.jpg) no-repeat top right;
-  position: relative;
-  cursor: pointer;
-}
-#destiny-i-banner p {
-  color: #2a6496;
-  font-size: 24px;
-  margin: 68px 0 0 60px;
-  text-shadow: 1px 1px 0 rgba(255,255,255,.5);
-}
-#destiny-i-logo {
-  width: 300px;
-  height: 170px;
-  text-indent: -999em;
-  background: url(../img/destiny-i-logo.png) no-repeat top right;
-  margin: 15px 0;
-  position: absolute;
-  background-size: 70%;
-  right: 10px;
-  top: 20px;
-}
-@media (min-width: 990px) {
-  #destiny-i-logo {
-    background-size: 100%;
-    right: 100px;
-    top: 0;
-  }
-}
-@media (min-width: 1200px) {
-  #destiny-i-logo {
-    background-size: 100%;
-    right: 175px;
-    top: 0;
-  }
+.gift-message {
+  font-size: 13px;
+  font-weight: normal;
 }

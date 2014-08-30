@@ -36,7 +36,7 @@ use Destiny\Common\Config;
       </div>
 
       <form action="/subscription/confirm" method="post">
-        <div class="bs-block">
+        <div class="ds-block">
 
           <p>An error has occurred during the subscription process.
           

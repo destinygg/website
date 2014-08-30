@@ -367,7 +367,11 @@ class SubscriptionsService extends Service {
     */
     public function getSubscriptionById($subscriptionId) {
         $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE subscriptionId = :subscriptionId' );
+        $stmt = $conn->prepare ( '
+            SELECT * FROM dfl_users_subscriptions 
+            WHERE subscriptionId = :subscriptionId
+            LIMIT 1
+        ' );
         $stmt->bindValue ( 'subscriptionId', $subscriptionId, \PDO::PARAM_INT );
         $stmt->execute ();
         $subscription = $stmt->fetch ();
@@ -376,16 +380,16 @@ class SubscriptionsService extends Service {
           $subscription ['tierLabel'] = $subType ['tierLabel'];
         }
         return $subscription;
-        }
+    }
 
-        /**
-        * Check if a user has a active subscription
-        *
-        * @param number $gifter userId
-        * @param number $giftee userId
-        * @return boolean
-        */
-        public function getCanUserReceiveGift($gifter, $giftee) {
+    /**
+    * Check if a user has a active subscription
+    *
+    * @param number $gifter userId
+    * @param number $giftee userId
+    * @return boolean
+    */
+    public function getCanUserReceiveGift($gifter, $giftee) {
 
         if($gifter == $giftee){
           return false;

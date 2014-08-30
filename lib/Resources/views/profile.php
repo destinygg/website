@@ -97,7 +97,9 @@ use Destiny\Commerce\SubscriptionStatus;
             <?php endif; ?>
 
             <?php if(!empty($model->subscription['gifterUsername'])): ?>
-            <p><span class="glyphicon glyphicon-gift"></span> This subscription was gifted by <span class="label label-success"><?=Tpl::out($model->subscription['gifterUsername'])?></span></p>
+            <p>
+              <span class="glyphicon glyphicon-gift"></span> This subscription was gifted by <span class="label label-success"><?=Tpl::out($model->subscription['gifterUsername'])?></span>
+            </p>
             <?php endif; ?>
             
           </div>

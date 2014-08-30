@@ -69,7 +69,7 @@ use Destiny\Common\Config;
                     </div>
                 </div>
             </div>
-            <iframe id="chat-frame" class="stream-element" style="border:none; width: 100%;" seamless="seamless" src="/embed/chat"></iframe>
+            <iframe id="chat-frame" class="stream-element" style="border:none; width: 100%;" seamless="seamless" src="/embed/chat?follow=/bigscreen"></iframe>
         </div>
 
     </div>

@@ -25,8 +25,8 @@
 	
 	// Emote line formatter
 	destiny.fn.EmoteFormatter = function(chat){
-		this.emoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+')($|\\s)');
-		this.gemoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+')($|\\s)', 'gm');
+		this.emoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+')($|[\\s,\\.\\?!])');
+		this.gemoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+')($|[\\s,\\.\\?!])', 'gm');
 		return this;
 	};
 	destiny.fn.EmoteFormatter.prototype.format = function(str, user){
@@ -43,14 +43,13 @@
 		 * */
 		var chars_reg = "[\\w!\"#$%&'*+,-./:;<=>?@\\\\^`|~]*",
 		    path_reg  = "(?:" + chars_reg + "(?:\\(" + chars_reg + "\\))?" + "(?:\\[" + chars_reg + "\\])?" + "(?:\\{" + chars_reg + "\\})?" +  ")*",
-		    tlds      = "(?:MUSEUM|TRAVEL|AERO|ARPA|ASIA|COOP|INFO|JOBS|MOBI|NAME|POST|BIZ|CAT|COM|EDU|GOV|INT|MIL|NET|ORG|PRO|TEL|XXX|AC|AD|AE|AF|AG|AI|AL|AM|AN|AO|AQ|AR|AS|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|IO|IQ|IR|IS|IT|JE|JM|JO|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MK|ML|MM|MN|MO|MP|MQ|MR|MS|MT|MU|MV|MW|MX|MY|MZ|NA|NC|NE|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|YE|YT|ZA|ZM|ZW)(?!\\w)",
 		    ipaddr    = "(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])";
 		this.linkregex = new RegExp(
 			"(((?:https?|ftp):\\/\\/)?" + //begin URL group, match protocol (if any)
 			"(?:[\\w]+(?::" + chars_reg + ")?@)?" + //match basic auth user/password prefix
 			"(?:" + ipaddr + "|(?:"+ //match an ip address or domain
 			"(?:[\\w-]+\\.)+" + //match subdomains and domain
-			tlds + //match valid+accepted TLDs, we don't care about punycode
+			destiny.tlds + //match valid+accepted TLDs
 			"))(?::[0-9]{1,5})?" + //match optional port (16-bit)
 			"(?:\\/" + path_reg + ")?)" //match path and query, END URL group
 			,"gi"

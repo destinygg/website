@@ -2,6 +2,7 @@
 namespace Destiny\Common;
 
 use Destiny\Chat\ChatIntegrationService;
+
 abstract class Session {
 
     /**

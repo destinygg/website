@@ -222,7 +222,7 @@ class SubscriptionController {
         if(isset($params['gift']) && !empty($params['gift'])){
 
           $model->gift = $params['gift'];
-          $model->warning = new Exception('If the giftee has a subscription by the time this payment is completed the subscription will be marked as failed, but your payment will still go through. You will have to manually reverse the order... :(');
+          $model->warning = new Exception('If the giftee has a subscription by the time this payment is completed the subscription will be marked as failed, but your payment will still go through.');
 
         }else{
 
@@ -268,16 +268,22 @@ class SubscriptionController {
         $giftReceiverUsername = (isset( $params['gift'] ) && !empty( $params['gift'] )) ? $params['gift'] : null;
         $giftReceiver = null;
 
+        if (isset( $params ['sub-message'] ) and !empty( $params ['sub-message'] ))
+            Session::set('subMessage', mb_substr($params ['sub-message'], 0, 250));
+
         try {
 
             if(!empty($giftReceiverUsername)){
                 // make sure the receiver is valid
                 $giftReceiver = $userService->getUserByUsername( $giftReceiverUsername );
                 if(empty($giftReceiver)){
-                   throw new Exception ( 'Invalid giftee' );
+                   throw new Exception ( 'Invalid giftee (user not found)' );
+                }
+                if ($userId == $giftReceiver['userId']){
+                   throw new Exception ( 'Invalid giftee (cannot gift yourself)' );
                 }
                 if(!$subscriptionsService->getCanUserReceiveGift ( $userId, $giftReceiver['userId'] )){
-                   throw new Exception ( 'Invalid giftee, cannot accept gifts' );
+                   throw new Exception ( 'Invalid giftee (user does not accept gifts)' );
                 }
             }
 
@@ -326,12 +332,15 @@ class SubscriptionController {
           
         }catch (Exception $e){
 
-            if (! empty ( $order ))
+            if (! empty ( $order )){
                 $ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-            if (! empty ( $paymentProfile ))
+            }
+            if (! empty ( $paymentProfile )){
                 $ordersService->updatePaymentStatus ( $paymentProfile ['paymentId'], PaymentStatus::ERROR );
-            if (! empty ( $subscriptionId ))
+            }
+            if (! empty ( $subscriptionId )){
                 $subscriptionsService->updateSubscriptionState ( $subscriptionId, SubscriptionStatus::ERROR );
+            }
 
             $log = Application::instance ()->getLogger ();
             $log->error ( $e->getMessage(), $order );
@@ -528,10 +537,18 @@ class SubscriptionController {
 
                 // Broadcast
                 if(!empty($orderSubscription['gifter'])){
-                    $gifter = $userService->getUserById( $orderSubscription['gifter'] );
+                    $gifter   = $userService->getUserById( $orderSubscription['gifter'] );
+                    $userName = $gifter['username'];
                     $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
                 }else{
+                    $userName = $subscriptionUser['username'];
                     $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
+                }
+
+                // Get the subscription message, and remove it from the session
+                $subMessage = Session::set('subMessage');
+                if(!empty($subMessage)){
+                    $chatIntegrationService->sendBroadcast ( sprintf ( "%s: %s", $userName, $subMessage ) );
                 }
 
             }

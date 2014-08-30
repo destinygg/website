@@ -23,6 +23,15 @@ use Destiny\Common\Config;
     </h1>
     
     <div class="content content-dark clearfix">
+    
+      <?php if(!empty($model->warning)): ?>
+      <div style="margin: 15px 15px 0 15px;">
+        <div class="alert alert-warning" style="margin: 0;">
+          <strong><span class="glyphicon glyphicon-warning-sign"></span> Warning!</strong>
+          <?=Tpl::out($model->warning->getMessage())?>
+        </div>
+      </div>
+      <?php endif; ?>
 
       <div class="ui-step-legend-wrap clearfix">
         <div class="ui-step-legend clearfix">
@@ -34,15 +43,6 @@ use Destiny\Common\Config;
           </ul>
         </div>
       </div>
-    
-      <?php if(!empty($model->warning)): ?>
-      <div style="margin: 15px 15px 0 15px;">
-        <div class="alert alert-warning" style="margin: 0;">
-          <strong><span class="glyphicon glyphicon-warning-sign"></span> Warning!</strong>
-          <?=Tpl::out($model->warning->getMessage())?>
-        </div>
-      </div>
-      <?php endif; ?>
 
       <div style="width: 100%;" class="clearfix stream">
         <form class="onceoff" action="/subscription/create" method="post">
@@ -108,7 +108,14 @@ use Destiny\Common\Config;
               <br>until the payment has been cleared which can take up to 7 business days.
             </p>
           </div>
-          
+
+          <div class="ds-block">
+            <label>
+              <div>Send a message with your subscription (optional):</div>
+              <input type="text" name="sub-message" autocomplete="off" maxlength="250" class="form-control" placeholder=""/>
+            </label>
+          </div>
+
           <div class="form-actions">
             <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
             <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-shopping-cart"></span> Pay subscription</button>

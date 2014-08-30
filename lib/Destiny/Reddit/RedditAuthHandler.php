@@ -25,8 +25,8 @@ class RedditAuthHandler {
         $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
         $client = new \OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'], \OAuth2\Client::AUTH_TYPE_AUTHORIZATION_BASIC );
         return $client->getAuthenticationUrl ( 'https://ssl.reddit.com/api/v1/authorize', $callback, array (
-                'scope' => 'identity',
-                'state' => md5 ( time () . 'eFdcSA_' ) 
+            'scope' => 'identity',
+            'state' => md5 ( time () . 'eFdcSA_' ) 
         ) );
     }
     
@@ -43,8 +43,8 @@ class RedditAuthHandler {
         $client = new \OAuth2\Client ( $oAuthConf ['clientId'], $oAuthConf ['clientSecret'], \OAuth2\Client::AUTH_TYPE_AUTHORIZATION_BASIC );
         $client->setAccessTokenType ( \OAuth2\Client::ACCESS_TOKEN_BEARER );
         $response = $client->getAccessToken ( 'https://ssl.reddit.com/api/v1/access_token', 'authorization_code', array (
-                'redirect_uri' => sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ),
-                'code' => $params ['code'] 
+            'redirect_uri' => sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ),
+            'code' => $params ['code'] 
         ) );
         
         if (empty ( $response ) || isset ( $response ['error'] ))
@@ -52,14 +52,18 @@ class RedditAuthHandler {
         
         if (! isset ( $response ['result'] ) || empty ( $response ['result'] ) || ! isset ( $response ['result'] ['access_token'] ))
             throw new Exception ( 'Failed request for access token' );
-        
+
         $client->setAccessToken ( $response ['result'] ['access_token'] );
-        $response = $client->fetch ( "https://oauth.reddit.com/api/v1/me.json" );
-        
-        if (empty ( $response ['result'] ) || isset ( $response ['error'] ))
+
+        // Reddit requires a User-Agent
+        $info = $client->fetch ( "https://oauth.reddit.com/api/v1/me.json", array(), 'GET', array(
+            'User-Agent' => 'destiny.gg/'.Config::version ()
+        ));
+
+        if (empty ( $info ['result'] ) || isset ( $info ['error'] ))
             throw new Exception ( 'Invalid user details response' );
         
-        $authCreds = $this->getAuthCredentials ( $params ['code'], $response ['result'] );
+        $authCreds = $this->getAuthCredentials ( $params ['code'], $info ['result'] );
         $authCredHandler = new AuthenticationRedirectionFilter ();
         return $authCredHandler->execute ( $authCreds );
     }
