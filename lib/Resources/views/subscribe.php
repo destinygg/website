@@ -204,15 +204,6 @@ use Destiny\Common\User\UserRole;
               <label class="error hidden"></label>
             </div>
           
-            <div id="gftFrmGrp" class="form-group">
-              <label>Send a message with your gift</label>
-              <textarea tabindex="2" id="giftmessage" autocomplete="off" maxlength="250" class="form-control" placeholder="" style="resize:vertical;"></textarea>
-              <div class="clearfix">
-                <small class="pull-left">Warning: This message will be broadcast to the chat.</small>
-                <small class="pull-right">Maximum length 250 characters</small>
-              </div>
-            </div>
-
             <button tabindex="4" type="button" class="btn btn-default" data-dismiss="modal" id="userSearchCancel">Cancel</button>
             <button tabindex="3" type="submit" class="btn btn-primary" id="userSearchSelect" data-loading-text="Checking user...">Select</button>
           </form>

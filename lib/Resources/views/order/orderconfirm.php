@@ -49,7 +49,6 @@ use Destiny\Common\Config;
 
           <input type="hidden" name="subscription" value="<?= $model->subscriptionType['id'] ?>">
           <input type="hidden" name="gift" value="<?= $model->gift ?>">
-          <input type="hidden" name="gift-message" value="<?= $model->giftMessage ?>">
 
           <?php if(!empty($model->currentSubscription)): ?>
 
@@ -85,11 +84,6 @@ use Destiny\Common\Config;
 
               <?php if(!empty($model->gift)): ?>
               <p><span class="glyphicon glyphicon-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($model->gift)?></span></p>
-              <?php if(!empty($model->giftMessage)): ?>
-              <blockquote class="gift-message">
-                <p><?= Tpl::out($model->giftMessage) ?></blockquote></p>
-              </blockquote>
-              <?php endif; ?>
               <?php endif; ?>
 
               <p><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</p>
@@ -114,7 +108,14 @@ use Destiny\Common\Config;
               <br>until the payment has been cleared which can take up to 7 business days.
             </p>
           </div>
-          
+
+          <div class="ds-block">
+            <label>
+              <div>Send a message with your subscription (optional):</div>
+              <input type="text" name="sub-message" autocomplete="off" maxlength="250" class="form-control" placeholder=""/>
+            </label>
+          </div>
+
           <div class="form-actions">
             <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
             <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-shopping-cart"></span> Pay subscription</button>
