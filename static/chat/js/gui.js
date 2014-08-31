@@ -658,7 +658,8 @@
         },
         
         addBroadcastUI: function(message){
-            console.log(message);
+
+            if ( typeof( message ) == 'string' ) return;
             if (message.data.substring(0, 9) == 'redirect:') return;
             // Dont show the broadcast if the user has already dismissed it
             if(this.broadcastdismiss != null && moment.utc(message.timestamp).unix() < this.broadcastdismiss){
