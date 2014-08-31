@@ -867,6 +867,7 @@
     ChatBroadcastMessage = function(message, timestamp){
         this.init(message, timestamp);
         this.type = 'broadcast';
+        this.user = {features: [null]}; // so that global emotes are in effect
         return this;
     };
     $.extend(ChatBroadcastMessage.prototype, ChatMessage.prototype);

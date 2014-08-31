@@ -116,6 +116,7 @@ chat.prototype.loadIgnoreList = function() {
 
 // websocket stuff
 chat.prototype.parseAndDispatch = function(e) {
+	if ( typeof(e) != 'string' ) return;
 	var eventname   = e.data.split(' ', 1)[0],
 			handler = 'on' + eventname,
 			obj     = JSON.parse(e.data.substring(eventname.length+1));
