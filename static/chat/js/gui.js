@@ -621,7 +621,7 @@
         
         handleHighlight: function(message, skipnotify){
             
-            if (!message.user || message.user.username == this.engine.user.username)
+            if (!message.user || !message.user.username || message.user.username == this.engine.user.username)
                 return;
             
             var u = message.user.username.toLowerCase();
