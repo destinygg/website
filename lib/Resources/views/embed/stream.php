@@ -11,7 +11,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body class="embed">
-	<iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless></iframe>
+	<iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/embed" scrolling="no" seamless></iframe>
 	<?php include Tpl::file('seg/commonbottom.php') ?>
 </body>
 </html>

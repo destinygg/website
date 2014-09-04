@@ -47,7 +47,7 @@ use Destiny\Common\Config;
                 <div class="stream-overlay to-botleft"></div>
                 <div class="stream-overlay to-main"></div>
                 <div class="stream-overlay fsbtn" title="Fullscreen"></div>
-                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless></iframe>
+                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/embed" scrolling="no" seamless></iframe>
             </div>
             
         </div>
