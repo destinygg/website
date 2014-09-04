@@ -31,13 +31,7 @@ use Destiny\Common\Config;
             <div class="stream-overlay to-botleft"></div>
             <div class="stream-overlay to-main"></div>
             <div class="stream-overlay fsbtn" title="Fullscreen"></div>
-            <object class="stream-element" type="application/x-shockwave-flash" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=<?=Config::$a['twitch']['user']?>" height="100%" width="100%">
-                <param name="allowFullScreen" value="true">
-                <param name="allowScriptAccess" value="always">
-                <param name="allowNetworking" value="all">
-                <param name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf">
-                <param name="flashvars" value="hostname=www.twitch.tv&amp;channel=<?=Config::$a['twitch']['user']?>&amp;auto_play=true&amp">
-            </object>
+            <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/embed?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless></iframe>
         </div>
         <div id="chat-embed">
             <iframe class="stream-element" style="border:none;" seamless="seamless" src="/embed/chat"></iframe>

@@ -1287,7 +1287,7 @@ body#emoticons .emote-label:hover {
   width: 350px;
   float: right;
 }
-#twitchpanel .stream-element {
+iframe.stream-element {
   width: 100%;
   height: 100%;
 }
