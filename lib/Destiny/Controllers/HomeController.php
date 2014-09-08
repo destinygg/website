@@ -98,8 +98,9 @@ class HomeController {
      * @return string
      */
     public function emoticons(array $params, ViewModel $model) {
-        $model->emoticons = Config::$a['chat'] ['customemotes'];
-        natcasesort( $model->emoticons );
+        $emotes = Config::$a['chat'] ['customemotes'];
+        natcasesort( $emotes );
+        $model->emoticons = $emotes;
         return 'chat/emoticons';
     }
 
