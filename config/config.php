@@ -44,6 +44,10 @@ return array (
 			'Nappa',
 			'DAFUK',
 			'AYYYLMAO',
+			'INFESTINY',
+			'SURPRISE',
+			'FerretLOL',
+			'Sippy',
 		),
 	),
 	'redis' => array(
