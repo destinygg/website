@@ -99,27 +99,20 @@ use Destiny\Common\Config;
           </div>
 
           <div class="ds-block">
-            <p>
-              <span>By clicking the 'Pay subscription' button below, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</span>
-              <br /><a href="#" onclick="$(this).hide().parent().next().show(); return false;">Planning to use eChecks?</a>
-            </p>
-            <p style="display: none;">
-              <span class="label label-warning">NOTE:</span> Those who choose to use the &quot;eCheck&quot; as a payment type, will not receive their subscription
-              <br>until the payment has been cleared which can take up to 7 business days.
-            </p>
-          </div>
-
-          <div class="ds-block">
             <label>
               <div>Send a message with your subscription (optional):</div>
-              <input type="text" name="sub-message" autocomplete="off" maxlength="250" class="form-control" placeholder=""/>
             </label>
+            <textarea name="sub-message" autocomplete="off" maxlength="250" class="form-control" placeholder=""></textarea>
+            <small>Maximum message length 250 characters</small>
           </div>
 
           <div class="form-actions">
             <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
             <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-shopping-cart"></span> Pay subscription</button>
             <a href="/subscribe" class="btn btn-link">Cancel</a>
+            <p style="font-size: 12px; margin: 15px 0 0 0; color: #">
+              <span>By clicking the &quot;Pay subscription&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</span>
+            </p>
           </div>
 
         </form>
@@ -131,8 +124,15 @@ use Destiny\Common\Config;
   <?php include Tpl::file('seg/commonbottom.php') ?>
   
   <script>
-  $('form.onceoff').on('submit', function(){
-    $(this).find('[type="submit"]').attr("disabled", "disabled");
+  $(function(){
+    $('form.onceoff').on('submit', function(){
+      var frm = $(this);
+      frm.find('[type="submit"]').attr("disabled", "disabled");
+      window.setTimeout(function(){
+        frm.find('[type="submit"]').removeAttr("disabled");
+      }, 30000);
+    });
+    $('textarea[name="sub-message"]').focus();
   });
   </script>
   

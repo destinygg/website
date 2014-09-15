@@ -335,11 +335,8 @@ chat.prototype.onBROADCAST = function(data) {
 			}, 5000);
 		});
 
-	} else { // dont add a broadcastui for it
+	} else {
 		var message = new ChatBroadcastMessage(data.data, data.timestamp);
-		message.onAPPEND = function(gui){
-			gui.addBroadcastUI(message.message);
-		};
 	}
 
 	return message;
