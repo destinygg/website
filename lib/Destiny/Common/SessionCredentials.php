@@ -110,14 +110,14 @@ class SessionCredentials {
      */
     public function getData() {
         return array (
-                'email' => $this->getEmail (),
-                'username' => $this->getUserName (),
-                'userId' => $this->getUserId (),
-                'userStatus' => $this->getUserStatus (),
-                'country' => $this->getCountry (),
-                'roles' => $this->getRoles (),
-                'authProvider' => $this->getAuthProvider (),
-                'features' => $this->getFeatures ()
+            'email' => $this->getEmail (),
+            'username' => $this->getUserName (),
+            'userId' => $this->getUserId (),
+            'userStatus' => $this->getUserStatus (),
+            'country' => $this->getCountry (),
+            'roles' => $this->getRoles (),
+            'authProvider' => $this->getAuthProvider (),
+            'features' => $this->getFeatures ()
         );
     }
 
@@ -257,7 +257,7 @@ class SessionCredentials {
      */
     public function hasFeature($featureName) {
         foreach ( $this->features as $feature ) {
-            if (strcasecmp ( $feature, $featureName ) == 0) {
+            if (strcasecmp ( $feature, $featureName ) === 0) {
                 return true;
             }
         }

@@ -138,8 +138,8 @@ class IpnController {
           // We dont care about what state the sub is in.... 
           $subscription = $subService->getSubscriptionByOrderId ( $paymentProfile ['orderId'] );
 
-          
           if (empty ( $subscription )) {
+            $log->critical ( 'Invalid recurring_payment', $data );
             throw new Exception ( 'Invalid subscription for recurring payment' );
           }
 

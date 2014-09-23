@@ -261,6 +261,7 @@ class SubscriptionController {
         $subscriptionsService = SubscriptionsService::instance ();
         $ordersService = OrdersService::instance ();
         $payPalApiService = PayPalApiService::instance ();
+        $log = Application::instance ()->getLogger ();
         
         $userId = Session::getCredentials ()->getUserId ();
         $subscriptionType = $subscriptionsService->getSubscriptionType ( $params ['subscription'] );
@@ -334,17 +335,18 @@ class SubscriptionController {
 
             if (! empty ( $order )){
                 $ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
+                $log->error ( $e->getMessage(), $order );
+                return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/error';
             }
             if (! empty ( $paymentProfile )){
                 $ordersService->updatePaymentStatus ( $paymentProfile ['paymentId'], PaymentStatus::ERROR );
+                $log->error ( $e->getMessage(), $paymentProfile );
             }
             if (! empty ( $subscriptionId )){
                 $subscriptionsService->updateSubscriptionState ( $subscriptionId, SubscriptionStatus::ERROR );
+                $log->error ( $e->getMessage() );
             }
-
-            $log = Application::instance ()->getLogger ();
-            $log->error ( $e->getMessage(), $order );
-            return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/error';
+            throw new Exception ( $e->getMessage() );
         }
     }
     
@@ -513,7 +515,7 @@ class SubscriptionController {
             if(!empty($orderSubscription['gifter']) && !$subscriptionsService->getCanUserReceiveGift ( $userId, $subscriptionUser['userId'] )){
 
                 // Update the state to ERROR and log a critical error
-                Application::instance ()->getLogger ()->critical ( 'Duplicate subscription attempt, Gifter: %d GifteeId: %d, OrderId: %d', $userId, $subscriptionUser['userId'], $order ['orderId'] );
+                Application::instance ()->getLogger ()->critical ( sprintf('Duplicate subscription attempt, Gifter: %d GifteeId: %d, OrderId: %d', $userId, $subscriptionUser['userId'], $order ['orderId']) );
                 $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ERROR );
 
             }else{
