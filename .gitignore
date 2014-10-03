@@ -12,3 +12,5 @@ config/config.local.php
 /deployment.properties
 /node_modules
 /scripts/redis/*.hash
+.DS_Store
+*.swp
