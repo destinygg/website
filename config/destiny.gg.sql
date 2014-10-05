@@ -255,5 +255,5 @@ INSERT  INTO `dfl_features`(`featureId`,`featureName`,`featureLabel`) VALUES
 (10, 'flair4', 'Trusted'),
 (11, 'flair5', 'Contributor'),
 (12, 'flair6', 'Composition Challenge Winner'),
-(13, 'flair7', 'Eve Notable');
+(13, 'flair7', 'Eve Notable'),
 (14, 'flair8', 'Subscriber Tier 4');

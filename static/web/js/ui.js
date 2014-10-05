@@ -364,7 +364,7 @@ $(function(){
     });
     
     // Add collapses
-    $(".collapse").collapse();
+    $(".collapse").not('#collapsemenu').collapse();
     
     // Section collapse
     $(".collapsible").each(function(){
