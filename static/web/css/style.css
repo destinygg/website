@@ -445,6 +445,14 @@ i.icon-google {
 i.icon-reddit {
   background-image: url(../img/ico/reddit_16.png);
 }
+i.icon-android {
+  background: no-repeat center center;
+  background-image: url(../img/ico/android_24.png);
+  background-size: 24px 24px;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+}
 
 
 .stream {
