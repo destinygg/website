@@ -48,15 +48,6 @@ body {
   z-index: 49;
 }
 
-// override bootstrap nav
-.navbar .container {
-  min-width:940px;
-}
-@media (min-width: @screen-lg-min) {
-  .navbar .container {
-    width: 1170px;
-  }
-}
 .navbar {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   margin: 0;
@@ -71,6 +62,61 @@ body {
 .navbar-nav > li > a {
   padding-top: 15px;
   padding-bottom: 15px;
+}
+.navbar #menubtn {
+  display: none;
+}
+
+@media (max-width: @screen-xs-max) {
+  .navbar {
+    min-height: 30px;
+
+    #menubtn {
+      display: inherit;
+
+      a {
+        padding-left: 0;
+        padding-right: 0;
+
+        .menuicon {
+          display: inline-block;
+
+          &:before {
+            display: block;
+            content: "";
+            border-bottom: 6px double white;
+            border-top: 2px solid white;
+            height: 10px;
+            width: 16px;
+          }
+        }
+
+        &.collapsed .menuicon:before {
+          border-color: #999;
+        }
+      }
+    }
+
+    .navbar-collapse {
+      &.collapse {
+        display: none;
+      }
+
+      &.in {
+        display: block;
+      }
+
+      & > ul > li {
+        float: left;
+        clear: left;
+      }
+    }
+  }
+
+  .navbar-nav > li > a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
 }
 
 // Embeds
@@ -999,7 +1045,7 @@ table.grid .rank {
   bottom: 0;  
 }
 
-@media (max-width: @screen-sm-max) {
+@media (max-width: @screen-xs-max) {
   .stream-overlay {
     display: none;
   }
@@ -1027,6 +1073,7 @@ body#profile .container {
 }
 
 // Bigscreen page
+@xs-navheight: 31px;
 @navheight: 51px;
 @chatwidth: 400px;
 @panelheight: 31px;
@@ -1044,7 +1091,7 @@ body#bigscreen #page-content {
     -webkit-flex-direction: column;
     flex-direction: column;
     position: absolute;
-    top: @navheight;
+    top: @xs-navheight;
     bottom: 0;
     left: 0;
     right: 0;
