@@ -28,7 +28,8 @@ module.exports = function(grunt) {
 						'static/vendor/bootstrap-3.1.1/js/bootstrap.js',
 						'static/vendor/moment/moment-2.4.0.min.js',
 						'static/vendor/overthrow/overthrow.min.js',
-						'static/vendor/nanoscrollerjs/jquery.nanoscroller.js'// We currently dont use the min file, because of custom mods
+						'static/vendor/nanoscrollerjs/jquery.nanoscroller.js',// We currently dont use the min file, because of custom mods
+						'static/vendor/jquery.smartbanner/jquery.smartbanner.js'
 					]
 				}
 			},

@@ -659,3 +659,28 @@ $(function(){
         }
     });
 });
+
+if (window.self === window.top) {
+    var page = $('#page-content');
+    if (page.css('position') == 'absolute') {
+        $('body').on('show', '#smartbanner', function(ev, bannerHeight) {
+            page.css('top', page.position()['top'] + bannerHeight);
+        });
+
+        $('body').on('hide', '#smartbanner', function() {
+            page.css('top', '');
+        });
+    }
+
+    $(function(){
+        $.smartbanner({
+            title: 'Destiny',
+            author: 'Destiny.gg',
+            daysHidden: 30,
+            daysReminder: 90,
+            icon: destiny.cdn+'/web/img/androidIcon.png',
+            // for testing
+            // daysHidden: 0
+        });
+    });
+}
