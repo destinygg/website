@@ -18,6 +18,14 @@ body {
   padding: 0;
 }
 
+/* Removes bootstrap column padding */
+.row-no-padding {
+  [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
 @-moz-keyframes spin { 
   0% { -moz-transform: rotate(0deg); }
   100% { -moz-transform: rotate(-360deg); }
@@ -454,12 +462,6 @@ i.icon-android {
   display: inline-block;
 }
 
-
-.stream {
-  width: 50%;
-  float: left;
-}
-
 .stream .thumbnails {
   margin: 0;
   padding: 20px 0 0 0;
@@ -660,18 +662,9 @@ i.icon-android {
   background: black url("../img/feenixnascita.jpg") no-repeat top center;
 }
 
-.public-ads {
-  width: 300px;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
 .public-ads,
 .donate-block {
   height: 250px;
-  float: left;
-  margin-left: 20px;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 6px;
 }

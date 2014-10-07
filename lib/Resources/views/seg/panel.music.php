@@ -4,9 +4,9 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
 <section class="container">
-  <div class="content content-dark clearfix">
+  <div class="content content-dark clearfix row-no-padding">
 
-    <div id="stream-twitter" class="stream">
+    <div id="stream-twitter" class="col-sm-6 stream">
       <h3 class="title">
         <span>Tweets</span>
         <a href="https://twitter.com/<?=Config::$a['twitter']['user']?>/">twitter.com</a>
@@ -33,7 +33,7 @@ use Destiny\Common\Config;
       </div>
     </div>
 
-    <div id="stream-lastfm" class="stream">
+    <div id="stream-lastfm" class="col-sm-6 stream">
       <h3 class="title">
         <span>Music</span>
         <a href="http://www.last.fm/user/<?=Config::$a['lastfm']['user']?>">last.fm</a>

@@ -2,7 +2,7 @@
 use Destiny\Common\Config;
 ?>
 <section id="footer" class="container">
-	<footer class="clearfix">
+	<footer class="clearfix row-no-padding">
 		<p class="col-sm-5">
 			<span><?=Config::$a['meta']['shortName']?> &copy; <?=date('Y')?> </span>
 			<a><i title="There are no limits here" class="icon-bobross"></i></a>

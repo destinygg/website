@@ -5,8 +5,8 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
 <section class="container">
-	<div class="content content-dark content-split clearfix">
-		<div id="youtube" class="stream">
+	<div class="content content-dark content-split clearfix row-no-padding">
+		<div id="youtube" class="col-sm-6 stream">
 			<h3 class="title clearfix">
 				<span>Videos</span> <a href="http://www.youtube.com/user/<?=Config::$a['youtube']['user']?>/videos?view=0" class="youtube-title">youtube.com</a>
 			</h3>
@@ -29,7 +29,7 @@ use Destiny\Common\Config;
 			<?endif;?>
 			</ul>
 		</div>
-		<div id="broadcasts" class="stream">
+		<div id="broadcasts" class="col-sm-6 stream">
 			<h3 class="title clearfix">
 				<span>Broadcasts</span> <a href="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/profile/pastBroadcasts" class="twitch-title">twitch.tv</a>
 			</h3>
