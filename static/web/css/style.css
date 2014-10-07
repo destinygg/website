@@ -662,11 +662,64 @@ i.icon-android {
   background: black url("../img/feenixnascita.jpg") no-repeat top center;
 }
 
+#donate-wrap,
+#private-ads-wrap,
+#public-ads-wrap {
+  text-align: center;
+}
+
+@media (min-width: @screen-sm-min) {
+  #donate-wrap {
+    text-align: center;
+  }
+
+  #private-ads-wrap {
+    text-align: left;
+  }
+
+  #public-ads-wrap {
+    text-align: right;
+  }
+}
+
+@media (min-width: @screen-md-min) {
+  #donate-wrap {
+    text-align: left;
+  }
+
+  #private-ads-wrap {
+    text-align: center;
+  }
+}
+
 .public-ads,
 .donate-block {
   height: 250px;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 6px;
+}
+
+.public-ads,
+.donate-block,
+.private-ads {
+  display: inline-block;
+}
+
+.donate-block,
+.public-ads {
+  width: 300px;
+}
+
+@media (min-width: @screen-sm-min) {
+  .donate-block {
+    width: 80%;
+  }
+}
+
+@media (min-width: @screen-md-min) {
+  .donate-block {
+    width: 300px;
+  }
 }
 
 .public-ads:first-child,.donate-block:first-child {
@@ -678,6 +731,7 @@ i.icon-android {
   padding: 40px 30px;
   text-align: center;
   font-size: 14px;
+  display: inline-block;
 }
 
 #paypal-form {
@@ -723,15 +777,34 @@ i.icon-android {
   padding: 0 30px;
 }
 
+#footer {
+  margin-bottom: 10px;
+}
+
 footer {
   position: relative;
   font-size: 12px;
   color: #555;
   text-shadow: 1px 1px 1px black;
   padding: 0;
+
+  #footer-badges {
+    text-align: center;
+  }
+  
+  #footer-thanks {
+    text-align: right;
+  }
 }
-footer p.pull-right {
-  text-align: right;
+
+@media (max-width: @screen-xs-max) {
+  footer {
+    #footer-copyright,
+    #footer-badges,
+    #footer-thanks {
+      text-align: center;
+    }
+  }
 }
 
 /**
