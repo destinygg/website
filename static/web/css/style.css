@@ -1378,12 +1378,18 @@ body#emoticons .emote-label:hover {
   min-height: 200px; 
   background: rgba(0,0,0,0.5); 
   border-radius: 6px;
+
+  &:after {
+    content: "";
+    clear: both;
+    display: block;
+  }
 }
 #live-banner .preview {
-  position: absolute;
   padding: 10px;  
   top:0;
   left:0;
+  float: left;
 }
 #live-banner .preview a {
   display: block;
@@ -1391,8 +1397,9 @@ body#emoticons .emote-label:hover {
   width: 300px;
   height: 180px;  
 }
+
 #live-banner #live-info-wrap {
-  margin-left: 305px;
+  float: left;
 }
 #live-banner #live-info-wrap > div {
   padding: 15px 20px;
@@ -1408,6 +1415,26 @@ body#emoticons .emote-label:hover {
 #live-banner #live-info-wrap #live-info {
   margin-bottom: 1em;
   color: #666;
+}
+#live-banner #live-popouts {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+#live-banner #live-info-wrap {
+  max-width: none;
+}
+
+@media(min-width: @screen-sm-min) {
+  #live-banner #live-info-wrap {
+    max-width: 230px;
+  }
+}
+
+@media(min-width: @screen-md-min) {
+  #live-banner #live-info-wrap {
+    max-width: none;
+  }
 }
 
 // The panels on the /stream page

@@ -13,10 +13,6 @@ use Destiny\Common\Utils\Date;
         </div>
         <div id="live-info-wrap">
           <div>
-            <div class="pull-right">
-              <a target="_blank" href="/embed/chat" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Pop-out chat</a>
-              <a target="_blank" href="http://www.twitch.tv/destiny/popout" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
-            </div>
             <h1 title="<?=Tpl::out($model->streamInfo['status'])?>"><?=Tpl::out($model->streamInfo['status'])?></h1>
             <div id="live-info">
               Currently playing <strong class="live-info-game"><?=Tpl::out($model->streamInfo['game'])?></strong><br />
@@ -26,6 +22,10 @@ use Destiny\Common\Utils\Date;
             <a id="live-link" href="/bigscreen" class="btn btn-lg btn-primary"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>
             <small>&nbsp; Prefer the old layout? <a href="/screen">Try this</a></small>
           </div>
+        </div>
+        <div id="live-popouts" class="hidden-xs">
+          <a target="_blank" href="/embed/chat" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Pop-out chat</a>
+          <a target="_blank" href="http://www.twitch.tv/destiny/popout" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
         </div>
       </div>
     </div>
@@ -39,10 +39,6 @@ use Destiny\Common\Utils\Date;
         </div>
         <div id="live-info-wrap">
           <div>
-            <div class="pull-right">
-              <a target="_blank" href="/embed/chat" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Pop-out chat</a>
-              <a target="_blank" href="http://www.twitch.tv/destiny/popout" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
-            </div>
             <h1>Stream currently offline</h1>
             <div id="live-info">
               <span class="offline-status"><?= Tpl::out($model->streamInfo['status']) ?></span><br />
@@ -52,6 +48,10 @@ use Destiny\Common\Utils\Date;
             <a href="/bigscreen" class="btn btn-lg btn-primary">Join the chat while you wait!</a>
             <small>&nbsp; Prefer the old layout? <a href="/screen">Try this</a></small>
           </div>
+        </div>
+        <div id="live-popouts" class="hidden-xs">
+          <a target="_blank" href="/embed/chat" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Pop-out chat</a>
+          <a target="_blank" href="http://www.twitch.tv/destiny/popout" class="popup btn btn-xs btn-link" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Pop-out stream</a>
         </div>
       </div>
     </div>
