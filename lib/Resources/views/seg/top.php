@@ -27,7 +27,7 @@ use Destiny\Common\Session;
         <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
         <?php endif; ?>
 
-        <li class="bigscreen"><a title="So. Much. Girth." href="/bigscreen" rel="bigscreen"><i class="icon-bigscreen"></i><span class="hidden-xs">Big screen</span></a></li>
+        <li class="bigscreen"><a title="So. Much. Girth." href="/bigscreen" rel="bigscreen"><i class="icon-bigscreen"></i><span class="hidden-xs hidden-sm">Big screen</span></a></li>
         <li class="divider-vertical"></li>
         <?php if(Session::hasRole(UserRole::USER)): ?>
         <li>
