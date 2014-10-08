@@ -7,7 +7,7 @@ use Destiny\Common\Utils\Date;
 
   <section id="online-banner-view" class="container" <?= (!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])) ? 'style="display: none"' : '' ?>>
     <div class="content">
-      <div id="live-banner">
+      <div id="live-banner" class="clearfix">
         <div class="preview">
           <a href="/bigscreen" title="<?=(isset($model->streamInfo['status'])) ? Tpl::out($model->streamInfo['status']) : ''?>" style="<?=(!empty($model->streamInfo['stream'])) ? 'background: url('. Tpl::out($model->streamInfo['stream']['preview']['medium']) .') no-repeat center center;' : ''?>"></a>
         </div>
@@ -33,7 +33,7 @@ use Destiny\Common\Utils\Date;
   
   <section id="offline-banner-view" class="container" <?= (!empty($model->streamInfo['stream'])) ? 'style="display: none"' : '' ?>>
     <div class="content">
-      <div id="live-banner">
+      <div id="live-banner" class="clearfix">
         <div class="preview">
           <a href="/bigscreen" title="<?=Tpl::out($model->streamInfo['status'])?>" style="background: url(<?=(!empty($model->broadcasts) && isset($model->broadcasts['videos'])) ? Tpl::out($model->broadcasts['videos'][0]['preview']) : Tpl::out($model->broadcasts['video_banner'])?>) no-repeat center center;"></a>
         </div>

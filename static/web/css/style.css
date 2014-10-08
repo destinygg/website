@@ -1444,12 +1444,6 @@ body#emoticons .emote-label:hover {
   min-height: 200px; 
   background: rgba(0,0,0,0.5); 
   border-radius: 6px;
-
-  &:after {
-    content: "";
-    clear: both;
-    display: block;
-  }
 }
 #live-banner .preview {
   padding: 10px;  
