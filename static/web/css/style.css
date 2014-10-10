@@ -1138,8 +1138,11 @@ table.grid .rank {
 }
 
 body#bigscreen .container,
+body#bigscreen .container-fluid,
 body#authentication .container,
-body#profile .container {
+body#authentication .container-fluid,
+body#profile .container,
+body#profile .container-fluid {
   width: auto;
   max-width: 100%;
 }
@@ -1400,7 +1403,7 @@ form label.error {
   }
 }
 
-body#admin #main-nav .container {
+body#admin #main-nav .container-fluid {
   margin: 0;
 }
 
