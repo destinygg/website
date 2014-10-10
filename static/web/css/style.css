@@ -1,5 +1,5 @@
 @screen-xs-max: 767px;
-@screen-sm-min: 768px;
+@screen-sm-min: 768px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
 @screen-sm-max: 991px;
 @screen-md-min: 992px;
 @screen-md-max: 1199px;

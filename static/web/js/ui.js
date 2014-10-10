@@ -264,8 +264,12 @@ $(function(){
 
         // Bigscreen resize
         $('#chat-panel-resize-bar').each(function(){
-            var resizebar   = $(this),
-                minwidth    = 320;
+
+            var resizebar    = $(this),
+                minwidth     = 320,
+                disableWidth = 768;
+
+            resizebar.css('left', 0);
 
             // Resize the stream / chat frames
             var resizeFrames = function(nwidth)
@@ -280,7 +284,6 @@ $(function(){
                 streampanel.css('width', '-o-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', 'calc(100% - '+ nwidth +'px)');
                 chatpanel.css('width', nwidth);
-
                 resizebar.css('left', 0);
 
                 if(localStorage){
@@ -318,22 +321,28 @@ $(function(){
                     $(document).unbind('mousemove.chatresize');
                     $(document).unbind('mouseup.chatresize');
 
-                    // Resize the frame (width is for the chat panel, the stream is always 100%)
+                    // Resize the frames
                     resizeFrames( (chatpanel.offset().left + chatpanel.outerWidth()) - resizebar.offset().left );
                 });
 
                 $(document).on('mousemove.chatresize', function(e){
                     e.preventDefault();
-
-                    // position resize bar
                     resizebar.css('left', sx + (e.clientX - offsetX));
                 });
 
             });
 
+            // If the window is reduced to a size below the disableWidth, disable the custom resizing
+            $(window).on('resize.chatresize', function(){
+                if($(window).width() <= disableWidth){
+                    streampanel.removeAttr('style');
+                    chatpanel.removeAttr('style');
+                }
+            });
+
             // Onload, remember the last width the user chose
             var width = parseInt(localStorage['bigscreen.chat.width']);
-            if(width > minwidth){
+            if(width > minwidth && $(window).width() > disableWidth){
                 resizeFrames(width);
             }
 
