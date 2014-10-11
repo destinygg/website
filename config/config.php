@@ -22,8 +22,6 @@ return array (
 			'Abathur',
 			'LUL',
 			'Heimerdonger',
-			'ASLAN',
-			'DJAslan',
 			'SoSad',
 			'DURRSTINY',
 			'SURPRISE',
