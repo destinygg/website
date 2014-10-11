@@ -1485,7 +1485,7 @@ body#emoticons .emote-label:hover {
   right: 20px;
 }
 #live-banner #live-info-wrap {
-  max-width: none;
+  max-width: 650px;
 }
 
 @media(min-width: @screen-sm-min) {
@@ -1496,7 +1496,13 @@ body#emoticons .emote-label:hover {
 
 @media(min-width: @screen-md-min) {
   #live-banner #live-info-wrap {
-    max-width: none;
+    max-width: 450px;
+  }
+}
+
+@media(min-width: @screen-lg-min) {
+  #live-banner #live-info-wrap {
+    max-width: 650px;
   }
 }
 
