@@ -23,6 +23,7 @@ function chat(element, user, options) {
 	this.debug              = false;
 	this.users              = [];
 	this.ignorelist         = {};
+	this.cmdignorelist      = {};
 	this.controlevents      = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
 	this.errorstrings       = {
 		"nopermission"      : "You do not have the required permissions to use that",
@@ -111,7 +112,8 @@ chat.prototype.loadIgnoreList = function() {
 	if (!localStorage)
 		return;
 	
-	this.ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
+	this.ignorelist = JSON.parse(localStorage['chatignorelist'] || '{rustlebot: true}');
+	this.cmdignorelist = JSON.parse(localStorage['cmdignorelist'] || '{!rustlebot}');
 };
 
 // websocket stuff
@@ -226,6 +228,17 @@ chat.prototype.onMSG = function(data) {
 	if(this.user.username != data.nick || !messageui){
 		if (this.ignorelist[data.nick.toLowerCase()]) // user ignored
 			return;
+
+		// check if message includes ignored commands
+		if(data.data.indexOf("!") !== -1){
+			var first_word = data.data.split(' ').shift(0);
+			// might need to do Object.keys(this.cmdignorelist) if 
+			// it has the same format as this.ignorelist
+			var re = new RegExp("^("+this.cmdignorelist.join('|')+")", 'i');
+			if(re.test(data.data)){
+				return;
+			}
+		}
 		
 		var user = this.users[data.nick];
 		if (!user) {
@@ -347,6 +360,7 @@ chat.prototype.handleCommand = function(str) {
 	var parts     = str.split(" ");
 	    command   = parts[0].toLowerCase(),
 	    nickregex = /^[a-zA-Z0-9_]{3,20}$/,
+	    cmdregex  = /^!/i,
 	    payload   = {};
 	
 	if (str.substring(0, 1) === '/') {
@@ -396,17 +410,25 @@ chat.prototype.handleCommand = function(str) {
 			}
 			
 			var nick = parts[1].toLowerCase();
-			if (!nickregex.test(nick)) {
+			if(nickregex.test(nick)){
+				this.ignorelist[nick] = true;
+				this.gui.removeUserMessages(nick);
+				this.gui.push(new ChatStatusMessage("Ignoring "+nick));
+				
+				localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
+				this.loadIgnoreList();
+			}else if(cmdregex.test(nick)) {
+				this.cmdignorelist[nick] = true;
+				// TODO (retroactively remote chat messages with this command)
+				// this.gui.removeUserMessages(nick); // works for nicks, not commands
+				this.gui.push(new ChatStatusMessage("Ignoring lines starting with "+nick));
+				
+				localStorage['cmdignorelist'] = JSON.stringify(this.cmdignorelist);
+				this.loadIgnoreList();				
+			}else{
 				this.gui.push(new ChatErrorMessage("Invalid nick - /ignore nick"));
 				return;
 			}
-			
-			this.ignorelist[nick] = true;
-			this.gui.removeUserMessages(nick);
-			this.gui.push(new ChatStatusMessage("Ignoring "+nick));
-			
-			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
-			this.loadIgnoreList();
 			break;
 			
 		case "unignore":
@@ -415,16 +437,22 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			
-			if (!parts[1] || !nickregex.test(parts[1].toLowerCase())) {
+			if (!parts[1] || !nickregex.test(parts[1].toLowerCase()) || !cmdregex.test(parts[1])) {
 				this.gui.push(new ChatErrorMessage("Invalid nick - /ignore nick"));
 				return;
 			}
-			var nick = parts[1].toLowerCase();
-			
-			delete(this.ignorelist[nick]);
-			this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
-			
-			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
+			var nick = nick.toLowerCase();
+			if(nickregex.test(nick)){
+				delete(this.ignorelist[nick]);
+				this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
+				
+				localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
+			}else if(cmdregex.test(nick)){
+				delete(this.cmdignorelist[nick]);
+				this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
+				
+				localStorage['cmdignorelist'] = JSON.stringify(this.cmdignorelist);
+			}
 			this.loadIgnoreList();
 			break;
 			
