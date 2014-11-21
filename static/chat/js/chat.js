@@ -441,7 +441,7 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatErrorMessage("Invalid nick - /ignore nick"));
 				return;
 			}
-			var nick = nick.toLowerCase();
+			var nick = parts[1].toLowerCase();
 			if(nickregex.test(nick)){
 				delete(this.ignorelist[nick]);
 				this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
