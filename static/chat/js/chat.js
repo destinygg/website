@@ -368,12 +368,24 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "help":
-			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
+			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /whisper /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
 			break;
 			
 		case "me":
 			payload.data = "/" + str;
 			this.emit("MSG", payload);
+			break;
+
+		case "notify":
+		case "whisper":
+			if (!parts[1] || !nickregex.test(parts[1].toLowerCase())) {
+				this.gui.push(new ChatErrorMessage("Invalid nick - /whisper nick message"));
+				return;
+			}
+			payload.nick = parts[1]
+			parts.shift(0) // remove /whisper
+			payload.data = parts.join(' ')
+			this.emit("WHISPER", payload)
 			break;
 			
 		case "ignore":
