@@ -188,6 +188,9 @@ chat.prototype.onQUIT = function(data) {
 		this.gui.trigger('quit', data);
 	}
 };
+chat.prototype.onWHISPER = function (data) {
+	this.onMSG(data)
+};
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
 	if(this.user.username == data.nick && $.isArray(data.features))
