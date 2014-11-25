@@ -379,6 +379,9 @@ chat.prototype.handleCommand = function(str) {
 			this.emit("MSG", payload);
 			break;
 
+		case "w":
+		case "tell":
+		case "t":
 		case "whisper":
 		case "notify":
 			if (!parts[1] || !nickregex.test(parts[1].toLowerCase())) {
