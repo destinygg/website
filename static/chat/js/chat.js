@@ -189,7 +189,9 @@ chat.prototype.onQUIT = function(data) {
 	}
 };
 chat.prototype.onNOTIFY = function (data) {
-	this.onMSG(data)
+	var usermessage = this.onMSG(data)
+	usermessage.isNotify = true
+	return usermessage
 };
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
