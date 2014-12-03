@@ -55,6 +55,7 @@ return array (
 			'AYYYLMAO',
 			'DANKMEMES',
 			'MLADY',
+			'SOTRIGGERED',
 		),
 	),
 	'redis' => array(
