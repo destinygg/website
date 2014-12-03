@@ -2,7 +2,7 @@
 	"name" : "destiny/website",
 	"description": "Destiny.gg website",
 	"license": "proprietary",
-	"version": "1.4.20",
+	"version": "1.4.21",
 	"minimum-stability": "dev",
 	"require": {
 		"php" : ">=5.3.0",
