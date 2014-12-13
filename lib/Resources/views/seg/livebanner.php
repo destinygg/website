@@ -20,7 +20,6 @@ use Destiny\Common\Utils\Date;
               ~<span class="live-info-viewers"><?=Tpl::out((!empty($model->streamInfo['stream'])) ? $model->streamInfo['stream']['viewers'] : 0)?></span> viewers
             </div>
             <a id="live-link" href="/bigscreen" class="btn btn-lg btn-primary"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>
-            <small class="hidden-xs">&nbsp; Prefer the old layout? <a href="/screen">Try this</a></small>
           </div>
         </div>
         <div id="live-popouts" class="hidden-xs">
@@ -46,7 +45,6 @@ use Destiny\Common\Utils\Date;
               Was playing <strong class="offline-info-game"><?=(isset($model->streamInfo['game'])) ? Tpl::out($model->streamInfo['game']) : ''?></strong><br />
             </div>
             <a href="/bigscreen" class="btn btn-lg btn-primary">Join the chat while you wait!</a>
-            <small class="hidden-xs">&nbsp; Prefer the old layout? <a href="/screen">Try this</a></small>
           </div>
         </div>
         <div id="live-popouts" class="hidden-xs">

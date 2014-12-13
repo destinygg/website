@@ -66,16 +66,9 @@ class HomeController {
      * @return string
      */
     public function screen(array $params, ViewModel $model) {
-        $app = Application::instance ();
-        $cacheDriver = $app->getCacheDriver ();
-        $model->articles = $cacheDriver->fetch ( 'recentblog' );
-        $model->summoners = $cacheDriver->fetch ( 'summoners' );
-        $model->tweets = $cacheDriver->fetch ( 'twitter' );
-        $model->music = $cacheDriver->fetch ( 'recenttracks' );
-        $model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
-        $model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
-        $model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
-        return 'screen';
+        $response = new Response ( Http::STATUS_MOVED_PERMANENTLY );
+        $response->setLocation ( '/bigscreen' );
+        return $response;
     }
 
     /**

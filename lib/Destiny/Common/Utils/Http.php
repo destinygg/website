@@ -15,6 +15,8 @@ abstract class Http {
     const HEADER_LOCATION = 'Location';
     const HEADER_PRAGMA = 'Pragma';
     const HEADER_CONNECTION = 'Connection';
+
+    const STATUS_MOVED_PERMANENTLY = 301;
     const STATUS_NOT_MODIFIED = 304;
     const STATUS_FORBIDDEN = 403;
     const STATUS_NOT_FOUND = 404;
@@ -25,6 +27,7 @@ abstract class Http {
     const STATUS_NO_CONTENT = 204;
     
     public static $HEADER_STATUSES = array (
+        301 => 'Moved Permanently',
         500 => 'Error',
         404 => 'Not Found',
         401 => 'Unauthorized',

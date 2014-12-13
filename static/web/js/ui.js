@@ -210,24 +210,6 @@ $(function(){
             gad.before('<div id="adblocker-message"><a>Add blocker</a><p>Please consider turning adblocker off for this website.</p></div>');
         }
     }, 8000);
-
-    // Old style twitch panel
-    $('#twitchpanel').each(function(){
-        $('#popoutchat').on('click', function(){
-            window.open('/embed/chat', '_blank', window.getOptionsString());
-            $('body').addClass('nochat');
-            $('#chat-embed').remove();
-            $('#popoutchat,#popoutvideo').hide();
-            return false;
-        });
-        $('#popoutvideo').on('click', function(){
-            window.open('http://www.twitch.tv/destiny/popout', '_blank', window.getOptionsString({height:420, width:720}));
-            $('body').addClass('novideo');
-            $('#player-embed').remove();
-            $('#popoutchat,#popoutvideo').hide();
-            return false;
-        });
-    });
     
     // Bigscreen
     $('body#bigscreen').each(function(){
