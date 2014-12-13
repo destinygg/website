@@ -25,14 +25,14 @@ use Destiny\Common\Config;
                 <div class="toolgroup clearfix">
                     <div class="pull-left channel-stat game">
                     <?php if(!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])): ?>
-                        <span class="glyphicon glyphicon-time"></span>
+                        <span class="fa fa-clock-o"></span>
                         <span>
                         <?php if(isset($model->streamInfo['lastbroadcast'])): ?>
                         Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?>
                         <?php endif; ?>
                         </span>
                         <?php else: ?>
-                        <span class="glyphicon glyphicon-time"></span> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
+                        <span class="fa fa-clock-o"></span> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
                         <?php if(isset($model->streamInfo['stream']) && intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
                         - <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay
                         <?php endif; ?>
@@ -57,9 +57,9 @@ use Destiny\Common\Config;
             <div class="panelheader clearfix">
                 <div class="toolgroup clearfix">
                     <div id="chat-panel-tools">
-                        <a title="Refresh" id="refresh" class="pull-left"><span class="glyphicon glyphicon-refresh"></span></a>
-                        <a title="Close" id="close" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a>
-                        <a title="Popout" id="popout" class="pull-right"><span class="glyphicon glyphicon-share"></span></a>
+                        <a title="Refresh" id="refresh" class="pull-left"><span class="fa fa-refresh"></span></a>
+                        <a title="Close" id="close" class="pull-right"><span class="fa fa-remove"></span></a>
+                        <a title="Popout" id="popout" class="pull-right"><span class="fa fa-share"></span></a>
                     </div>
                 </div>
             </div>

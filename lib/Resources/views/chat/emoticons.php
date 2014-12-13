@@ -14,27 +14,31 @@ use Destiny\Common\Utils\Tpl;
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
 <body id="emoticons">
+  <div id="page-wrap">
 
-  <?php include Tpl::file('seg/top.php') ?>
-  <?php include Tpl::file('seg/headerband.php') ?>
+    <?php include Tpl::file('seg/top.php') ?>
+    <?php include Tpl::file('seg/headerband.php') ?>
 
-  <section class="container">
-    <h1 class="title">Emoticons</h1>
-    <div class="content content-dark">
-      <div class="emoticons clearfix">
-        <?php foreach( $model->emoticons as $trigger ): ?>
-        <div class="emote">
-          <div>
-            <div class="chat-emote chat-emote-<?=$trigger?>" title="<?=$trigger?>"></div>
-            <a class="emote-label"><?=Tpl::out($trigger)?></a>
+    <section class="container">
+      <h1 class="title">Emoticons</h1>
+      <div class="content content-dark">
+        <div class="emoticons clearfix">
+          <?php foreach( $model->emoticons as $trigger ): ?>
+          <div class="emote">
+            <div>
+              <div class="chat-emote chat-emote-<?=$trigger?>" title="<?=$trigger?>"></div>
+              <a class="emote-label"><?=Tpl::out($trigger)?></a>
+            </div>
           </div>
+          <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
       </div>
-    </div>
-  </section>
+    </section>
+
+  </div>
 
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
+  
 </body>
 </html>

@@ -40,7 +40,7 @@ class UserAdminController {
     public function adminUserEdit(array $params, ViewModel $model) {
         $model->title = 'User';
         
-        FilterParams::isRequired($params, 'id');
+        FilterParams::required($params, 'id');
         
         $user = UserService::instance ()->getUserById ( $params ['id'] );
         if (empty ( $user )) {
@@ -92,7 +92,7 @@ class UserAdminController {
     public function adminUserEditProcess(array $params, ViewModel $model) {
         $model->title = 'User';
         
-        FilterParams::isRequired($params, 'id');
+        FilterParams::required($params, 'id');
         
         $authService = AuthenticationService::instance ();
         $userService = UserService::instance ();
@@ -153,7 +153,7 @@ class UserAdminController {
      * @return string
      */
     public function subscriptionAdd(array $params, ViewModel $model) {
-        FilterParams::isRequired ( $params, 'id');
+        FilterParams::required ( $params, 'id');
         
         $userService = UserService::instance ();
 
@@ -184,8 +184,8 @@ class UserAdminController {
      * @return string
      */
     public function subscriptionEdit(array $params, ViewModel $model) {
-        FilterParams::isRequired ( $params, 'id' );
-        FilterParams::isRequired ( $params, 'subscriptionId' );
+        FilterParams::required ( $params, 'id' );
+        FilterParams::required ( $params, 'subscriptionId' );
         
         $subscriptionsService = SubscriptionsService::instance ();
         $userService = UserService::instance ();
@@ -226,10 +226,10 @@ class UserAdminController {
      * @return string
      */
     public function subscriptionSave(array $params, ViewModel $model) {
-        FilterParams::isRequired ( $params, 'subscriptionType' );
-        FilterParams::isRequired ( $params, 'status' );
-        FilterParams::isRequired ( $params, 'createdDate' );
-        FilterParams::isRequired ( $params, 'endDate' );
+        FilterParams::required ( $params, 'subscriptionType' );
+        FilterParams::required ( $params, 'status' );
+        FilterParams::required ( $params, 'createdDate' );
+        FilterParams::required ( $params, 'endDate' );
         
         $subscriptionsService = SubscriptionsService::instance ();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);

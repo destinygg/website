@@ -7,6 +7,7 @@ use Destiny\Common\Service;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\User\UserService;
 
 class ChatIntegrationService extends Service {
     
@@ -35,8 +36,7 @@ class ChatIntegrationService extends Service {
     public function renewChatSessionExpiration($sessionId) {
         if (! empty ( $sessionId )) {
             $redis = Application::instance ()->getRedis ();
-            $id = sprintf ( 'CHAT:session-%s', $sessionId );
-            $redis->expire ( $id, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
+            $redis->expire ( sprintf ( 'CHAT:session-%s', $sessionId ), intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
         }
     }
 
@@ -49,9 +49,8 @@ class ChatIntegrationService extends Service {
     public function setChatSession(SessionCredentials $credentials, $sessionId) {
         $redis = Application::instance ()->getRedis ();
         $json = json_encode ( $credentials->getData () );
-        $id = sprintf ( 'CHAT:session-%s', $sessionId );
         $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-        $redis->set ( $id, $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
+        $redis->set ( sprintf ( 'CHAT:session-%s', $sessionId ), $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
         $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
     }
 
@@ -87,9 +86,9 @@ class ChatIntegrationService extends Service {
         if (empty ( $message )) {
             throw new Exception ( 'Message required' );
         }
-        $redis = Application::instance ()->getRedis ();
         $broadcast = new \stdClass ();
         $broadcast->data = $message;
+        $redis = Application::instance ()->getRedis ();
         $redis->publish ( sprintf ( 'broadcast-%s', Config::$a ['redis'] ['database'] ), json_encode ( $broadcast ) );
         return $broadcast;
     }
@@ -106,7 +105,7 @@ class ChatIntegrationService extends Service {
             throw new Exception ( 'UserId required' );
         }
         $redis = Application::instance ()->getRedis ();
-        $redis->publish ( sprintf ( 'unbanuserid-%s', Config::$a ['redis'] ['database'] ), (string)$userId );
+        $redis->publish ( sprintf ( 'unbanuserid-%s', Config::$a ['redis'] ['database'] ), (string) $userId );
         return $userId;
     }
 
@@ -149,6 +148,7 @@ class ChatIntegrationService extends Service {
     /**
      * Removes all of the bans and notifies the chat to refresh the bans
      * so it actually notices the bans being removed
+     *
      * @throws Exception
      */
     public function purgeBans() {
@@ -160,5 +160,27 @@ class ChatIntegrationService extends Service {
         ");
         $stmt->execute();
         return $redis->publish ( sprintf ( 'refreshbans-%s', Config::$a ['redis'] ['database'] ), "doesnotmatter" );
+    }
+
+    /**
+     * Publish to the private message channel
+     *
+     * @param array $message the message
+     * @throws Exception
+     */
+    public function publishPrivateMessage(array $message) {
+        $userService = UserService::instance ();
+
+        $user = new SessionCredentials($userService->getUserById ($message ['userid']));
+        $targetuser = new SessionCredentials($userService->getUserById ($message ['targetuserid']));
+
+        $data = new \stdClass ();
+        $data->id = $message['id'];
+        $data->data = $message['message'];
+        $data->user = $user;
+        $data->targetuser = $targetuser;
+
+        $redis = Application::instance ()->getRedis ();
+        return $redis->publish ( sprintf ( 'notify-%s', Config::$a ['redis'] ['database'] ), json_encode($data) );
     }
 }

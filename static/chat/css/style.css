@@ -194,6 +194,7 @@
   overflow: hidden; 
 }
 .chat-tools-wrap .iconbtn {
+  font-size: 20px;
   cursor: pointer;  
   width:30px;
   height: 28px;
@@ -202,12 +203,32 @@
   display: block;
   text-align: center;
   color: #555;
+  position: relative;
 }
 .chat-tools-wrap .iconbtn:hover {
   color: white;
 }
 .chat-tools-wrap .iconbtn.active {
   color: white;
+}
+
+.chat-tools-wrap .chat-pm-count {
+  font-family: "Lucida Console", Monaco, monospace;
+  text-decoration: none;
+  font-size: 10px;
+  color: white;
+  background-color: #b91010;
+  line-height: 10px;
+  padding: 3px;
+  position: absolute;
+  border-radius: 8px;
+  top: -5px;
+  left: 0;
+  display: block;
+  text-shadow: 1px 1px 0px black;
+  text-align: center;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+  min-width: 15px;
 }
 
 .chat .chat-lines i[class^="icon-"] {
@@ -267,9 +288,7 @@
   color:#414141;
 }
 .chat-theme-dark .chat-lines > div.highlight time,
-.chat-theme-dark .chat-lines > div.notify time,
-.chat-lines > div.highlight .continue,
-.chat-lines > div.notify .continue {
+.chat-lines > div.highlight .continue {
   color: #838383;
 }
 .chat-theme-dark .chat-lines > .command-msg,
@@ -277,7 +296,6 @@
 .chat-theme-dark .chat-lines > .status-msg,
 .chat-theme-dark .chat-lines > .ui-msg,
 .chat-theme-dark .chat-lines > .own-msg,
-.chat-theme-dark .chat-lines > .notify,
 .chat-theme-dark .chat-lines > .highlight {
   color: #dedede;
 }
@@ -285,20 +303,16 @@
   color: #edea12;
 }
 .chat-theme-dark .chat-lines > .broadcast-msg {
-  background: linear-gradient(to right,rgba(255, 255, 21, 0.1) 0,rgba(255,255,255,0) 90%,rgba(255,255,255,0) 100%);
+  background: rgba(255, 255, 21, 0.1);
 }
 .chat-theme-dark .chat-lines > .own-msg {
-  background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 100%);
-}
-.chat-theme-dark .chat-lines > .notify {
-  background: linear-gradient(to right, rgba(239, 0, 255, 0.5) 0,rgba(0,150,255,0) 100%);
+  background-color: rgba(255,255,255,0.05);
 }
 .chat-theme-dark .chat-lines > .highlight {
-  background: linear-gradient(to right,  rgba(0,150,255,0.5) 0%,rgba(0,150,255,0) 100%);
+  background-color: rgba(0,150,255,0.25);
 }
 .chat-theme-dark .chat-lines > .command-msg,
 .chat-theme-dark .chat-lines > .own-msg,
-.chat-theme-dark .chat-lines > .notify
 .chat-theme-dark .chat-lines > .highlight .msg,
 .chat-theme-dark .chat-lines > .broadcast-msg .msg {
   text-shadow:1px 1px 0 rgba(0,0,0,0.5);  
@@ -313,6 +327,29 @@
   text-shadow: none;
   outline: none;
 }
+
+.chat-theme-dark .chat-lines > .private-message {
+  background-color: #212121;
+  margin: 5px 15px 5px 10px;
+  padding: 10px;
+  position: relative;
+  border-radius: 3px;
+}
+
+.chat-theme-dark .chat-lines > .private-message .speech-arrow {
+  top: 15px;
+  left: -5px;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 5px 5px 0;
+  border-color: transparent #212121 transparent transparent;
+}
+.chat-theme-dark .chat-lines > .private-message .message-actions {
+    font-size: 90%;
+}
+
 /**
  * Need to keep these rules seperate
  * Browsers will kill the whole line of css if one rule is invalid
@@ -355,7 +392,6 @@
   opacity:0.3;
 }
 .chat.focus-user .chat-lines > .user-msg.focused,
-.chat.focus-user .chat-lines > .user-msg.notify,
 .chat.focus-user .chat-lines > .user-msg.highlight {
   opacity:1;
 }
@@ -459,7 +495,6 @@
 .chat-menu, 
 .user-tools,
 .hint-popup {
-    /*transition: top 0.25s ease-out, bottom 0.25s ease-out, opacity 0.1s ease-in;*/
     font-size: 12px;
 }
 
@@ -565,6 +600,18 @@
   right: 3px;
   top: 3px;
   bottom: 3px;
+}
+
+
+#chat-private-messages {
+  width: 270px;
+}
+#chat-private-messages #chat-pm-message {
+  padding: 15px;
+}
+#chat-private-messages #chat-pm-message p {
+  font-size:14px;
+  text-align: center;
 }
 
 /**

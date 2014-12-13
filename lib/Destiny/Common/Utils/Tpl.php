@@ -65,4 +65,18 @@ class Tpl {
         return sprintf ( '<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
     }
 
+    public static function calendar(\DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+        return sprintf ( '<time title="%s" data-moment="true" data-moment-calendar="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
+    }
+
+    public static function formatTextForDisplay($text){
+        $linkify = new \Misd\Linkify\Linkify();
+        $text = $linkify->process(self::out($text));
+        $emotes = Config::$a ['chat'] ['customemotes'];
+        $pattern = '/(^|[\\s,\\.\\?!])('. join($emotes, '|') .')(?=$|[\\s,\\.\\?!])/i';
+        $replace = '$1<div title="$2" class="chat-emote chat-emote-$2"></div>';
+        $text = preg_replace($pattern, $replace, $text);
+        return $text;
+    }
+
 }

@@ -12,60 +12,62 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="ordererror">
+  <div id="page-wrap">
 
-  <?php include Tpl::file('seg/top.php') ?>
-  <?php include Tpl::file('seg/headerband.php') ?>
-  
-  <section class="container">
+    <?php include Tpl::file('seg/top.php') ?>
+    <?php include Tpl::file('seg/headerband.php') ?>
+    
+    <section class="container">
 
-    <h1 class="title">
-      <span>Subscribe</span> <small>become one of the brave</small>
-    </h1>
+      <h1 class="title">
+        <span>Subscribe</span> <small>become one of the brave</small>
+      </h1>
 
-    <div class="content content-dark clearfix">
+      <div class="content content-dark clearfix">
 
-      <div class="ui-step-legend-wrap clearfix">
-        <div class="ui-step-legend clearfix">
-          <ul>
-            <li style="width: 25%;"><a>Select a subscription</a></li>
-            <li style="width: 25%;"><a>Confirmation</a></li>
-            <li style="width: 25%;"><a>Pay subscription</a></li>
-            <li style="width: 25%;"><a>Complete</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <form action="/subscription/confirm" method="post">
-        <div class="ds-block">
-
-          <p>An error has occurred during the subscription process.
-          
-          <?php if(!empty($model->orderId)): ?>
-          <br />Your reference is #<?=Tpl::out($model->orderId)?>
-          <?php endif; ?>
-          
-          <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. 
-          </p>
-          
-          <?php if(!empty($model->error)): ?>
-          <div class="alert alert-error">
-            <strong>Error!</strong>
-            <?=Tpl::out($model->error->getMessage())?>
+        <div class="ui-step-legend-wrap clearfix">
+          <div class="ui-step-legend clearfix">
+            <ul>
+              <li style="width: 25%;"><a>Select a subscription</a></li>
+              <li style="width: 25%;"><a>Confirmation</a></li>
+              <li style="width: 25%;"><a>Pay subscription</a></li>
+              <li style="width: 25%;"><a>Complete</a></li>
+            </ul>
           </div>
-          <?php endif; ?>
-          
         </div>
 
-        <div class="form-actions">
-          <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
-          <a href="/subscribe" class="btn btn-link">Subscriptions</a>
-          <a href="/profile" class="btn btn-link">Back to profile</a>
-        </div>
+        <form action="/subscription/confirm" method="post">
+          <div class="ds-block">
 
-      </form>
+            <p>An error has occurred during the subscription process.
+            
+            <?php if(!empty($model->orderId)): ?>
+            <br />Your reference is #<?=Tpl::out($model->orderId)?>
+            <?php endif; ?>
+            
+            <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. 
+            </p>
+            
+            <?php if(!empty($model->error)): ?>
+            <div class="alert alert-error">
+              <strong>Error!</strong>
+              <?=Tpl::out($model->error->getMessage())?>
+            </div>
+            <?php endif; ?>
+            
+          </div>
 
-    </div>
-  </section>
+          <div class="form-actions">
+            <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
+            <a href="/subscribe" class="btn btn-link">Subscriptions</a>
+            <a href="/profile" class="btn btn-link">Back to profile</a>
+          </div>
+
+        </form>
+
+      </div>
+    </section>
+  </div>
   
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>

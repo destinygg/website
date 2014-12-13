@@ -105,18 +105,6 @@ class HomeController {
     }
 
     /**
-     * @Route ("/shave")
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     */
-    public function shave(array $params, ViewModel $model) {
-        $model->url = 'http://dollar-shave-club.7eer.net/c/72409/74122/1969';
-        return 'outbound';
-    }
-
-    /**
      * @Route ("/ting")
      *
      * @param array $params

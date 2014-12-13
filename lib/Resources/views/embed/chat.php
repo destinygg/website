@@ -37,10 +37,11 @@ use Destiny\Common\Config;
           </div>
           <div class="chat-tools-wrap">
             <a class="iconbtn chat-settings-btn" title="Settings">
-              <span class="glyphicon glyphicon-cog"></span>
+              <span class="fa fa-cog"></span>
             </a>
             <a class="iconbtn chat-users-btn" title="Users">
-              <span class="glyphicon glyphicon-user"></span>
+              <span class="chat-pm-count hidden" title="You have missed messages!">0</span>
+              <span class="fa fa-user"></span>
             </a>
           </div>
         </div>
@@ -61,7 +62,7 @@ use Destiny\Common\Config;
           </div>
           <div class="chat-tools-wrap">
             <a class="iconbtn chat-users-btn" title="Users">
-              <span class="glyphicon glyphicon-user"></span>
+              <span class="fa fa-user"></span>
             </a>
           </div>
         </div>
@@ -76,8 +77,8 @@ use Destiny\Common\Config;
         <div class="hint-popup">
             <div class="wrap clearfix">
               <div class="alert alert-warning">
-                <a class="hidehint" title="Hide hint"><span class="glyphicon glyphicon-remove"></span></a>
-                <a class="nexthint" title="Next hint"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                <a class="hidehint" title="Hide hint"><span class="fa fa-remove"></span></a>
+                <a class="nexthint" title="Next hint"><span class="fa fa-chevron-right"></span></a>
                 <strong>Hint:</strong> <span class="hint-message"></span>
               </div>
             </div>
@@ -96,20 +97,20 @@ use Destiny\Common\Config;
                 <div class="user-tools-wrap">
                 
                   <a id="ignoreuser" href="#ignore">
-                    <span class="glyphicon glyphicon-eye-close"></span> Ignore
+                    <span class="fa fa-eye-slash"></span> Ignore
                   </a>
                   <a id="unignoreuser" href="#unignore">
-                    <span class="glyphicon glyphicon-eye-open"></span> Unignore
+                    <span class="fa fa-eye"></span> Unignore
                   </a>
             
                   <?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
                   <a href="#togglemute">
-                    <span class="glyphicon glyphicon-ban-circle"></span> Mute
+                    <span class="fa fa-ban"></span> Mute
                   </a> 
                   <a href="#toggleban">
-                    <span class="glyphicon glyphicon-remove"></span> Ban
+                    <span class="fa fa-remove"></span> Ban
                   </a> 
-                  <a href="#clearmessages"><span class="glyphicon glyphicon-fire"></span> Clear messages</a> 
+                  <a href="#clearmessages"><span class="fa fa-fire"></span> Clear messages</a> 
                   <?php endif; ?>
             
                 </div>
@@ -174,7 +175,7 @@ use Destiny\Common\Config;
             <div class="chat-broadcast alert alert-info hidden template">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                 <p>
-                    <span class="glyphicon glyphicon-exclamation-sign"></span>
+                    <span class="fa fa-exclamation-triangle"></span>
                     <span class="message">This is a broadcast!</span>
                 </p>
             </div>
@@ -272,6 +273,22 @@ use Destiny\Common\Config;
             </div>
         </div>
         <!-- end settings -->
+
+        <div id="chat-private-messages" class="chat-menu">
+            <div class="list-wrap clearfix">
+              <div class="toolbar">
+                <h5>
+                  Messages
+                  <button type="button" class="close" aria-hidden="true">&times;</button>
+                </h5>
+              </div>
+              <div id="chat-pm-message">
+                <p>You have <span class="chat-pm-count">0</span> unread message(s).</p>
+                <p><a href="/profile/messages" target="_blank" class="btn btn-primary btn-sm reply-link"><i class="fa fa-envelope"></i> INBOX</a> or <button class="btn btn-default btn-sm close-link">DISMISS <i class="fa fa-close"></i></button></p>
+                <p>or view the <a href="#" class="user-list-link">user list</a></p>
+              </div>
+            </div>
+        </div>
     
     </div>
     <!-- end bot frame -->

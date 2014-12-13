@@ -13,6 +13,7 @@ $word = $words [array_rand ( $words, 1 )];
 <title>Error : Authentication required</title>
 <meta charset="utf-8">
 <link href="<?=Config::cdn()?>/vendor/bootstrap-3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/vendor/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdn()?>/errors/css/style.min.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
 <?php include Tpl::file('seg/google.tracker.php') ?>

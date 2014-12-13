@@ -139,11 +139,11 @@ chat.prototype.parseAndDispatch = function(e) {
 chat.prototype.dispatchBacklog = function(e) {
 	var handler = 'on' + e.event,
 	    obj     = {
-		nick     : e.username,
-		data     : e.data || e.target,
-		features : e.features,
-		timestamp: moment.utc(e.timestamp).valueOf()
-	};
+			nick     : e.username,
+			data     : e.data || e.target,
+			features : e.features,
+			timestamp: moment.utc(e.timestamp).valueOf()
+		};
 	
 	if (this[handler])
 		return this[handler](obj);
@@ -189,9 +189,21 @@ chat.prototype.onQUIT = function(data) {
 	}
 };
 chat.prototype.onNOTIFY = function (data) {
-	var usermessage = this.onMSG(data)
-	usermessage.isNotify = true
-	return usermessage
+	var user = this.users[data.nick];
+	if (!user) {
+		user = new ChatUser(data);
+		if (user.username == data.nick)
+			this.user = user;
+	} else
+		this.gui.autoCompletePlugin.addData(user.username, data.timestamp);
+
+	if (this.ignorelist[data.nick])
+		return;
+
+	if (user && user.features.length != data.features.length)
+		this.users[data.nick] = user;
+
+	return new ChatUserPrivateMessage(data.data, user, data.targetuserid, data.timestamp);
 };
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
@@ -391,9 +403,30 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			payload.nick = parts[1]
-			parts.shift(0) // remove /notify
+			parts.shift(0) // remove command
+			parts.shift(0) // remove nick
 			payload.data = parts.join(' ')
-			this.emit("NOTIFY", payload)
+
+			this.gui.push(new ChatUserPrivateMessage(payload.data, {username: payload.nick, features:[]}, undefined, true), 'sent');
+
+			var self = this;
+			$.ajax({
+				url: '/api/messages/send',
+				type: 'POST',
+				data: {
+					recipients: [payload.nick],
+					message: payload.data
+				},
+				success: function(data){
+					if(!data)
+						self.gui.push(new ChatErrorMessage("Failed to send private message."));
+					else if(!data.success)
+						self.gui.push(new ChatErrorMessage(data.message));
+				},
+				error: function(){
+					self.gui.push(new ChatErrorMessage("Failed to send private message."));
+				}
+			});
 			break;
 			
 		case "ignore":

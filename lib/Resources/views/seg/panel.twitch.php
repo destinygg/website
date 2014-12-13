@@ -9,10 +9,10 @@ use Destiny\Common\Config;
                 <div class="pull-left channel-stat game">
                 <?php if(!empty($model->streamInfo)): ?>
                     <?php if(!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])): ?>
-                    <span class="glyphicon glyphicon-time"></span> 
+                    <span class="fa fa-clock-o"></span> 
                     <span>Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
                     <?php else: ?>
-                    <span class="glyphicon glyphicon-time"></span> 
+                    <span class="fa fa-clock-o"></span> 
                     <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
                     <?php if(intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
                     - <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay

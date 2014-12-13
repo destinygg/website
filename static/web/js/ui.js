@@ -192,13 +192,15 @@ $(function(){
     
     // Private ads / rotation
     var pads = $('.private-ads .private-ad'), adRotateIndex = pads.length-1;
-    setInterval(function(){
-        $(pads[adRotateIndex]).fadeOut(500, function(){
-            $(this).hide().removeClass('active');
-        });
-        if(adRotateIndex < pads.length-1) adRotateIndex++; else adRotateIndex = 0;
-        $(pads[adRotateIndex]).hide().addClass('active').fadeIn(500);
-    }, 8 * 1000);
+    if(pads.length > 1){
+        setInterval(function(){
+            $(pads[adRotateIndex]).fadeOut(500, function(){
+                $(this).hide().removeClass('active');
+            });
+            if(adRotateIndex < pads.length-1) adRotateIndex++; else adRotateIndex = 0;
+            $(pads[adRotateIndex]).hide().addClass('active').fadeIn(500);
+        }, 8 * 1000);
+    }
 
     
     // Check if the ad has been blocked after X seconds
@@ -382,10 +384,10 @@ $(function(){
             $v = $c.find('> content');
         $t.on('click', function(){
             if($c.hasClass('active')){
-                $t.find('>.expander').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-right');
+                $t.find('>.expander').removeClass('fa-chevron-down').addClass('fa-chevron-right');
                 $v.hide();
             }else{
-                $t.find('>.expander').removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-down');
+                $t.find('>.expander').removeClass('fa-chevron-right').addClass('fa-chevron-down');
                 $v.show();
             }
             $c.toggleClass('active');
@@ -427,6 +429,9 @@ $(function(){
         if(ui.data('moment-fromnow')){
             ui.addClass('moment-update');
             ui.html(moment(datetime).fromNow());
+        }else if(ui.data('moment-calendar')){
+            ui.addClass('moment-update');
+            ui.html(moment(datetime).calendar());
         }else{
             ui.html(moment(datetime).format(format));
         }

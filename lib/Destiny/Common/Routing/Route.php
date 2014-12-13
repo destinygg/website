@@ -46,7 +46,7 @@ class Route {
     }
 
     /**
-     * Test is the path supplied meets the Route requirements
+     * Test if the path supplied meets the Route requirements
      *
      * @param string $path The path from the URI
      * @param string $method The HTTP method
@@ -79,7 +79,6 @@ class Route {
      * @return string
      */
     private function stripPathExtention($path){
-        // Remove ext
         $ext = pathinfo ( $path, PATHINFO_EXTENSION );
         if (! empty ( $ext )) {
             $path = substr ( $path, 0, - (strlen ( $ext ) + 1) );

@@ -45,7 +45,6 @@ body {
   100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
 }
 
-// overlay
 .overlay {
   position: absolute;
   top: 0;
@@ -79,6 +78,9 @@ body {
 }
 .navbar #menubtn {
   display: none;
+}
+.navbar-nav.navbar-right:last-child {
+  margin-right: 0;
 }
 
 @media (max-width: @screen-xs-max) {
@@ -133,7 +135,6 @@ body {
   }
 }
 
-// Embeds
 body.embed {
   margin: 0;
   padding: 0;
@@ -186,6 +187,9 @@ input[disabled] {
 
 .breadcrumb {
   background-color: #030303;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .breadcrumb>li+li:before {
@@ -229,6 +233,8 @@ label small {
   border-radius: 4px 0 0 4px;
 }
 
+.navbar-
+
 .alert-subtle {
   text-align: center;
   color: #999;
@@ -236,7 +242,6 @@ label small {
   background: none;
   border: none;
 }
-
 .alert-subtle h4 {
   color: #999;
 }
@@ -354,6 +359,23 @@ body.thin #header-band #top-navigation {
 }
 #main-nav .brand {
   display: none;
+}
+
+#main-nav .dropdown-menu {
+  background-color: rgba(22,22,22,0.95);
+}
+#main-nav .dropdown-menu .divider {
+  background-color: #333;
+}
+#main-nav .dropdown-menu > li > a {
+  color: #999;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+}
+#main-nav .dropdown-menu>li>a:hover, 
+#main-nav .dropdown-menu>li>a:focus {
+  text-decoration: none;
+  background-color: transparent;
+  color: #ddd;
 }
 
 .content-dark {
@@ -658,10 +680,6 @@ i.icon-android {
   border-radius: 6px;
 }
 
-#feenix-nascita > a {
-  background: black url("../img/feenixnascita.jpg") no-repeat top center;
-}
-
 #donate-wrap,
 #private-ads-wrap,
 #public-ads-wrap {
@@ -778,31 +796,42 @@ i.icon-android {
 }
 
 #footer {
-  margin-bottom: 10px;
+  color: #555;
+  font-size: 12px;
+  line-height: 18px;
+  position: relative;
+  text-shadow: 1px 1px 1px black;
+  padding: 20px 20px 10px 20px;
+}
+#footer #footer-copyright {
+  text-align: left;
+}
+#footer #footer-badges {
+  text-align: center;
+}
+#footer #footer-thanks {
+  text-align: right;
 }
 
-footer {
-  position: relative;
-  font-size: 12px;
-  color: #555;
-  text-shadow: 1px 1px 1px black;
-  padding: 0;
-
-  #footer-badges {
-    text-align: center;
-  }
-  
-  #footer-thanks {
-    text-align: right;
-  }
+#page-wrap {
+  min-height: 100%;
+  margin-bottom: -70px; 
+}
+#page-wrap:after {
+  content: "";
+  display: block;
+}
+#footer, #page-wrap:after {
+  height: 70px; 
 }
 
 @media (max-width: @screen-xs-max) {
-  footer {
+  #footer {
     #footer-copyright,
     #footer-badges,
     #footer-thanks {
       text-align: center;
+      margin: 10px 0;
     }
   }
 }
@@ -1041,6 +1070,8 @@ table.grid .rank {
   margin-top: 10px;
   padding-bottom: 10px;
   border-bottom: 1px solid #222;  
+  font-size: 20px;
+  color: #ddd;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -1077,13 +1108,9 @@ table.grid .rank {
   border-top-left-radius: 0;
 }
 
-#main-nav .icon-bigscreen {
-  margin: -1px 5px -2px 0 !important;
-}
-
 .icon-bigscreen {
   background: url("../img/ico/tv_32.png") no-repeat top left !important;  
-  width: 32px !important;
+  width: 30px !important;
   height: 19px !important;
   display: inline-block;
   vertical-align: bottom;
@@ -1139,10 +1166,8 @@ table.grid .rank {
 
 body#bigscreen .container,
 body#bigscreen .container-fluid,
-body#authentication .container,
-body#authentication .container-fluid,
-body#profile .container,
-body#profile .container-fluid {
+body.profile .container,
+body.profile .container-fluid {
   width: auto;
   max-width: 100%;
 }
@@ -1155,7 +1180,7 @@ body#profile .container-fluid {
   }
 }
 
-// Bigscreen page
+/* Bigscreen page */
 @xs-navheight: 31px;
 @navheight: 51px;
 @chatwidth: 400px;
@@ -1338,7 +1363,7 @@ body#bigscreen .panelheader .channel-stat {
   text-overflow: ellipsis;
 }
 
-// Banned embed
+/* Banned embed */
 body#banned {
   margin: 0;
   padding: 0;
@@ -1396,7 +1421,7 @@ form label.error {
   border-radius: 0 0 4px 4px;
 }
 
-// Administration
+/* Administration */
 @media (min-width: @screen-lg-min) {
   body#admin .container {
     width: auto;
@@ -1408,7 +1433,7 @@ body#admin #main-nav .container-fluid {
 }
 
 
-// Emoticons
+/* Emoticons */
 body#emoticons .content {
   background-color: #080808;
 }
@@ -1440,7 +1465,7 @@ body#emoticons .emote-label:hover {
   color: white;
 }
 
-// Banner shows if the stream is live
+/* Banner shows if the stream is live */
 #live-banner {
   margin: 0; 
   position: relative; 
@@ -1506,7 +1531,7 @@ body#emoticons .emote-label:hover {
   }
 }
 
-// The panels on the /stream page
+/* The panels on the /stream page */
 
 #twitchpanel .panelheader .game>div {
   padding: 0 0 0 10px;
@@ -1558,4 +1583,15 @@ body.novideo #twitchpanel #chat-embed {
 .gift-message {
   font-size: 13px;
   font-weight: normal;
+}
+
+#alerts-container {
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+#alerts-container .alert {
+  margin: 10px;
 }

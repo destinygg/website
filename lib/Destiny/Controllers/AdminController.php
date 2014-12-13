@@ -134,7 +134,7 @@ class AdminController {
      * @param array $params         
      */
     public function adminUserFind(array $params) {
-        FilterParams::isRequired($params, 's');
+        FilterParams::required($params, 's');
         $userService = UserService::instance ();
         $users = $userService->findUsers ( $params ['s'], 10 );
         $response = new Response ( Http::STATUS_OK );

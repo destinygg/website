@@ -1,7 +1,7 @@
 <div class="navbar navbar-inverse navbar-static-top">
   <div class="container">
     <ul id="top-left-nav" class="nav navbar-nav">
-      <li><a title="Home Page" href="/"><span class="glyphicon glyphicon-home"></span></a></li>
+      <li><a title="Home Page" href="/"><span class="fa fa-home"></span></a></li>
       <li><a title="Blog @ destiny.gg" href="http://blog.destiny.gg">Blog</a></li>
       <li><a title="twitter.com" href="https://twitter.com/Steven_Bonnell/">Twitter</a></li>
       <li><a title="youtube.com" href="http://www.youtube.com/user/Destiny">Youtube</a></li>
