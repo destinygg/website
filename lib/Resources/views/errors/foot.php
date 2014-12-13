@@ -1,4 +1,4 @@
-<section class="container">
+<section id="footer-wrap" class="container">
 	<footer class="clearfix">
 		<p class="pull-left">
 			<span>Destiny &copy; <?=date('Y')?> </span>

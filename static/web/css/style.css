@@ -273,13 +273,13 @@ label small {
 #overview a {
   left:0;
   top:0;
-  background: url("../img/destinylogotop.png") no-repeat -25px center;
+  background: url("../img/logo.destingg.m.png") no-repeat -25px center;
   width: 400px;
   position: absolute;
   text-indent: -999em;
 }
 #destiny-illustration {
-  background: url(../img/destinybannerhead.small.png) no-repeat top left;
+  background: url(../img/illustration.sm.png) no-repeat top left;
   width: 500px;
   height: 109px;
   position: absolute;
@@ -975,14 +975,15 @@ hr {
 }
 
 .ui-step-legend ul li .arrow {
-  display: block;
-  width: 30px;
-  height: 15px;
-  background: url(../img/steplegendarrow.png) no-repeat top left;
-  position: absolute;
-  bottom: -15px;
-  margin-left: -15px;
+  bottom: -14px;
+  margin-left: -14px;
   left: 50%;
+  position: absolute;
+  width: 0; 
+  height: 0; 
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 14px solid #0088CC;
 }
 
 .alert-info a {
@@ -1334,7 +1335,7 @@ body#bigscreen #chat-panel-resize-bar.active {
 body#admin #main-nav .brand,
 body#bigscreen #main-nav .brand {
   text-indent: -999em;
-  background: url("../img/destinygg.small.png") no-repeat center center;
+  background: url("../img/logo.destinygg.sm.png") no-repeat center center;
   display: block;
   width: 224px;
   display: none;

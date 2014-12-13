@@ -7,13 +7,7 @@ use Destiny\Common\Config;
 class Tpl {
     
     public static function file($filename){
-        // Dodgy... this is done so that gnix can use the error pages too
-        // So we store the /error/ pages in the root folder of the project
-        if(strpos($filename, 'errors/') === 0){
-            return Config::$a['tpl']['error.path'] . $filename;
-        }else{
-            return Config::$a['tpl']['path'] . $filename;
-        }
+        return Config::$a['tpl']['path'] . $filename;
     }
 
     public static function jsout($var) {

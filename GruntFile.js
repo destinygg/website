@@ -116,6 +116,7 @@ module.exports = function(grunt) {
 
                     // Errors CSS
                     'static/errors/css/style.min.css' : [
+                        'static/vendor/bootstrap-3.1.1/css/bootstrap.css',
                         'static/errors/css/style.css'
                     ],
 
