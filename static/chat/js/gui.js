@@ -442,6 +442,8 @@
             this.scrollPlugin.updateAndScroll(wasScrolledBottom);
             
             this.handleHighlight(message);
+            // HANDLENOTIFY
+            this.handleNotify(message);
             
             if($.isFunction(message['onAPPEND']))
                 message.onAPPEND(this);
@@ -639,6 +641,13 @@
                 }
             }
             
+        },
+
+        handleNotify: function(message) {
+            if(message.hasOwnProperty('isNotify') && message.isNotify){
+                message.ui.removeClass('highlight');
+                message.ui.addClass('notify');
+            }
         },
         
         getChatOption: function(option, defaultvalue) {

@@ -188,6 +188,11 @@ chat.prototype.onQUIT = function(data) {
 		this.gui.trigger('quit', data);
 	}
 };
+chat.prototype.onNOTIFY = function (data) {
+	var usermessage = this.onMSG(data)
+	usermessage.isNotify = true
+	return usermessage
+};
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
 	if(this.user.username == data.nick && $.isArray(data.features))
@@ -368,12 +373,27 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "help":
-			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
+			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /notify /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
 			break;
 			
 		case "me":
 			payload.data = "/" + str;
 			this.emit("MSG", payload);
+			break;
+
+		case "w":
+		case "tell":
+		case "t":
+		case "whisper":
+		case "notify":
+			if (!parts[1] || !nickregex.test(parts[1].toLowerCase())) {
+				this.gui.push(new ChatErrorMessage("Invalid nick - /notify nick message"));
+				return;
+			}
+			payload.nick = parts[1]
+			parts.shift(0) // remove /notify
+			payload.data = parts.join(' ')
+			this.emit("NOTIFY", payload)
 			break;
 			
 		case "ignore":
