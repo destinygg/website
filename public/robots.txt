@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /profile/*
+Disallow: /embed/*
