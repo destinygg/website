@@ -35,6 +35,7 @@ class BannedController {
             }
         }
         $model->user = $creds->getData ();
+        $model->title = 'Banned';
         return 'banned';
     }
 }

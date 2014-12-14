@@ -123,7 +123,7 @@ use Destiny\Commerce\SubscriptionStatus;
       <div class="content">
 
         <?php foreach ($model->gifts as $gift): ?>
-        <div class="content-dark clearfix" style="margin: 15px 0;">
+        <div class="content-dark clearfix">
           <div class="ds-block">
             <div>
 

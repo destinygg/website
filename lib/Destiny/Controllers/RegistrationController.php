@@ -60,7 +60,7 @@ class RegistrationController {
         if (! empty ( $username ) && empty ( $email )) {
             $email = $username . '@destiny.gg';
         }
-        $model->title = 'New user';
+        $model->title = 'Register';
         $model->username = $username;
         $model->email = $email;
         $model->follow = (isset($params['follow'])) ? $params['follow']:'';
@@ -119,7 +119,7 @@ class RegistrationController {
             $authCredHandler = new AuthenticationRedirectionFilter ();
             return $authCredHandler->execute ( $authCreds );
         } catch ( Exception $e ) {
-            $model->title = 'Error';
+            $model->title = 'Register Error';
             $model->username = $username;
             $model->email = $email;
             $model->follow = (isset($params['follow'])) ? $params['follow']:'';

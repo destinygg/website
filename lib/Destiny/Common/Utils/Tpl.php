@@ -30,7 +30,7 @@ class Tpl {
     public static function title($title) {
         $str = Config::$a ['meta'] ['title'];
         if (! empty ( $title )) {
-            $str = sprintf ( '%s : %s', Config::$a ['meta'] ['shortName'], $title );
+            $str = sprintf ( '%s - %s', $title, Config::$a ['meta'] ['shortName'] );
         }
         return $str;
     }

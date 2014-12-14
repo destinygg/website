@@ -41,6 +41,7 @@ class PrivateMessageController {
         $viewModel->inbox = $inbox;
         $viewModel->read = $read;
         $viewModel->username = $username;
+        $viewModel->title = 'Messages';
         return 'profile/inbox';
     }
 
@@ -237,6 +238,7 @@ class PrivateMessageController {
         $viewModel->username = $username;
         $viewModel->userId = $userId;
         $viewModel->replyto = $message['id'];
+        $viewModel->title = 'Message';
         return 'profile/message';
     }
 
@@ -280,6 +282,7 @@ class PrivateMessageController {
         $viewModel->username = $username;
         $viewModel->userId = $userId;
         $viewModel->replyto = $message['id'];
+        $viewModel->title = 'Message';
         return 'profile/message';
     }
 

@@ -77,6 +77,7 @@ class SubscriptionController {
             throw new Exception ( 'Must have an active subscription' );
         }
         $model->subscription = $subscription;
+        $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
     
@@ -106,6 +107,7 @@ class SubscriptionController {
 
         $model->subscription = $subscription;
         $model->giftee = $giftee;
+        $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
     
@@ -163,6 +165,7 @@ class SubscriptionController {
         
         $model->subscription = $subscription;
         $model->subscriptionCancelled = true;
+        $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
     
@@ -187,6 +190,7 @@ class SubscriptionController {
       
         $model->order = $order;
         $model->orderId = $params ['orderId'];
+        $model->title = 'Subscription Error';
         return 'order/ordererror';
     }
     
@@ -242,6 +246,7 @@ class SubscriptionController {
         }
 
         $model->subscriptionType = $subscriptionType;
+        $model->title = 'Subscription Confirm';
         return 'order/orderconfirm';
     }
     
@@ -391,6 +396,7 @@ class SubscriptionController {
         $model->subscription = $subscription;
         $model->subscriptionType = $subscriptionType;
         $model->paymentProfile = $paymentProfile;
+        $model->title = 'Subscription Complete';
         return 'order/ordercomplete';
     }
     

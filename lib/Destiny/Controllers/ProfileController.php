@@ -125,6 +125,7 @@ class ProfileController {
 
       $model->paymentProfile = $paymentProfile;
       $model->address = $address;
+      $model->title = 'Account';
       return 'profile';
     }
 
@@ -240,6 +241,7 @@ class ProfileController {
       $model->subscription = $subscription;
       $model->subscriptionType = $subscriptionType;
       $model->authTokens = ApiAuthenticationService::instance ()->getAuthTokensByUserId ( $userId );
+      $model->title = 'Authentication';
       return 'profile/authentication';
     }
 

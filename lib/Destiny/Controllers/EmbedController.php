@@ -28,6 +28,7 @@ class EmbedController {
             $user ['username'] = $creds->getUsername ();
             $user ['features'] = $creds->getFeatures ();
         }
+        $model->title = 'Stream';
         $model->user = $user;
         return 'embed/stream';
     }
@@ -55,6 +56,7 @@ class EmbedController {
             $model->follow = $params['follow'];
         }
 
+        $model->title = 'Chat';
         return 'embed/chat';
     }
     

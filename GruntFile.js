@@ -210,6 +210,7 @@ module.exports = function(grunt) {
 
     // Build all resources
     grunt.registerTask('build', [
+        'clean',
         'build:fetch',
         'build:assets',
         'build:js',

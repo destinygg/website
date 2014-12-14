@@ -1552,3 +1552,24 @@ iframe.stream-element {
 #alerts-container .alert {
   margin: 10px;
 }
+
+body#amazon .amazon-referral {
+    text-align: center;
+    margin: 40px 0 0 0;
+    padding-bottom: 60px;
+}
+body#amazon .amazon-referral:first-child {
+    border-width: 0 0 0 0;
+}
+body#amazon .amazon-referral a {
+    text-decoration: none;
+}
+body#amazon .amazon-referral img {
+    border-radius: 8px;
+}
+@media (max-width: @screen-sm-max) {
+  body#amazon .amazon-referral {
+    border-width: 0 0 0 0;
+    margin-left: 0;
+  }
+}
