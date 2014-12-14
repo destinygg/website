@@ -22,14 +22,14 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'static/vendor/libs.min.js': [
+                        'static/vendor/overthrow/overthrow.min.js',
                         'static/vendor/jquery/jquery-1.10.2.min.js',
                         'static/vendor/jquery.cookie/jquery.cookie.js',
                         'static/vendor/jquery.mousewheel/jquery.mousewheel.min.js',
                         'static/vendor/jquery.validate/jquery.validate.min.js',
+                        'static/vendor/jquery.nanoscroller-0.8.4/jquery.nanoscroller.min.js',
                         'static/vendor/bootstrap-3.1.1/js/bootstrap.js',
-                        'static/vendor/moment/moment-2.4.0.min.js',
-                        'static/vendor/overthrow/overthrow.min.js',
-                        'static/vendor/nanoscrollerjs/jquery.nanoscroller.js' // We currently dont use the min file, because of custom mods
+                        'static/vendor/moment/moment-2.4.0.min.js'
                     ]
                 }
             },
@@ -122,6 +122,7 @@ module.exports = function(grunt) {
 
                     // Chat CSS
                     'static/chat/css/style.min.css' : [
+                        'static/vendor/jquery.nanoscroller-0.8.4/nanoscroller.css',
                         'static/chat/css/style.css',
                         'scripts/emotes/emoticons.css',
                         'scripts/icons/icons.css'

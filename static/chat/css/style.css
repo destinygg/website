@@ -1,60 +1,10 @@
-/**
- * Nano scroller
- **/
-.nano {
-  position : relative;
-  width    : 100%;
-  height   : 100%;
-  overflow : hidden;
+.nano > .nano-pane > .nano-slider {
+  background: #eee;
 }
-.nano .content {
-  position      : absolute;
-  overflow      : scroll;
-  overflow-x    : hidden;
-  top           : 0;
-  right         : 0;
-  bottom        : 0;
-  left          : 0;
-}
-.nano .content:focus {
-  outline: none;
-}
-.nano .content::-webkit-scrollbar {
-  visibility: hidden;
-}
-.has-scrollbar .content::-webkit-scrollbar {
-  visibility: visible;
-}
-.nano:hover > .pane, .pane.active, .pane.flashed {
-  visibility : visible\9; /* Target only IE7 and IE8 with this hack */
-  opacity    : 0.99;
-}
-
-.nano > .pane {
-  background            : rgba(0,0,0,0.3);
-  position              : absolute;
-  width                 : 8px;
-  right                 : 5px;
-  top                   : 0;
-  bottom                : 0;
-  visibility            : hidden\9; /* Target only IE7 and IE8 with this hack */
-  opacity               : .01; 
-  -webkit-transition    : .2s;
-  -moz-transition       : .2s;
-  -o-transition         : .2s;
-  transition            : .2s;
-}
-.nano > .pane > .slider {
-  background            : #999;
-  position              : relative;
-  margin                : 0 1px;
-  -moz-border-radius    : 3px;
-  -webkit-border-radius : 3px;  
-  border-radius         : 3px;
-}
-.nano > .pane > .slider:hover,
-.nano > .pane.active > .slider {
-  background: #eee; 
+.nano > .nano-pane {
+  background: transparent;
+  width: 8px;
+  right: 4px;
 }
 
 .serif {
@@ -88,6 +38,7 @@
 .chat-output .chat-lines {
   -webkit-backface-visibility: hidden;
   -webkit-perspective: 1000;
+  outline: 0 !important;
 }
 
 .chat-lines > div {

@@ -21,7 +21,7 @@ use Destiny\Common\Config;
     <!-- chat output -->
     <div class="chat-output-frame">
         <div class="chat-output nano">
-          <div class="chat-lines overthrow"></div>
+          <div class="chat-lines overthrow nano-content"></div>
         </div>
     </div>
     <!-- end chat output -->
@@ -201,7 +201,7 @@ use Destiny\Common\Config;
               </div>
             
               <div id="chat-groups" class="scrollable nano">
-                <div class="content">
+                <div class="content nano-content">
                   <h6>Admins</h6>
                   <ul class="unstyled admins"></ul>
                   <hr/>

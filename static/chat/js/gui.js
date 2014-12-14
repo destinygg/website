@@ -141,13 +141,13 @@
                     case 'showtime':
                         chat.saveChatOption(name, checked);
                         chat.ui.toggleClass('chat-time', checked);
-                        chat.scrollPlugin.updateAndScroll();
+                        chat.scrollPlugin.updateAndScroll(chat.scrollPlugin.isScrolledToBottom());
                         break;
                     
                     case 'hideflairicons':
                         chat.saveChatOption(name, checked);
                         chat.ui.toggleClass('chat-icons', (!checked));
-                        chat.scrollPlugin.updateAndScroll();
+                        chat.scrollPlugin.updateAndScroll(chat.scrollPlugin.isScrolledToBottom());
                         break;
                     
                     case 'highlight':
@@ -321,27 +321,26 @@
                     cMenu.closeMenus(this);
             }, this));
 
-            // Scrollbars and scroll locking
-            this.lines.addClass('content');
+            // Scrollbar plugin
             this.scrollPlugin = this.output.nanoScroller({
                 disableResize: true,
                 preventPageScrolling: true,
-                contentClass: 'chat-lines',
                 sliderMinHeight: 40,
                 tabIndex: 1
             })[0].nanoscroller;
-            this.scrollPlugin.isScrolledToBottom = $.proxy(function(){
+
+            this.scrollPlugin.isScrolledToBottom = function getIsScrolledBottom(){
                 return (this.contentScrollTop >= this.maxScrollTop - 30);
-            }, this.scrollPlugin);
-            this.scrollPlugin.updateAndScroll = $.proxy(function(scrollbottom){
+            };
+
+            this.scrollPlugin.updateAndScroll = function resetAndScrollBottom(scrollbottom){
                 if(!this.isActive) 
                     return;
-                scrollbottom = (scrollbottom == undefined) ? this.isScrolledToBottom() : scrollbottom;
+                this.reset();
                 if(scrollbottom)
                     this.scrollBottom(0);
-                else
-                    this.reset();
-            }, this.scrollPlugin);
+            };
+            // End Scrollbar
             
             // Enable toolbar
             this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
@@ -490,7 +489,7 @@
         },
         
         resize: function(){
-            this.scrollPlugin.updateAndScroll();
+            this.scrollPlugin.updateAndScroll(this.scrollPlugin.isScrolledToBottom());
             return this;
         },
         
