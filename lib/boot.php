@@ -9,7 +9,17 @@ use Monolog\Handler\StreamHandler;
 // This should be in the server config
 ini_set ( 'date.timezone', 'UTC' );
 
-$loader = require_once realpath ( __DIR__ ) . '/autoload.php';
+// Used when the full path is needed to the base directory
+define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
+define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
+$loader = require _BASEDIR . '/vendor/autoload.php';
+
+Config::load ( array_replace_recursive ( 
+    require _BASEDIR . '/config/config.php', 
+    require _BASEDIR . '/config/config.local.php', 
+    json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) 
+) );
+
 AnnotationRegistry::registerLoader ( array ($loader, 'loadClass') );
 
 $app = new Destiny\Common\Application ();
@@ -18,8 +28,6 @@ $app->setLoader ( $loader );
 $log = new Logger ( $context->log );
 $log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->log . '.log', Logger::INFO ) );
 $log->pushProcessor ( new Monolog\Processor\WebProcessor () );
-$log->pushProcessor ( new Monolog\Processor\MemoryPeakUsageProcessor () );
-$log->pushProcessor ( new Destiny\Common\Log\SessionRequestProcessor () );
 $app->setLogger ( $log );
 
 $app->setConnection ( DriverManager::getConnection ( Config::$a ['db'], new Doctrine\DBAL\Configuration () ) );
@@ -32,4 +40,3 @@ $app->setRedis ( $redis );
 $cache = new RedisCache ();
 $cache->setRedis ( $app->getRedis () );
 $app->setCacheDriver ( $cache );
-?>
