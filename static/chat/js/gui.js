@@ -725,15 +725,28 @@
         },
 
         setUnreadMessageCount: function(count){
+            var self = this;
             this.unreadMessageCount = count;
 
             var countui = this.ui.find('.chat-pm-count');
             countui.text(this.unreadMessageCount);
 
-            if(this.unreadMessageCount == 0)
+            var $bcount = this.ui.find('.chat-users-btn .chat-pm-count'),
+                $container = $bcount.parent();
+            if($bcount.bounceinterval)
+                clearInterval($bcount.bounceinterval);
+
+            var startbounce = function(){
+                $bcount.detach().appendTo($container);
+            }
+
+            if(this.unreadMessageCount == 0){
                 countui.addClass('hidden');
-            else
+            } else {
+                $bcount.bounceinterval = setInterval(startbounce, 30000);
+                startbounce();
                 countui.removeClass('hidden');
+            }
         },
         
     });
@@ -1046,7 +1059,7 @@
                     });
                 }
             });
-        });
+        })
         this.ui.on('click', '.hide-pm', function(e){
             e.preventDefault();
             self.destroy();

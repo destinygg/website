@@ -203,6 +203,12 @@ module.exports = function(grunt) {
         'copy:gluedimages'
     ]);
 
+    // Build javascript
+    grunt.registerTask('build:static', [
+        'build:js',
+        'build:css'
+    ]);
+
     // Build task to retrieve all external data
     grunt.registerTask('build:fetch', [
         'tldFetcher:fetch'
@@ -213,8 +219,7 @@ module.exports = function(grunt) {
         'clean',
         'build:fetch',
         'build:assets',
-        'build:js',
-        'build:css'
+        'build:static'
     ]);
     
     // Default
