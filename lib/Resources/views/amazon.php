@@ -19,7 +19,7 @@ use Destiny\Common\Config;
         <section class="container">
             <div class="row">
                 <div class="col-md-4 amazon-referral">
-                    <a href="https://www.amazon.ca/?tag=destiny0f7a-20">
+                    <a href="http://www.amazon.ca/?tag=destiny0f7a-20">
                         <h2 style="font-weight: normal;">Canada</h2>
                         <img alt="amazon.ca" width="250" height="65" src="<?=Config::cdn()?>/web/img/amazon.ca.jpg" />
                     </a>
@@ -31,7 +31,7 @@ use Destiny\Common\Config;
                     </a>
                 </div>
                 <div class="col-md-4 amazon-referral">
-                    <a href="https://www.amazon.co.uk/?tag=destiny0f7-21">
+                    <a href="http://www.amazon.co.uk/?tag=destiny0f7-21">
                         <h2>United Kingdom</h2>
                         <img alt="amazon.co.uk" width="250" height="65" src="<?=Config::cdn()?>/web/img/amazon.co.uk.jpg" />
                     </a>

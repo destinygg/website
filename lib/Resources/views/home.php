@@ -20,6 +20,7 @@ use Destiny\Common\Config;
         <?php include Tpl::file('seg/top.php') ?>
         <?php include Tpl::file('seg/headerband.php') ?>
         <?php include Tpl::file('seg/livebanner.php') ?>
+        <?php include Tpl::file('seg/panel.android.php') ?>
         <?php include Tpl::file('seg/panel.videos.php') ?>
         <?php include Tpl::file('seg/panel.music.php') ?>
         <?php include Tpl::file('seg/panel.calendar.php') ?>

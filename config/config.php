@@ -148,6 +148,7 @@ return array (
 		'title'				=> 'Destiny - Steven Bonnell II',
 		'author'			=> 'Steven Bonnell II',
 		'description'		=> 'Steven (Destiny) Bonnell II is a professional streamer, primarily playing StarCraft II, but will often venture off into other topics, including but not limited to: philosophy, youtube videos, music and all sorts of wonderful pseudo-intellectualism.',
+		'shortdescription'  => 'Destiny is a professional streamer, primarily playing StarCraft II.',
 		'keywords'			=> 'Steven Bonnell,Destiny,Destiny.gg,StarCraft,StarCraft2,Counter Strike,CS:GO,League of Legends,streamer,stream,game,pc,build a box',
 		'video'				=> 'http://www-cdn.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny',
 		'videoSecureUrl'	=> 'https://secure.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny' 

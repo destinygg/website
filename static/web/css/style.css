@@ -1,3 +1,4 @@
+@screen-xxs-max: 600px;
 @screen-xs-max: 767px;
 @screen-sm-min: 768px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
 @screen-sm-max: 991px;
@@ -475,14 +476,6 @@ i.icon-google {
 i.icon-reddit {
   background-image: url(../img/ico/reddit_16.png);
 }
-i.icon-android {
-  background: no-repeat center center;
-  background-image: url(../img/ico/android_24.png);
-  background-size: 24px 24px;
-  width: 24px;
-  height: 24px;
-  display: inline-block;
-}
 
 .stream .thumbnails {
   margin: 0;
@@ -654,117 +647,76 @@ i.icon-android {
   font-size: 85%;
 }
 
-.private-ads {
-  margin: 0 auto;
-  position: relative;
-}
 
-.private-ads,.private-ad>a {
-  width: 300px;
-  height: 250px;
-  display: block;
-}
-
-.private-ad.active {
-  z-index: 81;
-}
-
-.private-ad {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
-
-.private-ad > a {
-  border-radius: 6px;
-}
-
-#donate-wrap,
-#private-ads-wrap,
-#public-ads-wrap {
+#dc-donate-xs {
   text-align: center;
 }
+#dc-donate-xs p {
+  font-size: 18px;
+}
+#dc-donate {
+  margin-top: 40px;
 
-@media (min-width: @screen-sm-min) {
-  #donate-wrap {
-    text-align: center;
+  .dc-donate-blk {
+    float: left;
   }
-
-  #private-ads-wrap {
+  .dc-donate-blk:nth-child(1) {
     text-align: left;
   }
-
-  #public-ads-wrap {
+  .dc-donate-blk:nth-child(2) {
+    text-align: center;
+  }
+  .dc-donate-blk:nth-child(3) {
     text-align: right;
   }
 }
 
-@media (min-width: @screen-md-min) {
-  #donate-wrap {
-    text-align: left;
-  }
+#dc-donate-wrap {
+  display: flex;
+  justify-content: space-around;
+}
 
-  #private-ads-wrap {
-    text-align: center;
+@media (max-width: @screen-xxs-max) {
+  #dc-donate-wrap {
+    display: block;
+  }
+  #dc-donate .dc-donate-blk {
+    float: none;
+    display: block;
+    text-align: center !important;
+    margin-bottom: 20px;
   }
 }
 
-.public-ads,
-.donate-block {
+#donate-block {
   height: 250px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   border-radius: 6px;
-}
-
-.public-ads,
-.donate-block,
-.private-ads {
-  display: inline-block;
-}
-
-.donate-block,
-.public-ads {
-  width: 300px;
-}
-
-@media (min-width: @screen-sm-min) {
-  .donate-block {
-    width: 80%;
+  p {
+    color: #cacaca;
+    padding: 40px 30px 10px;
+    font-size: 18px;
   }
-}
-
-@media (min-width: @screen-md-min) {
-  .donate-block {
-    width: 300px;
+  &:hover .paypal-payment-methods {
+    background-position: top center;
   }
-}
-
-.public-ads:first-child,.donate-block:first-child {
-  margin-left: 0;
-}
-
-.donate-block p {
-  color: #cacaca;
-  padding: 40px 30px;
-  text-align: center;
-  font-size: 14px;
-  display: inline-block;
 }
 
 #paypal-form {
-  text-align: center;
+  position: absolute;
+  top:0;
+  left:0;
 }
 
-#paypal-form #paypal-payment-methods {
-  background: url("../img/payment.types.png") no-repeat top center;
+.paypal-payment-methods {
+  background: url("../img/payment.types.png") no-repeat bottom center;
   width: 211px;
   height: 28px;
   display: block;
-  margin: 15px auto 0 auto;
+  margin: 20px auto 0 auto;
 }
 
-#paypal-form .btn-paypal {
+.btn-paypal {
   font-weight: bold;
   font-size: 20px;
   color: #003366;
@@ -779,61 +731,71 @@ i.icon-android {
   background: linear-gradient(to bottom, rgba(252, 234, 187, 1) 0%, rgba(252, 205, 77, 1) 50%, rgba(248, 181, 0, 1) 51%, rgba(251, 223, 147, 1) 100% );
 }
 
-#adblocker-message>a {
-  text-indent: -999em;
-  text-align: center;
-  margin: 50px auto 10px auto;
-  width: 90px;
-  height: 90px;
-  display: block;
-  background: url("../img/adblocker.png") no-repeat top left;
-}
-
-#adblocker-message>p {
-  color: #888;
-  text-align: center;
-  padding: 0 30px;
-}
-
 #footer {
-  color: #555;
+  color: #444;
   font-size: 12px;
   line-height: 18px;
   position: relative;
   text-shadow: 1px 1px 1px black;
-  padding: 20px 20px 10px 20px;
+  background-color: rgba(0,0,0,0.4);
+  border-top: 1px solid #181818;
+  padding: 0;
+  margin-top: 39px;
 }
-#footer #footer-copyright {
-  text-align: left;
+#footer h3 {
+  color: #444;
+  line-height: 22px;
+  margin-top: 0;
 }
-#footer #footer-badges {
-  text-align: center;
+#footer a {
+  color: #888;
 }
-#footer #footer-thanks {
-  text-align: right;
+#footer a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+#footer {
+  #footer-inner {
+    height: 100%;
+  }
+  #footer-copyright {
+    h3 {
+      font-size: 22px;
+    }
+  }
+  #footer-badges {
+    h3 {
+      font-size: 18px;
+    }
+  }
+  #footer-thanks {
+    h3 {
+      font-size: 18px;
+    }
+  }
+
+  #footer-links {
+     box-shadow: 0 1px 0 #151515;
+     border-bottom: 1px solid #000;
+  }
+
+  #footer-copyright,
+  #footer-badges,
+  #footer-thanks {
+    margin: 30px 0 20px 0;
+  }
 }
 
 #page-wrap {
   min-height: 100%;
-  margin-bottom: -70px; 
+  margin-bottom: -245px; 
 }
 #page-wrap:after {
   content: "";
   display: block;
 }
-#footer, #page-wrap:after {
-  height: 70px; 
-}
-
-@media (max-width: @screen-xs-max) {
-  #footer {
-    #footer-copyright,
-    #footer-badges,
-    #footer-thanks {
-      text-align: center;
-      margin: 10px 0;
-    }
-  }
+#page-wrap:after {
+  height: 245px; 
 }
 
 /**
@@ -1572,4 +1534,8 @@ body#amazon .amazon-referral img {
     border-width: 0 0 0 0;
     margin-left: 0;
   }
+}
+
+#android-banner p {
+  color: #666;
 }

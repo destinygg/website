@@ -190,27 +190,6 @@ $(function(){
         }
     });
     
-    // Private ads / rotation
-    var pads = $('.private-ads .private-ad'), adRotateIndex = pads.length-1;
-    if(pads.length > 1){
-        setInterval(function(){
-            $(pads[adRotateIndex]).fadeOut(500, function(){
-                $(this).hide().removeClass('active');
-            });
-            if(adRotateIndex < pads.length-1) adRotateIndex++; else adRotateIndex = 0;
-            $(pads[adRotateIndex]).hide().addClass('active').fadeIn(500);
-        }, 8 * 1000);
-    }
-
-    
-    // Check if the ad has been blocked after X seconds
-    var gad = $('#google-ad');
-    setTimeout(function(){
-        if(gad.css('display') == 'none' || parseInt(gad.height()) <= 0){
-            gad.before('<div id="adblocker-message"><a>Add blocker</a><p>Please consider turning adblocker off for this website.</p></div>');
-        }
-    }, 8000);
-    
     // Bigscreen
     $('body#bigscreen').each(function(){
 
@@ -655,28 +634,3 @@ $(function(){
         }
     });
 });
-
-if (window.self === window.top) {
-    var page = $('#page-content');
-    if (page.css('position') == 'absolute') {
-        $('body').on('show', '#smartbanner', function(ev, bannerHeight) {
-            page.css('top', page.position()['top'] + bannerHeight);
-        });
-
-        $('body').on('hide', '#smartbanner', function() {
-            page.css('top', '');
-        });
-    }
-
-    $(function(){
-        $.smartbanner({
-            title: 'Destiny',
-            author: 'Destiny.gg',
-            daysHidden: 30,
-            daysReminder: 90,
-            icon: destiny.cdn+'/web/img/androidIcon.png',
-            // for testing
-            // daysHidden: 0
-        });
-    });
-}
