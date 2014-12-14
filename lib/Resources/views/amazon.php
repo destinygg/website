@@ -8,9 +8,6 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<meta name="description" content="<?=Config::$a['meta']['description']?>">
-<meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
-<meta name="author" content="<?=Config::$a['meta']['author']?>">
 <?php include Tpl::file('seg/opengraph.php') ?>
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
