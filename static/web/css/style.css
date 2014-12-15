@@ -12,7 +12,7 @@ body{
 }
 
 body {
-  background: #111 url("../img/bodybg.png") repeat top center;
+  background: #111 url("../img/body-bg.png") repeat top center;
   position: relative;
   color: #999;
   margin: 0;
@@ -234,8 +234,6 @@ label small {
   border-radius: 4px 0 0 4px;
 }
 
-.navbar-
-
 .alert-subtle {
   text-align: center;
   color: #999;
@@ -253,7 +251,7 @@ label small {
 #header-band {
   overflow: hidden;
   border-bottom: 1px solid #191919;
-  background: rgba(0, 0, 0, 0.76) url("../img/cloudbg.jpg") repeat-x -400px -50px;
+  background: rgba(0, 0, 0, 0.76) url("../img/cloud-bg.jpg") repeat-x -400px -50px;
   padding: 0;
   margin: 0;
 }
@@ -274,13 +272,13 @@ label small {
 #overview a {
   left:0;
   top:0;
-  background: url("../img/logo.destingg.m.png") no-repeat -25px center;
+  background: url("../img/logo-destinygg-m.png") no-repeat -25px center;
   width: 400px;
   position: absolute;
   text-indent: -999em;
 }
 #destiny-illustration {
-  background: url(../img/illustration.sm.png) no-repeat top left;
+  background: url("../img/illustration-sm.png") no-repeat top left;
   width: 500px;
   height: 109px;
   position: absolute;
@@ -435,7 +433,7 @@ body.thin #header-band #top-navigation {
 }
 
 i.icon-bobross {
-  background: url(../../favicon.png) no-repeat center center;
+  background: url("../../favicon.png") no-repeat center center;
   margin-bottom: 1px;
   margin-top: 0;
   width:16px;
@@ -709,7 +707,7 @@ i.icon-reddit {
 }
 
 .paypal-payment-methods {
-  background: url("../img/payment.types.png") no-repeat bottom center;
+  background: url("../img/payment-types.png") no-repeat bottom center;
   width: 211px;
   height: 28px;
   display: block;
@@ -1129,6 +1127,8 @@ table.grid .rank {
 
 body#bigscreen .container,
 body#bigscreen .container-fluid,
+body#admin .container,
+body#admin .container-fluid,
 body.profile .container,
 body.profile .container-fluid {
   width: auto;
@@ -1297,7 +1297,7 @@ body#bigscreen #chat-panel-resize-bar.active {
 body#admin #main-nav .brand,
 body#bigscreen #main-nav .brand {
   text-indent: -999em;
-  background: url("../img/logo.destinygg.sm.png") no-repeat center center;
+  background: url("../img/logo-destiny-gg.sm.png") no-repeat center center;
   display: block;
   width: 224px;
   display: none;
@@ -1334,43 +1334,44 @@ body#banned {
   min-width: 320px;
   box-shadow: inset 0 0 5px 5px rgba(0,0,0,0.25);
   background: #050505;
-}
-body#banned #ban-info {
-  margin:0;
-  padding: 20px 15px;
-  position: relative;
-  overflow-x: hidden;
-}
-body#banned #ban-info h1,
-body#banned #ban-info h2,
-body#banned #ban-info h3 {
-  font-size: 24px;
-  line-height: 24px;
-  color: #fafafa;
-}
-body#banned #ban-info h3 {
-  font-size: 20px;
-  line-height: 20px;  
-}
-body#banned #ban-info p {
-  font-size: 12px;
-  margin: 15px 0;
-}
-body#banned #ban-info dt {
-  font-weight: normal;
-  color: #444;
-}
-body#banned #ban-info h1 small {
-  color: white;
-  font-size: 16px;
-  border-radius: 6px;
-  padding:1px 4px;
-}
-body#banned .bantype-temporary small {
-  background-color: #f89406;
-}
-body#banned .bantype-permanent small {
-  background-color: #b94a48;
+
+  #ban-info {
+    margin:0;
+    padding: 20px 15px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  #ban-info h1,
+  #ban-info h2,
+  #ban-info h3 {
+    font-size: 24px;
+    line-height: 24px;
+    color: #fafafa;
+  }
+  #ban-info h3 {
+    font-size: 20px;
+    line-height: 20px;  
+  }
+  #ban-info p {
+    font-size: 12px;
+    margin: 15px 0;
+  }
+  #ban-info dt {
+    font-weight: normal;
+    color: #444;
+  }
+  #ban-info h1 small {
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    padding:1px 4px;
+  }
+  .bantype-temporary small {
+    background-color: #f89406;
+  }
+  .bantype-permanent small {
+    background-color: #b94a48;
+  }
 }
 
 form label.error {
@@ -1391,117 +1392,104 @@ form label.error {
   }
 }
 
-body#admin #main-nav .container-fluid {
-  margin: 0;
-}
-
 
 /* Emoticons */
-body#emoticons .content {
-  background-color: #080808;
-}
-body#emoticons .emote {
-  height: 85px;
-  width: 20%;
-  float: left;
-}
-body#emoticons .emote > div {
-  margin: 10px;
-}
-body#emoticons .chat-emote {
-  top: auto;
-  position: static;
-  display: block;
-  margin: 0 auto !important;
-}
-body#emoticons .emote-label {
-  font-size: 12px;
-  text-align: center;
-  color: rgba(255,255,255,0.7);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  margin-top: 5px;
-  line-height: 30px;
-  display: block;
-}
-body#emoticons .emote-label:hover {
-  color: white;
+body#emoticons {
+  .content {
+    background-color: #080808;
+  }
+  .emote {
+    height: 85px;
+    width: 20%;
+    float: left;
+  }
+  .emote > div {
+    margin: 10px;
+  }
+  .chat-emote {
+    top: auto;
+    position: static;
+    display: block;
+    margin: 0 auto !important;
+  }
+  .emote-label {
+    font-size: 12px;
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-top: 5px;
+    line-height: 30px;
+    display: block;
+  }
+  .emote-label:hover {
+    color: white;
+  }
 }
 
 /* Banner shows if the stream is live */
-#live-banner {
-  margin: 0; 
-  position: relative; 
-  min-height: 200px; 
-  background: rgba(0,0,0,0.5); 
-  border-radius: 6px;
-}
-#live-banner .preview {
-  padding: 10px;  
-  top:0;
-  left:0;
-  float: left;
-}
-#live-banner .preview a {
-  display: block;
-  border-radius: 6px;
-  width: 300px;
-  height: 180px;  
-}
+#status-banners {
 
-#live-banner #live-info-wrap {
-  float: left;
-}
-#live-banner #live-info-wrap > div {
-  padding: 15px 20px;
-}
-#live-banner #live-info-wrap h1 {
-  letter-spacing: -0.05em;
-  white-space: nowrap;
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  font-size: 36px; 
-  margin:0 0 10px 0; 
-}
-#live-banner #live-info-wrap #live-info {
-  margin-bottom: 1em;
-  color: #666;
-}
-#live-banner #live-popouts {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-}
-#live-banner #live-info-wrap {
-  max-width: 650px;
-}
-
-@media(min-width: @screen-sm-min) {
-  #live-banner #live-info-wrap {
-    max-width: 230px;
+  .banner-view-wrap {
+    margin: 0; 
+    position: relative; 
+    min-height: 200px; 
+    background: rgba(0,0,0,0.5); 
+    border-radius: 6px;
+  }
+  .banner-thumbnail {
+    position: absolute;
+    padding: 10px;  
+    top:0;
+    left:0;
+    float: left;
+  }
+  .banner-thumbnail a {
+    display: block;
+    border-radius: 6px;
+    width: 300px;
+    height: 180px;  
+  }
+  .banner-content-wrap > div {
+    padding: 20px 20px 20px 10px;
+  }
+  .banner-content-wrap h1 {
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    font-size: 36px; 
+    margin:0 0 10px 0; 
+  }
+  .banner-content-wrap {
+    min-width: calc(~"100%" - 320px);
+    margin-left: 320px;
+  }
+  .banner-content-text {
+    margin-bottom: 1em;
+    color: #666;
   }
 }
 
-@media(min-width: @screen-md-min) {
-  #live-banner #live-info-wrap {
-    max-width: 450px;
+@media (max-width: @screen-sm-max) {
+  #status-banners .banner-thumbnail {
+    display: none;
+  }
+  #status-banners .banner-content-wrap {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+@media (max-width: @screen-xxs-max) {
+  #status-banners .banner-popout-links {
+    display: none;
   }
 }
 
-@media(min-width: @screen-lg-min) {
-  #live-banner #live-info-wrap {
-    max-width: 650px;
-  }
-}
 
 iframe.stream-element {
   width: 100%;
   height: 100%;
-}
-
-.gift-message {
-  font-size: 13px;
-  font-weight: normal;
 }
 
 #alerts-container {
@@ -1516,18 +1504,18 @@ iframe.stream-element {
 }
 
 body#amazon .amazon-referral {
-    text-align: center;
-    margin: 40px 0 0 0;
-    padding-bottom: 60px;
+  text-align: center;
+  margin: 40px 0 0 0;
+  padding-bottom: 60px;
 }
 body#amazon .amazon-referral:first-child {
-    border-width: 0 0 0 0;
+  border-width: 0 0 0 0;
 }
 body#amazon .amazon-referral a {
-    text-decoration: none;
+  text-decoration: none;
 }
 body#amazon .amazon-referral img {
-    border-radius: 8px;
+  border-radius: 8px;
 }
 @media (max-width: @screen-sm-max) {
   body#amazon .amazon-referral {
@@ -1535,7 +1523,6 @@ body#amazon .amazon-referral img {
     margin-left: 0;
   }
 }
-
 #android-banner p {
   color: #666;
 }

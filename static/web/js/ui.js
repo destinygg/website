@@ -166,8 +166,8 @@ $(function(){
                 return;
             
             if(data != null && data.stream != null){
-                onlinebanner.find('.preview a').attr('title', data.status);
-                onlinebanner.find('.preview a').css('background-image', 'url('+data.stream.preview.medium+')');
+                onlinebanner.find('.banner-thumbnail a').attr('title', data.status);
+                onlinebanner.find('.banner-thumbnail a').css('background-image', 'url('+data.stream.preview.medium+')');
                 onlinebanner.find('.live-info-game').text(data.game);
                 onlinebanner.find('.live-info-updated').text(moment(data.stream.channel.updated_at).fromNow());
                 onlinebanner.find('.live-info-viewers').text(data.stream.viewers);
@@ -179,9 +179,9 @@ $(function(){
                 offlinebanner.find('.offline-info-game').text(data.game);
                 
                 if(data.previousbroadcast)
-                    offlinebanner.find('.preview a').css('background-image', 'url('+data.previousbroadcast.preview+')');
+                    offlinebanner.find('.banner-thumbnail a').css('background-image', 'url('+data.previousbroadcast.preview+')');
                 else
-                    offlinebanner.find('.preview a').css('background-image', 'url('+data.video_banner+')');
+                    offlinebanner.find('.banner-thumbnail a').css('background-image', 'url('+data.video_banner+')');
                 
                 offlinebanner.show().appendTo(statusbanners);
                 onlinebanner.detach();

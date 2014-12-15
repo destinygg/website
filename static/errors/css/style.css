@@ -13,7 +13,7 @@ body {
 }
 
 body {
-    background: #111 url("../img/bodybg.png") repeat top center;
+    background: #111 url("../img/body-bg.png") repeat top center;
     position: relative;
 }
 
@@ -31,7 +31,7 @@ footer {
 #header-band {
     border-top: 1px solid black;
     border-bottom: 1px solid #222;
-    background: url("../img/cloudbg.jpg") repeat-x top center;
+    background: url("../img/cloud-bg.jpg") repeat-x top center;
     background-size: auto 100%;
     min-height: 192px;
     margin: 0;
@@ -60,7 +60,7 @@ footer {
 }
 
 #header-band #overview #illustration {
-    background: url("../img/illustration.lg.png") no-repeat top left;
+    background: url("../img/illustration-lg.png") no-repeat top left;
     top: 0;
     right: 0;
     width: 500px;
