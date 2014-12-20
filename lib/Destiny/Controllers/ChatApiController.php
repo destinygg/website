@@ -10,7 +10,12 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Session;
+use Destiny\Common\Config;
+use Destiny\Common\Response;
+use Destiny\Common\MimeType;
+use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatIntegrationService;
+use Destiny\Messages\PrivateMessageService;
 
 /**
  * @Controller
@@ -42,15 +47,15 @@ class ChatApiController {
      */
     public function sendMessage(array $params) {
 
-        FilterParams::required($params, 'privatekey');
-        $this->checkPrivateKey($params['privatekey']);
-
         $privateMessageService = PrivateMessageService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
         $userService = UserService::instance();
         $response = array();
 
         try {
+
+            FilterParams::required($params, 'privatekey');
+            $this->checkPrivateKey($params['privatekey']);
 
             FilterParams::required($params, 'message');
             FilterParams::required($params, 'userid');
