@@ -1039,7 +1039,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: '/api/messages/'+ encodeURIComponent(self.messageid) +'/open',
+                url: '/profile/messages/'+ encodeURIComponent(self.messageid) +'/open',
                 complete: function(){
                     pmlines.each(function(){
                         var message = $(this).data('message'),
@@ -1074,7 +1074,6 @@
                 <div class="'+this.type+'-msg'+((css) ? ' '+css:'')+' private-message" data-username="'+this.user.username.toLowerCase()+'">\
                     '+html+' \
                     <span class="message-actions">
-                        <a target="_blank" href="/profile/messages/users/'+ encodeURIComponent(this.user.username.toLowerCase()) +'"><i class="fa fa-fw fa-reply-all"></i> Reply</a> or \
                         <a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>\
                     </span>\
                     <i class="speech-arrow"></i>\
