@@ -21,6 +21,7 @@ abstract class Http {
     const STATUS_FORBIDDEN = 403;
     const STATUS_NOT_FOUND = 404;
     const STATUS_UNAUTHORIZED = 401;
+    const STATUS_BAD_REQUEST = 400;
     const STATUS_ERROR = 500;
     const STATUS_SERVICE_UNAVAILABLE = 503;
     const STATUS_OK = 200;
@@ -31,6 +32,7 @@ abstract class Http {
         500 => 'Error',
         404 => 'Not Found',
         401 => 'Unauthorized',
+        400 => 'Bad Request',
         304 => 'Not Modified',
         200 => 'OK',
         204 => 'No Content',

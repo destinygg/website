@@ -402,6 +402,12 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatErrorMessage("Invalid nick - /notify nick message"));
 				return;
 			}
+			
+			if(parts[1].toLowerCase() == this.user.username.toLowerCase()){
+				this.gui.push(new ChatErrorMessage("Cannot send a message to yourself"));
+				return;
+			}
+
 			payload.nick = parts[1]
 			parts.shift(0) // remove command
 			parts.shift(0) // remove nick
