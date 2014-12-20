@@ -20,7 +20,7 @@ use Destiny\Common\Exception;
 class AuthenticationController {
     
     /**
-     * @Route ("/auth/api")
+     * @Route ("/api/auth")
      * @Transactional
      *
      * @param array $params   

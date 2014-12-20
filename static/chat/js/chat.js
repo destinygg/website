@@ -408,25 +408,7 @@ chat.prototype.handleCommand = function(str) {
 			payload.data = parts.join(' ')
 
 			this.gui.push(new ChatUserPrivateMessage(payload.data, {username: payload.nick, features:[]}, undefined, true), 'sent');
-
-			var self = this;
-			$.ajax({
-				url: '/api/messages/send',
-				type: 'POST',
-				data: {
-					recipients: [payload.nick],
-					message: payload.data
-				},
-				success: function(data){
-					if(!data)
-						self.gui.push(new ChatErrorMessage("Failed to send private message."));
-					else if(!data.success)
-						self.gui.push(new ChatErrorMessage(data.message));
-				},
-				error: function(){
-					self.gui.push(new ChatErrorMessage("Failed to send private message."));
-				}
-			});
+			this.emit("PRIVMSG", payload);
 			break;
 			
 		case "ignore":

@@ -165,22 +165,22 @@ class ChatIntegrationService extends Service {
     /**
      * Publish to the private message channel
      *
-     * @param array $message the message
+     * @param array $message
+     * @param array $user
+     * @param array $targetuser
      * @throws Exception
      */
-    public function publishPrivateMessage(array $message) {
+    public function publishPrivateMessage(array $message, array $user, array $targetuser) {
         $userService = UserService::instance ();
-
-        $user = new SessionCredentials($userService->getUserById ($message ['userid']));
-        $targetuser = new SessionCredentials($userService->getUserById ($message ['targetuserid']));
-
-        $data = new \stdClass ();
-        $data->id = $message['id'];
-        $data->data = $message['message'];
-        $data->user = $user;
-        $data->targetuser = $targetuser;
-
+        $data = array(
+            'messageid' => $message['id'],
+            'message' => $message['message'],
+            'username' => $user['username'],
+            'userid' => $user['userId'],
+            'targetusername' => $targetuser['username'],
+            'targetuserid' => $targetuser['userId']
+        );
         $redis = Application::instance ()->getRedis ();
-        return $redis->publish ( sprintf ( 'notify-%s', Config::$a ['redis'] ['database'] ), json_encode($data) );
+        return $redis->publish ( sprintf ( 'privmsg-%s', Config::$a ['redis'] ['database'] ), json_encode($data) );
     }
 }

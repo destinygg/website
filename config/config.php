@@ -10,6 +10,7 @@ return array (
 		'port'				=> 9998,
 		'backlog' 			=> 150,
 		'maxlines' 			=> 150,
+		'privatekey'		=> null,
 		'customemotes' => array(
 			'Dravewin',
 			'INFESTINY',

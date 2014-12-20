@@ -47,7 +47,6 @@ class PrivateMessageController {
 
     /**
      * @Route ("/profile/messages/send")
-     * @Route ("/api/messages/send")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
      *
@@ -63,6 +62,7 @@ class PrivateMessageController {
         $userId = Session::getCredentials ()->getUserId ();
         $privateMessageService = PrivateMessageService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
+        $userService = UserService::instance();
         $response = array('success' => false, 'message' => '');
         $isReply = (isset($params['replyto']) && !empty($params['replyto']));
 
@@ -89,27 +89,34 @@ class PrivateMessageController {
                     $message['userid'] = $replymessage['targetuserid'];
                     $message['targetuserid'] = $replymessage['userid'];
                 }
+
+                $user = $userService->getUserById ( $message['userid'] );
+                $targetuser = $userService->getUserById ( $message['targetuserid'] );
+
                 $privateMessageService->addMessage($message);
+                $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
 
             }else{
 
-                FilterParams::isarray($params, 'recipients');
-                $recipients = $this->prepareRecipients( $params['recipients'] );
 
+                FilterParams::isarray($params, 'recipients');
+                $recipients = $privateMessageService->prepareRecipients( $params['recipients'] );
+
+                $user = $userService->getUserById ( $userId );
                 foreach ($recipients as $recipientId) {
+                    $targetuser = $userService->getUserById ( $recipientId );
                     $message = array(
                         'userid' => $userId,
                         'targetuserid' => $recipientId,
                         'message' => $params['message'],
                         'isread' => 0
                     );
-                    $message['id'] = $privateMessageService->addMessage($message);
-                    //$chatIntegrationService->publishPrivateMessage( $message );
+                    $message['id'] = $privateMessageService->addMessage( $message );
+                    $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
                 }
                 
             }
 
-            $response['id'] = $message['id'];
             $response['message'] = 'Message sent';
             $response['success'] = true;
 
@@ -124,59 +131,7 @@ class PrivateMessageController {
     }
 
     /**
-     * Removes null | empty values, lowercases all usernames and removes the current username from the list.
-     *
-     * @throws Exception
-     * @return array
-     */
-    private function prepareRecipients(array $recipients){
-        $userService = UserService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-
-        $recipients = array_unique(array_map('strtolower', $recipients));
-        if(empty($recipients)){
-            throw new Exception('Invalid recipients list');
-        }
-
-        $ids = $userService->getUserIdsByUsernames($recipients);
-        if(Session::hasRole(UserRole::ADMIN)){
-            foreach ($recipients as $recipient) {
-                switch ($recipient) {
-                    case 't1 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(1);
-                        break;
-
-                    case 't2 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(2);
-                        break;
-
-                    case 't3 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(3);
-                        break;
-
-                    case 't4 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(4);
-                        break;
-                }
-            }
-        }
-
-        if(count($ids) == 1 && $ids[0] == $userId){
-            throw new Exception('Cannot send a message to yourself only.');
-        }
-
-        $recipients = array_diff($ids, array($userId));
-
-        if(empty($recipients)){
-            throw new Exception('Invalid recipient value(s)');
-        }
-
-        return $recipients;
-    }
-
-    /**
      * @Route ("/profile/messages/{id}/open")
-     * @Route ("/api/messages/send")
      * @Secure ({"USER"})
      *
      * @param array $params
@@ -288,7 +243,6 @@ class PrivateMessageController {
 
     /**
      * @Route ("/profile/messages/users/{username}/open")
-     * @Route ("/api/messages/users/{username}/open")
      * @Secure ({"USER"})
      *
      * @param array $params
