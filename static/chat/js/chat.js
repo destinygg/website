@@ -200,9 +200,6 @@ chat.prototype.onPRIVMSG = function (data) {
 	if (this.ignorelist[data.nick])
 		return;
 
-	if (user && user.features.length != data.features.length)
-		this.users[data.nick] = user;
-
 	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
 };
 chat.prototype.onMSG = function(data) {
