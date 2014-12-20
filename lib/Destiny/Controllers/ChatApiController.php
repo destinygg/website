@@ -74,7 +74,7 @@ class ChatApiController {
 
             $message['id'] = $privateMessageService->addMessage( $message );
             $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
-            $response = new Response ( Http::STATUS_OK );
+            $response = new Response ( Http::STATUS_NO_CONTENT );
 
         } catch (Exception $e) {
             $response['success'] = false;

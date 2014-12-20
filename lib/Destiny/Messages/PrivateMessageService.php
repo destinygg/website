@@ -4,6 +4,10 @@ namespace Destiny\Messages;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
+use Destiny\Common\User\UserService;
+use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
+use Destiny\Common\Exception;
 
 class PrivateMessageService extends Service {
     
@@ -208,7 +212,7 @@ class PrivateMessageService extends Service {
      * @throws Exception
      * @return array
      */
-    private function prepareRecipients(array $recipients){
+    public function prepareRecipients(array $recipients){
         $userService = UserService::instance();
         $userId = Session::getCredentials ()->getUserId ();
 
