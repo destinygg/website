@@ -74,23 +74,14 @@ class ChatApiController {
 
             $message['id'] = $privateMessageService->addMessage( $message );
             $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
-
-            $response = array(
-                'messageid' => $message['id'],
-                'message' => $message['message'],
-                'username' => $user['username'],
-                'userid' => $user['userId'],
-                'targetusername' => $targetuser['username'],
-                'targetuserid' => $targetuser['userId']
-            );
+            $response = new Response ( Http::STATUS_OK );
 
         } catch (Exception $e) {
             $response['success'] = false;
             $response['error'] = $e->getMessage();
+            $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
+            $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         }
-
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         return $response;
     }
 }
