@@ -1008,10 +1008,11 @@
     // END USER MESSAGE
 
     // PRIVATE MESSAGE
-    ChatUserPrivateMessage = function(data, user, timestamp, isSending){
+    ChatUserPrivateMessage = function(data, user, messageid, timestamp, isSending){
         this.init(data, timestamp);
         this.type = 'user';
         this.user = user;
+        this.messageid = messageid;
         this.isSending = isSending;
         this.isread = false;
         this.prepareMessage();
@@ -1038,7 +1039,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: '/api/messages/users/'+ encodeURIComponent(username) +'/open',
+                url: '/api/messages/'+ encodeURIComponent(self.messageid) +'/open',
                 complete: function(){
                     pmlines.each(function(){
                         var message = $(this).data('message'),

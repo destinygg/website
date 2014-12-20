@@ -188,7 +188,7 @@ chat.prototype.onQUIT = function(data) {
 		this.gui.trigger('quit', data);
 	}
 };
-chat.prototype.onNOTIFY = function (data) {
+chat.prototype.onPRIVMSG = function (data) {
 	var user = this.users[data.nick];
 	if (!user) {
 		user = new ChatUser(data);
@@ -203,7 +203,7 @@ chat.prototype.onNOTIFY = function (data) {
 	if (user && user.features.length != data.features.length)
 		this.users[data.nick] = user;
 
-	return new ChatUserPrivateMessage(data.data, user, data.targetuserid, data.timestamp);
+	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
 };
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
