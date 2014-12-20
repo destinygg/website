@@ -33,8 +33,8 @@ class ChatApiController {
     }
 
     /**
-     * @Route ('/api/messages/send')
-     * @HttpMethod ({'POST'})
+     * @Route ("/api/messages/send")
+     * @HttpMethod ({"POST"})
      *
      * Expects the following GET|POST variables:
      *     privatekey=XXXXXXXX
