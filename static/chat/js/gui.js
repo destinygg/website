@@ -1041,6 +1041,7 @@
                         message.isread = true;
                         message.ui.find('.icon-mail-receive').attr('class', 'icon-mail-open-document');
                         messageactions.remove();
+                        destiny.chat.gui.setUnreadMessageCount( destiny.chat.gui.unreadMessageCount - 1 );
                     });
                 },
                 error: function(){
@@ -1073,7 +1074,7 @@
             </div>';
     };
     ChatUserPrivateMessage.prototype.wrapUser = function(user){
-        return ' <i class="icon-mail-receive" title="Received Message"></i> <a class="user">' +user.username+'</a>';
+        return ' <i class="mail-send.png" title="Received Message"></i> <a class="user">' +user.username+'</a>';
     };
     // END PRIVATE MESSAGE
     
