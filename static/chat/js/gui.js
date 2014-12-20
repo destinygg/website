@@ -1008,30 +1008,24 @@
     // END USER MESSAGE
 
     // PRIVATE MESSAGE
-    ChatUserPrivateMessage = function(data, user, messageid, timestamp, isSending){
+    ChatUserPrivateMessage = function(data, user, messageid, timestamp){
         this.init(data, timestamp);
         this.type = 'user';
         this.user = user;
         this.messageid = messageid;
-        this.isSending = isSending;
         this.isread = false;
         this.prepareMessage();
         this.isSlashMe = false; // make sure a private message is never reformatted to /me
         return this;
     };
     $.extend(ChatUserPrivateMessage.prototype, ChatUserMessage.prototype);
-    ChatUserPrivateMessage.prototype.destroy = function(){
-        if(!this.isread && !this.isSending)
-            destiny.chat.gui.setUnreadMessageCount( destiny.chat.gui.unreadMessageCount + 1 );
-        return true;
-    };
     ChatUserPrivateMessage.prototype.insert = function(container){
         var self = this,
             username = this.user.username.toLowerCase();
         this.ui.on('click', '.mark-as-read', function(e){
             e.preventDefault();
             // Need to make sure all private messages are marked as read from this user, not just this one
-            var pmlines = destiny.chat.gui.lines.find('.private-message[data-username="'+ username +'"]');
+            var pmlines = destiny.chat.gui.lines.find('.private-message[data-messageid="'+ self.messageid +'"]');
             pmlines.each(function(){
                 var message = $(this).data('message'),
                     messageactions = message.ui.find('.message-actions');
@@ -1065,37 +1059,21 @@
             self.destroy();
             self.ui.remove();
         })
+        destiny.chat.gui.setUnreadMessageCount( destiny.chat.gui.unreadMessageCount + 1 );
         return this.ui.appendTo(container);
     };
     ChatUserPrivateMessage.prototype.wrap = function(html, css) {
-        // If the person is sending the private message, no need for the tools
-        if(!this.isSending){
-            return '\
-                <div class="'+this.type+'-msg'+((css) ? ' '+css:'')+' private-message" data-username="'+this.user.username.toLowerCase()+'">\
-                    '+html+' \
-                    <span class="message-actions">
-                        <a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>\
-                    </span>\
-                    <i class="speech-arrow"></i>\
-                </div>\
-            ';
-        }else{
-            return '\
-                <div class="'+this.type+'-msg'+((css) ? ' '+css:'')+' private-message" data-username="'+this.user.username.toLowerCase()+'">\
-                    '+html+' \
-                    <span class="message-actions">
-                        <a href="#" class="hide-pm"><i class="fa fa-fw fa-remove"></i> Hide</a>\
-                    </span>\
-                    <i class="speech-arrow"></i>\
-                </div>\
-            ';
-        }
+        return '\
+            <div class="'+this.type+'-msg'+((css) ? ' '+css:'')+' private-message" data-messageid="'+this.messageid+'" data-username="'+this.user.username.toLowerCase()+'">\
+                '+html+' \
+                <span class="message-actions">
+                    <a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>\
+                </span>\
+                <i class="speech-arrow"></i>\
+            </div>';
     };
     ChatUserPrivateMessage.prototype.wrapUser = function(user){
-        if(!this.isSending)
-            return ' <i class="icon-mail-receive" title="Received Message"></i> <a class="user">' +user.username+'</a>';
-        else
-            return ' <i class="icon-mail-send" title="Sent Message"></i> <a class="user">' +user.username+'</a>';
+        return ' <i class="icon-mail-receive" title="Received Message"></i> <a class="user">' +user.username+'</a>';
     };
     // END PRIVATE MESSAGE
     
