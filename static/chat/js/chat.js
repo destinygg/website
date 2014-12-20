@@ -402,7 +402,7 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatErrorMessage("Invalid nick - /notify nick message"));
 				return;
 			}
-			
+
 			if(parts[1].toLowerCase() == this.user.username.toLowerCase()){
 				this.gui.push(new ChatErrorMessage("Cannot send a message to yourself"));
 				return;
@@ -413,7 +413,7 @@ chat.prototype.handleCommand = function(str) {
 			parts.shift(0) // remove nick
 			payload.data = parts.join(' ')
 
-			this.gui.push(new ChatUserPrivateMessage(payload.data, {username: payload.nick, features:[]}, undefined, true), 'sent');
+			this.gui.push(new ChatInfoMessage("Your message has been sent!"));
 			this.emit("PRIVMSG", payload);
 			break;
 			
