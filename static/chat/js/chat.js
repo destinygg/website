@@ -197,7 +197,7 @@ chat.prototype.onPRIVMSG = function (data) {
 	} else
 		this.gui.autoCompletePlugin.addData(user.username, data.timestamp);
 
-	if (this.ignorelist[data.nick])
+	if (this.ignorelist[data.nick.toLowerCase()])
 		return;
 
 	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
