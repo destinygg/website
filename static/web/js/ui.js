@@ -1,9 +1,9 @@
 // Document ready
 $(function(){
     var unreadElem = $('.pm-count');
-    if (unreadElem.length && localStorage) {
+    if (unreadElem && localStorage) {
         var unreadMessageCount = parseInt(unreadElem.text() || "0", 10);
-        localStorage['unreadMessageCount'] = unreadMessageCount;
+        localStorage['unreadMessageCount'] = unreadMessageCount || 0;
     }
 
     // Generic popup defaults

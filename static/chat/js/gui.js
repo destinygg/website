@@ -53,7 +53,7 @@
         broadcasts           : broadcasts,
         broadcastdismiss     : (localStorage['chatbroadcastdismiss'] || null),
         maxbroadcasts        : 1,
-        unreadMessageCount  : 0,
+        unreadMessageCount   : parseInt(localStorage['unreadMessageCount'] || 0, 10),
         
         trigger: function(name, data){
             $(this).trigger(name, data);
@@ -202,7 +202,7 @@
                 cMenu.closeMenus(chat);
             });
             this.privatemessagelist.visible = false;
-            chat.setUnreadMessageCount(this.unreadMessageCount || localStorage['unreadMessageCount']);
+            chat.setUnreadMessageCount(this.unreadMessageCount);
 
             // User list
             this.userslist = this.ui.find('#chat-user-list:first').eq(0);
@@ -731,24 +731,8 @@
             localStorage['unreadMessageCount'] = count;
 
             var countui = this.ui.find('.chat-pm-count');
-            countui.text(this.unreadMessageCount);
-
-            var $bcount = this.ui.find('.chat-users-btn .chat-pm-count'),
-                $container = $bcount.parent();
-            if($bcount.bounceinterval)
-                clearInterval($bcount.bounceinterval);
-
-            var startbounce = function(){
-                $bcount.detach().appendTo($container);
-            }
-
-            if(this.unreadMessageCount == 0){
-                countui.addClass('hidden');
-            } else {
-                $bcount.bounceinterval = setInterval(startbounce, 30000);
-                startbounce();
-                countui.removeClass('hidden');
-            }
+            countui.text(this.unreadMessageCount)
+            countui.toggleClass('hidden', !count);
         },
         
     });
