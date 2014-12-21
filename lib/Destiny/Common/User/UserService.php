@@ -779,4 +779,19 @@ class UserService extends Service {
     }    
     return $ids;
   }
+
+  public function isUserOldEnough( $userId ) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare("
+      SELECT COUNT(*)
+      FROM dfl_users AS u
+      WHERE
+        u.userId = :userId AND
+        DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW()
+      LIMIT 1
+    ");
+    $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+    $stmt->execute();
+    return !!$stmt->fetchColumn();
+  }
 }

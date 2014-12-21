@@ -66,8 +66,13 @@ class ChatApiController {
                 throw new Exception ("Cannot send messages while you are banned.");
             }
 
+            $oldEnough = $userService->isUserOldEnough ( $params['userid'] );
+            if (! $oldEnough) {
+                throw new Exception ("Your account is not old enough to send messages.");
+            }
+
             if($params['userid'] == $params['targetuserid']){
-                throw new Exception ('Cannot send a message to yourself only.');
+                throw new Exception ('Cannot send messages to yourself.');
             }
 
             $user = $userService->getUserById ( $params['userid'] );

@@ -73,6 +73,11 @@ class PrivateMessageController {
                 throw new Exception ("You cannot send messages while you are banned.");
             }
 
+            $oldEnough = $userService->isUserOldEnough ( $userId );
+            if (! $oldEnough) {
+                throw new Exception ("Your account is not old enough to send messages.");
+            }
+
             FilterParams::required($params, 'message');
 
             if($isReply){
