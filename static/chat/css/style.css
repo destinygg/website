@@ -249,6 +249,9 @@
 .chat-lines a.nsfw-link {
   border-bottom: 1px dashed red;
 }
+.chat-lines a.nsfl-link {
+  border-bottom: 1px dashed #FFF000;
+}
 
 .chat .chat-lines time, 
 .chat .user-msg i {
