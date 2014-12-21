@@ -7,13 +7,7 @@ use Destiny\Common\Config;
 class Tpl {
     
     public static function file($filename){
-        // Dodgy... this is done so that gnix can use the error pages too
-        // So we store the /error/ pages in the root folder of the project
-        if(strpos($filename, 'errors/') === 0){
-            return Config::$a['tpl']['error.path'] . $filename;
-        }else{
-            return Config::$a['tpl']['path'] . $filename;
-        }
+        return Config::$a['tpl']['path'] . $filename;
     }
 
     public static function jsout($var) {
@@ -36,7 +30,7 @@ class Tpl {
     public static function title($title) {
         $str = Config::$a ['meta'] ['title'];
         if (! empty ( $title )) {
-            $str = sprintf ( '%s : %s', Config::$a ['meta'] ['shortName'], $title );
+            $str = sprintf ( '%s - %s', $title, Config::$a ['meta'] ['shortName'] );
         }
         return $str;
     }
@@ -63,6 +57,20 @@ class Tpl {
 
     public static function fromNow(\DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
         return sprintf ( '<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
+    }
+
+    public static function calendar(\DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+        return sprintf ( '<time title="%s" data-moment="true" data-moment-calendar="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
+    }
+
+    public static function formatTextForDisplay($text){
+        $linkify = new \Misd\Linkify\Linkify();
+        $text = $linkify->process(self::out($text));
+        $emotes = Config::$a ['chat'] ['customemotes'];
+        $pattern = '/(^|[\\s,\\.\\?!])('. join($emotes, '|') .')(?=$|[\\s,\\.\\?!])/i';
+        $replace = '$1<div title="$2" class="chat-emote chat-emote-$2"></div>';
+        $text = preg_replace($pattern, $replace, $text);
+        return $text;
     }
 
 }

@@ -1,65 +1,81 @@
 <?php
 namespace Destiny; 
 use Destiny\Common\User\UserRole;
-use Destiny\Common\Session; 
+use Destiny\Common\Session;
+use Destiny\Common\Config;
 ?>
 <div id="main-nav" class="navbar navbar-static-top navbar-inverse">
-  <div class="container-fluid">
-    <a class="brand pull-left" href="/">Destiny.gg</a>
-    <ul class="nav navbar-nav">
-      <li id="menubtn">
-        <a title="Menu" href="#" class="collapsed" aria-label="Menu" data-toggle="collapse"
-            data-target="#collapsemenu">
-          <span class="menuicon"></span>
-        </a>
-      </li>
-    </ul>
+    <div class="container-fluid">
+    
+        <a class="brand pull-left" href="/">Destiny.gg</a>
+        <ul class="nav navbar-nav">
+            <li id="menubtn">
+                <a title="Menu" href="#" class="collapsed" aria-label="Menu" data-toggle="collapse" data-target="#collapsemenu">
+                    <span class="menuicon"></span>
+                </a>
+            </li>
+        </ul>
 
-    <div class="navbar-header pull-right">
-      <ul class="nav navbar-nav">
-        <?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
-        <li class="divider-vertical"></li>
-        <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe</span></a></li>
-        <?php endif; ?>
+        <ul class="nav navbar-nav navbar-right pull-right">
 
-        <?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
-        <li class="divider-vertical"></li>
-        <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
-        <?php endif; ?>
+            <li class="bigscreen">
+                <a title="So. Much. Girth." href="/bigscreen" rel="bigscreen">
+                    <i class="hidden-xs hidden-sm icon-bigscreen"></i>
+                    <span class="">Big screen</span>
+                </a>
+            </li>
+            <li class="divider-vertical"></li>
+            <?php if(Session::hasRole(UserRole::USER)): ?>
 
-        <li class="bigscreen"><a title="So. Much. Girth." href="/bigscreen" rel="bigscreen"><i class="icon-bigscreen"></i><span class="hidden-xs hidden-sm">Big screen</span></a></li>
-        <li class="divider-vertical"></li>
-        <?php if(Session::hasRole(UserRole::USER)): ?>
-        <li>
-          <a href="/profile" rel="profile">
-            <span class="visible-xs glyphicon glyphicon-user"></span>
-            <span class="hidden-xs">Profile</span>
-          </a>
-        </li>
-        <li>
-          <a href="/logout" title="Sign out">
-            <span class="glyphicon glyphicon-off"></span>
-          </a>
-        </li>
-        <?php else:?>
-        <li>
-          <a href="/login" rel="login">
-            <span class="visible-xs glyphicon glyphicon-log-in"></span>
-            <span class="hidden-xs">Sign In</span>
-          </a>
-        </li>
-        <?php endif; ?>
-      </ul>
+            <li class="dropdown hidden-xs">
+                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                    Profile <span class="caret"></span>
+                    <?php if($model->unreadMessageCount > 0): ?>
+                        <span class="pm-count flash" title="You have unread messages!"><?php echo $model->unreadMessageCount; ?></span>
+                    <?php endif; ?>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="/profile">Account</a></li>
+                    <li><a href="/profile/messages">Messages</a></li>
+                    <li><a href="/profile/authentication">Authentication</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/logout">Sign Out</a></li>
+                </ul>
+            </li>
+
+            <?php else:?>
+            <li>
+                <a href="/login" rel="login">
+                    <span class="visible-xs fa fa-sign-in"></span>
+                    <span class="hidden-xs">Sign In</span>
+                </a>
+            </li>
+            <?php endif; ?>
+        </ul>
+
+        <div class="navbar-collapse collapse" id="collapsemenu">
+            <ul class="nav navbar-nav">
+
+                <?php if(Session::hasRole(UserRole::USER)): ?>
+                <li class="visible-xs"><a title="Your account" href="/profile">Profile</a></li>
+                <li class="divider-vertical visible-xs"></li>
+                <?php endif; ?>
+
+                <li><a title="Blog @ destiny.gg" href="http://blog.destiny.gg">Blog</a></li>
+                <li><a title="twitter.com" href="https://twitter.com/Steven_Bonnell/">Twitter</a></li>
+                <li><a title="youtube.com" href="http://www.youtube.com/user/Destiny">Youtube</a></li>
+                <li><a title="reddit.com" href="http://www.reddit.com/r/Destiny/">Reddit</a></li>
+                <li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
+
+                <?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
+                <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe Now!</span></a></li>
+                <?php endif; ?>
+
+                <?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
+                <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
+                <?php endif; ?>
+
+            </ul>
+        </div>
     </div>
-
-    <div class="navbar-collapse collapse" id="collapsemenu">
-      <ul class="nav navbar-nav">
-        <li><a title="Blog @ destiny.gg" href="http://blog.destiny.gg">Blog</a></li>
-        <li><a title="twitter.com" href="https://twitter.com/Steven_Bonnell/">Twitter</a></li>
-        <li><a title="youtube.com" href="http://www.youtube.com/user/Destiny">Youtube</a></li>
-        <li><a title="reddit.com" href="http://www.reddit.com/r/Destiny/">Reddit</a></li>
-        <li><a title="facebook.com" href="https://www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
-      </ul>
-    </div>
-  </div>
 </div>

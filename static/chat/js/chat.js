@@ -139,11 +139,11 @@ chat.prototype.parseAndDispatch = function(e) {
 chat.prototype.dispatchBacklog = function(e) {
 	var handler = 'on' + e.event,
 	    obj     = {
-		nick     : e.username,
-		data     : e.data || e.target,
-		features : e.features,
-		timestamp: moment.utc(e.timestamp).valueOf()
-	};
+			nick     : e.username,
+			data     : e.data || e.target,
+			features : e.features,
+			timestamp: moment.utc(e.timestamp).valueOf()
+		};
 	
 	if (this[handler])
 		return this[handler](obj);
@@ -187,6 +187,20 @@ chat.prototype.onQUIT = function(data) {
 		delete(this.users[data.nick]);
 		this.gui.trigger('quit', data);
 	}
+};
+chat.prototype.onPRIVMSG = function (data) {
+	var user = this.users[data.nick];
+	if (!user) {
+		user = new ChatUser(data);
+		if (user.username == data.nick)
+			this.user = user;
+	} else
+		this.gui.autoCompletePlugin.addData(user.username, data.timestamp);
+
+	if (this.ignorelist[data.nick])
+		return;
+
+	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
 };
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
@@ -368,12 +382,36 @@ chat.prototype.handleCommand = function(str) {
 			break;
 			
 		case "help":
-			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
+			this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /notify /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
 			break;
 			
 		case "me":
 			payload.data = "/" + str;
 			this.emit("MSG", payload);
+			break;
+
+		case "w":
+		case "tell":
+		case "t":
+		case "whisper":
+		case "notify":
+			if (!parts[1] || !nickregex.test(parts[1].toLowerCase())) {
+				this.gui.push(new ChatErrorMessage("Invalid nick - /notify nick message"));
+				return;
+			}
+
+			if(parts[1].toLowerCase() == this.user.username.toLowerCase()){
+				this.gui.push(new ChatErrorMessage("Cannot send a message to yourself"));
+				return;
+			}
+
+			payload.nick = parts[1]
+			parts.shift(0) // remove command
+			parts.shift(0) // remove nick
+			payload.data = parts.join(' ')
+
+			this.gui.push(new ChatInfoMessage("Your message has been sent!"));
+			this.emit("PRIVMSG", payload);
 			break;
 			
 		case "ignore":

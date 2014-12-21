@@ -27,7 +27,7 @@ use Destiny\Common\Config;
       <?php if(!empty($model->warning)): ?>
       <div style="margin: 15px 15px 0 15px;">
         <div class="alert alert-warning" style="margin: 0;">
-          <strong><span class="glyphicon glyphicon-warning-sign"></span> Warning!</strong>
+          <strong><span class="fa fa-warning"></span> Warning!</strong>
           <?=Tpl::out($model->warning->getMessage())?>
         </div>
       </div>
@@ -83,7 +83,7 @@ use Destiny\Common\Config;
               <h2><?=$model->subscriptionType['tierLabel']?></h2>
 
               <?php if(!empty($model->gift)): ?>
-              <p><span class="glyphicon glyphicon-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($model->gift)?></span></p>
+              <p><span class="fa fa-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($model->gift)?></span></p>
               <?php endif; ?>
 
               <p><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</p>
@@ -108,7 +108,7 @@ use Destiny\Common\Config;
 
           <div class="form-actions">
             <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
-            <button type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-shopping-cart"></span> Pay subscription</button>
+            <button type="submit" class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Pay subscription</button>
             <a href="/subscribe" class="btn btn-link">Cancel</a>
             <p style="font-size: 12px; margin: 15px 0 0 0; color: #">
               <span>By clicking the &quot;Pay subscription&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</span>

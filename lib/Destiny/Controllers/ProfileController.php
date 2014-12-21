@@ -125,6 +125,7 @@ class ProfileController {
 
       $model->paymentProfile = $paymentProfile;
       $model->address = $address;
+      $model->title = 'Account';
       return 'profile';
     }
 
@@ -225,8 +226,8 @@ class ProfileController {
           $authProfileTypes [] = $profile ['authProvider'];
         }
         $model->authProfiles = $authProfiles;
-        $model->authProfileTypes = $authProfileTypes;
       }
+      $model->authProfileTypes = $authProfileTypes;
       
       $subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
       if (empty ( $subscription )) {
@@ -240,6 +241,7 @@ class ProfileController {
       $model->subscription = $subscription;
       $model->subscriptionType = $subscriptionType;
       $model->authTokens = ApiAuthenticationService::instance ()->getAuthTokensByUserId ( $userId );
+      $model->title = 'Authentication';
       return 'profile/authentication';
     }
 
@@ -270,7 +272,7 @@ class ProfileController {
      * @param array $params         
      */
     public function profileAuthtokenDelete(array $params) {
-      FilterParams::isRequired ( $params, 'authToken' );
+      FilterParams::required ( $params, 'authToken' );
       
       $userId = Session::getCredentials ()->getUserId ();
       $apiAuthService = ApiAuthenticationService::instance ();
@@ -294,7 +296,7 @@ class ProfileController {
      * @return string
      */
     public function profileConnect(array $params, ViewModel $model) {
-      FilterParams::isRequired ( $params, 'provider' );
+      FilterParams::required ( $params, 'provider' );
       
       $authProvider = $params ['provider'];
       
@@ -340,13 +342,13 @@ class ProfileController {
      */
     public function updateAddress(array $params){
       
-      FilterParams::isRequired ( $params, 'fullName' );
-      FilterParams::isRequired ( $params, 'line1' );
-      FilterParams::isRequired ( $params, 'line2' );
-      FilterParams::isRequired ( $params, 'city' );
-      FilterParams::isRequired ( $params, 'region' );
-      FilterParams::isRequired ( $params, 'zip' );
-      FilterParams::isRequired ( $params, 'country' );
+      FilterParams::required ( $params, 'fullName' );
+      FilterParams::required ( $params, 'line1' );
+      FilterParams::required ( $params, 'line2' );
+      FilterParams::required ( $params, 'city' );
+      FilterParams::required ( $params, 'region' );
+      FilterParams::required ( $params, 'zip' );
+      FilterParams::required ( $params, 'country' );
 
       $userService = UserService::instance ();
       $userId = Session::getCredentials ()->getUserId ();

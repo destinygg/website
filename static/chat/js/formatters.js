@@ -67,14 +67,17 @@
 	};
 	destiny.fn.UrlFormatter.prototype.format = function(str, user){
 		if (!str) return;
-		var nsfw      = (/\b(?:NSFW|NSFL|SPOILER)\b/i.test(str)),
+		var nsfw      = (/\b(?:NSFW|SPOILER)\b/i.test(str)),
+		    nsfl      = (/\b(?:NSFL)\b/i.test(str)),
 		    css       = [],
 		    formatter = this;
 		
 		css.push('externallink');
-		if(nsfw)
+		if(nsfl)
+			css.push('nsfl-link');
+		else if(nsfw)
 			css.push('nsfw-link');
-		
+
 		return str.replace(this.linkregex, function(match, url, scheme){
 			scheme = scheme ? '' : 'http://';
 			var encodedUrl = formatter.encodeUrl(url);

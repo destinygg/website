@@ -1,60 +1,10 @@
-/**
- * Nano scroller
- **/
-.nano {
-  position : relative;
-  width    : 100%;
-  height   : 100%;
-  overflow : hidden;
+.nano > .nano-pane > .nano-slider {
+  background: #eee;
 }
-.nano .content {
-  position      : absolute;
-  overflow      : scroll;
-  overflow-x    : hidden;
-  top           : 0;
-  right         : 0;
-  bottom        : 0;
-  left          : 0;
-}
-.nano .content:focus {
-  outline: none;
-}
-.nano .content::-webkit-scrollbar {
-  visibility: hidden;
-}
-.has-scrollbar .content::-webkit-scrollbar {
-  visibility: visible;
-}
-.nano:hover > .pane, .pane.active, .pane.flashed {
-  visibility : visible\9; /* Target only IE7 and IE8 with this hack */
-  opacity    : 0.99;
-}
-
-.nano > .pane {
-  background            : rgba(0,0,0,0.3);
-  position              : absolute;
-  width                 : 8px;
-  right                 : 5px;
-  top                   : 0;
-  bottom                : 0;
-  visibility            : hidden\9; /* Target only IE7 and IE8 with this hack */
-  opacity               : .01; 
-  -webkit-transition    : .2s;
-  -moz-transition       : .2s;
-  -o-transition         : .2s;
-  transition            : .2s;
-}
-.nano > .pane > .slider {
-  background            : #999;
-  position              : relative;
-  margin                : 0 1px;
-  -moz-border-radius    : 3px;
-  -webkit-border-radius : 3px;  
-  border-radius         : 3px;
-}
-.nano > .pane > .slider:hover,
-.nano > .pane.active > .slider {
-  background: #eee; 
+.nano > .nano-pane {
+  background: transparent;
+  width: 8px;
+  right: 4px;
 }
 
 .serif {
@@ -88,6 +38,7 @@
 .chat-output .chat-lines {
   -webkit-backface-visibility: hidden;
   -webkit-perspective: 1000;
+  outline: 0 !important;
 }
 
 .chat-lines > div {
@@ -194,6 +145,7 @@
   overflow: hidden; 
 }
 .chat-tools-wrap .iconbtn {
+  font-size: 20px;
   cursor: pointer;  
   width:30px;
   height: 28px;
@@ -202,12 +154,65 @@
   display: block;
   text-align: center;
   color: #555;
+  position: relative;
 }
 .chat-tools-wrap .iconbtn:hover {
   color: white;
 }
 .chat-tools-wrap .iconbtn.active {
   color: white;
+}
+
+.chat-tools-wrap .chat-pm-count {
+  font-family: "Lucida Console", Monaco, monospace;
+  text-decoration: none;
+  font-size: 10px;
+  color: white;
+  background-color: #b91010;
+  line-height: 10px;
+  padding: 3px;
+  position: absolute;
+  border-radius: 8px;
+  top: -5px;
+  left: 0;
+  display: block;
+  text-shadow: 1px 1px 0px black;
+  text-align: center;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+  min-width: 15px;
+}
+@-webkit-keyframes flash {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
+}
+@keyframes flash {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
+}
+.chat-pm-count.flash {
+  -webkit-animation-name: flash;
+  -webkit-animation-duration:1.5s;
+  -webkit-animation-direction:alternate;
+  -webkit-animation-timing-function:linear;
+  -webkit-animation-delay:0s;
+  -webkit-animation-iteration-count:infinite;
+  -moz-animation-name: flash;
+  -moz-animation-duration:1.5s;
+  -moz-animation-direction:alternate;
+  -moz-animation-timing-function:linear;
+  -moz-animation-delay:0s;
+  -moz-animation-iteration-count:infinite;
+  animation-name: flash;
+  animation-duration: 1.5s;
+  animation-iteration-count:infinite;
 }
 
 .chat .chat-lines i[class^="icon-"] {
@@ -235,7 +240,7 @@
   color: #02C2FF;
 }
 .chat-lines a.externallink:visited {
-  color: #004D74; 
+  color: #A66BE5; 
 }
 .chat-lines a.externallink:hover, 
 .chat-lines a.externallink:focus {
@@ -243,6 +248,9 @@
 }
 .chat-lines a.nsfw-link {
   border-bottom: 1px dashed red;
+}
+.chat-lines a.nsfl-link {
+  border-bottom: 1px dashed #FFF000;
 }
 
 .chat .chat-lines time, 
@@ -282,13 +290,13 @@
   color: #edea12;
 }
 .chat-theme-dark .chat-lines > .broadcast-msg {
-  background: linear-gradient(to right,rgba(255, 255, 21, 0.1) 0,rgba(255,255,255,0) 90%,rgba(255,255,255,0) 100%);
+  background: rgba(255, 255, 21, 0.1);
 }
 .chat-theme-dark .chat-lines > .own-msg {
-  background: linear-gradient(to right, rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 90%,rgba(255,255,255,0) 100%);
+  background-color: rgba(255,255,255,0.05);
 }
 .chat-theme-dark .chat-lines > .highlight {
-  background: linear-gradient(to right,  rgba(0,150,255,0.5) 0%,rgba(0,150,255,0) 100%);
+  background-color: rgba(0,150,255,0.25);
 }
 .chat-theme-dark .chat-lines > .command-msg,
 .chat-theme-dark .chat-lines > .own-msg,
@@ -306,6 +314,29 @@
   text-shadow: none;
   outline: none;
 }
+
+.chat-theme-dark .chat-lines > .private-message {
+  background-color: #212121;
+  margin: 5px 15px 5px 10px;
+  padding: 10px;
+  position: relative;
+  border-radius: 3px;
+}
+
+.chat-theme-dark .chat-lines > .private-message .speech-arrow {
+  top: 15px;
+  left: -5px;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 5px 5px 0;
+  border-color: transparent #212121 transparent transparent;
+}
+.chat-theme-dark .chat-lines > .private-message .message-actions {
+    font-size: 90%;
+}
+
 /**
  * Need to keep these rules seperate
  * Browsers will kill the whole line of css if one rule is invalid
@@ -451,7 +482,6 @@
 .chat-menu, 
 .user-tools,
 .hint-popup {
-    /*transition: top 0.25s ease-out, bottom 0.25s ease-out, opacity 0.1s ease-in;*/
     font-size: 12px;
 }
 
@@ -559,6 +589,18 @@
   bottom: 3px;
 }
 
+
+#chat-private-messages {
+  width: 270px;
+}
+#chat-private-messages #chat-pm-message {
+  padding: 15px;
+}
+#chat-private-messages #chat-pm-message p {
+  font-size:14px;
+  text-align: center;
+}
+
 /**
  * The text shown when a user is not logged in 
  **/
@@ -587,10 +629,9 @@
 .chat-lines .emotecount {
   text-shadow: none;
   animation: emotecount 600ms 1;
-  -webkit-animation: emotecount 600ms 1;
 }
 @keyframes emotecount {
-  from {
+  from { 
     color: black;
     background-color: white;
   }
@@ -599,16 +640,7 @@
     background-color: #333;
   }
 }
-@-webkit-keyframes emotecount {
-  from {
-    color: black;
-    background-color: white;
-  }
-  to {
-    color: white;
-    background-color: #333;
-  }
-}
+
 
 .chat-lines .emotecount.x5 > span {
   font-size: 10px;
@@ -697,4 +729,18 @@
 }
 
 .chat-broadcast {
+}
+
+@keyframes hop { 
+  0% {transform: translateY(0);}
+  5% {transform: translateY(2px);}
+  10% {transform: translateY(-13px);}
+  50% {transform: translateY(-15px);}
+  70% {transform: translateY(-13px);}
+  80% {transform: translateY(-5px);}
+  95% {transform: translateY(0);}
+  100% {transform: translateY(0);}
+}
+.hop {
+  animation: hop 700ms linear 5; 
 }

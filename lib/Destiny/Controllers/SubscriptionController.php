@@ -77,6 +77,7 @@ class SubscriptionController {
             throw new Exception ( 'Must have an active subscription' );
         }
         $model->subscription = $subscription;
+        $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
     
@@ -91,7 +92,7 @@ class SubscriptionController {
      * @return string
      */
     public function subscriptionGiftCancel(array $params, ViewModel $model) {
-        FilterParams::isRequired($params, 'id');
+        FilterParams::required($params, 'id');
 
         $subscriptionsService = SubscriptionsService::instance ();
         $userService = UserService::instance ();
@@ -106,6 +107,7 @@ class SubscriptionController {
 
         $model->subscription = $subscription;
         $model->giftee = $giftee;
+        $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
     
@@ -121,7 +123,7 @@ class SubscriptionController {
      * @return string
      */
     public function subscriptionCancelProcess(array $params, ViewModel $model) {
-        FilterParams::isRequired($params, 'subscriptionId');
+        FilterParams::required($params, 'subscriptionId');
 
         $ordersService = OrdersService::instance ();
         $payPalAPIService = PayPalApiService::instance ();
@@ -163,6 +165,7 @@ class SubscriptionController {
         
         $model->subscription = $subscription;
         $model->subscriptionCancelled = true;
+        $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
     
@@ -174,7 +177,7 @@ class SubscriptionController {
      * @param array $params
      */
     public function subscriptionError(array $params, ViewModel $model) {
-        FilterParams::isRequired($params, 'orderId');
+        FilterParams::required($params, 'orderId');
       
         // @TODO make this more solid
         $userId = Session::getCredentials ()->getUserId ();
@@ -187,6 +190,7 @@ class SubscriptionController {
       
         $model->order = $order;
         $model->orderId = $params ['orderId'];
+        $model->title = 'Subscription Error';
         return 'order/ordererror';
     }
     
@@ -198,7 +202,7 @@ class SubscriptionController {
      * @param array $params
      */
     public function subscriptionConfirm(array $params, ViewModel $model) {
-        FilterParams::isRequired($params, 'subscription');
+        FilterParams::required($params, 'subscription');
 
         $subscriptionsService = SubscriptionsService::instance ();
         
@@ -242,6 +246,7 @@ class SubscriptionController {
         }
 
         $model->subscriptionType = $subscriptionType;
+        $model->title = 'Subscription Confirm';
         return 'order/orderconfirm';
     }
     
@@ -255,7 +260,7 @@ class SubscriptionController {
      * @param array $params
      */
     public function subscriptionCreate(array $params, ViewModel $model) {
-        FilterParams::isRequired($params, 'subscription');
+        FilterParams::required($params, 'subscription');
         
         $userService = UserService::instance ();
         $subscriptionsService = SubscriptionsService::instance ();
@@ -358,7 +363,7 @@ class SubscriptionController {
      * @param array $params
      */
     public function subscriptionComplete(array $params, ViewModel $model) {
-        FilterParams::isRequired($params, 'orderId');
+        FilterParams::required($params, 'orderId');
         
         $ordersService = OrdersService::instance ();
         $subscriptionsService = SubscriptionsService::instance ();
@@ -391,6 +396,7 @@ class SubscriptionController {
         $model->subscription = $subscription;
         $model->subscriptionType = $subscriptionType;
         $model->paymentProfile = $paymentProfile;
+        $model->title = 'Subscription Complete';
         return 'order/ordercomplete';
     }
     
@@ -405,9 +411,9 @@ class SubscriptionController {
      */
     public function subscriptionProcess(array $params, ViewModel $model) {
 
-        FilterParams::isRequired ( $params, 'orderId' );
-        FilterParams::isRequired ( $params, 'token' );
-        FilterParams::isThere ( $params, 'success' );
+        FilterParams::required ( $params, 'orderId' );
+        FilterParams::required ( $params, 'token' );
+        FilterParams::declared ( $params, 'success' );
           
         $ordersService = OrdersService::instance ();
         $userService = UserService::instance ();
@@ -455,7 +461,7 @@ class SubscriptionController {
             }
             
             // Moved this down here, as if the order status is error, the payerID is not returned
-            FilterParams::isRequired ( $params, 'PayerID' );
+            FilterParams::required ( $params, 'PayerID' );
             
             // Point of no return - we only every want a person to get here if their order was a successful sequence
             Session::set ( 'token' );
@@ -584,7 +590,7 @@ class SubscriptionController {
      * @param array $params
      */
     public function giftCheckUser(array $params, ViewModel $model) {
-      FilterParams::isRequired($params, 's');
+      FilterParams::required($params, 's');
 
       $userService = UserService::instance ();
       $subscriptionService = SubscriptionsService::instance();

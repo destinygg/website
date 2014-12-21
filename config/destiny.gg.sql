@@ -4,8 +4,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-/*Table structure for table `bans` */
-
 CREATE TABLE `bans` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `userid` int(10) unsigned NOT NULL,
@@ -17,8 +15,6 @@ CREATE TABLE `bans` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Table structure for table `chatlog` */
-
 CREATE TABLE `chatlog` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `userid` int(10) unsigned NOT NULL,
@@ -29,16 +25,12 @@ CREATE TABLE `chatlog` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Table structure for table `dfl_features` */
-
 CREATE TABLE `dfl_features` (
   `featureId` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `featureName` VARCHAR(100) NOT NULL,
   `featureLabel` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`featureId`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `dfl_orders` */
 
 CREATE TABLE `dfl_orders` (
   `orderId` int(14) NOT NULL AUTO_INCREMENT,
@@ -51,9 +43,7 @@ CREATE TABLE `dfl_orders` (
   PRIMARY KEY (`orderId`),
   KEY `userId` (`userId`),
   KEY `userOrderState` (`userId`,`state`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_orders_ipn` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_orders_ipn` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
@@ -63,9 +53,7 @@ CREATE TABLE `dfl_orders_ipn` (
   `ipnData` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_orders_payment_profiles` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_orders_payment_profiles` (
   `profileId` int(14) NOT NULL AUTO_INCREMENT,
@@ -83,9 +71,7 @@ CREATE TABLE `dfl_orders_payment_profiles` (
   KEY `userId` (`userId`),
   KEY `userOrderId` (`userId`,`orderId`),
   KEY `paymentProfileId` (`paymentProfileId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_orders_payments` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_orders_payments` (
   `paymentId` int(14) NOT NULL AUTO_INCREMENT,
@@ -100,17 +86,13 @@ CREATE TABLE `dfl_orders_payments` (
   `paymentDate` datetime DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   PRIMARY KEY (`paymentId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_roles` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_roles` (
   `roleId` int(14) NOT NULL,
   `roleName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`roleId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_scheduled_tasks` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_scheduled_tasks` (
   `action` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -119,9 +101,7 @@ CREATE TABLE `dfl_scheduled_tasks` (
   `period` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `executeOnNextRun` tinyint(1) DEFAULT NULL,
   `executeCount` int(14) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users` (
   `userId` int(14) NOT NULL AUTO_INCREMENT,
@@ -135,9 +115,7 @@ CREATE TABLE `dfl_users` (
   `nameChangedDate` datetime DEFAULT NULL,
   `allowGifting` tinyint(4) DEFAULT '1',
   PRIMARY KEY (`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users_auth` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users_auth` (
   `userId` int(14) DEFAULT NULL,
@@ -149,9 +127,7 @@ CREATE TABLE `dfl_users_auth` (
   `modifiedDate` datetime DEFAULT NULL,
   KEY `authProvider` (`authProvider`,`authId`),
   KEY `userId` (`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users_auth_token` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users_auth_token` (
   `authTokenId` INT(14) NOT NULL AUTO_INCREMENT,
@@ -161,9 +137,7 @@ CREATE TABLE `dfl_users_auth_token` (
   PRIMARY KEY (`authTokenId`),
   KEY `userId` (`userId`),
   KEY `authToken` (`authToken`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users_features` */
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users_features` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -173,8 +147,6 @@ CREATE TABLE `dfl_users_features` (
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Table structure for table `dfl_users_rememberme` */
-
 CREATE TABLE `dfl_users_rememberme` (
   `userId` int(14) NOT NULL,
   `token` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -182,17 +154,13 @@ CREATE TABLE `dfl_users_rememberme` (
   `createdDate` datetime DEFAULT NULL,
   `expireDate` datetime DEFAULT NULL,
   KEY `token` (`token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users_roles` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users_roles` (
   `userId` int(14) NOT NULL,
   `roleId` tinyint(1) NOT NULL,
   KEY `userId` (`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `dfl_users_subscriptions` */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users_subscriptions` (
   `subscriptionId` INT(14) NOT NULL AUTO_INCREMENT,
@@ -210,9 +178,7 @@ CREATE TABLE `dfl_users_subscriptions` (
   PRIMARY KEY (`subscriptionId`),
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-/*Table structure for table `users_address` */
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users_address` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
@@ -228,7 +194,19 @@ CREATE TABLE `users_address` (
   `modifiedDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `privatemessages` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `userid` int(11) NOT NULL,
+  `targetuserid` int(11) NOT NULL,
+  `message` text COLLATE utf8_unicode_ci NOT NULL,
+  `timestamp` datetime NOT NULL,
+  `isread` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `targetuserid` (`targetuserid`),
+  KEY `userid` (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 /* INSERT DEFAULT DATA */

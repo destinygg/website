@@ -51,7 +51,7 @@ class ChatAdminController {
      */
     public function adminChatBroadcast(array $params, ViewModel $model){
         $model->title = 'Chat';
-        FilterParams::isRequired($params, 'message');
+        FilterParams::required($params, 'message');
         
         $chatIntegrationService = ChatIntegrationService::instance ();
         $chatIntegrationService->sendBroadcast ( $params ['message'] );
@@ -71,7 +71,7 @@ class ChatAdminController {
      */
     public function adminChatIp(array $params, ViewModel $model){
         $model->title = 'Chat';
-        FilterParams::isRequired ( $params, 'ip' );
+        FilterParams::required ( $params, 'ip' );
         
         $userService = UserService::instance ();
         $model->usersByIp = $userService->findUsersWithIP ( $params ['ip'] );

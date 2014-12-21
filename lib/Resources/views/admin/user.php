@@ -37,7 +37,7 @@ use Destiny\Commerce\SubscriptionStatus;
   
   <section class="container collapsible">
     <h3>
-      <span class="glyphicon glyphicon-chevron-right expander"></span> Details 
+      <span class="fa fa-fw fa-chevron-right expander"></span> Details 
       <small>(<?=Tpl::out($model->user['username'])?>)</small>
     </h3>
     <div class="content content-dark clearfix">
@@ -109,7 +109,7 @@ use Destiny\Commerce\SubscriptionStatus;
   </section>
 
   <section class="container collapsible">
-    <h3><span class="glyphicon glyphicon-chevron-right expander"></span> Address</h3>
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Address</h3>
     <div class="content content-dark clearfix">
     
       <?php if(!empty($model->address)): ?>
@@ -143,7 +143,7 @@ use Destiny\Commerce\SubscriptionStatus;
   </section>
   
   <section class="container collapsible">
-    <h3><span class="glyphicon glyphicon-chevron-right expander"></span> Subscription</h3>
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>
     <div class="content content-dark clearfix">
       <div class="ds-block">
         <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/add" class="btn btn-primary">New subscription</a>
@@ -189,7 +189,7 @@ use Destiny\Commerce\SubscriptionStatus;
   </section>
 
   <section class="container collapsible">
-    <h3><span class="glyphicon glyphicon-chevron-right expander"></span> Smurfs</h3>
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Smurfs</h3>
     <div class="content content-dark clearfix">
       <div class="ds-block">
         Smurfs are alternative accounts of the user based on the fact that the
@@ -227,7 +227,7 @@ use Destiny\Commerce\SubscriptionStatus;
   </section>
 
   <section class="container collapsible">
-    <h3><span class="glyphicon glyphicon-chevron-right expander"></span> IPs</h3>
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> IPs</h3>
     <div class="content content-dark clearfix">
       <div class="ds-block">
         <p>The last seen 3 IP addresses of the user (as seen by the chat)</p>
@@ -256,7 +256,7 @@ use Destiny\Commerce\SubscriptionStatus;
   </section>
 
   <section class="container collapsible">
-    <h3><span class="glyphicon glyphicon-chevron-right expander"></span> Ban / Mute</h3>
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Ban / Mute</h3>
     <div class="content content-dark clearfix">
       
       <?php if(empty($model->ban)): ?>
@@ -314,7 +314,7 @@ use Destiny\Commerce\SubscriptionStatus;
 
   <?php if(!empty($model->authSessions)): ?>
   <section class="container collapsible">
-    <h3><span class="glyphicon glyphicon-chevron-right expander"></span> Authentication</h3>
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Authentication</h3>
     <div class="content content-dark clearfix">
       <table class="grid">
         <thead>

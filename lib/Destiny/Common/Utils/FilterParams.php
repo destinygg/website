@@ -21,22 +21,35 @@ abstract class FilterParams {
      * @param string $identifier
      * @throws FilterParamsException
      */
-    public static function isRequired(array $params, $identifier) {
+    public static function required(array $params, $identifier) {
         if (! isset ( $params [$identifier] ) || empty ( $params [$identifier] ) || trim ( $params [$identifier] ) == '') {
             throw new FilterParamsException ( sprintf ( 'Required field missing %s', $identifier ) );
         }
     }
     
     /**
-     * Make sure a parameter isset (had to use isThere, cause isset is a reserve word)
+     * Make sure a parameter has been declared
      * 
      * @param array $params
      * @param unknown $identifier
      * @throws FilterParamsException
      */
-    public static function isThere(array $params, $identifier) {
+    public static function declared(array $params, $identifier) {
         if (! isset ( $params [$identifier] )) {
             throw new FilterParamsException ( sprintf ( 'Field not set %s', $identifier ) );
+        }
+    }
+    
+    /**
+     * Make sure a parameter has been declared and is an array
+     * 
+     * @param array $params
+     * @param unknown $identifier
+     * @throws FilterParamsException
+     */
+    public static function isarray(array $params, $identifier) {
+        if (! isset ( $params [$identifier] ) || !is_array($params [$identifier])) {
+            throw new FilterParamsException ( sprintf ( 'Field not set or not an array %s', $identifier ) );
         }
     }
 }

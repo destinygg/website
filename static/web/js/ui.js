@@ -1,6 +1,11 @@
 // Document ready
 $(function(){
-    
+    var unreadElem = $('.pm-count');
+    if (unreadElem && localStorage) {
+        var unreadMessageCount = parseInt(unreadElem.text() || "0", 10);
+        localStorage['unreadMessageCount'] = unreadMessageCount || 0;
+    }
+
     // Generic popup defaults
     var popupDefaults = {
         height     :500,
@@ -166,8 +171,8 @@ $(function(){
                 return;
             
             if(data != null && data.stream != null){
-                onlinebanner.find('.preview a').attr('title', data.status);
-                onlinebanner.find('.preview a').css('background-image', 'url('+data.stream.preview.medium+')');
+                onlinebanner.find('.banner-thumbnail a').attr('title', data.status);
+                onlinebanner.find('.banner-thumbnail a').css('background-image', 'url('+data.stream.preview.medium+')');
                 onlinebanner.find('.live-info-game').text(data.game);
                 onlinebanner.find('.live-info-updated').text(moment(data.stream.channel.updated_at).fromNow());
                 onlinebanner.find('.live-info-viewers').text(data.stream.viewers);
@@ -179,52 +184,15 @@ $(function(){
                 offlinebanner.find('.offline-info-game').text(data.game);
                 
                 if(data.previousbroadcast)
-                    offlinebanner.find('.preview a').css('background-image', 'url('+data.previousbroadcast.preview+')');
+                    offlinebanner.find('.banner-thumbnail a').css('background-image', 'url('+data.previousbroadcast.preview+')');
                 else
-                    offlinebanner.find('.preview a').css('background-image', 'url('+data.video_banner+')');
+                    offlinebanner.find('.banner-thumbnail a').css('background-image', 'url('+data.video_banner+')');
                 
                 offlinebanner.show().appendTo(statusbanners);
                 onlinebanner.detach();
             }
             
         }
-    });
-    
-    // Private ads / rotation
-    var pads = $('.private-ads .private-ad'), adRotateIndex = pads.length-1;
-    setInterval(function(){
-        $(pads[adRotateIndex]).fadeOut(500, function(){
-            $(this).hide().removeClass('active');
-        });
-        if(adRotateIndex < pads.length-1) adRotateIndex++; else adRotateIndex = 0;
-        $(pads[adRotateIndex]).hide().addClass('active').fadeIn(500);
-    }, 8 * 1000);
-
-    
-    // Check if the ad has been blocked after X seconds
-    var gad = $('#google-ad');
-    setTimeout(function(){
-        if(gad.css('display') == 'none' || parseInt(gad.height()) <= 0){
-            gad.before('<div id="adblocker-message"><a>Add blocker</a><p>Please consider turning adblocker off for this website.</p></div>');
-        }
-    }, 8000);
-
-    // Old style twitch panel
-    $('#twitchpanel').each(function(){
-        $('#popoutchat').on('click', function(){
-            window.open('/embed/chat', '_blank', window.getOptionsString());
-            $('body').addClass('nochat');
-            $('#chat-embed').remove();
-            $('#popoutchat,#popoutvideo').hide();
-            return false;
-        });
-        $('#popoutvideo').on('click', function(){
-            window.open('http://www.twitch.tv/destiny/popout', '_blank', window.getOptionsString({height:420, width:720}));
-            $('body').addClass('novideo');
-            $('#player-embed').remove();
-            $('#popoutchat,#popoutvideo').hide();
-            return false;
-        });
     });
     
     // Bigscreen
@@ -382,10 +350,10 @@ $(function(){
             $v = $c.find('> content');
         $t.on('click', function(){
             if($c.hasClass('active')){
-                $t.find('>.expander').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-right');
+                $t.find('>.expander').removeClass('fa-chevron-down').addClass('fa-chevron-right');
                 $v.hide();
             }else{
-                $t.find('>.expander').removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-down');
+                $t.find('>.expander').removeClass('fa-chevron-right').addClass('fa-chevron-down');
                 $v.show();
             }
             $c.toggleClass('active');
@@ -427,6 +395,9 @@ $(function(){
         if(ui.data('moment-fromnow')){
             ui.addClass('moment-update');
             ui.html(moment(datetime).fromNow());
+        }else if(ui.data('moment-calendar')){
+            ui.addClass('moment-update');
+            ui.html(moment(datetime).calendar());
         }else{
             ui.html(moment(datetime).format(format));
         }
@@ -668,28 +639,3 @@ $(function(){
         }
     });
 });
-
-if (window.self === window.top) {
-    var page = $('#page-content');
-    if (page.css('position') == 'absolute') {
-        $('body').on('show', '#smartbanner', function(ev, bannerHeight) {
-            page.css('top', page.position()['top'] + bannerHeight);
-        });
-
-        $('body').on('hide', '#smartbanner', function() {
-            page.css('top', '');
-        });
-    }
-
-    $(function(){
-        $.smartbanner({
-            title: 'Destiny',
-            author: 'Destiny.gg',
-            daysHidden: 30,
-            daysReminder: 90,
-            icon: destiny.cdn+'/web/img/androidIcon.png',
-            // for testing
-            // daysHidden: 0
-        });
-    });
-}

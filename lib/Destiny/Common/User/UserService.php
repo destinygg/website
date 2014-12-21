@@ -733,4 +733,50 @@ class UserService extends Service {
 
     return $redis->evalSha( $hash, $argument );
   }
+
+  /**
+   * Get a list of users id for a specific tier
+   *
+   * @param int $tier
+   * @return array
+   */
+  public function getUserIdsBySubscriptionTier($tier) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare("
+      SELECT u.userId FROM `dfl_users` u
+      LEFT JOIN `dfl_users_subscriptions` s USING (userId)
+      WHERE s.subscriptionTier = :subscriptionTier AND s.status = 'Active'
+    ");
+    $stmt->bindValue ( 'subscriptionTier', $tier, \PDO::PARAM_INT );
+    $stmt->execute();
+    $ids = array();
+    $result = $stmt->fetchAll();
+    foreach($result as $item) {
+      $ids[] = $item['userId'];
+    }    
+    return $ids;
+  }
+
+  /**
+   * Get a list of user ids from a list of usernames
+   *
+   * @param array $usernames
+   * @return array
+   */
+  public function getUserIdsByUsernames(array $usernames) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->executeQuery("
+      SELECT u.userId FROM `dfl_users` u
+      WHERE u.username IN (?)
+    ", 
+      array($usernames), 
+      array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+    );
+    $ids = array();
+    $result = $stmt->fetchAll();
+    foreach($result as $item) {
+      $ids[] = $item['userId'];
+    }    
+    return $ids;
+  }
 }

@@ -2,7 +2,6 @@
 return array (
 	'cacheAnnotations'		=> true, // If TRUE, stores the annotation definitions in files /tmp/annotations/ (these need to be cleared if changes are made to annotations)
 	'allowImpersonation'	=> false, // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
-	'maintenance'			=> false,
 	'profile' => array(
 		'nameChangeLimit' 	=> 0
 	),
@@ -11,6 +10,7 @@ return array (
 		'port'				=> 9998,
 		'backlog' 			=> 150,
 		'maxlines' 			=> 150,
+		'privatekey'		=> null,
 		'customemotes' => array(
 			'Dravewin',
 			'INFESTINY',
@@ -146,10 +146,11 @@ return array (
 	),
 	'meta' => array (
 		'shortName'			=> 'Destiny',
-		'title'				=> 'Destiny : Steven Bonnell II',
+		'title'				=> 'Destiny - Steven Bonnell II',
 		'author'			=> 'Steven Bonnell II',
-		'description'		=> 'Destiny.gg, Online streamer, primarily playing League of Legends, but I will often venture off into other topics, including but not limited to: philosophy, youtube videos, music and all sorts of wonderful pseudo-intellectualism.',
-		'keywords'			=> 'Destiny.gg,Online,stream,game,pc,League of Legends',
+		'description'		=> 'Steven (Destiny) Bonnell II is a professional streamer, primarily playing StarCraft II, but will often venture off into other topics, including but not limited to: philosophy, youtube videos, music and all sorts of wonderful pseudo-intellectualism.',
+		'shortdescription'  => 'Destiny is a professional streamer, primarily playing StarCraft II.',
+		'keywords'			=> 'Steven Bonnell,Destiny,Destiny.gg,StarCraft,StarCraft2,Counter Strike,CS:GO,League of Legends,streamer,stream,game,pc,build a box',
 		'video'				=> 'http://www-cdn.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny',
 		'videoSecureUrl'	=> 'https://secure.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny' 
 	),

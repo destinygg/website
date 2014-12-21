@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
@@ -8,7 +8,7 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<script src="<?=Config::cdnvf('1.1.0')?>/vendor/libs.min.js"></script>
+<script src="<?=Config::cdnvf('1.2.0')?>/vendor/libs.min.js"></script>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 <script>
 

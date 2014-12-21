@@ -55,6 +55,7 @@ class AdminController {
         $model->size = $params ['size'];
         $model->page = $params ['page'];
         $model->search = $params ['search'];
+        $model->title = 'Admin';
         return 'admin/admin';
     }
 
@@ -98,6 +99,7 @@ class AdminController {
         $model->subscribersT3 = $subService->getSubscriptionsByTier ( 3 );
         $model->subscribersT2 = $subService->getSubscriptionsByTier ( 2 );
         $model->subscribersT1 = $subService->getSubscriptionsByTier ( 1 );
+        $model->title = 'Subscribers';
         return 'admin/subscribers';
     }
 
@@ -111,6 +113,7 @@ class AdminController {
     public function adminBans(array $params, ViewModel $model) {
         $chatService = ChatIntegrationService::instance ();
         $model->activeBans = $chatService->getActiveBans();
+        $model->title = 'Active Bans';
         return 'admin/bans';
     }
 
@@ -134,7 +137,7 @@ class AdminController {
      * @param array $params         
      */
     public function adminUserFind(array $params) {
-        FilterParams::isRequired($params, 's');
+        FilterParams::required($params, 's');
         $userService = UserService::instance ();
         $users = $userService->findUsers ( $params ['s'], 10 );
         $response = new Response ( Http::STATUS_OK );
