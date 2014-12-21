@@ -25,20 +25,23 @@ function chat(element, user, options) {
 	this.ignorelist         = {};
 	this.controlevents      = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
 	this.errorstrings       = {
-		"nopermission"      : "You do not have the required permissions to use that",
-		"protocolerror"     : "Invalid or badly formatted",
-		"needlogin"         : "You have to be logged in to use that",
-		"invalidmsg"        : "The message was invalid",
-		"throttled"         : "Throttled! You were trying to send messages too fast",
-		"duplicate"         : "The message is identical to the last one you sent",
-		"muted"             : "You are muted (subscribing auto-removes mutes)",
-		"submode"           : "The channel is currently in subscriber only mode",
-		"needbanreason"     : "Providing a reason for the ban is mandatory",
-		"banned"            : "You have been banned (subscribing auto-removes non-permanent bans), disconnecting",
-		"requiresocket"     : "This chat requires WebSockets",
-		"toomanyconnections": "Only 5 concurrent connections allowed",
-		"socketerror"       : "Error contacting server",
-		"notfound"          : "The user was not found"
+		"unknown"               : "Unknown error, this usuall indicates an internal problem :(",
+		"nopermission"          : "You do not have the required permissions to use that",
+		"protocolerror"         : "Invalid or badly formatted",
+		"needlogin"             : "You have to be logged in to use that",
+		"invalidmsg"            : "The message was invalid",
+		"throttled"             : "Throttled! You were trying to send messages too fast",
+		"duplicate"             : "The message is identical to the last one you sent",
+		"muted"                 : "You are muted (subscribing auto-removes mutes)",
+		"submode"               : "The channel is currently in subscriber only mode",
+		"needbanreason"         : "Providing a reason for the ban is mandatory",
+		"banned"                : "You have been banned (subscribing auto-removes non-permanent bans), disconnecting",
+		"requiresocket"         : "This chat requires WebSockets",
+		"toomanyconnections"    : "Only 5 concurrent connections allowed",
+		"socketerror"           : "Error contacting server",
+		"privmsgbanned"         : "Cannot send private messages while banned",
+		"privmsgaccounttooyoung": "Your account is too recent to send private messages",
+		"notfound"              : "The user was not found"
 	};
 	this.user               = new ChatUser(user);
 	this.gui                = new ChatGui(element, this, options);
@@ -188,6 +191,24 @@ chat.prototype.onQUIT = function(data) {
 		this.gui.trigger('quit', data);
 	}
 };
+chat.prototype.shouldIgnoreMessage = function(nick, message) {
+	if (!this.ignorelist)
+		return false;
+
+	if (!this.ignoreregex) {
+		var nicks = [];
+		$.each(this.ignorelist, function(key) {
+			nicks.push(key);
+		});
+		if (nicks.length == 0)
+			return false;
+
+		this.ignoreregex = new RegExp(nicks.join("|"), "ig");
+	}
+
+	return this.ignoreregex.test(nick) || this.ignoreregex.test(message);
+};
+
 chat.prototype.onPRIVMSG = function (data) {
 	var user = this.users[data.nick];
 	if (!user) {
@@ -195,9 +216,9 @@ chat.prototype.onPRIVMSG = function (data) {
 		if (user.username == data.nick)
 			this.user = user;
 	} else
-		this.gui.autoCompletePlugin.addData(user.username, data.timestamp);
+		this.gui.autoCompletePlugin.addDataIfNotExists(user.username, 1);
 
-	if (this.ignorelist[data.nick.toLowerCase()])
+	if (this.shouldIgnoreMessage(data.nick, data.data))
 		return;
 
 	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
@@ -238,7 +259,8 @@ chat.prototype.onMSG = function(data) {
 		this.originemote = messageui;
 	
 	if(this.user.username != data.nick || !messageui){
-		if (this.ignorelist[data.nick.toLowerCase()]) // user ignored
+
+		if (this.shouldIgnoreMessage(data.nick, data.data))
 			return;
 		
 		var user = this.users[data.nick];
@@ -355,6 +377,9 @@ chat.prototype.onBROADCAST = function(data) {
 
 	return message;
 };
+chat.prototype.onPRIVMSGSENT = function(data) {
+	this.gui.push(new ChatInfoMessage("Your message has been sent!"));
+};
 
 chat.prototype.handleCommand = function(str) {
 
@@ -410,7 +435,6 @@ chat.prototype.handleCommand = function(str) {
 			parts.shift(0) // remove nick
 			payload.data = parts.join(' ')
 
-			this.gui.push(new ChatInfoMessage("Your message has been sent!"));
 			this.emit("PRIVMSG", payload);
 			break;
 			
@@ -460,6 +484,7 @@ chat.prototype.handleCommand = function(str) {
 			var nick = parts[1].toLowerCase();
 			
 			delete(this.ignorelist[nick]);
+			this.ignoreregex = null;
 			this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
 			
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);

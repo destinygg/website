@@ -68,12 +68,12 @@ class ChatApiController {
 
             $ban = $userService->getUserActiveBan ( $params['userid'] );
             if (! empty ( $ban )) {
-                throw new Exception ("Cannot send messages while you are banned.");
+                throw new Exception ("privmsgbanned");
             }
 
             $oldEnough = $userService->isUserOldEnough ( $params['userid'] );
             if (! $oldEnough) {
-                throw new Exception ("Your account is not old enough to send messages.");
+                throw new Exception ("privmsgaccounttooyoung");
             }
 
             $user = $userService->getUserById ( $params['userid'] );
@@ -81,17 +81,17 @@ class ChatApiController {
             $credentials->addRoles ( $userService->getUserRolesByUserId ( $params['userid'] ) );
             $canSend = $privateMessageService->canSend( $credentials );
             if (! $canSend) {
-                throw new Exception ("You have sent too many messages, throttled.");
+                throw new Exception ("throttled");
             }
 
             $user = $userService->getUserById ( $params['userid'] );
             $targetuser = $userService->getUserById ( $params['targetuserid'] );
 
             if(empty($user))
-                throw new Exception ('User not found');
+                throw new Exception ('notfound');
 
             if(empty($targetuser))
-                throw new Exception ('Target user not found');
+                throw new Exception ('notfound');
 
             $message = array(
                 'userid' => $params['userid'],

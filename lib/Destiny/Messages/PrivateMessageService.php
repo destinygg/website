@@ -44,7 +44,7 @@ class PrivateMessageService extends Service {
                     userid = :userid OR
                     targetuserid = :userid
                 ) AND
-                DATE_SUB(NOW(), INTERVAL 1 HOUR) > timestamp
+                DATE_SUB(NOW(), INTERVAL 1 HOUR) < timestamp
             ORDER BY id ASC
         ");
         $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
@@ -64,7 +64,7 @@ class PrivateMessageService extends Service {
                     $cansend = false;
 
             } else {
-                $count--;
+                $count -= 2; // for every message received, let two be sent
 
                 // received a message in the last 5 minutes, reset
                 if ($now - $row['timestamp'] < $timelimit)
