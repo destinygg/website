@@ -59,7 +59,8 @@ class PrivateMessageController {
      * @return Response
      */
     public function sendMessage(array $params) {
-        $userId = Session::getCredentials ()->getUserId ();
+        $user = Session::getCredentials ();
+        $userId = $user->getUserId ();
         $privateMessageService = PrivateMessageService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
         $userService = UserService::instance();
@@ -76,6 +77,11 @@ class PrivateMessageController {
             $oldEnough = $userService->isUserOldEnough ( $userId );
             if (! $oldEnough) {
                 throw new Exception ("Your account is not old enough to send messages.");
+            }
+
+            $canSend = $privateMessageService->canSend( $user );
+            if (! $canSend) {
+                throw new Exception ("You have sent too many messages, throttled.");
             }
 
             FilterParams::required($params, 'message');

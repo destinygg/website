@@ -16,6 +16,7 @@ use Destiny\Common\MimeType;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatIntegrationService;
 use Destiny\Messages\PrivateMessageService;
+use Destiny\Common\SessionCredentials;
 
 /**
  * @Controller
@@ -61,6 +62,10 @@ class ChatApiController {
             FilterParams::required($params, 'userid');
             FilterParams::required($params, 'targetuserid');
 
+            if($params['userid'] == $params['targetuserid']){
+                throw new Exception ('Cannot send messages to yourself.');
+            }
+
             $ban = $userService->getUserActiveBan ( $params['userid'] );
             if (! empty ( $ban )) {
                 throw new Exception ("Cannot send messages while you are banned.");
@@ -71,8 +76,12 @@ class ChatApiController {
                 throw new Exception ("Your account is not old enough to send messages.");
             }
 
-            if($params['userid'] == $params['targetuserid']){
-                throw new Exception ('Cannot send messages to yourself.');
+            $user = $userService->getUserById ( $params['userid'] );
+            $credentials = new SessionCredentials ( $user );
+            $credentials->addRoles ( $userService->getUserRolesByUserId ( $params['userid'] ) );
+            $canSend = $privateMessageService->canSend( $credentials );
+            if (! $canSend) {
+                throw new Exception ("You have sent too many messages, throttled.");
             }
 
             $user = $userService->getUserById ( $params['userid'] );

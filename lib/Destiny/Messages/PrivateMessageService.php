@@ -26,6 +26,58 @@ class PrivateMessageService extends Service {
     public static function instance() {
         return parent::instance ();
     }
+
+    public function canSend($user) {
+        if ($user->hasRole(UserRole::ADMIN))
+            return true;
+
+        $userid = $user->getUserId();
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            SELECT
+                userid,
+                targetuserid,
+                UNIX_TIMESTAMP(timestamp) AS timestamp
+            WHERE
+                (
+                    userid = :userid OR
+                    targetuserid = :userid
+                ) AND
+                DATE_SUB(NOW(), INTERVAL 1 HOUR) > timestamp
+            ORDER BY id ASC
+        ");
+        $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $now       = time();
+        $cansend   = true;
+        $timelimit = 60 * 60 * 5;
+        $count     = 0;
+
+        while($row = $stmt->fetch()) {
+            if ($row['userid'] == $userid) {
+                $count++;
+
+                // sent a message in the last 5 minutes
+                if ($now - $row['timestamp'] < $timelimit)
+                    $cansend = false;
+
+            } else {
+                $count--;
+
+                // received a message in the last 5 minutes, reset
+                if ($now - $row['timestamp'] < $timelimit)
+                    $cansend = true;
+
+            }
+        }
+
+        // sent message count outweighs the received message count, deny
+        if ($count > 7)
+            $cansend = false;
+
+        return $cansend;
+    }
     
     public function getUnreadMessageCount($targetuserid) {
         $conn = Application::instance ()->getConnection ();
