@@ -93,7 +93,7 @@ class PrivateMessageController {
                 $user = $userService->getUserById ( $message['userid'] );
                 $targetuser = $userService->getUserById ( $message['targetuserid'] );
 
-                $privateMessageService->addMessage($message);
+                $message['id'] = $privateMessageService->addMessage($message);
                 $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
 
             }else{
