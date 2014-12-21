@@ -159,50 +159,74 @@ class PrivateMessageService extends Service {
      * @param int $limit
      * @return array
      */
-    public function getInboxMessagesByUserId($userId, $isread, $start=0, $limit=100){
+    public function getInboxMessagesByUserId($userid){
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
-            SELECT 
-            f.id,
-            f.userid,
-            f.targetuserid,
-            f.message,
-            f.timestamp, 
-            (
-                SELECT GROUP_CONCAT(DISTINCT u.username) FROM `privatemessages` p
-                LEFT JOIN `dfl_users` u ON (u.userId = p.userid)
-                WHERE (p.userid = f.userid AND p.targetuserid = f.targetuserid) OR (p.userid = f.targetuserid AND p.targetuserid = f.userid)
-
-            ) `from`,
-            (
-                SELECT COUNT(*) FROM `privatemessages` p
-                WHERE (p.userid = f.userid AND p.targetuserid = f.targetuserid) OR (p.userid = f.targetuserid AND p.targetuserid = f.userid)
-
-            ) `count`
-            FROM (
-                SELECT * FROM `privatemessages` a
-                WHERE (LEAST(a.userid, a.targetuserid), GREATEST(a.userid, a.targetuserid), a.timestamp) IN (   
-                    SELECT LEAST(b.userid, b.targetuserid) AS `x`, GREATEST(b.userid, b.targetuserid) AS `y`, MAX(b.timestamp)
-                    FROM `privatemessages` b
-                    GROUP BY `x`, `y`
-                )
-            ) f
-            WHERE :userId IN (f.userid, f.targetuserid) 
-            AND ( 
-                SELECT MIN(p.isread) FROM `privatemessages` p
-                WHERE p.targetuserid = :userId AND p.userid IN (f.userid, f.targetuserid) 
-                LIMIT 1
-            ) = :isread
-            GROUP BY f.id
-            ORDER BY f.timestamp DESC
-            LIMIT :start,:limit
+            SELECT
+                pm.id,
+                pm.userid,
+                pm.targetuserid,
+                pm.message,
+                pm.timestamp,
+                pm.isread,
+                du.username AS fromuser,
+                tdu.username AS touser
+            FROM privatemessages AS pm
+            LEFT JOIN dfl_users AS du ON(
+                du.userId = pm.userid
+            )
+            LEFT JOIN dfl_users AS tdu ON(
+                tdu.userId = pm.targetuserid
+            )
+            WHERE
+                pm.userid       = :userid OR
+                pm.targetuserid = :userid
+            ORDER BY pm.id DESC
         ");
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('isread', $isread, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll();
+
+        $threads = array();
+        $unreadthreads = array();
+        while($row = $stmt->fetch()) {
+            if ($row['targetuserid'] != $userid) {
+                $index = $row['targetuserid'];
+                $nick  = $row['touser'];
+            } else {
+                $index = $row['userid'];
+                $nick  = $row['fromuser'];
+            }
+
+            // since we are ordered descending, this will init the thread with
+            // the latest message and timestamp
+            if (!isset($threads[ $index ]))
+                $threads[ $index ] = array(
+                    'othernick' => $nick,
+                    'timestamp' => $row['timestamp'],
+                    'message'   => $row['message'],
+                    'count'     => 0,
+                );
+
+            $threads[ $index ]['count']++;
+            if ($row['targetuserid'] == $userid and !$row['isread'])
+                $unreadthreads[ $index ] = true;
+        }
+
+        $unread = array();
+        $read = array();
+        foreach($threads as $threadid => $value) {
+            if (isset($unreadthreads[ $threadid ]))
+                $unread[ $threadid ] = $value;
+            else
+                $read[ $threadid ] = $value;
+
+            unset($threads[ $threadid ]);
+        }
+
+        return array(
+            'unread' => $unread,
+            'read'   => $read,
+        );
     }
 
     /**
@@ -228,6 +252,7 @@ class PrivateMessageService extends Service {
 
     /**
      * Get a single message by id and (targetuserid or userid)
+     * used for the reply feature
      *
      * @param int $id
      * @param int $userid
@@ -259,10 +284,17 @@ class PrivateMessageService extends Service {
     public function getMessagesBetweenUserIdAndTargetUserId($userId, $targetUserId, $start=0, $limit=50){
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare('
-            SELECT p.*, from.username `from` FROM privatemessages p
-            LEFT JOIN `dfl_users` `from` ON (from.userId = p.userid)
-            WHERE (p.userid = :userId AND p.targetuserid = :targetUserId) OR (p.userid = :targetUserId AND p.targetuserid = :userId)
-            ORDER BY p.timestamp DESC
+            SELECT
+                p.*,
+                from.username `from`
+            FROM privatemessages p
+            LEFT JOIN `dfl_users` `from` ON (
+                from.userId = p.userid
+            )
+            WHERE
+                p.userid IN(:userId, :targetUserId) AND
+                p.targetuserid IN(:userId, :targetUserId)
+            ORDER BY p.id DESC
             LIMIT :start,:limit
         ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
@@ -322,5 +354,36 @@ class PrivateMessageService extends Service {
         }
 
         return $recipients;
+    }
+
+    public function markMessagesRead($targetuserid, $fromuserid) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            UPDATE privatemessages
+            SET isread = 1
+            WHERE
+                targetuserid = :targetuserid AND
+                userid       = :fromuserid
+        ");
+        $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
+        $stmt->bindValue('fromuserid', $fromuserid, \PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function markMessageRead($messageid, $targetuserid) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            UPDATE privatemessages
+            SET isread = 1
+            WHERE
+                id           = :messageid AND
+                targetuserid = :targetuserid
+            LIMIT 1
+        ");
+        $stmt->bindValue('messageid', $messageid, \PDO::PARAM_INT);
+        $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return (bool) $stmt->rowCount();
     }
 }

@@ -35,11 +35,9 @@ class PrivateMessageController {
         $username = Session::getCredentials ()->getUsername ();
 
         $privateMessageService = PrivateMessageService::instance();
-        $inbox = $privateMessageService->getInboxMessagesByUserId( $userId, 0 );
-        $read = $privateMessageService->getInboxMessagesByUserId( $userId, 1 );
+        $inbox = $privateMessageService->getInboxMessagesByUserId( $userId );
 
         $viewModel->inbox = $inbox;
-        $viewModel->read = $read;
         $viewModel->username = $username;
         $viewModel->title = 'Messages';
         return 'profile/inbox';
@@ -162,11 +160,9 @@ class PrivateMessageController {
         try {
             FilterParams::required($params, 'id');
 
-            $message = $privateMessageService->getMessageByIdAndTargetUserId( $params['id'], $userId );
-            if(empty($message)){
+            // could not find the message that is targeted at the user
+            if(!$privateMessageService->markMessageRead( $params['id'], $userId ))
                 throw new Exception('Invalid message');
-            }
-            $privateMessageService->openMessageById( $message['id'] );
 
         } catch (Exception $e) {
             $response['success'] = false;
@@ -192,16 +188,13 @@ class PrivateMessageController {
         $privateMessageService = PrivateMessageService::instance();
         $userId = Session::getCredentials ()->getUserId ();
         $username = Session::getCredentials ()->getUsername ();
-        $message = $privateMessageService->getMessageByIdAndTargetUserIdOrUserId( $params['id'], $userId );
-        if(empty($message)){
-            throw new Exception('Invalid message id or user');
-        }
 
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $message['userid'], $message['targetuserid'] );
-        foreach ($messages as $msg) {
-            if($msg['targetuserid'] == $userId && $msg['isread'] == 0){
-                $privateMessageService->openMessageById( $msg['id'] );
-            }
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['id'] );
+        // mark messages that are meant for me as read, not the other way around
+        $privateMessageService->markMessagesRead( $userId, $params['id'] );
+        foreach($messages as $message) {
+            if ($message['userid'] == $params['id'])
+                break;
         }
 
         $viewModel->message = $message;
@@ -212,78 +205,4 @@ class PrivateMessageController {
         $viewModel->title = 'Message';
         return 'profile/message';
     }
-
-    /**
-     * @Route ("/profile/messages/users/{username}")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"GET"})
-     *
-     * @param array $params
-     * @return Response
-     */
-    public function userMessages(array $params, ViewModel $viewModel){
-        FilterParams::required($params, 'username');
-
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $username = Session::getCredentials ()->getUsername ();
-
-        $targetUser = UserService::instance()->getUserByUsername($params['username']);
-        if(empty($targetUser)){
-            throw new Exception("Could not find target user");
-        }
-
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $targetUser['userId'] );
-
-        // @TODO make the UI handle no messages...
-        if(count($messages) <= 0){
-            throw new Exception('No messages for this user');
-        }
-
-        foreach ($messages as $msg) {
-            if($msg['targetuserid'] == $userId && $msg['isread'] == 0){
-                $privateMessageService->openMessageById( $msg['id'] );
-            }
-        }
-
-        $message = $messages[count($messages)-1];
-
-        $viewModel->message = $message;
-        $viewModel->messages = $messages;
-        $viewModel->username = $username;
-        $viewModel->userId = $userId;
-        $viewModel->replyto = $message['id'];
-        $viewModel->title = 'Message';
-        return 'profile/message';
-    }
-
-    /**
-     * @Route ("/profile/messages/users/{username}/open")
-     * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @return Response
-     */
-    public function openUserMessagesAsRead(array $params){
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $response = array('success'=>true);
-
-        try {
-            FilterParams::required($params, 'username');
-            $targetUser = UserService::instance()->getUserByUsername($params['username']);
-            if(empty($targetUser)){
-                throw new Exception("Could not find target user");
-            }
-            $privateMessageService->openMessagesByUserIdAndTargetUserId( $userId, $targetUser['userid'] );
-        } catch (Exception $e) {
-            $response['success'] = false;
-            $response['message'] = $e->getMessage();
-        }
-
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
-    }
-
 }

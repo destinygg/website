@@ -88,14 +88,17 @@ table#inbox td.from a {
 .message-list .message {
     position: relative;
     margin-left: 0;
+    width: 90%;
 }
 .message-list .message.message-me {
     margin-left: 0;
     background-color: rgba(0,0,0,0.4);
+    float: right;
 }
 .message-list .message.message-notme {
-    margin-left: 5px;
-    background-color: rgba(0,0,0,0.6);
+    margin-left: 0px;
+    background-color: #000;
+    float: left;
 }
 .message-list .message.message-notme .speech-arrow {
     top: 15px;

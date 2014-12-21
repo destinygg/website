@@ -41,23 +41,15 @@ use Destiny\Commerce\SubscriptionStatus;
                             <col class="c4">
                         </colgroup>
                         <tbody>
-                            <?php foreach($model->inbox as $m): ?>
-
-                            <?php
-                            $from = explode(',', $m['from']);
-                            foreach($from as $i=>$name){
-                                if(stristr($name, $model->username) !== false){
-                                    array_splice($from, $i, 1);
-                                    break;
-                                }
-                            }
-                            ?>
-
-                            <tr data-id="<?= $m['id'] ?>">
+                            <?php foreach($model->inbox['unread'] as $id => $thread): ?>
+                            <tr data-id="<?= $id ?>">
                                 <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
-                                <td class="from"><a href="/profile/messages/<?= $m['id'] ?>"><?= Tpl::out(join(', ', $from)) ?></a> <span class="count"><?= (intval($m['count']) > 1) ? '('. $m['count'] .')':'' ?></span></td>
-                                <td class="message"><span><?= Tpl::out($m['message']) ?></span></td>
-                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($m['timestamp']), Date::FORMAT); ?></td>
+                                <td class="from">
+                                    <a href="/profile/messages/<?= $id ?>"><?= Tpl::out($thread['othernick']) ?></a>
+                                    <span class="count">(<?= $thread['count'] ?>)</span>
+                                </td>
+                                <td class="message"><span><?= Tpl::out($thread['message']) ?></span></td>
+                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp']), Date::FORMAT); ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -82,7 +74,7 @@ use Destiny\Commerce\SubscriptionStatus;
             <div class="content">
                 <div class="content-dark clearfix">
 
-                    <?php if(!empty($model->read)): ?>
+                    <?php if(!empty($model->inbox['read'])): ?>
                     <table id="read" class="grid messages">
                         <colgroup>
                             <!-- <col class="c1"> -->
@@ -91,23 +83,17 @@ use Destiny\Commerce\SubscriptionStatus;
                             <col class="c4">
                         </colgroup>
                         <tbody>
-                            <?php foreach($model->read as $m): ?>
-
-                            <?php
-                            $from = explode(',', $m['from']);
-                            foreach($from as $i=>$name){
-                                if(stristr($name, $model->username) !== false){
-                                    array_splice($from, $i, 1);
-                                    break;
-                                }
-                            }
-                            ?>
-
-                            <tr data-id="<?= $m['id'] ?>">
+                            <?php foreach($model->inbox['read'] as $id => $thread): ?>
+                            <tr data-id="<?= $id ?>">
                                 <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
-                                <td class="from"><a href="/profile/messages/<?= $m['id'] ?>"><?= Tpl::out(join(', ', $from)) ?></a> <span class="count"><?= (intval($m['count']) > 1) ? '('. $m['count'] .')':'' ?></span></td>
-                                <td class="message"><span><?= Tpl::out($m['message']) ?></span></td>
-                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($m['timestamp']), Date::FORMAT); ?></td>
+                                <td class="from">
+                                    <a href="/profile/messages/<?= $id ?>">
+                                        <?= Tpl::out($thread['othernick']) ?>
+                                    </a>
+                                    <span class="count">(<?= $thread['count'] ?>)</span>
+                                </td>
+                                <td class="message"><span><?= Tpl::out($thread['message']) ?></span></td>
+                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp']), Date::FORMAT); ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

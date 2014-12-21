@@ -58,7 +58,7 @@ use Destiny\Common\Config;
                 <div class="speech-arrow"></div>
             </div>
             <?php endfor; ?>
-
+            <div class="clearfix"></div>
             <div class="message-reply content content-dark clearfix" style="">
                 <div class="clearfix">
                     <span class="pull-left">
