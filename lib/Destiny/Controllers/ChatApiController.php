@@ -61,6 +61,11 @@ class ChatApiController {
             FilterParams::required($params, 'userid');
             FilterParams::required($params, 'targetuserid');
 
+            $ban = $userService->getUserActiveBan ( $params['userid'] );
+            if (! empty ( $ban )) {
+                throw new Exception ("Cannot send messages while you are banned.");
+            }
+
             if($params['userid'] == $params['targetuserid']){
                 throw new Exception ('Cannot send a message to yourself only.');
             }

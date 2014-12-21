@@ -68,6 +68,11 @@ class PrivateMessageController {
 
         try {
 
+            $ban = $userService->getUserActiveBan ( $userId );
+            if (! empty ( $ban )) {
+                throw new Exception ("You cannot send messages while you are banned.");
+            }
+
             FilterParams::required($params, 'message');
 
             if($isReply){

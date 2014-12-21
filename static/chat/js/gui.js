@@ -1026,7 +1026,7 @@
                         var message = $(this).data('message'),
                             messageactions = message.ui.find('.message-actions');
                         message.isread = true;
-                        message.ui.find('.icon-mail-receive').attr('class', 'icon-mail-open-document');
+                        message.ui.find('.icon-mail-send').attr('class', 'icon-mail-open-document');
                         messageactions.remove();
                         destiny.chat.gui.setUnreadMessageCount( destiny.chat.gui.unreadMessageCount - 1 );
                     });
@@ -1036,7 +1036,7 @@
                         var message = $(this).data('message'),
                             messageactions = message.ui.find('.message-actions');
                         message.isread = true;
-                        message.ui.find('.icon-mail-receive').attr('class', 'icon-mail-open-document');
+                        message.ui.find('.icon-mail-send').attr('class', 'icon-mail-open-document');
                         messageactions.remove();
                     });
                 }
@@ -1061,7 +1061,7 @@
             </div>';
     };
     ChatUserPrivateMessage.prototype.wrapUser = function(user){
-        return ' <i class="mail-send.png" title="Received Message"></i> <a class="user">' +user.username+'</a>';
+        return ' <i class="icon-mail-send" title="Received Message"></i> <a class="user">' +user.username+'</a>';
     };
     // END PRIVATE MESSAGE
     
