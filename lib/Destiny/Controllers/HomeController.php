@@ -8,6 +8,9 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Config;
+use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
+use Destiny\Messages\PrivateMessageService;
 
 /**
  * @Controller
@@ -23,6 +26,12 @@ class HomeController {
      * @return string
      */
     public function home(array $params, ViewModel $model) {
+        if (Session::hasRole(UserRole::USER)) {
+            $userid = $userId = Session::getCredentials ()->getUserId ();
+            $privateMessageService = PrivateMessageService::instance();
+            $model->unreadMessageCount = $privateMessageService->getUnreadMessageCount($userid);
+        }
+
         $app = Application::instance ();
         $cacheDriver = $app->getCacheDriver ();
         $model->articles = $cacheDriver->fetch ( 'recentblog' );

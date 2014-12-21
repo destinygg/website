@@ -1,7 +1,7 @@
 <?php
 namespace Destiny; 
 use Destiny\Common\User\UserRole;
-use Destiny\Common\Session; 
+use Destiny\Common\Session;
 use Destiny\Common\Config;
 ?>
 <div id="main-nav" class="navbar navbar-static-top navbar-inverse">
@@ -28,7 +28,12 @@ use Destiny\Common\Config;
             <?php if(Session::hasRole(UserRole::USER)): ?>
 
             <li class="dropdown hidden-xs">
-                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Profile <span class="caret"></span></a>
+                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                    Profile <span class="caret"></span>
+                    <?php if($model->unreadMessageCount > 0): ?>
+                        <span class="pm-count flash" title="You have unread messages!"><?php echo $model->unreadMessageCount; ?></span>
+                    <?php endif; ?>
+                </a>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="/profile">Account</a></li>
                     <li><a href="/profile/messages">Messages</a></li>

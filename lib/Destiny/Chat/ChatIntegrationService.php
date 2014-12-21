@@ -171,7 +171,6 @@ class ChatIntegrationService extends Service {
      * @throws Exception
      */
     public function publishPrivateMessage(array $message, array $user, array $targetuser) {
-        $userService = UserService::instance ();
         $data = array(
             'messageid' => $message['id'],
             'message' => $message['message'],

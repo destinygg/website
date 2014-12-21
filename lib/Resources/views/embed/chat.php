@@ -40,7 +40,7 @@ use Destiny\Common\Config;
               <span class="fa fa-cog"></span>
             </a>
             <a class="iconbtn chat-users-btn" title="Users">
-              <span class="chat-pm-count hidden hop" title="You have missed messages!">0</span>
+              <span class="chat-pm-count hidden flash" title="You have unread messages!">0</span>
               <span class="fa fa-user"></span>
             </a>
           </div>

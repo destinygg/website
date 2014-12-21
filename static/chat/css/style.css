@@ -181,6 +181,39 @@
   box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
   min-width: 15px;
 }
+@-webkit-keyframes flash {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
+}
+@keyframes flash {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
+}
+.chat-pm-count.flash {
+  -webkit-animation-name: flash;
+  -webkit-animation-duration:1.5s;
+  -webkit-animation-direction:alternate;
+  -webkit-animation-timing-function:linear;
+  -webkit-animation-delay:0s;
+  -webkit-animation-iteration-count:infinite;
+  -moz-animation-name: flash;
+  -moz-animation-duration:1.5s;
+  -moz-animation-direction:alternate;
+  -moz-animation-timing-function:linear;
+  -moz-animation-delay:0s;
+  -moz-animation-iteration-count:infinite;
+  animation-name: flash;
+  animation-duration: 1.5s;
+  animation-iteration-count:infinite;
+}
 
 .chat .chat-lines i[class^="icon-"] {
   width: 16px;

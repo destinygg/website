@@ -202,8 +202,7 @@
                 cMenu.closeMenus(chat);
             });
             this.privatemessagelist.visible = false;
-            chat.setUnreadMessageCount(this.unreadMessageCount);
-
+            chat.setUnreadMessageCount(this.unreadMessageCount || localStorage['unreadMessageCount']);
 
             // User list
             this.userslist = this.ui.find('#chat-user-list:first').eq(0);
@@ -725,7 +724,11 @@
 
         setUnreadMessageCount: function(count){
             var self = this;
+            if (count < 0)
+                count = 0;
+
             this.unreadMessageCount = count;
+            localStorage['unreadMessageCount'] = count;
 
             var countui = this.ui.find('.chat-pm-count');
             countui.text(this.unreadMessageCount);

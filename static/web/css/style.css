@@ -1511,3 +1511,55 @@ body#amazon {
 #alerts-container .alert {
   margin: 10px;
 }
+
+.pm-count {
+  font-family: "Lucida Console", Monaco, monospace;
+  text-decoration: none;
+  font-size: 10px;
+  color: white;
+  background-color: #b91010;
+  line-height: 10px;
+  padding: 3px;
+  position: absolute;
+  border-radius: 8px;
+  top: 5px;
+  right: 0;
+  display: block;
+  text-shadow: 1px 1px 0px black;
+  text-align: center;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+  min-width: 15px;
+}
+@-webkit-keyframes flash {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
+}
+@keyframes flash {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
+}
+.pm-count.flash {
+  -webkit-animation-name: flash;
+  -webkit-animation-duration:1.5s;
+  -webkit-animation-direction:alternate;
+  -webkit-animation-timing-function:linear;
+  -webkit-animation-delay:0s;
+  -webkit-animation-iteration-count:infinite;
+  -moz-animation-name: flash;
+  -moz-animation-duration:1.5s;
+  -moz-animation-direction:alternate;
+  -moz-animation-timing-function:linear;
+  -moz-animation-delay:0s;
+  -moz-animation-iteration-count:infinite;
+  animation-name: flash;
+  animation-duration: 1.5s;
+  animation-iteration-count:infinite;
+}

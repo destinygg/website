@@ -27,6 +27,20 @@ class PrivateMessageService extends Service {
         return parent::instance ();
     }
     
+    public function getUnreadMessageCount($targetuserid) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            SELECT COUNT(*)
+            FROM privatemessages AS pm
+            WHERE
+                targetuserid = :targetuserid AND
+                isread       = 0
+        ");
+        $stmt->bindValue("targetuserid", $targetuserid, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
     /**
      * Add a new message
      *
