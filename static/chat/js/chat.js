@@ -211,11 +211,9 @@ chat.prototype.shouldIgnoreMessage = function(nick, message) {
 
 chat.prototype.onPRIVMSG = function (data) {
 	var user = this.users[data.nick];
-	if (!user) {
+	if (!user)
 		user = new ChatUser(data);
-		if (user.username == data.nick)
-			this.user = user;
-	} else
+	else
 		this.gui.autoCompletePlugin.addDataIfNotExists(user.username, 1);
 
 	if (this.shouldIgnoreMessage(data.nick, data.data))
