@@ -38,6 +38,7 @@ class PrivateMessageService extends Service {
                 userid,
                 targetuserid,
                 UNIX_TIMESTAMP(timestamp) AS timestamp
+            FROM privatemessages
             WHERE
                 (
                     userid = :userid OR
