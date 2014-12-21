@@ -629,6 +629,8 @@
 .chat-lines .emotecount {
   text-shadow: none;
   animation: emotecount 600ms 1;
+  -moz-animation: emotecount 600ms 1;
+  -webkit-animation: emotecount 600ms 1;
 }
 @keyframes emotecount {
   from { 
@@ -640,7 +642,16 @@
     background-color: #333;
   }
 }
-
+@-webkit-keyframes emotecount {
+  from {
+    color: black;
+    background-color: white;
+  }
+  to {
+    color: white;
+    background-color: #333;
+  }
+}
 
 .chat-lines .emotecount.x5 > span {
   font-size: 10px;
