@@ -14,6 +14,7 @@ use Destiny\Commerce\SubscriptionStatus;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 <link href="<?=Config::cdnv()?>/web/css/messages.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdn()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
 <body id="messages" class="profile">
     <div id="page-wrap">
@@ -32,7 +33,7 @@ use Destiny\Commerce\SubscriptionStatus;
             <div class="content">
                 <div class="content-dark clearfix">
 
-                    <?php if(!empty($model->inbox)): ?>
+                    <?php if(!empty($model->inbox['unread'])): ?>
                     <table id="inbox" class="grid messages">
                         <colgroup>
                             <!-- <col class="c1"> -->
@@ -48,7 +49,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                     <a href="/profile/messages/<?= $id ?>"><?= Tpl::out($thread['othernick']) ?></a>
                                     <span class="count">(<?= $thread['count'] ?>)</span>
                                 </td>
-                                <td class="message"><span><?= Tpl::out($thread['message']) ?></span></td>
+                                <td class="message"><span><?= Tpl::formatTextForDisplay($thread['message']) ?></span></td>
                                 <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp']), Date::FORMAT); ?></td>
                             </tr>
                             <?php endforeach; ?>
@@ -92,7 +93,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                     </a>
                                     <span class="count">(<?= $thread['count'] ?>)</span>
                                 </td>
-                                <td class="message"><span><?= Tpl::out($thread['message']) ?></span></td>
+                                <td class="message"><span><?= Tpl::formatTextForDisplay($thread['message']) ?></span></td>
                                 <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp']), Date::FORMAT); ?></td>
                             </tr>
                             <?php endforeach; ?>

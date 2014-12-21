@@ -52,7 +52,7 @@ use Destiny\Common\Config;
                     <span class="message-from">
                         <span alt="<?= Tpl::out($msg['from']) ?>"><?= (!$isme) ? Tpl::out($msg['from']) : 'Me' ?></span>
                     </span>
-                    <span class="message-snippet"><?= Tpl::out($msg['message']) ?></span>
+                    <span class="message-snippet"><?= Tpl::formatTextForDisplay($msg['message']) ?></span>
                     <span class="message-date"><?= Tpl::calendar(Date::getDateTime($msg['timestamp']), Date::FORMAT); ?></span>
                 </div>
                 <div class="speech-arrow"></div>
