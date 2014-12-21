@@ -482,6 +482,7 @@
                 this.onSend(str, this.input[0]);
                 this.insertInputHistory(str);
                 this.currenthistoryline = -1;
+                this.autoCompletePlugin.markLastComplete();
             };
             str = null;
             return this;

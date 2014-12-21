@@ -25,6 +25,17 @@
 		
 		return this;
 	};
+	mAutoComplete.prototype.addDataIfNotExists = function(nick, weight){
+		var id = this.getShardIdByTxt(nick);
+
+		if(!this.shards[id])
+			this.shards[id] = {};
+
+		if (!this.shards[id][nick])
+			this.shards[id][nick] = {nick: nick, weight: weight};
+
+		return this;
+	};
 	mAutoComplete.prototype.init = function(input, options){
 		this.expireUsers = $.proxy(this.expireUsers, this);
 		setInterval(this.expireUsers, 300000); // 5 minutes
@@ -88,6 +99,10 @@
 			};
 		};
 	};
+	mAutoComplete.prototype.markLastComplete = function() {
+		if(this.lastComplete)
+			this.addData(this.lastComplete, (new Date).getTime());
+	};
 
 	$.fn.mAutoComplete = function(options){
 		return this.each(function(){
@@ -129,12 +144,14 @@
 				resultIndex = (resultIndex >= results.length-1) ? 0 : resultIndex+1;
 				var replace = (results[resultIndex] || {}).nick;
 				if(replace){
+					autoComplete.lastComplete = replace; // mark the last used nick
+
 					var pre  = originalTxt.substr(0,searchWord.startIndex),
 					    post = originalTxt.substr(searchWord.startIndex+searchWord.word.length);
 					
 					if(post.substring(0,1) != " " || post.length == 0)
 						post = " " + post;
-				
+
 					// Only change the input value / move the cursor if the search word is different
 					if(replace.toLowerCase() != searchWord.word.toLowerCase()){
 						inp.focus();

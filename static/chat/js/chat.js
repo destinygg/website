@@ -247,7 +247,7 @@ chat.prototype.onMSG = function(data) {
 			if (user.nick == this.user.nick)
 				this.user = user;
 		} else
-			this.gui.autoCompletePlugin.addData(data.nick, data.timestamp);
+			this.gui.autoCompletePlugin.addDataIfNotExists(data.nick, 1);
 		
 		if (user && user.features.length != data.features.length)
 			this.users[data.nick] = user;
