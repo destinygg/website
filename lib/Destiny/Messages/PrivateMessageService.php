@@ -70,7 +70,7 @@ class PrivateMessageService extends Service {
                 if ($row['targetuserid'] != $targetuserid)
                     continue;
                 
-                $target_unread_count += 1
+                $target_unread_count += 1;
                 if($target_unread_count > $messagelimit && $now - $row['timestamp'] < $timelimit)
                     $cansend = false;
                 
