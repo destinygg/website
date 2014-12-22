@@ -161,7 +161,8 @@ table#inbox td.from a {
 }
 
 .message-reply {
-    margin-top: 10px;
+    clear: both;
+    margin-top: 5px;
 }
 .message-reply {
     margin-top: 10px;
@@ -173,6 +174,26 @@ table#inbox td.from a {
 
 .message-list-title {
     margin-bottom: 20px;
+}
+
+.collapsed-group .message,
+.collapsed-group.active .collapsed-group-label {
+    display: none;
+}
+.collapsed-group.active .message {
+    display: inherit;
+}
+.collapsed-group-label {
+    margin-bottom: 10px;
+    line-height: 30px;
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 4px;
+    text-align: center;
+}
+.collapsed-group-line {
+    border-top: 1px solid #333;
+    background-color: #0D0D0D;
+    height: 8px;
 }
 
 /** COMPOSE **/

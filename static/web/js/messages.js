@@ -274,3 +274,26 @@ $(function(){
         $(this).on('click', '.message-summary', showFullMessage);
     });
 });
+
+// message
+$(function(){
+    var showmax = 10, 
+        messages = $('.message-list .message');
+    if(messages.length > showmax){
+        var oldmessages = messages.slice(0, -showmax);
+        oldmessages.wrapAll(
+            '<div class="collapsed-group">\
+                <div class="collapsed-group-label"><a href="#"><i class="fa fa-chevron-circle-down"></i> show '+ oldmessages.length +' older messages</a></div>\
+            </div>'
+        );
+    }
+    $('.message-list').on('click', '.collapsed-group', function(e){
+        $(this).addClass('active');
+        e.preventDefault();
+    });
+    $(window).on('load', function(){
+        var lastelement = $('.message-reply'),
+            offset = lastelement.offset().top + lastelement.outerHeight(true) - $(window).height();
+        $('html,body').animate({scrollTop:offset},5);
+    });
+});
