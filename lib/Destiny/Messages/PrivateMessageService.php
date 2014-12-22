@@ -56,8 +56,8 @@ class PrivateMessageService extends Service {
         $timelimit = 60 * 60 * 1;
         $messagelimit = 3;
         
-        $general_unread_count = 0
-        $target_unread_count = 0
+        $general_unread_count = 0;
+        $target_unread_count = 0;
 
         while($row = $stmt->fetch()) {
             if ($row['userid'] == $userid && !$row['isread']) {
