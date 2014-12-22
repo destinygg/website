@@ -100,8 +100,13 @@
 		};
 	};
 	mAutoComplete.prototype.markLastComplete = function() {
-		if(this.lastComplete)
+		if(!this.lastComplete)
+			return
+
+		var data = this.shards[this.getShardIdByTxt(this.lastComplete)] || {};
+		if (!data[this.lastComplete] || data[this.lastComplete].weight != 2)
 			this.addData(this.lastComplete, (new Date).getTime());
+
 	};
 
 	$.fn.mAutoComplete = function(options){
