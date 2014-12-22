@@ -27,7 +27,7 @@ class PrivateMessageService extends Service {
         return parent::instance ();
     }
 
-    public function canSend($user) {
+    public function canSend($user, $targetuserid) {
         if ($user->hasRole(UserRole::ADMIN))
             return true;
 
@@ -37,6 +37,7 @@ class PrivateMessageService extends Service {
             SELECT
                 userid,
                 targetuserid,
+                isread,
                 UNIX_TIMESTAMP(timestamp) AS timestamp
             FROM privatemessages
             WHERE
@@ -52,29 +53,45 @@ class PrivateMessageService extends Service {
 
         $now       = time();
         $cansend   = true;
-        $timelimit = 60 * 60 * 5;
-        $count     = 0;
+        $timelimit = 60 * 60 * 1;
+        $messagelimit = 3;
+        
+        $general_unread_count = 0
+        $target_unread_count = 0
 
         while($row = $stmt->fetch()) {
-            if ($row['userid'] == $userid) {
-                $count++;
-
-                // sent a message in the last 5 minutes
-                if ($now - $row['timestamp'] < $timelimit)
+            if ($row['userid'] == $userid && !$row['isread']) {
+                // $userid sent a message that was NOT read
+                $general_unread_count += 1;
+                
+                // immediatly throttle if sent more than $messagelimit unread 
+                // messages to the same $targetuserid in the last $timelimit minutes
+                // ONLY a reply can cancel this, otherwise it would `return false`
+                if ($row['targetuserid'] != $targetuserid)
+                    continue;
+                
+                $target_unread_count += 1
+                if($target_unread_count > $messagelimit && $now - $row['timestamp'] < $timelimit)
                     $cansend = false;
-
-            } else {
-                $count -= 2; // for every message received, let two be sent
-
-                // received a message in the last 5 minutes, reset
+                
+            } else if ( $row['userid'] == $targetuserid ) {
+                $target_unread_count -= $messagelimit;
+                $general_unread_count -= $messagelimit;
+                $cansend = true;
+                
+                // avoid rate limiting quick replies
+                // received a message in the last $timelimit minutes, reset
                 if ($now - $row['timestamp'] < $timelimit)
-                    $cansend = true;
-
+                    return true;
+            }else {
+                // $userid sent a message that was read OR
+                // $userid recieved a message from someone unrelated to this conversation 
+                $general_unread_count -= 2;
             }
         }
-
         // sent message count outweighs the received message count, deny
-        if ($count > 7)
+        // considering this is the last hour, and most people don't mark as read
+        if ( $target_unread_count > 7 || $general_unread_count > 21 )
             $cansend = false;
 
         return $cansend;

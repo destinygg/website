@@ -77,11 +77,6 @@ class PrivateMessageController {
                 throw new Exception ("Your account is not old enough to send messages.");
             }
 
-            $canSend = $privateMessageService->canSend( $user );
-            if (! $canSend) {
-                throw new Exception ("You have sent too many messages, throttled.");
-            }
-
             FilterParams::required($params, 'message');
 
             if($isReply){
@@ -103,6 +98,11 @@ class PrivateMessageController {
                     $message['userid'] = $replymessage['targetuserid'];
                     $message['targetuserid'] = $replymessage['userid'];
                 }
+                
+                $canSend = $privateMessageService->canSend( $user, $message['targetuserid'] );
+                if (! $canSend) {
+                    throw new Exception ("You have sent too many messages, throttled.");
+                }
 
                 $user = $userService->getUserById ( $message['userid'] );
                 $targetuser = $userService->getUserById ( $message['targetuserid'] );
@@ -118,6 +118,10 @@ class PrivateMessageController {
 
                 $user = $userService->getUserById ( $userId );
                 foreach ($recipients as $recipientId) {
+                    $canSend = $privateMessageService->canSend( $user, $recipientId );
+                    if (! $canSend) {
+                        throw new Exception ("You have sent too many messages, throttled.");
+                    }
                     $targetuser = $userService->getUserById ( $recipientId );
                     $message = array(
                         'userid' => $userId,
@@ -189,7 +193,7 @@ class PrivateMessageController {
         $userId = Session::getCredentials ()->getUserId ();
         $username = Session::getCredentials ()->getUsername ();
 
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['id'] );
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['id'], 0, 10 );
         // mark messages that are meant for me as read, not the other way around
         $privateMessageService->markMessagesRead( $userId, $params['id'] );
         foreach($messages as $message) {
