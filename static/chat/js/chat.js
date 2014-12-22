@@ -115,6 +115,7 @@ chat.prototype.loadIgnoreList = function() {
 		return;
 	
 	this.ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
+	this.ignoreregex = null;
 };
 
 // websocket stuff
@@ -182,7 +183,7 @@ chat.prototype.onNAMES = function(data) {
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
-	this.gui.autoCompletePlugin.addData(data.nick, 1);
+	this.gui.autoCompletePlugin.addDataIfNotExists(data.nick, 1);
 	this.gui.trigger('join', data);
 };
 chat.prototype.onQUIT = function(data) {
@@ -198,12 +199,12 @@ chat.prototype.shouldIgnoreMessage = function(nick, message) {
 	if (!this.ignoreregex) {
 		var nicks = [];
 		$.each(this.ignorelist, function(key) {
-			nicks.push(key);
+			nicks.push(key.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"));
 		});
 		if (nicks.length == 0)
 			return false;
 
-		this.ignoreregex = new RegExp(nicks.join("|"), "ig");
+		this.ignoreregex = new RegExp(nicks.join("|"), "i");
 	}
 
 	return this.ignoreregex.test(nick) || this.ignoreregex.test(message);
@@ -482,7 +483,6 @@ chat.prototype.handleCommand = function(str) {
 			var nick = parts[1].toLowerCase();
 			
 			delete(this.ignorelist[nick]);
-			this.ignoreregex = null;
 			this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
 			
 			localStorage['chatignorelist'] = JSON.stringify(this.ignorelist);
