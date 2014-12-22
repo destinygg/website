@@ -79,18 +79,19 @@ class ChatApiController {
             $user = $userService->getUserById ( $params['userid'] );
             $credentials = new SessionCredentials ( $user );
             $credentials->addRoles ( $userService->getUserRolesByUserId ( $params['userid'] ) );
-            $canSend = $privateMessageService->canSend( $credentials );
+            $targetuser = $userService->getUserById ( $params['targetuserid'] );
+            
+            if(empty($targetuser))
+                throw new Exception ('notfound');
+                
+            $canSend = $privateMessageService->canSend( $credentials, $targetuserid );
             if (! $canSend) {
                 throw new Exception ("throttled");
             }
 
             $user = $userService->getUserById ( $params['userid'] );
-            $targetuser = $userService->getUserById ( $params['targetuserid'] );
 
             if(empty($user))
-                throw new Exception ('notfound');
-
-            if(empty($targetuser))
                 throw new Exception ('notfound');
 
             $message = array(
