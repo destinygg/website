@@ -34,7 +34,7 @@ use Destiny\Common\Config;
                 $msg = $model->messages[$i];
                 $isme = (stristr($msg['from'], $model->username) !== false);
                 $styles = array();
-                $styles[] = ($model->message['id'] == $msg['id'] || ($msg['isread'] == 0 && !$isme)) ? 'message-active' : 'message-hidden';
+                $styles[] = 'message-active';
                 $styles[] = ($isme) ? 'message-me' : 'message-notme';
                 $styles[] = ($msg['isread'] == 1) ? 'message-read' : 'message-unread';
             ?>
@@ -67,6 +67,7 @@ use Destiny\Common\Config;
                     </span>
                 </div>
             </div>
+            <a name="latest"></a>
 
         </section>
 
@@ -77,6 +78,13 @@ use Destiny\Common\Config;
     <?php include Tpl::file('seg/commonbottom.php') ?>
 
     <script src="<?=Config::cdnv()?>/web/js/messages.min.js"></script>
+
+    <script>
+    $(window).on('load', function(){
+        var offset = $('.message-list .message:last').offset().top-20;
+        $('html,body').animate({scrollTop:offset},5);
+    });
+    </script>
 
 </body>
 </html>

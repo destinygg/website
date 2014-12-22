@@ -189,7 +189,7 @@ class PrivateMessageController {
         $userId = Session::getCredentials ()->getUserId ();
         $username = Session::getCredentials ()->getUsername ();
 
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['id'] );
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['id'], 0, 10 );
         // mark messages that are meant for me as read, not the other way around
         $privateMessageService->markMessagesRead( $userId, $params['id'] );
         foreach($messages as $message) {

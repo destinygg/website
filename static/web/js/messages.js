@@ -227,10 +227,10 @@ $(function(){
 
     var toggleRowClick = function(e){
         var self = $(this),
-            messageId = self.data('id');
+            userid = self.data('id');
         e.preventDefault();
         e.stopPropagation();
-        window.location.href = '/profile/messages/'+messageId + '#' + messageId;
+        window.location.href = '/profile/messages/'+ userid;
     };
 
     var pressedTableRow = function(){
