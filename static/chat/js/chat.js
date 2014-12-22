@@ -182,7 +182,7 @@ chat.prototype.onNAMES = function(data) {
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
-	this.gui.autoCompletePlugin.addData(data.nick, 1);
+	this.gui.autoCompletePlugin.addDataIfNotExists(data.nick, 1);
 	this.gui.trigger('join', data);
 };
 chat.prototype.onQUIT = function(data) {
