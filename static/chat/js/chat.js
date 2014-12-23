@@ -215,7 +215,7 @@ chat.prototype.onPRIVMSG = function (data) {
 	if (!user)
 		user = new ChatUser(data);
 	else
-		this.gui.autoCompletePlugin.addDataIfNotExists(user.username, 1);
+		this.gui.autoCompletePlugin.addData(user.username, (new Date).getTime());
 
 	if (this.shouldIgnoreMessage(data.nick, data.data))
 		return;
@@ -268,7 +268,7 @@ chat.prototype.onMSG = function(data) {
 			if (user.nick == this.user.nick)
 				this.user = user;
 		} else
-			this.gui.autoCompletePlugin.addDataIfNotExists(data.nick, 1);
+			this.gui.autoCompletePlugin.addData(data.nick, (new Date).getTime());
 		
 		if (user && user.features.length != data.features.length)
 			this.users[data.nick] = user;

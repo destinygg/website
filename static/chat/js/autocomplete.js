@@ -83,7 +83,7 @@
 	mAutoComplete.prototype.expireUsers = function() {
 		// if the user hasnt spoken in the last 5 minutes, reset the weight
 		// so that emotes can be ordered before the user again
-		var fiveminutesago = (new Date).getTime() - 300000;
+		var fiveminutesago = 3000000000000 + (new Date).getTime() - 300000;
 		for (var i in this.shards) {
 			if (!this.shards.hasOwnProperty(i))
 				continue;
@@ -94,7 +94,7 @@
 
 				// dont touch emotes or already reset users
 				var nick = this.shards[i][j]
-				if (nick.weight > 2 && nick.weight < fiveminutesago)
+				if (nick.weight != 3000000000000 && nick.weight < fiveminutesago)
 					nick.weight = 1;
 			};
 		};
@@ -104,8 +104,8 @@
 			return
 
 		var data = this.shards[this.getShardIdByTxt(this.lastComplete)] || {};
-		if (!data[this.lastComplete] || data[this.lastComplete].weight != 2)
-			this.addData(this.lastComplete, (new Date).getTime());
+		if (!data[this.lastComplete] || data[this.lastComplete].weight != 3000000000000)
+			this.addData(this.lastComplete, 3000000000000 + (new Date).getTime());
 
 	};
 
