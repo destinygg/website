@@ -16,6 +16,7 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
 use Destiny\Chat\ChatIntegrationService;
+use Destiny\Common\SessionCredentials;
 
 /**
  * @Controller
@@ -117,11 +118,12 @@ class PrivateMessageController {
                 $recipients = $privateMessageService->prepareRecipients( $params['recipients'] );
 
                 $user = $userService->getUserById ( $userId );
+                $credentials = new SessionCredentials ( $user );
                 foreach ($recipients as $recipientId) {
-                    $canSend = $privateMessageService->canSend( $user, $recipientId );
-                    if (! $canSend) {
+                    $canSend = $privateMessageService->canSend( $credentials, $recipientId );
+                    if (! $canSend)
                         throw new Exception ("You have sent too many messages, throttled.");
-                    }
+
                     $targetuser = $userService->getUserById ( $recipientId );
                     $message = array(
                         'userid' => $userId,
