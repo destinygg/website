@@ -99,7 +99,7 @@
             }).data('mAutoComplete');
             
             for (var i = this.emoticons.length - 1; i >= 0; i--) {
-                // let the emotes have more weight than someone who never spoke
+                // let the emotes have more weight than users by default
                 this.autoCompletePlugin.addData(this.emoticons[i], 3000000000000);
             };
             

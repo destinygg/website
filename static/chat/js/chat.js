@@ -175,7 +175,8 @@ chat.prototype.onNAMES = function(data) {
 	for (var i = data.users.length - 1; i >= 0; i--) {
 		var u = data.users[i];
 		this.users[u.nick] = new ChatUser(u);
-		this.gui.autoCompletePlugin.addData(u.nick, 1);
+		if (!this.shouldIgnore(u.nick, ""))
+			this.gui.autoCompletePlugin.addData(u.nick, 1);
 	};
 	
 	this.gui.trigger('names', data);
@@ -183,7 +184,10 @@ chat.prototype.onNAMES = function(data) {
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
-	this.gui.autoCompletePlugin.addDataIfNotExists(data.nick, 1);
+
+	if (!this.shouldIgnore(data.nick, ""))
+		this.gui.autoCompletePlugin.addDataIfNotExists(data.nick, 1);
+
 	this.gui.trigger('join', data);
 };
 chat.prototype.onQUIT = function(data) {
@@ -192,7 +196,7 @@ chat.prototype.onQUIT = function(data) {
 		this.gui.trigger('quit', data);
 	}
 };
-chat.prototype.shouldIgnoreMessage = function(nick, message) {
+chat.prototype.shouldIgnore = function(nick, message) {
 	if (!this.ignorelist)
 		return false;
 
@@ -207,19 +211,19 @@ chat.prototype.shouldIgnoreMessage = function(nick, message) {
 		this.ignoreregex = new RegExp(nicks.join("|"), "i");
 	}
 
-	return this.ignoreregex.test(nick) || this.ignoreregex.test(message);
+	nick = nick.toLowerCase();
+	return this.ignorelist[nick] || this.ignoreregex.test(message);
 };
 
 chat.prototype.onPRIVMSG = function (data) {
 	var user = this.users[data.nick];
 	if (!user)
 		user = new ChatUser(data);
-	else
-		this.gui.autoCompletePlugin.addData(user.username, (new Date).getTime());
 
-	if (this.shouldIgnoreMessage(data.nick, data.data))
+	if (this.shouldIgnore(data.nick, data.data))
 		return;
 
+	this.gui.autoCompletePlugin.addData(user.username, (new Date).getTime());
 	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
 };
 chat.prototype.onMSG = function(data) {
@@ -259,7 +263,7 @@ chat.prototype.onMSG = function(data) {
 	
 	if(this.user.username != data.nick || !messageui){
 
-		if (this.shouldIgnoreMessage(data.nick, data.data))
+		if (this.shouldIgnore(data.nick, data.data))
 			return;
 		
 		var user = this.users[data.nick];
