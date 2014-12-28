@@ -1,103 +1,173 @@
 (function(){
-			
-	var kCodes = {
-		TAB : 9
-	};
-	
-	var mAutoComplete = function(input, options){
-		this.input = input;
-		this.shards = {};
-		return this.init(input, options);
-	};
-	mAutoComplete.prototype.getShardIdByTxt = function(txt){
-		return txt.substr(0,1).toUpperCase();
-	};
-	mAutoComplete.prototype.addData = function(nick, weight){
-		var id        = this.getShardIdByTxt(nick);
-		
-		if(!this.shards[id])
-			this.shards[id] = {};
-		
-		if (this.shards[id][nick])
-			this.shards[id][nick].weight = weight;
-		else
-			this.shards[id][nick] = {nick: nick, weight: weight};
-		
-		return this;
-	};
-	mAutoComplete.prototype.addDataIfNotExists = function(nick, weight){
-		var id = this.getShardIdByTxt(nick);
+	mAutoComplete = function(input, options) {
+		this.input = $(input);
 
-		if(!this.shards[id])
-			this.shards[id] = {};
+		if (!input[0].setSelectionRange)
+			return this;
 
-		if (!this.shards[id][nick])
-			this.shards[id][nick] = {nick: nick, weight: weight};
+		this.minWordLength = 2;
+		this.maxResults    = 10;
+		this.buckets       = {};
+		this.expireUsers   = $.proxy(this.expireUsers, this);
+		this.resetSearch();
 
-		return this;
-	};
-	mAutoComplete.prototype.init = function(input, options){
-		this.expireUsers = $.proxy(this.expireUsers, this);
 		setInterval(this.expireUsers, 300000); // 5 minutes
+
+		var self = this;
+		this.input.on({
+			mousedown: function(e) {
+				self.resetSearch();
+				return true;
+			},
+			keydown: function(e) {
+				if (e.keyCode == 9) { // if TAB
+					if (self.searchResults.length <= 0) {
+						self.resetSearch();
+						self.checkCurrentWord();
+					}
+					self.showAutoComplete();
+					return false;
+				}
+
+				// Cancel the search and continue the keydown
+				self.resetSearch();
+				return true;
+			}
+		});
+
 		return this;
 	};
-	mAutoComplete.prototype.getCaretWord = function(inp){
-		var pre = inp.val().substring(0, inp[0].selectionStart),
-			post = inp.val().substring(inp[0].selectionStart),
-			startCaret = pre.lastIndexOf(" ")+1, 
-			endCaret = post.indexOf(" ");
-		if(startCaret > 0)
+	mAutoComplete.prototype.getBucketId = function(str) {
+		if (str.length == 0)
+			return "";
+
+		return str[0].toLowerCase();
+	};
+	mAutoComplete.prototype.getBucket = function(nick, weight, isemote, ispromoted) {
+		var id = this.getBucketId(nick);
+
+		if(!this.buckets[id])
+			this.buckets[id] = {};
+
+		if (!this.buckets[id][nick])
+			this.buckets[id][nick] = {
+				data: nick,
+				weight: weight,
+				isemote: !!isemote,
+				ispromoted: !!ispromoted
+			};
+
+		return this.buckets[id][nick];
+	};
+	mAutoComplete.prototype.addEmote = function(emote){
+		this.getBucket(emote, 1, true, false);
+
+		return this;
+	};
+	mAutoComplete.prototype.addNick = function(nick) {
+		this.getBucket(nick, 1, false, false);
+
+		return this;
+	};
+	mAutoComplete.prototype.updateNick = function(nick) {
+		var weight = Date.now();
+		var data = this.getBucket(nick, weight, false, false);
+
+		data.weight = weight;
+		return this;
+	};
+	mAutoComplete.prototype.promoteNick = function(nick) {
+		var weight = Date.now();
+		var data = this.getBucket(nick, weight, false, true);
+
+		data.weight = weight;
+		data.ispromoted = true;
+		return this;
+	};
+	mAutoComplete.prototype.getCaretWord = function() {
+		var value      = this.input.val(),
+		    bareinput  = this.input[0],
+		    pre        = value.substring(0, bareinput.selectionStart),
+		    post       = value.substring(bareinput.selectionStart),
+		    startCaret = pre.lastIndexOf(" ") + 1,
+		    endCaret   = post.indexOf(" ");
+
+		if (startCaret > 0)
 			pre = pre.substring(startCaret);
-		if(endCaret > -1)
+
+		if (endCaret > -1)
 			post = post.substring(0, endCaret);
-		return {pre: pre, post: post, word: pre+post, startIndex: startCaret};
+
+		return {
+			pre       : pre,
+			post      : post,
+			word      : pre + post,
+			startIndex: startCaret
+		};
 	};
 	mAutoComplete.prototype.cmp = function(a, b) {
+		// order promoted things first
+		if (a.ispromoted != b.ispromoted)
+			return a.ispromoted && !b.ispromoted? -1: 1;
+
+		// order emotes second
+		if (a.isemote != b.isemote)
+			return a.isemote && !b.isemote? -1: 1;
+
+		// order according to recency third
 		if (a.weight == b.weight) {
-			// if the weight is the same, order lexically
-			var a = a.nick.toLowerCase(),
-			    b = b.nick.toLowerCase();
-			
+			// if the weight is the same, order lexically fourth
+			var a = a.data.toLowerCase(),
+			    b = b.data.toLowerCase();
+
 			if (a == b)
 				return 0;
-			
+
 			return a > b? 1: -1;
 		}
 		return a.weight > b.weight? -1: 1;
 	};
-	mAutoComplete.prototype.search = function(txt, limit){
+	mAutoComplete.prototype.search = function(str, limit) {
+		str = $.trim(str);
 		// escape the text being inserted into the regexp
-		txt = txt.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+		str = str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 		var res  = [],
-		    f    = new RegExp("^"+txt, "i"),
-		    data = this.shards[this.getShardIdByTxt(txt)] || {};
+		    f    = new RegExp("^"+str, "i"),
+		    data = this.buckets[this.getBucketId(str)] || {};
 		
-		$.each(data, function(nick, v) {
+		for (var nick in data) {
+			if (!data.hasOwnProperty(nick))
+				continue;
+
 			if (f.test(nick))
-				res.push(v);
-		});
-		
+				res.push(data[nick]);
+		}
+
 		res.sort(this.cmp);
-		return res;
+		return res.slice(0, limit);
 	};
 	mAutoComplete.prototype.expireUsers = function() {
 		// if the user hasnt spoken in the last 5 minutes, reset the weight
 		// so that emotes can be ordered before the user again
-		var fiveminutesago = (new Date).getTime() - 300000;
-		for (var i in this.shards) {
-			if (!this.shards.hasOwnProperty(i))
+		var fiveminutesago = Date.now() - 300000;
+		for (var i in this.buckets) {
+			if (!this.buckets.hasOwnProperty(i))
 				continue;
 
-			for(var j in this.shards[i]) {
-				if (!this.shards[i].hasOwnProperty(j))
+			for(var j in this.buckets[i]) {
+				if (!this.buckets[i].hasOwnProperty(j))
 					continue;
 
 				// dont touch emotes or already reset users
-				var nick = this.shards[i][j]
-				if (nick.weight > 3000000000000 && nick.weight < fiveminutesago + 3000000000000)
-					nick.weight -= 3000000000000;
-				else if (nick.weight < 3000000000000 && nick.weight < fiveminutesago && nick.weight != 1)
-					nick.weight = 1;
+				var data = this.buckets[i][j];
+				if (data.isemote)
+					continue;
+
+				if (data.weight < fiveminutesago) {
+					data.weight = 1;
+					data.ispromoted = false;
+				}
+
 			};
 		};
 	};
@@ -105,100 +175,59 @@
 		if(!this.lastComplete)
 			return
 
-		var data = this.shards[this.getShardIdByTxt(this.lastComplete)] || {};
-		if (!data[this.lastComplete] || data[this.lastComplete].weight != 3000000000000)
-			this.addData(this.lastComplete, 3000000000000 + (new Date).getTime());
+		var data = this.buckets[this.getBucketId(this.lastComplete)] || {};
+		if (!data[this.lastComplete] || !data[this.lastComplete].isemote)
+			this.promoteNick(this.lastComplete);
 
 		this.lastComplete = null;
 	};
-
-	$.fn.mAutoComplete = function(options){
-		return this.each(function(){
-			
-			var settings = $.extend({
-				minWordLength: 3,
-				maxResults: 5,
-				triggerKeys: [kCodes.TAB]
-			}, options);
-		
-			var results 		= new Array(),
-				resultIndex 	= -1,
-				searchWord		= '',
-				originalTxt 	= '',
-				inp 			= $(this), 
-				autoComplete 	= new mAutoComplete(inp, options);
-				
-			inp.data('mAutoComplete', autoComplete);
-
-			if(!inp[0].setSelectionRange)
-				return this;
-			
-			var resetSearchResults = function(){
-				results = [];
-				resultIndex = -1;
-				searchWord = '';
-				originalTxt = '';
-			};
-			
-			var checkCurrentWord = function(){
-				searchWord = autoComplete.getCaretWord(inp);
-				if(searchWord.word.length < settings.minWordLength) 
-					return;
-				results = autoComplete.search(searchWord.word, settings.maxResults);
-				originalTxt = inp.val();
-			};
-			
-			var showAutoComplete = function(){
-				resultIndex = (resultIndex >= results.length-1) ? 0 : resultIndex+1;
-				var replace = (results[resultIndex] || {}).nick;
-				if(replace){
-					autoComplete.lastComplete = replace; // mark the last used nick
-
-					var pre  = originalTxt.substr(0,searchWord.startIndex),
-					    post = originalTxt.substr(searchWord.startIndex+searchWord.word.length);
-					
-					if(post.substring(0,1) != " " || post.length == 0)
-						post = " " + post;
-
-					// Only change the input value / move the cursor if the search word is different
-					if(replace.toLowerCase() != searchWord.word.toLowerCase()){
-						inp.focus();
-						if(post.substring(0,1) != " " || post.length == 0)
-							replace =  replace + " ";
-						inp.val(pre+replace+post);
-						if(post.trim() == ''){
-							// If the cursor is at the end of the string, refocus input to shift the inputs overflow / focus
-							inp.blur().focus();
-						}else{
-							// If the caret is in the middle of other text, just move the cursor
-							inp[0].setSelectionRange(pre.length+replace.length, pre.length+replace.length);
-						}
-					}
-				}
-			};
-			
-			inp.on({
-				mousedown: function(e){
-					resetSearchResults();
-					return true;
-				},
-				keydown: function(e){
-
-					if($.inArray(e.keyCode, settings.triggerKeys) >= 0){
-						if(results.length <= 0){
-							resetSearchResults();
-							checkCurrentWord();
-						}
-						showAutoComplete();
-						// Always cancel tab? the user is used to not loosing focus
-						return false;
-					}
-
-					// Cancel the search and continue the keydown
-					resetSearchResults();
-					return true;
-				}
-			});
-		});
+	mAutoComplete.prototype.resetSearch = function() {
+		this.origVal       = null;
+		this.searchResults = [];
+		this.searchIndex   = -1;
+		this.searchWord    = null;
 	};
+	mAutoComplete.prototype.checkCurrentWord = function() {
+		this.searchWord = this.getCaretWord();
+		if (this.searchWord.word.length < this.minWordLength)
+			return;
+
+		this.searchResults = this.search(this.searchWord.word, this.maxResults);
+		this.origVal = this.input.val();
+	};
+	mAutoComplete.prototype.showAutoComplete = function() {
+		if (this.searchIndex >= this.searchResults.length - 1)
+			this.searchIndex = 0;
+		else
+			this.searchIndex = this.searchIndex + 1;
+
+		var result = this.searchResults[this.searchIndex];
+		if (!result)
+			return;
+
+		this.lastComplete = result.data;
+		var pre  = this.origVal.substr(0, this.searchWord.startIndex),
+		    post = this.origVal.substr(this.searchWord.startIndex + this.searchWord.word.length);
+
+		if (post[0] != " " || post.length == 0)
+			post = " " + post;
+
+		if (result.data == this.searchWord.word)
+			return;
+
+		var replace = result.data;
+		this.input.focus();
+		if (post[0] != " " || post.length == 0)
+			replace = replace + " ";
+
+		this.input.val(pre + replace + post);
+
+		// If the cursor is at the end of the string, refocus input to shift the inputs overflow / focus
+		if (post.trim() == "")
+			this.input.blur().focus();
+		else // If the caret is in the middle of other text, just move the cursor
+			this.input[0].setSelectionRange(pre.length + replace.length, pre.length + replace.length);
+
+	};
+
 })();

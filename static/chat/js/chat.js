@@ -176,7 +176,7 @@ chat.prototype.onNAMES = function(data) {
 		var u = data.users[i];
 		this.users[u.nick] = new ChatUser(u);
 		if (!this.shouldIgnore(u.nick, ""))
-			this.gui.autoCompletePlugin.addData(u.nick, 1);
+			this.gui.autoCompletePlugin.addNick(u.nick);
 	};
 	
 	this.gui.trigger('names', data);
@@ -186,7 +186,7 @@ chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
 
 	if (!this.shouldIgnore(data.nick, ""))
-		this.gui.autoCompletePlugin.addDataIfNotExists(data.nick, 1);
+		this.gui.autoCompletePlugin.addNick(data.nick);
 
 	this.gui.trigger('join', data);
 };
@@ -223,7 +223,7 @@ chat.prototype.onPRIVMSG = function (data) {
 	if (this.shouldIgnore(data.nick, data.data))
 		return;
 
-	this.gui.autoCompletePlugin.addData(user.username, (new Date).getTime());
+	this.gui.autoCompletePlugin.updateNick(user.username);
 	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
 };
 chat.prototype.onMSG = function(data) {
@@ -272,7 +272,7 @@ chat.prototype.onMSG = function(data) {
 			if (user.nick == this.user.nick)
 				this.user = user;
 		} else
-			this.gui.autoCompletePlugin.addData(data.nick, (new Date).getTime());
+			this.gui.autoCompletePlugin.updateNick(data.nick);
 		
 		if (user && user.features.length != data.features.length)
 			this.users[data.nick] = user;

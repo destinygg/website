@@ -93,14 +93,11 @@
             };
             
             // Auto complete
-            this.autoCompletePlugin = this.input.mAutoComplete({
-                minWordLength: 2,
-                maxResults: 10
-            }).data('mAutoComplete');
+            this.autoCompletePlugin = new mAutoComplete(this.input);
             
             for (var i = this.emoticons.length - 1; i >= 0; i--) {
                 // let the emotes have more weight than users by default
-                this.autoCompletePlugin.addData(this.emoticons[i], 3000000000000);
+                this.autoCompletePlugin.addEmote(this.emoticons[i]);
             };
             
             // Chat settings
