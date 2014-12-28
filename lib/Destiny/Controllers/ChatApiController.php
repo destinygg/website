@@ -84,7 +84,7 @@ class ChatApiController {
             if(empty($targetuser))
                 throw new Exception ('notfound');
                 
-            $canSend = $privateMessageService->canSend( $credentials, $targetuserid );
+            $canSend = $privateMessageService->canSend( $credentials, $params['targetuserid'] );
             if (! $canSend) {
                 throw new Exception ("throttled");
             }
