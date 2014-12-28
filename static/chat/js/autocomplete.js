@@ -78,7 +78,10 @@
 	};
 	mAutoComplete.prototype.promoteNick = function(nick) {
 		var weight = Date.now();
-		var data = this.getBucket(nick, weight, false, true);
+		var data = this.getBucket(nick, weight, false, false);
+
+		if (data.isemote)
+			return this;
 
 		data.weight = weight;
 		data.ispromoted = true;
@@ -115,22 +118,21 @@
 			return a.isemote && !b.isemote? -1: 1;
 
 		// order according to recency third
-		if (a.weight == b.weight) {
-			// if the weight is the same, order lexically fourth
-			var a = a.data.toLowerCase(),
-			    b = b.data.toLowerCase();
+		if (a.weight != b.weight)
+			return a.weight > b.weight? -1: 1;
 
-			if (a == b)
-				return 0;
+		// order lexically fourth
+		var a = a.data.toLowerCase(),
+		    b = b.data.toLowerCase();
 
-			return a > b? 1: -1;
-		}
-		return a.weight > b.weight? -1: 1;
+		if (a == b)
+			return 0;
+
+		return a > b? 1: -1;
 	};
 	mAutoComplete.prototype.search = function(str, limit) {
-		str = $.trim(str);
 		// escape the text being inserted into the regexp
-		str = str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+		str = str.trim().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 		var res  = [],
 		    f    = new RegExp("^"+str, "i"),
 		    data = this.buckets[this.getBucketId(str)] || {};
@@ -158,16 +160,12 @@
 				if (!this.buckets[i].hasOwnProperty(j))
 					continue;
 
-				// dont touch emotes or already reset users
 				var data = this.buckets[i][j];
-				if (data.isemote)
+				if (data.isemote || data.weight > fiveminutesago)
 					continue;
 
-				if (data.weight < fiveminutesago) {
-					data.weight = 1;
-					data.ispromoted = false;
-				}
-
+				data.weight = 1;
+				data.ispromoted = false;
 			};
 		};
 	};
@@ -176,9 +174,10 @@
 			return
 
 		var data = this.buckets[this.getBucketId(this.lastComplete)] || {};
-		if (!data[this.lastComplete] || !data[this.lastComplete].isemote)
-			this.promoteNick(this.lastComplete);
+		if (!data[this.lastComplete] || data[this.lastComplete].isemote)
+			return this.lastComplete = null;
 
+		this.promoteNick(this.lastComplete);
 		this.lastComplete = null;
 	};
 	mAutoComplete.prototype.resetSearch = function() {
@@ -209,6 +208,8 @@
 		var pre  = this.origVal.substr(0, this.searchWord.startIndex),
 		    post = this.origVal.substr(this.searchWord.startIndex + this.searchWord.word.length);
 
+		// always add a space after our completion if there isn't one since people
+		// would add one anyway
 		if (post[0] != " " || post.length == 0)
 			post = " " + post;
 
@@ -217,9 +218,6 @@
 
 		var replace = result.data;
 		this.input.focus();
-		if (post[0] != " " || post.length == 0)
-			replace = replace + " ";
-
 		this.input.val(pre + replace + post);
 
 		// If the cursor is at the end of the string, refocus input to shift the inputs overflow / focus
