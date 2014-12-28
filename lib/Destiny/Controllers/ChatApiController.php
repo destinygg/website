@@ -34,6 +34,32 @@ class ChatApiController {
     }
 
     /**
+     * @Route ("/api/messages/unreadcount")
+     *
+     * @param array $params
+     * @return Response
+     */
+    public function unreadCount(array $params) {
+
+        $userId = Session::getCredentials ()->getUserId ();
+        $response = array(
+            'success' => false,
+        );
+
+        if ($userId) {
+            $privateMessageService   = PrivateMessageService::instance();
+            $response['success']     = true;
+            $response['unreadcount'] =
+                (int) $privateMessageService->getUnreadMessageCount( $userId )
+            ;
+        }
+
+        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
+        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+        return $response;
+    }
+
+    /**
      * @Route ("/api/messages/send")
      * @HttpMethod ({"POST"})
      *
