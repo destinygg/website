@@ -373,6 +373,17 @@ class PrivateMessageService extends Service {
         return $recipients;
     }
 
+    public function markAllMessagesRead($targetuserid) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            UPDATE privatemessages
+            SET isread = 1
+            WHERE targetuserid = :targetuserid
+        ");
+        $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
     public function markMessagesRead($targetuserid, $fromuserid) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("

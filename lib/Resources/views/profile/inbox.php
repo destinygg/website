@@ -26,6 +26,7 @@ use Destiny\Commerce\SubscriptionStatus;
 
         <section class="container collapsible active">
             <button accesskey="n" class="btn btn-default btn-primary" data-toggle="modal" data-target="#compose">New Message</button>
+            <a class="btn btn-default pull-right" href="/profile/messages/openall">Mark All Read</a>
         </section>
       
         <section class="container collapsible active">

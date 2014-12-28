@@ -151,6 +151,20 @@ class PrivateMessageController {
     }
 
     /**
+     * @Route ("/profile/messages/openall")
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return Response
+     */
+    public function openAll(array $params) {
+        $privateMessageService = PrivateMessageService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
+        $privateMessageService->markAllMessagesRead( $userId );
+        return 'redirect: /profile/messages';
+    }
+
+    /**
      * @Route ("/profile/messages/{id}/open")
      * @Secure ({"USER"})
      *
@@ -211,4 +225,5 @@ class PrivateMessageController {
         $viewModel->title = 'Message';
         return 'profile/message';
     }
+
 }
