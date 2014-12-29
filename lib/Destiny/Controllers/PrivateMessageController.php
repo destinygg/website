@@ -212,12 +212,13 @@ class PrivateMessageController {
         $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['id'], 0, 1000 );
         // mark messages that are meant for me as read, not the other way around
         $privateMessageService->markMessagesRead( $userId, $params['id'] );
-        foreach($messages as $message) {
-            if ($message['userid'] == $params['id'])
-                break;
-        }
+        $message = reset($messages);
+        if ($message['userid'] == $params['id'])
+            $targetUsername = $message['from'];
+        else
+            $targetUsername = $message['to'];
 
-        $viewModel->message = $message;
+        $viewModel->targetUsername = $targetUsername;
         $viewModel->messages = $messages;
         $viewModel->username = $username;
         $viewModel->userId = $userId;

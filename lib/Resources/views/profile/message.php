@@ -27,7 +27,7 @@ use Destiny\Common\Config;
         
         <section class="container message-list active">
 
-            <h4 class="message-list-title">Messages between you and <?= Tpl::out($model->message['from']) ?></h4>
+            <h4 class="message-list-title">Messages between you and <?= Tpl::out($model->targetUsername) ?></h4>
 
             <?php for($i=count($model->messages)-1; $i>=0; $i--): ?>
             <?php

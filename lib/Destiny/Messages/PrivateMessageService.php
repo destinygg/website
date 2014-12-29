@@ -303,16 +303,20 @@ class PrivateMessageService extends Service {
         $stmt = $conn->prepare('
             SELECT
                 p.*,
-                from.username `from`
+                from.username `from`,
+                target.username `to`
             FROM privatemessages p
-            LEFT JOIN `dfl_users` `from` ON (
+            LEFT JOIN `dfl_users` AS `from` ON (
                 from.userId = p.userid
+            )
+            LEFT JOIN `dfl_users` AS `target` ON (
+                target.userId = p.targetuserid
             )
             WHERE
                 p.userid IN(:userId, :targetUserId) AND
                 p.targetuserid IN(:userId, :targetUserId)
             ORDER BY p.id DESC
-            LIMIT :start,:limit
+            LIMIT :start, :limit
         ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->bindValue('targetUserId', $targetUserId, \PDO::PARAM_INT);
