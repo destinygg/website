@@ -9,7 +9,7 @@ $word = $words [array_rand ( $words, 1 )];
 <head>
 <title>Error - Destiny</title>
 <meta charset="utf-8">
-<link href="<?=Config::cdn()?>/errors/css/style.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/errors/css/style.min.css" rel="stylesheet" media="screen">
 <link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
