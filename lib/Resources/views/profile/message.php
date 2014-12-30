@@ -27,7 +27,7 @@ use Destiny\Common\Config;
         
         <section class="container message-list active">
 
-            <h4 class="message-list-title">Messages between you and <?= Tpl::out($model->message['from']) ?></h4>
+            <h4 class="message-list-title">Messages between you and <?= Tpl::out($model->targetuser['username']) ?></h4>
 
             <?php for($i=count($model->messages)-1; $i>=0; $i--): ?>
             <?php
@@ -62,7 +62,7 @@ use Destiny\Common\Config;
             <div class="message-reply content content-dark clearfix" style="">
                 <div class="clearfix">
                     <span class="pull-left">
-                        <a accesskey="r" id="reply-toggle" href="#reply" data-replyto="<?= $model->replyto ?>" data-toggle="modal" data-target="#compose"><i class="fa fa-reply-all"></i> Reply</a>
+                        <a accesskey="r" id="reply-toggle" href="#reply" data-replyto="<?= Tpl::out($model->targetuser['username']) ?>" data-toggle="modal" data-target="#compose"><i class="fa fa-reply-all"></i> Reply</a>
                         to this message or go to <a accesskey="m" href="/profile/messages">inbox</a>.
                     </span>
                 </div>

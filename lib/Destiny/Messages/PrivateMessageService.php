@@ -27,6 +27,13 @@ class PrivateMessageService extends Service {
         return parent::instance ();
     }
 
+    /**
+     * Check if a user is allowed to send a message based on various criteria
+     *
+     * @param SessionCredentials $user
+     * @param int $targetuserid
+     * @return boolean
+     */
     public function canSend($user, $targetuserid) {
         if ($user->hasRole(UserRole::ADMIN))
             return true;
@@ -97,6 +104,12 @@ class PrivateMessageService extends Service {
         return $cansend;
     }
     
+    /**
+     * Get the total number of unread messages
+     *
+     * @param int $targetuserid
+     * @return int
+     */
     public function getUnreadMessageCount($targetuserid) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
@@ -323,56 +336,12 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Removes null | empty values, lowercases all usernames and removes the current username from the list.
+     * Mark all messages from $formuserid to $targetuserid
      *
-     * @throws Exception
-     * @return array
+     * @param int $targetuserid
+     * @param int $fromuserid
+     * @return void
      */
-    public function prepareRecipients(array $recipients){
-        $userService = UserService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-
-        $recipients = array_unique(array_map('strtolower', $recipients));
-        if(empty($recipients)){
-            throw new Exception('Invalid recipients list');
-        }
-
-        $ids = $userService->getUserIdsByUsernames($recipients);
-        if(Session::hasRole(UserRole::ADMIN)){
-            foreach ($recipients as $recipient) {
-                switch ($recipient) {
-                    case 't1 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(1);
-                        break;
-
-                    case 't2 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(2);
-                        break;
-
-                    case 't3 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(3);
-                        break;
-
-                    case 't4 subscribers':
-                        $ids += $userService->getUserIdsBySubscriptionTier(4);
-                        break;
-                }
-            }
-        }
-
-        if(count($ids) == 1 && $ids[0] == $userId){
-            throw new Exception('Cannot send a message to yourself only.');
-        }
-
-        $recipients = array_diff($ids, array($userId));
-
-        if(empty($recipients)){
-            throw new Exception('Invalid recipient value(s)');
-        }
-
-        return $recipients;
-    }
-
     public function markMessagesRead($targetuserid, $fromuserid) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
@@ -387,6 +356,13 @@ class PrivateMessageService extends Service {
         $stmt->execute();
     }
 
+    /**
+     * Mark a specific message as read
+     *
+     * @param int $messageid
+     * @param int $targetuserid
+     * @return boolean $success
+     */
     public function markMessageRead($messageid, $targetuserid) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
@@ -400,7 +376,77 @@ class PrivateMessageService extends Service {
         $stmt->bindValue('messageid', $messageid, \PDO::PARAM_INT);
         $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
         $stmt->execute();
-
         return (bool) $stmt->rowCount();
     }
+
+    /**
+     * Send a batch message to all recipients, returns the sent messages as the result
+     * intended for use by ADMINS only.
+     *
+     * @param int $userId
+     * @param string $message
+     * @param array $recipients
+     *              A list of usernames and groups
+     * @return int affected rows
+     */
+    public function batchAddMessage($userId, $message, array $recipients){
+
+        $groups = array();
+        foreach ($recipients as $recipient) {
+            switch ($recipient) {
+                case 't1 subscribers':
+                    $groups[] = 1;
+                    break;
+                case 't2 subscribers':
+                    $groups[] = 2;
+                    break;
+                case 't3 subscribers':
+                    $groups[] = 3;
+                    break;
+                case 't4 subscribers':
+                    $groups[] = 4;
+                    break;
+            }
+        }
+
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->executeQuery("
+            INSERT INTO privatemessages
+            SELECT 
+                NULL id, 
+                ? `userid`, 
+                u.userid `targetuserid`, 
+                ? `message`, 
+                NOW() `timestamp`, 
+                0 `isread`
+            FROM dfl_users u
+            LEFT JOIN dfl_users_subscriptions s ON (s.userId = u.userId AND s.status = 'Active')
+            WHERE u.username IN (?) OR s.subscriptionTier IN (?)
+            GROUP BY u.userId
+        ", 
+            array($userId, $message, $recipients, $groups), 
+            array(\PDO::PARAM_INT, \PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+        );
+        $rowCount = $stmt->rowCount();
+        $stmt = $conn->prepare("
+            SELECT 
+                p.id `messageid`,
+                p.message,
+                from.username `username`,
+                p.userid,
+                to.username `targetusername`,
+                p.targetuserid
+            FROM privatemessages p
+            LEFT JOIN dfl_users `from` ON (from.userid = p.userid)
+            LEFT JOIN dfl_users `to` ON (to.userId = p.targetuserid)
+            WHERE from.userId = :userid
+            ORDER BY p.id DESC
+            LIMIT 0,:limit
+        ");
+        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('limit', $rowCount, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
 }

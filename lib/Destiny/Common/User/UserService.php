@@ -735,29 +735,6 @@ class UserService extends Service {
   }
 
   /**
-   * Get a list of users id for a specific tier
-   *
-   * @param int $tier
-   * @return array
-   */
-  public function getUserIdsBySubscriptionTier($tier) {
-    $conn = Application::instance ()->getConnection ();
-    $stmt = $conn->prepare("
-      SELECT u.userId FROM `dfl_users` u
-      LEFT JOIN `dfl_users_subscriptions` s USING (userId)
-      WHERE s.subscriptionTier = :subscriptionTier AND s.status = 'Active'
-    ");
-    $stmt->bindValue ( 'subscriptionTier', $tier, \PDO::PARAM_INT );
-    $stmt->execute();
-    $ids = array();
-    $result = $stmt->fetchAll();
-    foreach($result as $item) {
-      $ids[] = $item['userId'];
-    }    
-    return $ids;
-  }
-
-  /**
    * Get a list of user ids from a list of usernames
    *
    * @param array $usernames

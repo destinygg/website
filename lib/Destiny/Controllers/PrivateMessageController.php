@@ -52,72 +52,61 @@ class PrivateMessageController {
      * Expects the following GET|POST variables:
      *     message=string
      *     recipients[]=username|group
-     *     replyto=message.id [Optional, if set, recipients are ignored]
      *
      * @param array $params
      * @return Response
      */
     public function sendMessage(array $params) {
-        $user = Session::getCredentials ();
-        $userId = $user->getUserId ();
         $privateMessageService = PrivateMessageService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
         $userService = UserService::instance();
         $response = array('success' => false, 'message' => '');
-        $isReply = (isset($params['replyto']) && !empty($params['replyto']));
 
         try {
 
+            FilterParams::required($params, 'message');
+            FilterParams::isarray($params, 'recipients');
+
+            $sessionCredentials = Session::getCredentials ();
+            $userId = $sessionCredentials->getUserId ();
+            $username = strtolower($sessionCredentials->getUsername());
+            $user = $userService->getUserById ( $userId );
+            $recipients = array_unique(array_map('strtolower', $params['recipients']));
+
+            if(empty($recipients))
+                throw new Exception('Invalid recipients list');
+
+            if(count($recipients) === 1 && $recipients[0] == $username)
+                throw new Exception('Cannot send messages to yourself.');
+
+            // Remove the user if its in the list
+            $recipients = array_diff($recipients, array($username));
+
             $ban = $userService->getUserActiveBan ( $userId );
-            if (! empty ( $ban )) {
+            if (!empty($ban))
                 throw new Exception ("You cannot send messages while you are banned.");
-            }
 
             $oldEnough = $userService->isUserOldEnough ( $userId );
-            if (! $oldEnough) {
+            if (!$oldEnough)
                 throw new Exception ("Your account is not old enough to send messages.");
-            }
 
-            FilterParams::required($params, 'message');
+            // Because batch sending makes it difficult to run checks on each recipient
+            // we only use the batch sending for admins e.g. sending to tiers etc.
+            if(Session::hasRole(UserRole::ADMIN)){
 
-            if($isReply){
-
-                $replymessage = $privateMessageService->getMessageByIdAndTargetUserIdOrUserId( $params['replyto'], $userId );
-                if(empty($replymessage)){
-                    throw new Exception('Invalid reply to message');
-                }
-                
-                $message = array(
-                    'message' => $params['message'],
-                    'isread' => 0
-                );
-                
-                if($userId == $replymessage['userid']){
-                    $message['userid'] = $replymessage['userid'];
-                    $message['targetuserid'] = $replymessage['targetuserid'];
-                }else{
-                    $message['userid'] = $replymessage['targetuserid'];
-                    $message['targetuserid'] = $replymessage['userid'];
-                }
-                
-                $canSend = $privateMessageService->canSend( $user, $message['targetuserid'] );
-                if (! $canSend) {
-                    throw new Exception ("You have sent too many messages, throttled.");
-                }
-
-                $user = $userService->getUserById ( $message['userid'] );
-                $targetuser = $userService->getUserById ( $message['targetuserid'] );
-
-                $message['id'] = $privateMessageService->addMessage($message);
-                $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
+                $messages = $privateMessageService->batchAddMessage( $userId, $params['message'], $params['recipients'] );
+                $chatIntegrationService->publishPrivateMessages($messages);
 
             }else{
 
+                $recipients = $userService->getUserIdsByUsernames( $params['recipients'] );
 
-                FilterParams::isarray($params, 'recipients');
-                $recipients = $privateMessageService->prepareRecipients( $params['recipients'] );
+                if(empty($recipients))
+                    throw new Exception('Invalid recipient value(s)');
 
-                $user = $userService->getUserById ( $userId );
+                if(count($recipients) > 20)
+                    throw new Exception('You may only send to maximum 20 users.');
+
                 $credentials = new SessionCredentials ( $user );
                 foreach ($recipients as $recipientId) {
                     $canSend = $privateMessageService->canSend( $credentials, $recipientId );
@@ -132,15 +121,21 @@ class PrivateMessageController {
                         'isread' => 0
                     );
                     $message['id'] = $privateMessageService->addMessage( $message );
-                    $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
+                    $chatIntegrationService->publishPrivateMessage(array(
+                        'messageid' => $message['id'],
+                        'message' => $message['message'],
+                        'username' => $username,
+                        'userid' => $userId,
+                        'targetusername' => $targetuser['username'],
+                        'targetuserid' => $targetuser['userId']
+                    ));
                 }
-                
             }
 
             $response['message'] = 'Message sent';
             $response['success'] = true;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
         }
@@ -170,7 +165,7 @@ class PrivateMessageController {
             if(!$privateMessageService->markMessageRead( $params['id'], $userId ))
                 throw new Exception('Invalid message');
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $response['success'] = false;
             $response['message'] = $e->getMessage();
         }
@@ -181,7 +176,7 @@ class PrivateMessageController {
     }
 
     /**
-     * @Route ("/profile/messages/{id}")
+     * @Route ("/profile/messages/{targetuserid}")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      *
@@ -189,25 +184,25 @@ class PrivateMessageController {
      * @return Response
      */
     public function message(array $params, ViewModel $viewModel) {
-        FilterParams::required($params, 'id');
+        FilterParams::required($params, 'targetuserid');
 
         $privateMessageService = PrivateMessageService::instance();
+        $userService = UserService::instance();
+
         $userId = Session::getCredentials ()->getUserId ();
         $username = Session::getCredentials ()->getUsername ();
 
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['id'], 0, 1000 );
-        // mark messages that are meant for me as read, not the other way around
-        $privateMessageService->markMessagesRead( $userId, $params['id'] );
-        foreach($messages as $message) {
-            if ($message['userid'] == $params['id'])
-                break;
-        }
+        $targetuser = $userService->getUserById($params['targetuserid']);
+        if(empty($targetuser))
+            throw new Exception('Invalid user');
 
-        $viewModel->message = $message;
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['targetuserid'], 0, 1000 );
+        $privateMessageService->markMessagesRead( $userId, $params['targetuserid'] );
+
+        $viewModel->targetuser = $targetuser;
         $viewModel->messages = $messages;
         $viewModel->username = $username;
         $viewModel->userId = $userId;
-        $viewModel->replyto = $message['id'];
         $viewModel->title = 'Message';
         return 'profile/message';
     }

@@ -12,7 +12,6 @@ use Destiny\Common\Utils\Tpl;
                 <h4 class="modal-title" id="composeLabel">New message</h4>
             </div>
             <div id="compose-form">
-                <input id="compose-replyto" type="hidden" value="" />
                 <div class="modal-recipients">
                     <div class="modal-user-groups" class="clearfix">
                         <?php if(Session::hasRole(UserRole::ADMIN)): ?>

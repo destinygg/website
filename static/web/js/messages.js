@@ -9,7 +9,6 @@ $(function(){
             $pagealrt = $('#alerts-container'),
             $message = $form.find('textarea#compose-message'),
             $recipients = $form.find('input#compose-recipients'),
-            $replyto = $form.find('input#compose-replyto'),
             $recipientscont = $form.find('.modal-recipients .recipient-container'),
             $submitbtn = $form.find('button#modal-send-btn'),
             $clsbtn = $form.find('button#modal-close-btn'),
@@ -27,16 +26,15 @@ $(function(){
         var resetForm = function (){
             $message.val('');
             $recipients.val('');
-            $modalmsg.hide();
             $recipientscont.empty();
+            $modalmsg.hide();
             enableMessageForm();
         };
 
         var isValidMessageForm = function (){
             var message = $message.val(),
-                replyto = $replyto.val(),
                 recipients = getRecipientLabels();
-            if(recipients.length == 0 && replyto == ''){
+            if(recipients.length == 0){
                 return false;
             }
             if(message.trim() == '' || message.trim().length > 500){
@@ -48,10 +46,9 @@ $(function(){
         var sendMessage = function (){
 
             var message = $message.val(),
-                replyto = $replyto.val(),
                 recipients = getRecipientLabels();
 
-            if(recipients.length == 0 && replyto == ''){
+            if(recipients.length == 0){
                 $modalmsg.show().html('<span class="text-danger">Recipients required</span>');
                 return;
             }
@@ -75,8 +72,7 @@ $(function(){
                 url: '/profile/messages/send',
                 data: {
                     'recipients' : recipients,
-                    'message' : message,
-                    'replyto' : replyto
+                    'message' : message
                 },
                 success: function(data){
                     saveStateOnClose = false;
@@ -192,6 +188,31 @@ $(function(){
         $usergroups.on('click', '.groups a', function(){
             addRecipientLabel( $(this).text(), 'group' );
         });
+
+        var msgmodal = $('#compose');
+
+        $('.message-list').on('click', '.message-header,.message-summary', function(){
+            $(this).closest('.message').toggleClass('message-active message-hidden');
+        });
+
+        $('.message-reply').on('click', '#reply-toggle', function(){
+            msgmodal.unbind('shown.bs.modal').on('shown.bs.modal', function(){
+                $(this).find('textarea').focus();
+            });
+            msgmodal.find('#composeLabel').text('Reply ...');
+            msgmodal.find('.modal-recipients,.modal-settings,.modal-user-groups').hide();
+
+            $recipients.val('');
+            $recipientscont.empty();
+            addRecipientLabel( $(this).data('replyto') );
+        });
+
+        $('.message-list').each(function(){
+            var showFullMessage = function(){
+                $(this).closest('.message').addClass('message-active').removeClass('message-hidden');
+            };
+            $(this).on('click', '.message-summary', showFullMessage);
+        });
         
     });
 
@@ -250,31 +271,6 @@ $(function(){
 
 });
 
-// Message
-$(function(){
-    var msgmodal = $('#compose');
-
-    $('.message-list').on('click', '.message-header,.message-summary', function(){
-        $(this).closest('.message').toggleClass('message-active message-hidden');
-    });
-
-    $('.message-reply').on('click', '#reply-toggle', function(){
-        msgmodal.unbind('shown.bs.modal').on('shown.bs.modal', function(){
-            $(this).find('textarea').focus();
-        });
-        msgmodal.find('#composeLabel').text('Reply ...');
-        msgmodal.find('.modal-recipients,.modal-settings,.modal-user-groups').hide();
-        msgmodal.find('input#compose-replyto').val($(this).data('replyto'));
-    });
-
-    $('.message-list').each(function(){
-        var showFullMessage = function(){
-            $(this).closest('.message').addClass('message-active').removeClass('message-hidden');
-        };
-        $(this).on('click', '.message-summary', showFullMessage);
-    });
-});
-
 // message
 $(function(){
     var showmax = 10, 
@@ -292,8 +288,10 @@ $(function(){
         e.preventDefault();
     });
     $(window).on('load', function(){
-        var lastelement = $('.message-reply'),
-            offset = lastelement.offset().top + lastelement.outerHeight(true) - $(window).height();
-        $('html,body').animate({scrollTop:offset},5);
+        $('.message-reply').each(function(){
+            var lastelement = $(this),
+                offset = lastelement.offset().top + lastelement.outerHeight(true) - $(window).height();
+            $('html,body').animate({scrollTop:offset},5);
+        });
     });
 });

@@ -163,23 +163,39 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Publish to the private message channel
+     * Publish the message to the redis channel
      *
-     * @param array $message
-     * @param array $user
-     * @param array $targetuser
+     * @param array $data
      * @throws Exception
      */
-    public function publishPrivateMessage(array $message, array $user, array $targetuser) {
+    public function publishPrivateMessage(array $data) {
         $data = array(
-            'messageid' => $message['id'],
-            'message' => $message['message'],
-            'username' => $user['username'],
-            'userid' => $user['userId'],
-            'targetusername' => $targetuser['username'],
-            'targetuserid' => $targetuser['userId']
+            'messageid' => $data['messageid'],
+            'message' => $data['message'],
+            'username' => $data['username'],
+            'userid' => $data['userid'],
+            'targetusername' => $data['targetusername'],
+            'targetuserid' => $data['targetuserid']
         );
         $redis = Application::instance ()->getRedis ();
         return $redis->publish ( sprintf ( 'privmsg-%s', Config::$a ['redis'] ['database'] ), json_encode($data) );
+    }
+
+    /**
+     * Publishes multiple messages to the redis channel
+     *
+     * @param array $data
+     * @throws Exception
+     */
+    public function publishPrivateMessages(array $data){
+        $redis = Application::instance ()->getRedis ();
+        $chunked = array_chunk($data, 100);
+        foreach ($chunked as $chunk) {
+            $redis->multi();
+            foreach ($chunk as $msgdata) {
+                $this->publishPrivateMessage( $msgdata );
+            }
+            $redis->exec();
+        }
     }
 }

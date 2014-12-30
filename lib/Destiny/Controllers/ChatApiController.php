@@ -47,7 +47,6 @@ class ChatApiController {
      * @return Response
      */
     public function sendMessage(array $params) {
-
         $privateMessageService = PrivateMessageService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
         $userService = UserService::instance();
@@ -56,25 +55,23 @@ class ChatApiController {
         try {
 
             FilterParams::required($params, 'privatekey');
-            $this->checkPrivateKey($params['privatekey']);
-
             FilterParams::required($params, 'message');
             FilterParams::required($params, 'userid');
             FilterParams::required($params, 'targetuserid');
 
-            if($params['userid'] == $params['targetuserid']){
+            if(! $this->checkPrivateKey($params['privatekey']))
+                throw new Exception ('Invalid shared private key.');
+
+            if($params['userid'] == $params['targetuserid'])
                 throw new Exception ('Cannot send messages to yourself.');
-            }
 
             $ban = $userService->getUserActiveBan ( $params['userid'] );
-            if (! empty ( $ban )) {
+            if (! empty ( $ban ))
                 throw new Exception ("privmsgbanned");
-            }
 
             $oldEnough = $userService->isUserOldEnough ( $params['userid'] );
-            if (! $oldEnough) {
+            if (! $oldEnough)
                 throw new Exception ("privmsgaccounttooyoung");
-            }
 
             $user = $userService->getUserById ( $params['userid'] );
             $credentials = new SessionCredentials ( $user );
@@ -85,11 +82,8 @@ class ChatApiController {
                 throw new Exception ('notfound');
                 
             $canSend = $privateMessageService->canSend( $credentials, $targetuserid );
-            if (! $canSend) {
+            if (! $canSend)
                 throw new Exception ("throttled");
-            }
-
-            $user = $userService->getUserById ( $params['userid'] );
 
             if(empty($user))
                 throw new Exception ('notfound');
@@ -102,7 +96,14 @@ class ChatApiController {
             );
 
             $message['id'] = $privateMessageService->addMessage( $message );
-            $chatIntegrationService->publishPrivateMessage( $message, $user, $targetuser );
+            $chatIntegrationService->publishPrivateMessage(array(
+                'id' => $message['id'],
+                'message' => $message['message'],
+                'username' => $user['username'],
+                'userid' => $user['userId'],
+                'targetusername' => $targetuser['username'],
+                'targetuserid' => $targetuser['userId']
+            ));
             $response = new Response ( Http::STATUS_NO_CONTENT );
 
         } catch (Exception $e) {
