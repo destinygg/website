@@ -277,3 +277,12 @@ table#inbox td.from a {
     padding:0; 
     font-weight: normal;
 }
+.icon-message-read, .icon-message-unread {
+    margin: 2px 0 0 10px;
+}
+.icon-message-read {
+    color: #158943;
+}
+.icon-message-unread {
+    color: #494949;
+}

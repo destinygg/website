@@ -200,6 +200,10 @@
             });
             this.privatemessagelist.visible = false;
             chat.setUnreadMessageCount(this.unreadMessageCount);
+            $(document).on('privmsg-update', function() {
+                this.unreadMessageCount = parseInt(localStorage['unreadMessageCount'] || 0, 10);
+                chat.setUnreadMessageCount(this.unreadMessageCount);
+            });
 
             // User list
             this.userslist = this.ui.find('#chat-user-list:first').eq(0);

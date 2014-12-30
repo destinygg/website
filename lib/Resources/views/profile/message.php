@@ -12,8 +12,8 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 
-<link href="<?=Config::cdn()?>/web/css/messages.min.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/web/css/messages.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 
 </head>
 <body id="message" class="profile">
@@ -44,6 +44,11 @@ use Destiny\Common\Config;
                         <div class="message-from pull-left">
                             <span alt="<?= Tpl::out($msg['from']) ?>"><?= (!$isme) ? Tpl::out($msg['from']) : 'Me' ?></span>
                         </div>
+                        <?php if ($isme and $msg['isread']): ?>
+                            <div class="icon-message-read pull-left glyphicon glyphicon-ok-circle" title="Your message has been marked as read"></div>
+                        <?php elseif ($isme and !$msg['isread']): ?>
+                            <div class="icon-message-unread pull-left glyphicon glyphicon-question-sign" title="Your message has not yet been read"></div>
+                        <?php endif; ?>
                         <div class="message-date pull-right"><?= Tpl::calendar(Date::getDateTime($msg['timestamp']), Date::FORMAT); ?></div>
                     </div>
                     <div class="message-txt"><?= Tpl::formatTextForDisplay($msg['message']) ?></div>

@@ -316,16 +316,20 @@ class PrivateMessageService extends Service {
         $stmt = $conn->prepare('
             SELECT
                 p.*,
-                from.username `from`
+                from.username `from`,
+                target.username `to`
             FROM privatemessages p
-            LEFT JOIN `dfl_users` `from` ON (
+            LEFT JOIN `dfl_users` AS `from` ON (
                 from.userId = p.userid
+            )
+            LEFT JOIN `dfl_users` AS `target` ON (
+                target.userId = p.targetuserid
             )
             WHERE
                 p.userid IN(:userId, :targetUserId) AND
                 p.targetuserid IN(:userId, :targetUserId)
             ORDER BY p.id DESC
-            LIMIT :start,:limit
+            LIMIT :start, :limit
         ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->bindValue('targetUserId', $targetUserId, \PDO::PARAM_INT);
@@ -342,6 +346,17 @@ class PrivateMessageService extends Service {
      * @param int $fromuserid
      * @return void
      */
+    public function markAllMessagesRead($targetuserid) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            UPDATE privatemessages
+            SET isread = 1
+            WHERE targetuserid = :targetuserid
+        ");
+        $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
     public function markMessagesRead($targetuserid, $fromuserid) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("

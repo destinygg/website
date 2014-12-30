@@ -14,7 +14,7 @@ use Destiny\Commerce\SubscriptionStatus;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 <link href="<?=Config::cdnv()?>/web/css/messages.min.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
 <body id="messages" class="profile">
     <div id="page-wrap">
@@ -26,6 +26,7 @@ use Destiny\Commerce\SubscriptionStatus;
 
         <section class="container collapsible active">
             <button accesskey="n" class="btn btn-default btn-primary" data-toggle="modal" data-target="#compose">New Message</button>
+            <a class="btn btn-default pull-right" href="/profile/messages/openall">Mark All Read</a>
         </section>
       
         <section class="container collapsible active">

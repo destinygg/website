@@ -428,6 +428,32 @@ $(function(){
     }, 10*60*1000);
 })();
 
+//Query the unread message count
+(function(){
+    if (!localStorage)
+        return;
+
+    window.setInterval(function(){
+        $.ajax({
+            url: '/api/messages/unreadcount',
+            method: 'get',
+            cache: false,
+            dataType: 'json',
+            success: function(data) {
+                if (!data || !data.success)
+                    return;
+
+                var count = parseInt(localStorage['unreadMessageCount'] || "0", 10);
+                if (count == data.unreadcount)
+                    return;
+
+                localStorage['unreadMessageCount'] = data.unreadcount;
+                $(document).trigger('privmsg-update');
+            }
+        });
+    }, 10*60*1000);
+})();
+
 //Remember dismissed permanent alert boxes
 (function() {
     
