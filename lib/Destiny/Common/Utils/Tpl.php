@@ -63,14 +63,35 @@ class Tpl {
         return sprintf ( '<time title="%s" data-moment="true" data-moment-calendar="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
     }
 
-    public static function formatTextForDisplay($text){
+    public static function formatTextForDisplay($text) {
+        $text = self::out($text);
         $linkify = new \Misd\Linkify\Linkify();
-        $text = $linkify->process(self::out($text));
-        $emotes = Config::$a ['chat'] ['customemotes'];
-        $pattern = '/(^|[\\s,\\.\\?!])('. join($emotes, '|') .')(?=$|[\\s,\\.\\?!])/i';
-        $replace = '$1<div title="$2" class="chat-emote chat-emote-$2"></div>';
-        $text = preg_replace($pattern, $replace, $text);
+        $text = $linkify->process($text, array('attr'=>array('target'=>'_blank')));
+        $text = self::emotify($text);
         return $text;
+    }
+
+    public static function emotify($text) {
+        $emotes = Config::$a ['chat'] ['customemotes'];
+        $lcemotes = array_map('strtolower', $emotes);
+        $pattern = '/(^|[\s,\.\?!])('. join($emotes, '|') .')(?=$|[\s,\.\?!])/i';
+        $callback = function ($match) use ($emotes, $lcemotes) {
+            return '<i class="chat-emote chat-emote-' . $emotes[array_search(strtolower($match[2]), $lcemotes)] . '"></i>';
+        };
+        $chunks = preg_split('/(<.+?>)/is', $text, 0, PREG_SPLIT_DELIM_CAPTURE);
+        $openTag = null;
+        for ($i = 0; $i < count($chunks); $i++) {
+            if ($i % 2 === 0) {
+                if ($openTag === null)
+                    $chunks[$i] = preg_replace_callback($pattern, $callback, $chunks[$i]);
+            } else {
+                if ($openTag === null && preg_match("`<(.+?).*(?<!/)>$`is", $chunks[$i], $matches))
+                    $openTag = $matches[1];
+                else if (preg_match('`</\s*' . $openTag . '>`i', $chunks[$i], $matches))
+                    $openTag = null;
+            }
+        }
+        return implode($chunks);
     }
 
 }

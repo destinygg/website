@@ -357,6 +357,13 @@ class PrivateMessageService extends Service {
         $stmt->execute();
     }
 
+    /**
+     * Mark messages as read
+     *
+     * @param int $targetuserid
+     * @param int $fromuserid
+     * @return void
+     */
     public function markMessagesRead($targetuserid, $fromuserid) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
