@@ -31,7 +31,7 @@
 	};
 	destiny.fn.EmoteFormatter.prototype.format = function(str, user){
 		var emoteregex = (user && ((user.features || []).length > 0)) ? this.gemoteregex:this.emoteregex;
-		return str.replace(emoteregex, '$1<div title="$2" class="chat-emote chat-emote-$2"></div>');
+		return str.replace(emoteregex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
 	};
 	
 	// URL line formatter
