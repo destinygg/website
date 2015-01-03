@@ -5,7 +5,11 @@ module.exports = function(grunt) {
 
         // Clean tmp directory
         clean: {
-            build: ['tmp/**/*']
+            build: [
+                'tmp/**/*',
+                'scripts/emotes/emoticons.css',
+                'scripts/icons/icons.css'
+            ]
         },
 
         // Minify Javascript
