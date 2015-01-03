@@ -11,7 +11,14 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body class="embed">
-	<iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/embed" scrolling="no" seamless></iframe>
-	<?php include Tpl::file('seg/commonbottom.php') ?>
+    <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/embed" scrolling="no" seamless></iframe>
+    <?php include Tpl::file('seg/commonbottom.php') ?>
+    <script>
+    $(window).on('beforeunload', function(e){
+        var confirmationMessage = "( ͡° ͜ʖ ͡°)";
+        (e || window.event).returnValue = confirmationMessage;
+        return confirmationMessage;
+    });
+    </script>
 </body>
 </html>
