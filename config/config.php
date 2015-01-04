@@ -49,7 +49,6 @@ return array (
 			'FerretLOL',
 			'Sippy',
 			'DestiSenpaii',
-			'KINGSLY',
 			'Nappa',
 			'DAFUK',
 			'AYYYLMAO',
