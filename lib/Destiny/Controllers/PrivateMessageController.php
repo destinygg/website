@@ -124,7 +124,7 @@ class PrivateMessageController {
                     $chatIntegrationService->publishPrivateMessage(array(
                         'messageid' => $message['id'],
                         'message' => $message['message'],
-                        'username' => $username,
+                        'username' => $sessionCredentials->getUsername(), // non-lowercase
                         'userid' => $userId,
                         'targetusername' => $targetuser['username'],
                         'targetuserid' => $targetuser['userId']
