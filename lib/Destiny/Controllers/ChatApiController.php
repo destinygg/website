@@ -123,7 +123,7 @@ class ChatApiController {
 
             $message['id'] = $privateMessageService->addMessage( $message );
             $chatIntegrationService->publishPrivateMessage(array(
-                'id' => $message['id'],
+                'messageid' => $message['id'],
                 'message' => $message['message'],
                 'username' => $user['username'],
                 'userid' => $user['userId'],
