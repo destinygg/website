@@ -2,7 +2,7 @@
 	"name" : "destiny/website",
 	"description": "Destiny.gg website",
 	"license": "proprietary",
-	"version": "1.5.25",
+	"version": "1.5.26",
 	"minimum-stability": "dev",
 	"require": {
 		"php" : ">=5.3.0",
@@ -10,9 +10,9 @@
 		"ext-json" : "*",
 		"ext-openssl" : "*",
 		"paypal/merchant-sdk-php" : "3.5.*",
-		"monolog/monolog" : "1.5.0",
-		"doctrine/dbal": "2.4.*@dev",
-		"themattharris/tmhoauth": "dev-master",
+		"monolog/monolog" : "1.12.0",
+		"doctrine/dbal": "2.6.*@dev",
+		"themattharris/tmhoauth": "0.8.4",
 		"adoy/oauth2": "dev-master",
 		"misd/linkify": "1.1.*@dev"
 	},

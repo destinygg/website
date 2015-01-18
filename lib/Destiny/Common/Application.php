@@ -102,6 +102,7 @@ class Application extends Service {
         
         // No route found
         if (! $route) {
+            $model->title = Http::$HEADER_STATUSES [Http::STATUS_NOT_FOUND];
             $response = new Response ( Http::STATUS_NOT_FOUND );
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
             $this->handleResponse ( $response );
@@ -109,6 +110,7 @@ class Application extends Service {
         
         // Security checks
         if (! $this->hasRouteSecurity ( $route, Session::getCredentials () )) {
+            $model->title = Http::$HEADER_STATUSES [Http::STATUS_UNAUTHORIZED];
             $response = new Response ( Http::STATUS_UNAUTHORIZED );
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
             $this->handleResponse ( $response );
@@ -187,6 +189,7 @@ class Application extends Service {
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( $e->getMessage () );
             $model->code = Http::STATUS_ERROR;
+            $model->title = 'Error';
 
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
                 
@@ -202,6 +205,7 @@ class Application extends Service {
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( 'Maximum over-rustle has been achieved' );
             $model->code = Http::STATUS_ERROR;
+            $model->title = 'Error';
 
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
         }

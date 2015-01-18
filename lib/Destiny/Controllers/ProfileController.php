@@ -229,17 +229,6 @@ class ProfileController {
       }
       $model->authProfileTypes = $authProfileTypes;
       
-      $subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
-      if (empty ( $subscription )) {
-        $subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
-      }
-      $subscriptionType = null;
-      if (! empty ( $subscription )) {
-        $subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
-      }
-      
-      $model->subscription = $subscription;
-      $model->subscriptionType = $subscriptionType;
       $model->authTokens = ApiAuthenticationService::instance ()->getAuthTokensByUserId ( $userId );
       $model->title = 'Authentication';
       return 'profile/authentication';

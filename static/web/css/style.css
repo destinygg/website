@@ -1563,3 +1563,14 @@ body#amazon {
   animation-duration: 1.5s;
   animation-iteration-count:infinite;
 }
+
+#mortyface {
+  background: url(../img/mortyface.png) no-repeat center center;
+  width: 194px;
+  height: 200px;
+  display: inline-block;
+}
+body.error #error-container {
+  text-align: center;
+  padding: 50px 0;
+}

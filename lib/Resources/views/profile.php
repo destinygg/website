@@ -55,6 +55,8 @@ use Destiny\Commerce\SubscriptionStatus;
                 <span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)
                 <?php if($model->subscription['recurring'] == 1): ?>
                 <span class="label label-success">Recurring</span>
+                <?php else: ?>
+                <span class="label label-default">Not recurring</span>
                 <?php endif; ?>
               </p>
               

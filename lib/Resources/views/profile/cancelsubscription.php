@@ -42,6 +42,8 @@ use Destiny\Common\Utils\Date;
                 <span class="label label-<?=($model->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($model->subscription['status'])?></span>
                 <?php if($model->subscription['recurring']):?>
                 <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
+                <?php else: ?>
+                <span class="label label-default" title="This subscription is not automatically renewed">Not recurring</span>
                 <?php endif; ?>
               </dd>
               

@@ -14,14 +14,17 @@ module.exports = function(grunt) {
 
         // Minify Javascript
         uglify: {
+
+            options: {
+                sourceMap        : true,
+                mangle           : false,
+                preserveComments : 'some', //will preserve all comments that start with a bang (!) or include a closure compiler style
+                sourceMapRoot    : './'
+            },
             
             // Common external libraries
             libs: {
                 options: {
-                    mangle           : false,
-                    sourceMap        : 'static/vendor/libs.min.map',
-                    sourceMappingURL : 'libs.min.map',
-                    sourceMapPrefix  : 2,
                     preserveComments : 'all'
                 },
                 files: {
@@ -40,13 +43,6 @@ module.exports = function(grunt) {
             
             // General web libs
             web: {
-                options: {
-                    mangle           : false,
-                    preserveComments : 'some', //will preserve all comments that start with a bang (!) or include a closure compiler style
-                    sourceMap        : 'static/web/js/destiny.min.map',
-                    sourceMappingURL : 'destiny.min.map',
-                    sourceMapPrefix  : 3 
-                },
                 files: {
                     'static/web/js/destiny.min.js': [
                         'static/web/js/utils.js',
@@ -59,13 +55,6 @@ module.exports = function(grunt) {
             
             // Messages libs
             messages: {
-                options: {
-                    mangle           : false,
-                    preserveComments : 'some',
-                    sourceMap        : 'static/web/js/messages.min.map',
-                    sourceMappingURL : 'messages.min.map',
-                    sourceMapPrefix  : 3
-                },
                 files: {
                     'static/web/js/messages.min.js': [
                         'static/web/js/messages.js'
@@ -75,13 +64,6 @@ module.exports = function(grunt) {
             
             // Chat libs
             chat: {
-                options: {
-                    mangle           : false,
-                    preserveComments : 'some',
-                    sourceMap        : 'static/chat/js/chat.min.map',
-                    sourceMappingURL : 'chat.min.map',
-                    sourceMapPrefix  : 3
-                },
                 files: {
                     'static/chat/js/chat.min.js': [
                         'scripts/chat/tld.js',
@@ -118,12 +100,6 @@ module.exports = function(grunt) {
                         'static/web/css/messages.css'
                     ],
 
-                    // Errors CSS
-                    'static/errors/css/style.min.css' : [
-                        'static/vendor/bootstrap-3.1.1/css/bootstrap.css',
-                        'static/errors/css/style.css'
-                    ],
-
                     // Chat CSS
                     'static/chat/css/style.min.css' : [
                         'static/vendor/jquery.nanoscroller-0.8.4/nanoscroller.css',
@@ -147,6 +123,7 @@ module.exports = function(grunt) {
                 options : '--sprite-namespace= --namespace=icon --css=scripts/icons --img=scripts/icons --css-template=scripts/icons/icons.jinja --url=../img/ --pseudo-class-separator=_'
             },
         },
+
         tldFetcher: {
             options: {
                 targetFile: 'scripts/chat/tld.js'

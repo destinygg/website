@@ -1,35 +1,31 @@
 <?php
+namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
-$words = include 'words.php';
-$word = $words [array_rand ( $words, 1 )];
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Unauthorized - Destiny</title>
+<title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<link href="<?=Config::cdnv()?>/errors/css/style.min.css" rel="stylesheet" media="screen">
-<link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.png">
+<meta name="description" content="<?=Config::$a['meta']['description']?>">
+<meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
+<meta name="author" content="<?=Config::$a['meta']['author']?>">
+<?php include Tpl::file('seg/opengraph.php') ?>
+<?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body class="error forbidden">
+<body id="error-401" class="error">
     <div id="page-wrap">
-        <div id="middle-wrap">
-            <?php include'top.php' ?>
-            <section id="header-band">
-                <div class="container">
-                    <div id="overview">
-                        <div id="illustration"></div>
-                        <div id="info">
-                            <h1><strong><?=$word?>!</strong> Authentication required</h1>
-                            <p>You need to login to see this page. <br />Would you like to <a href="/login">login</a>?</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <?php include'foot.php' ?>
-        </div>
+        <?php include Tpl::file('seg/top.php') ?>
+        <?php include Tpl::file('seg/headerband.php') ?>
+        <section id="error-container" class="container">
+            <a title="Rick and Morty" href="http://www.adultswim.com/videos/rick-and-morty/" target="_blank" id="mortyface"></a>
+            <h1>Aw geez, Rick!</h1>
+            <p>You must be logged in to view this page. Go to the <a href="/login">login</a> page</p>
+        </section>
     </div>
+    <?php include Tpl::file('seg/foot.php') ?>
+    <?php include Tpl::file('seg/commonbottom.php') ?>
 </body>
 </html>

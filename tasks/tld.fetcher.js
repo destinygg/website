@@ -21,7 +21,6 @@ module.exports = function(grunt) {
 
         // Asynchronously fetch TLDs, if valid then replace
         var done = this.async();
-        grunt.log.writeln('Fetching TLDs...' + this.data);
         http.get(TLD_FETCH_URL, function(res) {
             var data = '';
             res.on('data', function(chunk) {
