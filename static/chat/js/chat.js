@@ -19,7 +19,7 @@ destiny.UserFeatures = {
 
 function chat(element, user, options) {
 	var protocol = location.protocol === 'https:'? 'wss://': 'ws://';
-	this.server             = protocol + options.host + ':' + options.port + '/ws';
+	this.server             = protocol + options.host + '/ws';
 	this.connected          = false;
 	this.debug              = false;
 	this.users              = [];
