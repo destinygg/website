@@ -22,7 +22,10 @@ class Request {
         if (isset ( $_POST ))
             $this->post = $_POST;
 
-        if (! empty ( $_SERVER ['HTTP_CLIENT_IP'] )) {
+        if (! empty ( $_SERVER ['HTTP_X_REAL_IP']  )) {
+            // ip from haproxy
+            $this->ipAddress = $_SERVER ['HTTP_X_REAL_IP'];
+        } elseif (! empty ( $_SERVER ['HTTP_CLIENT_IP'] )) {
             // check ip from share internet
             $this->ipAddress = $_SERVER ['HTTP_CLIENT_IP'];
         } elseif (! empty ( $_SERVER ['HTTP_X_FORWARDED_FOR'] )) {
