@@ -4,7 +4,7 @@ use Destiny\Common\Config;
 <section id="dc-donate-xs" class="container visible-sm visible-xs visible-md">
     <div class="content content-dark clearfix">
         <div class="ds-block">
-            <p><a title="Visit www.paypal.com" href="https://www.paypal.com/">PayPal</a> donations are welcome and appreciated</p>
+            <p><a title="Visit www.paypal.com" href="//www.paypal.com/">PayPal</a> donations are welcome and appreciated</p>
             <div>
                 <button form="paypal-form" class="btn btn-lg btn-paypal" title="PayPal - The safer, easier way to pay online!">Donate</button>
                 <i class="paypal-payment-methods" title="Payment methods"></i>
@@ -22,7 +22,7 @@ use Destiny\Common\Config;
         </div>
         <div id="donate-block" class="dc-donate-blk visible-lg">
             <div class="dc-donate-inner">
-                <p><a title="Visit www.paypal.com" href="https://www.paypal.com/">PayPal</a> donations are welcome<br /> and appreciated</p>
+                <p><a title="Visit www.paypal.com" href="//www.paypal.com/">PayPal</a> donations are welcome<br /> and appreciated</p>
                 <div>
                     <button form="paypal-form" class="btn btn-lg btn-paypal" title="PayPal - The safer, easier way to pay online!">Donate</button>
                     <i class="paypal-payment-methods" title="Payment methods"></i>
@@ -42,12 +42,12 @@ use Destiny\Common\Config;
     </div>
 </section>
 
-<form id="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<form id="paypal-form" action="//www.paypal.com/cgi-bin/webscr" method="post">
     <input type="hidden" name="cmd" value="_donations">
     <input type="hidden" name="business" value="<?=Config::$a['paypal']['email']?>">
     <input type="hidden" name="lc" value="US">
     <input type="hidden" name="item_name" value="<?=Config::$a['paypal']['name']?>">
     <input type="hidden" name="no_note" value="0">
     <input type="hidden" name="currency_code" value="USD"> <input type="hidden" name="bn" value="PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest">
-    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+    <img alt="" border="0" src="//www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>

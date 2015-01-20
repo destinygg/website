@@ -29,7 +29,7 @@ sub vcl_recv {
 	set req.grace = 2m;
 	
 	// do not do anything with the dev/phpma/dba site
-	if (req.http.host ~ "(dev|phpma|dba)\.destiny\.gg$") {
+	if (req.http.host ~ "(dev|phpma)\.destiny\.gg$") {
 		return (pass);
 	}
 	
@@ -126,4 +126,15 @@ sub vcl_miss {
 		purge;
 		error 200 "Purged.";
 	}
+}
+
+sub vcl_hash {
+	hash_data(req.url);
+	if (req.http.host) {
+		hash_data(req.http.host);
+	} else {
+		hash_data(server.ip);
+	}
+	hash_data(req.http.X-Forwarded-Proto)
+	return (hash);
 }

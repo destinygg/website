@@ -9,7 +9,7 @@ use Destiny\Common\Config;
     <div id="stream-twitter" class="col-sm-6 stream">
       <h3 class="title">
         <span>Tweets</span>
-        <a href="https://twitter.com/<?=Config::$a['twitter']['user']?>/">twitter.com</a>
+        <a href="//twitter.com/<?=Config::$a['twitter']['user']?>/">twitter.com</a>
       </h3>
       <div class="entries">
       <?if(!empty($model->tweets)):?>
@@ -18,7 +18,7 @@ use Destiny\Common\Config;
         <div class="media">
           <div class="media-body">
             <div class="media-heading">
-              <a target="_blank" href="https://twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>">
+              <a target="_blank" href="//twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>">
                 <span class="fa fa-share"></span>
               </a>
               <?=$tweet['html']?>
@@ -36,7 +36,7 @@ use Destiny\Common\Config;
     <div id="stream-lastfm" class="col-sm-6 stream">
       <h3 class="title">
         <span>Music</span>
-        <a href="http://www.last.fm/user/<?=Config::$a['lastfm']['user']?>">last.fm</a>
+        <a href="//www.last.fm/user/<?=Config::$a['lastfm']['user']?>">last.fm</a>
       </h3>
       <div class="entries">
       <?if(!empty($model->music) && isset($model->music['recenttracks']['track']) && !empty($model->music['recenttracks']['track'])):?>

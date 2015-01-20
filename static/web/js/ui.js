@@ -110,8 +110,8 @@ $(function(){
                     ui.append(
                         '<li>'+
                             '<div class="thumbnail" data-toggle="tooltip" title="'+ title + '">'+
-                                '<a href="'+ 'http://www.youtube.com/watch?v='+ data.items[i].snippet.resourceId.videoId +'">'+ 
-                                    '<img alt="'+ title +'" src="'+destiny.cdn+'/web/img/320x240.gif" data-src="https://i.ytimg.com/vi/'+ data.items[i].snippet.resourceId.videoId +'/default.jpg" />'+
+                                '<a href="'+ '//www.youtube.com/watch?v='+ data.items[i].snippet.resourceId.videoId +'">'+ 
+                                    '<img alt="'+ title +'" src="'+destiny.cdn+'/web/img/320x240.gif" data-src="//i.ytimg.com/vi/'+ data.items[i].snippet.resourceId.videoId +'/default.jpg" />'+
                                 '</a>'+
                             '</div>'+
                         '</li>'
