@@ -24,7 +24,7 @@ $isoffline = (!isset($model->streamInfo['stream']) || empty($model->streamInfo['
           <a href="/bigscreen" class="btn btn-lg btn-primary"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>
           <div class="banner-popout-links btn-group pull-right" data-toggle="buttons" style="margin-top: 10px;">
             <a target="_blank" class="btn btn-link popup" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>"><i class="fa fa-comment"></i> Chat</a>
-            <a target="_blank" class="btn btn-link popup" href="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>"><i class="fa fa-eye"></i> Stream</a>
+            <a target="_blank" class="btn btn-link popup" href="//www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>"><i class="fa fa-eye"></i> Stream</a>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@ $isoffline = (!isset($model->streamInfo['stream']) || empty($model->streamInfo['
           <a href="/bigscreen" class="btn btn-lg btn-primary">Join the chat while you wait!</a>
           <div class="banner-popout-links btn-group pull-right" data-toggle="buttons" style="margin-top: 10px;">
             <a target="_blank" class="btn btn-link popup" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>"><i class="fa fa-comment"></i> Chat</a>
-            <a target="_blank" class="btn btn-link popup" href="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>"><i class="fa fa-eye"></i> Stream</a>
+            <a target="_blank" class="btn btn-link popup" href="//www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>"><i class="fa fa-eye"></i> Stream</a>
           </div>
         </div>
       </div>

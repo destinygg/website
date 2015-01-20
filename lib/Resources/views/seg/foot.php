@@ -22,7 +22,7 @@ use Destiny\Common\Config;
                     <p>
                         Illustration feature by <a title="Many thanks!" href="http://guilhemsalines.blogspot.com/">@elevencyan</a>
                         <br />Source code for <a href="https://github.com/destinygg/website">website</a> and <a href="https://github.com/destinygg/chat">chat</a>
-                        <br />The Destiny sub-reddit <a title="www.reddit.com" href="http://www.reddit.com/r/Destiny">/r/Destiny</a>
+                        <br />The Destiny sub-reddit <a title="www.reddit.com" href="//www.reddit.com/r/Destiny">/r/Destiny</a>
                     </p>
                 </div>
                 <div id="footer-thanks" class="col-sm-5">

@@ -14,7 +14,7 @@ use Destiny\Common\Config;
                             The Destiny app now lets you watch Destiny or other Twitch channels with destiny.gg chat.
                         </p>
                         <div>
-                            <a target="_blank" title="Destiny.gg for Android" href="https://play.google.com/store/apps/details?id=gg.destiny.app.chat">
+                            <a target="_blank" title="Destiny.gg for Android" href="//play.google.com/store/apps/details?id=gg.destiny.app.chat">
                                 <img width="197" height="59" alt="Destiny.gg for Android" src="<?=Config::cdn()?>/web/img/google-play-icon.png" />
                             </a>
                         </div> 
@@ -22,7 +22,7 @@ use Destiny\Common\Config;
                 </div>
                 <div class="col-md-5 visible-md visible-lg">
                     <div class="ds-block">
-                        <a class="pull-right" target="_blank" title="Destiny.gg for Android" href="https://play.google.com/store/apps/details?id=gg.destiny.app.chat">
+                        <a class="pull-right" target="_blank" title="Destiny.gg for Android" href="//play.google.com/store/apps/details?id=gg.destiny.app.chat">
                             <img width="309" height="150" alt="Destiny.gg for Android" src="<?=Config::cdn()?>/web/img/android-app-ss.png" />
                         </a>
                     </div>
