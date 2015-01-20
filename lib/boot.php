@@ -26,7 +26,7 @@ $app = new Destiny\Common\Application ();
 $app->setLoader ( $loader );
 
 $log = new Logger ( $context->log );
-$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->log . '.log', Logger::INFO ) );
+$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->log . '.log', Logger::CRITICAL ) );
 $log->pushProcessor ( new Monolog\Processor\WebProcessor () );
 $app->setLogger ( $log );
 
