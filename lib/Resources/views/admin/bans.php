@@ -31,7 +31,7 @@ use Destiny\Common\Config;
         <thead>
           <tr>
             <td style="width: 200px;">User</td>
-            <td style="width: 400px;">Reason</td>
+            <td>Reason</td>
             <td style="width: 80px;">Created on</td>
             <td style="width: 80px;">Ends on</td>
             <td><a onclick="return confirm('Are you sure?');" class="btn btn-danger btn-xs" href="/admin/bans/purgeall">Remove all bans!</a></td>
