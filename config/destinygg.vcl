@@ -135,6 +135,6 @@ sub vcl_hash {
 	} else {
 		hash_data(server.ip);
 	}
-	hash_data(req.http.X-Forwarded-Proto)
+	hash_data(req.http.X-Forwarded-Proto);
 	return (hash);
 }
