@@ -144,7 +144,6 @@ class ProfileController {
       // Get user
       $userService = UserService::instance ();
       $userFeaturesService = UserFeaturesService::instance ();
-      $authService = AuthenticationService::instance ();
       $subscriptionsService = SubscriptionsService::instance ();
       $authenticationService = AuthenticationService::instance ();
       
@@ -196,8 +195,8 @@ class ProfileController {
       }
       
       // Update user
-      $userService->updateUser ( $user ['userId'], $userData );
-      $authService->flagUserForUpdate ( $user ['userId'] );
+      $authenticationService->updateUser ( $user ['userId'], $userData );
+      $authenticationService->flagUserForUpdate ( $user ['userId'] );
       
       Session::set ( 'modelSuccess', 'Your profile has been updated' );
       return 'redirect: /profile';

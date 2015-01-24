@@ -93,8 +93,8 @@ class RegistrationController {
         $authCreds->setEmail ( $email );
         
         try {
-            AuthenticationService::instance ()->validateUsername ( $username );
-            AuthenticationService::instance ()->validateEmail ( $email );
+            $authService->validateUsername ( $username );
+            $authService->validateEmail ( $email );
             if (! empty ( $country )) {
                 $countryArr = Country::getCountryByCode ( $country );
                 if (empty ( $countryArr )) {

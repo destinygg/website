@@ -60,7 +60,7 @@ class AuthenticationService extends Service {
      * @param array $user
      * @throws Exception
      */
-    public function validateUsername($username, array $user = null, array $params = array()) {
+    public function validateUsername($username, array $user = null) {
         if (empty ( $username ))
             throw new Exception ( 'Username required' );
 
