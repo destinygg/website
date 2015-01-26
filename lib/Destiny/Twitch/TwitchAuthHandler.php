@@ -79,13 +79,18 @@ class TwitchAuthHandler{
         if (empty ( $data ) || ! isset ( $data ['_id'] ) || empty ( $data ['_id'] )) {
            throw new Exception ( 'Authorization failed, invalid user data' );
         }
+
+        if(!isset($data['email']) || empty($data['email']) || !$data['email']){
+            throw new Exception ( 'You must have a verified email address for your registration to complete successfully.' );
+        }
+
         $arr = array ();
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;
         $arr ['authId'] = $data ['_id'];
         $arr ['authDetail'] = $data ['name'];
         $arr ['username'] = (isset ( $data ['display_name'] ) && ! empty ( $data ['display_name'] )) ? $data ['display_name'] : $data ['name'];
-        $arr ['email'] = (isset ( $data ['email'] ) && ! empty ( $data ['email'] )) ? $data ['email'] : '';
+        $arr ['email'] = $data ['email'];
         return new AuthenticationCredentials ( $arr );
     }
 }
