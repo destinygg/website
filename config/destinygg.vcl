@@ -129,12 +129,5 @@ sub vcl_miss {
 }
 
 sub vcl_hash {
-	hash_data(req.url);
-	if (req.http.host) {
-		hash_data(req.http.host);
-	} else {
-		hash_data(server.ip);
-	}
 	hash_data(req.http.X-Forwarded-Proto);
-	return (hash);
 }
