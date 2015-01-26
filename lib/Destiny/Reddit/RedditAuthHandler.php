@@ -79,6 +79,11 @@ class RedditAuthHandler {
         if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
             throw new Exception ( 'Authorization failed, invalid user data' );
         }
+
+        if(!isset($data['has_verified_email']) || empty($data['has_verified_email']) || $data['has_verified_email'] != 1){
+            throw new Exception ( 'You must have a verified email address for your registration to complete successfully.' );
+        }
+
         $arr = array ();
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;

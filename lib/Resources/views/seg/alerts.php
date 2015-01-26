@@ -2,7 +2,7 @@
 
 <?php if(!empty($model->error)): ?>
 <section class="container">
-    <div class="alert alert-error" style="margin:0;">
+    <div class="alert alert-danger" style="margin:0;">
         <strong>Error!</strong>
         <?=Tpl::out($model->error)?>
     </div>

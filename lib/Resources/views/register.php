@@ -25,7 +25,7 @@ use Destiny\Common\Utils\Country;
       </h1>
       
       <?php if(!empty($model->error)): ?>
-      <div class="alert alert-error">
+      <div class="alert alert-danger">
         <strong>Error!</strong>
         <?=Tpl::out($model->error->getMessage())?>
       </div>

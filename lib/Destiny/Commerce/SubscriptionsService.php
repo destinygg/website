@@ -31,7 +31,7 @@ class SubscriptionsService extends Service {
         $authenticationService = AuthenticationService::instance ();
 
         // Expire recurring subs with a 24 hour grace period
-        $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE recurring = 1 AND status = :status AND endDate + INTERVAL 24 HOUR <= NOW()' );
+        $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE recurring = 1 AND status = :status AND endDate + INTERVAL 1 HOUR <= NOW()' );
         $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
         $stmt->execute ();
         $subscriptions = $stmt->fetchAll ();
