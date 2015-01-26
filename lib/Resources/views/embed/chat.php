@@ -10,7 +10,7 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
-<meta name="referrer" content="none">
+<meta name="referrer" content="no-referrer">
 <?php include Tpl::file('seg/commontop.php') ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 <?php include Tpl::file('seg/google.tracker.php') ?>
