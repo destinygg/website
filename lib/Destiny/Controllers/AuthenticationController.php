@@ -103,6 +103,10 @@ class AuthenticationController {
      * @throws Exception
      */
     public function authReddit(array $params, ViewModel $model) {
+        $model->title = 'Login error';
+        $model->error = new Exception("Reddit authorization has been disabled.");
+        return 'login';
+        /*
         try {
             $authHandler = new RedditAuthHandler ();
             return $authHandler->authenticate ( $params, $model );
@@ -111,5 +115,6 @@ class AuthenticationController {
             $model->error = $e;
             return 'login';
         }
+        */
     }
 }
