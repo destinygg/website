@@ -59,7 +59,7 @@ chat.prototype.start = function(){
 	
 	this.gui.onSend = function(str){
 		if(this.engine.user == null || !this.engine.user.username)
-			return this.push(new ChatErrorMessage(this.engine.errorstrings.requiresocket));
+			return this.push(new ChatErrorMessage(this.engine.errorstrings.needlogin));
 		
 		if (str.substring(0, 4) === '/me ')
 			var message = str.substring(4);
@@ -270,7 +270,7 @@ chat.prototype.onMSG = function(data) {
 		var user = this.users[data.nick];
 		if (!user) {
 			user = new ChatUser(data);
-			if (user.nick == this.user.nick)
+			if (user.nick != "" && user.nick == this.user.nick)
 				this.user = user;
 		} else
 			this.gui.autoCompletePlugin.updateNick(data.nick);

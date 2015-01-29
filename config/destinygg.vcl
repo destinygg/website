@@ -49,7 +49,7 @@ sub vcl_recv {
 	}
 	
 	// cache the landing page/chat landing page if no session was started
-	if ((req.url == "/") && req.http.Cookie !~ "sid=|rememberme=") {
+	if ((req.url == "/" || req.url == "/embed/chat") && req.http.Cookie !~ "sid=|rememberme=") {
 		unset req.http.cookie;
 	}
 	
