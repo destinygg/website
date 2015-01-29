@@ -195,7 +195,7 @@ class ProfileController {
       }
       
       // Update user
-      $authenticationService->updateUser ( $user ['userId'], $userData );
+      $userService->updateUser ( $user ['userId'], $userData );
       $authenticationService->flagUserForUpdate ( $user ['userId'] );
       
       Session::set ( 'modelSuccess', 'Your profile has been updated' );

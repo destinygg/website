@@ -60,7 +60,7 @@ class RedditAuthHandler {
             'User-Agent' => 'destiny.gg/'.Config::version ()
         ));
 
-        if (empty ( $info ['result'] ) || isset ( $info ['error'] ))
+        if (empty ( $info ['result'] ) || !is_array ( $info ['result'] ) || isset ( $info ['error'] ))
             throw new Exception ( 'Invalid user details response' );
         
         $authCreds = $this->getAuthCredentials ( $params ['code'], $info ['result'] );
