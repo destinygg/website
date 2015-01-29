@@ -88,11 +88,9 @@ class LoginController {
                 $authHandler = new TwitterAuthHandler ();
                 return 'redirect: ' . $authHandler->getAuthenticationUrl ();
             
-            /*
             case 'REDDIT' :
                 $authHandler = new RedditAuthHandler ();
                 return 'redirect: ' . $authHandler->getAuthenticationUrl ();
-            */
 
             default :
                 $model->title = 'Login error';

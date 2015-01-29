@@ -2,6 +2,7 @@
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -10,6 +11,7 @@ use Destiny\Common\Utils\Country;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body id="register">
   <div id="page-wrap">
@@ -82,6 +84,14 @@ use Destiny\Common\Utils\Country;
                 <span class="help-block">(this should only be used if you are on a private computer)</span>
               </div>
             </div>
+
+            <div class="form-group"> 
+              <label>How Can Mirrors Be Real If Our Eyes Aren't Real?</label> 
+              <div class="controls">
+                <div class="g-recaptcha" data-sitekey="<?= Config::$a ['g-recaptcha'] ['key'] ?>"></div>
+              </div>
+            </div>
+
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary btn-lg">Continue</button>

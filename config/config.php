@@ -180,6 +180,10 @@ return array (
 			'google_ad_height'	=> 250 
 		) 
 	),
+	'g-recaptcha' => array (
+		'key'                   => '',
+		'secret'                => '',
+	),
 	'calendar' 					=>  '', 
 	'lastfm' => array (
 		'apikey'				=> '',

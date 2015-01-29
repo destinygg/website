@@ -5,6 +5,8 @@ use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
+use Destiny\Common\Request;
+use Destiny\Common\Config;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Annotation\Controller;
@@ -13,6 +15,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
+use Destiny\Google\GoogleRecaptchaHandler;
 
 /**
  * @Controller
@@ -79,7 +82,7 @@ class RegistrationController {
      * @param array $params
      * @throws Exception
      */
-    public function registerProcess(array $params, ViewModel $model) {
+    public function registerProcess(array $params, ViewModel $model, Request $request) {
         $userService = UserService::instance ();
         $authService = AuthenticationService::instance ();
         $authCreds = $this->getSessionAuthenticationCredentials ( $params );
@@ -93,6 +96,13 @@ class RegistrationController {
         $authCreds->setEmail ( $email );
         
         try {
+        
+            if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
+                throw new Exception ( 'You must solve the recaptcha.' );
+
+            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+            $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
+        
             $authService->validateUsername ( $username );
             $authService->validateEmail ( $email );
             if (! empty ( $country )) {

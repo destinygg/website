@@ -59,14 +59,12 @@ use Destiny\Common\Utils\Tpl;
                 <i class="icon-twitch"></i> Twitch
               </label>
             </div>
-            <!--
             <div class="form-group">
               <label class="radio">
                 <input type="radio" name="authProvider" value="reddit">
                 <i class="icon-reddit"></i> Reddit
               </label>
             </div>
-            -->
             <div class="form-group">
               <label class="radio">
                 <input type="radio" name="authProvider" value="google">
