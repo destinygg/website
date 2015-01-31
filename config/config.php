@@ -57,6 +57,7 @@ return array (
 			'SOTRIGGERED',
 			'MASTERB8',
 			'NOTMYTEMPO',
+			'Cheeks',
 		),
 	),
 	'redis' => array(
