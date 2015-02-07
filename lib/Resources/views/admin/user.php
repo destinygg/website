@@ -58,7 +58,6 @@ use Destiny\Commerce\SubscriptionStatus;
             <label class="control-label" for="inputEmail">Email</label>
             <div class="controls">
               <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($model->user['email'])?>" placeholder="Email">
-              <span class="help-block">Be it valid or not, it will be safe with us.</span>
             </div>
           </div>
 
@@ -76,6 +75,14 @@ use Destiny\Commerce\SubscriptionStatus;
               <?foreach($countries as $country):?>
               <option value="<?=$country['alpha-2']?>"<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
               <?endforeach;?>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Accept Gifts:</label> 
+            <select class="form-control" name="allowGifting">
+              <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?endif;?>>Yes, accept gifts</option>
+              <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?endif;?>>No, do not accept gifts</option>
             </select>
           </div>
           

@@ -139,7 +139,7 @@ class AdminController {
     public function adminUserFind(array $params) {
         FilterParams::required($params, 's');
         $userService = UserService::instance ();
-        $users = $userService->findUsers ( $params ['s'], 10 );
+        $users = $userService->findUsers ( trim($params ['s']), 10 );
         $response = new Response ( Http::STATUS_OK );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         $response->setBody ( json_encode ( $users ) );

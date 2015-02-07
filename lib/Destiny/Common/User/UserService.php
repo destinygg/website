@@ -11,6 +11,12 @@ use Destiny\Common\Exception;
 class UserService extends Service {
   
   /**
+   * A list of roles
+   * @var array
+   */
+  protected $roles;
+  
+  /**
    * Singleton instance
    *
    * var UserService
@@ -38,12 +44,6 @@ class UserService extends Service {
       $this->addUserRole ( $userId, $role );
     }
   }
-  
-  /**
-   * A list of roles
-   * @var array
-   */
-  protected $roles;
 
   /**
    * Get all the user roles
@@ -300,6 +300,7 @@ class UserService extends Service {
       \PDO::PARAM_INT,
       \PDO::PARAM_STR,
       \PDO::PARAM_INT,
+      \PDO::PARAM_STR,
       \PDO::PARAM_STR,
       \PDO::PARAM_STR,
       \PDO::PARAM_STR 

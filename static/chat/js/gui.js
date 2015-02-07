@@ -28,7 +28,6 @@
         lines              : null,
         output             : null,
         input              : null,
-        onSend             : $.noop,
         userMessages       : [],
         
         backlog            : backlog,
@@ -83,29 +82,22 @@
             // Input history
             this.currenthistoryline = -1;
             this.storedinputline = null;
-            if (window.localStorage) {
-                this.setupInputHistory();
-            }
 
-            this.setupNotifications();
-            if (this.engine.user.username) {
-                this.highlightregex.user = new RegExp("\\b"+this.engine.user.username+"\\b", "i");
-            };
+            if (window.localStorage)
+                this.setupInputHistory();
             
             // Auto complete
-            this.autoCompletePlugin = new mAutoComplete(this.input);
-            
-            for (var i = this.emoticons.length - 1; i >= 0; i--) {
-                // let the emotes have more weight than users by default
-                this.autoCompletePlugin.addEmote(this.emoticons[i]);
-            };
+            this.autoCompletePlugin = new ChatAutoComplete(this.input, this.emoticons);
             
             // Chat settings
             this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
             this.chatsettings.btn = this.ui.find('.chat-settings-btn:first').eq(0);
             this.chatsettings.list = this.chatsettings.find('ul:first').eq(0);
             this.chatsettings.visible = false;
+
+            this.setupNotifications();
             this.loadSettings();
+            this.loadHighlighters();
             
             this.chatsettings.btn.on('click', function(e){
                 e.preventDefault();
@@ -128,7 +120,7 @@
                         data.splice(i, 1)
                 };
                 chat.saveChatOption('customhighlight', data );
-                chat.loadCustomHighlights();
+                chat.loadHighlighters();
             });
             this.chatsettings.on('change', 'input[type="checkbox"]', function(){
                 var name    = $(this).attr('name'),
@@ -370,11 +362,10 @@
                     timestampformat: 'HH:mm'
             };
             
+            var customhighlight = self.getChatOption('customhighlight', []);
             this.timestampformat = self.getChatOption('timestampformat', defaults['timestampformat']);
             this.maxlines = self.getChatOption('maxlines', defaults['maxlines']);
-            customhighlight = self.getChatOption('customhighlight', []);
             this.chatsettings.find('input[name=customhighlight]').val( customhighlight.join(', ') );
-            this.loadCustomHighlights();
             this.chatsettings.find('input[type="checkbox"]').each(function() {
                 var name  = $(this).attr('name'),
                     value = self.getChatOption(name, defaults[name]);
@@ -404,7 +395,7 @@
                     if ($.inArray(line.event, this.engine.controlevents) >= 0)
                         this.put(message);
                     else
-                        this.handleHighlight(this.put(message), true);
+                        this.handleHighlight(this.put(message));
                     
                 }
                 this.put(new ChatUIMessage('<hr/>'));
@@ -417,9 +408,8 @@
         loadBroadcasts: function(){
             this.backlogLoading = true;
             if(this.broadcasts.length > 0){
-                for (var i = this.broadcasts.length - 1; i >= 0; i--) {
+                for (var i = this.broadcasts.length - 1; i >= 0; i--)
                     this.addBroadcastUI( this.broadcasts[i] );
-                }
             }
             this.backlogLoading = false;
             return;
@@ -472,7 +462,9 @@
             
             // Reset and or scroll bottom
             this.scrollPlugin.updateAndScroll(wasScrolledBottom);
-            this.handleHighlight(message);
+            // Handle highlight / and if highlighted, notification
+            if(this.handleHighlight(message) && this.notifications)
+                this.showNotification(message);
             return message;
         },
         
@@ -480,7 +472,26 @@
             var str = this.input.val().trim();
             if(str != ''){
                 this.input.val('').focus();
-                this.onSend(str, this.input[0]);
+
+                if(this.engine.user == null || !this.engine.user.username)
+                    return this.push(new ChatErrorMessage(this.engine.errorstrings.needlogin));
+                
+                if (str.substring(0, 4) === '/me ')
+                    var message = str.substring(4);
+                else
+                    var message = str;
+                
+                // If this is an emoticon spam, emit the message but don't add the line immediately
+                if ($.inArray(message, this.emoticons) != -1 && this.engine.previousemote && this.engine.previousemote.message == message)
+                    return this.engine.emit('MSG', {data: str});
+                
+                if (str.substring(0, 1) === '/')
+                    return this.engine.handleCommand(str.substring(1));
+
+                // Normal user message, emit
+                this.push(new ChatUserMessage(str, this.engine.user), (!this.engine.connected) ? 'unsent' : 'pending');
+                this.engine.emit('MSG', {data: str});
+
                 this.insertInputHistory(str);
                 this.currenthistoryline = -1;
                 this.autoCompletePlugin.markLastComplete();
@@ -581,11 +592,10 @@
         setupNotifications: function() {
             window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications || window.Notification;
             if(!notifications)
-                $('#chat-settings input[name=notifications]').closest('label').text('Notifications are not supported by your browser');
+                this.chatsettings.find('input[name=notifications]').closest('label').text('Notifications are not supported by your browser');
             
-            if(!notifications || !this.engine.user.username || !this.getChatOption('notifications', false)){
+            if(!notifications || !this.engine.user.username || !this.getChatOption('notifications', false))
                 this.notifications = false;
-            }
         },
         
         showNotification: function(message) {
@@ -634,39 +644,36 @@
             
         },
         
-        loadCustomHighlights: function() {
+        loadHighlighters: function() {
+            if (this.engine.user && this.engine.user.username)
+                this.highlightregex.user = new RegExp("\\b@?(?:"+this.engine.user.username+")\\b", "i");
+
             this.highlightnicks = this.getChatOption('highlightnicks', {});
             
-            var highlights = this.getChatOption('customhighlight', []);
-            if (highlights.length == 0)
-                return;
-            
-            for (var i = highlights.length - 1; i >= 0; i--) {
-                highlights[i] = highlights[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
-            };
-            this.highlightregex.custom = new RegExp("\\b(?:"+highlights.join("|")+")\\b", "i")
+            var customhighlights = this.getChatOption('customhighlight', []);
+            if (customhighlights.length > 0){
+                for (var i = customhighlights.length - 1; i >= 0; i--)
+                    customhighlights[i] = customhighlights[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+                this.highlightregex.custom = new RegExp("\\b(?:"+customhighlights.join("|")+")\\b", "i");
+            }
         },
         
-        handleHighlight: function(message, skipnotify){
-            
-            if (!message.user || !message.user.username || message.user.username == this.engine.user.username)
-                return;
+        handleHighlight: function(message){
+            if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getChatOption('highlight', true))
+                return false;
             
             var u = message.user.username.toLowerCase();
-            if (this.highlightnicks[u]) {
+            if (this.highlightnicks[u]){
                 message.ui.addClass('highlight');
+                return true;
             }
             
-            if (!this.highlightregex.user || !this.getChatOption('highlight', true))
-                return;
-            
-            if (this.highlightregex.user.test(message.message) || (this.highlightregex.custom && this.highlightregex.custom.test(message.message))) {
+            if ((this.highlightregex.user && this.highlightregex.user.test(message.message)) || (this.highlightregex.custom && this.highlightregex.custom.test(message.message))) {
                 message.ui.addClass('highlight');
-                if(!skipnotify && this.notifications){
-                    this.showNotification(message);
-                }
+                return true;
             }
-            
+
+            return false;
         },
         
         getChatOption: function(option, defaultvalue) {
@@ -761,50 +768,6 @@
         this.features = [];
         $.extend(this, args);
         return this;
-    };
-    ChatUser.prototype.getFeatureHTML = function(){
-        var icons = '';
-        for (var i = 0; i < this.features.length; i++) {
-            switch(this.features[i]){
-                case destiny.UserFeatures.VIP :
-                    icons += '<i class="icon-vip" title="VIP"/>';
-                    break;
-                case destiny.UserFeatures.MODERATOR :
-                    icons += '<i class="icon-moderator" title="Moderator"/>';
-                    break;
-                case destiny.UserFeatures.ADMIN :
-                    icons += '<i class="icon-admin" title="Administrator"/>';
-                    break;
-                case destiny.UserFeatures.BOT :
-                    icons += '<i class="icon-bot" title="Bot"/>';
-                    break;
-                case destiny.UserFeatures.NOTABLE :
-                    icons += '<i class="icon-notable" title="Notable"/>';
-                    break;
-                case destiny.UserFeatures.TRUSTED :
-                    icons += '<i class="icon-trusted" title="Trusted"/>';
-                    break;
-                case destiny.UserFeatures.CONTRIBUTOR :
-                    icons += '<i class="icon-contributor" title="Contributor"/>';
-                    break;
-                case destiny.UserFeatures.COMPCHALLENGE :
-                    icons += '<i class="icon-compchallenge" title="Composition Challenge Winner"/>';
-                    break;
-                case destiny.UserFeatures.EVENOTABLE :
-                    icons += '<i class="icon-evenotable" title="Eve Notable"/>';
-                    break;
-            }
-        }
-        if($.inArray(destiny.UserFeatures.SUBSCRIBERT4, this.features) >= 0){
-            icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
-        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT3, this.features) >= 0){
-            icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
-        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, this.features) >= 0){
-            icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
-        }else if($.inArray(destiny.UserFeatures.SUBSCRIBER, this.features) >= 0){
-            icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
-        }
-        return icons;
     };
 
     // UI MESSAGE - ability to send HTML markup to the chat
@@ -970,8 +933,57 @@
         } else
             return '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+'">'+html+'</div>';
     };
+
+    ChatUserMessage.prototype.getFeatureHTML = function(user){
+        var icons = '';
+
+        if($.inArray(destiny.UserFeatures.SUBSCRIBERT4, user.features) >= 0){
+            icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
+        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT3, user.features) >= 0){
+            icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
+        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, user.features) >= 0){
+            icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
+        }else if($.inArray(destiny.UserFeatures.SUBSCRIBER, user.features) >= 0){
+            icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
+        }
+
+        for (var i = 0; i < user.features.length; i++) {
+            switch(user.features[i]){
+                case destiny.UserFeatures.VIP :
+                    icons += '<i class="icon-vip" title="VIP"/>';
+                    break;
+                case destiny.UserFeatures.MODERATOR :
+                    icons += '<i class="icon-moderator" title="Moderator"/>';
+                    break;
+                case destiny.UserFeatures.ADMIN :
+                    icons += '<i class="icon-admin" title="Administrator"/>';
+                    break;
+                case destiny.UserFeatures.BOT :
+                    icons += '<i class="icon-bot" title="Bot"/>';
+                    break;
+                case destiny.UserFeatures.NOTABLE :
+                    icons += '<i class="icon-notable" title="Notable"/>';
+                    break;
+                case destiny.UserFeatures.TRUSTED :
+                    icons += '<i class="icon-trusted" title="Trusted"/>';
+                    break;
+                case destiny.UserFeatures.CONTRIBUTOR :
+                    icons += '<i class="icon-contributor" title="Contributor"/>';
+                    break;
+                case destiny.UserFeatures.COMPCHALLENGE :
+                    icons += '<i class="icon-compchallenge" title="Composition Challenge Winner"/>';
+                    break;
+                case destiny.UserFeatures.EVENOTABLE :
+                    icons += '<i class="icon-evenotable" title="Eve Notable"/>';
+                    break;
+            }
+        }
+
+        return icons;
+    };
+
     ChatUserMessage.prototype.wrapUser = function(user){
-        return ((this.isSlashMe) ? '':user.getFeatureHTML()) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
+        return ((this.isSlashMe) ? '':this.getFeatureHTML(user)) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
     };
     ChatUserMessage.prototype.wrapMessage = function(){
         var elem     = $('<span class="msg"/>').text(this.message),

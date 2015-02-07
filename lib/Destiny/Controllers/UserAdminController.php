@@ -106,6 +106,7 @@ class UserAdminController {
         $username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : $user ['username'];
         $email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
         $country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
+        $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
         
         $authService->validateUsername ( $username, $user );
         $authService->validateEmail ( $email, $user );
@@ -121,7 +122,8 @@ class UserAdminController {
         $userData = array (
             'username' => $username,
             'country' => $country,
-            'email' => $email 
+            'email' => $email,
+            'allowGifting' => $allowGifting
         );
         $userService->updateUser ( $user ['userId'], $userData );
         $user = $userService->getUserById ( $params ['id'] );

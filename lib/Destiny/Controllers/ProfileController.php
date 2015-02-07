@@ -332,7 +332,7 @@ class ProfileController {
       
       FilterParams::required ( $params, 'fullName' );
       FilterParams::required ( $params, 'line1' );
-      FilterParams::required ( $params, 'line2' );
+      FilterParams::declared ( $params, 'line2' );
       FilterParams::required ( $params, 'city' );
       FilterParams::required ( $params, 'region' );
       FilterParams::required ( $params, 'zip' );

@@ -234,8 +234,10 @@ class SubscriptionsService extends Service {
     public function getSubscriptionsByGifterId( $gifterId ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-          SELECT s.*,u.username `gifterUsername` FROM dfl_users_subscriptions s
+          SELECT s.*, u2.username, u.username `gifterUsername` 
+          FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users u ON (u.userId = s.gifter)
+          LEFT JOIN dfl_users u2 ON (u2.userId = s.userId)
           WHERE s.gifter = :gifter
           ORDER BY createdDate DESC
         ' );
@@ -253,8 +255,10 @@ class SubscriptionsService extends Service {
     public function getActiveSubscriptionsByGifterId( $gifterId ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-          SELECT s.*,u.username `gifterUsername` FROM dfl_users_subscriptions s
+          SELECT s.*, u2.username, u.username `gifterUsername` 
+          FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users u ON (u.userId = s.gifter)
+          LEFT JOIN dfl_users u2 ON (u2.userId = s.userId)
           WHERE s.gifter = :gifter AND s.status = :status
           ORDER BY endDate ASC
         ' );
@@ -274,8 +278,10 @@ class SubscriptionsService extends Service {
     public function getActiveSubscriptionByIdAndGifterId( $subscriptionId, $gifterId ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-          SELECT s.*,u.username `gifterUsername` FROM dfl_users_subscriptions s
+          SELECT s.*, u2.username, u.username `gifterUsername` 
+          FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users u ON (u.userId = s.gifter)
+          LEFT JOIN dfl_users u2 ON (u2.userId = s.userId)
           WHERE s.gifter = :gifter AND s.subscriptionId = :subscriptionId AND s.status = :status
           ORDER BY createdDate DESC
           LIMIT 0,1

@@ -651,7 +651,7 @@ $(function(){
         rules: {
             fullName : { required: true },
             line1    : { required: true },
-            line2    : { required: true },
+            line2    : { required: false },
             city     : { required: true },
             region   : { required: true },
             zip      : { required: true },

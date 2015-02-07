@@ -19,25 +19,8 @@ use Destiny\Commerce\SubscriptionStatus;
 
     <?php include Tpl::file('seg/top.php') ?>
     <?php include Tpl::file('seg/headerband.php') ?>
+    <?php include Tpl::file('seg/alerts.php') ?>
     <?php include Tpl::file('profile/menu.php') ?>
-      
-    <?php if(!empty($model->error)): ?>
-    <section class="container">
-      <div class="alert alert-danger" style="margin:0;">
-        <strong>Error!</strong>
-        <?=Tpl::out($model->error)?>
-      </div>
-    </section>
-    <?php endif; ?>
-      
-    <?php if(!empty($model->success)): ?>
-    <section class="container">
-      <div class="alert alert-info" style="margin:0;">
-        <strong>Success!</strong>
-        <?=Tpl::out($model->success)?>
-      </div>
-    </section>
-    <?php endif; ?>
     
     <section class="container collapsible">
       <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>
@@ -133,7 +116,7 @@ use Destiny\Commerce\SubscriptionStatus;
               <a class="btn btn-danger pull-right cancel-gift" href="/subscription/<?= $gift['subscriptionId'] ?>/cancel">Cancel</a>
               <?php endif; ?>
 
-              <h3><?= Tpl::out( $gift['type']['tierLabel'] ) ?> <small>Gifted to <span class="label label-primary"><?= $gift['gifterUsername'] ?></span></small></h3>
+              <h3><?= Tpl::out( $gift['type']['tierLabel'] ) ?> <small>Gifted to <span class="label label-primary"><?= $gift['username'] ?></span></small></h3>
               <p>
                 <span class="sub-amount">$<?=$gift['type']['amount']?></span> 
                 <span>(<?=$gift['type']['billingFrequency']?> <?=strtolower($gift['type']['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif; ?>)</span>

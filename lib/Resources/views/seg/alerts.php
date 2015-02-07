@@ -1,3 +1,6 @@
+<?php
+use Destiny\Common\Utils\Tpl;
+?>
 <div id="alerts-container"></div>
 
 <?php if(!empty($model->error)): ?>

@@ -56,27 +56,6 @@ chat.prototype.start = function(){
 	
 	if (!window.WebSocket)
 		return this.gui.push(new ChatErrorMessage(this.errorstrings.requiresocket));
-	
-	this.gui.onSend = function(str){
-		if(this.engine.user == null || !this.engine.user.username)
-			return this.push(new ChatErrorMessage(this.engine.errorstrings.needlogin));
-		
-		if (str.substring(0, 4) === '/me ')
-			var message = str.substring(4);
-		else
-			var message = str;
-		
-		// If this is an emoticon spam, emit the message but don't add the line immediately
-		if ($.inArray(message, this.emoticons) != -1 && this.engine.previousemote && this.engine.previousemote.message == message)
-			return this.engine.emit('MSG', {data: str});
-		
-		if (str.substring(0, 1) === '/')
-			return this.engine.handleCommand(str.substring(1));
-
-		// Normal user message, emit
-		this.push(new ChatUserMessage(str, this.engine.user), (!this.engine.connected) ? 'unsent' : 'pending');
-		this.engine.emit('MSG', {data: str});
-	};
 
 	this.gui.loadBacklog();
 	this.gui.loadBroadcasts();
