@@ -76,11 +76,10 @@ body,
   background: none;
 }
 
-.chat-input{
-  display: none;
-}
-
-.chat .chat-lines i[class^="icon-"] {
+.chat-input,
+.chat-lines > div i.continue,
+.chat .chat-lines i[class^="icon-"],
+.chat .ui-msg {
   display: none !important;
 }
 
@@ -91,9 +90,6 @@ body,
 
 .chat .flair3 {
   color: #6aa7f9;
-}
-.chat a.user {
-  color: #cacaca;
 }
 .chat a.flair8 {
   color: #e564f4;
