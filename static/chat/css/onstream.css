@@ -77,7 +77,7 @@ body,
 }
 
 .chat-input,
-.chat-lines > div i.continue,
+.chat-lines .continue,
 .chat .chat-lines i[class^="icon-"],
 .chat .ui-msg {
   display: none !important;
