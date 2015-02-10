@@ -77,7 +77,6 @@ body,
 }
 
 .chat-input,
-.chat-lines > div i.continue,
 .chat .chat-lines i[class^="icon-"],
 .chat .ui-msg {
   display: none !important;
@@ -99,6 +98,7 @@ body,
   margin: 0;
 }
 
+.chat-lines > div .continue,
 .nano .nano-slider {
   visibility: hidden;
 }
