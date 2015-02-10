@@ -1,0 +1,56 @@
+/* override things for the browser source plugin */
+body,
+.chat-theme-dark {
+  background: transparent !important;
+}
+
+.chat-lines .emotecount {
+  font-size:125%;
+}
+
+.chat-lines {
+  font-size: 150%;
+  color: white;
+}
+
+.chat-theme-dark .chat-lines>.command-msg,
+.chat-theme-dark .chat-lines>.error-msg,
+.chat-theme-dark .chat-lines>.status-msg,
+.chat-theme-dark .chat-lines>.ui-msg,
+.chat-theme-dark .chat-lines>.own-msg,
+.chat-theme-dark .chat-lines>.highlight {
+  color: white;
+}
+
+.hint-popup>div,
+.user-tools>div,
+#chat-broadcasts>div {
+  display: none !important;
+}
+
+.chat-lines time {
+  font-size: inherit;
+  color: #888;
+}
+
+.chat-theme-dark .chat-lines > .command-msg,
+.chat-theme-dark .chat-lines > .own-msg,
+.chat-theme-dark .chat-lines > .highlight .msg,
+.chat-theme-dark .chat-lines > .broadcast-msg .msg,
+.chat a.flair8,
+.chat-lines {
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important;
+}
+
+.chat-theme-dark .chat-lines>.highlight,
+.chat-theme-dark .chat-lines > .broadcast-msg {
+  background: none;
+}
+
+.chat-input{
+  display: none;
+}
+
+.chat .chat-lines i[class^="icon-"] {
+  display: none !important;
+}

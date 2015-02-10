@@ -3,7 +3,7 @@
     var ChatAutoComplete = function(input, emoticons) {
         var self = this;
 
-        if (!input[0].setSelectionRange)
+        if (!input || input.length == 0 || !input[0].setSelectionRange)
             return this;
 
         this.minWordLength = 2;
@@ -49,6 +49,9 @@
         return str[0].toLowerCase();
     };
     ChatAutoComplete.prototype.addToBucket = function(data, weight, isemote, ispromoted) {
+        if (!this.input)
+            return;
+
         var id = this.getBucketId(data);
 
         if(!this.buckets[id])
@@ -75,6 +78,9 @@
         return this;
     };
     ChatAutoComplete.prototype.updateNick = function(nick) {
+        if (!this.input)
+            return;
+
         var weight = Date.now();
         var data = this.addToBucket(nick, weight, false, false);
 

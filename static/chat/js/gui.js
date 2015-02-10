@@ -392,7 +392,7 @@
                     if (!message)
                         continue;
                     
-                    if ($.inArray(line.event, this.engine.controlevents) >= 0)
+                    if (this.engine.controlevents[ line.event ])
                         this.put(message);
                     else
                         this.handleHighlight(this.put(message));
@@ -442,15 +442,14 @@
         push: function(message, state){
             // Get the scroll position before adding the new line / removing old lines
             var wasScrolledBottom = this.scrollPlugin.isScrolledToBottom();
-            
+            var lines = this.lines.children();
             // Rid excess lines if the user is scrolled to the bottom
-            var lineCount = this.lines.children().length;
+            var lineCount = lines.length;
             if(wasScrolledBottom && lineCount >= this.maxlines){
-                this.lines.children().slice( 0, 2 + Math.floor(((lineCount-this.maxlines)/this.maxlines)*100)).each(function(){
-                    var message = $(this).data('message');
-                    message.destroy();
-                    message.ui.remove();
-                });
+                var unwantedlines = lines.slice(0, lineCount - this.maxlines);
+                for (var i = unwantedlines.length - 1; i >= 0; i--) {
+                    $(unwantedlines[i]).remove();
+                };
             }
             
             this.userMessages.push(message);
@@ -777,9 +776,6 @@
     ChatUIMessage.prototype.insert = function(container){
         return this.ui.appendTo(container);
     };
-    ChatUIMessage.prototype.destroy = function(){
-        return true;
-    };
     ChatUIMessage.prototype.init = function(html){
         this.message = html;
         return this;
@@ -801,9 +797,6 @@
     };
     ChatMessage.prototype.insert = function(container){
         return this.ui.appendTo(container);
-    };
-    ChatMessage.prototype.destroy = function(){
-        return true;
     };
     ChatMessage.prototype.init = function(message, timestamp){
         this.message = message;
@@ -1058,7 +1051,6 @@
         })
         this.ui.on('click', '.hide-pm', function(e){
             e.preventDefault();
-            self.destroy();
             self.ui.remove();
         })
         destiny.chat.gui.setUnreadMessageCount( destiny.chat.gui.unreadMessageCount + 1 );

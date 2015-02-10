@@ -24,7 +24,13 @@ function chat(element, user, options) {
 	this.debug              = false;
 	this.users              = [];
 	this.ignorelist         = {};
-	this.controlevents      = ["MUTE", "UNMUTE", "BAN", "UNBAN", "SUBONLY"];
+	this.controlevents      = {
+		"MUTE"   : true,
+		"UNMUTE" : true,
+		"BAN"    : true,
+		"UNBAN"  : true,
+		"SUBONLY": true
+	};
 	this.errorstrings       = {
 		"unknown"               : "Unknown error, this usuall indicates an internal problem :(",
 		"nopermission"          : "You do not have the required permissions to use that",
@@ -113,7 +119,7 @@ chat.prototype.parseAndDispatch = function(e) {
 		var message = this[handler](obj);
 		if (message) {
 			
-			if ($.inArray(eventname, this.controlevents) >= 0)
+			if (this.controlevents[ eventname ])
 				this.gui.push(message, 'control');
 			else
 				this.gui.push(message);
