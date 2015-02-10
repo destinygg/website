@@ -59,8 +59,9 @@ body,
   font-weight: 800;
   text-decoration: none;
   font-size: 20px;
-  text-shadow: -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 1px 1px 3px #000 !important;
+  text-shadow: -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 1px 1px 3px #000;
   -webkit-text-stroke: 1px black;
+  letter-spacing: 0.03em;
 }
 .chat-theme-dark .chat-lines>.command-msg,
 .chat-theme-dark .chat-lines>.error-msg,
@@ -102,4 +103,8 @@ body,
 
 .chat-lines > div {
   margin: 0;
+}
+
+.nano .nano-slider {
+  visibility: hidden;
 }
