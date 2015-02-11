@@ -10,7 +10,7 @@
 			'tabcompletion'  : 'Use the tab key to auto-complete usernames and emotes',
 			'hoveremotes'    : 'Hovering your mouse over an emote will show you the emote code',
 			'highlight'      : 'Chat messages containing your username will be highlighted in blue',
-			'notify'         : 'User /notify to send whispers to someone else',
+			'notify'         : 'Use /msg <username> to send a private message to someone',
 			'ignoreuser'     : 'Ignore other users by clicking their name and selecting ignore',
 			'moreinfo'       : 'See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information',
 			'emotewiki'      : 'For the list of available emotes type /emotes or <a href="https://github.com/destinygg/website/wiki/Emotes" target="_blank">click here</a>',

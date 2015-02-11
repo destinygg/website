@@ -427,6 +427,7 @@ chat.prototype.handleCommand = function(str) {
 			payload.data = parts.join(' ')
 
 			this.emit("PRIVMSG", payload);
+			this.gui.autoCompletePlugin.markLastComplete();
 			break;
 			
 		case "ignore":
