@@ -59,7 +59,7 @@ use Destiny\Common\Config;
     
       <div class="content content-dark clearfix">
         <div class="ds-block">
-          <p>Login keys allow you to authenticate with the destiny.gg chat without the need for a username or password. Keys MUST be kept a <strong>confidential</strong>.</p>
+          <p>Login keys allow you to authenticate with the destiny.gg chat without the need for a username or password.</p>
         </div>
         <form action="/profile/authtoken/create" method="post">
           <table class="grid" style="width:100%">
