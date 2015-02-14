@@ -36,7 +36,7 @@ use Destiny\Common\Config;
                     <?= (is_int ( $v )) ? "$k = $v;\r\n" : "$k = \"$v\";"; ?>
                 <?php endforeach; ?>
                 </script>
-                <script src="//pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+                <script src="https://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
             </div>
         </div>
     </div>
