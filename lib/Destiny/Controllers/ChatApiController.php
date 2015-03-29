@@ -299,21 +299,22 @@ class ChatApiController {
             $data = json_decode( file_get_contents('php://input'), true );
             $userService = UserService::instance();
             $authid = $userService->getTwitchIDFromNick( $data['nick'] );
-            $users = $userService->updateTwitchSubscriptions( array( $authid => 1 ) );
+            if ( $authid ) {
+                $users = $userService->updateTwitchSubscriptions( array( $authid => 1 ) );
 
-            $chatIntegrationService = ChatIntegrationService::instance();
-            $authenticationService = AuthenticationService::instance ();
-            foreach( $users as $user ) {
-                $authenticationService->flagUserForUpdate ( $user['userId'] );
+                $chatIntegrationService = ChatIntegrationService::instance();
+                $authenticationService = AuthenticationService::instance ();
+                foreach( $users as $user ) {
+                    $authenticationService->flagUserForUpdate ( $user['userId'] );
 
-                if ( !$user['istwitchsubscriber'] ) // do not announce non-subs
-                    continue;
+                    if ( !$user['istwitchsubscriber'] ) // do not announce non-subs
+                        continue;
 
-                $chatIntegrationService->sendBroadcast(
-                    sprintf("%s is now a Twitch subscriber!", $user['username'] )
-                );
+                    $chatIntegrationService->sendBroadcast(
+                        sprintf("%s is now a Twitch subscriber!", $user['username'] )
+                    );
+                }
             }
-
             $response = new Response ( Http::STATUS_NO_CONTENT );
 
         } catch (Exception $e) {
