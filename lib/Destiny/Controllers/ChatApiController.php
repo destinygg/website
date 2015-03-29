@@ -254,7 +254,7 @@ class ChatApiController {
             $subs = json_decode( file_get_contents('php://input'), true );
             $userService = UserService::instance();
             $users = $userService->updateTwitchSubscriptions( $subs );
-            foreach( $users as $user )
+            foreach( $users as $user ) {
                 if ( !$user['istwitchsubscriber'] )
                     continue;
 

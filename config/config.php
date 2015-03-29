@@ -60,6 +60,14 @@ return array (
 			'LIES',
 			'LeRuse',
 		),
+		'twitchemotes' => array(
+			'nathanDad',
+			'nathanFather',
+			'nathanDubs1',
+			'nathanDubs2',
+			'nathanDubs3',
+			'nathanParty',
+		),
 	),
 	'redis' => array(
 		'host' 				=> 'localhost',

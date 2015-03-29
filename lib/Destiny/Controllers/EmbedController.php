@@ -25,7 +25,7 @@ class EmbedController {
         if (Session::hasRole ( UserRole::USER )) {
             $creds = Session::getCredentials ();
             $user = array ();
-            $user ['username'] = $creds->getUsername ();
+            $user ['nick'] = $creds->getUsername ();
             $user ['features'] = $creds->getFeatures ();
         }
         $model->title = 'Stream';
@@ -45,7 +45,7 @@ class EmbedController {
         if (Session::hasRole ( UserRole::USER )) {
             $creds = Session::getCredentials ();
             $user = array ();
-            $user ['username'] = $creds->getUsername ();
+            $user ['nick'] = $creds->getUsername ();
             $user ['features'] = $creds->getFeatures ();
         }
         $model->options = $this->getChatOptionParams ( $params );
@@ -86,11 +86,16 @@ class EmbedController {
     private function getChatOptionParams(array $params) {
         $emotes = Config::$a ['chat'] ['customemotes'];
         natcasesort( $emotes );
+
+        $twemotes = Config::$a ['chat'] ['twitchemotes'];
+        natcasesort( $twemotes );
+
         return array (
             'host' => Config::$a ['chat'] ['host'],
             'port' => Config::$a ['chat'] ['port'],
             'maxlines' => Config::$a ['chat'] ['maxlines'],
             'emoticons' => array_values( $emotes ),
+            'twitchemotes' => array_values( $twemotes ),
         );
     }
 }

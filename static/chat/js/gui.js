@@ -45,6 +45,7 @@
         
         timestampformat    : null,
         emoticons          : [],
+        twitchemotes       : [],
         formatters         : [],
         hintPopup          : null,
         
@@ -87,7 +88,7 @@
                 this.setupInputHistory();
             
             // Auto complete
-            this.autoCompletePlugin = new ChatAutoComplete(this.input, this.emoticons);
+            this.autoCompletePlugin = new ChatAutoComplete(this.input, this.emoticons.concat(this.twitchemotes));
             
             // Chat settings
             this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
@@ -220,8 +221,6 @@
                         admins.push(username.toLowerCase());
                     else if($.inArray('vip', u.features) >= 0)
                         vips.push(username.toLowerCase());
-                    else if($.inArray('moderator', u.features) >= 0)
-                        mods.push(username.toLowerCase());
                     else if($.inArray('subscriber', u.features) >= 0)
                         subs.push(username.toLowerCase());
                     else
@@ -937,16 +936,13 @@
         }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, user.features) >= 0){
             icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
         }else if($.inArray(destiny.UserFeatures.SUBSCRIBER, user.features) >= 0){
-            icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
+            icons += '<i class="icon-subscriber" title="Subscriber (T1/T0)"/>';
         }
 
         for (var i = 0; i < user.features.length; i++) {
             switch(user.features[i]){
                 case destiny.UserFeatures.VIP :
                     icons += '<i class="icon-vip" title="VIP"/>';
-                    break;
-                case destiny.UserFeatures.MODERATOR :
-                    icons += '<i class="icon-moderator" title="Moderator"/>';
                     break;
                 case destiny.UserFeatures.ADMIN :
                     icons += '<i class="icon-admin" title="Administrator"/>';

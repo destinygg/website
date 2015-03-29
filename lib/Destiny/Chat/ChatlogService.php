@@ -33,11 +33,12 @@ class ChatlogService extends Service {
         $stmt = $conn->prepare ( '
             SELECT
                 u.username,
+                u.istwitchsubscriber,
                 u2.username AS target,
                 l.event,
                 l.data,
                 l.timestamp,
-                IF(subs.userId IS NULL,0,1) AS `subscriber`,
+                IF(subs.userId IS NULL AND u.istwitchsubscriber = 0,0,1) AS `subscriber`,
                 subs.subscriptionType AS `subscriptionType`,
                 subs.subscriptionTier AS `subscriptionTier`,
                 (

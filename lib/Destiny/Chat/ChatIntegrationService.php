@@ -51,6 +51,7 @@ class ChatIntegrationService extends Service {
         $json = json_encode ( $credentials->getData () );
         $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
         $redis->set ( sprintf ( 'CHAT:session-%s', $sessionId ), $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
+        $redis->publish ( sprintf ( 'refreshuser-%s', Config::$a ['redis'] ['database'] ), $json );
         $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
     }
 

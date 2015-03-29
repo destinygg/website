@@ -27,10 +27,17 @@
 	destiny.fn.EmoteFormatter = function(chat){
 		this.emoteregex = new RegExp('(^|[\\s,\\.\\?!])('+chat.emoticons.join('|')+')(?=$|[\\s,\\.\\?!])');
 		this.gemoteregex = new RegExp('(^|[\\s,\\.\\?!])('+chat.emoticons.join('|')+')(?=$|[\\s,\\.\\?!])', 'gm');
+		this.twitchemoteregex = new RegExp('(^|[\\s,\\.\\?!])('+chat.emoticons.join('|')+'|'+chat.twitchemotes.join('|')+')(?=$|[\\s,\\.\\?!])', 'gm');
 		return this;
 	};
 	destiny.fn.EmoteFormatter.prototype.format = function(str, user){
-		var emoteregex = (user && ((user.features || []).length > 0)) ? this.gemoteregex:this.emoteregex;
+		var emoteregex = this.emoteregex;
+		if (user && (user.features || []).length > 0) {
+			if ($.inArray(destiny.UserFeatures.SUBSCRIBERT0, user.features) > -1)
+				emoteregex = this.twitchemoteregex;
+			else
+				emoteregex = this.gemoteregex;
+		}
 		return str.replace(emoteregex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
 	};
 	

@@ -104,6 +104,11 @@ class HomeController {
         $emotes = Config::$a['chat'] ['customemotes'];
         natcasesort( $emotes );
         $model->emoticons = $emotes;
+
+        $twemotes = Config::$a['chat'] ['twitchemotes'];
+        natcasesort( $twemotes );
+        $model->twitchemotes = $twemotes;
+
         $model->title = 'Emoticons';
         return 'chat/emoticons';
     }

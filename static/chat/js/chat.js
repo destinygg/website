@@ -3,6 +3,7 @@
 destiny.UserFeatures = {
     PROTECTED     : 'protected',
     SUBSCRIBER    : 'subscriber',
+    SUBSCRIBERT0  : 'flair9',
     SUBSCRIBERT2  : 'flair1',
     SUBSCRIBERT3  : 'flair3',
     SUBSCRIBERT4  : 'flair8',

@@ -11,6 +11,7 @@ use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Commerce\SubscriptionsService;
+use Destiny\Common\Authentication\AuthenticationService;
 
 class ApiAuthHandler {
     
@@ -37,22 +38,10 @@ class ApiAuthHandler {
         if (empty ( $user )) {
             return new Response ( Http::STATUS_FORBIDDEN, 'User not found' );
         }
-        $credentials = new SessionCredentials ( $user );
-        $credentials->setAuthProvider ( 'API' );
-        $credentials->addRoles ( UserRole::USER );
-        $credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $authToken ['userId'] ) );
-        $credentials->addRoles ( UserService::instance ()->getUserRolesByUserId ( $authToken ['userId'] ) );
-        $subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $authToken ['userId'] );
-        if (! empty ( $subscription )) {
-            $credentials->addRoles ( UserRole::SUBSCRIBER );
-            $credentials->addFeatures ( UserFeature::SUBSCRIBER );
-            if ($subscription ['subscriptionTier'] == 2) {
-                $credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
-            }
-            if ($subscription ['subscriptionTier'] == 3) {
-                $credentials->addFeatures ( UserFeature::SUBSCRIBERT3 );
-            }
-        }
+
+        $authenticationService = AuthenticationService::instance ();
+        $credentials = $authenticationService->getUserCredentials( $user, 'API');
+
         $response = new Response ( Http::STATUS_OK, json_encode ( $credentials->getData () ) );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         return $response;

@@ -61,8 +61,11 @@ class ChatController {
                 $line ['features'] = array ();
             }
             
-            if (! empty ( $line ['subscriber'] ) && $line ['subscriber'] == 1) {
+            if ( $line ['subscriber'] == 1) {
                 $line ['features'] [] = UserFeature::SUBSCRIBER;
+                if ($line ['istwitchsubscriber']) {
+                    $line ['features'] [] = UserFeature::SUBSCRIBERT0;
+                }
                 if ($line ['subscriptionTier'] == 2) {
                     $line ['features'] [] = UserFeature::SUBSCRIBERT2;
                 }
@@ -73,6 +76,7 @@ class ChatController {
                     $line ['features'] [] = UserFeature::SUBSCRIBERT4;
                 }
             }
+            unset($line ['istwitchsubscriber']); // do not leak the abstraction
             $lines [] = $line;
         }
 
@@ -91,7 +95,13 @@ class ChatController {
      * @param ViewModel $model
      */
     public function emotes(array $params, ViewModel $model) {
-        $response = new Response ( Http::STATUS_OK, json_encode ( Config::$a ['chat'] ['customemotes'] ) );
+        // just return every single one
+        $emotes = array_merge(
+            Config::$a ['chat'] ['customemotes'],
+            Config::$a ['chat'] ['twitchemotes']
+        );
+
+        $response = new Response ( Http::STATUS_OK, json_encode ( $emotes ) );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         return $response;
     }
