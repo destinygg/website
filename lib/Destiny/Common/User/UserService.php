@@ -773,6 +773,21 @@ class UserService extends Service {
     return !!$stmt->fetchColumn();
   }
 
+  public function getTwitchIDFromNick( $nick ) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare("
+      SELECT ua.authId
+      FROM dfl_users_auth AS ua
+      WHERE
+        ua.authProvider = 'twitch' AND
+        ua.authDetail   = :nick
+      LIMIT 1
+    ");
+    $stmt->bindValue('nick', $nick, \PDO::PARAM_STR);
+    $stmt->execute();
+    return $stmt->fetchColumn();
+  }
+
   /*
    * Expects an array with twitch users _id as keys and a 0 or 1 as value
    * to indicate whether the user is a subscriber or not
