@@ -67,6 +67,8 @@ return array (
 			'nathanDubs2',
 			'nathanDubs3',
 			'nathanParty',
+			'nathanDank',
+			'nathanFeels',
 		),
 	),
 	'redis' => array(
