@@ -176,9 +176,15 @@ class AuthenticationService extends Service {
         
         // Get the users active subscriptions
         $subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
-        if (! empty ( $subscription )) {
+        if (! empty ( $subscription ) or $user ['istwitchsubscriber']) {
             $credentials->addRoles ( UserRole::SUBSCRIBER );
             $credentials->addFeatures ( UserFeature::SUBSCRIBER );
+
+            if ( $user['istwitchsubscriber'] )
+                $credentials->addFeatures ( UserFeature::SUBSCRIBERT0 );
+        }
+
+        if (! empty( $subscription )) {
             if ($subscription ['subscriptionTier'] == 2) {
                 $credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
             }

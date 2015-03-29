@@ -114,6 +114,7 @@ CREATE TABLE `dfl_users` (
   `nameChangedCount` tinyint(4) DEFAULT '0',
   `nameChangedDate` datetime DEFAULT NULL,
   `allowGifting` tinyint(4) DEFAULT '1',
+  `istwitchsubscriber` INT NOT NULL DEFAULT  '0',
   PRIMARY KEY (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

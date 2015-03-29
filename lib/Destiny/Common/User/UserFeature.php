@@ -5,6 +5,7 @@ abstract class UserFeature {
     
     const PROTECT = 'protected';
     const SUBSCRIBER = 'subscriber';
+    const SUBSCRIBERT0 = 'flair9'; // twitch subscriber
     const SUBSCRIBERT2 = 'flair1';
     const SUBSCRIBERT3 = 'flair3';
     const SUBSCRIBERT4 = 'flair8';

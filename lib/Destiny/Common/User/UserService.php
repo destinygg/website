@@ -772,4 +772,123 @@ class UserService extends Service {
     $stmt->execute();
     return !!$stmt->fetchColumn();
   }
+
+  /*
+   * Expects an array with twitch users _id as keys and a 0 or 1 as value
+   * to indicate whether the user is a subscriber or not
+   * Returns an array of active subscribers (for announcing) with the
+   * key being the authid and the value being an array of user info(userid, username)
+   */
+  public function updateTwitchSubscriptions( $data ) {
+    if ( empty( $data ) )
+      return;
+
+    $conn = Application::instance ()->getConnection ();
+    $batchsize = 100;
+
+    $ids = array();
+    foreach( $data as $authid => $subscriber ) {
+      if ( !ctype_alnum( $authid ) )
+        throw new \Exception("Non alpha-numeric authid found: $authid");
+
+      $ids[]= $authid;
+    }
+
+    // we get the users connected to the twitch authids so that later we can
+    // update the users in batches efficiently and return the subs with
+    // the required information to the caller
+    // we default to a 1 for the istwitchsubscriber field because that is
+    // assumed to be the most common case, and we will need to do less work
+    // to later update the info for the nonsubs
+    $idToUser = array();
+    $infosql  = "
+      SELECT
+        u.username,
+        u.userId,
+        ua.authId,
+        '1' AS istwitchsubscriber
+      FROM
+        dfl_users_auth AS ua,
+        dfl_users AS u
+      WHERE
+        u.userId        = ua.userId AND
+        ua.authProvider = 'twitch' AND
+        ua.authId       IN('%s')
+    ";
+
+    // do it in moderate batches
+    $chunks = array_chunk($ids, $batchsize);
+    foreach($chunks as $chunk) {
+      $sql  = sprintf( $infosql, implode("', '", $chunk ) );
+      $stmt = $conn->prepare($sql);
+      $stmt->execute();
+
+      while($row = $stmt->fetch())
+        $idToUser[ $row['authId'] ] = $row;
+    }
+    unset($ids);
+
+    if ( empty( $idToUser ) )
+      return array();
+
+    $subs    = array();
+    $nonsubs = array();
+    foreach( $idToUser as $authid => $user ) {
+      if ( $data[ $authid ] )
+        $subs[] = $user['userId'];
+      else
+        $nonsubs[] = $user['userId'];
+    }
+
+    $subsql = "
+      UPDATE dfl_users AS u
+      SET u.istwitchsubscriber = %s
+      WHERE u.userId IN('%s')
+    ";
+
+    // update the subs first
+    $chunks = array_chunk($subs, $batchsize);
+    foreach($chunks as $chunk) {
+      $sql  = sprintf( $subsql, '1', implode("', '", $chunk ) );
+      $stmt = $conn->prepare($sql);
+      $stmt->execute();
+    }
+
+    // update nonsubs
+    $chunks = array_chunk($nonsubs, $batchsize);
+    foreach($chunks as $chunk) {
+      $sql  = sprintf( $subsql, '0', implode("', '", $chunk ) );
+      $stmt = $conn->prepare($sql);
+      $stmt->execute();
+    }
+    unset($subs, $nonsubs, $chunks);
+
+    // update the return data
+    foreach( $data as $authid => $subscriber) {
+      if (!$subscriber)
+        $idToUser[ $authid ]['istwitchsubscriber'] = '0';
+    }
+
+    return $idToUser;
+  }
+
+  public function getActiveTwitchSubscriptions() {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare("
+      SELECT ua.authId
+      FROM
+        dfl_users AS u,
+        dfl_users_auth AS ua
+      WHERE
+        u.userId             = ua.userId AND
+        u.istwitchsubscriber = 1
+    ");
+    $stmt->execute();
+
+    $ret = array();
+    while($row = $stmt->fetch())
+      $ret[] = $row['authId'];
+    
+    return $ret;
+  }
 }
