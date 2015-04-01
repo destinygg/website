@@ -224,7 +224,7 @@ chat.prototype.onMSG = function(data) {
 	else
 		var emoticon = data.data;
 	
-	if ($.inArray(emoticon, this.gui.emoticons) != -1) {
+	if ($.inArray(emoticon, this.gui.emoticons) != -1 || $.inArray(emoticon, this.gui.twitchemotes) != -1) {
 		if (this.previousemote && this.previousemote.message == emoticon) {
 			if(this.previousemote.emotecount === 1){
 				this.previousemote.emotecount = 2;
