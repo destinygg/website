@@ -941,6 +941,9 @@
 
         for (var i = 0; i < user.features.length; i++) {
             switch(user.features[i]){
+                case destiny.UserFeatures.SUBSCRIBERT0 :
+                    icons += '<i class="icon-minitwitch" title="Twitch subscriber"/>';
+                    break;
                 case destiny.UserFeatures.VIP :
                     icons += '<i class="icon-vip" title="VIP"/>';
                     break;
