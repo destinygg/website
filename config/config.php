@@ -60,7 +60,6 @@ return array (
 			'LIES',
 			'LeRuse',
 			'YEE',
-			'F',
 		),
 		'twitchemotes' => array(
 			'nathanDad',

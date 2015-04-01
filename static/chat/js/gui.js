@@ -936,7 +936,7 @@
         }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, user.features) >= 0){
             icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
         }else if($.inArray(destiny.UserFeatures.SUBSCRIBER, user.features) >= 0){
-            icons += '<i class="icon-subscriber" title="Subscriber (T1/T0)"/>';
+            icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
         }
 
         for (var i = 0; i < user.features.length; i++) {
