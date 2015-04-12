@@ -29,7 +29,7 @@ sub vcl_recv {
 	set req.grace = 2m;
 	
 	// do not do anything with the dev/phpma/dba site
-	if (req.http.host ~ "(dev|phpma)\.destiny\.gg$") {
+	if (req.http.host ~ "(stage|dev|phpma)\.destiny\.gg$") {
 		return (pass);
 	}
 	
