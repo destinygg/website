@@ -33,7 +33,7 @@ use Destiny\Common\Config;
         <div class="clearfix">
           <div class="chat-input-wrap">
             <div class="chat-input-control">
-              <input type="text" placeholder="Enter a message..." class="input" autocomplete="off" spellcheck="true"/>
+              <input type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
             </div>
           </div>
           <div class="chat-tools-wrap">
