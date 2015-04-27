@@ -37,6 +37,16 @@ use Destiny\Common\Config;
                     </a>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4 amazon-referral">
+                    <a href="http://www.amazon.de/?tag=destiny0f-21">
+                        <h2>Germany</h2>
+                        <img alt="amazon.de" width="250" height="65" src="<?=Config::cdn()?>/web/img/amazon.de.jpg" />
+                    </a>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
         </div>
     </div>
     <?php include Tpl::file('seg/foot.php') ?>
