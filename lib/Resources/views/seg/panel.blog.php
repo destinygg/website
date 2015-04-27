@@ -20,10 +20,10 @@ if (! empty ( $model->articles )) :
 						</div>
 						<div>
 							<?php if(count($article['categories']) > 0): ?>
-							<span>
-								<small>Posted in</small> 
+							<small>
+								Posted in 
 								<?= join(", ", $article['categories']); ?>
-							</span>
+							</small> 
 							<?php endif; ?>
 						</div>
 						<?=Tpl::moment(Date::getDateTime($article['date']),Date::FORMAT)?>
@@ -45,10 +45,10 @@ if (! empty ( $model->articles )) :
 						</div>
 						<div>
 							<?php if(count($article['categories']) > 0): ?>
-							<span>
-								<small>Posted in</small> 
+							<small>
+								Posted in 
 								<?= join(", ", $article['categories']); ?>
-							</span>
+							</small> 
 							<?php endif; ?>
 						</div>
 						<?=Tpl::moment(Date::getDateTime($article['date']),Date::FORMAT)?>
