@@ -34,9 +34,7 @@ class BlogApiService extends Service {
     public function getBlogPosts(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
             'timeout' => 25,
-            'url' => new String ( 'http://blog.destiny.gg/?feed=json&limit={limit}', array (
-                'limit' => 6 
-            ) ),
+            'url' => 'http://blog.destiny.gg/feed/json',
             'contentType' => MimeType::JSON,
             'onfetch' => function ($json) {
                 if (empty($json) || !is_array($json)) {
