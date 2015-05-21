@@ -249,7 +249,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <tbody>
         <?php foreach($model->user['ips'] as $ip): ?>
           <tr>
-            <td><?=Tpl::out($ip)?></td>
+            <td><a target="_blank" href="http://www.iplocation.net/?query=<?=rawurlencode($ip)?>"><?=Tpl::out($ip)?></a></td>
           </tr>
         <?php endforeach; ?>
         </tbody>
