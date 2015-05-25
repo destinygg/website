@@ -1,16 +1,14 @@
 (function($){
 	
 	// Chat message formatters
-	// must have two methods, a constructor and a .format(message, user) method
+	// must have two methods, a constructor and a .format(message[, user]) method
 	
 	// Green Text formatter
 	destiny.fn.GreenTextFormatter = function(chat){
 		return this;
 	}
 	destiny.fn.GreenTextFormatter.prototype.format = function(str, user){
-
-
-		if(str.indexOf("&gt;") === 0){
+		if(user && str.indexOf("&gt;") === 0){
             if(
                 $.inArray(destiny.UserFeatures.SUBSCRIBERT3, user.features) > -1 ||
                 $.inArray(destiny.UserFeatures.SUBSCRIBERT4, user.features) > -1 ||
@@ -72,7 +70,7 @@
 			return htmlencmap[c];
 		});
 	};
-	destiny.fn.UrlFormatter.prototype.format = function(str, user){
+	destiny.fn.UrlFormatter.prototype.format = function(str){
 		if (!str) return;
 		var nsfw      = (/\b(?:NSFW|SPOILER)\b/i.test(str)),
 		    nsfl      = (/\b(?:NSFL)\b/i.test(str)),
