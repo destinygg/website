@@ -1,0 +1,1 @@
+ALTER TABLE `dfl_users` ADD COLUMN `istwitchsubscriber` INT(11) NULL;
