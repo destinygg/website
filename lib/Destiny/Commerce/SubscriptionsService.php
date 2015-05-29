@@ -46,7 +46,7 @@ class SubscriptionsService extends Service {
         }
 
         // Expire NONE recurring subs immediately
-        $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE recurring = 0 AND status = :status AND endDate <= NOW()' );
+        $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE (recurring = 0 OR recurring IS NULL) AND status = :status AND endDate <= NOW()' );
         $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
         $stmt->execute ();
         $subscriptions = $stmt->fetchAll ();
