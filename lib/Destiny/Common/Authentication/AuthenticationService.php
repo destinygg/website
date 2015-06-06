@@ -104,14 +104,14 @@ class AuthenticationService extends Service {
      * @param array $user
      * @throws Exception
      */
-    public function validateEmail($email, array $user = null) {
+    public function validateEmail($email, array $user = null, $skipusercheck = null) {
         if (! filter_var ( $email, FILTER_VALIDATE_EMAIL ))
             throw new Exception ( 'A valid email is required' );
         
-        if (! empty ( $user )) {
+        if (! $skipusercheck and ! empty ( $user )) {
             if (UserService::instance ()->getIsEmailTaken ( $email, $user ['userId'] ))
                 throw new Exception ( 'The email you asked for is already being used' );
-        } else {
+        } elseif (! $skipusercheck ) {
             if (UserService::instance ()->getIsEmailTaken ( $email ))
                 throw new Exception ( 'The email you asked for is already being used' );
         }

@@ -18,7 +18,10 @@ class AuthenticationRedirectionFilter {
             Application::instance ()->getLogger ()->error ( sprintf ( 'Error validating auth credentials %s', var_export ( $authCreds, true ) ) );
             throw new Exception ( 'Invalid auth credentials' );
         }
-        
+
+        if ($authCreds->getEmail())
+            $authService->validateEmail( $authCreds->getEmail(), null, true );
+
         // Account merge
         if (Session::set ( 'accountMerge' ) === '1') {
             // Must be logged in to do a merge
