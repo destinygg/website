@@ -115,6 +115,11 @@ class AuthenticationService extends Service {
             if (UserService::instance ()->getIsEmailTaken ( $email ))
                 throw new Exception ( 'The email you asked for is already being used' );
         }
+
+        $emailDomain = strtolower( substr( $email, strpos( $email, '@' ) + 1 ) );
+        if ( isset( Config::$a ['blacklistedDomains'][ $emailDomain ] ) )
+            throw new Exception ( 'The email is blacklisted' );
+
     }
 
     /**

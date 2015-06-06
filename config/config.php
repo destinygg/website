@@ -1,5 +1,8 @@
 <?php
 return array (
+	// the key is the LOWERCASE domain to blacklist, the value is something non-null
+	'blacklistedDomains' => array(
+	),
 	'cacheAnnotations'		=> true, // If TRUE, stores the annotation definitions in files /tmp/annotations/ (these need to be cleared if changes are made to annotations)
 	'allowImpersonation'	=> false, // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
 	'profile' => array(
