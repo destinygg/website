@@ -138,7 +138,8 @@ return array (
 	'cookie' => array (
 		'domain' 		=> '',
 		'name' 			=> 'sid',
-		'path' 			=> '/' 
+		'path' 			=> '/',
+		'httponly'		=> true,
 	),
 	'tpl' => array (
 		'path' 			=> _BASEDIR . '/lib/Resources/views/',

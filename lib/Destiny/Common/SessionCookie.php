@@ -32,6 +32,9 @@ class SessionCookie {
      */
     protected $domain = '';
 
+    protected $secure = false;
+    protected $httponly = true;
+
     /**
      * Setup the cookie interface
      *
@@ -59,6 +62,14 @@ class SessionCookie {
         return $this->domain;
     }
 
+    public function getSecure() {
+        return $this->secure;
+    }
+
+    public function getHttpOnly() {
+        return $this->httponly;
+    }
+
     public function setName($name) {
         $this->name = $name;
     }
@@ -73,6 +84,14 @@ class SessionCookie {
 
     public function setDomain($domain) {
         $this->domain = $domain;
+    }
+
+    public function setSecure($secure) {
+        $this->secure = $secure;
+    }
+
+    public function setHttpOnly($httponly) {
+        $this->httponly = $httponly;
     }
 
     /**
