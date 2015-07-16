@@ -42,7 +42,7 @@ class RegistrationController {
                 throw new Exception ( 'Invalid authentication information' );
             }
         } else {
-            throw new Exception ( 'Invalid authentication session' );
+            throw new Exception ( 'Could not retrieve session data. Possibly due to cookies not being enabled.' );
         }
         return $authSession;
     }

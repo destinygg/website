@@ -6,20 +6,6 @@ use Destiny\Chat\ChatIntegrationService;
 abstract class Session {
 
     /**
-     * Start flag start the cookie regardless of existing cookie
-     *
-     * @var int
-     */
-    const START_NOCOOKIE = 1;
-
-    /**
-     * Start flag start the session only if the cookie is available
-     *
-     * @var int
-     */
-    const START_IFCOOKIE = 2;
-
-    /**
      * Get the session interface
      *
      * @return SessionInstance
@@ -29,28 +15,22 @@ abstract class Session {
     }
 
     /**
-     * Return true if there is a session cookie and its not empty
+     * Returns true if the session cookie isset and has value
+     */
+    public static function hasSessionCookie() {
+        $session = self::instance ();
+        $sid = $session->getSessionCookie ()->getValue ();
+        return !empty($sid);
+    }
+
+    /**
+     * Start the session if not already started
      *
-     * @param START_IFCOOKIE|START_NOCOOKIE $flag
      * @return boolean
      */
-    public static function start($flag) {
+    public static function start() {
         $session = self::instance ();
-        if (! $session->isStarted ()) {
-            switch ($flag) {
-                case self::START_IFCOOKIE :
-                    $sid = $session->getSessionCookie ()->getCookie ();
-                    if (! empty ( $sid )) {
-                        ChatIntegrationService::instance ()->renewChatSessionExpiration ( $sid );
-                        return $session->start ();
-                    }
-                    return false;
-
-                case self::START_NOCOOKIE :
-                    return $session->start ();
-            }
-        }
-        return false;
+        return (!$session->isStarted()) ? $session->start () : true;
     }
 
     /**

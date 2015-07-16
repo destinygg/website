@@ -87,9 +87,6 @@ return array (
 		'timeout'			=> 30,
 		'connecttimeout'	=> 5
 	),
-	'rememberme' => array(
-		'cookieName'		=> 'rememberme'
-	),
 	'authProfiles' => array (
 		'twitch',
 		'google',
@@ -135,10 +132,18 @@ return array (
 	'cdn' => array (
 		'domain' 		=> '' 
 	),
+	'rememberme' => array (
+		'domain' 		=> '',
+		'name' 			=> 'rememberme',
+		'path' 			=> '/',
+		'secure'        => false,
+		'httponly'		=> true
+	),
 	'cookie' => array (
 		'domain' 		=> '',
 		'name' 			=> 'sid',
 		'path' 			=> '/',
+		'secure'        => false,
 		'httponly'		=> true,
 	),
 	'tpl' => array (

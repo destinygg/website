@@ -27,20 +27,6 @@ class AuthenticationService extends Service {
     protected static $instance = null;
     
     /**
-     * The name of the remember me cookie
-     *
-     * @var string
-     */
-    protected $remembermeId= '';
-    
-    /**
-     * The salt for the token
-     *
-     * @var string
-     */
-    protected $remembermeSalt = 'r3xCdvd_sqe';
-    
-    /**
      * Singleton
      *
      * @return AuthenticationService
@@ -48,7 +34,6 @@ class AuthenticationService extends Service {
     public static function instance() {
         if (static::$instance === null) {
             static::$instance = new static ();
-            static::$instance->remembermeId = Config::$a ['rememberme'] ['cookieName'];
         }
         return static::$instance;
     }
@@ -123,42 +108,51 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Check if a user has been flagged for updates, and refreshes the session credentials
+     * Starts up the session, looks for remember me if there was no session
+     * Also updates the session if the user is flagged for it.
+     *
      * @throws Exception
      */
-    public function init() {
-        $app = Application::instance ();
-        // Check if the users session has been flagged for update
-        if (Session::isStarted ()) {
-            $userId = Session::getCredentials ()->getUserId ();
-            $lastUpdate = $this->isUserFlaggedForUpdate ( $userId );
-            if (! empty ( $userId ) && $lastUpdate !== false) {
-                $this->clearUserUpdateFlag ( $userId, $lastUpdate );
-                $userManager = UserService::instance ();
-                $user = $userManager->getUserById ( $userId );
+    public function startSession() {
+
+        // If the session has a cookie, start it
+        if ( Session::hasSessionCookie () && Session::start() && Session::hasRole ( UserRole::USER ) ) {
+            ChatIntegrationService::instance ()->renewChatSessionExpiration ( Session::getSessionId () );
+        }
+
+        // Check the Remember me cookie if the session is invalid
+        if( !Session::hasRole ( UserRole::USER ) ){
+            $rememberMe = $this->getRememberMe ();
+            if (!empty($rememberMe) && isset($rememberMe['userId']) && !empty ( $rememberMe['userId'] )) {
+                $user = UserService::instance ()->getUserById ( $rememberMe['userId'] );
                 if (! empty ( $user )) {
-                    // Check the user status
-                    if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
-                        throw new Exception ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
-                    }
-                    $credentials = $this->getUserCredentials ( $user, 'session' );
-                    Session::updateCredentials ( $credentials );
-                    ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
+
+                    Session::start();
+                    Session::updateCredentials ( $this->getUserCredentials ( $user, 'rememberme' ) );
+
+                    // This writes to the DB a bit more than it needs to, low impact, leaving here.
+                    $this->setRememberMe ( $user );
+
+                    // flagUserForUpdate updates the credentials AGAIN, but since its low impact
+                    // Instead of doing the logic in two places 
+                    $this->flagUserForUpdate ( $user['userId'] );
                 }
             }
         }
-    }
 
-    /**
-     * Logout a user
-     */
-    public function logout() {
-        ChatIntegrationService::instance ()->deleteChatSession ();
-        $userId = Session::getCredentials ()->getUserId ();
-        if (! empty ( $userId )) {
-            $this->clearRememberMe ( $userId );
+        // Update the user if they have been flagged for an update
+        if( Session::hasRole ( UserRole::USER ) ) {
+            $userId = Session::getCredentials ()->getUserId ();
+            if( !empty($userId) && $this->isUserFlaggedForUpdate ( $userId ) ){
+                $user = UserService::instance ()->getUserById ( $userId );
+                if ( !empty ( $user ) ) {
+                    $this->clearUserUpdateFlag ( $userId );
+                    Session::updateCredentials ( $this->getUserCredentials ( $user, 'session' ) );
+                    // the refreshChatSession differs from this call, because only here we have access to the session id.
+                    ChatIntegrationService::instance ()->setChatSession ( Session::getCredentials(), Session::getSessionId () );
+                }
+            }
         }
-        Session::destroy ();
     }
 
     /**
@@ -172,14 +166,9 @@ class AuthenticationService extends Service {
         $credentials = new SessionCredentials ( $user );
         $credentials->setAuthProvider ( $authProvider );
         $credentials->addRoles ( UserRole::USER );
-        
-        // Add the user features
         $credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
-        
-        // Get the stored roles
         $credentials->addRoles ( UserService::instance ()->getUserRolesByUserId ( $user ['userId'] ) );
-        
-        // Get the users active subscriptions
+
         $subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
         if (! empty ( $subscription ) or $user ['istwitchsubscriber']) {
             $credentials->addRoles ( UserRole::SUBSCRIBER );
@@ -204,20 +193,6 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Check if a auth profile exists for a user
-     *
-     * @param AuthenticationCredentials $authCreds
-     * @return boolean
-     */
-    public function getUserAuthProfileExists(AuthenticationCredentials $authCreds) {
-        $user = UserService::instance ()->getUserByAuthId ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
-        if (empty ( $user )) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Handles the credentials after authorization
      *
      * @param array $authCreds
@@ -227,7 +202,6 @@ class AuthenticationService extends Service {
         $userService = UserService::instance ();
         $user = $userService->getUserByAuthId ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
         
-        // Make sure there is a user
         if (empty ( $user )) {
             throw new Exception ( 'Invalid auth user' );
         }
@@ -242,11 +216,6 @@ class AuthenticationService extends Service {
             ) );
         }
         
-        // Check the user status
-        if (strcasecmp ( $user ['userStatus'], 'Active' ) !== 0) {
-            throw new Exception ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
-        }
-        
         // Renew the session upon successful login, makes it slightly harder to hijack
         $session = Session::instance ();
         $session->renew ( true );
@@ -255,6 +224,7 @@ class AuthenticationService extends Service {
         Session::updateCredentials ( $credentials );
         ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
         
+        // Variable is sent from the login form
         if (Session::set ( 'rememberme' )) {
             $this->setRememberMe ( $user );
         }
@@ -262,6 +232,7 @@ class AuthenticationService extends Service {
 
     /**
      * Handles the authentication and then merging of accounts
+     * Merging of an account is basically connecting multiple authenticators to one user
      *
      * @param AuthenticationCredentials $authCreds
      * @throws Exception
@@ -297,150 +268,93 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Generates a rememberme record
+     * Generates a rememberme record and cookie
+     * Note the rememberme cookie has a long expiry unlike the session cookie
      *
      * @param array $user
      */
-    public function setRememberMe(array $user) {
-        $this->clearRememberMe ( $user ['userId'] );
+    protected function setRememberMe(array $user) {
+        $rememberMeService = RememberMeService::instance ();
+        $cookie = Session::instance()->getRememberMeCookie();
+        $token = $cookie->getValue();
+
+        // Clean out old token
+        if (! empty ( $token )) {
+            $rememberMeService->deleteRememberMe ( $user ['userId'], $token, 'rememberme' );
+            $cookie->clearCookie();
+        }
+
+        // Create the new token and record
         $createdDate = Date::getDateTime ( 'NOW' );
         $expireDate = Date::getDateTime ( 'NOW + 30 day' );
-        $token = md5 ( $user ['userId'] . $createdDate->getTimestamp () . $expireDate->getTimestamp () . $this->remembermeSalt );
-        $rememberMeService = RememberMeService::instance ();
+        $token = md5 ( $user ['userId'] . $createdDate->getTimestamp () . $expireDate->getTimestamp () . rand(1000, 9999) );
         $rememberMeService->addRememberMe ( $user ['userId'], $token, 'rememberme', $expireDate, $createdDate );
-        $this->setRememberMeCookie ( $token, $createdDate, $expireDate );
+        $cookie->setValue ( $token, $expireDate->getTimestamp () );
         return $token;
     }
 
     /**
-     * Returns the current userId of the remember me cookie
-     * Also performs validation on the cookie and the record in the Db
-     * Does not touch the DB unless there is a valid remember me cookie
+     * Returns the remember me record for the current cookie
      *
-     * @return int false
+     * @return array
      */
-    public function getRememberMe() {
-        $cookie = $this->getRememberMeCookie ();
-        if (! empty ( $cookie ) && isset ( $cookie ['created'] ) && isset ( $cookie ['expire'] ) && isset ( $cookie ['token'] )) {
-            $rememberMeService = RememberMeService::instance ();
-            $rememberMe = $rememberMeService->getRememberMe ( $cookie ['token'], 'rememberme' );
-            if (! empty ( $rememberMe )) {
-                try {
-                    if (Date::getDateTime ( $rememberMe ['createdDate'] ) != Date::getDateTime ( $cookie ['created'] )) {
-                        throw new Exception ( 'Token invalid [createdDate] does not match' );
-                    }
-                    if (Date::getDateTime ( $rememberMe ['expireDate'] ) != Date::getDateTime ( $cookie ['expire'] )) {
-                        throw new Exception ( 'Token invalid [expireDate] does not match' );
-                    }
-                    if ($cookie ['token'] != md5 ( $rememberMe ['userId'] . Date::getDateTime ( $rememberMe ['createdDate'] )->getTimestamp () . Date::getDateTime ( $rememberMe ['expireDate'] )->getTimestamp () . $this->remembermeSalt )) {
-                        throw new Exception ( 'Token invalid [token] does not match' );
-                    }
-                } catch ( Exception $e ) {
-                    $this->clearRememberMe ( $rememberMe ['userId'] );
-                    Application::instance ()->getLogger ()->error ( sprintf ( 'Remember-me: %s', $e->getMessage () ) );
-                    return false;
-                }
-                return $rememberMe ['userId'];
+    protected function getRememberMe() {
+        $rememberMeService = RememberMeService::instance ();
+        $cookie = Session::instance()->getRememberMeCookie();
+        $token = $cookie->getValue();
+        $rememberMe = null;
+
+        // throw back to when I used a json string in the rememberme cookie
+        // this is here so no-ones remember me cookie failed after upgrade.
+        if(!empty($token) && $token[0] == "{"){
+            $cookieData = json_decode ( $cookieData, true );
+            if(!empty ( $cookieData ) && isset($cookieData ['token'])){
+                $token = $cookieData ['token'];
             }
         }
-        return false;
-    }
 
-    /**
-     * Clear the local rememberme cookie
-     *
-     * @param int $userId
-     */
-    public function clearRememberMe($userId) {
-        $cookie = $this->getRememberMeCookie ();
-        if (! empty ( $cookie )) {
-            $rememberMeService = RememberMeService::instance ();
-            $rememberMeService->deleteRememberMe ( $userId, $cookie ['token'], 'rememberme' );
+        // If the token is not empty query the DB for the remember me record
+        if (! empty ( $token )) {
+            $rememberMe = $rememberMeService->getRememberMe ( $token, 'rememberme' );
         }
-        $this->clearRememberMeCookie ();
-    }
-
-    /**
-     * Set the remember me cookie
-     *
-     * @param string $token
-     * @param DateTime $createdDate
-     * @param DateTime $expireDate
-     * @param int $expire
-     */
-    private function setRememberMeCookie($token, \DateTime $createdDate, \DateTime $expireDate) {
-        $value = json_encode ( array (
-            'expire' => $expireDate->getTimestamp (),
-            'created' => $createdDate->getTimestamp (),
-            'token' => $token 
-        ) );
-        setcookie ( $this->remembermeId, $value, $expireDate->getTimestamp (), Config::$a ['cookie'] ['path'], Config::$a ['cookie'] ['domain'] );
-    }
-
-    /**
-     * Return the current rememberme cookie
-     *
-     * @return array null
-     */
-    private function getRememberMeCookie() {
-        if (isset ( $_COOKIE [$this->remembermeId] ) && ! empty ( $_COOKIE [$this->remembermeId] )) {
-            return json_decode ( $_COOKIE [$this->remembermeId], true );
-        }
-        return null;
-    }
-
-    /**
-     * Clear the current user remember me cookie
-     */
-    private function clearRememberMeCookie() {
-        if (isset ( $_COOKIE [$this->remembermeId] )) {
-            unset ( $_COOKIE [$this->remembermeId] );
-        }
-        setcookie ( $this->remembermeId, '', time () - 3600, Config::$a ['cookie'] ['path'], Config::$a ['cookie'] ['domain'] );
+        return $rememberMe;
     }
 
     /**
      * Flag a user session for update
+     * So that on their next request, the session data is updated.
+     * Also does a chat session refresh
+     *
      * @param int $userId
      */
     public function flagUserForUpdate($userId) {
         $user = UserService::instance ()->getUserById ( $userId );
-        $credentials = $this->getUserCredentials ( $user, 'session' );
-        
-        if (Session::instance () != null && Session::getCredentials ()->getUserId () == $userId) {
-            // Update the current session if the userId is the same as the credential user id
-            Session::updateCredentials ( $credentials );
-            // Init / create the current users chat session
-            ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
-        } else {
-            // Otherwise set a session variable which is picked up by the remember me service to update the session
+        if(!empty($user)){
             $cache = Application::instance ()->getCacheDriver ();
             $cache->save ( sprintf ( 'refreshusersession-%s', $userId ), time (), intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
+            ChatIntegrationService::instance ()->refreshChatUserSession ( $this->getUserCredentials ( $user, 'session' ) );
         }
-        ChatIntegrationService::instance ()->refreshChatUserSession ( $credentials );
+    }
+
+    /**
+     * Removes the user update flag
+     *
+     * @param int $userId
+     */
+    protected function clearUserUpdateFlag($userId) {
+        $cache = Application::instance ()->getCacheDriver ();
+        $cache->delete ( sprintf ( 'refreshusersession-%s', $userId ));
     }
 
     /**
      * Check if the user has been flagged for update
      *
      * @param int $userId
-     * @return last update time | false
      */
-    private function isUserFlaggedForUpdate($userId) {
+    protected function isUserFlaggedForUpdate($userId) {
         $cache = Application::instance ()->getCacheDriver ();
         $lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
-        return ($lastUpdated && $lastUpdated != Session::get ( 'lastUpdated' )) ? $lastUpdated : false;
-    }
-
-    /**
-     * Updates the session last updated time to match the cache time
-     *
-     * @param int $userId
-     * @param int $lastUpdated
-     * @return boolean
-     */
-    private function clearUserUpdateFlag($userId, $lastUpdated) {
-        Session::set ( 'lastUpdated', $lastUpdated );
+        return !empty ($lastUpdated);
     }
 
 }

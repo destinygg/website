@@ -69,11 +69,12 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Delete the session for the chat user
+     * Delete the session for the chat user         
+     * @param string $sessionId         
      */
-    public function deleteChatSession() {
+    public function deleteChatSession($sessionId) {
         $redis = Application::instance ()->getRedis ();
-        $redis->delete ( sprintf ( 'CHAT:session-%s', Session::getSessionId () ) );
+        $redis->delete ( sprintf ( 'CHAT:session-%s', $sessionId ) );
     }
 
     /**

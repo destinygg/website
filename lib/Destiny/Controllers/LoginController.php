@@ -14,6 +14,7 @@ use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
+use Destiny\Chat\ChatIntegrationService;
 
 /**
  * @Controller
@@ -26,7 +27,10 @@ class LoginController {
      * @param array $params         
      */
     public function logout(array $params) {
-        AuthenticationService::instance ()->logout ();
+        if(Session::isStarted()){
+            ChatIntegrationService::instance ()->deleteChatSession ( Session::getSessionId () );
+            Session::destroy ();
+        }
         return 'redirect: /';
     }
     
@@ -66,7 +70,8 @@ class LoginController {
             return 'login';
         }
         
-        Session::start ( Session::START_NOCOOKIE );
+        Session::start ();
+        
         if ($rememberme) {
             Session::set ( 'rememberme', 1 );
         }

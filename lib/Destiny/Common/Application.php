@@ -107,13 +107,22 @@ class Application extends Service {
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
             $this->handleResponse ( $response );
         }
-        
-        // Security checks
-        if (! $this->hasRouteSecurity ( $route, Session::getCredentials () )) {
-            $model->title = Http::$HEADER_STATUSES [Http::STATUS_UNAUTHORIZED];
-            $response = new Response ( Http::STATUS_UNAUTHORIZED );
-            $response->setBody ( $this->template ( 'errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
-            $this->handleResponse ( $response );
+
+        if( $route->isSecure () ){
+            if(strcasecmp ( Session::getCredentials ()->getUserStatus(), 'Active' ) !== 0){
+                $response = new Response ( Http::STATUS_ERROR );
+                $model->error = new Exception ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
+                $model->code = Http::STATUS_ERROR;
+                $model->title = 'Inactive user';
+                $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
+                $this->handleResponse ( $response );
+            }
+            if (! $this->hasRouteSecurity ( $route, Session::getCredentials () )) {
+                $response = new Response ( Http::STATUS_UNAUTHORIZED );
+                $model->title = Http::$HEADER_STATUSES [Http::STATUS_UNAUTHORIZED];
+                $response->setBody ( $this->template ( 'errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
+                $this->handleResponse ( $response );
+            }
         }
         
         try {
@@ -250,7 +259,7 @@ class Application extends Service {
         if (! empty ( $secure )) {
             foreach ( $secure as $role ) {
                 if (! $credentials->hasRole ( $role )) {
-                return false;
+                    return false;
                 }
             }
         }
@@ -258,7 +267,7 @@ class Application extends Service {
         if (! empty ( $features )) {
             foreach ( $features as $feature ) {
                 if (! $credentials->hasFeature ( $feature )) {
-                return false;
+                    return false;
                 }
             }
         }

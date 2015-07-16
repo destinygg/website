@@ -1,8 +1,8 @@
 <?php
 use Destiny\Common\Application;
 use Destiny\Common\SessionCredentials;
-use Destiny\Common\SessionCookie;
 use Destiny\Common\SessionInstance;
+use Destiny\Common\Cookie;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Routing\Router;
@@ -29,16 +29,13 @@ RouteAnnotationClassLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR 
 
 // Setup user session
 $session = new SessionInstance ();
-$session->setSessionCookie ( new SessionCookie ( Config::$a ['cookie'] ) );
+$session->setSessionCookie ( new Cookie ( Config::$a ['cookie'] ) );
+$session->setRememberMeCookie ( new Cookie ( Config::$a ['rememberme'] ) );
 $session->setCredentials ( new SessionCredentials () );
 $app->setSession ( $session );
 
-// Start the session if a valid session cookie is found
-Session::start ( Session::START_IFCOOKIE );
-
-// Startup the remember me and auth service
-AuthenticationService::instance ()->init ();
-RememberMeService::instance ()->init ();
+// Startup the authentication service, handles logged in session, remember me session
+AuthenticationService::instance ()->startSession();
 
 // Attempts to find a route and execute it
 $app->executeRequest ( new Request() );

@@ -229,6 +229,20 @@ class UserService extends Service {
     return $stmt->fetch ();
   }
 
+  public function getUserAuthProviderExists($authId, $authProvider) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare ( '
+      SELECT COUNT(*) FROM dfl_users_auth AS a 
+      INNER JOIN dfl_users AS u ON (u.userId = a.userId)
+      WHERE a.authId = :authId AND a.authProvider = :authProvider 
+      LIMIT 1
+    ' );
+    $stmt->bindValue ( 'authId', $authId, \PDO::PARAM_STR );
+    $stmt->bindValue ( 'authProvider', $authProvider, \PDO::PARAM_STR );
+    $stmt->execute ();
+    return ($stmt->fetchColumn () > 0) ? true : false;
+  }
+
   /**
    * Return a users auth profile
    *

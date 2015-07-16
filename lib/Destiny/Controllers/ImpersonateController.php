@@ -50,7 +50,7 @@ class ImpersonateController {
         }
         
         $credentials = $authService->getUserCredentials ( $user, 'impersonating' );
-        Session::start ( Session::START_NOCOOKIE );
+        Session::start ();
         Session::updateCredentials ( $credentials );
         ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
         return 'redirect: /';

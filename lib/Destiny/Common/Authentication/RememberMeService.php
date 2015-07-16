@@ -26,31 +26,6 @@ class RememberMeService extends Service {
     }
 
     /**
-     * Checks the users current session status
-     * Does a remember me login
-     * @return void
-     */
-    public function init() {
-        $app = Application::instance ();
-        $authService = AuthenticationService::instance ();
-        // If the session hasnt started, or the data is not valid (result from php clearing the session data), check the Remember me cookie
-        if (! Session::isStarted () || ! Session::getCredentials ()->isValid ()) {
-            $userId = $authService->getRememberMe ();
-            if ($userId !== false) {
-                $userManager = UserService::instance ();
-                $user = $userManager->getUserById ( $userId );
-                if (! empty ( $user )) {
-                    Session::start ( Session::START_NOCOOKIE );
-                    $credentials = $authService->getUserCredentials ( $user, 'rememberme' );
-                    Session::updateCredentials ( $credentials );
-                    ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
-                    $authService->setRememberMe ( $user );
-                }
-            }
-        }
-    }
-
-    /**
      * Clear expired rememberme's
      *
      * @return void

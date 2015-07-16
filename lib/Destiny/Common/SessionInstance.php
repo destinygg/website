@@ -22,9 +22,16 @@ class SessionInstance {
     /**
      * The session cookie
      *
-     * @var SessionCookie
+     * @var Cookie
      */
     protected $sessionCookie = null;
+    
+    /**
+     * The remember me cookie
+     *
+     * @var Cookie
+     */
+    protected $rememberMeCookie = null;
     
     /**
      * The session authentication
@@ -79,8 +86,8 @@ class SessionInstance {
      * @return void
      */
     public function destroy() {
-        $cookie = $this->getSessionCookie ();
-        $cookie->clearCookie ();
+        $this->getSessionCookie ()->clearCookie ();
+        $this->getRememberMeCookie ()->clearCookie ();
         if ($this->isStarted ()) {
             session_destroy ();
             $_SESSION = array ();
@@ -100,7 +107,7 @@ class SessionInstance {
     /**
      * Set the auth credentials
      *
-     * @param unknown_type $credentials
+     * @param \Destiny\Cookie $credentials
      */
     public function setCredentials(SessionCredentials $credentials) {
         $this->credentials = $credentials;
@@ -109,7 +116,7 @@ class SessionInstance {
     /**
      * Get the session cookie
      *
-     * @return \Destiny\SessionCookie
+     * @return \Destiny\Cookie
      */
     public function getSessionCookie() {
         return $this->sessionCookie;
@@ -118,9 +125,9 @@ class SessionInstance {
     /**
      * Set the session cookie
      *
-     * @param unknown_type $sessionCookie
+     * @param \Destiny\Cookie $sessionCookie
      */
-    public function setSessionCookie(SessionCookie $sessionCookie) {
+    public function setSessionCookie(Cookie $sessionCookie) {
         $this->sessionCookie = $sessionCookie;
         session_set_cookie_params (
             $sessionCookie->getLife (),
@@ -130,6 +137,24 @@ class SessionInstance {
             $sessionCookie->getHttpOnly ()
         );
         session_name ( $sessionCookie->getName () );
+    }
+
+    /**
+     * Get the remember me cookie
+     *
+     * @return \Destiny\Cookie
+     */
+    public function getRememberMeCookie() {
+        return $this->rememberMeCookie;
+    }
+
+    /**
+     * Set the remember me cookie
+     *
+     * @param \Destiny\Cookie $sessionCookie
+     */
+    public function setRememberMeCookie(Cookie $sessionCookie) {
+        $this->rememberMeCookie = $sessionCookie;
     }
 
     /**

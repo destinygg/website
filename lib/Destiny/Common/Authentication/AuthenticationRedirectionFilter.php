@@ -3,6 +3,7 @@ namespace Destiny\Common\Authentication;
 
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
@@ -12,6 +13,7 @@ class AuthenticationRedirectionFilter {
     
     public function execute(AuthenticationCredentials $authCreds) {
         $authService = AuthenticationService::instance ();
+        $userService = UserService::instance ();
         
         // Make sure the creds are valid
         if (! $authCreds->isValid ()) {
@@ -36,7 +38,7 @@ class AuthenticationRedirectionFilter {
         $follow = Session::set( 'follow' );
 
         // If the user profile doesnt exist, go to the register page
-        if (! $authService->getUserAuthProfileExists ( $authCreds )) {
+        if (! $userService->getUserAuthProviderExists ( $authCreds->getAuthId (), $authCreds->getAuthProvider () )) {
             Session::set ( 'authSession', $authCreds );
             $url = '/register?code=' . urlencode ( $authCreds->getAuthCode () );
             if (! empty( $follow )) {

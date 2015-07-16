@@ -134,4 +134,8 @@ class Route {
         $this->feature = $feature;
     }
 
+    public function isSecure() {
+        return !empty($this->secure) || !empty($this->feature);
+    }
+
 }
