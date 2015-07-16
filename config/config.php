@@ -133,16 +133,8 @@ return array (
 	'cdn' => array (
 		'domain' 		=> '' 
 	),
-	'rememberme' => array (
-		'domain' 		=> '',
-		'name' 			=> 'rememberme',
-		'path' 			=> '/',
-		'secure'        => false,
-		'httponly'		=> true
-	),
 	'cookie' => array (
 		'domain' 		=> '',
-		'name' 			=> 'sid',
 		'path' 			=> '/',
 		'secure'        => false,
 		'httponly'		=> true,

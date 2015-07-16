@@ -12,12 +12,8 @@ class Cookie {
     protected $secure = false;
     protected $httponly = true;
 
-    /**
-     * Setup the cookie interface
-     *
-     * @param array $params
-     */
-    public function __construct(array $params = null) {
+    public function __construct($name, array $params = null) {
+        $this->setName ( $name );
         if (! empty ( $params )) {
             Options::setOptions ( $this, $params );
         }
