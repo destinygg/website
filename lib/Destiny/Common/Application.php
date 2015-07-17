@@ -109,7 +109,7 @@ class Application extends Service {
         }
 
         if( $route->isSecure () ){
-            if(strcasecmp ( Session::getCredentials ()->getUserStatus(), 'Active' ) !== 0){
+            if(Session::getCredentials ()->isValid() && strcasecmp ( Session::getCredentials ()->getUserStatus(), 'Active' ) !== 0){
                 $response = new Response ( Http::STATUS_ERROR );
                 $model->error = new Exception ( sprintf ( 'User status not active. Status: %s', $user ['userStatus'] ) );
                 $model->code = Http::STATUS_ERROR;
