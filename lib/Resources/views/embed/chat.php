@@ -34,6 +34,7 @@ use Destiny\Common\Config;
           <div class="chat-input-wrap">
             <div class="chat-input-control">
               <input type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
+              <span id="emoticon-btn" class="fa fa-smile-o" title="Show emoticons"></span>
             </div>
           </div>
           <div class="chat-tools-wrap">
@@ -78,8 +79,8 @@ use Destiny\Common\Config;
         <div class="hint-popup">
             <div class="wrap clearfix">
               <div class="alert alert-warning">
-                <a class="hidehint" title="Hide hint"><span class="fa fa-remove"></span></a>
-                <a class="nexthint" title="Next hint"><span class="fa fa-chevron-right"></span></a>
+                <a title="Hide hint"><span class="fa fa-remove hidehint"></span></a>
+                <a title="Next hint"><span class="fa fa-chevron-right nexthint"></span></a>
                 <strong>Hint:</strong> <span class="hint-message"></span>
               </div>
             </div>
@@ -238,42 +239,68 @@ use Destiny\Common\Config;
                 </h5>
               </div>
               
-              <ul class="unstyled">
-                <li>
+              <div class="tools">
+                <div class="form-group checkbox">
                   <label class="checkbox" title="Show all user flair icons">
                     <input name="hideflairicons" type="checkbox" /> Hide flair icons
                   </label>
-                </li>
-                <li>
+                </div>
+                <div class="form-group checkbox">
                   <label class="checkbox" title="Show the timestamps next to the messages">
                     <input name="showtime" type="checkbox" /> Show time for messages
                   </label>
-                </li>
-                <li>
+                </div>
+                <div class="form-group checkbox">
                   <label class="checkbox" title="Highlight text that you are mentioned in">
                     <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
                   </label>
-                </li>
-                <li>
+                </div>
+                <div class="form-group checkbox">
                   <label class="text" title="Your custom list of words that will make messages highlight" style="width: 100%;">
                     Custom highlight words.
                     <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma (,)" />
                   </label>
-                </li>
-                <li>
+                </div>
+                <div class="form-group checkbox">
                   <label class="checkbox" title="Show desktop notifications on hightlight">
                     <input name="notifications" type="checkbox" /> Desktop notification on highlight
                   </label>
-                </li>
-                <li>
+                </div>
+                <div class="form-group checkbox">
                   <hr style="margin:5px 0;">
                   See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information
-                </li>
-              </ul>
+                </div>
+              </div>
               
             </div>
         </div>
         <!-- end settings -->
+    
+        <!-- emote list -->
+        <div id="chat-emote-list" class="chat-menu">
+            <div class="list-wrap clearfix">
+            
+              <div class="toolbar">
+                <h5>
+                  Emoticons
+                  <button type="button" class="close" aria-hidden="true">&times;</button>
+                </h5>
+              </div>
+            
+              <div id="chat-emotes" class="scrollable nano">
+                <div class="content nano-content">
+                  <div class="emote-group" id="destiny-emotes"></div>
+                  <hr/>
+                  <h6>Twitch Emotes</h6>
+                  <div id="emote-subscribe-note">Subscribe on Twitch to unlock Emoticons</div>
+                  <div class="emote-group" id="twitch-emotes"></div>
+                  <hr/>
+                </div>
+              </div>
+            
+            </div>
+        </div>
+        <!-- emote list -->
 
         <div id="chat-private-messages" class="chat-menu">
             <div class="list-wrap clearfix">

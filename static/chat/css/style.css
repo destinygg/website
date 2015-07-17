@@ -11,6 +11,15 @@
   font-family: "Trebuchet MS", sans-serif;
 }
 
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 /**
  * Chat frame and layout
  **/
@@ -121,10 +130,11 @@
 
 
 .chat-input-control {
-    padding:3px 0 0 5px;
+    padding:3px 35px 0 5px;
     height: 28px;
     margin: 1px;
     border-radius: 3px;
+    position: relative;
 }
 .chat-input-control .input {
   background: none;
@@ -139,6 +149,19 @@
 }
 .chat-input-control .input:focus {
   box-shadow: none; 
+}
+.chat-input-control #emoticon-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 20px;
+  padding: 4px 10px;
+  color: rgb(85, 85, 85);
+  cursor: pointer;
+}
+.chat-input-control #emoticon-btn:hover,
+.chat-input-control #emoticon-btn.active {
+  color: rgb(150, 150, 150);
 }
 .chat-tools-wrap > div {
   height: 30px;
@@ -527,9 +550,8 @@
   color: white;
 }
 .chat-menu .list-wrap, 
-.chat-menu .list-wrap .scrollable {
+.chat-menu .scrollable {
   max-height: 330px;
-  font-size: 0.9em;
 }
 .chat-menu .list-wrap,
 .user-tools > div {
@@ -542,6 +564,7 @@
   margin-top: auto;
 }
 .chat-menu ul,
+.chat-menu .tools,
 .user-tools .tools {
   padding: 0 10px;
   margin: 10px 0;
@@ -553,15 +576,15 @@
   text-overflow: ellipsis;
   overflow: hidden;
 }
-#chat-user-list ul li {
-  line-height:18px;
-}
-#chat-user-list h6:first-child {
+.chat-menu h6:first-child {
   margin-top:10px;
 }
-#chat-user-list h6 {
+.chat-menu h6 {
   font-weight: bold;
   margin: 0 0 5px 5px;
+}
+#chat-user-list ul li {
+  line-height:18px;
 }
 #chat-user-list hr {
   margin: 5px 0;
@@ -572,6 +595,9 @@
 #chat-user-list .user {
   cursor: pointer;
   .serif;
+}
+#chat-user-list .scrollable {
+  font-size: 0.9em;
 }
 
 .user-tools a#unignoreuser,
@@ -599,6 +625,38 @@
 #chat-private-messages #chat-pm-message p {
   font-size:14px;
   text-align: center;
+}
+
+#chat-emote-list {
+  width: calc(~"100%" - 40px);
+}
+#chat-emote-list h6 {
+  text-align: center;
+}
+#chat-emotes {
+  text-align: center;
+}
+#chat-emote-list .emote-group {
+  margin-right: 10px;
+  margin-top: 5px;
+  .noselect;
+}
+#chat-emote-list .emote {
+  display: inline-block;
+  padding: 5px;
+}
+#chat-emote-list .emote-group:not(.disabled) .emote:hover {
+  cursor: pointer;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+
+#chat-emote-list .chat-emote {
+  top: 0;
+  margin: 5px;
+}
+#chat-emote-list .content {
+  outline: 0;
 }
 
 /**

@@ -170,6 +170,55 @@
                         break;
                 }
             });
+
+
+            this.chatemotelist = this.ui.find('#chat-emote-list:first').eq(0);
+            this.chatemotelist.btn = this.ui.find('#emoticon-btn').eq(0);
+            this.chatemotelist.scrollable = this.chatemotelist.find('.scrollable:first');
+            this.chatemotelist.content = this.chatemotelist.find('.content:first');
+            this.chatemotelist.visible = false;
+            this.chatemotelist.populated = false;
+            this.chatemotelist.populateEmoteList = function(){
+
+                if(!chat.chatemotelist.populated){
+                    var demotes = chat.chatemotelist.content.find('#destiny-emotes');
+                    var temotes = chat.chatemotelist.content.find('#twitch-emotes');
+
+                    if(chat.engine.user && $.inArray(destiny.UserFeatures.SUBSCRIBERT0, chat.engine.user.features) >= 0){
+                        chat.chatemotelist.content.find('#emote-subscribe-note').hide();
+                    } else {
+                        temotes.addClass('disabled');
+                    }
+
+                    demotes.empty();
+                    for(var i in chat.emoticons){
+                        var e = chat.emoticons[i];
+                        demotes.append('<div class="emote"><span title="'+e+'" class="chat-emote chat-emote-'+e+'">'+e+'</span></div>');
+                    }
+                    temotes.empty();
+                    for(var i in chat.twitchemotes){
+                        var e = chat.twitchemotes[i];
+                        temotes.append('<div class="emote"><span title="'+e+'" class="chat-emote chat-emote-'+e+'">'+e+'</span></div>');
+                    }
+                    chat.chatemotelist.populated = true;
+                }
+            };
+            this.chatemotelist.btn.on('click', function(e){
+                var isVisible = chat.chatemotelist.visible;
+                e.preventDefault();
+                cMenu.closeMenus(chat);
+                if(isVisible)
+                    return;
+                cMenu.closeMenus(chat);
+                chat.chatemotelist.populateEmoteList();
+                return cMenu.prototype.showMenu.call(chat.chatemotelist, chat);
+            });
+            this.chatemotelist.content.on('click', '.emote-group:not(.disabled) .emote', function(e){
+                var emote = $(this).find('.chat-emote');
+                var value = chat.input.val().trim();
+                chat.input.val( value + ((value == "") ? "":" ")  +  $(emote).text());
+                e.preventDefault();
+            });
             
             this.privatemessagelist = this.ui.find('#chat-private-messages:first').eq(0);
             this.privatemessagelist.btn = this.ui.find('.chat-users-btn:first').eq(0);
@@ -270,6 +319,7 @@
             cMenu.addMenu(this, this.privatemessagelist);
             cMenu.addMenu(this, this.chatsettings);
             cMenu.addMenu(this, this.userslist);
+            cMenu.addMenu(this, this.chatemotelist);
             
             // The tools for when you click on a user
             this.cUserTools = new cUserTools(this);
