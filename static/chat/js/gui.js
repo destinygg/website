@@ -216,7 +216,8 @@
             this.chatemotelist.content.on('click', '.emote-group:not(.disabled) .emote', function(e){
                 var emote = $(this).find('.chat-emote');
                 var value = chat.input.val().trim();
-                chat.input.val( value + ((value == "") ? "":" ")  +  $(emote).text());
+                chat.input.val( value + ((value == "") ? "":" ")  +  $(emote).text() + " ");
+                chat.input.focus();
                 e.preventDefault();
             });
             

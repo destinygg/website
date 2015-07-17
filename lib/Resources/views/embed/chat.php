@@ -34,7 +34,7 @@ use Destiny\Common\Config;
           <div class="chat-input-wrap">
             <div class="chat-input-control">
               <input type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
-              <span id="emoticon-btn" class="fa fa-smile-o" title="Show emoticons"></span>
+              <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
             </div>
           </div>
           <div class="chat-tools-wrap">
@@ -282,7 +282,7 @@ use Destiny\Common\Config;
             
               <div class="toolbar">
                 <h5>
-                  Emoticons
+                  Emotes
                   <button type="button" class="close" aria-hidden="true">&times;</button>
                 </h5>
               </div>
@@ -292,7 +292,7 @@ use Destiny\Common\Config;
                   <div class="emote-group" id="destiny-emotes"></div>
                   <hr/>
                   <h6>Twitch Emotes</h6>
-                  <div id="emote-subscribe-note">Subscribe on Twitch to unlock Emoticons</div>
+                  <div id="emote-subscribe-note">Subscribe on Twitch to unlock Emotes</div>
                   <div class="emote-group" id="twitch-emotes"></div>
                   <hr/>
                 </div>

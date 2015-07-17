@@ -551,7 +551,7 @@
 }
 .chat-menu .list-wrap, 
 .chat-menu .scrollable {
-  max-height: 330px;
+  max-height: 343px;
 }
 .chat-menu .list-wrap,
 .user-tools > div {
@@ -629,6 +629,7 @@
 
 #chat-emote-list {
   width: calc(~"100%" - 40px);
+  max-width: 450px;
 }
 #chat-emote-list h6 {
   text-align: center;
@@ -643,7 +644,7 @@
 }
 #chat-emote-list .emote {
   display: inline-block;
-  padding: 5px;
+  padding: 4px;
 }
 #chat-emote-list .emote-group:not(.disabled) .emote:hover {
   cursor: pointer;
