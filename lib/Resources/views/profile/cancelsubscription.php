@@ -105,9 +105,11 @@ use Destiny\Common\Utils\Date;
             </div>
 
             <div class="form-group">
-              <label class="checkbox">
-                <input name="cancelRemainingTime" type="checkbox" value="1" /> Cancel the remaining subscription time <em>immediately</em>
-              </label>
+              <div class="checkbox">
+                <label>
+                  <input name="cancelRemainingTime" type="checkbox" value="1" /> Cancel the remaining subscription time <em>immediately</em>
+                </label>
+              </div>
             </div>
 
           </div>

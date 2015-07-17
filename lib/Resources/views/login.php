@@ -41,8 +41,8 @@ use Destiny\Common\Utils\Tpl;
           <div class="ds-block">
 
             <div class="form-group">
-              <div class="controls">
-                <label class="checkbox">
+              <div class="controls checkbox">
+                <label>
                   <input type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember my login
                 </label>
                 <span class="help-block">(this should only be used if you are on a private computer)</span>
@@ -54,28 +54,36 @@ use Destiny\Common\Utils\Tpl;
             </div>
             
             <div class="form-group">
-              <label class="radio">
-                <input type="radio" name="authProvider" value="twitch">
-                <i class="icon-twitch"></i> Twitch
-              </label>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="authProvider" value="twitch">
+                  <i class="icon-twitch"></i> Twitch
+                </label>
+              </div>
             </div>
             <div class="form-group">
-              <label class="radio">
-                <input type="radio" name="authProvider" value="reddit">
-                <i class="icon-reddit"></i> Reddit
-              </label>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="authProvider" value="reddit">
+                  <i class="icon-reddit"></i> Reddit
+                </label>
+              </div>
             </div>
             <div class="form-group">
-              <label class="radio">
-                <input type="radio" name="authProvider" value="google">
-                <i class="icon-google"></i> Google
-              </label>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="authProvider" value="google">
+                  <i class="icon-google"></i> Google
+                </label>
+              </div>
             </div>
             <div class="form-group">
-              <label class="radio">
-                <input type="radio" name="authProvider" value="twitter">
-                <i class="icon-twitter"></i> Twitter
-              </label>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="authProvider" value="twitter">
+                  <i class="icon-twitter"></i> Twitter
+                </label>
+              </div>
             </div>
           </div>
           

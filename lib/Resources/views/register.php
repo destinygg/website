@@ -77,8 +77,8 @@ use Destiny\Common\Config;
               </select>
             </div>
             <div class="form-group">
-              <div class="controls">
-                <label class="checkbox">
+              <div class="controls checkbox">
+                <label>
                   <input type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember my login
                 </label>
                 <span class="help-block">(this should only be used if you are on a private computer)</span>

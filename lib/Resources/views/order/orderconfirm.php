@@ -93,9 +93,11 @@ use Destiny\Common\Config;
           <?php endif; ?>
 
           <div class="ds-block">
-            <label class="checkbox">
-              <input type="checkbox" name="renew" value="1" checked="checked" /> Automatically renew this subscription
-            </label>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="renew" value="1" checked="checked" /> Automatically renew this subscription
+              </label>
+            </div>
           </div>
 
           <div class="ds-block">
