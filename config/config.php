@@ -65,6 +65,7 @@ return array (
 			'YEE',
 			'SWEATSTINY',
 			'PEPE',
+			'CheekerZ',
 		),
 		'twitchemotes' => array(
 			'nathanDad',
