@@ -68,18 +68,18 @@
         return this.buckets[id][data];
     };
     ChatAutoComplete.prototype.addEmote = function(emote){
-        this.addToBucket(emote, 1, true, 0);
+        this.addToBucket(emote, true, 0);
 
         return this;
     };
     ChatAutoComplete.prototype.addNick = function(nick) {
-        this.addToBucket(nick, 1, false, 0);
+        this.addToBucket(nick, false, 0);
 
         return this;
     };
     ChatAutoComplete.prototype.promoteNick = function(nick) {
         var promoteTimestamp = Date.now();
-        var data = this.addToBucket(nick, weight, false, promoteTimestamp);
+        var data = this.addToBucket(nick, false, promoteTimestamp);
 
         if (data.isemote)
             return this;
