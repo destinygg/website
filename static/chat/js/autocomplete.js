@@ -2,6 +2,7 @@
 
     var ChatAutoComplete = function(input, emoticons) {
         var self = this;
+        var keyMap = [];
 
         if (!input || input.length == 0 || !input[0].setSelectionRange)
             return this;
@@ -25,10 +26,19 @@
                 self.resetSearch();
             },
             keydown: function(e) {
-                if (e.keyCode == 9) { // if TAB
+                e = e || event;
+                keyMap[e.keyCode] = e.type == 'keydown';
+                if (keyMap[9] && keyMap[16]) { // Shift+Tab
                     if (self.searchResults.length <= 0) {
                         self.resetSearch();
-                        self.searchSelectWord();
+                        self.searchSelectWord(true);
+                    }
+                    self.showAutoComplete();
+                    return false;
+                }else if (keyMap[9]) { // if TAB
+                    if (self.searchResults.length <= 0) {
+                        self.resetSearch();
+                        self.searchSelectWord(false);
                     }
                     self.showAutoComplete();
                     return false;
@@ -203,11 +213,15 @@
         this.searchIndex   = -1;
         this.searchWord    = null;
     };
-    ChatAutoComplete.prototype.searchSelectWord = function() {
+    ChatAutoComplete.prototype.searchSelectWord = function(weow) {
         var searchWord = this.getSearchWord(this.input.val(), this.input[0].selectionStart);
         if (searchWord.word.length >= this.minWordLength){
             this.searchWord    = searchWord;
-            this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, this.searchWord.isUserSearch);
+            if (weow) {
+                this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, true);
+            } else {
+                this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, this.searchWord.isUserSearch);
+            }
             this.origVal       = this.input.val();
         }
     };
