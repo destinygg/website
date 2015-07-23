@@ -19,7 +19,7 @@
         for (var i = emoticons.length - 1; i >= 0; i--)
             this.addEmote(emoticons[i]);
 
-        setInterval(this.expireUsers, 300000); // 5 minutes
+        setInterval(this.expireUsers, 100000); // 1 minute
         this.input.on({
             mousedown: function(e) {
                 self.resetSearch();
@@ -49,7 +49,7 @@
 
         return str[0].toLowerCase();
     };
-    ChatAutoComplete.prototype.addToBucket = function(data, weight, isemote, ispromoted) {
+    ChatAutoComplete.prototype.addToBucket = function(data, isemote, promoteTimestamp) {
         if (!this.input)
             return;
 
@@ -61,42 +61,30 @@
         if (!this.buckets[id][data])
             this.buckets[id][data] = {
                 data: data,
-                weight: weight,
                 isemote: !!isemote,
-                ispromoted: !!ispromoted
+                promoted: promoteTimestamp
             };
 
         return this.buckets[id][data];
     };
     ChatAutoComplete.prototype.addEmote = function(emote){
-        this.addToBucket(emote, 1, true, false);
+        this.addToBucket(emote, 1, true, 0);
 
         return this;
     };
     ChatAutoComplete.prototype.addNick = function(nick) {
-        this.addToBucket(nick, 1, false, false);
+        this.addToBucket(nick, 1, false, 0);
 
-        return this;
-    };
-    ChatAutoComplete.prototype.updateNick = function(nick) {
-        if (!this.input)
-            return;
-
-        var weight = Date.now();
-        var data = this.addToBucket(nick, weight, false, false);
-
-        data.weight = weight;
         return this;
     };
     ChatAutoComplete.prototype.promoteNick = function(nick) {
-        var weight = Date.now();
-        var data = this.addToBucket(nick, weight, false, false);
+        var promoteTimestamp = Date.now();
+        var data = this.addToBucket(nick, weight, false, promoteTimestamp);
 
         if (data.isemote)
             return this;
 
-        data.weight = weight;
-        data.ispromoted = true;
+        data.promoted = promoteTimestamp;
         return this;
     };
 
@@ -128,18 +116,14 @@
     };
     ChatAutoComplete.prototype.sortResults = function(a, b) {
         // order promoted things first
-        if (a.ispromoted != b.ispromoted)
-            return a.ispromoted && !b.ispromoted? -1: 1;
+        if (a.promoted != b.promoted)
+            return a.promoted > b.promoted? -1: 1;
 
         // order emotes second
         if (a.isemote != b.isemote)
             return a.isemote && !b.isemote? -1: 1;
 
-        // order according to recency third
-        if (a.weight != b.weight)
-            return a.weight > b.weight? -1: 1;
-
-        // order lexically fourth
+        // order lexically third
         var a = a.data.toLowerCase(),
             b = b.data.toLowerCase();
 
@@ -167,9 +151,9 @@
         return res.slice(0, limit);
     };
     ChatAutoComplete.prototype.expireUsers = function() {
-        // if the user hasnt spoken in the last 5 minutes, reset the weight
-        // so that emotes can be ordered before the user again
-        var fiveminutesago = Date.now() - 300000;
+        // every 10 minutes reset the promoted users so that emotes can be
+        // ordered before the user again
+        var tenminutesago = Date.now() - 600000;
         for (var i in this.buckets) {
             if (!this.buckets.hasOwnProperty(i))
                 continue;
@@ -179,11 +163,10 @@
                     continue;
 
                 var data = this.buckets[i][j];
-                if (data.isemote || data.weight > fiveminutesago)
+                if (data.isemote || data.promoted > tenminutesago)
                     continue;
 
-                data.weight = 1;
-                data.ispromoted = false;
+                data.promoted = 0;
             };
         };
     };
