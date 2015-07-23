@@ -175,8 +175,21 @@
             return
 
         var data = this.buckets[this.getBucketId(this.lastComplete)] || {};
-        if (!data[this.lastComplete] || data[this.lastComplete].isemote)
+
+        // should never happen, but just in case
+        if (!data[this.lastComplete])
             return this.lastComplete = null;
+
+        if (data[this.lastComplete].isemote) {
+            // reset the promotion of users near the emote
+            for(var j in data) {
+                if (!data.hasOwnProperty(j))
+                    continue;
+
+                data[j].promoted = 0;
+            }
+            return this.lastComplete = null;
+        }
 
         this.promoteNick(this.lastComplete);
         this.lastComplete = null;
