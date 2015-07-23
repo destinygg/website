@@ -26,9 +26,10 @@
             },
             keydown: function(e) {
                 if (e.keyCode == 9) { // if TAB
+                    var forceUserSearch = e.shiftKey;
                     if (self.searchResults.length <= 0) {
                         self.resetSearch();
-                        self.searchSelectWord();
+                        self.searchSelectWord(forceUserSearch);
                     }
                     self.showAutoComplete();
                     return false;
@@ -203,11 +204,12 @@
         this.searchIndex   = -1;
         this.searchWord    = null;
     };
-    ChatAutoComplete.prototype.searchSelectWord = function() {
+    ChatAutoComplete.prototype.searchSelectWord = function(forceUserSearch) {
         var searchWord = this.getSearchWord(this.input.val(), this.input[0].selectionStart);
         if (searchWord.word.length >= this.minWordLength){
             this.searchWord    = searchWord;
-            this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, this.searchWord.isUserSearch);
+            var isUserSearch   = forceUserSearch? true: this.searchWord.isUserSearch;
+            this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, isUserSearch);
             this.origVal       = this.input.val();
         }
     };
