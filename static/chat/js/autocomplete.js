@@ -49,7 +49,7 @@
 
         return str[0].toLowerCase();
     };
-    ChatAutoComplete.prototype.addToBucket = function(data, isemote, promoteTimestamp) {
+    ChatAutoComplete.prototype.addToBucket = function(data, weight, isemote, promoteTimestamp) {
         if (!this.input)
             return;
 
@@ -61,6 +61,7 @@
         if (!this.buckets[id][data])
             this.buckets[id][data] = {
                 data: data,
+                weight: weight,
                 isemote: !!isemote,
                 promoted: promoteTimestamp
             };
@@ -68,18 +69,28 @@
         return this.buckets[id][data];
     };
     ChatAutoComplete.prototype.addEmote = function(emote){
-        this.addToBucket(emote, true, 0);
+        this.addToBucket(emote, 1, true, 0);
 
         return this;
     };
     ChatAutoComplete.prototype.addNick = function(nick) {
-        this.addToBucket(nick, false, 0);
+        this.addToBucket(nick, 1, false, 0);
 
+        return this;
+    };
+    ChatAutoComplete.prototype.updateNick = function(nick) {
+        if (!this.input)
+            return;
+
+        var weight = Date.now();
+        var data = this.addToBucket(nick, weight, false, 0);
+
+        data.weight = weight;
         return this;
     };
     ChatAutoComplete.prototype.promoteNick = function(nick) {
         var promoteTimestamp = Date.now();
-        var data = this.addToBucket(nick, false, promoteTimestamp);
+        var data = this.addToBucket(nick, 1, false, promoteTimestamp);
 
         if (data.isemote)
             return this;
@@ -123,7 +134,11 @@
         if (a.isemote != b.isemote)
             return a.isemote && !b.isemote? -1: 1;
 
-        // order lexically third
+        // order according to recency third
+        if (a.weight != b.weight)
+            return a.weight > b.weight? -1: 1;
+
+        // order lexically fourth
         var a = a.data.toLowerCase(),
             b = b.data.toLowerCase();
 
@@ -163,10 +178,11 @@
                     continue;
 
                 var data = this.buckets[i][j];
-                if (data.isemote || data.promoted > tenminutesago)
-                    continue;
+                if (!data.isemote && data.promoted <= tenminutesago)
+                    data.promoted = 0;
 
-                data.promoted = 0;
+                if (!data.isemote && data.weight <= tenminutesago)
+                    data.weight = 1;
             };
         };
     };

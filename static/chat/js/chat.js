@@ -210,6 +210,7 @@ chat.prototype.onPRIVMSG = function (data) {
 	if (this.shouldIgnore(data.nick, data.data))
 		return;
 
+	this.gui.autoCompletePlugin.updateNick(user.username);
 	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
 };
 chat.prototype.onMSG = function(data) {
@@ -257,7 +258,8 @@ chat.prototype.onMSG = function(data) {
 			user = new ChatUser(data);
 			if (user.nick != "" && user.nick == this.user.nick)
 				this.user = user;
-		}
+		} else
+			this.gui.autoCompletePlugin.updateNick(data.nick);
 		
 		if (user && user.features.length != data.features.length)
 			this.users[data.nick] = user;
