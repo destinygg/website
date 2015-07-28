@@ -1082,7 +1082,7 @@ i.td-fill {
   vertical-align: bottom;
 }
 .icon-bigscreen.animated {
-  background: url("../img/ico/tv_32.anim.gif") no-repeat top left !important;
+  background: url("../img/ico/tv_32.anim.gif") no-repeat top left !important; 
 }
 
 /**
@@ -1112,11 +1112,10 @@ i.td-fill {
 }
 .stream-overlay.fsbtn {
   cursor: pointer;
-  width: 32px;
-  height: 32px;
-  right: 120px;
-  bottom: 10px;
-  background: url("../img/fullscreen.png");
+  width: 30px;
+  height: 34px;
+  right: 0;
+  bottom: 0;  
 }
 
 @media (max-width: @screen-xs-max) {
