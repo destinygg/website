@@ -261,6 +261,8 @@
 
 .chat-lines a.externallink {
   color: #02C2FF;
+  position: relative;
+  z-index: 1200;
 }
 .chat-lines a.externallink:visited {
   color: #A66BE5; 
