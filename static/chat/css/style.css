@@ -262,7 +262,7 @@
 .chat-lines a.externallink {
   color: #02C2FF;
   position: relative;
-  z-index: 1200;
+  z-index: 120;
 }
 .chat-lines a.externallink:visited {
   color: #A66BE5; 
@@ -515,6 +515,7 @@
     right: 20px;
     bottom: -5px;
     width: 240px;
+    z-index: 220;
 }
 .chat-menu.active {
     bottom: 0;
