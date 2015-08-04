@@ -307,7 +307,7 @@ class AuthenticationService extends Service {
         // throw back to when I used a json string in the rememberme cookie
         // this is here so no-ones remember me cookie failed after upgrade.
         if(!empty($token) && $token[0] == "{"){
-            $cookieData = json_decode ( $cookieData, true );
+            $cookieData = @json_decode ( $token, true );
             if(!empty ( $cookieData ) && isset($cookieData ['token'])){
                 $token = $cookieData ['token'];
             }
