@@ -76,8 +76,8 @@
             this.inputwrap.removeClass('hidden');
             
             // Message formatters
-            this.formatters.push(new destiny.fn.EmoteFormatter(this));
             this.formatters.push(new destiny.fn.UrlFormatter(this));
+            this.formatters.push(new destiny.fn.EmoteFormatter(this));
             this.formatters.push(new destiny.fn.GreenTextFormatter(this));
             
             // Input history
@@ -754,7 +754,7 @@
                 encoded = message.data;
             
             for(var i=0; i< this.formatters.length; ++i)
-                encoded = this.formatters[i].format(encoded, this.user);
+                encoded = this.formatters[i].format(encoded, this.user, encoded);
             
             var broadcasts     = this.ui.find('#chat-broadcasts'),
                 prevbroadcasts = broadcasts.find('.chat-broadcast:not(.template)');
@@ -945,7 +945,7 @@
             encoded  = elem.html();
         
         for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
-            encoded = destiny.chat.gui.formatters[i].format(encoded);
+            encoded = destiny.chat.gui.formatters[i].format(encoded, null, this.message);
         
         elem.html(encoded);
         return elem.get(0).outerHTML;
@@ -1036,7 +1036,7 @@
             elem.addClass('emote');
         
         for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
-            encoded = destiny.chat.gui.formatters[i].format(encoded, this.user);
+            encoded = destiny.chat.gui.formatters[i].format(encoded, this.user, this.message);
         
         elem.html(encoded);
         return elem.get(0).outerHTML;
@@ -1140,7 +1140,7 @@
             encoded  = elem.html();
         
         for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
-            encoded = destiny.chat.gui.formatters[i].format(encoded);
+            encoded = destiny.chat.gui.formatters[i].format(encoded, null, this.message);
         
         elem.html(encoded);
         return elem.get(0).outerHTML;

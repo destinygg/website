@@ -32,7 +32,7 @@ module.exports = function(grunt) {
                 var tlds = parseTLDs(data);
 
                 if (typeof tlds === "string") {
-                    replaceTLDs(options.targetFile, tlds, function() {
+                    replaceTLDs(options.templateFile, options.targetFile, tlds, function() {
                         done();
                     });
                 } else {
@@ -46,7 +46,8 @@ module.exports = function(grunt) {
     });
 
     function parseTLDs(data) {
-        var list = [];
+        // List of pseudo TLD-s we want to support
+        var list = ['bit', 'exit', 'gnu', 'i2p', 'local', 'onion', 'zkey'];
 
         // Make sure data is string
         if (typeof data !== "string") {
@@ -85,20 +86,25 @@ module.exports = function(grunt) {
         return list.join("|");
     }
 
-    function replaceTLDs(file, tlds, callback) {
-        grunt.log.writeln('Writing TLDs to ' + file + '.');
+    function replaceTLDs(tplfile, targetfile, tlds, callback) {
+        grunt.log.writeln('Writing TLDs from template ' + tplfile + '.');
 
-        var output = 
-        '/** Generated file do not edit manually **/' + "\r\n" +
-        'destiny.tlds = "(?:'+ tlds +')(?!\\w)";';
-
-        fs.writeFile(file, output, 'utf8', function(err) {
+        var output = fs.readFile(tplfile, {encoding: 'utf8'}, function(err, data) {
             if (err) {
-                grunt.log.writeln('IO error writing to ' + file + ' skipping write.');
-            } else {
-                grunt.log.writeln('Wrote new tlds to file ' + file + '!');
+                grunt.log.writeln('IO error reading from ' + tplfile + ' skipping write.');
+                return;
             }
-            callback();
+
+            var output = data.replace('{{gtld}}', tlds);
+
+            fs.writeFile(targetfile, output, 'utf8', function(err) {
+                if (err) {
+                    grunt.log.writeln('IO error writing to ' + targetfile + ' skipping write.');
+                } else {
+                    grunt.log.writeln('Wrote new TLDs to file ' + targetfile + '!');
+                }
+                callback();
+            });
         });
     }
 };

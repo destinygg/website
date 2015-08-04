@@ -66,9 +66,9 @@ module.exports = function(grunt) {
             chat: {
                 files: {
                     'static/chat/js/chat.min.js': [
-                        'scripts/chat/tld.js',
                         'static/chat/js/autocomplete.js',
                         'static/chat/js/formatters.js',
+                        'static/chat/js/UrlFormatter.js',
                         'static/chat/js/hints.js',
                         'static/chat/js/menu.js',
                         'static/chat/js/gui.js',
@@ -126,7 +126,8 @@ module.exports = function(grunt) {
 
         tldFetcher: {
             options: {
-                targetFile: 'scripts/chat/tld.js'
+                templateFile: 'scripts/chat/UrlFormatter.tpl.js',
+                targetFile: 'static/chat/js/UrlFormatter.js'
             },
             defaults: {}, // no-op target for convenience
             fetch: {} // does a fetch + replace on targetFile
