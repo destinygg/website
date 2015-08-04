@@ -17,7 +17,7 @@ destiny.fn.UrlFormatter = function(chat) {
 	    number      = unicodeShortcuts["p{N}"],
 	    iriChar     = letter + number,
 	    pathChar    = iriChar + "/\\-+_@|&=#~*%.,:;'?!" + unicodeShortcuts["p{Sc}"] + unicodeShortcuts["p{Sk}"] + unicodeShortcuts["p{So}"],
-	    endChar     = iriChar + "/\\-+_&~*%" + unicodeShortcuts["p{Sc}"],
+	    endChar     = iriChar + "/\\-+_&~*%;" + unicodeShortcuts["p{Sc}"],
 	    octet       = "(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])",
 	    ipv4Addr    = "\\b" + octet + "\\." + octet + "\\." + octet + "\\." + octet + "\\b",
 	    ipAddr      = "(?:" + ipv4Addr + ")",
@@ -27,15 +27,14 @@ destiny.fn.UrlFormatter = function(chat) {
 	    hostName    = "(?:" + domain + gtld + "|" + ipAddr + ")",
 	    wellParen   = "\\([" + pathChar + "]*(?:\\([" + pathChar + "]*\\)[" + pathChar + "]*)*\\)",
 	    pathCont    = "(?:[" + pathChar + "]*(?:" + wellParen + "|[" + endChar + "])+)+",
-	    path        = "(?:/|(?:/" + pathCont + ")+|\\b|$)",
-	    port        = "(?::[0-9]*)?",
-	    webURL      = hostName + port + pathCont,
+	    path        = "(?:" + pathCont + "|/|\\b|$)",
+	    port        = "(?::[0-9]+)?",
+	    webURL      = hostName + port + path,
 
-	    scheme      = "((?:https?|ftp)://)",
+	    scheme      = "(https?|ftp)://",
 	    strict      = "\\b" + scheme + pathCont,
 	    relaxed     = strict + "|" + webURL;
 
-	this.schemeregex = new RegExp("^" + scheme, "i");
 	this.linkregex   = new RegExp(relaxed, "gi");
 	this._elem       = $('<div/>');
 	return this;
