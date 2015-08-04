@@ -23,9 +23,9 @@
 	
 	// Emote line formatter
 	destiny.fn.EmoteFormatter = function(chat){
-		this.emoteregex = new RegExp('(^|[\\s,\\.\\?!])('+chat.emoticons.join('|')+')(?=$|[\\s,\\.\\?!])');
-		this.gemoteregex = new RegExp('(^|[\\s,\\.\\?!])('+chat.emoticons.join('|')+')(?=$|[\\s,\\.\\?!])', 'gm');
-		this.twitchemoteregex = new RegExp('(^|[\\s,\\.\\?!])('+chat.emoticons.join('|')+'|'+chat.twitchemotes.join('|')+')(?=$|[\\s,\\.\\?!])', 'gm');
+		this.emoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+')(?=$|\\s)');
+		this.gemoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+')(?=$|\\s)', 'gm');
+		this.twitchemoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+'|'+chat.twitchemotes.join('|')+')(?=$|\\s)', 'gm');
 		return this;
 	};
 	destiny.fn.EmoteFormatter.prototype.format = function(str, user){

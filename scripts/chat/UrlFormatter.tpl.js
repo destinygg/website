@@ -20,21 +20,18 @@ destiny.fn.UrlFormatter = function(chat) {
 	    endChar     = iriChar + "/\\-+_&~*%" + unicodeShortcuts["p{Sc}"],
 	    octet       = "(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])",
 	    ipv4Addr    = "\\b" + octet + "\\." + octet + "\\." + octet + "\\." + octet + "\\b",
-	    ipv6Addr    = "(?:[0-9a-fA-F]{1,4}:(?:[0-9a-fA-F]{1,4}:(?:[0-9a-fA-F]{1,4}:(?:[0-9a-fA-F]{1,4}:(?:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{0,4}|:[0-9a-fA-F]{1,4})?|(?::[0-9a-fA-F]{1,4}){0,2})|(?::[0-9a-fA-F]{1,4}){0,3})|(?::[0-9a-fA-F]{1,4}){0,4})|:(?::[0-9a-fA-F]{1,4}){0,5})(?:(?:[0-9a-fA-F]{1,4}){2}|:(?:25[0-5]|(?:2[0-4]|1[0-9]|[1-9])?[0-9])(?:\\.(?:25[0-5]|(?:2[0-4]|1[0-9]|[1-9])?[0-9])){3})|(?:(?:[0-9a-fA-F]{1,4}:){1,6}|:):[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){7}:",
-	    ipAddr      = "(?:" + ipv4Addr + "|" + ipv6Addr + ")",
+	    ipAddr      = "(?:" + ipv4Addr + ")",
 	    iri         = "[" + iriChar + "](?:[" + iriChar + "\\-]*[" + iriChar + "])?",
 	    domain      = "(?:" + iri + "\\.)+",
 	    gtld        = "(?:{{gtld}})",
 	    hostName    = "(?:" + domain + gtld + "|" + ipAddr + ")",
 	    wellParen   = "\\([" + pathChar + "]*(?:\\([" + pathChar + "]*\\)[" + pathChar + "]*)*\\)",
 	    pathCont    = "(?:[" + pathChar + "]*(?:" + wellParen + "|[" + endChar + "])+)+",
-	    path        = "(?:/|/" + pathCont + "?|\\b|$)",
+	    path        = "(?:/|(?:/" + pathCont + ")+|\\b|$)",
 	    port        = "(?::[0-9]*)?",
-	    webURL      = hostName + port + path,
+	    webURL      = hostName + port + pathCont,
 
-	    comScheme   = "[a-zA-Z][a-zA-Z.\\-+]*://",
-	    otherScheme = "(?:bitcoin|file|magnet|mailto|sms|tel|xmpp)",
-	    scheme      = "(?:" + comScheme + "|" + otherScheme + ")",
+	    scheme      = "((?:https?|ftp)://)",
 	    strict      = "\\b" + scheme + pathCont,
 	    relaxed     = strict + "|" + webURL;
 
@@ -61,8 +58,8 @@ destiny.fn.UrlFormatter.prototype.encodeUrl = function(value) {
 		replace(/>/g, '&gt;');
 };
 
-destiny.fn.UrlFormatter.prototype.format = function(encodedstr, user, str) {
-	if (!encodedstr) return;
+destiny.fn.UrlFormatter.prototype.format = function(str) {
+	if (!str) return;
 	var self       = this,
 	    extraclass = '';
 
@@ -71,12 +68,17 @@ destiny.fn.UrlFormatter.prototype.format = function(encodedstr, user, str) {
 	else if(/\b(?:NSFW|SPOILER)\b/i.test(str))
 		extraclass = ' nsfw-link';
 
-	return str.replace(this.linkregex, function(url) {
-		var scheme     = !self.schemeregex.test(url)? 'http://': '',
-		    encodedUrl = self.encodeUrl(url);
+	return str.replace(self.linkregex, function(url, scheme) {
+		scheme = scheme? '': 'http://';
+		var decodedUrl = self._elem.html(url).text(),
+		    m          = decodedUrl.match(self.linkregex);
+		if (!m)
+			return url;
 
-		return '<a target="_blank" class="externallink' + extraclass + '" href="' + scheme + encodedUrl + '"
-rel="nofollow">' + encodedUrl + '</a>';
+		url = m[0];
+		var extra = self.encodeUrl(decodedUrl.substring(url.length));
+		return '<a target="_blank" class="externallink' + extraclass + '" href="' + scheme + url + '"
+rel="nofollow">' + url + '</a>' + extra;
 	});
 };
 
