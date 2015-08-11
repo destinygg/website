@@ -1,5 +1,5 @@
 (function($){
-
+    var oneminuteago = null;
     var ChatAutoComplete = function(input, emoticons) {
         var self = this;
 
@@ -126,19 +126,23 @@
         };
     };
     ChatAutoComplete.prototype.sortResults = function(a, b) {
-        // order promoted things first
+        // promoted == recently autocompleted
         if (a.promoted != b.promoted)
             return a.promoted > b.promoted? -1: 1;
 
-        // order emotes second
+        // active one minute ago
+        if (a.weight >= oneminuteago || b.weight >= oneminuteago)
+            return a.weight > b.weight? -1: 1;
+
+        // emotes
         if (a.isemote != b.isemote)
             return a.isemote && !b.isemote? -1: 1;
 
-        // order according to recency third
+        // recently active
         if (a.weight != b.weight)
             return a.weight > b.weight? -1: 1;
 
-        // order lexically fourth
+        // lexically
         var a = a.data.toLowerCase(),
             b = b.data.toLowerCase();
 
@@ -162,6 +166,7 @@
                 res.push(data[nick]);
         }
 
+        oneminuteago = Date.now() - 60000;
         res.sort(this.sortResults);
         return res.slice(0, limit);
     };
