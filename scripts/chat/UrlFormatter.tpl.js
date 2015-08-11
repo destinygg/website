@@ -16,11 +16,10 @@ destiny.fn.UrlFormatter = function(chat) {
 	var letter      = unicodeShortcuts["p{L}"],
 	    number      = unicodeShortcuts["p{N}"],
 	    iriChar     = letter + number,
-	    pathChar    = iriChar + "/\\-+_@|&=#~*%.,:;'?!" + unicodeShortcuts["p{Sc}"] + unicodeShortcuts["p{Sk}"] + unicodeShortcuts["p{So}"],
-	    endChar     = iriChar + "/\\-+_&~*%;" + unicodeShortcuts["p{Sc}"],
+	    pathChar    = iriChar + "/\\[\\]\\-+_&~*%@|=#.,:;'?!" + unicodeShortcuts["p{Sc}"] + unicodeShortcuts["p{Sk}"] + unicodeShortcuts["p{So}"],
+	    endChar     = iriChar + "/\\]\\-+_&~*%;" + unicodeShortcuts["p{Sc}"],
 	    octet       = "(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])",
-	    ipv4Addr    = "\\b" + octet + "\\." + octet + "\\." + octet + "\\." + octet + "\\b",
-	    ipAddr      = "(?:" + ipv4Addr + ")",
+	    ipAddr      = "(?:\\b" + octet + "\\." + octet + "\\." + octet + "\\." + octet + "\\b)",
 	    iri         = "[" + iriChar + "](?:[" + iriChar + "\\-]*[" + iriChar + "])?",
 	    domain      = "(?:" + iri + "\\.)+",
 	    gtld        = "(?:{{gtld}})",
@@ -74,8 +73,8 @@ destiny.fn.UrlFormatter.prototype.format = function(str) {
 		if (!m)
 			return url;
 
-		url = m[0];
-		var extra = self.encodeUrl(decodedUrl.substring(url.length));
+		url = self.encodeUrl(m[0]);
+		var extra = self.encodeUrl(decodedUrl.substring(m[0].length));
 		return '<a target="_blank" class="externallink' + extraclass + '" href="' + scheme + url + '"
 rel="nofollow">' + url + '</a>' + extra;
 	});
