@@ -88,12 +88,9 @@
         data.weight = weight;
         return this;
     };
-    ChatAutoComplete.prototype.promoteNick = function(nick) {
+    ChatAutoComplete.prototype.promote = function(str) {
         var promoteTimestamp = Date.now();
-        var data = this.addToBucket(nick, 1, false, promoteTimestamp);
-
-        if (data.isemote)
-            return this;
+        var data = this.addToBucket(str, 1, false, promoteTimestamp);
 
         data.promoted = promoteTimestamp;
         return this;
@@ -183,7 +180,7 @@
                     continue;
 
                 var data = this.buckets[i][j];
-                if (!data.isemote && data.promoted <= tenminutesago)
+                if (data.promoted <= tenminutesago)
                     data.promoted = 0;
 
                 if (!data.isemote && data.weight <= tenminutesago)
@@ -209,10 +206,9 @@
 
                 data[j].promoted = 0;
             }
-            return this.lastComplete = null;
         }
 
-        this.promoteNick(this.lastComplete);
+        this.promote(this.lastComplete);
         this.lastComplete = null;
     };
     ChatAutoComplete.prototype.resetSearch = function() {
