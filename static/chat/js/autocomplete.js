@@ -6,7 +6,7 @@
         if (!input || input.length == 0 || !input[0].setSelectionRange)
             return this;
 
-        this.minWordLength = 2;
+        this.minWordLength = 1;
         this.maxResults    = 10;
         this.buckets       = {};
         this.origVal       = null;
