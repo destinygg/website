@@ -159,5 +159,14 @@ class HomeController {
     public function schedule() {
         return 'redirect: https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com';
     }
+
+    /**
+     * @Route ("/shirt")
+     *
+     * @return string
+     */
+    public function shirts() {
+        return 'redirect: http://teespring.com/twitch/desteeny2';
+    }
     
 }
