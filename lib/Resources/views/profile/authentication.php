@@ -10,6 +10,7 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
+<script src="//www.google.com/recaptcha/api.js"></script>
 </head>
 <body id="authentication" class="profile">
   <div id="page-wrap">
@@ -61,7 +62,7 @@ use Destiny\Common\Config;
         <div class="ds-block">
           <p>Login keys allow you to authenticate with the destiny.gg chat without the need for a username or password.</p>
         </div>
-        <form action="/profile/authtoken/create" method="post">
+        <form id="authtoken-form"action="/profile/authtoken/create" method="post">
           <table class="grid" style="width:100%">
             <thead>
               <tr>
@@ -84,9 +85,16 @@ use Destiny\Common\Config;
               <?php endif; ?>
             </tbody>
           </table>
+
+          <div id="recaptcha" class="form-group ds-block hidden"> 
+            <label>How Can Mirrors Be Real If Our Eyes Aren't Real?</label> 
+            <div class="controls">
+              <div class="g-recaptcha" data-sitekey="<?= Config::$a ['g-recaptcha'] ['key'] ?>"></div>
+            </div>
+          </div>
           
           <div class="form-actions">
-            <button class="btn btn-primary">Create new key</button>
+            <button class="btn btn-primary" onclick="if($('#recaptcha').hasClass('hidden')){$('#recaptcha').removeClass('hidden')}else{$('#authtoken-form').submit()}; return false">Create new key</button>
           </div>
 
         </form>

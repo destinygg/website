@@ -6,6 +6,7 @@ use Destiny\Common\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
+use Destiny\Common\Request;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -26,6 +27,7 @@ use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Common\Utils\FilterParams;
+use Destiny\Google\GoogleRecaptchaHandler;
 
 /**
  * @Controller
@@ -240,7 +242,13 @@ class ProfileController {
      *
      * @param array $params         
      */
-    public function profileAuthtokenCreate(array $params) {
+    public function profileAuthtokenCreate(array $params, ViewModel $model, Request $request) {
+      if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
+        throw new Exception ( 'You must solve the recaptcha.' );
+
+      $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+      $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
+
       $apiAuthService = ApiAuthenticationService::instance ();
       $userId = Session::getCredentials ()->getUserId ();
       $tokens = $apiAuthService->getAuthTokensByUserId ( $userId );
