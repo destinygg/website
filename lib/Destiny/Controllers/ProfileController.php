@@ -230,6 +230,15 @@ class ProfileController {
       }
       $model->authProfileTypes = $authProfileTypes;
       
+      if (Session::get ( 'modelSuccess' )) {
+        $model->success = Session::get ( 'modelSuccess' );
+        Session::set ( 'modelSuccess' );
+      }
+      if (Session::get ( 'modelError' )) {
+        $model->error = Session::get ( 'modelError' );
+        Session::set ( 'modelError' );
+      }
+      
       $model->authTokens = ApiAuthenticationService::instance ()->getAuthTokensByUserId ( $userId );
       $model->title = 'Authentication';
       return 'profile/authentication';
@@ -237,6 +246,7 @@ class ProfileController {
 
     /**
      * @Route ("/profile/authtoken/create")
+     * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @Transactional
      *
@@ -257,11 +267,13 @@ class ProfileController {
       }
       $token = $apiAuthService->createAuthToken ( $userId );
       $apiAuthService->addAuthToken ( $userId, $token );
+      Session::set ( 'modelSuccess', 'Auth token created!' );
       return 'redirect: /profile/authentication';
     }
 
     /**
      * @Route ("/profile/authtoken/{authToken}/delete")
+     * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @Transactional
      *
@@ -280,6 +292,7 @@ class ProfileController {
         throw new Exception ( 'Auth token not owned by user' );
       }
       $apiAuthService->removeAuthToken ( $authToken ['authTokenId'] );
+      Session::set ( 'modelSuccess', 'Auth token removed!' );
       return 'redirect: /profile/authentication';
     }
 
@@ -293,7 +306,6 @@ class ProfileController {
      */
     public function profileConnect(array $params, ViewModel $model) {
       FilterParams::required ( $params, 'provider' );
-      
       $authProvider = $params ['provider'];
       
       // check if the auth provider you are trying to login with is not the same as the current
@@ -301,8 +313,9 @@ class ProfileController {
       if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
         throw new Exception ( 'Provider already authenticated' );
       }
-        // Set a session var that is picked up in the AuthenticationService
-        // in the GET method, this variable is unset
+
+      // Set a session var that is picked up in the AuthenticationService
+      // in the GET method, this variable is unset
       Session::set ( 'accountMerge', '1' );
       
       switch (strtoupper ( $authProvider )) {
@@ -328,9 +341,31 @@ class ProfileController {
     }
 
     /**
+     * @Route ("/profile/connect/{provider}/delete")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     * @Transactional
+     *
+     * @param array $params   
+     * @param ViewModel $model          
+     * @return string
+     */
+    public function profileConnectDelete(array $params) {
+      FilterParams::required ( $params, 'provider' );
+
+      $userId = Session::getCredentials ()->getUserId ();
+      $apiAuthService = ApiAuthenticationService::instance ();
+      $apiAuthService->deleteAuthProfileByUserId($userId, $params ['provider']);
+      
+      Session::set ( 'modelSuccess', 'Authentication profile removed!' );
+      return 'redirect: /profile/authentication';
+    }
+
+    /**
      * Update/add a address
      * 
      * @Route ("/profile/address/update")
+     * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @Transactional
      *
@@ -370,7 +405,6 @@ class ProfileController {
       }
       
       Session::set ( 'modelSuccess', 'Your address has been updated' );
-      
       return 'redirect: /profile';
     }
 

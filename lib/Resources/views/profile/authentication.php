@@ -17,6 +17,7 @@ use Destiny\Common\Config;
 
     <?php include Tpl::file('seg/top.php') ?>
     <?php include Tpl::file('seg/headerband.php') ?>
+    <?php include Tpl::file('seg/alerts.php') ?>
     <?php include Tpl::file('profile/menu.php') ?>
     
     <section class="container collapsible active">
@@ -24,33 +25,44 @@ use Destiny\Common\Config;
 
       <div class="content content-dark clearfix">
         <div class="ds-block">
-          <p>Authentication providers are what we use to know who you are! you can login with any of the services below</p>
+          <p>Authentication providers are what we use to know who you are! you can login with any of the services below.</p>
         </div>
-        <table class="grid" style="width:100%">
-          <thead>
-            <tr>
-              <td>Profile</td>
-              <td style="width:100%;">Status</td>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
-            <tr>
-              <td>
-                <i class="icon-<?=$profileType?>"></i> <?=ucwords($profileType)?>
-              </td>
-              <td>
-                <?php if(in_array($profileType, $model->authProfileTypes)): ?>
-                <?php $model->requireConnections = true; ?>
-                <span class="subtle"><span class="fa fa-check"></span> Connected</span>
-                <?php else: ?>
-                <a href="/profile/connect/<?=$profileType?>">Connect</a>
-                <?php endif; ?>
-              </td>
-            </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
+        <form id="auth-profile-form" method="post">
+          <table class="grid" style="width:100%">
+            <thead>
+              <tr>
+                <td>Profile</td>
+                <td></td>
+                <td style="width:100%;">Status</td>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
+              <tr>
+                <td>
+                  <?php if(in_array($profileType, $model->authProfileTypes)): ?>
+                  <?php $model->requireConnections = true; ?>
+                  <a href="/profile/connect/<?=$profileType?>/delete" class="btn btn-danger btn-xs btn-post">Disconnect</a>
+                  <?php else: ?>
+                  <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
+                  <?php endif; ?>
+                </td>
+                <td>
+                   <?=ucwords($profileType)?>
+                </td>
+                <td>
+                  <?php if(in_array($profileType, $model->authProfileTypes)): ?>
+                  <?php $model->requireConnections = true; ?>
+                  <span class="subtle"><span class="fa fa-check"></span> Connected</span>
+                  <?php else: ?>
+                  <span class="subtle">Not connected</span>
+                  <?php endif; ?>
+                </td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </form>
         
       </div>
     </section>
@@ -67,6 +79,7 @@ use Destiny\Common\Config;
             <thead>
               <tr>
                 <td>Key</td>
+                <td></td>
                 <td style="width:100%;">Created</td>
               </tr>
             </thead>
@@ -74,13 +87,14 @@ use Destiny\Common\Config;
               <?php if(!empty($model->authTokens)): ?>
               <?php foreach($model->authTokens as $authToken): ?>
               <tr>
-                <td><a href="/profile/authtoken/<?=$authToken['authToken']?>/delete" class="btn btn-danger btn-xs">Delete</a> <span><?=$authToken['authToken']?></span></td>
+                <td><a href="/profile/authtoken/<?=$authToken['authToken']?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a></td>
+                <td><span><?=$authToken['authToken']?></span></td>
                 <td><?=Date::getDateTime($authToken['createdDate'])->format(Date::STRING_FORMAT)?></td>
               </tr>
               <?php endforeach; ?>
               <?php else: ?>
               <tr>
-                <td colspan="2"><span class="subtle">You have no authentication keys</span></td>
+                <td colspan="3"><span class="subtle">You have no authentication keys</span></td>
               </tr>
               <?php endif; ?>
             </tbody>
@@ -104,5 +118,18 @@ use Destiny\Common\Config;
   
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
+
+  <style>
+  .btn-post { min-width: 75px; }
+  </style>
+  <script>
+  $('#auth-profile-form, #authtoken-form').on('click', '.btn-post', function(){
+    var a = $(this), form = $(this).closest('form');
+    form.attr("action", a.attr("href"));
+    form.trigger('submit');
+    return false;
+  });
+  </script>
+
 </body>
 </html>

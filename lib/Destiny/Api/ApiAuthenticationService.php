@@ -140,4 +140,12 @@ class ApiAuthenticationService extends Service {
         return $stmt->fetchAll ();
     }
 
+    public function deleteAuthProfileByUserId($userId, $authProfile) {
+        $conn = Application::instance ()->getConnection ();
+        $conn->delete ( 'dfl_users_auth', array (
+            'userId' => $userId,
+            'authProvider' => $authProfile,
+        ) );
+    }
+
 }
