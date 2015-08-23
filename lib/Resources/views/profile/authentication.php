@@ -44,7 +44,7 @@ use Destiny\Common\Config;
                 <td>
                   <?php if(in_array($profileType, $model->authProfileTypes)): ?>
                   <?php $model->requireConnections = true; ?>
-                  <a href="/profile/connect/<?=$profileType?>" class="btn btn-success btn-xs btn-post">Connected</a>
+                  <button class="btn btn-default btn-xs btn-post" disabled="disabled">Connected</button>
                   <?php else: ?>
                   <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
                   <?php endif; ?>
