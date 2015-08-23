@@ -9,7 +9,6 @@ use PayPal\Service\PayPalAPIInterfaceServiceService;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsRequestType;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsReq;
 use Destiny\Common\Exception;
-use Destiny\Commerce\PaymentProfileStatus;
 use PayPal\EBLBaseComponents\ManageRecurringPaymentsProfileStatusRequestDetailsType;
 use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusRequestType;
 use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusReq;
@@ -32,8 +31,6 @@ use PayPal\EBLBaseComponents\PaymentDetailsItemType;
 use PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
-use Destiny\Commerce\OrderStatus;
-use Destiny\Commerce\PaymentStatus;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
 
 class PayPalApiService extends Service {

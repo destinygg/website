@@ -1,13 +1,11 @@
 <?php
 namespace Destiny\Chat;
 
-use Destiny\Common\Session;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
-use Destiny\Common\User\UserService;
 
 class ChatIntegrationService extends Service {
     

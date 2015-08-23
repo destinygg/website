@@ -8,8 +8,6 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Service;
 use Destiny\Common\SessionCredentials;
-use Destiny\Common\Authentication\RememberMeService;
-use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;

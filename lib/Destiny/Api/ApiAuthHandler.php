@@ -3,14 +3,9 @@ namespace Destiny\Api;
 
 use Destiny\Common\Response;
 use Destiny\Common\MimeType;
-use Destiny\Common\SessionCredentials;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Exception;
-use Destiny\Common\User\UserRole;
-use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;
-use Destiny\Common\User\UserFeaturesService;
-use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Authentication\AuthenticationService;
 
 class ApiAuthHandler {

@@ -2,7 +2,6 @@
 namespace Destiny\Common\Utils;
 
 use Destiny\Common\Utils\String\Params;
-use Destiny\Common\Utils\Options;
 
 /**
  * Simple parameterized string utility

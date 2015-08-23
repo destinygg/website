@@ -9,7 +9,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\User\UserService;
-use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;

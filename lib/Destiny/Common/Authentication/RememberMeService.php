@@ -2,10 +2,7 @@
 namespace Destiny\Common\Authentication;
 
 use Destiny\Common\Service;
-use Destiny\Common\Session;
 use Destiny\Common\Application;
-use Destiny\Common\User\UserService;
-use Destiny\Chat\ChatIntegrationService;
 
 class RememberMeService extends Service {
     

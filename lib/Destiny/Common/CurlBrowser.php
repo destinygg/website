@@ -1,11 +1,8 @@
 <?php
 namespace Destiny\Common;
 
-use Destiny\Common\Config;
-use Destiny\Common\MimeType;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Options;
-use Destiny\Common\Application;
 use Psr\Log\LoggerInterface;
 
 /**

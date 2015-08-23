@@ -3,7 +3,6 @@ namespace Destiny\Common;
 
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Options;
-use Destiny\Common\Exception;
 use Psr\Log\LoggerInterface;
 
 /**

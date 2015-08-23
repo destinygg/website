@@ -4,10 +4,7 @@ namespace Destiny\Messages;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\User\UserService;
-use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
-use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;
 
 class PrivateMessageService extends Service {

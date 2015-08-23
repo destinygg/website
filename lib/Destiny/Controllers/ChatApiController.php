@@ -2,7 +2,6 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Exception;
-use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;

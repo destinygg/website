@@ -2,7 +2,6 @@
 namespace Destiny\Common\Routing;
 
 use Destiny\Common\Application;
-use Destiny\Common\Routing\Route;
 use Destiny\Common\DirectoryClassIterator;
 use Doctrine\Common\Annotations\Reader;
 use \ReflectionClass;

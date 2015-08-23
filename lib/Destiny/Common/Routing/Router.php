@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Common\Routing;
 
-use Destiny\Common\Routing\Route;
 use Destiny\Common\Request;
 
 class Router {

@@ -6,7 +6,6 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationService;
-use Destiny\Commerce\SubscriptionStatus;
 
 class SubscriptionsService extends Service {
 
