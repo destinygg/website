@@ -324,13 +324,15 @@ use Destiny\Commerce\SubscriptionStatus;
   </section>
 
   <?php if(!empty($model->authSessions)): ?>
+  <form id="admin-form-auth-sessions" method="post">
   <section class="container collapsible">
     <h3><span class="fa fa-fw fa-chevron-right expander"></span> Authentication</h3>
     <div class="content content-dark clearfix">
       <table class="grid">
         <thead>
           <tr>
-            <td>Provider</td>
+            <td>Type</td>
+            <td></td>
             <td style="width:100%;">Detail</td>
             <td>Created</td>
             <td>Modified</td>
@@ -339,6 +341,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <tbody>
         <?php foreach($model->authSessions as $auth): ?>
           <tr>
+            <td><a href="/admin/user/<?=$model->user['userId']?>/auth/<?= $auth['authProvider'] ?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a></td>
             <td><?= $auth['authProvider'] ?></td>
             <td><?= (!empty($auth['authDetail'])) ? Tpl::out($auth['authDetail']):Tpl::out($auth['authId']) ?></td>
             <td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
@@ -349,6 +352,7 @@ use Destiny\Commerce\SubscriptionStatus;
       </table>
     </div>
   </section>
+  </form>
   <?php endif; ?>
   
   <br />
@@ -356,6 +360,14 @@ use Destiny\Commerce\SubscriptionStatus;
   <?php include Tpl::file('seg/commonbottom.php') ?>
   
   <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
+  <script>
+  $('.btn-post').on('click', function(){
+    var a = $(this), form = $(this).closest('form');
+    form.attr("action", a.attr("href"));
+    form.trigger('submit');
+    return false;
+  });
+  </script>
   
 </body>
 </html>

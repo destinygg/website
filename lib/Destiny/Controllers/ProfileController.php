@@ -341,27 +341,6 @@ class ProfileController {
     }
 
     /**
-     * @Route ("/profile/connect/{provider}/delete")
-     * @HttpMethod ({"POST"})
-     * @Secure ({"USER"})
-     * @Transactional
-     *
-     * @param array $params   
-     * @param ViewModel $model          
-     * @return string
-     */
-    public function profileConnectDelete(array $params) {
-      FilterParams::required ( $params, 'provider' );
-
-      $userId = Session::getCredentials ()->getUserId ();
-      $apiAuthService = ApiAuthenticationService::instance ();
-      $apiAuthService->deleteAuthProfileByUserId($userId, $params ['provider']);
-      
-      Session::set ( 'modelSuccess', 'Authentication profile removed!' );
-      return 'redirect: /profile/authentication';
-    }
-
-    /**
      * Update/add a address
      * 
      * @Route ("/profile/address/update")

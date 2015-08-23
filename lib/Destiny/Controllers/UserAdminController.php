@@ -263,4 +263,19 @@ class UserAdminController {
         return 'redirect: /admin/user/'. urlencode($params['id']) .'/subscription/'. urlencode($subscriptionId) .'/edit';
     }
 
+    /**
+     * @Route ("/admin/user/{id}/auth/{provider}/delete")
+     * @Secure ({"ADMIN"})
+     * @HttpMethod ({"POST"})
+     *
+     * @param array $params
+     * @return string
+     */
+    public function authProviderDelete(array $params) {
+        $apiAuthService = ApiAuthenticationService::instance ();
+        $apiAuthService->deleteAuthProfileByUserId($params['id'], $params['provider']);
+        Session::set ( 'modelSuccess', 'Authentication profile removed!' );
+        return 'redirect: /admin/user/'. urlencode($params['id']) .'/edit';
+    }
+
 }

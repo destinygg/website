@@ -11,6 +11,9 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 <script src="//www.google.com/recaptcha/api.js"></script>
+<style>
+  .btn-post { min-width: 75px; }
+</style>
 </head>
 <body id="authentication" class="profile">
   <div id="page-wrap">
@@ -32,8 +35,7 @@ use Destiny\Common\Config;
             <thead>
               <tr>
                 <td>Profile</td>
-                <td></td>
-                <td style="width:100%;">Status</td>
+                <td style="width:100%;"></td>
               </tr>
             </thead>
             <tbody>
@@ -42,21 +44,13 @@ use Destiny\Common\Config;
                 <td>
                   <?php if(in_array($profileType, $model->authProfileTypes)): ?>
                   <?php $model->requireConnections = true; ?>
-                  <a href="/profile/connect/<?=$profileType?>/delete" class="btn btn-danger btn-xs btn-post">Disconnect</a>
+                  <a href="/profile/connect/<?=$profileType?>" class="btn btn-success btn-xs btn-post">Connected</a>
                   <?php else: ?>
                   <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
                   <?php endif; ?>
                 </td>
                 <td>
                    <?=ucwords($profileType)?>
-                </td>
-                <td>
-                  <?php if(in_array($profileType, $model->authProfileTypes)): ?>
-                  <?php $model->requireConnections = true; ?>
-                  <span class="subtle"><span class="fa fa-check"></span> Connected</span>
-                  <?php else: ?>
-                  <span class="subtle">Not connected</span>
-                  <?php endif; ?>
                 </td>
               </tr>
               <?php endforeach; ?>
@@ -108,7 +102,7 @@ use Destiny\Common\Config;
           </div>
           
           <div class="form-actions">
-            <button class="btn btn-primary" onclick="if($('#recaptcha').hasClass('hidden')){$('#recaptcha').removeClass('hidden')}else{$('#authtoken-form').submit()}; return false">Create new key</button>
+            <button class="btn btn-primary" id="btn-create-key">Create new key</button>
           </div>
 
         </form>
@@ -119,16 +113,23 @@ use Destiny\Common\Config;
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
 
-  <style>
-  .btn-post { min-width: 75px; }
-  </style>
   <script>
-  $('#auth-profile-form, #authtoken-form').on('click', '.btn-post', function(){
+  $('.btn-post').on('click', function(){
     var a = $(this), form = $(this).closest('form');
     form.attr("action", a.attr("href"));
     form.trigger('submit');
     return false;
   });
+  $('#btn-create-key').on('click', function(){
+    var recaptcha = $('#recaptcha'), form = $(this).closest('form');
+    if(recaptcha.hasClass('hidden')){
+      recaptcha.removeClass('hidden')
+    }else{
+      form.submit()
+    }
+    return false;
+  });
+
   </script>
 
 </body>
