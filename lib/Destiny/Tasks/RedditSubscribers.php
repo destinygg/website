@@ -3,7 +3,6 @@
 namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
-use Psr\Log\LoggerInterface;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Utils\Options;
 
@@ -16,8 +15,6 @@ class RedditSubscribers implements TaskInterface {
     }
 
     public function execute() {
-        
-        // Do nothing if we arent outputting a file
         if (empty ( $this->output ))
             return;
         
@@ -72,7 +69,6 @@ class RedditSubscribers implements TaskInterface {
         file_put_contents ( $tmpFilename, json_encode ( $json, JSON_NUMERIC_CHECK ) );
         @unlink ( $this->output );
         rename ( $tmpFilename, $this->output );
-        $log->debug ( sprintf ( 'Output subscribers json "%s"', $this->output ) );
     }
     
     /**

@@ -46,14 +46,16 @@ class RegistrationController {
         }
         return $authSession;
     }
-    
+
     /**
      * @Route ("/register")
      * @HttpMethod ({"GET"})
      *
      * Handle the confirmation request
      *
-     * @param array $params         
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
      * @throws Exception
      */
     public function register(array $params, ViewModel $model) {
@@ -78,8 +80,10 @@ class RegistrationController {
      * @HttpMethod ({"POST"})
      * @Transactional
      *
-     * Handle the confirmation request
      * @param array $params
+     * @param ViewModel $model
+     * @param Request $request
+     * @return string
      * @throws Exception
      */
     public function registerProcess(array $params, ViewModel $model, Request $request) {

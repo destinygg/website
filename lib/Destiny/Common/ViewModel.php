@@ -37,6 +37,7 @@ class ViewModel extends \stdClass {
      *
      * @param string $name
      * @param mixed $value
+     * @return mixed
      */
     public function __set($name, $value) {
         $this->vars [$name] = $value;
@@ -47,7 +48,7 @@ class ViewModel extends \stdClass {
      * get a variable value by name
      *
      * @param string $name
-     * @param mixed $value
+     * @return mixed|null
      */
     public function __get($name) {
         return (isset ( $this->vars [$name] )) ? $this->vars [$name] : null;
@@ -57,6 +58,7 @@ class ViewModel extends \stdClass {
      * Check if a var isset
      *
      * @param string $name
+     * @return bool
      */
     public function __isset($name) {
         return isset ( $this->vars [$name] );

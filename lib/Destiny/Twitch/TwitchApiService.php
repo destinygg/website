@@ -45,6 +45,7 @@ class TwitchApiService extends Service {
     }
 
     /**
+     * @param array $options
      * @return CurlBrowser
      */
     public function getStreamInfo(array $options = array()) {

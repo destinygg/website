@@ -12,21 +12,16 @@ use Doctrine\DBAL\Connection;
 class UserService extends Service {
   
   /**
-   * A list of roles
    * @var array
    */
   protected $roles;
   
   /**
-   * Singleton instance
-   *
    * var UserService
    */
   protected static $instance = null;
 
   /**
-   * Singleton instance
-   *
    * @return UserService
    */
   public static function instance() {
@@ -34,8 +29,6 @@ class UserService extends Service {
   }
 
   /**
-   * Set a list of user roles
-   *
    * @param int $userId
    * @param array $roles
    */
@@ -47,7 +40,6 @@ class UserService extends Service {
   }
 
   /**
-   * Get all the user roles
    * @return array
    */
   public function getUserRoles() {
@@ -61,7 +53,6 @@ class UserService extends Service {
   }
 
   /**
-   * Get the roleId by roleName
    * @param string $roleName
    * @return array
    */
@@ -76,8 +67,6 @@ class UserService extends Service {
   }
 
   /**
-   * Add a role to a user
-   *
    * @param int $userId
    * @param string $roleName
    * @return int
@@ -93,8 +82,6 @@ class UserService extends Service {
   }
 
   /**
-   * Remove all roles from a user
-   *
    * @param int $userId
    */
   public function removeAllUserRoles($userId) {
@@ -105,10 +92,10 @@ class UserService extends Service {
   }
 
   /**
-   * Return true if the $username has already been used, false otherwise.
-   *
    * @param string $username
-   * @return boolean
+   * @param int $excludeUserId
+   * @return bool
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function getIsUsernameTaken($username, $excludeUserId = 0) {
     $conn = Application::instance ()->getConnection ();
@@ -120,11 +107,10 @@ class UserService extends Service {
   }
 
   /**
-   * Return true if the $email has already been used, false otherwise.
-   *
-   * @param string $username
-   * @param string $excludeUserId
-   * @return boolean
+   * @param $email
+   * @param int|string $excludeUserId
+   * @return bool
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function getIsEmailTaken($email, $excludeUserId = 0) {
     $conn = Application::instance ()->getConnection ();
@@ -136,9 +122,9 @@ class UserService extends Service {
   }
 
   /**
-   * Get the user record by username
-   *
-   * @param string $userId
+   * @param int $username
+   * @return mixed
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function getUserByUsername($username) {
     $conn = Application::instance ()->getConnection ();
@@ -149,9 +135,8 @@ class UserService extends Service {
   }
 
   /**
-   * Get the user record by userId
-   *
    * @param string $userId
+   * @return mixed
    */
   public function getUserById($userId) {
     $conn = Application::instance ()->getConnection ();
@@ -162,9 +147,8 @@ class UserService extends Service {
   }
 
   /**
-   * Add a new user
-   *
    * @param array $user
+   * @return string
    */
   public function addUser(array $user) {
     $conn = Application::instance ()->getConnection ();
@@ -175,8 +159,6 @@ class UserService extends Service {
   }
 
   /**
-   * Update a user record
-   *
    * @param int $userId
    * @param array $user
    */
@@ -189,8 +171,6 @@ class UserService extends Service {
   }
 
   /**
-   * Return a list of the users roles
-   *
    * @param int $userId
    * @return array
    */
@@ -211,10 +191,9 @@ class UserService extends Service {
   }
 
   /**
-   * Get the user record by external Id
-   *
    * @param string $authId
    * @param string $authProvider
+   * @return mixed
    */
   public function getUserByAuthId($authId, $authProvider) {
     $conn = Application::instance ()->getConnection ();
@@ -245,11 +224,10 @@ class UserService extends Service {
   }
 
   /**
-   * Return a users auth profile
-   *
-   * @param string $authId
+   * @param int $userId
    * @param string $authProvider
    * @return array
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function getUserAuthProfile($userId, $authProvider) {
     $conn = Application::instance ()->getConnection ();
@@ -265,8 +243,6 @@ class UserService extends Service {
   }
 
   /**
-   * Get all the profiles for a specific uer
-   *
    * @param int $userId
    * @return array
    */
@@ -282,8 +258,8 @@ class UserService extends Service {
   }
 
   /**
-   * Updates a users auth profile
-   *
+   * @param int $userId
+   * @param string $authProvider
    * @param array $auth
    */
   public function updateUserAuthProfile($userId, $authProvider, array $auth) {
@@ -296,8 +272,6 @@ class UserService extends Service {
   }
 
   /**
-   * Add a auth profile to a user
-   *
    * @param array $auth
    * @return void
    */
@@ -323,8 +297,6 @@ class UserService extends Service {
   }
 
   /**
-   * Remove auth profile
-   *
    * @param int $userId
    * @param string $authProvider
    */
@@ -337,10 +309,11 @@ class UserService extends Service {
   }
 
   /**
-   * Find a user by username, returns a list of users
-   *
    * @param string $username
+   * @param int $limit
+   * @param int $start
    * @return array
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function findUsersByUsername($username, $limit = 10, $start = 0) {
     $conn = Application::instance ()->getConnection ();
@@ -358,12 +331,10 @@ class UserService extends Service {
   }
 
   /**
-   * List users
-   * 
    * @param int $limit
-   * @param int $start
-   * @param array $filters
+   * @param int $page
    * @return array
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function listUsers($limit, $page = 1) {
     $conn = Application::instance ()->getConnection ();
@@ -388,14 +359,15 @@ class UserService extends Service {
     $pagination ['limit'] = $limit;
     return $pagination;
   }
-  
+
   /**
-   * Find a user by search string
-   * @TODO Complicated order query to emulate "relavency"
+   * @TODO Complicated order query to emulate "relevancy"
    *
-   * @param string $string          
-   * @param number $limit         
-   * @param number $start         
+   * @param string $string
+   * @param int|number $limit
+   * @param int|number $start
+   * @return array
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function findUsers($string, $limit = 10, $start = 0) {
     $conn = Application::instance ()->getConnection ();
@@ -421,13 +393,11 @@ class UserService extends Service {
   }
 
   /**
-   * List users
-   * 
    * @param int $limit
-   * @param int $start
+   * @param $page
    * @param string $search
-   * @param array $filters
    * @return array
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function searchUsers($limit, $page, $search) {
     $conn = Application::instance ()->getConnection ();
@@ -463,13 +433,13 @@ class UserService extends Service {
     $pagination ['limit'] = $limit;
     return $pagination;
   }
-  
+
   /**
-   * Get a user address by user
-   *
-   * @param number $userId          
-   * @param number $limit         
-   * @param number $start         
+   * @param int $userId
+   * @param int $limit
+   * @param int $start
+   * @return mixed
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function getAddressByUserId($userId, $limit = 1, $start = 0) {
     $conn = Application::instance ()->getConnection ();
@@ -486,8 +456,6 @@ class UserService extends Service {
   }
   
   /**
-   * Add a user address
-   * 
    * @param array $address
    */
   public function addAddress(array $address){
@@ -519,8 +487,6 @@ class UserService extends Service {
   }
   
   /**
-   * Update a user address
-   * 
    * @param array $address
    */
   public function updateAddress(array $address){
@@ -528,14 +494,15 @@ class UserService extends Service {
     $address ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
     $conn->update ( 'users_address', $address, array ('id' => $address['id']) );
   }
-  
+
 
   /**
-   * Returns a list of bans
-   *
+   * @param int $userId
+   * @param string $ipaddress
    * @return array
+   * @throws \Doctrine\DBAL\DBALException
    */
-  public function getUserActiveBan($userId, $ipaddress = null) {
+  public function getUserActiveBan($userId, $ipaddress = "") {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
       SELECT
@@ -615,10 +582,10 @@ class UserService extends Service {
         'id' => $ban ['id']
     ) );
   }
-  
+
   /**
-   * Insert a new chat ban
    * @param array $ban
+   * @return string
    */
   public function insertBan(array $ban) {
     $conn = Application::instance ()->getConnection ();
@@ -627,10 +594,9 @@ class UserService extends Service {
   }
 
   /**
-   * Get a chat ban by ID
-   *
-   * @param int $userId
+   * @param $userid
    * @return int $count The number of rows modified
+   * @throws \Doctrine\DBAL\DBALException
    */
   public function removeUserBan( $userid ) {
     $conn = Application::instance ()->getConnection ();
@@ -652,8 +618,9 @@ class UserService extends Service {
   /**
    * Find users with the same IP as this user
    *
-   * @param int $userId
+   * @param int $userid
    * @return array $users The users found
+   * @throws Exception
    */
   public function findSameIPUsers( $userid ) {
     $keys = $this->callRedisScript('check-sameip-users', array( $userid ) );
@@ -688,8 +655,11 @@ class UserService extends Service {
    * transformed into (int)123 and than later users with the given ids
    * queried from the database ordered by username in ascending order
    *
-   * @param string $ipaddress
+   * @param string $keyprefix
+   * @param array $keys
    * @return array $users The users found
+   * @throws Exception
+   * @throws \Doctrine\DBAL\DBALException
    */
   private function getUsersFromRedisKeys( $keyprefix, $keys ) {
     $userids = array();
@@ -724,8 +694,9 @@ class UserService extends Service {
    * Loads the given redis script if needed and calls it with the $arguments param
    *
    * @param string $scriptname
-   * @param array $arguments
+   * @param array $argument
    * @return array $users The users found
+   * @throws Exception
    */
   private function callRedisScript( $scriptname, $argument ) {
     $redis = Application::instance ()->getRedis ();

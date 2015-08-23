@@ -15,7 +15,7 @@ abstract class Date {
     /**
      * Get a DateTime object
      *
-     * @param string|int $string
+     * @param int|string $time
      * @return \DateTime
      */
     public static function getDateTime($time = 'NOW') {

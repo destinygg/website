@@ -15,11 +15,10 @@ class TwitterAuthHandler {
      * @var string
      */
     protected $authProvider = 'twitter';
-    
+
     /**
-     * Redirects the user to the auth provider
-     *
      * @return string
+     * @throws Exception
      */
     public function getAuthenticationUrl() {
         $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
@@ -51,9 +50,10 @@ class TwitterAuthHandler {
         Session::set ( 'oauth', $response );
         return $tmhOAuth->url ( 'oauth/authorize', '' ) . "?oauth_token={$response['oauth_token']}";
     }
-    
+
     /**
-     * @param array $params         
+     * @param array $params
+     * @return string
      * @throws Exception
      */
     public function authenticate(array $params) {
@@ -74,6 +74,7 @@ class TwitterAuthHandler {
                 'curl_timeout' => Config::$a ['curl'] ['timeout'],
                 'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
         ) );
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
         $code = $tmhOAuth->user_request ( array (
                 'method' => 'POST',
                 'url' => $tmhOAuth->url ( 'oauth/access_token', '' ),
@@ -89,13 +90,12 @@ class TwitterAuthHandler {
         $authCredHandler = new AuthenticationRedirectionFilter ();
         return $authCredHandler->execute ( $authCreds );
     }
-    
+
     /**
-     * Build a standard auth array from custom data array from api response
-     *
-     * @param string $code          
-     * @param array $data           
+     * @param string $code
+     * @param array $data
      * @return AuthenticationCredentials
+     * @throws Exception
      */
     private function getAuthCredentials($code, array $data) {
         if (empty ( $data ) || ! isset ( $data ['user_id'] ) || empty ( $data ['user_id'] )) {

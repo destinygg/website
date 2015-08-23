@@ -23,13 +23,13 @@ use PayPal\IPN\PPIPNMessage;
  */
 class IpnController {
 
-    /**
-     * @Route ("/ipn")
-     * @Transactional
-     *
-     * Handles the incoming HTTP request
-     * @param array $params
-     */
+  /**
+   * @Route ("/ipn")
+   * @Transactional
+   *
+   * Handles the incoming HTTP request
+   * @return Response
+   */
     public function ipn() {
       $log = Application::instance ()->getLogger ();
       try {
@@ -68,11 +68,12 @@ class IpnController {
       }
     }
 
-    /**
-     * Handles the IPN message
-     *
-     * @param PPIPNMessage $ipnMessage
-     */
+  /**
+   * @param string $txnId
+   * @param string $txnType
+   * @param array $data
+   * @throws Exception
+   */
     protected function handleIPNTransaction($txnId, $txnType, array $data) {
       
       $log = Application::instance ()->getLogger ();
@@ -202,12 +203,11 @@ class IpnController {
       }
     }
 
-    /**
-     * Get payment profile from IPN
-     *
-     * @param array $data
-     * @return array
-     */
+  /**
+   * @param array $data
+   * @return array
+   * @throws Exception
+   */
     protected function getPaymentProfile(array $data) {
       if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {
         throw new Exception ( 'Invalid recurring_payment_id' );

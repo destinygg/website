@@ -145,11 +145,9 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Update a subscriptions recurring field
-    *
-    * @param int $subscriptionId
-    * @param \DateTime $endDate
-    */
+     * @param int $subscriptionId
+     * @param boolean $recurring
+     */
     public function updateSubscriptionRecurring($subscriptionId, $recurring) {
         $conn = Application::instance ()->getConnection ();
         $conn->update ( 'dfl_users_subscriptions', array (
@@ -163,11 +161,9 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Update a subscriptions status
-    *
-    * @param int $subscriptionId
-    * @param \DateTime $endDate
-    */
+     * @param int $subscriptionId
+     * @param string $status
+     */
     public function updateSubscriptionState($subscriptionId, $status) {
         $conn = Application::instance ()->getConnection ();
         $conn->update ( 'dfl_users_subscriptions', array (
@@ -181,8 +177,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Update a subscriptions payment profile
-    *
     * @param int $subscriptionId
     * @param int $profileId
     * @param boolean $recurring
@@ -318,9 +312,9 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Add subscription
-    * @param array $subscription
-    */
+     * @param array $subscription
+     * @return string
+     */
     public function addSubscription(array $subscription){
         $conn = Application::instance ()->getConnection ();
         $conn->insert ( 'dfl_users_subscriptions', $subscription);
@@ -339,11 +333,15 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get all user subscriptions
-    *
-    * @param number $userId          
-    * @return array
-    */
+     * Get all user subscriptions
+     *
+     * @param number $userId
+     * @param int $limit
+     * @param int $start
+     * @return array
+     * @throws Exception
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function getUserSubscriptions($userId, $limit = 100, $start = 0) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -365,11 +363,13 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get a subscription by Id
-    *
-    * @param number $id          
-    * @return array
-    */
+     * Get a subscription by Id
+     *
+     * @param int $subscriptionId
+     * @return array
+     * @throws Exception
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function getSubscriptionById($subscriptionId) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '

@@ -81,6 +81,7 @@ class OrdersService extends Service {
      * Get an order by orderId
      *
      * @param int $orderId
+     * @return mixed
      */
     public function getOrderById($orderId) {
         $conn = Application::instance ()->getConnection ();
@@ -91,10 +92,9 @@ class OrdersService extends Service {
     }
 
     /**
-     * Get an order by orderId and userId
-     *
      * @param int $orderId
      * @param int $userId
+     * @return mixed
      */
     public function getOrderByIdAndUserId($orderId, $userId) {
         $conn = Application::instance ()->getConnection ();
@@ -106,11 +106,12 @@ class OrdersService extends Service {
     }
 
     /**
-     * Get a list of order items by the userId
-     *
      * @param int $userId
      * @param int $limit
      * @param int $start
+     * @param string $order
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getOrdersByUserId($userId, $limit = 10, $start = 0, $order = 'ASC') {
         if ($order != 'ASC' && $order != 'DESC') {
@@ -130,11 +131,12 @@ class OrdersService extends Service {
     }
 
     /**
-     * Get a list of order items by the userId
-     *
      * @param int $userId
      * @param int $limit
      * @param int $start
+     * @param string $order
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getCompletedOrdersByUserId($userId, $limit = 10, $start = 0, $order = 'ASC') {
         if ($order != 'ASC' && $order != 'DESC') {
@@ -154,8 +156,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Add a recurring payment profile
-     *
      * @param array $profile
      * @return int
      */
@@ -177,11 +177,9 @@ class OrdersService extends Service {
     }
 
     /**
-     * Insert an ipn record
-     *
-     * @return void
+     * @param array $ipn
      */
-    public function addIpnRecord($ipn) {
+    public function addIpnRecord(array $ipn) {
         $conn = Application::instance ()->getConnection ();
         $conn->insert ( 'dfl_orders_ipn', array (
             'ipnTrackId' => $ipn ['ipnTrackId'],
@@ -195,8 +193,8 @@ class OrdersService extends Service {
      * This assumes there is only one profile per order
      * - this wont be the case other than when you are in the process of making an order
      *
-     * @todo dirty
      * @param int $orderId
+     * @return mixed
      */
     public function getPaymentProfileByOrderId($orderId) {
         $conn = Application::instance ()->getConnection ();
@@ -209,8 +207,9 @@ class OrdersService extends Service {
     /**
      * This uses the PP paymentProfileId, not the autoincrement local Id
      *
-     * @todo dirty
-     * @param int $orderId
+     * @param int $paymentProfileId
+     * @return mixed
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getPaymentProfileByPaymentProfileId($paymentProfileId) {
         $conn = Application::instance ()->getConnection ();
@@ -223,8 +222,9 @@ class OrdersService extends Service {
     /**
      * This uses the PP paymentProfileId, not the autoincrement local Id
      *
-     * @todo dirty
-     * @param int $orderId
+     * @param int $profileId
+     * @return mixed
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getPaymentProfileById($profileId) {
         $conn = Application::instance ()->getConnection ();
@@ -252,7 +252,7 @@ class OrdersService extends Service {
     /**
      * Set a payment profile state to cancelled
      *
-     * @param int $paymentProfile
+     * @param int $paymentProfileId
      * @param string $state
      */
     public function updatePaymentProfileState($paymentProfileId, $state) {
@@ -270,7 +270,7 @@ class OrdersService extends Service {
      * @todo dirty
      * @param int $profileId
      * @param int $paymentProfileId
-     * @param string $status
+     * @param string $state
      */
     public function updatePaymentProfileId($profileId, $paymentProfileId, $state) {
         $conn = Application::instance ()->getConnection ();
@@ -283,9 +283,8 @@ class OrdersService extends Service {
     }
 
     /**
-     * Get a payment by the transaction Id
-     *
      * @param string $transactionId
+     * @return mixed
      */
     public function getPaymentByTransactionId($transactionId) {
         $conn = Application::instance ()->getConnection ();
@@ -296,8 +295,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Get a payments order
-     *
      * @param int $paymentId
      * @return array
      */
@@ -315,11 +312,10 @@ class OrdersService extends Service {
     }
 
     /**
-     * Get a users payments
-     *
      * @param int $userId
      * @param int $limit
      * @param int $start
+     * @return array
      */
     public function getPaymentsByUser($userId, $limit = 10, $start = 0) {
         $conn = Application::instance ()->getConnection ();
@@ -339,12 +335,14 @@ class OrdersService extends Service {
 
     /**
      * Return payments by orderId
-     *
      * @todo this returns payments in ASC order, the getPaymentsByUser returns them in DESC order
      *
      * @param int $orderId
      * @param int $limit
      * @param int $start
+     * @param string $order
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getPaymentsByOrderId($orderId, $limit = 100, $start = 0, $order = 'ASC') {
         $order = ($order != 'ASC' && $order != 'DESC') ? 'ASC' : $order;

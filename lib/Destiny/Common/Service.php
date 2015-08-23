@@ -9,7 +9,7 @@ abstract class Service {
     protected static $instance = null;
 
     /**
-     * @return $instance
+     * @return Service $instance
      */
     public static function instance() {
         if (static::$instance === null) {

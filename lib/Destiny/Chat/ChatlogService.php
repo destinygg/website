@@ -9,15 +9,11 @@ use Doctrine\DBAL\Types\DateTimeType;
 class ChatlogService extends Service {
     
     /**
-     * Singleton
-     *
      * @var ChatlogService
      */
     protected static $instance = null;
 
     /**
-     * Get the singleton instance
-     *
      * @return ChatlogService
      */
     public static function instance() {
@@ -25,9 +21,9 @@ class ChatlogService extends Service {
     }
 
     /**
-     * Returns a chat log list
-     *
+     * @param int $limit
      * @return array
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getChatLog($limit) {
         $conn = Application::instance ()->getConnection ();
@@ -81,8 +77,9 @@ class ChatlogService extends Service {
      *
      * @param int $userId
      * @param \DateTime $startRange
-     * @param int $limit            
-     * @param int $start            
+     * @param int $limit
+     * @param int $start
+     * @return array
      */
     public function getChatLogBanContext($userId, \DateTime $startRange, $limit = 10, $start = 0) {
         $conn = Application::instance ()->getConnection ();
@@ -110,13 +107,13 @@ class ChatlogService extends Service {
         $stmt->execute ();
         return $stmt->fetchAll ();
     }
-    
+
     /**
-     * Get the latest broadcasts
-     * 
      * @param \DateTime $startRange
-     * @param number $limit
-     * @param number $start
+     * @param int $limit
+     * @param int $start
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getBroadcasts(\DateTime $startRange, $limit=1, $start=0){
         $conn = Application::instance ()->getConnection ();

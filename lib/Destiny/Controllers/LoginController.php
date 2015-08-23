@@ -18,13 +18,13 @@ use Destiny\Chat\ChatIntegrationService;
  * @Controller
  */
 class LoginController {
-    
+
     /**
      * @Route ("/logout")
      *
-     * @param array $params         
+     * @return string
      */
-    public function logout(array $params) {
+    public function logout() {
         if(Session::isStarted()){
             ChatIntegrationService::instance ()->deleteChatSession ( Session::getSessionId () );
             Session::destroy ();

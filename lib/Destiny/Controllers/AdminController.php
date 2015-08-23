@@ -64,7 +64,8 @@ class AdminController {
      * @Secure ({"ADMIN"})
      * @Transactional
      *
-     * @param array $params         
+     * @param array $params
+     * @return array|Response
      * @throws Exception
      */
     public function adminCron(array $params) {
@@ -85,13 +86,14 @@ class AdminController {
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         return $response;
     }
-    
+
     /**
      * @Route ("/admin/subscribers")
      * @Secure ({"ADMIN"})
      *
-     * @param array $params         
-     * @throws Exception
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
      */
     public function adminSubscribers(array $params, ViewModel $model) {
         $subService = SubscriptionsService::instance ();
@@ -107,8 +109,9 @@ class AdminController {
      * @Route ("/admin/bans")
      * @Secure ({"ADMIN"})
      *
-     * @param array $params         
-     * @throws Exception
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
      */
     public function adminBans(array $params, ViewModel $model) {
         $chatService = ChatIntegrationService::instance ();
@@ -131,7 +134,8 @@ class AdminController {
      * @Route ("/admin/user/find")
      * @Secure ({"ADMIN"})
      *
-     * @param array $params         
+     * @param array $params
+     * @return Response
      */
     public function adminUserFind(array $params) {
         FilterParams::required($params, 's');

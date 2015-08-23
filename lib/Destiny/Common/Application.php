@@ -78,7 +78,9 @@ class Application extends Service {
     }
 
     /**
-     * Executes the action if a route is found
+     * @param Request $request
+     * @throws Exception
+     * @throws \Doctrine\DBAL\ConnectionException
      */
     public function executeRequest(Request $request) {
         
@@ -238,10 +240,9 @@ class Application extends Service {
     }
 
     /**
-     * Check if the security credentials have the correct values for the route
      * @param Route $route
-     * @param Route $credentials
-     * @return boolean
+     * @param SessionCredentials $credentials
+     * @return bool
      */
     private function hasRouteSecurity(Route $route, SessionCredentials $credentials) {
         // Check the route security against the user roles and features

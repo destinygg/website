@@ -88,9 +88,7 @@ class SessionCredentials {
     }
 
     /**
-     * Set all the credentials at once
-     *
-     * @param array $params
+     * @return array
      */
     public function getData() {
         return array (
@@ -181,9 +179,8 @@ class SessionCredentials {
     }
 
     /**
-     * Check if this auth has a specific role
-     *
      * @param int $roleId
+     * @return bool
      */
     public function hasRole($roleId) {
         foreach ( $this->roles as $role ) {
@@ -235,9 +232,8 @@ class SessionCredentials {
     }
 
     /**
-     * Check if this auth has a specific feature
-     *
-     * @param int $featureId
+     * @param string $featureName
+     * @return bool
      */
     public function hasFeature($featureName) {
         foreach ( $this->features as $feature ) {

@@ -29,6 +29,7 @@ class PrivateMessageController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
+     * @param ViewModel $viewModel
      * @return Response
      */
     public function inbox(array $params, ViewModel $viewModel) {
@@ -195,7 +196,10 @@ class PrivateMessageController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
+     * @param ViewModel $viewModel
      * @return Response
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function message(array $params, ViewModel $viewModel) {
         FilterParams::required($params, 'targetuserid');

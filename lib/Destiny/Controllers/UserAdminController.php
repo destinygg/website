@@ -216,17 +216,17 @@ class UserAdminController {
         $model->title = 'Subsription';
         return "admin/subscription";
     }
-    
+
     /**
      * @Route ("/admin/user/{id}/subscription/{subscriptionId}/save")
      * @Route ("/admin/user/{id}/subscription/save")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"POST"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
-     * @throws Exception
+     * @param array $params
      * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function subscriptionSave(array $params) {
         FilterParams::required ( $params, 'subscriptionType' );

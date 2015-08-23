@@ -16,8 +16,6 @@ class Scheduler {
     public $logger = null;
     
     /**
-     * The schedule data
-     *
      * @var array
      */
     public $schedule = array ();
@@ -49,6 +47,7 @@ class Scheduler {
 
     /**
      * @param string $name
+     * @return mixed
      */
     protected function getTask($name) {
         $conn = Application::instance ()->getConnection ();
@@ -59,7 +58,7 @@ class Scheduler {
     }
 
     /**
-     * @param array $schedule
+     * @param array $task
      */
     protected function updateTask(array $task) {
         $conn = Application::instance ()->getConnection ();
@@ -77,7 +76,7 @@ class Scheduler {
     }
 
     /**
-     * @param array $schedule
+     * @param array $task
      */
     protected function insertTask(array $task) {
         $conn = Application::instance ()->getConnection ();
@@ -141,8 +140,6 @@ class Scheduler {
     }
 
     /**
-     * Execute a task by name
-     *
      * @param string $name
      */
     public function executeTaskByName($name) {
@@ -157,9 +154,8 @@ class Scheduler {
     }
 
     /**
-     * Execute schedule task
-     *
      * @param array $task
+     * @throws Exception
      */
     protected function executeTask(array $task) {
         $this->logger->debug ( sprintf ( 'Execute start %s', $task ['action'] ) );

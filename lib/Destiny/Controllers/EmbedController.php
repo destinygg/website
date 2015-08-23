@@ -76,12 +76,13 @@ class EmbedController {
         $model->title = 'Chat';
         return 'embed/onstreamchat';
     }
-    
+
     /**
      * Get the chat params from the get request
      * Make sure they are all valid
      *
      * @param array $params
+     * @return array
      */
     private function getChatOptionParams(array $params) {
         $emotes = Config::$a ['chat'] ['customemotes'];

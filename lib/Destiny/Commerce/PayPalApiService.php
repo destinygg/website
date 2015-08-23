@@ -38,8 +38,6 @@ class PayPalApiService extends Service {
     protected static $instance = null;
     
     /**
-     * Singleton
-     *
      * @return PayPalApiService
      */
     public static function instance() {
@@ -47,10 +45,7 @@ class PayPalApiService extends Service {
     }
 
     /**
-     * Clear a payment profile
-     *
-     * @param array $subscription         
-     * @param array $paymentProfile         
+     * @param array $paymentProfile
      * @throws Exception
      */
     public function cancelPaymentProfile(array $paymentProfile) {
@@ -87,14 +82,14 @@ class PayPalApiService extends Service {
         }
       
     }
-    
+
     /**
      * Create a Paypal recurring payment profile
      *
-     * @param array $order          
-     * @param string $token         
-     * @param array $subscriptionType         
-     * @return \PayPalAPI\CreateRecurringPaymentsProfileResponseType
+     * @param array $paymentProfile
+     * @param string $token
+     * @param array $subscriptionType
+     * @return \PayPal\PayPalAPI\CreateRecurringPaymentsProfileResponseType
      */
     public function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscriptionType) {
         $billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
@@ -126,12 +121,14 @@ class PayPalApiService extends Service {
         $paypalService = new PayPalAPIInterfaceServiceService ();
         return $paypalService->CreateRecurringPaymentsProfile ( $createRPProfileReq );
     }
-    
+
     /**
      * Execute the setExpressCheckout process, forwards to paypal
      *
-     * @param string $responseUrl         
-     * @param array $subscriptionType         
+     * @param string $responseUrl
+     * @param array $order
+     * @param array $subscriptionType
+     * @return \PayPal\PayPalAPI\SetExpressCheckoutResponseType
      */
     public function getNoPaymentECResponse($responseUrl, array $order, array $subscriptionType) {
         $returnUrl = Http::getBaseUrl () . $responseUrl .'?success=true&orderId=' . urlencode ( $order ['orderId'] );
@@ -171,13 +168,15 @@ class PayPalApiService extends Service {
         $paypalService = new PayPalAPIInterfaceServiceService ();
         return $paypalService->SetExpressCheckout ( $setECReq );
     }
-    
+
     /**
      * Execute the setExpressCheckout process, forwards to paypal
      *
-     * @param array $order          
-     * @param array $subscription         
-     * @param bool $recurring         
+     * @param string $responseUrl
+     * @param array $order
+     * @param array $subscriptionType
+     * @param bool $recurring
+     * @return \PayPal\PayPalAPI\SetExpressCheckoutResponseType
      */
     public function createECResponse($responseUrl, array $order, array $subscriptionType, $recurring = false) {
         // @todo should pass these urls in
@@ -227,11 +226,12 @@ class PayPalApiService extends Service {
         $paypalService = new PayPalAPIInterfaceServiceService ();
         return $paypalService->SetExpressCheckout ( $setECReq );
     }
-    
+
     /**
      * Retrieve the checkout instance from paypal
      *
-     * @return \PayPalAPI\GetExpressCheckoutDetailsResponseType
+     * @param string $token
+     * @return \PayPal\PayPalAPI\GetExpressCheckoutDetailsResponseType
      */
     public function retrieveCheckoutInfo($token) {
         $paypalService = new PayPalAPIInterfaceServiceService ();
@@ -239,13 +239,14 @@ class PayPalApiService extends Service {
         $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType ( $token );
         return $paypalService->GetExpressCheckoutDetails ( $getExpressCheckoutReq );
     }
-    
+
     /**
      * Get express checkout payment request response
-     * 
-     * @param string $payerId         
-     * @param array $order     
-     * @return PayPalAPI\DoExpressCheckoutPaymentResponseType     
+     *
+     * @param string $payerId
+     * @param string $token
+     * @param array $order
+     * @return \PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType
      */
     public function getECPaymentResponse($payerId, $token, array $order) {
         $DoECRequestDetails = new DoExpressCheckoutPaymentRequestDetailsType ();
@@ -270,7 +271,7 @@ class PayPalApiService extends Service {
     /**
      * Record the payments from a EC payment response
      * 
-     * @param PayPalAPI\DoExpressCheckoutPaymentResponseType $DoECResponse
+     * @param DoExpressCheckoutPaymentResponseType $DoECResponse
      * @param string $payerId
      * @param array $order
      * @return array

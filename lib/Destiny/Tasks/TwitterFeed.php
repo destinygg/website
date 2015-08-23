@@ -19,6 +19,7 @@ class TwitterFeed implements TaskInterface {
             'curl_timeout' => Config::$a ['curl'] ['timeout'],
             'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
         ) );
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
         $code = $tmhOAuth->user_request ( array (
             'url' => $tmhOAuth->url ( '1.1/statuses/user_timeline.json' ),
             'params' => array (

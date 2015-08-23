@@ -52,13 +52,13 @@ class ProfileController {
       return $paymentProfile;
     }
 
-    /**
-     * @Route ("/profile/info")
-     * @Secure ({"USER"})
-     *
-     * @param array $params         
-     */
-    public function profileInfo(array $params) {
+  /**
+   * @Route ("/profile/info")
+   * @Secure ({"USER"})
+   *
+   * @return Response
+   */
+    public function profileInfo() {
       $response = new Response ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
       $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
       return $response;
@@ -238,15 +238,19 @@ class ProfileController {
       return 'profile/authentication';
     }
 
-    /**
-     * @Route ("/profile/authtoken/create")
-     * @HttpMethod ({"POST"})
-     * @Secure ({"USER"})
-     * @Transactional
-     *
-     * @param array $params         
-     */
-    public function profileAuthtokenCreate(array $params, ViewModel $model, Request $request) {
+  /**
+   * @Route ("/profile/authtoken/create")
+   * @HttpMethod ({"POST"})
+   * @Secure ({"USER"})
+   * @Transactional
+   *
+   * @param array $params
+   * @param ViewModel $model
+   * @param Request $request
+   * @return string
+   * @throws Exception
+   */
+    public function profileAuthTokenCreate(array $params, ViewModel $model, Request $request) {
       if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
         throw new Exception ( 'You must solve the recaptcha.' );
 
@@ -265,15 +269,18 @@ class ProfileController {
       return 'redirect: /profile/authentication';
     }
 
-    /**
-     * @Route ("/profile/authtoken/{authToken}/delete")
-     * @HttpMethod ({"POST"})
-     * @Secure ({"USER"})
-     * @Transactional
-     *
-     * @param array $params         
-     */
-    public function profileAuthtokenDelete(array $params) {
+  /**
+   * @Route ("/profile/authtoken/{authToken}/delete")
+   * @HttpMethod ({"POST"})
+   * @Secure ({"USER"})
+   * @Transactional
+   *
+   * @param array $params
+   * @return string
+   * @throws Exception
+   * @throws \Destiny\Common\Utils\FilterParamsException
+   */
+    public function profileAuthTokenDelete(array $params) {
       FilterParams::required ( $params, 'authToken' );
       
       $userId = Session::getCredentials ()->getUserId ();
@@ -290,13 +297,15 @@ class ProfileController {
       return 'redirect: /profile/authentication';
     }
 
-    /**
-     * @Route ("/profile/connect/{provider}")
-     * @Secure ({"USER"})
-     *
-     * @param array $params         
-     * @return string
-     */
+  /**
+   * @Route ("/profile/connect/{provider}")
+   * @Secure ({"USER"})
+   *
+   * @param array $params
+   * @return string
+   * @throws Exception
+   * @throws \Destiny\Common\Utils\FilterParamsException
+   */
     public function profileConnect(array $params) {
       FilterParams::required ( $params, 'provider' );
       $authProvider = $params ['provider'];

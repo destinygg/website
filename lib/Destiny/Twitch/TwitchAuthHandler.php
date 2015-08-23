@@ -30,9 +30,10 @@ class TwitchAuthHandler{
             'scope' => 'user_read' 
         ) );
     }
-    
+
     /**
-     * @param array $params         
+     * @param array $params
+     * @return string
      * @throws Exception
      */
     public function authenticate(array $params) {
@@ -67,13 +68,12 @@ class TwitchAuthHandler{
         $authCredHandler = new AuthenticationRedirectionFilter ();
         return $authCredHandler->execute ( $authCreds );
     }
-    
+
     /**
-     * Build a standard auth array from custom data array from api response
-     *
-     * @param string $code          
-     * @param array $data         
+     * @param string $code
+     * @param array $data
      * @return AuthenticationCredentials
+     * @throws Exception
      */
     private function getAuthCredentials($code, array $data) {
         if (empty ( $data ) || ! isset ( $data ['_id'] ) || empty ( $data ['_id'] )) {

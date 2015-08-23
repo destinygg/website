@@ -10,15 +10,11 @@ use Destiny\Common\Exception;
 class ChatIntegrationService extends Service {
     
     /**
-     * Singleton instance
-     *
      * var ChatIntegrationService
      */
     protected static $instance = null;
 
     /**
-     * Singleton instance
-     *
      * @return ChatIntegrationService
      */
     public static function instance() {
@@ -26,9 +22,7 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Refreshes the current users session timeout
-     *
-     * @param string $sessionId         
+     * @param string $sessionId
      * @return void
      */
     public function renewChatSessionExpiration($sessionId) {
@@ -39,9 +33,7 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Handle the update of the credentials for chat
-     *
-     * @param SessionCredentials $credentials           
+     * @param SessionCredentials $credentials
      * @param string $sessionId         
      */
     public function setChatSession(SessionCredentials $credentials, $sessionId) {
@@ -54,9 +46,7 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Update a users session
-     *
-     * @param SessionCredentials $credentials           
+     * @param SessionCredentials $credentials
      */
     public function refreshChatUserSession(SessionCredentials $credentials) {
         $redis = Application::instance ()->getRedis ();
@@ -67,8 +57,7 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Delete the session for the chat user         
-     * @param string $sessionId         
+     * @param string $sessionId
      */
     public function deleteChatSession($sessionId) {
         $redis = Application::instance ()->getRedis ();
@@ -76,10 +65,9 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Broadcast a message
-     *
      * @param string $message
      *          the message
+     * @return \stdClass
      * @throws Exception
      */
     public function sendBroadcast($message) {
@@ -94,10 +82,9 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Unban and unmute a userId
-     *
      * @param int $userId
      *          the userId
+     * @return int
      * @throws Exception
      */
     public function sendUnban($userId) {
@@ -163,9 +150,8 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Publish the message to the redis channel
-     *
      * @param array $data
+     * @return int
      * @throws Exception
      */
     public function publishPrivateMessage(array $data) {
@@ -182,8 +168,6 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Publishes multiple messages to the redis channel
-     *
      * @param array $data
      * @throws Exception
      */

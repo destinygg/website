@@ -179,13 +179,9 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Get a list of messages by the target id and isread value
-     *
-     * @param int $userId
-     * @param int $isread
-     * @param int $start
-     * @param int $limit
+     * @param $userid
      * @return array
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getInboxMessagesByUserId($userid){
         $conn = Application::instance ()->getConnection ();
@@ -338,11 +334,8 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Mark all messages from $formuserid to $targetuserid
-     *
      * @param int $targetuserid
-     * @param int $fromuserid
-     * @return void
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function markAllMessagesRead($targetuserid) {
         $conn = Application::instance ()->getConnection ();
@@ -356,8 +349,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Mark messages as read
-     *
      * @param int $targetuserid
      * @param int $fromuserid
      * @return void
@@ -377,8 +368,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Mark a specific message as read
-     *
      * @param int $messageid
      * @param int $targetuserid
      * @return boolean $success

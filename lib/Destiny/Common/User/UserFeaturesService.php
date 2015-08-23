@@ -61,8 +61,9 @@ class UserFeaturesService extends Service {
     }
 
     /**
-     * Get a feature Id by the feature name
      * @param string $featureName
+     * @return array
+     * @throws Exception
      */
     public function getFeatureIdByName($featureName) {
         $features = $this->getFeatures ();
@@ -143,7 +144,7 @@ class UserFeaturesService extends Service {
      * Remove a feature from a user
      *
      * @param int $userId
-     * @param string $feature
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
      */
     public function removeAllUserFeatures($userId) {
         $conn = Application::instance ()->getConnection ();

@@ -81,10 +81,9 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Validate email
-     *
      * @param string $email
      * @param array $user
+     * @param null|boolean $skipusercheck
      * @throws Exception
      */
     public function validateEmail($email, array $user = null, $skipusercheck = null) {
@@ -191,9 +190,7 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Handles the credentials after authorization
-     *
-     * @param array $authCreds
+     * @param AuthenticationCredentials $authCreds
      * @throws Exception
      */
     public function handleAuthCredentials(AuthenticationCredentials $authCreds) {
@@ -270,6 +267,7 @@ class AuthenticationService extends Service {
      * Note the rememberme cookie has a long expiry unlike the session cookie
      *
      * @param array $user
+     * @return null|string
      */
     protected function setRememberMe(array $user) {
         $rememberMeService = RememberMeService::instance ();
@@ -335,8 +333,6 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Removes the user update flag
-     *
      * @param int $userId
      */
     protected function clearUserUpdateFlag($userId) {
@@ -345,9 +341,8 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Check if the user has been flagged for update
-     *
      * @param int $userId
+     * @return bool
      */
     protected function isUserFlaggedForUpdate($userId) {
         $cache = Application::instance ()->getCacheDriver ();

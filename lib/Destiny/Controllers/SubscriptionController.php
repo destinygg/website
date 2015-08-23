@@ -32,13 +32,14 @@ use Destiny\Common\MimeType;
  * @Controller
  */
 class SubscriptionController {
-  
+
     /**
      * @Route ("/subscribe")
      *
-     * Build subscribe checkout form
-     *
-     * @param array $params         
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     * @throws Exception
      */
     public function subscribe(array $params, ViewModel $model) {
         $subscriptionsService = SubscriptionsService::instance ();
@@ -168,13 +169,17 @@ class SubscriptionController {
         $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
-    
-    
+
+
     /**
      * @Route ("/subscription/{orderId}/error")
      * @Secure ({"USER"})
      *
      * @param array $params
+     * @param ViewModel $model
+     * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function subscriptionError(array $params, ViewModel $model) {
         FilterParams::required($params, 'orderId');
@@ -193,13 +198,15 @@ class SubscriptionController {
         $model->title = 'Subscription Error';
         return 'order/ordererror';
     }
-    
+
     /**
      * @Route ("/subscription/confirm")
      *
-     * Create and send the order
-     *
      * @param array $params
+     * @param ViewModel $model
+     * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function subscriptionConfirm(array $params, ViewModel $model) {
         FilterParams::required($params, 'subscription');
@@ -249,13 +256,16 @@ class SubscriptionController {
         $model->title = 'Subscription Confirm';
         return 'order/orderconfirm';
     }
-    
+
     /**
      * @Route ("/subscription/create")
      * @Secure ({"USER"})
      * @Transactional
      *
      * @param array $params
+     * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function subscriptionCreate(array $params) {
         FilterParams::required($params, 'subscription');
@@ -352,13 +362,17 @@ class SubscriptionController {
             throw new Exception ( $e->getMessage() );
         }
     }
-    
+
     /**
      * @Route ("/subscription/{orderId}/complete")
      * @Secure ({"USER"})
      * @Transactional
      *
      * @param array $params
+     * @param ViewModel $model
+     * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function subscriptionComplete(array $params, ViewModel $model) {
         FilterParams::required($params, 'orderId');
@@ -397,7 +411,7 @@ class SubscriptionController {
         $model->title = 'Subscription Complete';
         return 'order/ordercomplete';
     }
-    
+
     /**
      * @Route ("/subscription/process")
      * @Secure ({"USER"})
@@ -406,6 +420,9 @@ class SubscriptionController {
      * We were redirected here from PayPal after the buyer approved/cancelled the payment
      *
      * @param array $params
+     * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function subscriptionProcess(array $params) {
 
@@ -577,15 +594,13 @@ class SubscriptionController {
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/error';
         }
     }
-    
+
     /**
-     * Check if a user can receive a gift
-     * Returns JSON 
-     *
      * @Route ("/gift/check")
      * @Secure ({"USER"})
      *
      * @param array $params
+     * @return Response
      */
     public function giftCheckUser(array $params) {
       FilterParams::required($params, 's');

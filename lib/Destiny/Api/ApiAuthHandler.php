@@ -19,6 +19,7 @@ class ApiAuthHandler {
 
     /**
      * @param array $params
+     * @return Response
      * @throws Exception
      */
     public function authenticate(array $params) {

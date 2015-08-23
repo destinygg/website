@@ -33,6 +33,7 @@ class ApiAuthenticationService extends Service {
     /**
      * Builds a unique auth token
      *
+     * @param int $userId
      * @return string
      */
     public function createAuthToken($userId) {
@@ -76,6 +77,7 @@ class ApiAuthenticationService extends Service {
      * @param int $userId
      * @param int $limit
      * @param int $start
+     * @return array
      */
     public function getAuthTokensByUserId($userId, $limit = 5, $start = 0) {
         $conn = Application::instance ()->getConnection ();
@@ -120,11 +122,10 @@ class ApiAuthenticationService extends Service {
     }
 
     /**
-     * Get a list of authenticated sessions
-     *
      * @param int $userId
      * @param int $limit
      * @param int $start
+     * @return array
      */
     public function getAuthSessionsByUserId($userId, $limit = 5, $start = 0) {
         $conn = Application::instance ()->getConnection ();

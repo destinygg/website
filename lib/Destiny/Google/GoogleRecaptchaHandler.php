@@ -12,9 +12,14 @@ class GoogleRecaptchaHandler {
      * secret   Required. The shared key between your site and ReCAPTCHA.
      * response Required. The user response token provided by the reCAPTCHA to the user and provided to your site on.
      * remoteip Optional. The user's IP address.
+     *
+     * @param $secret
+     * @param $response
+     * @param $remoteip
+     * @return bool
+     * @throws Exception
      */
     public function resolve($secret, $response, $remoteip){
-        
         $curl = new CurlBrowser (array (
             'timeout' => 25,
             'url' => new String ( 'https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={response}&remoteip={remoteip}', array (

@@ -13,13 +13,14 @@ use Destiny\Common\Request;
  * @Controller
  */
 class BannedController {
-    
+
     /**
      * @Route ("/banned")
      * @Secure ({"USER"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param array $params
+     * @param ViewModel $model
+     * @param Request $request
      * @return string
      */
     public function banned(array $params, ViewModel $model, Request $request) {

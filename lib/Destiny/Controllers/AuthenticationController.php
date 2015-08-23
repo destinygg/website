@@ -18,12 +18,13 @@ use Destiny\Common\Exception;
  * @Controller
  */
 class AuthenticationController {
-    
+
     /**
      * @Route ("/api/auth")
      * @Transactional
      *
-     * @param array $params   
+     * @param array $params
+     * @return Response
      * @throws Exception
      */
     public function authApi(array $params) {
@@ -35,13 +36,14 @@ class AuthenticationController {
             return $response;
         }
     }
-    
+
     /**
      * @Route ("/auth/twitch")
      * @Transactional
      *
-     * @param array $params  
+     * @param array $params
      * @param ViewModel $model
+     * @return string
      * @throws Exception
      */
     public function authTwitch(array $params, ViewModel $model) {
@@ -54,13 +56,14 @@ class AuthenticationController {
             return 'login';
         }
     }
-    
+
     /**
      * @Route ("/auth/twitter")
      * @Transactional
      *
-     * @param array $params     
-     * @param ViewModel $model              
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
      * @throws Exception
      */
     public function authTwitter(array $params, ViewModel $model) {
@@ -73,13 +76,14 @@ class AuthenticationController {
             return 'login';
         }
     }
-    
+
     /**
      * @Route ("/auth/google")
      * @Transactional
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
      * @throws Exception
      */
     public function authGoogle(array $params, ViewModel $model) {
@@ -92,13 +96,14 @@ class AuthenticationController {
             return 'login';
         }
     }
-    
+
     /**
      * @Route ("/auth/reddit")
      * @Transactional
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
      * @throws Exception
      */
     public function authReddit(array $params, ViewModel $model) {

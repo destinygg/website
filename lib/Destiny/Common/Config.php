@@ -13,7 +13,7 @@ abstract class Config {
     /**
      * Load the config stack
      *
-     * @param array $array
+     * @param array $config
      */
     public static function load(array $config) {
         self::$a = $config;

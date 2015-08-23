@@ -24,6 +24,9 @@ class UserBanController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
+     * @param ViewModel $model
+     * @return string
+     * @throws Exception
      */
     public function addBan(array $params, ViewModel $model) {
         $model->title = 'New Ban';
@@ -53,6 +56,8 @@ class UserBanController {
      * @HttpMethod ({"POST"})
      *
      * @param array $params
+     * @return string
+     * @throws Exception
      */
     public function insertBan(array $params) {
         if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
@@ -80,6 +85,9 @@ class UserBanController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
+     * @param ViewModel $model
+     * @return string
+     * @throws Exception
      */
     public function editBan(array $params, ViewModel $model) {
         $model->title = 'Update Ban';
@@ -108,6 +116,8 @@ class UserBanController {
      * @Transactional
      *
      * @param array $params
+     * @return string
+     * @throws Exception
      */
     public function updateBan(array $params) {
         if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
@@ -143,6 +153,8 @@ class UserBanController {
      * @Secure ({"ADMIN"})
      *
      * @param array $params
+     * @return string
+     * @throws Exception
      */
     public function removeBan(array $params) {
         if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
