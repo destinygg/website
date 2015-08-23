@@ -61,7 +61,7 @@ class ChatlogService extends Service {
                     )
                 )
             WHERE
-                l.event NOT IN("JOIN", "QUIT")
+                l.event NOT IN(\'JOIN\', \'QUIT\')
             ORDER BY l.id DESC
             LIMIT 0,:limit
         ' );
@@ -95,7 +95,7 @@ class ChatlogService extends Service {
                 LEFT JOIN dfl_users AS u ON u.userId = l.userid
                 LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
             WHERE
-                l.event NOT IN("JOIN", "QUIT")
+                l.event NOT IN(\'JOIN\', \'QUIT\')
                 AND l.timestamp <= :startRange AND u.userId = :userId
             ORDER BY l.id DESC
             LIMIT :start,:limit
@@ -129,7 +129,7 @@ class ChatlogService extends Service {
                 LEFT JOIN dfl_users AS u ON u.userId = l.userid
                 LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
             WHERE
-                l.event IN("BROADCAST")
+                l.event IN(\'BROADCAST\')
                 AND l.timestamp >= :startRange
             ORDER BY l.id DESC
             LIMIT :start,:limit

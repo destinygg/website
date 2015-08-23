@@ -106,56 +106,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * @param int $userId
-     * @param int $limit
-     * @param int $start
-     * @param string $order
-     * @return array
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public function getOrdersByUserId($userId, $limit = 10, $start = 0, $order = 'ASC') {
-        if ($order != 'ASC' && $order != 'DESC') {
-            $order = 'ASC';
-        }
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( '
-            SELECT * FROM dfl_orders WHERE userId = :userId 
-            ORDER BY createdDate ' . $order . '
-            LIMIT :start,:limit
-        ' );
-        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
-    }
-
-    /**
-     * @param int $userId
-     * @param int $limit
-     * @param int $start
-     * @param string $order
-     * @return array
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public function getCompletedOrdersByUserId($userId, $limit = 10, $start = 0, $order = 'ASC') {
-        if ($order != 'ASC' && $order != 'DESC') {
-            $order = 'ASC';
-        }
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( '
-            SELECT * FROM dfl_orders WHERE userId = :userId AND state != \'New\'
-            ORDER BY createdDate ' . $order . '
-            LIMIT :start,:limit
-        ' );
-        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
-    }
-
-    /**
      * @param array $profile
      * @return int
      */
@@ -340,18 +290,16 @@ class OrdersService extends Service {
      * @param int $orderId
      * @param int $limit
      * @param int $start
-     * @param string $order
      * @return array
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function getPaymentsByOrderId($orderId, $limit = 100, $start = 0, $order = 'ASC') {
-        $order = ($order != 'ASC' && $order != 'DESC') ? 'ASC' : $order;
+    public function getPaymentsByOrderId($orderId, $limit = 100, $start = 0) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
             SELECT payments.* FROM dfl_orders_payments AS `payments`
             INNER JOIN dfl_orders AS `orders` ON (orders.orderId = payments.orderId)
             WHERE orders.orderId = :orderId
-            ORDER BY payments.paymentDate ' . $order . '
+            ORDER BY payments.paymentDate ASC
             LIMIT :start,:limit
         ' );
         $stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );

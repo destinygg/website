@@ -263,8 +263,8 @@ class PrivateMessageService extends Service {
     public function getMessageByIdAndTargetUserId($id, $targetUserId){
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare('
-            SELECT p.*, from.username `from` FROM privatemessages p
-            LEFT JOIN `dfl_users` `from` ON (from.userId = p.userid)
+            SELECT p.*, `from`.username `from` FROM privatemessages p
+            LEFT JOIN `dfl_users` `from` ON (`from`.userId = p.userid)
             WHERE p.id = :id AND p.targetuserid = :targetUserId
             LIMIT 0,1
         ');
@@ -285,8 +285,8 @@ class PrivateMessageService extends Service {
     public function getMessageByIdAndTargetUserIdOrUserId($id, $userid) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare('
-            SELECT p.*, from.username `from` FROM privatemessages p
-            LEFT JOIN `dfl_users` `from` ON (from.userId = p.userid)
+            SELECT p.*, `from`.username `from` FROM privatemessages p
+            LEFT JOIN `dfl_users` `from` ON (`from`.userId = p.userid)
             WHERE p.id = :id AND (p.targetuserid = :userid OR p.userid = :userid)
             LIMIT 0,1
         ');
@@ -310,11 +310,11 @@ class PrivateMessageService extends Service {
         $stmt = $conn->prepare('
             SELECT
                 p.*,
-                from.username `from`,
+                `from`.username `from`,
                 target.username `to`
             FROM privatemessages p
             LEFT JOIN `dfl_users` AS `from` ON (
-                from.userId = p.userid
+                `from`.userId = p.userid
             )
             LEFT JOIN `dfl_users` AS `target` ON (
                 target.userId = p.targetuserid
@@ -424,7 +424,7 @@ class PrivateMessageService extends Service {
             SELECT 
                 NULL id, 
                 ? `userid`, 
-                u.userid `targetuserid`, 
+                u.userId `targetuserid`,
                 ? `message`, 
                 NOW() `timestamp`, 
                 0 `isread`
@@ -441,14 +441,14 @@ class PrivateMessageService extends Service {
             SELECT 
                 p.id `messageid`,
                 p.message,
-                from.username `username`,
+                `from`.username `username`,
                 p.userid,
-                to.username `targetusername`,
+                `to`.username `targetusername`,
                 p.targetuserid
             FROM privatemessages p
-            LEFT JOIN dfl_users `from` ON (from.userid = p.userid)
-            LEFT JOIN dfl_users `to` ON (to.userId = p.targetuserid)
-            WHERE from.userId = :userid
+            LEFT JOIN dfl_users `from` ON (`from`.userId = p.userid)
+            LEFT JOIN dfl_users `to` ON (`to`.userId = p.targetuserid)
+            WHERE `from`.userId = :userid
             ORDER BY p.id DESC
             LIMIT 0,:limit
         ");
