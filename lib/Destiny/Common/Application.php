@@ -126,22 +126,37 @@ class Application extends Service {
             // Get and init action class
             $className = $route->getClass ();
             $classMethod = $route->getClassMethod ();
-            
-            // Init the action class instance
             $classInstance = new $className ();
+            $methodReflection = new \ReflectionMethod ( $classInstance, $classMethod );
             
             // Check for @Transactional annotation
             $annotationReader = $this->getAnnotationReader ();
-            $transactional = $annotationReader->getMethodAnnotation ( new \ReflectionMethod ( $classInstance, $classMethod ), 'Destiny\Common\Annotation\Transactional' );
+            $transactional = $annotationReader->getMethodAnnotation ( $methodReflection, 'Destiny\Common\Annotation\Transactional' );
             $transactional = (empty($transactional)) ? false : true;
 
             // If transactional begin a DB transaction before the action begins
             if ($transactional) {
                 $conn->beginTransaction ();
             }
+
+            // Figure out the method parameter order.
+            $args = array();
+            $methodParams = $methodReflection->getParameters();
+            foreach ($methodParams as $methodParam) {
+                $paramType = $methodParam->getClass();
+                if($methodParam->isArray()){
+                    $args[] = &$params;
+                } else if($paramType->isInstance($model)) {
+                    $args[] = &$model;
+                } else if($paramType->isInstance($request)) {
+                    $args[] = &$request;
+                }
+            }
+            $response = $methodReflection->invokeArgs($classInstance, $args);
+
                 
             // Execute the class method
-            $response = $classInstance->$classMethod ( $params, $model, $request );
+            //$response = $classInstance->$classMethod ( $params, $model, $request );
                 
             // Log any errors on the model
             // @TODO neaten this implementation up - better than logging everywhere else
