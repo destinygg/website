@@ -36,12 +36,11 @@ class SubscriptionController {
     /**
      * @Route ("/subscribe")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      * @throws Exception
      */
-    public function subscribe(array $params, ViewModel $model) {
+    public function subscribe(ViewModel $model) {
         $subscriptionsService = SubscriptionsService::instance ();
         
         if(Session::hasRole(UserRole::USER)){
@@ -67,12 +66,11 @@ class SubscriptionController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param ViewModel $model
      * @throws Exception
      * @return string
      */
-    public function subscriptionCancel(array $params, ViewModel $model) {
+    public function subscriptionCancel(ViewModel $model) {
         $subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
         if (empty ( $subscription )) {
             throw new Exception ( 'Must have an active subscription' );

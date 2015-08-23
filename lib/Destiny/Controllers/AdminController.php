@@ -91,11 +91,10 @@ class AdminController {
      * @Route ("/admin/subscribers")
      * @Secure ({"ADMIN"})
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function adminSubscribers(array $params, ViewModel $model) {
+    public function adminSubscribers(ViewModel $model) {
         $subService = SubscriptionsService::instance ();
         $model->subscribersT4 = $subService->getSubscriptionsByTier ( 4 );
         $model->subscribersT3 = $subService->getSubscriptionsByTier ( 3 );
@@ -109,11 +108,10 @@ class AdminController {
      * @Route ("/admin/bans")
      * @Secure ({"ADMIN"})
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function adminBans(array $params, ViewModel $model) {
+    public function adminBans(ViewModel $model) {
         $chatService = ChatIntegrationService::instance ();
         $model->activeBans = $chatService->getActiveBans();
         $model->title = 'Active Bans';

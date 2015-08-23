@@ -20,11 +20,10 @@ class ChatController {
     /**
      * @Route ("/chat/faq")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function faq(array $params, ViewModel $model) {
+    public function faq(ViewModel $model) {
         $model->title = 'Frequently Asked Questions';
         return 'chat/faq';
     }

@@ -69,11 +69,10 @@ class ProfileController {
      * @HttpMethod ({"GET"})
      * @Secure ({"USER"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param ViewModel $model
      * @return string
      */
-    public function profile(array $params, ViewModel $model) {
+    public function profile(ViewModel $model) {
       $userService = UserService::instance ();
       $subscriptionsService = SubscriptionsService::instance ();
       $userId = Session::getCredentials ()->getUserId ();
@@ -203,11 +202,10 @@ class ProfileController {
      * @Route ("/profile/authentication")
      * @Secure ({"USER"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param ViewModel $model
      * @return string
      */
-    public function profileAuthentication(array $params, ViewModel $model) {
+    public function profileAuthentication(ViewModel $model) {
       $userService = UserService::instance ();
       $userId = Session::getCredentials ()->getUserId ();
       $model->title = 'Authentication';
@@ -245,12 +243,11 @@ class ProfileController {
    * @Transactional
    *
    * @param array $params
-   * @param ViewModel $model
    * @param Request $request
    * @return string
    * @throws Exception
    */
-    public function profileAuthTokenCreate(array $params, ViewModel $model, Request $request) {
+    public function profileAuthTokenCreate(array $params, Request $request) {
       if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
         throw new Exception ( 'You must solve the recaptcha.' );
 

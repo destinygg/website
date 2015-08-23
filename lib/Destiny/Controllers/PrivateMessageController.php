@@ -28,11 +28,10 @@ class PrivateMessageController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params
      * @param ViewModel $viewModel
      * @return Response
      */
-    public function inbox(array $params, ViewModel $viewModel) {
+    public function inbox(ViewModel $viewModel) {
         $userId = Session::getCredentials ()->getUserId ();
         $username = Session::getCredentials ()->getUsername ();
 
@@ -150,10 +149,9 @@ class PrivateMessageController {
      * @Route ("/profile/messages/openall")
      * @Secure ({"USER"})
      *
-     * @param array $params
      * @return Response
      */
-    public function openAll(array $params) {
+    public function openAll() {
         $privateMessageService = PrivateMessageService::instance();
         $userId = Session::getCredentials ()->getUserId ();
         $privateMessageService->markAllMessagesRead( $userId );

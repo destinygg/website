@@ -22,12 +22,11 @@ class ChatAdminController {
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param ViewModel $model
      * @throws Exception
      * @return string
      */
-    public function adminChat(array $params, ViewModel $model) {
+    public function adminChat(ViewModel $model) {
         $model->title = 'Chat';
         if (Session::get ( 'modelSuccess' )) {
             $model->success = Session::get ( 'modelSuccess' );

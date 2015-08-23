@@ -16,11 +16,10 @@ class EmbedController {
     /**
      * @Route ("/embed/stream")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function embedStream(array $params, ViewModel $model){
+    public function embedStream(ViewModel $model){
         $user = null;
         if (Session::hasRole ( UserRole::USER )) {
             $creds = Session::getCredentials ();
@@ -48,7 +47,7 @@ class EmbedController {
             $user ['nick'] = $creds->getUsername ();
             $user ['features'] = $creds->getFeatures ();
         }
-        $model->options = $this->getChatOptionParams ( $params );
+        $model->options = $this->getChatOptionParams ();
         $model->user = $user;
 
         // Login follow url
@@ -63,14 +62,12 @@ class EmbedController {
     /**
      * @Route ("/embed/onstreamchat")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function embedOnstreamChat(array $params, ViewModel $model) {
-        $options = $this->getChatOptionParams ( $params );
+    public function embedOnStreamChat(ViewModel $model) {
+        $options = $this->getChatOptionParams ();
         $options['maxlines'] = 30;
-
         $model->options = $options;
         $model->user = null;
         $model->title = 'Chat';
@@ -81,10 +78,9 @@ class EmbedController {
      * Get the chat params from the get request
      * Make sure they are all valid
      *
-     * @param array $params
      * @return array
      */
-    private function getChatOptionParams(array $params) {
+    private function getChatOptionParams() {
         $emotes = Config::$a ['chat'] ['customemotes'];
         natcasesort( $emotes );
 

@@ -18,12 +18,11 @@ class BannedController {
      * @Route ("/banned")
      * @Secure ({"USER"})
      *
-     * @param array $params
      * @param ViewModel $model
      * @param Request $request
      * @return string
      */
-    public function banned(array $params, ViewModel $model, Request $request) {
+    public function banned(ViewModel $model, Request $request) {
         $userService = UserService::instance ();
         $creds = Session::getCredentials ();
         $model->ban = $userService->getUserActiveBan ( $creds->getUserId (), $request->ipAddress() );

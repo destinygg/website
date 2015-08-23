@@ -21,11 +21,10 @@ class HomeController {
      * @Route ("/")
      * @Route ("/home")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function home(array $params, ViewModel $model) {
+    public function home(ViewModel $model) {
         if (Session::hasRole(UserRole::USER)) {
             $userid = $userId = Session::getCredentials ()->getUserId ();
             $privateMessageService = PrivateMessageService::instance();
@@ -47,11 +46,10 @@ class HomeController {
     /**
      * @Route ("/help/agreement")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function helpAgreement(array $params, ViewModel $model) {
+    public function helpAgreement(ViewModel $model) {
         $model->title = 'User agreement';
         return 'help/agreement';
     }
@@ -81,11 +79,10 @@ class HomeController {
     /**
      * @Route ("/bigscreen")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function bigscreen(array $params, ViewModel $model) {
+    public function bigscreen(ViewModel $model) {
         $model->streamInfo = Application::instance ()->getCacheDriver ()->fetch ( 'streaminfo' );
         $model->title = 'Bigscreen';
         return 'bigscreen';
@@ -94,11 +91,10 @@ class HomeController {
     /**
      * @Route ("/emotes")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function emoticons(array $params, ViewModel $model) {
+    public function emoticons(ViewModel $model) {
         $emotes = Config::$a['chat'] ['customemotes'];
         natcasesort( $emotes );
         $model->emoticons = $emotes;
@@ -114,11 +110,10 @@ class HomeController {
     /**
      * @Route ("/ting")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function ting(array $params, ViewModel $model) {
+    public function ting(ViewModel $model) {
         $model->url = 'http://ting.7eer.net/c/72409/87559/2020';
         $model->title = 'Ting';
         return 'outbound';
@@ -127,11 +122,10 @@ class HomeController {
     /**
      * @Route ("/amazon")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function amazon(array $params, ViewModel $model) {
+    public function amazon(ViewModel $model) {
         $model->title = 'Amazon';
         return 'amazon';
     }
@@ -139,11 +133,10 @@ class HomeController {
     /**
      * @Route ("/eve")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function eve(array $params, ViewModel $model) {
+    public function eve(ViewModel $model) {
         $model->url = 'https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
         $model->title = 'EvE';
         return 'outbound';
