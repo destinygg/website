@@ -13,11 +13,6 @@ abstract class Config {
      */
     public static function load(array $config) {
         self::$a = $config;
-        if (isset ( self::$a ['env'] ) && ! empty ( self::$a ['env'] )) {
-            foreach ( self::$a ['env'] as $i => $v ) {
-                ini_set ( $i, $v );
-            }
-        }
     }
 
     /**
