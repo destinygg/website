@@ -57,10 +57,10 @@ class PayPalApiService extends Service {
         $orderService = OrdersService::instance ();
         // PPService
         $paypalService = new PayPalAPIInterfaceServiceService ();
-        $getRPPDetailsReqest = new GetRecurringPaymentsProfileDetailsRequestType ();
-        $getRPPDetailsReqest->ProfileID = $paymentProfile ['paymentProfileId'];
+        $getRPPDetailsRequest = new GetRecurringPaymentsProfileDetailsRequestType ();
+        $getRPPDetailsRequest->ProfileID = $paymentProfile ['paymentProfileId'];
         $getRPPDetailsReq = new GetRecurringPaymentsProfileDetailsReq ();
-        $getRPPDetailsReq->GetRecurringPaymentsProfileDetailsRequest = $getRPPDetailsReqest;
+        $getRPPDetailsReq->GetRecurringPaymentsProfileDetailsRequest = $getRPPDetailsRequest;
         $getRPPDetailsResponse = $paypalService->GetRecurringPaymentsProfileDetails ( $getRPPDetailsReq );
         if (empty ( $getRPPDetailsResponse ) || $getRPPDetailsResponse->Ack != 'Success') {
            throw new Exception ( 'Error retrieving payment profile status' );
@@ -71,13 +71,13 @@ class PayPalApiService extends Service {
         if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVEPROFILE ) === 0 || strcasecmp ( $profileStatus, PaymentProfileStatus::CANCELLEDPROFILE ) === 0) {
             if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
                 // Do we have a payment profile, we need to cancel it with paypal
-                $manageRPPStatusReqestDetails = new ManageRecurringPaymentsProfileStatusRequestDetailsType ();
-                $manageRPPStatusReqestDetails->Action = 'Cancel';
-                $manageRPPStatusReqestDetails->ProfileID = $paymentProfile ['paymentProfileId'];
-                $manageRPPStatusReqest = new ManageRecurringPaymentsProfileStatusRequestType ();
-                $manageRPPStatusReqest->ManageRecurringPaymentsProfileStatusRequestDetails = $manageRPPStatusReqestDetails;
+                $manageRPPStatusRequestDetails = new ManageRecurringPaymentsProfileStatusRequestDetailsType ();
+                $manageRPPStatusRequestDetails->Action = 'Cancel';
+                $manageRPPStatusRequestDetails->ProfileID = $paymentProfile ['paymentProfileId'];
+                $manageRPPStatusRequest = new ManageRecurringPaymentsProfileStatusRequestType ();
+                $manageRPPStatusRequest->ManageRecurringPaymentsProfileStatusRequestDetails = $manageRPPStatusRequestDetails;
                 $manageRPPStatusReq = new ManageRecurringPaymentsProfileStatusReq ();
-                $manageRPPStatusReq->ManageRecurringPaymentsProfileStatusRequest = $manageRPPStatusReqest;
+                $manageRPPStatusReq->ManageRecurringPaymentsProfileStatusRequest = $manageRPPStatusRequest;
                 $manageRPPStatusResponse = $paypalService->ManageRecurringPaymentsProfileStatus ( $manageRPPStatusReq );
                 if (! isset ( $manageRPPStatusResponse ) || $manageRPPStatusResponse->Ack != 'Success') {
                     throw new Exception ( $manageRPPStatusResponse->Errors [0]->LongMessage );
