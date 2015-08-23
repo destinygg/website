@@ -79,17 +79,14 @@ class Application extends Service {
 
     /**
      * @param Request $request
-     * @throws Exception
-     * @throws \Doctrine\DBAL\ConnectionException
      */
     public function executeRequest(Request $request) {
-        
         $route = $this->router->findRoute ( $request );
-        
+        $conn = $this->getConnection ();
         $model = new ViewModel ();
         $response = null;
+        $transactional = false;
         
-        // No route found
         if (! $route) {
             $model->title = Http::$HEADER_STATUSES [Http::STATUS_NOT_FOUND];
             $response = new Response ( Http::STATUS_NOT_FOUND );
@@ -107,7 +104,7 @@ class Application extends Service {
                 $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
                 $this->handleResponse ( $response );
             }
-            if (! $this->hasRouteSecurity ( $route, Session::getCredentials () )) {
+            if (! $this->hasRouteSecurity ( $route, $creds )) {
                 $response = new Response ( Http::STATUS_UNAUTHORIZED );
                 $model->title = Http::$HEADER_STATUSES [Http::STATUS_UNAUTHORIZED];
                 $response->setBody ( $this->template ( 'errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
@@ -115,37 +112,27 @@ class Application extends Service {
             }
         }
 
-        $conn = $this->getConnection ();
-        $transactional = false;
-        
         try {
-        
-            // Parameters
-            $params = array_merge ( $_GET, $_POST, $route->getPathParams ( $request->path() ) );
-            
-            // Get and init action class
             $className = $route->getClass ();
             $classMethod = $route->getClassMethod ();
             $classInstance = new $className ();
             $methodReflection = new \ReflectionMethod ( $classInstance, $classMethod );
-            
+            $methodParams = $methodReflection->getParameters();
+
             // Check for @Transactional annotation
             $annotationReader = $this->getAnnotationReader ();
             $transactional = $annotationReader->getMethodAnnotation ( $methodReflection, 'Destiny\Common\Annotation\Transactional' );
             $transactional = (empty($transactional)) ? false : true;
-
-            // If transactional begin a DB transaction before the action begins
             if ($transactional) {
                 $conn->beginTransaction ();
             }
 
-            // Figure out the method parameter order.
+            // Order the method arguments and invoke the controller
             $args = array();
-            $methodParams = $methodReflection->getParameters();
             foreach ($methodParams as $methodParam) {
                 $paramType = $methodParam->getClass();
                 if($methodParam->isArray()){
-                    $args[] = &$params;
+                    $args[] = array_merge ( $request->get(), $request->post(), $route->getPathParams ( $request->path() ) );
                 } else if($paramType->isInstance($model)) {
                     $args[] = &$model;
                 } else if($paramType->isInstance($request)) {
@@ -153,16 +140,12 @@ class Application extends Service {
                 }
             }
             $response = $methodReflection->invokeArgs($classInstance, $args);
+            unset ($args);
 
-                
-            // Execute the class method
-            //$response = $classInstance->$classMethod ( $params, $model, $request );
-                
-            // Log any errors on the model
-            // @TODO neaten this implementation up - better than logging everywhere else
-            ///if (! empty ( $model->error ) && is_a ( $model->error, 'Exception' )) {
-            /// $this->logger->error ( $model->error->getMessage () );
-            //}
+            // Commit the DB transaction
+            if ($transactional) {
+                $conn->commit ();
+            }
             
             // Check if the response is valid
             if (empty ( $response )) {
@@ -186,11 +169,6 @@ class Application extends Service {
             // Check the response type
             if (! $response instanceof Response) {
                 throw new Exception ( 'Invalid response' );
-            }
-            
-            // Commit the DB transaction
-            if ($transactional) {
-                $conn->commit ();
             }
             
         } catch ( Exception $e ) {

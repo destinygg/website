@@ -344,13 +344,14 @@ class ProfileController {
 
     /**
      * Update/add a address
-     * 
+     *
      * @Route ("/profile/address/update")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @Transactional
      *
-     * @param array $params         
+     * @param array $params
+     * @return string
      */
     public function updateAddress(array $params){
       

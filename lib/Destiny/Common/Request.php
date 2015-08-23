@@ -2,12 +2,31 @@
 namespace Destiny\Common;
 
 class Request {
-    
-    private $ipAddress; // request Ip Address
-    private $method; // request Method
-    private $uri; // request URL
-    private $get; // _GET vars
-    private $post; // _POST vars
+
+    /**
+     * @var string
+     */
+    private $ipAddress;
+
+    /**
+     * @var string
+     */
+    private $method;
+
+    /**
+     * @var string
+     */
+    private $uri;
+
+    /**
+     * @var array
+     */
+    private $get;
+
+    /**
+     * @var array
+     */
+    private $post;
 
     public function __construct(){
         if(isset ( $_SERVER ['REQUEST_URI'] ))

@@ -59,8 +59,8 @@ class Route {
             if (strlen ( $path ) > 1 && substr ( $path, - 1 ) === '/')
                 $path = substr ( $path, 0, - 1 );
                 
-            // Path without extention
-            $extlessPath = $this->stripPathExtention($path);
+            // Path without extension
+            $extlessPath = $this->stripPathExtension($path);
 
             // Exact
             if (strcasecmp ( $this->getPath (), $path ) === 0 || strcasecmp ( $this->getPath (), $extlessPath ) === 0)
@@ -78,7 +78,7 @@ class Route {
      * @param string $path
      * @return string
      */
-    private function stripPathExtention($path){
+    private function stripPathExtension($path){
         $ext = pathinfo ( $path, PATHINFO_EXTENSION );
         if (! empty ( $ext )) {
             $path = substr ( $path, 0, - (strlen ( $ext ) + 1) );
