@@ -127,6 +127,9 @@ class Application extends Service {
                 $this->handleResponse ( $response );
             }
         }
+
+        $conn = $this->getConnection ();
+        $transactional = false;
         
         try {
         
@@ -147,7 +150,6 @@ class Application extends Service {
 
             // If transactional begin a DB transaction before the action begins
             if ($transactional) {
-                $conn = $this->getConnection ();
                 $conn->beginTransaction ();
             }
                 
