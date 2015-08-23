@@ -6,6 +6,10 @@ use Doctrine\Common\Cache\RedisCache;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Destiny\Common\Application;
+use Destiny\Common\Routing\Router;
+use Destiny\Common\Routing\RouteAnnotationClassLoader;
+use Destiny\Common\DirectoryClassIterator;
+use Doctrine\Common\Annotations\AnnotationReader;
 
 // This should be in the server config
 ini_set ( 'date.timezone', 'UTC' );
@@ -41,3 +45,10 @@ $app->setRedis ( $redis );
 $cache = new RedisCache ();
 $cache->setRedis ( $app->getRedis () );
 $app->setCacheDriver ( $cache );
+
+$app->setRouter ( new Router () );
+$app->setAnnotationReader ( new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $cache, $debug = false) );
+//$app->setAnnotationReader ( new Doctrine\Common\Annotations\FileCacheReader ( new AnnotationReader (), realpath ( Config::$a ['cache'] ['path'] ) . '/annotation/' ) );
+
+// Annotation reader and routing
+RouteAnnotationClassLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Controllers/' ), $app->getAnnotationReader () );
