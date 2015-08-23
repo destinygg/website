@@ -79,7 +79,7 @@ class ChatlogService extends Service {
     /**
      * Get the last X number of messages from a specific user starting at a specific date (going backwards)
      *
-     * @param int $userId           
+     * @param int $userId
      * @param \DateTime $startRange
      * @param int $limit            
      * @param int $start            
@@ -99,11 +99,12 @@ class ChatlogService extends Service {
                 LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
             WHERE
                 l.event NOT IN("JOIN", "QUIT")
-                AND l.timestamp <= :startRange
+                AND l.timestamp <= :startRange AND u.userId = :userId
             ORDER BY l.id DESC
             LIMIT :start,:limit
         ' );
         $stmt->bindValue ( 'startRange', $startRange, DateTimeType::DATETIME );
+        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->execute ();

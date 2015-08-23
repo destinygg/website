@@ -5,7 +5,6 @@ use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Session;
