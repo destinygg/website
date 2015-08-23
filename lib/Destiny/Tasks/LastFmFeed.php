@@ -3,7 +3,6 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\LastFm\LastFMApiService;
-use TaskInterface;
 
 class LastFmFeed implements TaskInterface {
 

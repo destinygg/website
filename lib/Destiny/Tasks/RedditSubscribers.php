@@ -6,7 +6,6 @@ use Destiny\Common\Application;
 use Psr\Log\LoggerInterface;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Utils\Options;
-use TaskInterface;
 
 class RedditSubscribers implements TaskInterface {
     
@@ -15,7 +14,8 @@ class RedditSubscribers implements TaskInterface {
     public function __construct(array $options = array()) {
         Options::setOptions ( $this, $options );
     }
-    public function execute(LoggerInterface $log) {
+
+    public function execute() {
         
         // Do nothing if we arent outputting a file
         if (empty ( $this->output ))

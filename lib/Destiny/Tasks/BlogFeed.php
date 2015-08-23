@@ -3,7 +3,6 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\Blog\BlogApiService;
-use TaskInterface;
 
 class BlogFeed implements TaskInterface {
 

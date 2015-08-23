@@ -3,7 +3,6 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Config;
 use Destiny\Common\Application;
-use TaskInterface;
 
 class TwitterFeed implements TaskInterface {
 

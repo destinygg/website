@@ -602,7 +602,7 @@ class SubscriptionController {
 
       $user = $userService->getUserByUsername( $params ['s'] );
       if(!empty($user)){
-          $data['cangift'] = $subscriptionService->getCanUserReceiveGift ( $userId, $user['userId'], null );
+          $data['cangift'] = $subscriptionService->getCanUserReceiveGift ( $userId, $user['userId'] );
           $data['valid']   = true;
       }
 

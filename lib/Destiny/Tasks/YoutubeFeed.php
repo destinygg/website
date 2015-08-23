@@ -3,7 +3,6 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\Youtube\YoutubeApiService;
-use TaskInterface;
 
 class YoutubeFeed implements TaskInterface {
 

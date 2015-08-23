@@ -27,6 +27,7 @@ abstract class RouteAnnotationClassLoader {
             $routes = array ();
             $annotations = $reader->getMethodAnnotations ( $method );
             for($i=0; $i < count($annotations); ++$i){
+                /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
                 if($annotations[$i] instanceof \Destiny\Common\Annotation\Route){
                     $routes[] = $annotations[$i];
                 }
