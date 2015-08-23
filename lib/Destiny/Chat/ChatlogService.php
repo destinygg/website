@@ -4,6 +4,7 @@ namespace Destiny\Chat;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Commerce\SubscriptionStatus;
+use Doctrine\DBAL\Types\DateTimeType;
 
 class ChatlogService extends Service {
     
@@ -102,7 +103,7 @@ class ChatlogService extends Service {
             ORDER BY l.id DESC
             LIMIT :start,:limit
         ' );
-        $stmt->bindValue ( 'startRange', $startRange, \Doctrine\DBAL\Types\DateTimeType::DATETIME );
+        $stmt->bindValue ( 'startRange', $startRange, DateTimeType::DATETIME );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->execute ();
@@ -135,7 +136,7 @@ class ChatlogService extends Service {
             ORDER BY l.id DESC
             LIMIT :start,:limit
         ' );
-        $stmt->bindValue ( 'startRange', $startRange, \Doctrine\DBAL\Types\DateTimeType::DATETIME );
+        $stmt->bindValue ( 'startRange', $startRange, DateTimeType::DATETIME );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->execute ();

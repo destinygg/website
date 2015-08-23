@@ -3,6 +3,7 @@ namespace Destiny\Common\Utils;
 
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Config;
+use Misd\Linkify\Linkify;
 
 class Tpl {
     
@@ -65,7 +66,7 @@ class Tpl {
 
     public static function formatTextForDisplay($text) {
         $text = self::out($text);
-        $linkify = new \Misd\Linkify\Linkify();
+        $linkify = new Linkify();
         $text = $linkify->process($text, array('attr'=>array('target'=>'_blank')));
         $text = self::emotify($text);
         return $text;

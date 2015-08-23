@@ -7,6 +7,7 @@ use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Session;
+use OAuth2\Client;
 
 class GoogleAuthHandler {
     
@@ -25,8 +26,8 @@ class GoogleAuthHandler {
     public function getAuthenticationUrl() {
         $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
         $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
-        $client = new \OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
-        $client->setAccessTokenType ( \OAuth2\Client::ACCESS_TOKEN_BEARER );
+        $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
+        $client->setAccessTokenType ( Client::ACCESS_TOKEN_BEARER );
         return $client->getAuthenticationUrl ( 'https://accounts.google.com/o/oauth2/auth', $callback, array (
                 'scope' => 'openid email',
                 'state' => 'security_token=' . Session::getSessionId () 
@@ -44,7 +45,7 @@ class GoogleAuthHandler {
         
         $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
         $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
-        $client = new \OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
+        $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
         $response = $client->getAccessToken ( 'https://accounts.google.com/o/oauth2/token', 'authorization_code', array (
                 'redirect_uri' => $callback,
                 'code' => $params ['code'] 

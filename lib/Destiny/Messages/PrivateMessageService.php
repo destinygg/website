@@ -8,6 +8,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Exception;
+use Doctrine\DBAL\Connection;
 
 class PrivateMessageService extends Service {
     
@@ -447,7 +448,7 @@ class PrivateMessageService extends Service {
             GROUP BY u.userId
         ", 
             array($userId, $message, $recipients, $groups), 
-            array(\PDO::PARAM_INT, \PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+            array(\PDO::PARAM_INT, \PDO::PARAM_STR, Connection::PARAM_STR_ARRAY, Connection::PARAM_STR_ARRAY)
         );
         $rowCount = $stmt->rowCount();
         $stmt = $conn->prepare("

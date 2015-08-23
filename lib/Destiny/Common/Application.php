@@ -7,6 +7,8 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 
 class Application extends Service {
@@ -35,7 +37,7 @@ class Application extends Service {
     /**
      * DB Connection
      *
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     protected $connection;
     
@@ -296,7 +298,7 @@ class Application extends Service {
     /**
      * Get the active connection
      *
-     * @return \Doctrine\DBAL\Connection
+     * @return Connection
      */
     public function getConnection() {
         return $this->connection;
@@ -305,16 +307,16 @@ class Application extends Service {
     /**
      * Set the active connection
      *
-     * @param \Doctrine\DBAL\Connection $connection
+     * @param Connection $connection
      */
-    public function setConnection(\Doctrine\DBAL\Connection $connection) {
+    public function setConnection(Connection $connection) {
         $this->connection = $connection;
     }
 
     /**
      * Get the active connection
      *
-     * @return \Doctrine\Common\Cache\CacheProvider
+     * @return CacheProvider
      */
     public function getCacheDriver() {
         return $this->cacheDriver;
@@ -323,9 +325,9 @@ class Application extends Service {
     /**
      * Set the active connection
      *
-     * @param \Doctrine\Common\Cache\CacheProvider $cacheDriver
+     * @param CacheProvider $cacheDriver
      */
-    public function setCacheDriver(\Doctrine\Common\Cache\CacheProvider $cacheDriver) {
+    public function setCacheDriver(CacheProvider $cacheDriver) {
         $this->cacheDriver = $cacheDriver;
     }
 

@@ -7,6 +7,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Doctrine\DBAL\Connection;
 
 class UserService extends Service {
   
@@ -762,7 +763,7 @@ class UserService extends Service {
       WHERE u.username IN (?)
     ", 
       array($usernames), 
-      array(\Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+      array(Connection::PARAM_STR_ARRAY)
     );
     $ids = array();
     $result = $stmt->fetchAll();
