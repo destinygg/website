@@ -809,7 +809,7 @@ class UserService extends Service {
    */
   public function updateTwitchSubscriptions( $data ) {
     if ( empty( $data ) )
-      return;
+      return array();
 
     $conn = Application::instance ()->getConnection ();
     $batchsize = 100;

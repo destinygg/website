@@ -128,10 +128,9 @@ abstract class Date {
             return ceil ( $dayDiff / 7 ) . ' weeks ago';
         } elseif ($dayDiff < 365) {
             return ceil ( $dayDiff / (365 / 12) ) . ' months ago';
-        } else {
-            $years = round ( $dayDiff / 365 );
-            return $years . ' year' . ($years != 1 ? 's' : '') . ' ago';
         }
+        $years = round ( $dayDiff / 365 );
+        return $years . ' year' . ($years != 1 ? 's' : '') . ' ago';
     }
 
 }

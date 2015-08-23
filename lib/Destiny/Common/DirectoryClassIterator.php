@@ -68,7 +68,7 @@ class DirectoryClassIterator implements Iterator {
             
             // Make sure the class is not abstract
             $refl = new ReflectionClass ( $class );
-            if ($refl->isAbstract ()) return;
+            if ($refl->isAbstract ()) continue;
             
             $classes [] = $refl;
         }
