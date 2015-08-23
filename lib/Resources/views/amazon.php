@@ -13,10 +13,10 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="amazon">
-    <div id="page-wrap">
+    <section id="page-wrap">
         <?php include Tpl::file('seg/top.php') ?>
         <?php include Tpl::file('seg/headerband.php') ?>
-        <section class="container">
+        <div class="container">
             <div class="row">
                 <div class="col-md-4 amazon-referral">
                     <a href="http://www.amazon.ca/?tag=destiny0f7a-20">
@@ -48,7 +48,7 @@ use Destiny\Common\Config;
                 <div class="col-md-4"></div>
             </div>
         </div>
-    </div>
+    </section>
     <?php include Tpl::file('seg/foot.php') ?>
     <?php include Tpl::file('seg/commonbottom.php') ?>
 </body>

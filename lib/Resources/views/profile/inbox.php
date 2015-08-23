@@ -1,10 +1,8 @@
 <?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
-use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
 <html>

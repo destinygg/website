@@ -48,14 +48,14 @@ class CurlBrowser {
     /**
      * OnFetch method
      *
-     * @var function
+     * @var callable
      */
     public $onfetch = null;
     
     /**
      * BeforeFetch method
      *
-     * @var function
+     * @var callable
      */
     public $beforefetch = null;
     

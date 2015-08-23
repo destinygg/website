@@ -17,4 +17,3 @@ $arr = array (
 foreach ($arr as $k=>$v){
 	echo '<meta property="'. $k .'" content="'. $v .'" />' . PHP_EOL;
 }
-?>

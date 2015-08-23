@@ -41,7 +41,6 @@ use Destiny\Common\Config;
         <tbody>
         <?php $i=1; ?>
         <?php foreach($tier as $sub): ?>
-        <?php $subType = Config::$a['commerce']['subscriptions'][$sub['subscriptionType']];?>
         <tr>
           <td><?=$i?></td>
           <td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>

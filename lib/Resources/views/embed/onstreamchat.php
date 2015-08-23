@@ -1,8 +1,5 @@
 <?php
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\User\UserRole;
-use Destiny\Common\User\UserFeature;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>

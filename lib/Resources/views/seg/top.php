@@ -2,7 +2,6 @@
 namespace Destiny; 
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Session;
-use Destiny\Common\Config;
 ?>
 <div id="main-nav" class="navbar navbar-static-top navbar-inverse">
     <div class="container-fluid">
