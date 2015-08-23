@@ -94,6 +94,10 @@ class RegistrationController {
         
         $authCreds->setUsername ( $username );
         $authCreds->setEmail ( $email );
+
+        if ($rememberme) {
+            Session::set ( 'rememberme', 1 );
+        }
         
         try {
         
