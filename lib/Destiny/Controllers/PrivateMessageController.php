@@ -94,7 +94,7 @@ class PrivateMessageController {
             // we only use the batch sending for admins e.g. sending to tiers etc.
             if(Session::hasRole(UserRole::ADMIN)){
 
-                $messages = $privateMessageService->batchAddMessage( $userId, $params['message'], $params['recipients'] );
+                $messages = $privateMessageService->batchAddMessage( $userId, $params['message'], $recipients );
                 $chatIntegrationService->publishPrivateMessages($messages);
 
             }else{
