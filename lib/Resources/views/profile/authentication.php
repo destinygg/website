@@ -42,15 +42,15 @@ use Destiny\Common\Config;
               <?php foreach(Config::$a ['authProfiles'] as $profileType): ?>
               <tr>
                 <td>
-                  <?php if(in_array($profileType, $model->authProfileTypes)): ?>
-                  <?php $model->requireConnections = true; ?>
-                  <button class="btn btn-default btn-xs btn-post" disabled="disabled">Connected</button>
-                  <?php else: ?>
-                  <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
-                  <?php endif; ?>
+                   <?=ucwords($profileType)?>
                 </td>
                 <td>
-                   <?=ucwords($profileType)?>
+                  <?php if(in_array($profileType, $model->authProfileTypes)): ?>
+                    <?php $model->requireConnections = true; ?>
+                    <span class="subtle"><span class="fa fa-check"></span> Connected</span>
+                  <?php else: ?>
+                    <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
+                  <?php endif; ?>
                 </td>
               </tr>
               <?php endforeach; ?>
