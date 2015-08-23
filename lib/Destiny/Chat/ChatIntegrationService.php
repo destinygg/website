@@ -88,9 +88,8 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * Gets an array of bans
-     *
      * @throws Exception
+     * @return array
      */
     public function getActiveBans() {
         $conn = Application::instance ()->getConnection ();
@@ -127,6 +126,7 @@ class ChatIntegrationService extends Service {
      * Removes all of the bans and notifies the chat to refresh the bans
      * so it actually notices the bans being removed
      *
+     * @return int
      * @throws Exception
      */
     public function purgeBans() {

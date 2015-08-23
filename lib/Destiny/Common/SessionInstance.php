@@ -6,43 +6,31 @@ use Destiny\Common\Utils\Options;
 class SessionInstance {
     
     /**
-     * Wether or not the session has been started
-     *
      * @var boolean
      */
     protected $started = false;
     
     /**
-     * The unique session Id
-     *
      * @var string
      */
     protected $sessionId = '';
     
     /**
-     * The session cookie
-     *
      * @var Cookie
      */
     protected $sessionCookie = null;
     
     /**
-     * The remember me cookie
-     *
      * @var Cookie
      */
     protected $rememberMeCookie = null;
     
     /**
-     * The session authentication
-     *
      * @var SessionCredentials
      */
     protected $credentials = null;
 
     /**
-     * Setup the session
-     *
      * @param array $params
      */
     public function __construct(array $params = null) {
@@ -95,38 +83,18 @@ class SessionInstance {
         }
     }
 
-    /**
-     * Get the authentication credentials if auth success
-     *
-     * @return SessionCredentials
-     */
     public function getCredentials() {
         return $this->credentials;
     }
 
-    /**
-     * Set the auth credentials
-     *
-     * @param SessionCredentials $credentials
-     */
     public function setCredentials(SessionCredentials $credentials) {
         $this->credentials = $credentials;
     }
 
-    /**
-     * Get the session cookie
-     *
-     * @return Cookie
-     */
     public function getSessionCookie() {
         return $this->sessionCookie;
     }
 
-    /**
-     * Set the session cookie
-     *
-     * @param Cookie $sessionCookie
-     */
     public function setSessionCookie(Cookie $sessionCookie) {
         $this->sessionCookie = $sessionCookie;
         session_set_cookie_params (
@@ -139,47 +107,22 @@ class SessionInstance {
         session_name ( $sessionCookie->getName () );
     }
 
-    /**
-     * Get the remember me cookie
-     *
-     * @return Cookie
-     */
     public function getRememberMeCookie() {
         return $this->rememberMeCookie;
     }
 
-    /**
-     * Set the remember me cookie
-     *
-     * @param Cookie $sessionCookie
-     */
     public function setRememberMeCookie(Cookie $sessionCookie) {
         $this->rememberMeCookie = $sessionCookie;
     }
 
-    /**
-     * Get the unique session Id
-     *
-     * @return string
-     */
     public function getSessionId() {
         return $this->sessionId;
     }
 
-    /**
-     * Set the session Id
-     *
-     * @param string $sessionId
-     */
     public function setSessionId($sessionId) {
         $this->sessionId = $sessionId;
     }
 
-    /**
-     * Return all the session data
-     *
-     * @return array
-     */
     public function getData() {
         return $_SESSION;
     }

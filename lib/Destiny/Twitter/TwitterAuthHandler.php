@@ -10,8 +10,6 @@ use Destiny\Common\Session;
 class TwitterAuthHandler {
     
     /**
-     * The current auth type
-     *
      * @var string
      */
     protected $authProvider = 'twitter';

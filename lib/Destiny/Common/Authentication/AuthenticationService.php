@@ -135,8 +135,6 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Create a credentials object for a specific user
-     *
      * @param array $user
      * @param string $authProvider
      * @return SessionCredentials

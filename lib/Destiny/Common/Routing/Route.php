@@ -20,8 +20,6 @@ class Route {
     }
 
     /**
-     * Serialization
-     *
      * @return array
      */
     function __sleep() {
@@ -36,7 +34,6 @@ class Route {
     }
 
     /**
-     * Return the parameters in the path
      * @param string $path
      * @return array
      */
@@ -46,8 +43,6 @@ class Route {
     }
 
     /**
-     * Test if the path supplied meets the Route requirements
-     *
      * @param string $path The path from the URI
      * @param string $method The HTTP method
      * @return boolean

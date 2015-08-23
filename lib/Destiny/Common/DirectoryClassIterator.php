@@ -7,31 +7,28 @@ use \RecursiveRegexIterator;
 use \RegexIterator;
 use \ReflectionClass;
 use \Iterator;
-/*
+
+/**
  * Reads all files in a folder and finds the .php ones with classes in them
  */
 class DirectoryClassIterator implements Iterator {
     
     /**
-     * The position of the iterator
      * @var int
      */
     private $position = 0;
     
     /**
-     * List of classes
-     * @var array<ReflectionClass>
+     * @var ReflectionClass[]
      */
     private $array = array ();
     
     /**
-     * The base path
      * @var string
      */
     private $base;
     
     /**
-     * The path to the classes for annotation reading
      * @var string
      */
     private $path;
@@ -101,7 +98,7 @@ class DirectoryClassIterator implements Iterator {
     }
 
     public function next() {
-        ++ $this->position;
+        $this->position++;
     }
 
     public function rewind() {

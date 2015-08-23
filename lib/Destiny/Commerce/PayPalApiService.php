@@ -78,8 +78,6 @@ class PayPalApiService extends Service {
     }
 
     /**
-     * Create a Paypal recurring payment profile
-     *
      * @param array $paymentProfile
      * @param string $token
      * @param array $subscriptionType

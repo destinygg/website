@@ -90,8 +90,6 @@ class PrivateMessageService extends Service {
     }
     
     /**
-     * Get the total number of unread messages
-     *
      * @param int $targetuserid
      * @return int
      */
@@ -110,8 +108,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Add a new message
-     *
      * @param array $data
      * @return int last_insert_id()
      */
@@ -134,8 +130,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Mark a message as isread
-     *
      * @param int $id
      * @return int insert_id()
      */
@@ -149,8 +143,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Mark all messages between user and target as isread
-     *
      * @param int $userId
      * @param int $targetuserid
      * @return int affected_rows()
@@ -241,8 +233,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Get a single message by id and targetuserid
-     *
      * @param int $id
      * @param int $targetUserId
      * @return array
@@ -262,9 +252,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Get a single message by id and (targetuserid or userid)
-     * used for the reply feature
-     *
      * @param int $id
      * @param int $userid
      * @return array
@@ -284,8 +271,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Get a list of messages by userId and targetUserId
-     *
      * @param int $userId
      * @param int $targetUserId
      * @param int $start
@@ -376,9 +361,6 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * Send a batch message to all recipients, returns the sent messages as the result
-     * intended for use by ADMINS only.
-     *
      * @param int $userId
      * @param string $message
      * @param array $recipients

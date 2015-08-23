@@ -4,7 +4,7 @@ namespace Destiny\Common\Utils;
 use Destiny\Common\Utils\String\Params;
 
 /**
- * Simple parameterized string utility
+ * Simple parametrized string utility
  */
 class String {
     

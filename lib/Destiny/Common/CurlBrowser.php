@@ -100,11 +100,6 @@ class CurlBrowser {
      */
     protected $verifyPeer = true;
 
-    /**
-     * Constructor
-     *
-     * @param array $args           
-     */
     public function __construct(array $args = null) {
         if(isset(Config::$a ['curl']))
             Options::setOptions ( $this, Config::$a ['curl'] );

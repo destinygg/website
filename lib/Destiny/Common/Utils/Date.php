@@ -13,8 +13,6 @@ abstract class Date {
     const FORMAT = DATE_ISO8601;
 
     /**
-     * Get a DateTime object
-     *
      * @param int|string $time
      * @return \DateTime
      */

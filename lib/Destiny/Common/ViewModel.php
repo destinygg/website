@@ -4,17 +4,10 @@ namespace Destiny\Common;
 class ViewModel extends \stdClass {
     
     /**
-     * List of properties
-     *
      * @var array
      */
     protected $vars = array ();
 
-    /**
-     * Set the variables via the constructor
-     *
-     * @param array $params
-     */
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
             foreach ( $params as $name => $value ) {
@@ -24,8 +17,6 @@ class ViewModel extends \stdClass {
     }
 
     /**
-     * Return all the views data
-     *
      * @return array
      */
     public function getData() {
@@ -33,8 +24,6 @@ class ViewModel extends \stdClass {
     }
 
     /**
-     * Set a variable value
-     *
      * @param string $name
      * @param mixed $value
      * @return mixed
@@ -45,8 +34,6 @@ class ViewModel extends \stdClass {
     }
 
     /**
-     * get a variable value by name
-     *
      * @param string $name
      * @return mixed|null
      */
@@ -55,8 +42,6 @@ class ViewModel extends \stdClass {
     }
 
     /**
-     * Check if a var isset
-     *
      * @param string $name
      * @return bool
      */

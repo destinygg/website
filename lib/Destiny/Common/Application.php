@@ -145,20 +145,16 @@ class Application extends Service {
                 $response->setBody ( $this->template ( $tpl, $model ) );
             }
             
-            // Check the response type
             if (! $response instanceof Response) {
                 throw new Exception ( 'Invalid response' );
             }
             
         } catch ( Exception $e ) {
             
-            // Destiny\Exceptions are caught and displayed
             $this->logger->error ( $e->getMessage () );
-            
             if ($transactional) {
                 $conn->rollback ();
             }
-            
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( $e->getMessage () );
             $model->code = Http::STATUS_ERROR;
@@ -168,13 +164,10 @@ class Application extends Service {
                 
         } catch ( \Exception $e ) {
 
-            // \Exceptions are caught and generic message is shown
             $this->logger->critical ( $e->getMessage () );
-            
             if ($transactional) {
                 $conn->rollback ();
             }
-            
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( 'Maximum over-rustle has been achieved' );
             $model->code = Http::STATUS_ERROR;
@@ -183,12 +176,10 @@ class Application extends Service {
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
         }
         
-        // Handle the request response
         $this->handleResponse ( $response );
     }
 
     /**
-     * Handle the Response response
      * @param Response $response
      * @throws Exception
      * @return void
@@ -217,7 +208,6 @@ class Application extends Service {
      * @return bool
      */
     private function hasRouteSecurity(Route $route, SessionCredentials $credentials) {
-        // Check the route security against the user roles and features
         $secure = $route->getSecure ();
         if (! empty ( $secure )) {
             foreach ( $secure as $role ) {
@@ -259,141 +249,66 @@ class Application extends Service {
         return $contents;
     }
 
-    /**
-     * Get the active connection
-     *
-     * @return Connection
-     */
     public function getConnection() {
         return $this->connection;
     }
 
-    /**
-     * Set the active connection
-     *
-     * @param Connection $connection
-     */
     public function setConnection(Connection $connection) {
         $this->connection = $connection;
     }
 
-    /**
-     * Get the active connection
-     *
-     * @return CacheProvider
-     */
     public function getCacheDriver() {
         return $this->cacheDriver;
     }
 
-    /**
-     * Set the active connection
-     *
-     * @param CacheProvider $cacheDriver
-     */
     public function setCacheDriver(CacheProvider $cacheDriver) {
         $this->cacheDriver = $cacheDriver;
     }
 
-    /**
-     * Set logger
-     *
-     * @return LoggerInterface
-     */
     public function getLogger() {
         return $this->logger;
     }
 
-    /**
-     * Get logger
-     *
-     * @param LoggerInterface $logger
-     */
     public function setLogger(LoggerInterface $logger) {
         $this->logger = $logger;
     }
 
-    /**
-     * Get the session api
-     *
-     * @return SessionInstance
-     */
     public function getSession() {
         return $this->session;
     }
 
-    /**
-     * Set the session api
-     *
-     * @param SessionInstance $session
-     */
     public function setSession(SessionInstance $session) {
         $this->session = $session;
     }
 
-
-    /**
-     * Get the redis instance
-     *
-     * @return \Redis
-     */
     public function getRedis() {
         return $this->redis;
     }
 
-    /**
-     * Set the redis instance
-     *
-     * @param \Redis $redis
-     */
     public function setRedis(\Redis $redis) {
         $this->redis = $redis;
     }
 
-    /**
-     * Get the request router
-     * @return Router
-     */
     public function getRouter() {
         return $this->router;
     }
 
-    /**
-     * Set the request router
-     * @param Router $router
-     */
     public function setRouter(Router $router) {
         $this->router = $router;
     }
 
-    /**
-     * Get the autoloader
-     * @return callable
-     */
     public function getLoader() {
         return $this->loader;
     }
 
-    /**
-     * Set the autoloader
-     * @param callable $loader
-     */
     public function setLoader($loader) {
         $this->loader = $loader;
     }
 
-    /**
-     * Get the annotation reader
-     * @return Reader
-     */
     public function getAnnotationReader() {
         return $this->annotationReader;
     }
 
-    /**
-     * Set the annotation reader
-     * @param Reader $annotationReader
-     */
     public function setAnnotationReader(Reader $annotationReader) {
         $this->annotationReader = $annotationReader;
     }

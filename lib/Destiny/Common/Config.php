@@ -4,20 +4,15 @@ namespace Destiny\Common;
 abstract class Config {
     
     /**
-     * The configuration array
-     *
      * @var array
      */
     public static $a = array ();
 
     /**
-     * Load the config stack
-     *
      * @param array $config
      */
     public static function load(array $config) {
         self::$a = $config;
-        // Set environment vars
         if (isset ( self::$a ['env'] ) && ! empty ( self::$a ['env'] )) {
             foreach ( self::$a ['env'] as $i => $v ) {
                 ini_set ( $i, $v );
@@ -26,8 +21,6 @@ abstract class Config {
     }
 
     /**
-     * Return the cdn domain
-     *
      * @param string $protocol
      * @return string
      */
@@ -38,8 +31,6 @@ abstract class Config {
     }
 
     /**
-     * Return the cdn domain/version
-     *
      * @param string $protocol
      * @return string
      */
@@ -57,8 +48,6 @@ abstract class Config {
     }
 
     /**
-     * Return the application version
-     *
      * @return string
      */
     public static function version() {

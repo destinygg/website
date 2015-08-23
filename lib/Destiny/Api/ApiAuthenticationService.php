@@ -11,15 +11,11 @@ use Destiny\Common\Service;
 class ApiAuthenticationService extends Service {
     
     /**
-     * Salting for the auth token
-     *
      * @var string
      */
     protected $authTokenSalt = '_r52Ax_';
 
     /**
-     * Builds a unique auth token
-     *
      * @param int $userId
      * @return string
      */
@@ -32,8 +28,6 @@ class ApiAuthenticationService extends Service {
     }
 
     /**
-     * Add a API auth token to a user
-     *
      * @param int $userId
      * @param string $authToken
      */
@@ -47,8 +41,6 @@ class ApiAuthenticationService extends Service {
     }
 
     /**
-     * Remove an existing auth token
-     *
      * @param int $id
      */
     public function removeAuthToken($id) {
@@ -59,8 +51,6 @@ class ApiAuthenticationService extends Service {
     }
 
     /**
-     * Get a list of auth tokens by userId
-     *
      * @param int $userId
      * @param int $limit
      * @param int $start
@@ -81,10 +71,8 @@ class ApiAuthenticationService extends Service {
     }
 
     /**
-     * Get a single auth token
-     *
      * @param string $authToken
-     * @return array<array>
+     * @return array
      */
     public function getAuthToken($authToken) {
         $conn = Application::instance ()->getConnection ();

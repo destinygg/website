@@ -15,8 +15,6 @@ use Destiny\Common\MimeType;
 class YoutubeApiService extends Service {
 
     /**
-     * Get a the latest playlist from google
-     *
      * @param array $options
      * @param array $params
      * @throws Exception

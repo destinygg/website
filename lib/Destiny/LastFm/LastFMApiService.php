@@ -15,8 +15,6 @@ use Destiny\Common\MimeType;
 class LastFMApiService extends Service {
     
     /**
-     * Get the most recent LastFM tracks
-     *
      * @param array $options
      * @return CurlBrowser
      */

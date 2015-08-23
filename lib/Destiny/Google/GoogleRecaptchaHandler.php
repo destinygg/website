@@ -9,13 +9,9 @@ use Destiny\Common\Exception;
 class GoogleRecaptchaHandler {
 
     /**
-     * secret   Required. The shared key between your site and ReCAPTCHA.
-     * response Required. The user response token provided by the reCAPTCHA to the user and provided to your site on.
-     * remoteip Optional. The user's IP address.
-     *
-     * @param $secret
-     * @param $response
-     * @param $remoteip
+     * @param string $secret The shared key between your site and ReCAPTCHA.
+     * @param string $response The user response token provided by the reCAPTCHA to the user and provided to your site on.
+     * @param string $remoteip The user's IP address.
      * @return bool
      * @throws Exception
      */

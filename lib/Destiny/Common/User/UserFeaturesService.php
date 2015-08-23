@@ -16,7 +16,6 @@ class UserFeaturesService extends Service {
     protected $features = null;
 
     /**
-     * Return a list of features
      * @return array<featureName, featureId>
      */
     public function getFeatures() {

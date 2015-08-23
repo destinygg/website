@@ -10,8 +10,6 @@ use Destiny\Common\Application;
 class RememberMeService extends Service {
     
     /**
-     * Clear expired rememberme's
-     *
      * @return void
      */
     public function clearExpiredRememberMe() {
@@ -20,8 +18,6 @@ class RememberMeService extends Service {
     }
 
     /**
-     * Delete remember me
-     *
      * @param int $userId
      * @param string $token
      * @param string $tokenType
@@ -36,8 +32,6 @@ class RememberMeService extends Service {
     }
 
     /**
-     * Add remember me token
-     *
      * @param int $userId
      * @param string $token
      * @param string $tokenType
@@ -62,7 +56,7 @@ class RememberMeService extends Service {
     }
 
     /**
-     * Get the user Id of a none expired token
+     * Get the [userId, createdDate, expireDate] for the associated token
      *
      * @param string $token
      * @param string $tokenType
@@ -71,7 +65,7 @@ class RememberMeService extends Service {
     public function getRememberMe($token, $tokenType) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-            SELECT u.userId,r.createdDate,r.expireDate FROM dfl_users_rememberme AS r 
+            SELECT u.userId,r.createdDate,r.expireDate FROM dfl_users_rememberme AS r
             INNER JOIN dfl_users AS u ON (u.userId = r.userId)
             WHERE r.token = :token AND r.tokenType = :tokenType AND r.expireDate > NOW() 
             LIMIT 0,1

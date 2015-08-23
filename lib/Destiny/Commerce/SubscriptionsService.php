@@ -13,7 +13,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 class SubscriptionsService extends Service {
 
     /**
-    * Expires subscritions based on their end date
+    * Expires subscriptions based on their end date
     *
     * @return int the number of expired subscriptions
     */
@@ -107,8 +107,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get the first pending subscription
-    *
     * @param int $userId
     * @return array
     */
@@ -122,8 +120,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Update a subscriptions end date
-    *
     * @param int $subscriptionId
     * @param \DateTime $endDate
     */
@@ -189,8 +185,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get a list of subscriptions by tier
-    *
     * @param int $tier
     * @return array<array>
     */
@@ -211,8 +205,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get a list of subscriptions by gifter id (userId)
-    *
     * @param int $gifterId
     * @return array<array>
     */
@@ -232,8 +224,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get a list of active subscriptions by gifter id (userId)
-    *
     * @param int $gifterId
     * @return array<array>
     */
@@ -254,8 +244,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get a list of active subscriptions by subscriptionId and gifter id (userId)
-    *
     * @param int $subscriptionId
     * @param int $gifterId
     * @return array<array>
@@ -279,8 +267,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get a subscription by the order
-    * 
     * @param number $orderId
     * @return array
     */
@@ -325,8 +311,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-     * Get all user subscriptions
-     *
      * @param number $userId
      * @param int $limit
      * @param int $start
@@ -355,8 +339,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-     * Get a subscription by Id
-     *
      * @param int $subscriptionId
      * @return array
      * @throws Exception
@@ -380,8 +362,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Check if a user has a active subscription
-    *
     * @param number $gifter userId
     * @param number $giftee userId
     * @return boolean

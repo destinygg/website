@@ -50,8 +50,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Update an existing orders status
-     *
      * @param int $id
      * @param string $state
      */
@@ -65,8 +63,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Get an order by orderId
-     *
      * @param int $orderId
      * @return mixed
      */
@@ -172,8 +168,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Update a payment profile next payment date
-     *
      * @param int $paymentProfileId
      * @param \DateTime $billingNextDate
      */
@@ -187,8 +181,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Set a payment profile state to cancelled
-     *
      * @param int $paymentProfileId
      * @param string $state
      */
@@ -202,9 +194,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Set the paymentProfileId, and state to "Active"
-     *
-     * @todo dirty
      * @param int $profileId
      * @param int $paymentProfileId
      * @param string $state
@@ -271,7 +260,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Return payments by orderId
      * @todo this returns payments in ASC order, the getPaymentsByUser returns them in DESC order
      *
      * @param int $orderId
@@ -297,8 +285,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Return a payment by paymentId
-     *
      * @param int $paymentId
      * @return array
      */
@@ -315,8 +301,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Add an order payment
-     *
      * @param array $payment
      * @return int paymentId
      */
@@ -338,8 +322,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * Update an existing payments status
-     *
      * @param number $paymentId
      * @param string $state
      */
@@ -373,8 +355,6 @@ class OrdersService extends Service {
     }
     
     /**
-     * Create a new payment
-     * 
      * @param int $userId
      * @param array $order
      * @param array $subscriptionType

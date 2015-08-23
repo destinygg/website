@@ -4,13 +4,28 @@ namespace Destiny\Common;
 use Destiny\Common\Utils\Http;
 
 class Response {
-    
+
+    /**
+     * @var array
+     */
     private $headers = array ();
+
+    /**
+     * @var int
+     */
     private $status = Http::STATUS_OK;
+
+    /**
+     * @var string
+     */
     private $body;
+
+    /**
+     * @var string
+     */
     private $location;
 
-    public function __construct($status, $body = null) {
+    public function __construct($status = Http::STATUS_OK, $body = '') {
         $this->status = $status;
         $this->body = $body;
     }

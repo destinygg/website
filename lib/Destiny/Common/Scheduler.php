@@ -47,7 +47,7 @@ class Scheduler {
 
     /**
      * @param string $name
-     * @return mixed
+     * @return array
      */
     protected function getTask($name) {
         $conn = Application::instance ()->getConnection ();

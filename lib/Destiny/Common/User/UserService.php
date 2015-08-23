@@ -200,6 +200,12 @@ class UserService extends Service {
     return $stmt->fetch ();
   }
 
+  /**
+   * @param $authId
+   * @param $authProvider
+   * @return bool
+   * @throws \Doctrine\DBAL\DBALException
+   */
   public function getUserAuthProviderExists($authId, $authProvider) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
@@ -532,8 +538,6 @@ class UserService extends Service {
   }
   
   /**
-   * Get a chat ban by ID
-   *
    * @param int $banId
    * @return array
    */
@@ -607,8 +611,6 @@ class UserService extends Service {
   }
 
   /**
-   * Find users with the same IP as this user
-   *
    * @param int $userid
    * @return array $users The users found
    * @throws Exception
@@ -619,8 +621,6 @@ class UserService extends Service {
   }
 
   /**
-   * Find users with the given IP
-   *
    * @param string $ipaddress
    * @return array $users The users found
    */
@@ -630,8 +630,6 @@ class UserService extends Service {
   }
 
   /**
-   * Find the addresses of the user
-   *
    * @param int $userid
    * @return array $ipaddresses The addresses found
    */
@@ -711,8 +709,6 @@ class UserService extends Service {
   }
 
   /**
-   * Get a list of user ids from a list of usernames
-   *
    * @param array $usernames
    * @return array
    */
@@ -733,6 +729,11 @@ class UserService extends Service {
     return $ids;
   }
 
+  /**
+   * @param $userId
+   * @return bool
+   * @throws \Doctrine\DBAL\DBALException
+   */
   public function isUserOldEnough( $userId ) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare("
@@ -748,6 +749,11 @@ class UserService extends Service {
     return !!$stmt->fetchColumn();
   }
 
+  /**
+   * @param $nick
+   * @return bool|string
+   * @throws \Doctrine\DBAL\DBALException
+   */
   public function getTwitchIDFromNick( $nick ) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare("
@@ -763,13 +769,18 @@ class UserService extends Service {
     return $stmt->fetchColumn();
   }
 
-  /*
+  /**
    * Expects an array with twitch users _id as keys and a 0 or 1 as value
    * to indicate whether the user is a subscriber or not
    * Returns an array of active subscribers (for announcing) with the
    * key being the authid and the value being an array of user info(userid, username)
+   *
+   * @param array $data
+   * @return array
+   * @throws \Doctrine\DBAL\DBALException
+   * @throws \Exception
    */
-  public function updateTwitchSubscriptions( $data ) {
+  public function updateTwitchSubscriptions( array $data ) {
     if ( empty( $data ) )
       return array();
 
@@ -862,6 +873,10 @@ class UserService extends Service {
     return $idToUser;
   }
 
+  /**
+   * @return array
+   * @throws \Doctrine\DBAL\DBALException
+   */
   public function getActiveTwitchSubscriptions() {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare("

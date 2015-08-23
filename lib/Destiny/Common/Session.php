@@ -4,8 +4,6 @@ namespace Destiny\Common;
 abstract class Session {
 
     /**
-     * Get the session interface
-     *
      * @return SessionInstance
      */
     public static function instance() {
@@ -13,7 +11,7 @@ abstract class Session {
     }
 
     /**
-     * Returns true if the session cookie isset and has value
+     * @return boolean
      */
     public static function hasSessionCookie() {
         $session = self::instance ();
@@ -32,8 +30,6 @@ abstract class Session {
     }
 
     /**
-     * Return true if the session has been started
-     *
      * @return boolean
      */
     public static function isStarted() {
@@ -41,8 +37,6 @@ abstract class Session {
     }
 
     /**
-     * Return the instances unique session Id
-     *
      * @return string
      */
     public static function getSessionId() {
@@ -50,8 +44,6 @@ abstract class Session {
     }
 
     /**
-     * Updates the session variables
-     *
      * @param SessionCredentials $credentials
      */
     public static function updateCredentials(SessionCredentials $credentials) {
@@ -64,8 +56,6 @@ abstract class Session {
     }
 
     /**
-     * Get the current authenticated session credentials
-     *
      * @return SessionCredentials
      */
     public static function getCredentials() {
@@ -73,8 +63,6 @@ abstract class Session {
     }
 
     /**
-     * Destroys the current session
-     *
      * @return void
      */
     public static function destroy() {
@@ -83,8 +71,6 @@ abstract class Session {
     }
 
     /**
-     * Get a session variable
-     *
      * @param string $name
      * @return mixed
      */
@@ -105,9 +91,9 @@ abstract class Session {
     }
 
     /**
-     * Check if the creditials has a specific role
+     * Check if the credential's has a specific role
      *
-     * @param int $roleId
+     * @param string $roleId
      * @return boolean
      */
     public static function hasRole($roleId) {
@@ -119,9 +105,9 @@ abstract class Session {
     }
 
     /**
-     * Check if the creditials has a specific feature
+     * Check if the credential's has a specific feature
      *
-     * @param int $featureId
+     * @param string $featureId
      * @return boolean
      */
     public static function hasFeature($featureId) {
@@ -133,4 +119,3 @@ abstract class Session {
     }
 
 }
-?>

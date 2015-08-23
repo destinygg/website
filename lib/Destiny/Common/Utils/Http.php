@@ -77,8 +77,6 @@ abstract class Http {
     }
     
     /**
-     * Utility function that returns base url for the app
-     *
      * @return string
      */
     public static function getBaseUrl() {

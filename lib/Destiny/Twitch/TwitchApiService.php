@@ -16,13 +16,6 @@ use Destiny\Common\Application;
 class TwitchApiService extends Service {
     
     /**
-     * Stored when the broadcaster logs in, used to retrieve subscription
-     *
-     * @var string
-     */
-    protected $token = '';
-
-    /**
      * @param array $options
      * @return CurlBrowser
      */
@@ -97,7 +90,6 @@ class TwitchApiService extends Service {
     }
 
     /**
-     *
      * @param array $options
      * @return CurlBrowser
      */

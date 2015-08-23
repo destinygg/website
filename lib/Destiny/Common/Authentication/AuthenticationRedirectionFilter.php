@@ -57,6 +57,5 @@ class AuthenticationRedirectionFilter {
             return 'redirect: ' . $follow;
         }
         return 'redirect: /profile';
-        
     }
 }

@@ -12,15 +12,11 @@ use OAuth2\Client;
 class GoogleAuthHandler {
     
     /**
-     * The current auth type
-     *
      * @var string
      */
     protected $authProvider = 'google';
     
     /**
-     * Redirects the user to the auth provider
-     *
      * @return string
      */
     public function getAuthenticationUrl() {

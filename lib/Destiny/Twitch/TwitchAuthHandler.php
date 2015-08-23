@@ -10,15 +10,11 @@ use OAuth2\Client;
 class TwitchAuthHandler{
   
     /**
-     * The current auth type
-     *
      * @var string
      */
     protected $authProvider = 'twitch';
     
     /**
-     * Redirects the user to the auth provider
-     *
      * @return string
      */
     public function getAuthenticationUrl() {

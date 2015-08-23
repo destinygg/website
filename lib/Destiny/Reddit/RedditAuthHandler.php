@@ -10,15 +10,11 @@ use OAuth2\Client;
 class RedditAuthHandler {
     
     /**
-     * The current auth type
-     *
      * @var string
      */
     protected $authProvider = 'reddit';
     
     /**
-     * Redirects the user to the auth provider
-     *
      * @return string
      */
     public function getAuthenticationUrl() {

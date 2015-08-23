@@ -34,17 +34,16 @@ class SessionCredentials {
     protected $country = '';
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $roles = array ();
 
     /**
-     * @var array
+     * @var string[]
     */
     protected $features = array ();
 
     /**
-     * Create a session credentials instance
      * @param array $params
     */
     public function __construct(array $params = null) {
@@ -54,8 +53,6 @@ class SessionCredentials {
     }
 
     /**
-     * Set all the credentials at once
-     *
      * @param array $params
      */
     public function setData(array $params) {
@@ -148,9 +145,7 @@ class SessionCredentials {
     }
 
     /**
-     * Add roles
-     *
-     * @param array|string $role
+     * @param string[]|string $role
      */
     public function addRoles($role) {
         if (is_array ( $role )) {
@@ -165,8 +160,6 @@ class SessionCredentials {
     }
 
     /**
-     * Remove a role
-     *
      * @param string $role
      */
     public function removeRole($role) {
@@ -179,7 +172,7 @@ class SessionCredentials {
     }
 
     /**
-     * @param int $roleId
+     * @param string $roleId
      * @return bool
      */
     public function hasRole($roleId) {
@@ -247,7 +240,7 @@ class SessionCredentials {
     /**
      * Add user features
      *
-     * @param array|string $features
+     * @param string[]|string $features
      */
     public function addFeatures($features) {
         if (is_array ( $features )) {
@@ -276,4 +269,3 @@ class SessionCredentials {
     }
 
 }
-?>
