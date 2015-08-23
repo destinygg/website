@@ -31,11 +31,8 @@ class ChatController {
     
     /**
      * @Route ("/chat/history")
-     *
-     * @param array $params            
-     * @param ViewModel $model            
      */
-    public function history(array $params, ViewModel $model) {
+    public function history() {
         $chatLogService = ChatlogService::instance ();
         
         $chatlog    = $chatLogService->getChatLog ( Config::$a ['chat'] ['backlog'] );
@@ -90,11 +87,8 @@ class ChatController {
 
     /**
      * @Route ("/chat/emotes.json")
-     *
-     * @param array $params
-     * @param ViewModel $model
      */
-    public function emotes(array $params, ViewModel $model) {
+    public function emotes() {
         // just return every single one
         $emotes = array_merge(
             Config::$a ['chat'] ['customemotes'],

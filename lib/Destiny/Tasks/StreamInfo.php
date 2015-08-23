@@ -3,11 +3,10 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\Twitch\TwitchApiService;
-use Psr\Log\LoggerInterface;
 
 class StreamInfo {
 
-    public function execute(LoggerInterface $log) {
+    public function execute() {
         $cacheDriver = Application::instance ()->getCacheDriver ();
         $response = TwitchApiService::instance ()->getStreamInfo ()->getResponse ();
         if (! empty ( $response ))

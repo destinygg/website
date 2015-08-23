@@ -255,11 +255,9 @@ class SubscriptionController {
      * @Secure ({"USER"})
      * @Transactional
      *
-     * Create and send the order
-     *
      * @param array $params
      */
-    public function subscriptionCreate(array $params, ViewModel $model) {
+    public function subscriptionCreate(array $params) {
         FilterParams::required($params, 'subscription');
         
         $userService = UserService::instance ();
@@ -409,7 +407,7 @@ class SubscriptionController {
      *
      * @param array $params
      */
-    public function subscriptionProcess(array $params, ViewModel $model) {
+    public function subscriptionProcess(array $params) {
 
         FilterParams::required ( $params, 'orderId' );
         FilterParams::required ( $params, 'token' );
@@ -589,7 +587,7 @@ class SubscriptionController {
      *
      * @param array $params
      */
-    public function giftCheckUser(array $params, ViewModel $model) {
+    public function giftCheckUser(array $params) {
       FilterParams::required($params, 's');
 
       $userService = UserService::instance ();

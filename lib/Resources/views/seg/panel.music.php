@@ -23,7 +23,7 @@ use Destiny\Common\Config;
               </a>
               <?=$tweet['html']?>
             </div>
-            <?=Tpl::fromNow(Date::getDateTime($tweet['created_at']), Date::FORMAT)?>
+            <?=Tpl::fromNow(Date::getDateTime($tweet['created_at']))?>
           </div>
         </div>
       <?endforeach;?>
@@ -51,7 +51,7 @@ use Destiny\Common\Config;
             <div class="artist"><?=Tpl::out($track['artist']['#text'])?></div>
             <div class="details">
               <?if($track['date_str'] != ''):?>
-              <span class="pull-right"><?=Tpl::fromNow(Date::getDateTime($track['date_str']), Date::FORMAT)?></span>
+              <span class="pull-right"><?=Tpl::fromNow(Date::getDateTime($track['date_str']))?></span>
               <?endif;?>
               <?if($trackIndex==0 && $track['date_str'] == ''):?>
               <span class="pull-right"><time>now playing</time></span>

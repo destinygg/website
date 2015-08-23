@@ -2,7 +2,6 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Exception;
-use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
@@ -22,11 +21,10 @@ class ImpersonateController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
-     * @param ViewModel $model
      * @throws Exception
      * @return string
      */
-    public function impersonate(array $params, ViewModel $model) {
+    public function impersonate(array $params) {
         if (! Config::$a ['allowImpersonation']) {
             throw new Exception ( 'Impersonating is not allowed' );
         }

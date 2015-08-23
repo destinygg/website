@@ -136,11 +136,10 @@ class ProfileController {
      * @Transactional
      *
      * @param array $params         
-     * @param ViewModel $model          
      * @throws Exception
      * @return string
      */
-    public function profileSave(array $params, ViewModel $model) {
+    public function profileSave(array $params) {
       // Get user
       $userService = UserService::instance ();
       $authenticationService = AuthenticationService::instance ();
@@ -296,10 +295,9 @@ class ProfileController {
      * @Secure ({"USER"})
      *
      * @param array $params         
-     * @param ViewModel $model          
      * @return string
      */
-    public function profileConnect(array $params, ViewModel $model) {
+    public function profileConnect(array $params) {
       FilterParams::required ( $params, 'provider' );
       $authProvider = $params ['provider'];
       

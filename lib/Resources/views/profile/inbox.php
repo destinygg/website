@@ -51,7 +51,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                     <span class="count">(<?= $thread['count'] ?>)</span>
                                 </td>
                                 <td class="message"><span><?= Tpl::formatTextForDisplay($thread['message']) ?></span></td>
-                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp']), Date::FORMAT); ?></td>
+                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp'])); ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -95,7 +95,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                     <span class="count">(<?= $thread['count'] ?>)</span>
                                 </td>
                                 <td class="message"><span><?= Tpl::formatTextForDisplay($thread['message']) ?></span></td>
-                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp']), Date::FORMAT); ?></td>
+                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp'])); ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

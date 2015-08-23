@@ -55,11 +55,11 @@ class Tpl {
         return sprintf ( '<time title="%s" data-moment="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, $date->format ( $format ) );
     }
 
-    public static function fromNow(\DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+    public static function fromNow(\DateTime $date, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
         return sprintf ( '<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
     }
 
-    public static function calendar(\DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+    public static function calendar(\DateTime $date, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
         return sprintf ( '<time title="%s" data-moment="true" data-moment-calendar="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
     }
 

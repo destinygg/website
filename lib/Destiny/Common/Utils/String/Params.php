@@ -35,7 +35,7 @@ abstract class Params {
         for($i = 0, $rK = array (), $rV = array (); $i < count ( $keys ); ++ $i) {
             $key = self::getKey ( $keys [$i] );
             $keyName = self::getKeyName ( $key );
-            $keyValue = self::getKeyValue ( $key, ((isset ( $params [$keyName] )) ? $params [$keyName] : $keyName), $params );
+            $keyValue = self::getKeyValue ( $key, ((isset ( $params [$keyName] )) ? $params [$keyName] : $keyName) );
             $rK [] = $keys [$i];
             $rV [] = ($addSlashes) ? self::addSlashes ( $keyValue ) : $keyValue;
         }
@@ -91,23 +91,23 @@ abstract class Params {
         return (preg_match ( self::getSearchString ( $pattern ), $string ) > 0);
     }
 
-    protected static function getKeyValue($key, $value, array $params = null) {
+    protected static function getKeyValue($key, $value) {
         switch (self::getKeyType ( $key )) {
             case 'int' :
-                $value = self::getValueAsInt ( $key, $value );
+                $value = self::getValueAsInt ( $value );
                 break;
             default :
-                $value = self::getValueAsString ( $key, $value );
+                $value = self::getValueAsString ( $value );
                 break;
         }
         return $value;
     }
 
-    protected static function getValueAsInt($key, $value) {
+    protected static function getValueAsInt($value) {
         return intval ( $value );
     }
 
-    protected static function getValueAsString($key, $value) {
+    protected static function getValueAsString($value) {
         return "$value";
     }
 

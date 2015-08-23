@@ -49,7 +49,7 @@ use Destiny\Common\Config;
                         <?php elseif ($isme and !$msg['isread']): ?>
                             <div class="icon-message-unread pull-left glyphicon glyphicon-question-sign" title="Your message has not yet been read"></div>
                         <?php endif; ?>
-                        <div class="message-date pull-right"><?= Tpl::calendar(Date::getDateTime($msg['timestamp']), Date::FORMAT); ?></div>
+                        <div class="message-date pull-right"><?= Tpl::calendar(Date::getDateTime($msg['timestamp'])); ?></div>
                     </div>
                     <div class="message-txt"><?= Tpl::formatTextForDisplay($msg['message']) ?></div>
                 </div>
@@ -58,7 +58,7 @@ use Destiny\Common\Config;
                         <span alt="<?= Tpl::out($msg['from']) ?>"><?= (!$isme) ? Tpl::out($msg['from']) : 'Me' ?></span>
                     </span>
                     <span class="message-snippet"><?= Tpl::formatTextForDisplay($msg['message']) ?></span>
-                    <span class="message-date"><?= Tpl::calendar(Date::getDateTime($msg['timestamp']), Date::FORMAT); ?></span>
+                    <span class="message-date"><?= Tpl::calendar(Date::getDateTime($msg['timestamp'])); ?></span>
                 </div>
                 <div class="speech-arrow"></div>
             </div>

@@ -36,10 +36,9 @@ class ChatApiController {
     /**
      * @Route ("/api/messages/unreadcount")
      *
-     * @param array $params
      * @return Response
      */
-    public function unreadCount(array $params) {
+    public function unreadCount() {
 
         $userId = Session::getCredentials ()->getUserId ();
         $response = array(
@@ -49,9 +48,7 @@ class ChatApiController {
         if ($userId) {
             $privateMessageService   = PrivateMessageService::instance();
             $response['success']     = true;
-            $response['unreadcount'] =
-                (int) $privateMessageService->getUnreadMessageCount( $userId )
-            ;
+            $response['unreadcount'] = (int) $privateMessageService->getUnreadMessageCount( $userId );
         }
 
         $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );

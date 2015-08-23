@@ -15,10 +15,8 @@ class ApiController {
 
     /**
      * @Route ("/youtube.json")
-     *
-     * @param array $params
      */
-    public function youtube(array $params) {
+    public function youtube() {
         $app = Application::instance ();
         $playlist = $app->getCacheDriver ()->fetch ( 'youtubeplaylist' );
         $response = new Response ( Http::STATUS_OK, json_encode ( $playlist ) );
@@ -30,10 +28,8 @@ class ApiController {
 
     /**
      * @Route ("/twitter.json")
-     *
-     * @param array $params
      */
-    public function twitter(array $params) {
+    public function twitter() {
         $app = Application::instance ();
         $tweets = $app->getCacheDriver ()->fetch ( 'twitter' );
         $response = new Response ( Http::STATUS_OK, json_encode ( $tweets ) );
@@ -45,10 +41,8 @@ class ApiController {
 
     /**
      * @Route ("/stream.json")
-     *
-     * @param array $params
      */
-    public function stream(array $params) {
+    public function stream() {
         $app = Application::instance ();
         $info = $app->getCacheDriver ()->fetch ( 'streaminfo' );
         $response = new Response ( Http::STATUS_OK, json_encode ( $info ) );
@@ -60,10 +54,8 @@ class ApiController {
 
     /**
      * @Route ("/lastfm.json")
-     *
-     * @param array $params
      */
-    public function lastfm(array $params) {
+    public function lastfm() {
         $app = Application::instance ();
         $tracks = $app->getCacheDriver ()->fetch ( 'recenttracks' );
         $response = new Response ( Http::STATUS_OK, json_encode ( $tracks ) );
@@ -75,10 +67,8 @@ class ApiController {
 
     /**
      * @Route ("/broadcasts.json")
-     *
-     * @param array $params
      */
-    public function broadcasts(array $params) {
+    public function broadcasts() {
         $app = Application::instance ();
         $broadcasts = $app->getCacheDriver ()->fetch ( 'pastbroadcasts' );
         $response = new Response ( Http::STATUS_OK, json_encode ( $broadcasts ) );

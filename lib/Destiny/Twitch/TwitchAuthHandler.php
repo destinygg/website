@@ -5,7 +5,6 @@ use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
-use Destiny\Common\ViewModel;
 use OAuth2\Client;
 
 class TwitchAuthHandler{
@@ -36,7 +35,7 @@ class TwitchAuthHandler{
      * @param array $params         
      * @throws Exception
      */
-    public function authenticate(array $params, ViewModel $model) {
+    public function authenticate(array $params) {
         if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
            throw new Exception ( 'Authentication failed, invalid or empty code.' );
         }

@@ -228,7 +228,7 @@ class UserAdminController {
      * @throws Exception
      * @return string
      */
-    public function subscriptionSave(array $params, ViewModel $model) {
+    public function subscriptionSave(array $params) {
         FilterParams::required ( $params, 'subscriptionType' );
         FilterParams::required ( $params, 'status' );
         FilterParams::required ( $params, 'createdDate' );

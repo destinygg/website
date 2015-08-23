@@ -15,3 +15,5 @@ config/config.local.php
 /scripts/redis/*.hash
 .DS_Store
 *.swp
+
+/.idea

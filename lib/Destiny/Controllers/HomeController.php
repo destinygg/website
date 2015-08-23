@@ -59,9 +59,9 @@ class HomeController {
     /**
      * @Route ("/ping")
      *
-     * @param array $params
+     * @return Response
      */
-    public function ping(array $params) {
+    public function ping() {
         $response = new Response ( Http::STATUS_OK );
         $response->addHeader ( 'X-Pong', 'Destiny' );
         return $response;
@@ -70,11 +70,9 @@ class HomeController {
     /**
      * @Route ("/screen")
      *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
+     * @return Response
      */
-    public function screen(array $params, ViewModel $model) {
+    public function screen() {
         $response = new Response ( Http::STATUS_MOVED_PERMANENTLY );
         $response->setLocation ( '/bigscreen' );
         return $response;

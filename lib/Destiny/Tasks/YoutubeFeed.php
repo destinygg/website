@@ -2,12 +2,11 @@
 namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
-use Psr\Log\LoggerInterface;
 use Destiny\Youtube\YoutubeApiService;
 
 class YoutubeFeed {
 
-    public function execute(LoggerInterface $log) {
+    public function execute() {
         $app = Application::instance ();
         $response = YoutubeApiService::instance ()->getYoutubePlaylist ()->getResponse ();
         if (! empty ( $response ))

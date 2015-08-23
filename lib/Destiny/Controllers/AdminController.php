@@ -120,11 +120,8 @@ class AdminController {
     /**
      * @Route ("/admin/bans/purgeall")
      * @Secure ({"ADMIN"})
-     *
-     * @param array $params         
-     * @throws Exception
      */
-    public function adminPurgeBans(array $params, ViewModel $model) {
+    public function adminPurgeBans() {
         $chatService = ChatIntegrationService::instance ();
         $chatService->purgeBans();
         return 'redirect: /admin/bans';

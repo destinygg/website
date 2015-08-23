@@ -54,7 +54,7 @@ class UserBanController {
      *
      * @param array $params
      */
-    public function insertBan(array $params, ViewModel $model) {
+    public function insertBan(array $params) {
         if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
             throw new Exception ( 'userId required' );
         }
@@ -109,7 +109,7 @@ class UserBanController {
      *
      * @param array $params
      */
-    public function updateBan(array $params, ViewModel $model) {
+    public function updateBan(array $params) {
         if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
             throw new Exception ( 'id required' );
         }
