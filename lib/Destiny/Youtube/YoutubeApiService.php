@@ -9,23 +9,10 @@ use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\MimeType;
 
+/**
+ * @method static YoutubeApiService instance()
+ */
 class YoutubeApiService extends Service {
-    
-    /**
-     * Singleton
-     *
-     * @return YoutubeApiService
-     */
-    protected static $instance = null;
-
-    /**
-     * Singleton
-     *
-     * @return YoutubeApiService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
 
     /**
      * Get a the latest playlist from google

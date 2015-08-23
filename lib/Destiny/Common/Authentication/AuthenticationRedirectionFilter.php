@@ -8,7 +8,12 @@ use Destiny\Common\Exception;
 use Destiny\Common\Session;
 
 class AuthenticationRedirectionFilter {
-    
+
+    /**
+     * @param AuthenticationCredentials $authCreds
+     * @return string
+     * @throws Exception
+     */
     public function execute(AuthenticationCredentials $authCreds) {
         $authService = AuthenticationService::instance ();
         $userService = UserService::instance ();

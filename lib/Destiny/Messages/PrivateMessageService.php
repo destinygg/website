@@ -7,24 +7,11 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\User\UserRole;
 use Doctrine\DBAL\Connection;
 
+/**
+ * @method static PrivateMessageService instance()
+ */
 class PrivateMessageService extends Service {
     
-    /**
-     * Singleton instance
-     *
-     * var UserFeaturesService
-     */
-    protected static $instance = null;
-
-    /**
-     * Singleton instance
-     *
-     * @return PrivateMessageService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
-
     /**
      * Check if a user is allowed to send a message based on various criteria
      *

@@ -9,6 +9,9 @@ use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;
 
+/**
+ * @method static UserService instance()
+ */
 class UserService extends Service {
   
   /**
@@ -16,18 +19,6 @@ class UserService extends Service {
    */
   protected $roles;
   
-  /**
-   * var UserService
-   */
-  protected static $instance = null;
-
-  /**
-   * @return UserService
-   */
-  public static function instance() {
-    return parent::instance ();
-  }
-
   /**
    * @param int $userId
    * @param array $roles

@@ -3,12 +3,10 @@ use Destiny\Common\Application;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\SessionInstance;
 use Destiny\Common\Cookie;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Routing\Router;
 use Destiny\Common\Routing\RouteAnnotationClassLoader;
 use Destiny\Common\DirectoryClassIterator;
-use Destiny\Common\Authentication\RememberMeService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -39,4 +37,3 @@ AuthenticationService::instance ()->startSession();
 
 // Attempts to find a route and execute it
 $app->executeRequest ( new Request() );
-?>

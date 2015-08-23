@@ -11,13 +11,11 @@ use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @method static Application instance()
+ */
 class Application extends Service {
 
-    /**
-     * @var Application
-     */
-    protected static $instance = null;
-    
     /**
      * @var LoggerInterface
      */
@@ -57,25 +55,6 @@ class Application extends Service {
      * @var callable
      */
     public $loader;
-
-    /**
-     * Since this has to be created instance, only returns never creates
-     *
-     * @return Application
-     */
-    public static function instance() {
-        return static::$instance;
-    }
-
-    /**
-     * Construct
-     *
-     * @param array $args
-     */
-    public function __construct(array $args= null) {
-        self::$instance = $this;
-        Options::setOptions ( $this, $args );
-    }
 
     /**
      * @param Request $request

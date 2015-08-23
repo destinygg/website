@@ -10,13 +10,11 @@ namespace Destiny\Common\Annotation;
 class Feature {
     
     /**
-     * The features list
-     * @var array<string>
+     * @var string[]
      */
     public $features;
 
     /**
-     * A list of allowed features
      * @param array $params
      */
     public function __construct(array $params) {
@@ -24,4 +22,3 @@ class Feature {
     }
 
 }
-?>

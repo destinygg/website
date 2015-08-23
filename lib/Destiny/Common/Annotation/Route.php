@@ -8,13 +8,11 @@ namespace Destiny\Common\Annotation;
 class Route {
     
     /**
-     * The URL path
      * @var string
      */
     public $path;
 
     /**
-     * The annotation params
      * @param array $params
      */
     public function __construct(array $params) {
@@ -22,7 +20,6 @@ class Route {
     }
     
     /**
-     * Get the path
      * @return string
      */
     public function getPath(){
@@ -30,4 +27,3 @@ class Route {
     }
 
 }
-?>

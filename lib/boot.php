@@ -5,6 +5,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\Common\Cache\RedisCache;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Destiny\Common\Application;
 
 // This should be in the server config
 ini_set ( 'date.timezone', 'UTC' );
@@ -22,7 +23,7 @@ Config::load ( array_replace_recursive (
 
 AnnotationRegistry::registerLoader ( array ($loader, 'loadClass') );
 
-$app = new Destiny\Common\Application ();
+$app = Application::instance();
 $app->setLoader ( $loader );
 
 $log = new Logger ( $context->log );
@@ -30,7 +31,7 @@ $log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->
 $log->pushProcessor ( new Monolog\Processor\WebProcessor () );
 $app->setLogger ( $log );
 
-$app->setConnection ( DriverManager::getConnection ( Config::$a ['db'], new Doctrine\DBAL\Configuration () ) );
+$app->setConnection ( DriverManager::getConnection ( Config::$a ['db'] ) );
 
 $redis = new \Redis ();
 $redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );

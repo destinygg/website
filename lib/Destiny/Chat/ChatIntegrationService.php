@@ -7,20 +7,11 @@ use Destiny\Common\SessionCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 
+/**
+ * @method static ChatIntegrationService instance()
+ */
 class ChatIntegrationService extends Service {
     
-    /**
-     * var ChatIntegrationService
-     */
-    protected static $instance = null;
-
-    /**
-     * @return ChatIntegrationService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
-
     /**
      * @param string $sessionId
      * @return void

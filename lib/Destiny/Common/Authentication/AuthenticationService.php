@@ -15,30 +15,12 @@ use Destiny\Common\User\UserFeaturesService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
 
+/**
+ * @method static AuthenticationService instance()
+ */
 class AuthenticationService extends Service {
     
     /**
-     * Singleton
-     *
-     * @var AuthenticationService
-     */
-    protected static $instance = null;
-    
-    /**
-     * Singleton
-     *
-     * @return AuthenticationService
-     */
-    public static function instance() {
-        if (static::$instance === null) {
-            static::$instance = new static ();
-        }
-        return static::$instance;
-    }
-
-    /**
-     * Validates a username
-     *
      * @param string $username
      * @param array $user
      * @throws Exception

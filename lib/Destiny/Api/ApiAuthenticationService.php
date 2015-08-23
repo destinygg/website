@@ -5,14 +5,10 @@ use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Service;
 
+/**
+ * @method static ApiAuthenticationService instance()
+ */
 class ApiAuthenticationService extends Service {
-    
-    /**
-     * Singleton
-     *
-     * @var ApiAuthenticationService
-     */
-    protected static $instance = null;
     
     /**
      * Salting for the auth token
@@ -20,15 +16,6 @@ class ApiAuthenticationService extends Service {
      * @var string
      */
     protected $authTokenSalt = '_r52Ax_';
-
-    /**
-     * Singleton instance
-     *
-     * @return ApiAuthenticationService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
 
     /**
      * Builds a unique auth token
@@ -141,6 +128,10 @@ class ApiAuthenticationService extends Service {
         return $stmt->fetchAll ();
     }
 
+    /**
+     * @param int $userId
+     * @param string $authProfile
+     */
     public function deleteAuthProfileByUserId($userId, $authProfile) {
         $conn = Application::instance ()->getConnection ();
         $conn->delete ( 'dfl_users_auth', array (

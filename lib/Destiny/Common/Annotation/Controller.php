@@ -7,4 +7,3 @@ namespace Destiny\Common\Annotation;
  */
 class Controller {
 }
-?>

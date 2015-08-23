@@ -9,24 +9,11 @@ use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\MimeType;
 
+/**
+ * @method static LastFMApiService instance()
+ */
 class LastFMApiService extends Service {
     
-    /**
-     * Singleton
-     *
-     * @return LastFMApiService
-     */
-    protected static $instance = null;
-
-    /**
-     * Singleton
-     *
-     * @return LastFMApiService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
-
     /**
      * Get the most recent LastFM tracks
      *

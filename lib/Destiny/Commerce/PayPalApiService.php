@@ -33,17 +33,11 @@ use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
 
+/**
+ * @method static PayPalApiService instance()
+ */
 class PayPalApiService extends Service {
   
-    protected static $instance = null;
-    
-    /**
-     * @return PayPalApiService
-     */
-    public static function instance() {
-       return parent::instance ();
-    }
-
     /**
      * @param array $paymentProfile
      * @throws Exception

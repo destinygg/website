@@ -10,13 +10,11 @@ namespace Destiny\Common\Annotation;
 class Secure {
     
     /**
-     * The roles list
-     * @var array<string>
+     * @var string[]
      */
     public $roles;
 
     /**
-     * A list of allowed roles
      * @param array $params
      */
     public function __construct(array $params) {
@@ -24,4 +22,3 @@ class Secure {
     }
 
 }
-?>

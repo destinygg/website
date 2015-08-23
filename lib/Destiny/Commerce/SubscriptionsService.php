@@ -7,18 +7,10 @@ use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationService;
 
+/**
+ * @method static SubscriptionsService instance()
+ */
 class SubscriptionsService extends Service {
-
-    protected static $instance = null;
-
-    /**
-    * Singleton
-    *
-    * @return SubscriptionsService
-    */
-    public static function instance() {
-        return parent::instance ();
-    }
 
     /**
     * Expires subscritions based on their end date

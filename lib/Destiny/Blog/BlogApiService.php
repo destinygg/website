@@ -7,27 +7,12 @@ use Destiny\Common\Utils\String;
 use Destiny\Common\MimeType;
 use Destiny\Common\Exception;
 
+/**
+ * @method static BlogApiService instance()
+ */
 class BlogApiService extends Service {
     
     /**
-     * Singleton
-     *
-     * @return BlogApiService
-     */
-    protected static $instance = null;
-
-    /**
-     * Singleton
-     *
-     * @return BlogApiService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
-
-    /**
-     * Get the most recent blog posts
-     *
      * @param array $options
      * @return CurlBrowser
      */

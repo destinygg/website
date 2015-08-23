@@ -10,6 +10,9 @@ use Destiny\Common\Utils\String;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Application;
 
+/**
+ * @method static TwitchApiService instance()
+ */
 class TwitchApiService extends Service {
     
     /**
@@ -18,16 +21,6 @@ class TwitchApiService extends Service {
      * @var string
      */
     protected $token = '';
-    protected static $instance = null;
-
-    /**
-     * Singleton
-     *
-     * @return TwitchApiService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
 
     /**
      * @param array $options

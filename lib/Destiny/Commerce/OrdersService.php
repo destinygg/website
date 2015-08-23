@@ -6,23 +6,10 @@ use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 
+/**
+ * @method static OrdersService instance()
+ */
 class OrdersService extends Service {
-    
-    /**
-     * Singleton
-     *
-     * @var OrdersService
-     */
-    protected static $instance = null;
-
-    /**
-     * Get the singleton instance
-     *
-     * @return OrdersService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
     
     /**
      * Create a new order and item based on subscription

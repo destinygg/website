@@ -4,24 +4,11 @@ namespace Destiny\Common\Authentication;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 
+/**
+ * @method static RememberMeService instance()
+ */
 class RememberMeService extends Service {
     
-    /**
-     * Singleton
-     *
-     * @var RememberMeService
-     */
-    protected static $instance = null;
-
-    /**
-     * Get the singleton instance
-     *
-     * @return RememberMeService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
-
     /**
      * Clear expired rememberme's
      *

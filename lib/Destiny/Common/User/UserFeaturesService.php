@@ -5,23 +5,10 @@ use Destiny\Common\Exception;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 
+/**
+ * @method static UserFeaturesService instance()
+ */
 class UserFeaturesService extends Service {
-    
-    /**
-     * Singleton instance
-     *
-     * var UserFeaturesService
-     */
-    protected static $instance = null;
-
-    /**
-     * Singleton instance
-     *
-     * @return UserFeaturesService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
     
     /**
      * @var array

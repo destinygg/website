@@ -6,20 +6,11 @@ use Destiny\Common\Application;
 use Destiny\Commerce\SubscriptionStatus;
 use Doctrine\DBAL\Types\DateTimeType;
 
+/**
+ * @method static ChatlogService instance()
+ */
 class ChatlogService extends Service {
     
-    /**
-     * @var ChatlogService
-     */
-    protected static $instance = null;
-
-    /**
-     * @return ChatlogService
-     */
-    public static function instance() {
-        return parent::instance ();
-    }
-
     /**
      * @param int $limit
      * @return array
