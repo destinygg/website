@@ -3,8 +3,9 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\Twitch\TwitchApiService;
+use TaskInterface;
 
-class StreamInfo {
+class StreamInfo implements TaskInterface {
 
     public function execute() {
         $cacheDriver = Application::instance ()->getCacheDriver ();

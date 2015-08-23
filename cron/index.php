@@ -21,7 +21,7 @@ $scheduler->loadSchedule ();
 $stime = microtime ( true );
 try {
 	echo PHP_EOL . 'Scheduler starting';
-	$scheduler->executeShedule ( false );
+	$scheduler->executeSchedule ( false );
 	echo PHP_EOL . 'Scheduler completed';
 } catch ( Exception $e ) {
 	$log->error ( $e->getMessage () );

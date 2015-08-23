@@ -3,8 +3,9 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\Blog\BlogApiService;
+use TaskInterface;
 
-class BlogFeed {
+class BlogFeed implements TaskInterface {
 
     public function execute() {
         $response = BlogApiService::instance ()->getBlogPosts ()->getResponse ();

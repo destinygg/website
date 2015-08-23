@@ -3,8 +3,9 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\LastFm\LastFMApiService;
+use TaskInterface;
 
-class LastFmFeed {
+class LastFmFeed implements TaskInterface {
 
     public function execute() {
         $app = Application::instance ();

@@ -30,7 +30,7 @@ class IpnController {
      * Handles the incoming HTTP request
      * @param array $params
      */
-    public function ipn(array $params) {
+    public function ipn() {
       $log = Application::instance ()->getLogger ();
       try {
         $ipnMessage = new PPIPNMessage ();
@@ -66,9 +66,6 @@ class IpnController {
         return new Response ( Http::STATUS_ERROR, 'Error' );
 
       }
-      
-      $log->critical ( 'Unhandled IPN' );
-      return new Response ( Http::STATUS_ERROR, 'Unhandled IPN' );
     }
 
     /**

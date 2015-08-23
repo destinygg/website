@@ -3,8 +3,9 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\Twitch\TwitchApiService;
+use TaskInterface;
 
-class BroadcastsFeed {
+class BroadcastsFeed  implements TaskInterface {
 
     public function execute() {
         $app = Application::instance ();

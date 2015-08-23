@@ -6,8 +6,9 @@ use Destiny\Common\Application;
 use Psr\Log\LoggerInterface;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Utils\Options;
+use TaskInterface;
 
-class RedditSubscribers {
+class RedditSubscribers implements TaskInterface {
     
     public $output;
     

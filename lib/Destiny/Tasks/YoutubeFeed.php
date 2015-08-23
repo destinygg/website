@@ -3,8 +3,9 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Application;
 use Destiny\Youtube\YoutubeApiService;
+use TaskInterface;
 
-class YoutubeFeed {
+class YoutubeFeed implements TaskInterface {
 
     public function execute() {
         $app = Application::instance ();

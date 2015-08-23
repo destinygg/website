@@ -11,8 +11,6 @@ use Psr\Log\LoggerInterface;
 class Scheduler {
     
     /**
-     * Public logger
-     *
      * @var LoggerInterface
      */
     public $logger = null;
@@ -34,8 +32,6 @@ class Scheduler {
     }
 
     /**
-     * Load the schedule from the data source
-     *
      * @return void
      */
     public function loadSchedule() {
@@ -52,8 +48,6 @@ class Scheduler {
     }
 
     /**
-     * Load a task from the db by action name
-     *
      * @param string $name
      */
     protected function getTask($name) {
@@ -65,8 +59,6 @@ class Scheduler {
     }
 
     /**
-     * Update the tasks last run schedule
-     *
      * @param array $schedule
      */
     protected function updateTask(array $task) {
@@ -85,8 +77,6 @@ class Scheduler {
     }
 
     /**
-     * Insert a task into the db
-     *
      * @param array $schedule
      */
     protected function insertTask(array $task) {
@@ -109,8 +99,6 @@ class Scheduler {
     }
 
     /**
-     * Get a registered task by name
-     *
      * @param string $name
      * @return array
      */
@@ -124,11 +112,9 @@ class Scheduler {
     }
 
     /**
-     * Executes all the tasks
-     *
      * @return void
      */
-    public function executeShedule() {
+    public function executeSchedule() {
         $this->logger->debug ( 'Schedule starting' );
         foreach ( $this->schedule as $i => $action ) {
             // First run/ Execute on next run
