@@ -656,8 +656,7 @@ class UserService extends Service {
    * @return array $users The users found
    */
   public function findSameIPUsers( $userid ) {
-    $redis   = Application::instance ()->getRedis ();
-    $keys    = $this->callRedisScript('check-sameip-users', array( $userid ) );
+    $keys = $this->callRedisScript('check-sameip-users', array( $userid ) );
     return $this->getUsersFromRedisKeys('CHAT:userips-', $keys );
   }
 
@@ -668,8 +667,7 @@ class UserService extends Service {
    * @return array $users The users found
    */
   public function findUsersWithIP( $ipaddress ) {
-    $redis   = Application::instance ()->getRedis ();
-    $keys    = $this->callRedisScript('check-ip', array( $ipaddress ) );
+    $keys = $this->callRedisScript('check-ip', array( $ipaddress ) );
     return $this->getUsersFromRedisKeys('CHAT:userips-', $keys );
   }
 

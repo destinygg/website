@@ -10,7 +10,6 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
-use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
 
@@ -33,8 +32,6 @@ class UserBanController {
         }
         
         $userService = UserService::instance ();
-        $userFeatureService = UserFeaturesService::instance ();
-        
         $user = $userService->getUserById ( $params ['userId'] );
         if (empty ( $user )) {
             throw new Exception ( 'User was not found' );
@@ -93,10 +90,7 @@ class UserBanController {
             throw new Exception ( 'userId required' );
         }
         
-        $authenticationService = AuthenticationService::instance ();
         $userService = UserService::instance ();
-        $userFeatureService = UserFeaturesService::instance ();
-        
         $user = $userService->getUserById ( $params ['userId'] );
         if (empty ( $user )) {
             throw new Exception ( 'User was not found' );

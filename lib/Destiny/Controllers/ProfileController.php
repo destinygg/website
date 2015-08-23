@@ -14,7 +14,6 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Authentication\AuthenticationService;
-use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\OrdersService;
 use Destiny\Commerce\SubscriptionsService;
@@ -76,7 +75,6 @@ class ProfileController {
      */
     public function profile(array $params, ViewModel $model) {
       $userService = UserService::instance ();
-      $orderService = OrdersService::instance ();
       $subscriptionsService = SubscriptionsService::instance ();
       $userId = Session::getCredentials ()->getUserId ();
       
@@ -145,8 +143,6 @@ class ProfileController {
     public function profileSave(array $params, ViewModel $model) {
       // Get user
       $userService = UserService::instance ();
-      $userFeaturesService = UserFeaturesService::instance ();
-      $subscriptionsService = SubscriptionsService::instance ();
       $authenticationService = AuthenticationService::instance ();
       
       $userId = Session::getCredentials ()->getUserId ();
@@ -214,7 +210,6 @@ class ProfileController {
      */
     public function profileAuthentication(array $params, ViewModel $model) {
       $userService = UserService::instance ();
-      $subscriptionsService = SubscriptionsService::instance ();
       $userId = Session::getCredentials ()->getUserId ();
       $model->title = 'Authentication';
       $model->user = $userService->getUserById ( $userId );

@@ -1,12 +1,10 @@
 <?php
 namespace Destiny\Twitter;
 
-use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
-use Destiny\Common\User\UserService;
 use Destiny\Common\Session;
 
 class TwitterAuthHandler {
@@ -59,8 +57,6 @@ class TwitterAuthHandler {
      * @throws Exception
      */
     public function authenticate(array $params) {
-        $UserService = UserService::instance ();
-        $authService = AuthenticationService::instance ();
         if ((! isset ( $params ['oauth_token'] ) || empty ( $params ['oauth_token'] )) || ! isset ( $params ['oauth_verifier'] ) || empty ( $params ['oauth_verifier'] )) {
             throw new Exception ( 'Authentication failed' );
         }

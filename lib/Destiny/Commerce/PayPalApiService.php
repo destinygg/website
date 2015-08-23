@@ -54,7 +54,6 @@ class PayPalApiService extends Service {
      * @throws Exception
      */
     public function cancelPaymentProfile(array $subscription, array $paymentProfile) {
-        $subService = SubscriptionsService::instance ();
         $orderService = OrdersService::instance ();
         // PPService
         $paypalService = new PayPalAPIInterfaceServiceService ();

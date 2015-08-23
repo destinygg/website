@@ -101,7 +101,6 @@ abstract class Session {
      * @return mixed
      */
     public static function set($name, $value = null) {
-        $session = self::instance ();
         return self::instance ()->set ( $name, $value );
     }
 

@@ -3,7 +3,6 @@ namespace Destiny\Controllers;
 
 use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
-use Destiny\Common\Application;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
@@ -28,7 +27,6 @@ class ImpersonateController {
      * @return string
      */
     public function impersonate(array $params, ViewModel $model) {
-        $app = Application::instance ();
         if (! Config::$a ['allowImpersonation']) {
             throw new Exception ( 'Impersonating is not allowed' );
         }

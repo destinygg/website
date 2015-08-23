@@ -8,7 +8,6 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\User\UserService;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -57,8 +56,6 @@ class LoginController {
      * @return string
      */
     public function loginPost(array $params, ViewModel $model) {
-        $userService = UserService::instance ();
-        
         $authProvider = (isset ( $params ['authProvider'] ) && ! empty ( $params['authProvider'] )) ? $params ['authProvider'] : '';
         $rememberme = (isset ( $params ['rememberme'] ) && ! empty ( $params ['rememberme'] )) ? true : false;
         
