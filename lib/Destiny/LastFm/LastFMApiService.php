@@ -31,7 +31,7 @@ class LastFMApiService extends Service {
      * Get the most recent LastFM tracks
      *
      * @param array $options
-     * @return \Destiny\ApiConsumer
+     * @return CurlBrowser
      */
     public function getLastFMTracks(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (

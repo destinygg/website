@@ -24,8 +24,7 @@ class UserFeaturesService extends Service {
     }
     
     /**
-     * The list of features
-     * @var list
+     * @var array
      */
     protected $features = null;
 
@@ -113,7 +112,7 @@ class UserFeaturesService extends Service {
      *
      * @param int $userId
      * @param string $featureName
-     * @return the specfic feature record id
+     * @return int
      */
     public function addUserFeature($userId, $featureName) {
         $featureId = $this->getFeatureIdByName ( $featureName );

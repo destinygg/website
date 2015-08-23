@@ -36,7 +36,7 @@ class ViewModel {
      * Set a variable value
      *
      * @param string $name
-     * @param mix $value
+     * @param mixed $value
      */
     public function __set($name, $value) {
         $this->vars [$name] = $value;
@@ -47,7 +47,7 @@ class ViewModel {
      * get a variable value by name
      *
      * @param string $name
-     * @param mix $value
+     * @param mixed $value
      */
     public function __get($name) {
         return (isset ( $this->vars [$name] )) ? $this->vars [$name] : null;

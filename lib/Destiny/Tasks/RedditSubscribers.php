@@ -75,7 +75,7 @@ class RedditSubscribers {
     }
     
     /**
-     * @return the $output
+     * @return string
      */
     public function getOutput() {
         return $this->output;

@@ -209,7 +209,7 @@ class IpnController {
      * Get payment profile from IPN
      *
      * @param array $data
-     * @return unknown
+     * @return array
      */
     protected function getPaymentProfile(array $data) {
       if (! isset ( $data ['recurring_payment_id'] ) || empty ( $data ['recurring_payment_id'] )) {

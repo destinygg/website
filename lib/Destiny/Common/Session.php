@@ -1,8 +1,6 @@
 <?php 
 namespace Destiny\Common;
 
-use Destiny\Chat\ChatIntegrationService;
-
 abstract class Session {
 
     /**
@@ -88,7 +86,7 @@ abstract class Session {
      * Get a session variable
      *
      * @param string $name
-     * @return mix
+     * @return mixed
      */
     public static function get($name) {
         return self::instance ()->get ( $name );
@@ -100,7 +98,7 @@ abstract class Session {
      *
      * @param string $name
      * @param string $value
-     * @return mix
+     * @return mixed
      */
     public static function set($name, $value = null) {
         $session = self::instance ();

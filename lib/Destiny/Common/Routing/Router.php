@@ -7,6 +7,11 @@ use Destiny\Common\Request;
 class Router {
 
     /**
+     * @var Route[]
+     */
+    private $routes = array();
+
+    /**
      * Setup the router
      * @param array $routes
      */
@@ -18,7 +23,7 @@ class Router {
 
     /**
      * Get the route collection
-     * @return array<Route>
+     * @return Route[]
      */
     public function getRoutes() {
         return $this->routes;
@@ -26,7 +31,7 @@ class Router {
 
     /**
      * Set the route collection
-     * @param array<Route> $routes
+     * @param Route[] $routes
      */
     public function setRoutes(array $routes) {
         $this->routes = $routes;
@@ -43,7 +48,8 @@ class Router {
     /**
      * Find a route
      *
-     * @return Route
+     * @param Request $request
+     * @return \Destiny\Common\Routing\Route
      */
     public function findRoute(Request $request) {
         $path = $request->path ();

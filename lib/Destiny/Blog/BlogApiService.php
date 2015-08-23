@@ -29,7 +29,7 @@ class BlogApiService extends Service {
      * Get the most recent blog posts
      *
      * @param array $options
-     * @return \Destiny\CurlBrowser
+     * @return CurlBrowser
      */
     public function getBlogPosts(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (

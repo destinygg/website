@@ -350,7 +350,7 @@ class Application extends Service {
     /**
      * Get the session api
      *
-     * @return \Destiny\SessionInstance
+     * @return SessionInstance
      */
     public function getSession() {
         return $this->session;
@@ -369,7 +369,7 @@ class Application extends Service {
     /**
      * Get the redis instance
      *
-     * @return Redis
+     * @return \Redis
      */
     public function getRedis() {
         return $this->redis;
@@ -378,7 +378,7 @@ class Application extends Service {
     /**
      * Set the redis instance
      *
-     * @param Redis $redis
+     * @param \Redis $redis
      */
     public function setRedis(\Redis $redis) {
         $this->redis = $redis;
@@ -394,7 +394,7 @@ class Application extends Service {
 
     /**
      * Set the request router
-     * @param Destiny\Router $router
+     * @param Router $router
      */
     public function setRouter(Router $router) {
         $this->router = $router;

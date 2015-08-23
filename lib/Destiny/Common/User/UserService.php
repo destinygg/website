@@ -79,7 +79,7 @@ class UserService extends Service {
    *
    * @param int $userId
    * @param string $roleName
-   * @return the specfic record id
+   * @return int
    */
   public function addUserRole($userId, $roleName) {
     $roleId = $this->getRoleIdByName ( $roleName );

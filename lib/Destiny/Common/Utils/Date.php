@@ -39,8 +39,8 @@ abstract class Date {
      * On big intervals, you get months and days.
      * Only the two biggest parts are used.
      *
-     * @param DateTime $start
-     * @param DateTime|null $end
+     * @param \DateTime $start
+     * @param \DateTime|null $end
      * @return string
      */
     public static function getRemainingTime($start, $end = null) {

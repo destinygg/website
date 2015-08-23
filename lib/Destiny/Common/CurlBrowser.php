@@ -23,7 +23,7 @@ class CurlBrowser {
     /**
      * The response
      *
-     * @var mix | string
+     * @var mixed
      */
     public $response = null;
     
@@ -65,7 +65,7 @@ class CurlBrowser {
     /**
      * Argument to be passed into feth method
      *
-     * @var mix
+     * @var mixed
      */
     public $params = null;
     

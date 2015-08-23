@@ -52,7 +52,7 @@ class DirectoryClassIterator implements Iterator {
      * Ported from Doctrine class
      * Load all files in a folder
      *
-     * @return array<ReflectionClass>
+     * @return ReflectionClass[]
      */
     private function getClasses() {
         $files = self::getFiles ();
@@ -78,7 +78,7 @@ class DirectoryClassIterator implements Iterator {
     /**
      * Get all the php files in a folder
      *
-     * @return array<SplFileInfo>
+     * @return \SplFileInfo[]
      */
     private function getFiles() {
         $directory = new RecursiveDirectoryIterator ( $this->base . $this->path );

@@ -57,8 +57,8 @@ class RememberMeService extends Service {
      * @param int $userId
      * @param string $token
      * @param string $tokenType
-     * @param DateTime $expire
-     * @param DateTime $createdDate
+     * @param \DateTime $expire
+     * @param \DateTime $createdDate
      */
     public function addRememberMe($userId, $token, $tokenType, \DateTime $expire, \DateTime $createdDate) {
         $conn = Application::instance ()->getConnection ();

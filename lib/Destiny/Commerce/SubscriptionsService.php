@@ -206,7 +206,7 @@ class SubscriptionsService extends Service {
     /**
     * Get a list of subscriptions by tier
     *
-    * @param tinyint $tier
+    * @param int $tier
     * @return array<array>
     */
     public function getSubscriptionsByTier($tier) {

@@ -79,7 +79,7 @@ class ChatlogService extends Service {
      * Get the last X number of messages from a specific user starting at a specific date (going backwards)
      *
      * @param int $userId           
-     * @param DateTime $startRange          
+     * @param \DateTime $startRange
      * @param int $limit            
      * @param int $start            
      */
@@ -112,7 +112,7 @@ class ChatlogService extends Service {
     /**
      * Get the latest broadcasts
      * 
-     * @param DateTime $startRange
+     * @param \DateTime $startRange
      * @param number $limit
      * @param number $start
      */

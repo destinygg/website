@@ -30,7 +30,7 @@ class PrivateMessageService extends Service {
     /**
      * Check if a user is allowed to send a message based on various criteria
      *
-     * @param SessionCredentials $user
+     * @param \Destiny\Common\SessionCredentials $user
      * @param int $targetuserid
      * @return boolean
      */
@@ -409,7 +409,7 @@ class PrivateMessageService extends Service {
      * @param string $message
      * @param array $recipients
      *              A list of usernames and groups
-     * @return int affected rows
+     * @return array
      */
     public function batchAddMessage($userId, $message, array $recipients){
 

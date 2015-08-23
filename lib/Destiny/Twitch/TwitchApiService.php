@@ -31,7 +31,7 @@ class TwitchApiService extends Service {
 
     /**
      * @param array $options
-     * @return ApiConsumer
+     * @return CurlBrowser
      */
     public function getPastBroadcasts(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
@@ -45,7 +45,7 @@ class TwitchApiService extends Service {
     }
 
     /**
-     * @return ApiConsumer
+     * @return CurlBrowser
      */
     public function getStreamInfo(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
@@ -105,7 +105,7 @@ class TwitchApiService extends Service {
     /**
      *
      * @param array $options
-     * @return ApiConsumer
+     * @return CurlBrowser
      */
     public function getChannel(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (

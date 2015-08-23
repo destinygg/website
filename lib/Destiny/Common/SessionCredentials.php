@@ -4,57 +4,41 @@ namespace Destiny\Common;
 class SessionCredentials {
 
     /**
-     * The authentication provider used for this use
-     *
      * @var string
      */
     protected $authProvider = '';
 
     /**
-     * The authed creds Id
-     *
-     * @var string int
+     * @var int
      */
     protected $userId = '';
 
     /**
-     * The authed creds screen name
-     *
      * @var string
      */
     protected $username = '';
 
     /**
-     * The users status
-     *
      * @var string
      */
     protected $userStatus = '';
 
     /**
-     * The authed creds email
-     *
      * @var string
      */
     protected $email = '';
 
     /**
-     * The authed creds country
-     *
      * @var string
      */
     protected $country = '';
 
     /**
-     * The creds roles
-     *
-     * @var string
+     * @var array
      */
     protected $roles = array ();
 
     /**
-     * A list of features
-     *
      * @var array
     */
     protected $features = array ();

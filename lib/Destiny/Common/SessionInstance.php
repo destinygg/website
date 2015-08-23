@@ -107,7 +107,7 @@ class SessionInstance {
     /**
      * Set the auth credentials
      *
-     * @param \Destiny\Cookie $credentials
+     * @param SessionCredentials $credentials
      */
     public function setCredentials(SessionCredentials $credentials) {
         $this->credentials = $credentials;
@@ -116,7 +116,7 @@ class SessionInstance {
     /**
      * Get the session cookie
      *
-     * @return \Destiny\Cookie
+     * @return Cookie
      */
     public function getSessionCookie() {
         return $this->sessionCookie;
@@ -125,7 +125,7 @@ class SessionInstance {
     /**
      * Set the session cookie
      *
-     * @param \Destiny\Cookie $sessionCookie
+     * @param Cookie $sessionCookie
      */
     public function setSessionCookie(Cookie $sessionCookie) {
         $this->sessionCookie = $sessionCookie;
@@ -142,7 +142,7 @@ class SessionInstance {
     /**
      * Get the remember me cookie
      *
-     * @return \Destiny\Cookie
+     * @return Cookie
      */
     public function getRememberMeCookie() {
         return $this->rememberMeCookie;
@@ -151,7 +151,7 @@ class SessionInstance {
     /**
      * Set the remember me cookie
      *
-     * @param \Destiny\Cookie $sessionCookie
+     * @param Cookie $sessionCookie
      */
     public function setRememberMeCookie(Cookie $sessionCookie) {
         $this->rememberMeCookie = $sessionCookie;
@@ -199,7 +199,7 @@ class SessionInstance {
      * Get a variable by name
      *
      * @param string $name
-     * @return mix
+     * @return mixed
      */
     public function get($name) {
         return (isset ( $_SESSION [$name] )) ? $_SESSION [$name] : null;
@@ -209,7 +209,8 @@ class SessionInstance {
      * Set a variable by name
      *
      * @param string $name
-     * @param mix $value
+     * @param mixed $value
+     * @return mixed|null
      */
     public function set($name, $value = null) {
         if ($value === null) {

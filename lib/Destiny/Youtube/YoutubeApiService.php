@@ -33,7 +33,7 @@ class YoutubeApiService extends Service {
      * @param array $options
      * @param array $params
      * @throws Exception
-     * @return \Destiny\CurlBrowser
+     * @return CurlBrowser
      */
     public function getYoutubePlaylist(array $options = array(), array $params = array()) {
         // Get the channel ID's from a specific person

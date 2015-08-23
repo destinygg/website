@@ -31,7 +31,7 @@ abstract class FilterParams {
      * Make sure a parameter has been declared
      * 
      * @param array $params
-     * @param unknown $identifier
+     * @param string $identifier
      * @throws FilterParamsException
      */
     public static function declared(array $params, $identifier) {
@@ -44,7 +44,7 @@ abstract class FilterParams {
      * Make sure a parameter has been declared and is an array
      * 
      * @param array $params
-     * @param unknown $identifier
+     * @param string $identifier
      * @throws FilterParamsException
      */
     public static function isarray(array $params, $identifier) {

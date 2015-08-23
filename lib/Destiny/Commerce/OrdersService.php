@@ -442,7 +442,7 @@ class OrdersService extends Service {
     /**
      * Create a new payment
      * 
-     * @param unknown $userId
+     * @param int $userId
      * @param array $order
      * @param array $subscriptionType
      * @param \DateTime $billingStartDate
