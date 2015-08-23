@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common;
 
-class ViewModel {
+class ViewModel extends \stdClass {
     
     /**
      * List of properties
