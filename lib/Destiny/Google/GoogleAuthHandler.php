@@ -21,7 +21,7 @@ class GoogleAuthHandler {
     /**
      * Redirects the user to the auth provider
      *
-     * @return void
+     * @return string
      */
     public function getAuthenticationUrl() {
         $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];

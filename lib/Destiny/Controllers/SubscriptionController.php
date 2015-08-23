@@ -149,7 +149,7 @@ class SubscriptionController {
         if (! empty ( $subscription ['paymentProfileId'] )) {
             $paymentProfile = $ordersService->getPaymentProfileById ( $subscription ['paymentProfileId'] );
             if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
-               $payPalAPIService->cancelPaymentProfile ( $subscription, $paymentProfile );
+               $payPalAPIService->cancelPaymentProfile ( $paymentProfile );
             }
         }
         
@@ -506,7 +506,7 @@ class SubscriptionController {
                     $ordersService = OrdersService::instance ();
                     $paymentProfile = $ordersService->getPaymentProfileById ( $activeSubscription ['paymentProfileId'] );
                     if (! empty ( $paymentProfile )) {
-                        $payPalApiService->cancelPaymentProfile ( $activeSubscription, $paymentProfile );
+                        $payPalApiService->cancelPaymentProfile ( $paymentProfile );
                         $subscriptionsService->updateSubscriptionRecurring ( $activeSubscription ['subscriptionId'], false );
                     }
 

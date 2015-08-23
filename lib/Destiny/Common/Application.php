@@ -14,61 +14,46 @@ use Psr\Log\LoggerInterface;
 class Application extends Service {
 
     /**
-     * The application
-     *
      * @var Application
      */
     protected static $instance = null;
     
     /**
-     * Public logger
-     *
      * @var LoggerInterface
      */
     public $logger = null;
     
     /**
-     * Public logger
-     *
-     * @var \Doctrine\DBAL\Cache
+     * @var CacheProvider
      */
     public $cacheDriver = null;
     
     /**
-     * DB Connection
-     *
      * @var Connection
      */
     protected $connection;
     
     /**
-     * The current session api
-     *
      * @var SessionInstance
      */
     protected $session = null;
     
     /**
-     * A connected redis instance
-     *
      * @var \Redis
      */
     protected $redis = null;
     
     /**
-     * The request router
      * @var Router
      */
     protected $router;
     
     /**
-     * The request router
      * @var Reader
      */
     protected $annotationReader;
     
     /**
-     * The autoloader
      * @var callable
      */
     public $loader;

@@ -49,7 +49,7 @@ class YoutubeApiService extends Service {
             'onfetch' => function ($json) {
                 if (is_array ( $json ['items'] )) {
                     foreach ( $json ['items'] as $i => $item ) {
-                        $item ['snippet'] ['publishedAt'] = Date::getDateTime ( $item ['snippet'] ['publishedAt'], Date::FORMAT );
+                        $item ['snippet'] ['publishedAt'] = Date::getDateTime ( $item ['snippet'] ['publishedAt'] );
                     }
                 } else {
                     throw new Exception ( 'Youtube API Down' );

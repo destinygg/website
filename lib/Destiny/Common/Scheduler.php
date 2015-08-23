@@ -166,7 +166,8 @@ class Scheduler {
         $actionClass = 'Destiny\\Tasks\\' . $task ['action'];
         if (class_exists ( $actionClass, true )) {
             $actionObj = new $actionClass ($task);
-            $actionObj->execute ( $this->logger );
+            /* @var $actionObj \Destiny\Tasks\TaskInterface */
+            $actionObj->execute ();
         } else {
             throw new Exception ( sprintf ( 'Action not found: %s', $actionClass ) );
         }

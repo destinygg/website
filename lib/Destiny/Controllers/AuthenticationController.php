@@ -24,13 +24,12 @@ class AuthenticationController {
      * @Transactional
      *
      * @param array $params   
-     * @param ViewModel $model          
      * @throws Exception
      */
-    public function authApi(array $params, ViewModel $model) {
+    public function authApi(array $params) {
         try {
             $authHandler = new ApiAuthHandler ();
-            return $authHandler->authenticate ( $params, $model );
+            return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
             $response = new Response ( Http::STATUS_ERROR, $e->getMessage () );
             return $response;
@@ -42,13 +41,13 @@ class AuthenticationController {
      * @Transactional
      *
      * @param array $params  
-     * @param ViewModel $model              
+     * @param ViewModel $model
      * @throws Exception
      */
     public function authTwitch(array $params, ViewModel $model) {
         try {
             $authHandler = new TwitchAuthHandler ();
-            return $authHandler->authenticate ( $params, $model );
+            return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
             $model->title = 'Login error';
             $model->error = $e;
@@ -67,7 +66,7 @@ class AuthenticationController {
     public function authTwitter(array $params, ViewModel $model) {
         try {
             $authHandler = new TwitterAuthHandler ();
-            return $authHandler->authenticate ( $params, $model );
+            return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
             $model->title = 'Login error';
             $model->error = $e;
@@ -86,7 +85,7 @@ class AuthenticationController {
     public function authGoogle(array $params, ViewModel $model) {
         try {
             $authHandler = new GoogleAuthHandler ();
-            return $authHandler->authenticate ( $params, $model );
+            return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
             $model->title = 'Login error';
             $model->error = $e;
@@ -105,7 +104,7 @@ class AuthenticationController {
     public function authReddit(array $params, ViewModel $model) {
         try {
             $authHandler = new RedditAuthHandler ();
-            return $authHandler->authenticate ( $params, $model );
+            return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
             $model->title = 'Login error';
             $model->error = $e;

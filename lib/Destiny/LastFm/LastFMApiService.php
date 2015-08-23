@@ -45,7 +45,6 @@ class LastFMApiService extends Service {
                     // Timezone DST = -1
                     if (! isset ( $track ['@attr'] ) || $track ['@attr'] ['nowplaying'] != true) {
                         if (! empty ( $track ['date'] )) {
-                            $track ['date'] ['uts'] = $track ['date'] ['uts'];
                             $json ['recenttracks'] ['track'] [$i] ['date'] ['uts]'] = $track ['date'] ['uts'];
                             $json ['recenttracks'] ['track'] [$i] ['date_str'] = Date::getDateTime ( $track ['date'] ['uts'] )->format ( Date::FORMAT );
                         }
