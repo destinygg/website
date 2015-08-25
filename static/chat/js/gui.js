@@ -382,6 +382,27 @@
                 if(scrollbottom)
                     this.scrollBottom(0);
             };
+
+            +function() {
+                var scrollNotify = chat.ui.find('#chat-scroll-notify');
+                scrollNotify.on('click', function() {
+                    chat.scrollPlugin.updateAndScroll(true);
+                });
+
+                chat.output.debounce("scrolled", function() {
+                    scrollNotify.toggle(!chat.scrollPlugin.isScrolledToBottom());
+                }, 100);
+
+                chat.output.debounce("scrollend", function() {
+                    scrollNotify.hide();
+                }, 100);
+
+                var fnUpdateScrollValues = chat.scrollPlugin.updateScrollValues;
+                chat.scrollPlugin.updateScrollValues = function() {
+                    fnUpdateScrollValues.call(this, arguments);
+                    chat.output.trigger('scrolled');
+                };
+            }();
             // End Scrollbar
             
             // Enable toolbar

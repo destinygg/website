@@ -104,6 +104,17 @@
   background: rgb(46,46,46); /* Old browsers */
 }
 
+#chat-scroll-notify {
+  position: absolute;
+  display: none;
+  bottom : 0;
+  left: 0;
+  right: 0;
+  background: rgba(25, 25, 25, 0.75);
+  text-align: center;
+  cursor: pointer;
+}
+
 .chat-tools-wrap {
   position: absolute;
   right:0;
