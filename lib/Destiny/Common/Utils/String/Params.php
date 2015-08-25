@@ -1,8 +1,6 @@
 <?php
 namespace Destiny\Common\Utils\String;
 
-use Destiny\Common\Exception;
-
 abstract class Params {
 
     public static function params($params, $join = '&', $wrap = '') {
@@ -14,20 +12,18 @@ abstract class Params {
     }
 
     public static function search($pattern, $string) {
+        $params = array ();
         if (self::match ( $pattern, $string )) {
             $keys = self::getKeys ( $pattern );
             $values = self::getValues ( $pattern, $string );
-            if (count ( $values ) != count ( $keys )) {
-                throw new Exception ( '$values and $keys must have the exact length' );
+            if (count ( $values ) == count ( $keys )) {
+                for($i = 0; $i < count ( $keys ); ++ $i) {
+                    $key = self::getKey ( $keys [$i] );
+                    $params [self::getKeyName ( $key )] = self::getKeyValue ( $key, $values [$i] );
+                }
             }
-            $params = array ();
-            for($i = 0; $i < count ( $keys ); ++ $i) {
-                $key = self::getKey ( $keys [$i] );
-                $params [self::getKeyName ( $key )] = self::getKeyValue ( $key, $values [$i] );
-            }
-            return $params;
         }
-        return null;
+        return $params;
     }
 
     public static function apply($pattern, array $params, $addSlashes = false) {

@@ -7,7 +7,7 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Destiny\Common\Application;
 use Destiny\Common\Routing\Router;
-use Destiny\Common\Routing\RouteAnnotationClassLoader;
+use Destiny\Common\Routing\ControllerAnnotationLoader;
 use Destiny\Common\DirectoryClassIterator;
 use Doctrine\Common\Annotations\AnnotationReader;
 
@@ -30,14 +30,14 @@ AnnotationRegistry::registerLoader ( array ($loader, 'loadClass') );
 $app = Application::instance();
 $app->setLoader ( $loader );
 
-$log = new Logger ( $context->log );
-$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . $context->log . '.log', Logger::CRITICAL ) );
+$log = new Logger ( 'web' );
+$log->pushHandler ( new StreamHandler ( Config::$a ['log'] ['path'] . 'web.log', Logger::CRITICAL ) );
 $log->pushProcessor ( new Monolog\Processor\WebProcessor () );
 $app->setLogger ( $log );
 
 $app->setConnection ( DriverManager::getConnection ( Config::$a ['db'] ) );
 
-$redis = new \Redis ();
+$redis = new Redis ();
 $redis->connect ( Config::$a ['redis'] ['host'], Config::$a ['redis'] ['port'] );
 $redis->select ( Config::$a ['redis'] ['database'] );
 $app->setRedis ( $redis );
@@ -47,8 +47,7 @@ $cache->setRedis ( $app->getRedis () );
 $app->setCacheDriver ( $cache );
 
 $app->setRouter ( new Router () );
-$app->setAnnotationReader ( new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $cache, $debug = false) );
-//$app->setAnnotationReader ( new Doctrine\Common\Annotations\FileCacheReader ( new AnnotationReader (), realpath ( Config::$a ['cache'] ['path'] ) . '/annotation/' ) );
+$app->setAnnotationReader ( new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $cache, $debug = true) );
 
 // Annotation reader and routing
-RouteAnnotationClassLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Controllers/' ), $app->getAnnotationReader () );
+ControllerAnnotationLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Controllers/' ), $app->getAnnotationReader () );

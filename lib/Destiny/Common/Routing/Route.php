@@ -2,16 +2,43 @@
 namespace Destiny\Common\Routing;
 
 use Destiny\Common\Utils\Options;
-use Destiny\Common\Utils\String\Params;
 
 class Route {
-    
+
+    /**
+     * @var string
+     */
     public $path;
+
+    /**
+     * @var string
+     */
     public $class;
+
+    /**
+     * @var string
+     */
     public $classMethod;
+
+    /**
+     * @var array
+     */
     public $httpMethod;
+
+    /**
+     * @var array
+     */
     public $secure;
+
+    /**
+     * @var array
+     */
     public $feature;
+
+    /**
+     * @var boolean
+     */
+    public $transactional;
 
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
@@ -19,9 +46,6 @@ class Route {
         }
     }
 
-    /**
-     * @return array
-     */
     function __sleep() {
         return array (
             'path',
@@ -29,56 +53,9 @@ class Route {
             'classMethod',
             'httpMethod',
             'secure',
-            'feature' 
+            'feature',
+            'transactional'
         );
-    }
-
-    /**
-     * @param string $path
-     * @return array
-     */
-    public function getPathParams($path) {
-        $params = Params::search ( $this->getPath (), $path );
-        return ($params) ? $params : array ();
-    }
-
-    /**
-     * @param string $path The path from the URI
-     * @param string $method The HTTP method
-     * @return boolean
-     */
-    public function testPath($path, $method) {
-        if (empty ( $this->httpMethod ) || in_array ( $method, $this->httpMethod )) {
-
-            // Remove trailing slash
-            if (strlen ( $path ) > 1 && substr ( $path, - 1 ) === '/')
-                $path = substr ( $path, 0, - 1 );
-                
-            // Path without extension
-            $extlessPath = $this->stripPathExtension($path);
-
-            // Exact
-            if (strcasecmp ( $this->getPath (), $path ) === 0 || strcasecmp ( $this->getPath (), $extlessPath ) === 0)
-                return true;
-
-            // Regex match
-            if (Params::match ( $this->getPath (), $path ) || Params::match ( $this->getPath (), $extlessPath ))
-                return true;
-            
-        }
-        return false;
-    }
-    
-    /**
-     * @param string $path
-     * @return string
-     */
-    private function stripPathExtension($path){
-        $ext = pathinfo ( $path, PATHINFO_EXTENSION );
-        if (! empty ( $ext )) {
-            $path = substr ( $path, 0, - (strlen ( $ext ) + 1) );
-        }
-        return $path;
     }
 
     public function getPath() {
@@ -121,6 +98,10 @@ class Route {
         $this->secure = $secure;
     }
 
+    public function isSecure() {
+        return !empty($this->secure) || !empty($this->feature);
+    }
+
     public function getFeature() {
         return $this->feature;
     }
@@ -129,8 +110,12 @@ class Route {
         $this->feature = $feature;
     }
 
-    public function isSecure() {
-        return !empty($this->secure) || !empty($this->feature);
+    public function getTransactional() {
+        return $this->transactional;
+    }
+
+    public function setTransactional($transactional) {
+        $this->transactional = $transactional;
     }
 
 }

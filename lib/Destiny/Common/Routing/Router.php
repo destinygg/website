@@ -2,6 +2,7 @@
 namespace Destiny\Common\Routing;
 
 use Destiny\Common\Request;
+use Destiny\Common\Utils\String\Params;
 
 class Router {
 
@@ -11,8 +12,7 @@ class Router {
     private $routes = array();
 
     /**
-     * Setup the router
-     * @param array $routes
+     * @param Route[] $routes
      */
     public function __construct(array $routes = null) {
         if (! empty ( $routes )) {
@@ -21,7 +21,6 @@ class Router {
     }
 
     /**
-     * Get the route collection
      * @return Route[]
      */
     public function getRoutes() {
@@ -29,7 +28,6 @@ class Router {
     }
 
     /**
-     * Set the route collection
      * @param Route[] $routes
      */
     public function setRoutes(array $routes) {
@@ -37,7 +35,6 @@ class Router {
     }
     
     /**
-     * Add a route
      * @param Route $route
      */
     public function addRoute(Route $route){
@@ -45,21 +42,55 @@ class Router {
     }
 
     /**
-     * Find a route
-     *
      * @param Request $request
-     * @return \Destiny\Common\Routing\Route
+     * @return Route|null
      */
     public function findRoute(Request $request) {
-        $path = $request->path ();
         $method = $request->method ();
-        for($i = 0; $i < count ( $this->routes ); ++ $i) {
-            if ($this->routes [$i]->testPath ( $path, $method )) {
-                return $this->routes [$i];
+        $path = $this->prepareUriPath ( $request->path () );
+        for($i = 0; $i < count ( $this->routes ); ++$i) {
+            if ($this->testRoute ( $this->routes[$i], $path, $method )) {
+                return $this->routes[$i];
             }
         }
         return null;
     }
 
+    /**
+     * @param Route $route
+     * @param string $uriPath
+     * @param string $httpMethod
+     * @return boolean
+     */
+    protected function testRoute(Route $route, $uriPath, $httpMethod) {
+        $routeHttpMethod = $route->getHttpMethod();
+        if (empty ( $routeHttpMethod ) || in_array ( $httpMethod, $routeHttpMethod )) {
+            return (strcasecmp ( $route->getPath (), $uriPath ) === 0 || Params::match ( $route->getPath (), $uriPath ));
+        }
+        return false;
+    }
+
+    /**
+     * @param Route $route
+     * @param string $uriPath
+     * @return array
+     */
+    public function getRoutePathParams(Route $route, $uriPath) {
+        return Params::search ( $route->getPath (), $this->prepareUriPath($uriPath) );
+    }
+
+    /**
+     * Removes extension and trailing slash from the $path
+     * @param string $path
+     * @return string
+     */
+    protected function prepareUriPath($path) {
+        $extension = pathinfo ( $path, PATHINFO_EXTENSION );
+        if (! empty ( $extension ))
+            $path = substr ( $path, 0, - (strlen ( $extension ) + 1) );
+        if (strlen ( $path ) > 1 && substr ( $path, - 1 ) === '/')
+            $path = substr ( $path, 0, - 1 );
+        return $path;
+    }
+
 }
-?>

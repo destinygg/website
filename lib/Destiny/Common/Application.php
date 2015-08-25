@@ -62,10 +62,9 @@ class Application extends Service {
         $route = $this->router->findRoute ( $request );
         $conn = $this->getConnection ();
         $model = new ViewModel ();
-        $response = null;
         $transactional = false;
-        
-        if (! $route) {
+
+        if ( $route == null ) {
             $model->title = Http::$HEADER_STATUSES [Http::STATUS_NOT_FOUND];
             $response = new Response ( Http::STATUS_NOT_FOUND );
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
@@ -91,44 +90,44 @@ class Application extends Service {
         }
 
         try {
+
+            $transactional = $route->getTransactional();
             $className = $route->getClass ();
             $classMethod = $route->getClassMethod ();
-            $classInstance = new $className ();
-            $methodReflection = new \ReflectionMethod ( $classInstance, $classMethod );
-            $methodParams = $methodReflection->getParameters();
+            $classReflection = new \ReflectionClass ( $className );
+            $classInstance = $classReflection->newInstance();
 
-            // Check for @Transactional annotation
-            $annotationReader = $this->getAnnotationReader ();
-            $transactional = $annotationReader->getMethodAnnotation ( $methodReflection, 'Destiny\Common\Annotation\Transactional' );
-            $transactional = (empty($transactional)) ? false : true;
-            if ($transactional) {
-                $conn->beginTransaction ();
-            }
-
-            // Order the method arguments and invoke the controller
+            // Order the controller arguments and invoke the controller
             $args = array();
+            $methodReflection = $classReflection->getMethod( $classMethod );
+            $methodParams = $methodReflection->getParameters();
             foreach ($methodParams as $methodParam) {
                 $paramType = $methodParam->getClass();
                 if($methodParam->isArray()){
-                    $args[] = array_merge ( $request->get(), $request->post(), $route->getPathParams ( $request->path() ) );
+                    // the $params passed into the Controller classes. A merge of the _GET, _POST and variables generated from the route path (e.g. /dog/{id}/cat)
+                    $args[] = array_merge (
+                        $request->get(),
+                        $request->post(),
+                        $this->router->getRoutePathParams ( $route, $request->path() )
+                    );
                 } else if($paramType->isInstance($model)) {
                     $args[] = &$model;
                 } else if($paramType->isInstance($request)) {
                     $args[] = &$request;
                 }
             }
-            $response = $methodReflection->invokeArgs($classInstance, $args);
-            unset ($args);
 
-            // Commit the DB transaction
-            if ($transactional) {
+            if ($transactional)
+                $conn->beginTransaction ();
+
+            // Execute the controller
+            $response = $methodReflection->invokeArgs ($classInstance, $args);
+
+            if ($transactional)
                 $conn->commit ();
-            }
             
-            // Check if the response is valid
-            if (empty ( $response )) {
+            if (empty ( $response ))
                 throw new Exception ( 'Invalid action response' );
-            }
             
             // Redirect response
             if (is_string ( $response ) && substr ( $response, 0, 10 ) === 'redirect: ') {
@@ -158,7 +157,6 @@ class Application extends Service {
             $model->error = new Exception ( $e->getMessage () );
             $model->code = Http::STATUS_ERROR;
             $model->title = 'Error';
-
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
                 
         } catch ( \Exception $e ) {
@@ -171,7 +169,6 @@ class Application extends Service {
             $model->error = new Exception ( 'Maximum over-rustle has been achieved' );
             $model->code = Http::STATUS_ERROR;
             $model->title = 'Error';
-
             $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
         }
         
