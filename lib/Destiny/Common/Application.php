@@ -330,7 +330,7 @@ class Application extends Service {
     }
 
     /**
-     * Set logger
+     * Get logger
      *
      * @return LoggerInterface
      */
@@ -339,7 +339,7 @@ class Application extends Service {
     }
 
     /**
-     * Get logger
+     * Set logger
      *
      * @param LoggerInterface $logger
      */
