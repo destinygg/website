@@ -4,6 +4,8 @@ namespace Destiny\Controllers;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Transactional;
+use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Common\ViewModel;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -32,8 +34,7 @@ class AuthenticationController {
             $authHandler = new ApiAuthHandler ();
             return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
-            $response = new Response ( Http::STATUS_ERROR, $e->getMessage () );
-            return $response;
+            return new Response ( Http::STATUS_ERROR, $e->getMessage () );
         }
     }
 
@@ -51,9 +52,7 @@ class AuthenticationController {
             $authHandler = new TwitchAuthHandler ();
             return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
-            $model->title = 'Login error';
-            $model->error = $e;
-            return 'login';
+            return $this->handleAuthError($e, $model);
         }
     }
 
@@ -71,9 +70,7 @@ class AuthenticationController {
             $authHandler = new TwitterAuthHandler ();
             return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
-            $model->title = 'Login error';
-            $model->error = $e;
-            return 'login';
+            return $this->handleAuthError($e, $model);
         }
     }
 
@@ -91,9 +88,7 @@ class AuthenticationController {
             $authHandler = new GoogleAuthHandler ();
             return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
-            $model->title = 'Login error';
-            $model->error = $e;
-            return 'login';
+            return $this->handleAuthError($e, $model);
         }
     }
 
@@ -111,6 +106,20 @@ class AuthenticationController {
             $authHandler = new RedditAuthHandler ();
             return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
+            return $this->handleAuthError($e, $model);
+        }
+    }
+
+    /**
+     * @param \Exception $e
+     * @param ViewModel $model
+     * @return string
+     */
+    private function handleAuthError(\Exception $e, ViewModel $model) {
+        if(Session::hasRole ( UserRole::USER )){
+            Session::set('modelError', $e->getMessage());
+            return 'redirect: /profile/authentication';
+        } else {
             $model->title = 'Login error';
             $model->error = $e;
             return 'login';
