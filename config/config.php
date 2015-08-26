@@ -151,7 +151,8 @@ return array (
 		'path' 			=> _BASEDIR . '/log/'
 	),
 	'cache' => array (
-		'path'			=> _BASEDIR . '/tmp/'
+		'path'			=> _BASEDIR . '/tmp/',
+		'namespace'     => '_destinygg_web'
 	),
 	'db' => array (
 		'driver'		=> 'pdo_mysql',

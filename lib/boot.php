@@ -7,7 +7,7 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Destiny\Common\Application;
 use Destiny\Common\Routing\Router;
-use Destiny\Common\Routing\ControllerAnnotationLoader;
+use Destiny\Common\ControllerAnnotationLoader;
 use Destiny\Common\DirectoryClassIterator;
 use Doctrine\Common\Annotations\AnnotationReader;
 
@@ -44,10 +44,9 @@ $app->setRedis ( $redis );
 
 $cache = new RedisCache ();
 $cache->setRedis ( $app->getRedis () );
+$cache->setNamespace( Config::$a['cache']['namespace'] );
 $app->setCacheDriver ( $cache );
 
 $app->setRouter ( new Router () );
-$app->setAnnotationReader ( new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $cache, $debug = true) );
-
-// Annotation reader and routing
-ControllerAnnotationLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Controllers/' ), $app->getAnnotationReader () );
+$app->setAnnotationReader ( new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $cache, $debug = false) );
+ControllerAnnotationLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Controllers/' ), $app->getAnnotationReader (), $app->getRouter() );

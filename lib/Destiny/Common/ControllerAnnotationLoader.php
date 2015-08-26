@@ -1,22 +1,21 @@
 <?php
-namespace Destiny\Common\Routing;
+namespace Destiny\Common;
 
-use Destiny\Common\Application;
-use Destiny\Common\DirectoryClassIterator;
+use Destiny\Common\Routing\Route;
+use Destiny\Common\Routing\Router;
 use Doctrine\Common\Annotations\Reader;
 use \ReflectionClass;
 use \ReflectionMethod;
 
 abstract class ControllerAnnotationLoader {
     
-    public static function loadClasses(DirectoryClassIterator $classIterator, Reader $reader) {
+    public static function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
         foreach ( $classIterator as $refl ) {
-            self::loadClass ( $refl, $reader );
+            self::loadClass ( $refl, $reader, $router );
         }
     }
     
-    public static function loadClass(ReflectionClass $refl, Reader $reader) {
-        $router = Application::instance ()->getRouter ();
+    public static function loadClass(ReflectionClass $refl, Reader $reader, Router $router) {
         $annotation = $reader->getClassAnnotation ( $refl, 'Destiny\Common\Annotation\Controller' );
         if (empty ( $annotation))
             return;
