@@ -77,6 +77,14 @@
   font-style: italic;
 }
 
+.chat-lines .user-msg .chat-user {
+    cursor: pointer;
+}
+
+.chat-lines .user-msg .chat-user:hover {
+    text-decoration: underline;
+}
+
 .chat-input {
     width:100%;
     position: absolute;
@@ -411,7 +419,8 @@
 /**
  * Focus or highlight a line
  **/
-.chat.focus-user .chat-lines > .user-msg {
+.chat.focus-user .chat-lines > [class$="-msg"],
+.chat.focus-user .chat-lines > [class*="-msg "] {
   opacity:0.3;
 }
 .chat.focus-user .chat-lines > .user-msg.focused,

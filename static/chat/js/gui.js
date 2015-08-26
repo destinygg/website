@@ -78,6 +78,7 @@
             // Message formatters
             this.formatters.push(new destiny.fn.UrlFormatter(this));
             this.formatters.push(new destiny.fn.EmoteFormatter(this));
+            this.formatters.push(new destiny.fn.MentionedUserFormatter(this));
             this.formatters.push(new destiny.fn.GreenTextFormatter(this));
             
             // Input history
@@ -333,6 +334,18 @@
                 chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
                 return false;
             });
+
+            this.lines.on('mousedown', 'div.user-msg .chat-user', function(e) {
+                var username = this.textContent.toLowerCase();
+                if (chat.cUserTools.visible) {
+                    chat.toggleFocus(username);
+                } else {
+                    chat.cUserTools.show(this.textContent, username, chat.engine.users[username]);
+                    var speaker = $(this).closest('.user-msg').data('username');
+                    chat.toggleFocus(speaker);
+                }
+                e.stopImmediatePropagation();
+            });
             
             // Hints
             this.hintPopup = new hintPopup(this);
@@ -420,6 +433,10 @@
                 } catch (e) {}
             });
             return this;
+        },
+
+        toggleFocus: function(user) {
+            this.lines.find('div[data-username="' + user + '"]').toggleClass('focused');
         },
         
         loadSettings: function() {
