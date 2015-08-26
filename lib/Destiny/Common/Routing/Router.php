@@ -47,9 +47,10 @@ class Router {
      */
     public function findRoute(Request $request) {
         $method = $request->method ();
-        $path = $this->prepareUriPath ( $request->path () );
+        $rawPath = $request->path ();
+        $preparedPath = $this->prepareUriPath ( $rawPath );
         for($i = 0; $i < count ( $this->routes ); ++$i) {
-            if ($this->testRoute ( $this->routes[$i], $path, $method )) {
+            if ($this->testRoute ( $this->routes[$i], $preparedPath, $rawPath, $method )) {
                 return $this->routes[$i];
             }
         }
@@ -58,14 +59,16 @@ class Router {
 
     /**
      * @param Route $route
-     * @param string $uriPath
+     * @param string $preparedUriPath
+     * @param string $rawUriPath
      * @param string $httpMethod
      * @return boolean
      */
-    protected function testRoute(Route $route, $uriPath, $httpMethod) {
+    protected function testRoute(Route $route, $preparedUriPath, $rawUriPath, $httpMethod) {
         $routeHttpMethod = $route->getHttpMethod();
         if (empty ( $routeHttpMethod ) || in_array ( $httpMethod, $routeHttpMethod )) {
-            return (strcasecmp ( $route->getPath (), $uriPath ) === 0 || Params::match ( $route->getPath (), $uriPath ));
+            return (strcasecmp ( $route->getPath (), $preparedUriPath ) === 0 || Params::match ( $route->getPath (), $preparedUriPath )) ||
+                   (strcasecmp ( $route->getPath (), $rawUriPath ) === 0 || Params::match ( $route->getPath (), $rawUriPath ));
         }
         return false;
     }
