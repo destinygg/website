@@ -123,6 +123,7 @@
   background: rgba(25, 25, 25, 0.75);
   text-align: center;
   cursor: pointer;
+  z-index: 130;
 }
 
 .chat-tools-wrap {
