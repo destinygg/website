@@ -41,14 +41,14 @@
 
     destiny.fn.MentionedUserFormatter = function(chat) {
         this.chat = chat;
-        this.userregex = /(^|\s)([a-zA-Z0-9_]{3,20})($|\s|[\.\?!,])/g;
+        this.userregex = /(^|\s)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
         return this;
     };
     destiny.fn.MentionedUserFormatter.prototype.format = function(str, user) {
         var self = this;
-        return str.replace(this.userregex, function(match, p1, nick, p3) {
+        return str.replace(this.userregex, function(match, prefix, nick) {
             if (self.chat.engine.users.propertyIsEnumerable(nick)) {
-                return p1 + '<span class="chat-user">' + nick + '</span>' + p3;
+                return prefix + '<span class="chat-user">' + nick + '</span>';
             } else {
                 return match;
             }
