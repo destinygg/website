@@ -23,7 +23,7 @@ function chat(element, user, options) {
 	this.server             = protocol + options.host + '/ws';
 	this.connected          = false;
 	this.debug              = false;
-	this.users              = [];
+	this.users              = {};
 	this.ignorelist         = {};
 	this.controlevents      = {
 		"MUTE"   : true,
