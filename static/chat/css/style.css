@@ -77,6 +77,14 @@
   font-style: italic;
 }
 
+.chat-lines .user-msg .chat-user {
+    cursor: pointer;
+}
+
+.chat-lines .user-msg .chat-user:hover {
+    text-decoration: underline;
+}
+
 .chat-input {
     width:100%;
     position: absolute;
@@ -102,6 +110,17 @@
 .chat-input > div {
   margin: 5px 0 0 0;
   background: rgb(46,46,46); /* Old browsers */
+}
+
+#chat-scroll-notify {
+  position: absolute;
+  display: none;
+  bottom : 0;
+  left: 0;
+  right: 0;
+  background: rgba(25, 25, 25, 0.75);
+  text-align: center;
+  cursor: pointer;
 }
 
 .chat-tools-wrap {
@@ -400,7 +419,8 @@
 /**
  * Focus or highlight a line
  **/
-.chat.focus-user .chat-lines > .user-msg {
+.chat.focus-user .chat-lines > [class$="-msg"],
+.chat.focus-user .chat-lines > [class*="-msg "] {
   opacity:0.3;
 }
 .chat.focus-user .chat-lines > .user-msg.focused,

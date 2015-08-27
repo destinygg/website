@@ -32,6 +32,7 @@ module.exports = function(grunt) {
                         'static/vendor/overthrow/overthrow.min.js',
                         'static/vendor/jquery/jquery-1.11.3.min.js',
                         'static/vendor/jquery.cookie/jquery.cookie.js',
+                        'static/vendor/jquery.debounce/jquery.debounce.js',
                         'static/vendor/jquery.mousewheel/jquery.mousewheel.min.js',
                         'static/vendor/jquery.validate/jquery.validate.min.js',
                         'static/vendor/jquery.nanoscroller-0.8.7/jquery.nanoscroller.min.js',

@@ -23,6 +23,7 @@ use Destiny\Common\Config;
     <div class="chat-output-frame">
         <div class="chat-output nano">
           <div class="chat-lines overthrow nano-content"></div>
+          <div id="chat-scroll-notify">More messages below</div>
         </div>
     </div>
     <!-- end chat output -->
