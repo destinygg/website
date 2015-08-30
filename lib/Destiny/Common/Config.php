@@ -34,15 +34,6 @@ abstract class Config {
     }
 
     /**
-     * @param double $v
-     * @param string $protocol
-     * @return string
-     */
-    public static function cdnvf($v, $protocol = '//') {
-        return self::cdn ( $protocol ) . '/' . $v;
-    }
-
-    /**
      * @return string
      */
     public static function version() {
