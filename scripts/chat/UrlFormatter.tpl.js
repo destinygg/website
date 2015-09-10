@@ -30,7 +30,7 @@ destiny.fn.UrlFormatter = function(chat) {
 	    pathCont    = "(?:[" + pathChar + "]*(?:" + wellAll + "|[" + endChar + "])+)+",
 	    path        = "(?:" + pathCont + "|/|\\b|$)",
 	    port        = "(?::[0-9]+)?",
-	    webURL      = hostName + port + path,
+	    webURL      = "(?:" + hostName + port + "/" + path + ")|(?:" + hostName + port + "(?:\\b|$))",
 
 	    scheme      = "(https?|ftp)://",
 	    strict      = "\\b" + scheme + pathCont,
