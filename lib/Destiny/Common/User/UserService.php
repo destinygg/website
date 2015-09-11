@@ -896,4 +896,31 @@ class UserService extends Service {
     
     return $ret;
   }
+
+  public function setMinecraftUUID( $userid, $uuid ) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare("
+      UPDATE dfl_users
+      SET minecraftuuid = :uuid
+      WHERE userId = :userid
+      LIMIT 1
+    ");
+    $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+    $stmt->bindValue('uuid', $uuid, \PDO::PARAM_STR);
+    $stmt->execute();
+  }
+
+  public function getMinecraftUUID( $uuid ) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare("
+      SELECT COUNT(*)
+      FROM dfl_users
+      WHERE minecraftuuid = :uuid
+      LIMIT 1
+    ");
+    $stmt->bindValue('uuid', $uuid, \PDO::PARAM_STR);
+    $stmt->execute();
+
+    return (bool) $stmt->fetchColumn();
+  }
 }

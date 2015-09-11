@@ -15,11 +15,94 @@ use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Common\Exception;
+use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Commerce\SubscriptionsService;
 
 /**
  * @Controller
  */
 class AuthenticationController {
+
+    protected function checkPrivateKey($params){
+        if (empty ( $params['privatekey'] ) )
+            return false;
+
+        return (Config::$a['privatekeys']['minecraft'] === $privatekey);
+    }
+
+    /**
+     * @Route ("/auth/minecraft")
+     * @HttpMethod ({"GET"})
+     * @Transactional
+     *
+     * @param array $params
+     * @return Response
+     * @throws Exception
+     */
+    public function authMinecraftGET(array $params) {
+        if(! $this->checkPrivateKey($params))
+            return new Response ( Http::STATUS_FORBIDDEN, 'privateKey' );
+
+        if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
+            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+
+        if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
+            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+
+        $result = UserService::instance ()->getMinecraftUUID ( $params ['uuid'] );
+        if ( !$result )
+            return new Response ( Http::STATUS_FORBIDDEN, 'notfound' );
+
+        return new Response ( Http::STATUS_NO_CONTENT );
+    }
+
+    /**
+     * @Route ("/auth/minecraft")
+     * @HttpMethod ({"POST"})
+     * @Transactional
+     *
+     * @param array $params
+     * @return Response
+     * @throws Exception
+     */
+    public function authMinecraftPOST(array $params) {
+        if(! $this->checkPrivateKey($params))
+            return new Response ( Http::STATUS_FORBIDDEN, 'privateKey' );
+
+        if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
+            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+
+        if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
+            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+
+        if (empty ( $params ['authtoken'] ) || strlen ( $params ['authtoken'] ) > 32 )
+            return new Response ( Http::STATUS_FORBIDDEN, 'authToken' );
+
+        if ( !preg_match('/^[a-f0-9]{32}$/', $params ['authtoken'] ) )
+            return new Response ( Http::STATUS_FORBIDDEN, 'authToken' );
+
+        $authToken = ApiAuthenticationService::instance ()->getAuthToken ( $params ['authtoken'] );
+        if (empty ( $authToken ))
+            return new Response ( Http::STATUS_FORBIDDEN, 'authTokenNotFound' );
+
+        $sub = SubscriptionsService::getUserActiveSubscription( $authToken['userId'] );
+        if (empty ( $sub ))
+            return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
+
+        $user = UserService::instance ()
+        $userRow = $user->getUserById( $authToken['userId'] );
+        if (empty ( $userRow ))
+            return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
+
+        $user->setMinecraftUUID( $authToken['userId'], $params['uuid'] );
+        $response = array(
+            'nick' => $userRow['username'],
+            'end'  => $sub['endDate'],
+        );
+
+        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
+        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+    }
 
     /**
      * @Route ("/api/auth")

@@ -8,6 +8,10 @@ return array (
 	'profile' => array(
 		'nameChangeLimit' 	=> 0
 	),
+	'privateKeys' => array(
+		'chat' => '',
+		'minecraft' => '',
+	),
 	'chat' => array(
 		'host'				=> @$_SERVER['SERVER_NAME'],
 		'port'				=> 9998,

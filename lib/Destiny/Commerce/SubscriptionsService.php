@@ -70,7 +70,6 @@ class SubscriptionsService extends Service {
     /**
     * Get the first subscription
     * Note: This does not take into account end date.
-    * It relies on the subscription status Active
     *
     * @param int $userId
     * @return array
