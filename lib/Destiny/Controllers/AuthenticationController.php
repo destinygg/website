@@ -3,6 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
@@ -17,6 +18,10 @@ use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Commerce\SubscriptionsService;
+use Destiny\Common\Config;
+use Destiny\Common\User\UserService;
+use Destiny\Api\ApiAuthenticationService;
+use Destiny\Common\MimeType;
 
 /**
  * @Controller
@@ -27,13 +32,12 @@ class AuthenticationController {
         if (empty ( $params['privatekey'] ) )
             return false;
 
-        return (Config::$a['privatekeys']['minecraft'] === $privatekey);
+        return (Config::$a['privateKeys']['minecraft'] === $params['privatekey']);
     }
 
     /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"GET"})
-     * @Transactional
      *
      * @param array $params
      * @return Response
@@ -49,9 +53,13 @@ class AuthenticationController {
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
             return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
 
-        $result = UserService::instance ()->getMinecraftUUID ( $params ['uuid'] );
-        if ( !$result )
+        $userId = UserService::instance ()->getUserIdFromMinecraftUUID ( $params ['uuid'] );
+        if ( !$userId )
             return new Response ( Http::STATUS_FORBIDDEN, 'notfound' );
+
+        $sub = SubscriptionsService::getUserActiveSubscription( $userId );
+        if (empty ( $sub ))
+            return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
 
         return new Response ( Http::STATUS_NO_CONTENT );
     }
@@ -59,7 +67,6 @@ class AuthenticationController {
     /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"POST"})
-     * @Transactional
      *
      * @param array $params
      * @return Response
@@ -89,7 +96,7 @@ class AuthenticationController {
         if (empty ( $sub ))
             return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
 
-        $user = UserService::instance ()
+        $user = UserService::instance ();
         $userRow = $user->getUserById( $authToken['userId'] );
         if (empty ( $userRow ))
             return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
@@ -97,11 +104,12 @@ class AuthenticationController {
         $user->setMinecraftUUID( $authToken['userId'], $params['uuid'] );
         $response = array(
             'nick' => $userRow['username'],
-            'end'  => $sub['endDate'],
+            'end'  => strtotime( $sub['endDate'] ) * 1000,
         );
 
         $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+        return $response;
     }
 
     /**

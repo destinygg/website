@@ -29,7 +29,7 @@ class ChatApiController {
      * @return boolean
      */
     protected function checkPrivateKey($privatekey){
-        return (Config::$a['privatekeys']['chat'] === $privatekey);
+        return (Config::$a['privateKeys']['chat'] === $privatekey);
     }
 
     /**

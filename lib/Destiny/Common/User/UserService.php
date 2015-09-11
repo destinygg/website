@@ -905,15 +905,15 @@ class UserService extends Service {
       WHERE userId = :userid
       LIMIT 1
     ");
-    $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+    $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
     $stmt->bindValue('uuid', $uuid, \PDO::PARAM_STR);
     $stmt->execute();
   }
 
-  public function getMinecraftUUID( $uuid ) {
+  public function getUserIdFromMinecraftUUID( $uuid ) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare("
-      SELECT COUNT(*)
+      SELECT userId
       FROM dfl_users
       WHERE minecraftuuid = :uuid
       LIMIT 1
@@ -921,6 +921,6 @@ class UserService extends Service {
     $stmt->bindValue('uuid', $uuid, \PDO::PARAM_STR);
     $stmt->execute();
 
-    return (bool) $stmt->fetchColumn();
+    return $stmt->fetchColumn();
   }
 }
