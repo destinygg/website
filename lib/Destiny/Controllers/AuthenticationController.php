@@ -57,7 +57,7 @@ class AuthenticationController {
         if ( !$userId )
             return new Response ( Http::STATUS_FORBIDDEN, 'notfound' );
 
-        $sub = SubscriptionsService::getUserActiveSubscription( $userId );
+        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
         if (empty ( $sub ))
             return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
 
@@ -98,7 +98,7 @@ class AuthenticationController {
         if (empty ( $authToken ))
             return new Response ( Http::STATUS_FORBIDDEN, 'authTokenNotFound' );
 
-        $sub = SubscriptionsService::getUserActiveSubscription( $authToken['userId'] );
+        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $authToken['userId'] );
         if (empty ( $sub ))
             return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
 
