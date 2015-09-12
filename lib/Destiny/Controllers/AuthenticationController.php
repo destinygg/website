@@ -61,7 +61,13 @@ class AuthenticationController {
         if (empty ( $sub ))
             return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
 
-        return new Response ( Http::STATUS_NO_CONTENT );
+        $response = array(
+            'end'  => strtotime( $sub['endDate'] ) * 1000,
+        );
+
+        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
+        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+        return $response;
     }
 
     /**
