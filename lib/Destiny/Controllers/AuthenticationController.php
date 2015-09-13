@@ -104,7 +104,12 @@ class AuthenticationController {
         if (empty ( $userRow ))
             return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
 
-        $user->setMinecraftUUID( $userid, $params['uuid'] );
+        try {
+            $user->setMinecraftUUID( $userid, $params['uuid'] );
+        } catch ( \Doctrine\DBAL\DBALException $e ) {
+            return new Response ( Http::STATUS_FORBIDDEN, 'duplicateUUD' );
+        }
+
         $response = array(
             'nick' => $userRow['username'],
             'end'  => strtotime( $sub['endDate'] ) * 1000,
