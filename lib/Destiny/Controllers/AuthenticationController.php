@@ -45,17 +45,17 @@ class AuthenticationController {
      */
     public function authMinecraftGET(array $params) {
         if(! $this->checkPrivateKey($params))
-            return new Response ( Http::STATUS_FORBIDDEN, 'privateKey' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'privatekey' );
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
-            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
-            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
 
         $userId = UserService::instance ()->getUserIdFromMinecraftUUID ( $params ['uuid'] );
         if ( !$userId )
-            return new Response ( Http::STATUS_FORBIDDEN, 'notfound' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
 
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
         if (empty ( $sub ))
@@ -80,13 +80,13 @@ class AuthenticationController {
      */
     public function authMinecraftPOST(array $params) {
         if(! $this->checkPrivateKey($params))
-            return new Response ( Http::STATUS_FORBIDDEN, 'privateKey' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'privatekey' );
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
-            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
-            return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
 
         if (empty ( $params ['name'] ) || mb_strlen ( $params ['name'] ) > 16 )
             return new Response ( Http::STATUS_FORBIDDEN, 'name' );
@@ -107,7 +107,7 @@ class AuthenticationController {
         try {
             $user->setMinecraftUUID( $userid, $params['uuid'] );
         } catch ( \Doctrine\DBAL\DBALException $e ) {
-            return new Response ( Http::STATUS_FORBIDDEN, 'duplicateUUD' );
+            return new Response ( Http::STATUS_FORBIDDEN, 'duplicateUUID' );
         }
 
         $response = array(
