@@ -92,7 +92,7 @@ class AuthenticationController {
             return new Response ( Http::STATUS_FORBIDDEN, 'name' );
 
         $user   = UserService::instance ();
-        $userid = $user->getUserIdFromMinecraftName( $name );
+        $userid = $user->getUserIdFromMinecraftName( $params ['name'] );
         if (! $userid)
             return new Response ( Http::STATUS_FORBIDDEN, 'nameNotFound' );
 
