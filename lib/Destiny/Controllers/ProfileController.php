@@ -154,7 +154,8 @@ class ProfileController {
       $email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
       $country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
       $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
-      
+      $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
+
       try {
         $authenticationService->validateUsername ( $username, $user );
         $authenticationService->validateEmail ( $email, $user );
@@ -175,6 +176,7 @@ class ProfileController {
           'username' => $username,
           'country' => $country,
           'email' => $email,
+          'minecraftname' => $minecraftname,
           'allowGifting' => $allowGifting
       );
       
@@ -190,8 +192,29 @@ class ProfileController {
         }
       }
       
-      // Update user
-      $userService->updateUser ( $user ['userId'], $userData );
+      try {
+        // Update user
+        $userService->updateUser ( $user ['userId'], $userData );
+      } catch ( \Doctrine\DBAL\DBALException $e ) {
+        // get PDO exception, extract info
+        $info = $e->getPrevious()->errorInfo;
+
+        // a unique key constraint failure
+        if ( $info[0] === "23000" ) {
+
+          // extract key name
+          if ( !preg_match("/^Duplicate entry '.+' for key '(.+)'$/iu", $info[2], $match ) )
+            throw $e; // WELL FUCK I GUESS ITS NOT MYSQL
+
+          $key        = $match[1];
+          $keyToField = array(
+            'minecraftname' => '"Minecraft name"',
+          );
+
+          throw new Exception ( 'Duplicate value for ' . $keyToField[ $key ] );
+        }
+
+      }
       $authenticationService->flagUserForUpdate ( $user ['userId'] );
       
       Session::set ( 'modelSuccess', 'Your profile has been updated' );

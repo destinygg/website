@@ -923,4 +923,18 @@ class UserService extends Service {
 
     return $stmt->fetchColumn();
   }
+
+  public function getUserIdFromMinecraftName( $name ) {
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare("
+      SELECT userId
+      FROM dfl_users
+      WHERE minecraftname = :name
+      LIMIT 1
+    ");
+    $stmt->bindValue('name', $name, \PDO::PARAM_STR);
+    $stmt->execute();
+
+    return $stmt->fetchColumn();
+  }
 }

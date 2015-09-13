@@ -166,6 +166,11 @@ use Destiny\Commerce\SubscriptionStatus;
               </div>
               
               <div class="form-group">
+                <label>Minecraft name:</label>
+                <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name" />
+              </div>
+              
+              <div class="form-group">
                 <label>Nationality:
                 <br><small>The country you indentify with</small>
                 </label> 

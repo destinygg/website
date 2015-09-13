@@ -2,3 +2,9 @@ ALTER TABLE  `dfl_users` ADD  `minecraftuuid` VARCHAR( 36 ) CHARACTER SET ASCII 
 ADD UNIQUE (
 minecraftuuid
 );
+ALTER TABLE  `dfl_users` ADD  `minecraftname` VARCHAR( 16 ) DEFAULT NULL ,
+ADD UNIQUE (
+minecraftname
+);
+
+UPDATE dfl_users SET minecraftname = 'destiny' WHERE userName = 'Destiny' LIMIT 1;

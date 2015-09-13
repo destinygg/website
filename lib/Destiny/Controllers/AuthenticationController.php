@@ -88,26 +88,23 @@ class AuthenticationController {
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
             return new Response ( Http::STATUS_FORBIDDEN, 'UUID' );
 
-        if (empty ( $params ['authtoken'] ) || strlen ( $params ['authtoken'] ) > 32 )
-            return new Response ( Http::STATUS_FORBIDDEN, 'authToken' );
+        if (empty ( $params ['name'] ) || mb_strlen ( $params ['name'] ) > 16 )
+            return new Response ( Http::STATUS_FORBIDDEN, 'name' );
 
-        if ( !preg_match('/^[a-f0-9]{32}$/', $params ['authtoken'] ) )
-            return new Response ( Http::STATUS_FORBIDDEN, 'authToken' );
+        $user   = UserService::instance ();
+        $userid = $user->getUserIdFromMinecraftName( $name );
+        if (! $userid)
+            return new Response ( Http::STATUS_FORBIDDEN, 'nameNotFound' );
 
-        $authToken = ApiAuthenticationService::instance ()->getAuthToken ( $params ['authtoken'] );
-        if (empty ( $authToken ))
-            return new Response ( Http::STATUS_FORBIDDEN, 'authTokenNotFound' );
-
-        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $authToken['userId'] );
+        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
         if (empty ( $sub ))
             return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
 
-        $user = UserService::instance ();
-        $userRow = $user->getUserById( $authToken['userId'] );
+        $userRow = $user->getUserById( $userid );
         if (empty ( $userRow ))
             return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
 
-        $user->setMinecraftUUID( $authToken['userId'], $params['uuid'] );
+        $user->setMinecraftUUID( $userid, $params['uuid'] );
         $response = array(
             'nick' => $userRow['username'],
             'end'  => strtotime( $sub['endDate'] ) * 1000,
