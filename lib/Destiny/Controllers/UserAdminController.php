@@ -107,6 +107,8 @@ class UserAdminController {
         $email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
         $country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
         $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
+        $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
+        $minecraftuuid = (isset ( $params ['minecraftuuid'] ) && ! empty ( $params ['minecraftuuid'] )) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
         
         $authService->validateUsername ( $username, $user );
         $authService->validateEmail ( $email, $user );
@@ -123,6 +125,8 @@ class UserAdminController {
             'username' => $username,
             'country' => $country,
             'email' => $email,
+            'minecraftname' => $minecraftname,
+            'minecraftuuid' => $minecraftuuid,
             'allowGifting' => $allowGifting
         );
         $userService->updateUser ( $user ['userId'], $userData );
