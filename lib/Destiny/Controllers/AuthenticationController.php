@@ -58,8 +58,15 @@ class AuthenticationController {
             return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
 
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
-        if (empty ( $sub ))
-            return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
+        if (empty ( $sub )) {
+            $userRow = UserService::instance ()->getUserById( $userId );
+            if ( $userRow['istwitchsubscriber'] )
+                $sub = array(
+                    'endDate' => date('Y-m-d H:i:s', strtotime('+1 hour') ),
+                );
+            else
+                return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
+        }
 
         $response = array(
             'end'  => strtotime( $sub['endDate'] ) * 1000,
@@ -97,12 +104,18 @@ class AuthenticationController {
             return new Response ( Http::STATUS_FORBIDDEN, 'nameNotFound' );
 
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
-        if (empty ( $sub ))
-            return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
-
         $userRow = $user->getUserById( $userid );
         if (empty ( $userRow ))
             return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
+
+        if (empty ( $sub )) {
+            if ( $userRow['istwitchsubscriber'] )
+                $sub = array(
+                    'endDate' => date('Y-m-d H:i:s', strtotime('+1 hour') ),
+                );
+            else
+                return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
+        }
 
         try {
             $user->setMinecraftUUID( $userid, $params['uuid'] );
