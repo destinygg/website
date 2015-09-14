@@ -13,28 +13,103 @@
 }
 .chat-emote.chat-emote-OverRustle {
     animation: rustle 100ms 7;
-    -webkit-animation: rustle 100ms 7;
 }
 .chat-emote.chat-emote-OverRustle:hover {
-    animation: rustle1 100ms infinite;
-    -webkit-animation: rustle1 100ms infinite;
+    animation: rustle-hover 100ms infinite;
 }
 @keyframes rustle {
     from { left: 0px; }
     to { left: 2px; }
 }
-@-webkit-keyframes rustle {
+@keyframes rustle-hover {
     from { left: 0px; }
     to { left: 2px; }
 }
-@keyframes rustle1 {
-    from { left: 0px; }
-    to { left: 2px; }
+
+
+.chat-emote.chat-emote-MLADY {
+    animation: tip 250ms 2;
+
 }
-@-webkit-keyframes rustle1 {
-    from { left: 0px; }
-    to { left: 2px; }
+.chat-emote.chat-emote-MLADY:hover {
+    animation: tip-hover 250ms infinite;
 }
+@keyframes tip {
+  0% {
+    transform: rotate(0deg);
+    transform-origin: 4px bottom;
+  }
+  30% {
+    transform: rotate(20deg);
+    transform-origin: 4px bottom;
+  }
+  80% {
+    transform: rotate(-10deg);
+    transform-origin: 4px bottom;
+  }
+  100% {
+    transform: rotate(0deg);
+    transform-origin: 4px bottom;
+  }
+}
+@keyframes tip-hover {
+  0% {
+    transform: rotate(0deg);
+    transform-origin: 4px bottom;
+  }
+  30% {
+    transform: rotate(20deg);
+    transform-origin: 4px bottom;
+  }
+  80% {
+    transform: rotate(-10deg);
+    transform-origin: 4px bottom;
+  }
+  100% {
+    transform: rotate(0deg);
+    transform-origin: 4px bottom;
+  }
+}
+
+
+.chat-emote.chat-emote-SpookerZ {
+    animation: spook 250ms 3;
+
+}
+.chat-emote.chat-emote-SpookerZ:hover {
+    animation: spook-hover 250ms infinite;
+}
+@keyframes spook {
+  0% {
+    transform: translate(0px 0px);
+  }
+  25% {
+    transform: translate(0px,4px)
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+    transform-origin: 4px bottom;
+  }
+}
+@keyframes spook-hover {
+  0% {
+    transform: translate(0px 0px);
+  }
+  25% {
+    transform: translate(0px,4px)
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+    transform-origin: 4px bottom;
+  }
+}
+
 /* end destiny.gg */
 
 {% for image in images %}.{{ image.label }}{{ image.pseudo }}{%- if not image.last %}, {%- endif %}{%- endfor %}{
