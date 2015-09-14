@@ -72,6 +72,7 @@ return array (
 			'CheekerZ',
 			'SpookerZ',
 			'SLEEPSTINY',
+			'PICNIC',
 		),
 		'twitchemotes' => array(
 			'nathanDad',
