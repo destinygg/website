@@ -50,7 +50,7 @@ use Destiny\Commerce\SubscriptionStatus;
             <label class="control-label" for="inputUsername">Username / Nickname</label>
             <div class="controls">
               <input type="text" class="form-control" name="username" id="inputUsername" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username">
-              <span class="help-block">A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters</span>
+              <span class="help-block">Normally the requirements are that the nick should not begin with a letter that an emote begins with, plus it can contain only A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters. Admins do not have such restrictions.</span>
             </div>
           </div>
 

@@ -109,8 +109,7 @@ class UserAdminController {
         $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
         $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
         $minecraftuuid = (isset ( $params ['minecraftuuid'] ) && ! empty ( $params ['minecraftuuid'] )) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
-        
-        $authService->validateUsername ( $username, $user );
+
         $authService->validateEmail ( $email, $user );
         if (! empty ( $country )) {
             $countryArr = Country::getCountryByCode ( $country );
