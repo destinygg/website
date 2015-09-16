@@ -45,31 +45,30 @@ class AuthenticationController {
      */
     public function authMinecraftGET(array $params) {
         if(! $this->checkPrivateKey($params))
-            return new Response ( Http::STATUS_FORBIDDEN, 'privatekey' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
-            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
-            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
         $userId = UserService::instance ()->getUserIdFromMinecraftUUID ( $params ['uuid'] );
         if ( !$userId )
-            return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
+            return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
         if (empty ( $sub )) {
             $userRow = UserService::instance ()->getUserById( $userId );
             if ( $userRow['istwitchsubscriber'] )
-                $sub = array(
-                    'endDate' => date('Y-m-d H:i:s', strtotime('+1 hour') ),
-                );
+                $subEnd = strtotime('+1 hour');
             else
                 return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
-        }
+        } else
+            $subEnd = strtotime( $sub['endDate'] );
 
         $response = array(
-            'end'  => strtotime( $sub['endDate'] ) * 1000,
+            'end'  => $subEnd * 1000,
         );
 
         $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
@@ -87,26 +86,26 @@ class AuthenticationController {
      */
     public function authMinecraftPOST(array $params) {
         if(! $this->checkPrivateKey($params))
-            return new Response ( Http::STATUS_FORBIDDEN, 'privatekey' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
-            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
-            return new Response ( Http::STATUS_FORBIDDEN, 'uuid' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
         if (empty ( $params ['name'] ) || mb_strlen ( $params ['name'] ) > 16 )
-            return new Response ( Http::STATUS_FORBIDDEN, 'name' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'name' );
 
         $user   = UserService::instance ();
         $userid = $user->getUserIdFromMinecraftName( $params ['name'] );
         if (! $userid)
-            return new Response ( Http::STATUS_FORBIDDEN, 'nameNotFound' );
+            return new Response ( Http::STATUS_NOT_FOUND, 'nameNotFound' );
 
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
         $userRow = $user->getUserById( $userid );
         if (empty ( $userRow ))
-            return new Response ( Http::STATUS_FORBIDDEN, 'userNotFound' );
+            return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
         if (empty ( $sub )) {
             if ( $userRow['istwitchsubscriber'] )
@@ -120,7 +119,7 @@ class AuthenticationController {
         try {
             $user->setMinecraftUUID( $userid, $params['uuid'] );
         } catch ( \Doctrine\DBAL\DBALException $e ) {
-            return new Response ( Http::STATUS_FORBIDDEN, 'duplicateUUID' );
+            return new Response ( Http::STATUS_BAD_REQUEST, 'duplicateUUID' );
         }
 
         $response = array(
