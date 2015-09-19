@@ -16,11 +16,9 @@ use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Common\Exception;
-use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
-use Destiny\Api\ApiAuthenticationService;
 use Destiny\Common\MimeType;
 
 /**

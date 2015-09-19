@@ -123,7 +123,7 @@ class Application extends Service {
             // Execute the controller
             $response = $methodReflection->invokeArgs ($classInstance, $args);
 
-            if ($transactional)
+            if ($transactional && $conn->isTransactionActive() && !$conn->isRollbackOnly())
                 $conn->commit ();
             
             if (empty ( $response ))
@@ -150,7 +150,7 @@ class Application extends Service {
         } catch ( Exception $e ) {
             
             $this->logger->error ( $e->getMessage () );
-            if ($transactional) {
+            if ($transactional && $conn->isTransactionActive()) {
                 $conn->rollback ();
             }
             $response = new Response ( Http::STATUS_ERROR );

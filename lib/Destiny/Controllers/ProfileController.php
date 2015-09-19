@@ -128,16 +128,18 @@ class ProfileController {
       return 'profile';
     }
 
-    /**
-     * @Route ("/profile/update")
-     * @HttpMethod ({"POST"})
-     * @Secure ({"USER"})
-     * @Transactional
-     *
-     * @param array $params         
-     * @throws Exception
-     * @return string
-     */
+  /**
+   * @Route ("/profile/update")
+   * @HttpMethod ({"POST"})
+   * @Secure ({"USER"})
+   * @Transactional
+   *
+   * @param array $params
+   * @return string
+   * @throws Exception
+   * @throws \Doctrine\DBAL\DBALException
+   * @throws \Exception
+   */
     public function profileSave(array $params) {
       // Get user
       $userService = UserService::instance ();
