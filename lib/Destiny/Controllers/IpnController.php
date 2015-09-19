@@ -1,10 +1,12 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Response;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Commerce\OrderStatus;
 use Destiny\Commerce\PaymentStatus;
+use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
@@ -119,7 +121,7 @@ class IpnController {
             $log->info ( sprintf ( 'Express checkout IPN called, but no payment found [%s]', $txnId ) );
           }
           break;
-        
+
         // Recurring payment, renew subscriptions, or set to pending depending on the type
         // This is sent from paypal when a recurring payment is billed
         case 'recurring_payment' :
@@ -164,10 +166,11 @@ class IpnController {
           } else if (strcasecmp ( $data ['payment_status'], PaymentStatus::COMPLETED ) === 0) {
             $subService->updateSubscriptionState ( $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
             $log->debug ( sprintf ( 'Updated subscription %s status %s', $subscription ['subscriptionId'], SubscriptionStatus::ACTIVE ) );
+            $this->sendResubscribeBroadcast ( $subscription );
           }else{
             $log->notice ( sprintf ( 'Subscription status %s not changed for payment profile %s', $subscription ['subscriptionId'], $paymentProfile ['profileId'] ) );
           }
-          
+
           // Add a payment to the order
           $payment = array ();
           $payment ['orderId'] = $paymentProfile ['orderId'];
@@ -191,7 +194,7 @@ class IpnController {
           $log->debug ( sprintf ( 'Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
           break;
         
-        // sent on first postback when the user subscribes
+        // Sent on first postback when the user subscribes
         case 'recurring_payment_profile_created' :
           $paymentProfile = $this->getPaymentProfile ( $data );
           if (strcasecmp ( $data ['profile_status'], 'Active' ) === 0) {
@@ -200,6 +203,23 @@ class IpnController {
           $orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], $data ['profile_status'] );
           $log->debug ( sprintf ( 'Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status'] ) );
           break;
+      }
+    }
+
+    // NOTE the subscription endDate has not been updated with the new subscription time
+    private function sendResubscribeBroadcast(array $subscription) {
+      $log = Application::instance ()->getLogger ();
+      $userService = UserService::instance();
+      $user = $userService->getUserById($subscription['userId']);
+      if(!empty($user)){
+        try {
+          $months = max(1, Date::getDateTime($subscription['createdDate'])->diff(Date::getDateTime($subscription['endDate']))->m);
+          $months = ($months > 1) ? $months. " months" : $months. " month";
+          $chatIntegrationService = ChatIntegrationService::instance();
+          $chatIntegrationService->sendBroadcast(sprintf("%s has resubscribed! active for %s", $user['username'], $months));
+        }catch (\Exception $e){
+          $log->critical ( 'Could not send resubscribe broadcast' );
+        }
       }
     }
 
