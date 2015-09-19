@@ -110,6 +110,62 @@
   }
 }
 
+.chat-emote-DANKMEMES {
+  animation: DANKMEMES-anim 1s 2;
+}
+
+.chat-emote-DANKMEMES:hover {
+  animation: DANKMEMES-anim-hover 1s infinite;
+}
+
+@keyframes DANKMEMES-anim {
+  0%, 100% {
+    -webkit-filter: hue-rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    -webkit-filter: hue-rotate(360deg);
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes DANKMEMES-anim-hover {
+  0%, 100% {
+    -webkit-filter: hue-rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    -webkit-filter: hue-rotate(360deg);
+    filter: hue-rotate(360deg);
+  }
+}
+
+.chat-emote-PICNIC {
+  animation: PICNIC-anim 350ms 3;
+}
+
+.chat-emote-PICNIC:hover {
+  animation: PICNIC-anim-hover 350ms infinite;
+}
+
+@keyframes PICNIC-anim {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes PICNIC-anim-hover {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
 /* end destiny.gg */
 
 {% for image in images %}.{{ image.label }}{{ image.pseudo }}{%- if not image.last %}, {%- endif %}{%- endfor %}{
