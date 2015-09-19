@@ -2,7 +2,6 @@
 namespace Destiny\Google;
 
 use Destiny\Common\CurlBrowser;
-use Destiny\Common\Utils\String;
 use Destiny\Common\MimeType;
 use Destiny\Common\Exception;
 
@@ -18,11 +17,7 @@ class GoogleRecaptchaHandler {
     public function resolve($secret, $response, $remoteip){
         $curl = new CurlBrowser (array (
             'timeout' => 25,
-            'url' => new String ( 'https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={response}&remoteip={remoteip}', array (
-                'secret' => $secret,
-                'response' => $response,
-                'remoteip' => $remoteip 
-            ) ),
+            'url' => 'https://www.google.com/recaptcha/api/siteverify?secret='. $secret .'&response='. $response .'&remoteip=' . $remoteip,
             'contentType' => MimeType::JSON 
         ));
         $data = $curl->getResponse ();

@@ -2,7 +2,6 @@
 namespace Destiny\Common\Routing;
 
 use Destiny\Common\Request;
-use Destiny\Common\Utils\String\Params;
 
 class Router {
 
@@ -67,8 +66,8 @@ class Router {
     protected function testRoute(Route $route, $preparedUriPath, $rawUriPath, $httpMethod) {
         $routeHttpMethod = $route->getHttpMethod();
         if (empty ( $routeHttpMethod ) || in_array ( $httpMethod, $routeHttpMethod )) {
-            return (strcasecmp ( $route->getPath (), $preparedUriPath ) === 0 || Params::match ( $route->getPath (), $preparedUriPath )) ||
-                   (strcasecmp ( $route->getPath (), $rawUriPath ) === 0 || Params::match ( $route->getPath (), $rawUriPath ));
+            return (strcasecmp ( $route->getPath (), $preparedUriPath ) === 0 || RoutePathParser::match ( $route->getPath (), $preparedUriPath )) ||
+                   (strcasecmp ( $route->getPath (), $rawUriPath ) === 0 || RoutePathParser::match ( $route->getPath (), $rawUriPath ));
         }
         return false;
     }
@@ -79,7 +78,7 @@ class Router {
      * @return array
      */
     public function getRoutePathParams(Route $route, $uriPath) {
-        return Params::search ( $route->getPath (), $this->prepareUriPath($uriPath) );
+        return RoutePathParser::search ( $route->getPath (), $this->prepareUriPath($uriPath) );
     }
 
     /**

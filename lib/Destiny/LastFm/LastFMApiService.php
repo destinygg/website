@@ -4,7 +4,6 @@ namespace Destiny\LastFm;
 use Destiny\Common\Service;
 use Destiny\Common\CurlBrowser;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Utils\String;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\MimeType;
@@ -20,7 +19,7 @@ class LastFMApiService extends Service {
      */
     public function getLastFMTracks(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
-            'url' => new String ( 'http://ws.audioscrobbler.com/2.0/?api_key={apikey}&user={user}&method=user.getrecenttracks&limit=3&format=json', Config::$a ['lastfm'] ),
+            'url' => 'http://ws.audioscrobbler.com/2.0/?api_key='. Config::$a ['lastfm']['apikey'] .'&user='. Config::$a ['lastfm']['user'] .'&method=user.getrecenttracks&limit=3&format=json',
             'contentType' => MimeType::JSON,
             'onfetch' => function ($json) {
                 if (! $json || isset ( $json ['error'] ) && $json ['error'] > 0 || count ( $json ['recenttracks'] ['track'] ) <= 0) {

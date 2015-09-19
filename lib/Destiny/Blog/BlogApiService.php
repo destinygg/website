@@ -3,7 +3,6 @@ namespace Destiny\Blog;
 
 use Destiny\Common\Service;
 use Destiny\Common\CurlBrowser;
-use Destiny\Common\Utils\String;
 use Destiny\Common\MimeType;
 use Destiny\Common\Exception;
 

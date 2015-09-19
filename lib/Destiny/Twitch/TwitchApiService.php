@@ -6,7 +6,6 @@ use Destiny\Common\Service;
 use Destiny\Common\Config;
 use Destiny\Common\MimeType;
 use Destiny\Common\CurlBrowser;
-use Destiny\Common\Utils\String;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Application;
 
@@ -22,10 +21,7 @@ class TwitchApiService extends Service {
     public function getPastBroadcasts(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
             'timeout' => 25,
-            'url' => new String ( 'https://api.twitch.tv/kraken/channels/{user}/videos?broadcasts=true&limit={limit}', array (
-                'user' => Config::$a ['twitch'] ['user'],
-                'limit' => 4 
-            ) ),
+            'url' => 'https://api.twitch.tv/kraken/channels/'. Config::$a ['twitch'] ['user'] .'/videos?broadcasts=true&limit=' . 4,
             'contentType' => MimeType::JSON 
         ), $options ) );
     }
@@ -36,9 +32,7 @@ class TwitchApiService extends Service {
      */
     public function getStreamInfo(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
-            'url' => new String ( 'https://api.twitch.tv/kraken/streams/{user}/', array (
-                'user' => Config::$a ['twitch'] ['user'] 
-            ) ),
+            'url' => 'https://api.twitch.tv/kraken/streams/'. Config::$a ['twitch'] ['user'] .'/',
             'contentType' => MimeType::JSON,
             'onfetch' => function ($json) {
 
@@ -95,9 +89,7 @@ class TwitchApiService extends Service {
      */
     public function getChannel(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
-            'url' => new String ( 'https://api.twitch.tv/kraken/channels/{user}', array (
-                'user' => Config::$a ['twitch'] ['user'] 
-            ) ),
+            'url' => 'https://api.twitch.tv/kraken/channels/' . Config::$a ['twitch'] ['user'],
             'contentType' => MimeType::JSON 
         ), $options ) );
     }
