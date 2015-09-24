@@ -166,6 +166,92 @@
   }
 }
 
+.chat-emote-WEEWOO {
+  animation: WEEWOO-anim 1.5s 1;
+}
+
+.chat-emote-WEEWOO:hover {
+  animation: WEEWOO-anim-hover 2s infinite;
+}
+
+@keyframes WEEWOO-anim {
+  0%, 100% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.5;
+    -webkit-filter: hue-rotate(0deg) ;
+    filter: hue-rotate(0deg) ;
+  }
+  11% {
+    -webkit-filter: hue-rotate(170deg) ;
+    filter: hue-rotate(170deg) ;
+  }
+  35% {
+    opacity: 1
+  }
+  50% {
+    opacity: 0.2;
+    -webkit-filter: hue-rotate(170deg) ;
+    filter: hue-rotate(170deg) ;
+  }
+  51% {
+    -webkit-filter: hue-rotate(310deg) ;
+    filter: hue-rotate(310deg) ;
+  }
+  65% {
+    opacity: 1;
+  }
+  90%{
+    opacity: 0.2;
+    -webkit-filter: hue-rotate(310deg) ;
+    filter: hue-rotate(310deg) ;
+  }
+  91% {
+    -webkit-filter: hue-rotate(0deg) ;
+    filter: hue-rotate(0deg) ;
+  }
+}
+
+@keyframes WEEWOO-anim-hover {
+  0%, 100% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.2;
+    -webkit-filter: hue-rotate(0deg) saturate(100%);
+    filter: hue-rotate(0deg) saturate(100%);
+  }
+  11% {
+    -webkit-filter: hue-rotate(170deg) saturate(200%);
+    filter: hue-rotate(170deg) saturate(200%);
+  }
+  35% {
+    opacity: 1
+  }
+  50% {
+    opacity: 0.2;
+    -webkit-filter: hue-rotate(170deg) saturate(200%);
+    filter: hue-rotate(170deg) saturate(200%);
+  }
+  51% {
+    -webkit-filter: hue-rotate(310deg) saturate(200%);
+    filter: hue-rotate(310deg) saturate(200%);
+  }
+  65% {
+    opacity: 1;
+  }
+  90%{
+    opacity: 0.2;
+    -webkit-filter: hue-rotate(310deg) saturate(200%);
+    filter: hue-rotate(310deg) saturate(200%);
+  }
+  91% {
+    -webkit-filter: hue-rotate(0deg) saturate(100%);
+    filter: hue-rotate(0deg) saturate(100%);
+  }
+}
+
 /* end destiny.gg */
 
 {% for image in images %}.{{ image.label }}{{ image.pseudo }}{%- if not image.last %}, {%- endif %}{%- endfor %}{
