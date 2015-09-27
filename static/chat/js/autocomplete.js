@@ -248,6 +248,7 @@
 
         // Move the caret to the end of the replacement string + 1 for the space
         this.input[0].setSelectionRange(pre.length + result.data.length + 1, pre.length + result.data.length + 1);
+        this.input.focus(); // refocus again
         return true;
     };
 
