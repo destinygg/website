@@ -216,7 +216,7 @@ class IpnController {
           $months = max(1, Date::getDateTime($subscription['createdDate'])->diff(Date::getDateTime($subscription['endDate']))->m);
           $months = ($months > 1) ? $months. " months" : $months. " month";
           $chatIntegrationService = ChatIntegrationService::instance();
-          $chatIntegrationService->sendBroadcast(sprintf("%s has resubscribed! active for %s", $user['username'], $months));
+          $chatIntegrationService->sendBroadcast(sprintf("%s has resubscribed! Active for %s", $user['username'], $months));
         }catch (\Exception $e){
           $log->critical ( 'Could not send resubscribe broadcast' );
         }
