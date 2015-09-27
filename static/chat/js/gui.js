@@ -432,6 +432,15 @@
                     return false;
                 } catch (e) {}
             });
+
+            // when clicking on "nothing" move the focus to the input
+            this.ui.find('.chat-lines').on('click', function(e) {
+                // whitelist things that mean the user clicked on something
+                if ($(e.target).is('a'))
+                    return;
+
+                chat.input.focus();
+            });
             return this;
         },
 

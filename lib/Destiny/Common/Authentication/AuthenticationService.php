@@ -50,13 +50,13 @@ class AuthenticationService extends Service {
         }
 
         if (preg_match_all ( '/[0-9]{3}/', $username, $m ) > 0)
-            throw new Exception ( 'Too many numbers in a row' );
+            throw new Exception ( 'Too many numbers in a row in username' );
         
         if (preg_match_all ( '/[\_]{2}/', $username, $m ) > 0 || preg_match_all ( "/[_]+/", $username, $m ) > 2)
-            throw new Exception ( 'Too many underscores' );
+            throw new Exception ( 'Too many underscores in username' );
         
         if (preg_match_all ( "/[0-9]/", $username, $m ) > round ( strlen ( $username ) / 2 ))
-            throw new Exception ( 'Number ratio is too damn high' );
+            throw new Exception ( 'Number ratio is too damn high in username' );
         
         if (UserService::instance ()->getIsUsernameTaken ( $username, ((! empty ( $user )) ? $user ['userId'] : 0) ))
             throw new Exception ( 'The username you asked for is already being used' );
