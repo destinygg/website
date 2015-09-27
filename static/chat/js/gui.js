@@ -434,7 +434,17 @@
             });
 
             // when clicking on "nothing" move the focus to the input
-            this.ui.find('.chat-lines').on('click', function(e) {
+            var mouseDownCoords;
+            this.ui.find('.chat-lines').on('click mousedown', function(e) {
+                var coords = e.clientX + '-' + e.clientY;
+                if (e.type === 'mousedown') {
+                    mouseDownCoords = coords;
+                    return;
+                }
+
+                if (e.type === 'click' && mouseDownCoords !== coords)
+                    return;
+
                 // whitelist things that mean the user clicked on something
                 if ($(e.target).is('a'))
                     return;
