@@ -373,7 +373,7 @@ chat.prototype.onPRIVMSGSENT = function(data) {
 
 chat.prototype.handleCommand = function(str) {
 
-	var parts     = str.split(" ");
+	var parts     = str.match(/([^ ]+)/g);
 	    command   = parts[0].toLowerCase(),
 	    nickregex = /^[a-zA-Z0-9_]{3,20}$/,
 	    payload   = {};
