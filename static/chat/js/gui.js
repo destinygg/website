@@ -435,21 +435,37 @@
 
             // when clicking on "nothing" move the focus to the input
             var mouseDownCoords;
-            this.ui.find('.chat-lines').on('click mousedown', function(e) {
+            var focusTimer;
+            this.ui.find('.chat-lines').on('dblclick click mousedown keydown', function(e) {
                 var coords = e.clientX + '-' + e.clientY;
-                if (e.type === 'mousedown') {
-                    mouseDownCoords = coords;
-                    return;
+                switch(e.type) {
+                    case 'click':
+                        if (mouseDownCoords !== coords)
+                            return;
+
+                        focusTimer = setTimeout(function() {
+                            chat.input.focus();
+                        }, 500);
+                        break;
+                    case 'mousedown':
+                        mouseDownCoords = coords;
+                        break;
+                    case 'keydown':
+                        if (focusTimer) {
+                            clearTimeout(focusTimer);
+                            focusTimer = 0;
+                        }
+                        break;
+                    case 'dblclick':
+                        // whitelist things that mean the user clicked on something
+                        if ($(e.target).is('a'))
+                            return;
+
+                        clearTimeout(focusTimer);
+                        focusTimer = 0;
+                        chat.input.focus();
+                        break;
                 }
-
-                if (e.type === 'click' && mouseDownCoords !== coords)
-                    return;
-
-                // whitelist things that mean the user clicked on something
-                if ($(e.target).is('a'))
-                    return;
-
-                chat.input.focus();
             });
             return this;
         },
