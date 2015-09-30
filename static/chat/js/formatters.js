@@ -1,8 +1,8 @@
 (function($){
-	
+
 	// Chat message formatters
 	// must have two methods, a constructor and a .format(message[, user]) method
-	
+
 	// Green Text formatter
 	destiny.fn.GreenTextFormatter = function(chat){
 		return this;
@@ -41,7 +41,7 @@
 
 	destiny.fn.MentionedUserFormatter = function(chat) {
 		this.users = chat.engine.users;
-		this.userregex = /(^|\s@|\s)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
+		this.userregex = /(^|^@|\s|\s@)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
 		return this;
 	};
 	destiny.fn.MentionedUserFormatter.prototype.format = function(str, user) {

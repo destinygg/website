@@ -1,14 +1,14 @@
 (function($){
-    
+
     // Global chat instance
     destiny.chat;
-    
+
     //ChatGUI $('#element) shortcut
     $.fn.ChatGui = function(user, options){
         destiny.chat = new chat(this, user, options);
         destiny.chat.start();
     };
-    
+
     // ChatGUI class
     ChatGui = function(element, engine, options){
         this.ui = $(element);
@@ -29,68 +29,68 @@
         output             : null,
         input              : null,
         userMessages       : [],
-        
+
         backlog            : backlog,
         backlogLoading     : false,
-        
+
         highlightregex     : {},
         highlightnicks     : {},
-        
+
         notifications      : true,
-        
+
         lastMessage        : null,
-        
+
         menus              : [],
         menuOpenCount      : 0,
-        
+
         timestampformat    : null,
         emoticons          : [],
         twitchemotes       : [],
         formatters         : [],
         hintPopup          : null,
-        
+
         broadcastdisplaytime : 300000,
         broadcasts           : broadcasts,
         broadcastdismiss     : (localStorage['chatbroadcastdismiss'] || null),
         maxbroadcasts        : 1,
         unreadMessageCount   : parseInt(localStorage['unreadMessageCount'] || 0, 10),
-        
+
         trigger: function(name, data){
             $(this).trigger(name, data);
         },
-        
+
         on: function(name, fn){
             $(this).on(name, fn);
         },
-        
+
         init: function(){
-            
+
             // local var for this instance
             var chat = this;
-            
+
             // local elements stored in vars to not have to get the elements via query each time
             this.lines = this.ui.find('.chat-lines:first').eq(0);
             this.output = this.ui.find('.chat-output:first').eq(0);
             this.inputwrap = this.ui.find('.chat-input:first').eq(0);
             this.input = this.inputwrap.find('.input:first').eq(0);
             this.inputwrap.removeClass('hidden');
-            
+
             // Message formatters
             this.formatters.push(new destiny.fn.UrlFormatter(this));
             this.formatters.push(new destiny.fn.EmoteFormatter(this));
             this.formatters.push(new destiny.fn.MentionedUserFormatter(this));
             this.formatters.push(new destiny.fn.GreenTextFormatter(this));
-            
+
             // Input history
             this.currenthistoryline = -1;
             this.storedinputline = null;
 
             if (window.localStorage)
                 this.setupInputHistory();
-            
+
             // Auto complete
             this.autoCompletePlugin = new ChatAutoComplete(this.input, this.emoticons.concat(this.twitchemotes));
-            
+
             // Chat settings
             this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
             this.chatsettings.btn = this.ui.find('.chat-settings-btn:first').eq(0);
@@ -100,7 +100,7 @@
             this.setupNotifications();
             this.loadSettings();
             this.loadHighlighters();
-            
+
             this.chatsettings.btn.on('click', function(e){
                 e.preventDefault();
                 if(chat.chatsettings.visible){
@@ -113,7 +113,7 @@
                 var keycode = e.keyCode ? e.keyCode : e.which;
                 if (keycode && keycode != 13) // not enter
                     return;
-                
+
                 e.preventDefault();
                 var data = $(this).val().trim().split(',');
                 for (var i = data.length - 1; i >= 0; i--) {
@@ -128,27 +128,27 @@
                 var name    = $(this).attr('name'),
                     checked = $(this).is(':checked');
                 switch(name){
-                
+
                     case 'showtime':
                         chat.saveChatOption(name, checked);
                         chat.ui.toggleClass('chat-time', checked);
                         chat.scrollPlugin.updateAndScroll(chat.scrollPlugin.isScrolledToBottom());
                         break;
-                    
+
                     case 'hideflairicons':
                         chat.saveChatOption(name, checked);
                         chat.ui.toggleClass('chat-icons', (!checked));
                         chat.scrollPlugin.updateAndScroll(chat.scrollPlugin.isScrolledToBottom());
                         break;
-                    
+
                     case 'highlight':
                         chat.saveChatOption(name, checked);
                         break;
-                    
+
                     case 'notifications':
                         if (!notifications)
                             break;
-                        
+
                         var permission;
                         if (notifications.checkPermission)
                             permission = notifications.checkPermission();
@@ -159,7 +159,7 @@
                                 case "granted": permission = 3; break;
                             }
                         }
-                        
+
                         if (permission == 1) // not yet allowed
                             notifications.requestPermission(function(){});
                         else if (permission == 2) {
@@ -221,7 +221,7 @@
                 chat.input.focus();
                 e.preventDefault();
             });
-            
+
             this.privatemessagelist = this.ui.find('#chat-private-messages:first').eq(0);
             this.privatemessagelist.btn = this.ui.find('.chat-users-btn:first').eq(0);
             this.privatemessagelist.closelink = this.ui.find('.close-link').eq(0);
@@ -263,7 +263,7 @@
                 for(var username in chat.engine.users){
                     var u    = chat.engine.users[username],
                         elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
-                    
+
                     usercount++;
                     elems[username.toLowerCase()] = elem;
                     if($.inArray('bot', u.features) >= 0)
@@ -276,9 +276,9 @@
                         subs.push(username.toLowerCase());
                     else
                         plebs.push(username.toLowerCase());
-                    
+
                 }
-                
+
                 chat.userslist.find('h5 span').text(usercount);
                 var appendUsers = function(users, elem) {
                     if (users.length == 0) {
@@ -313,7 +313,7 @@
 
                 if(chat.unreadMessageCount > 0)
                     return cMenu.prototype.showMenu.call(chat.privatemessagelist, chat);
-                
+
                 chat.userslist.populateUserList();
                 return cMenu.prototype.showMenu.call(chat.userslist, chat);
             });
@@ -322,7 +322,7 @@
             cMenu.addMenu(this, this.chatsettings);
             cMenu.addMenu(this, this.userslist);
             cMenu.addMenu(this, this.chatemotelist);
-            
+
             // The tools for when you click on a user
             this.cUserTools = new cUserTools(this);
             this.userslist.on('click', '.user', function(){
@@ -346,10 +346,10 @@
                 }
                 e.stopImmediatePropagation();
             });
-            
+
             // Hints
             this.hintPopup = new hintPopup(this);
-            
+
             // Reset event
             this.chatsettings.find('#resethints').on('click', $.proxy(function(e){
                 e.preventDefault();
@@ -367,7 +367,7 @@
                 if(this.menuOpenCount > 0)
                     cMenu.closeMenus(this);
             }, this));
-            
+
             // Close all menus if someone clicks on any messages
             this.output.on('mousedown', $.proxy(function(e){
                 if(this.cUserTools.visible)
@@ -389,7 +389,7 @@
             };
 
             this.scrollPlugin.updateAndScroll = function resetAndScrollBottom(scrollbottom){
-                if(!this.isActive) 
+                if(!this.isActive)
                     return;
                 this.reset();
                 if(scrollbottom)
@@ -417,10 +417,10 @@
                 };
             }();
             // End Scrollbar
-            
+
             // Enable toolbar
             this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
-            
+
             // The login click
             this.ui.find('.chat-login-msg a[href="/login"]').on('click', function(){
                 try {
@@ -436,7 +436,7 @@
             // when clicking on "nothing" move the focus to the input
             var mouseDownCoords;
             var focusTimer;
-            this.ui.find('.chat-lines').on('dblclick click mousedown keydown', function(e) {
+            this.ui.find('.chat-lines').on('click mousedown keydown', function(e) {
                 var coords = e.clientX + '-' + e.clientY;
                 switch(e.type) {
                     case 'click':
@@ -456,15 +456,6 @@
                             focusTimer = 0;
                         }
                         break;
-                    case 'dblclick':
-                        // whitelist things that mean the user clicked on something
-                        if ($(e.target).is('a'))
-                            return;
-
-                        clearTimeout(focusTimer);
-                        focusTimer = 0;
-                        chat.input.focus();
-                        break;
                 }
             });
             return this;
@@ -473,7 +464,7 @@
         toggleFocus: function(user) {
             this.lines.find('div[data-username="' + user + '"]').toggleClass('focused');
         },
-        
+
         loadSettings: function() {
             var self     = this,
                 defaults = {
@@ -484,7 +475,7 @@
                     maxlines      : this.maxlines,
                     timestampformat: 'HH:mm'
             };
-            
+
             var customhighlight = self.getChatOption('customhighlight', []);
             this.timestampformat = self.getChatOption('timestampformat', defaults['timestampformat']);
             this.maxlines = self.getChatOption('maxlines', defaults['maxlines']);
@@ -492,7 +483,7 @@
             this.chatsettings.find('input[type="checkbox"]').each(function() {
                 var name  = $(this).attr('name'),
                     value = self.getChatOption(name, defaults[name]);
-                
+
                 $(this).attr('checked', value);
                 switch(name){
                     case 'showtime':
@@ -504,22 +495,22 @@
                 };
             });
         },
-        
+
         loadBacklog: function() {
             this.backlogLoading = true;
             if(this.backlog.length > 0){
                 for (var i = this.backlog.length - 1; i >= 0; i--) {
                     var line    = this.backlog[i],
                         message = this.engine.dispatchBacklog(line);
-                    
+
                     if (!message)
                         continue;
-                    
+
                     if (this.engine.controlevents[ line.event ])
                         this.put(message);
                     else
                         this.handleHighlight(this.put(message));
-                    
+
                 }
                 this.put(new ChatUIMessage('<hr/>'));
             };
@@ -527,7 +518,7 @@
             this.backlogLoading = false;
             return;
         },
-        
+
         loadBroadcasts: function(){
             this.backlogLoading = true;
             if(this.broadcasts.length > 0){
@@ -545,22 +536,22 @@
                     message.ui = $(message.addonHtml()); //same person consecutively
                 else
                     message.ui = $(message.html()); //different person
-                
+
                 if(message.user && this.engine.user && this.engine.user.username == message.user.username)
                     message.ui.addClass('own-msg');
             }else
                 message.ui = $(message.html());
 
-            message.ui.data('message', message);  
+            message.ui.data('message', message);
             message.insert(this.lines);
-            
+
             if(state != undefined)
                 message.status(state);
-            
+
             this.lastMessage = message;
             return message;
         },
-        
+
         // Add a message
         push: function(message, state){
             // Get the scroll position before adding the new line / removing old lines
@@ -574,14 +565,14 @@
                     $(unwantedlines[i]).remove();
                 };
             }
-            
+
             this.userMessages.push(message);
             this.put(message, state);
 
             // Make sure a reset has been called at least once when the scroll should be enabled, but isnt yet
             if(this.scrollPlugin.content.scrollHeight > this.scrollPlugin.el.clientHeight && !this.scrollPlugin.isActive)
                 this.scrollPlugin.reset();
-            
+
             // Reset and or scroll bottom
             this.scrollPlugin.updateAndScroll(wasScrolledBottom);
             // Handle highlight / and if highlighted, notification
@@ -589,7 +580,7 @@
                 this.showNotification(message);
             return message;
         },
-        
+
         send: function(){
             var str = this.input.val().trim();
             if(str != ''){
@@ -597,16 +588,16 @@
 
                 if(this.engine.user == null || !this.engine.user.username)
                     return this.push(new ChatErrorMessage(this.engine.errorstrings.needlogin));
-                
+
                 if (str.substring(0, 4) === '/me ')
                     var message = str.substring(4);
                 else
                     var message = str;
-                
+
                 // If this is an emoticon spam, emit the message but don't add the line immediately
                 if ($.inArray(message, this.emoticons) != -1 && this.engine.previousemote && this.engine.previousemote.message == message)
                     return this.engine.emit('MSG', {data: str});
-                
+
                 if (str.substring(0, 1) === '/')
                     return this.engine.handleCommand(str.substring(1));
 
@@ -621,27 +612,27 @@
             str = null;
             return this;
         },
-        
+
         resize: function(){
             this.scrollPlugin.updateAndScroll(this.scrollPlugin.isScrolledToBottom());
             return this;
         },
-        
+
         setupInputHistory: function(){
             var modifierpressed = false,
                 chat = this;
             $(this.input).on('keyup', function(e) {
-                
+
                 if (e.shiftKey || e.metaKey || e.ctrlKey)
                     modifierpressed = true;
-                
+
                 if ((e.keyCode != 38 && e.keyCode != 40) || modifierpressed) {
                     modifierpressed = false;
                     return;
                 }
-                
+
                 var num  = e.keyCode == 38? -1: 1; // if uparrow we subtract otherwise add
-                
+
                 // if uparrow and we are not currently showing any lines from the history
                 if (chat.currenthistoryline < 0 && e.keyCode == 38) {
                     // set the current line to the end if the history, do not subtract 1
@@ -649,17 +640,17 @@
                     chat.currenthistoryline = chat.getInputHistory().length;
                     // store the typed in message so that we can go back to it
                     chat.storedinputline = chat.input.val();
-                    
+
                     if (chat.currenthistoryline <= 0) // nothing in the history, bail out
                         return;
-                    
+
                 } else if (chat.currenthistoryline < 0 && e.keyCode == 40)
                     return; // down arrow, but nothing to show
-                
+
                 var index = chat.currenthistoryline + num;
                 // out of bounds
                 if (index >= chat.getInputHistory().length || index < 0) {
-                    
+
                     // down arrow was pressed to get back to the original line, reset
                     if (index >= chat.getInputHistory().length) {
                         chat.input.val(chat.storedinputline);
@@ -667,81 +658,81 @@
                     }
                     return;
                 }
-                
+
                 chat.currenthistoryline = index;
                 chat.input.val(chat.getInputHistory()[index]);
-                
+
             });
         },
-        
+
         getInputHistory: function(){
             return JSON.parse(localStorage['inputhistory'] || '[]');
         },
-        
+
         setInputHistory: function(arr){
             localStorage['inputhistory'] = JSON.stringify(arr);
         },
-        
+
         insertInputHistory: function(message){
             if (!window.localStorage)
                 return;
-            
+
             var history = this.getInputHistory();
             history.push(message);
             if (history.length > 20)
                 history.shift();
-            
+
             this.setInputHistory(history);
         },
-        
+
         resolveMessage: function(data){
             var found = false;
             for(var i in this.userMessages){
                 if(this.userMessages[i].message == data.data){
-                    
+
                     var message = this.userMessages[i];
                     message.status();
-                    
+
                     this.userMessages[i] = null;
                     delete(this.userMessages[i]);
-                    
+
                     return message;
                 }
             }
             return null;
         },
-        
+
         setupNotifications: function() {
             window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications || window.Notification;
             if(!notifications)
                 this.chatsettings.find('input[name=notifications]').closest('label').text('Notifications are not supported by your browser');
-            
+
             if(!notifications || !this.engine.user.username || !this.getChatOption('notifications', false))
                 this.notifications = false;
         },
-        
+
         showNotification: function(message) {
             if (!this.notifications)
                 return;
-            
+
             var msg   = message.message,
                 title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...',
                 notif = null,
                 self  = this;
-            
+
             if (msg.length >= 30)
                 msg = msg.substring(0, 30) + '...';
-            
+
             // only ever show a single notification
             if (this.currentnotification)
                 this.currentnotification.close();
-            
+
             if (notifications.createNotification){
                 // Try more widely supported webkit API first
                 notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
                 this.currentnotification = notif;
                 notif.show();
-                
+
             } else {
                 // Fallback to standard HTML5 notifications if needed
                 notif =  new notifications(title, {
@@ -752,7 +743,7 @@
                 });
                 this.currentnotification = notif;
             }
-            
+
             // If a notification was created and shown, close it after 5 seconds
             setTimeout(function() {
                 notif.close();
@@ -760,18 +751,18 @@
                 // the previous notification
                 if (notif === self.currentnotification)
                     self.currentnotification = null;
-                
+
                 self = null;
             }, 5000);
-            
+
         },
-        
+
         loadHighlighters: function() {
             if (this.engine.user && this.engine.user.username)
                 this.highlightregex.user = new RegExp("\\b@?(?:"+this.engine.user.username+")\\b", "i");
 
             this.highlightnicks = this.getChatOption('highlightnicks', {});
-            
+
             var customhighlights = this.getChatOption('customhighlight', []);
             if (customhighlights.length > 0){
                 for (var i = customhighlights.length - 1; i >= 0; i--)
@@ -779,17 +770,17 @@
                 this.highlightregex.custom = new RegExp("\\b(?:"+customhighlights.join("|")+")\\b", "i");
             }
         },
-        
+
         handleHighlight: function(message){
             if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getChatOption('highlight', true))
                 return false;
-            
+
             var u = message.user.username.toLowerCase();
             if (this.highlightnicks[u]){
                 message.ui.addClass('highlight');
                 return true;
             }
-            
+
             if ((this.highlightregex.user && this.highlightregex.user.test(message.message)) || (this.highlightregex.custom && this.highlightregex.custom.test(message.message))) {
                 message.ui.addClass('highlight');
                 return true;
@@ -797,23 +788,23 @@
 
             return false;
         },
-        
+
         getChatOption: function(option, defaultvalue) {
             var options = JSON.parse(localStorage['chatoptions'] || '{}');
             return (options[option] == undefined)? defaultvalue: options[option];
         },
-        
+
         saveChatOption: function(option, value) {
             var options     = JSON.parse(localStorage['chatoptions'] || '{}');
             options[option] = value;
             localStorage['chatoptions'] = JSON.stringify(options);
         },
-        
+
         removeUserMessages: function(username) {
             this.lines.children('div[data-username="'+username.toLowerCase()+'"]').remove();
             this.scrollPlugin.reset();
         },
-        
+
         addBroadcastUI: function(message){
 
             if ( typeof( message ) == 'string' ) return;
@@ -822,21 +813,21 @@
             if(this.broadcastdismiss != null && moment.utc(message.timestamp).unix() < this.broadcastdismiss){
                 return;
             }
-            
+
             var self    = this,
                 encoded = message.data;
-            
+
             for(var i=0; i< this.formatters.length; ++i)
                 encoded = this.formatters[i].format(encoded, this.user, encoded);
-            
+
             var broadcasts     = this.ui.find('#chat-broadcasts'),
                 prevbroadcasts = broadcasts.find('.chat-broadcast:not(.template)');
                 broadcasttpl   = broadcasts.find('.chat-broadcast.template:first');
-            
+
             if(prevbroadcasts.length >= this.maxbroadcasts){
                 prevbroadcasts[prevbroadcasts.length-1].remove();
             };
-            
+
             var broadcastui  = broadcasttpl.clone().removeClass('template');
             broadcastui.find('.message').html(encoded);
             broadcastui.appendTo(broadcasts);
@@ -865,9 +856,9 @@
             countui.text(this.unreadMessageCount)
             countui.toggleClass('hidden', !count);
         },
-        
+
     });
-    
+
     // should be moved somewhere better
     $(window).on({
         'resize.chat': function(){
@@ -953,7 +944,7 @@
         return '<div class="'+this.type+'-msg">'+content+'</div>';
     };
     // END BASE MESSAGE
-    
+
     // ERROR MESSAGE
     ChatErrorMessage = function(error, timestamp){
         this.init(error, timestamp);
@@ -965,7 +956,7 @@
         return this.wrap(this.wrapTime() + ' <i class="icon-error"></i> ' + this.wrapMessage());
     };
     // END ERROR MESSAGE
-    
+
     // INFO / HELP MESSAGE
     ChatInfoMessage = function(message, timestamp){
         this.init(message, timestamp);
@@ -977,7 +968,7 @@
         return this.wrap(this.wrapTime() + ' <i class="icon-info"></i> ' + this.wrapMessage());
     };
     // END INFO MESSAGE
-    
+
     // COMMAND MESSAGE
     ChatCommandMessage = function(message, timestamp){
         this.init(message, timestamp);
@@ -989,7 +980,7 @@
         return this.wrap(this.wrapTime() + ' <i class="icon-command"></i> ' + this.wrapMessage());
     };
     // END COMMAND MESSAGE
-    
+
     // STATUS MESSAGE
     ChatStatusMessage = function(message, timestamp){
         this.init(message, timestamp);
@@ -1001,7 +992,7 @@
         return this.wrap(this.wrapTime() + ' <i class="icon-status"></i> ' + this.wrapMessage());
     };
     // END STATUS MESSAGE
-    
+
     // BROADCAST MESSAGE
     ChatBroadcastMessage = function(message, timestamp){
         this.init(message, timestamp);
@@ -1016,15 +1007,15 @@
     ChatBroadcastMessage.prototype.wrapMessage = function(){
         var elem     = $('<span class="msg"/>').text(this.message),
             encoded  = elem.html();
-        
+
         for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
             encoded = destiny.chat.gui.formatters[i].format(encoded, null, this.message);
-        
+
         elem.html(encoded);
         return elem.get(0).outerHTML;
     };
     // END BROADCAST MESSAGE
-    
+
     // USER MESSAGE
     ChatUserMessage = function(message, user, timestamp){
         this.init(message, timestamp);
@@ -1104,13 +1095,13 @@
     ChatUserMessage.prototype.wrapMessage = function(){
         var elem     = $('<span class="msg"/>').text(this.message),
             encoded  = elem.html();
-        
+
         if(this.isSlashMe)
             elem.addClass('emote');
-        
+
         for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
             encoded = destiny.chat.gui.formatters[i].format(encoded, this.user, this.message);
-        
+
         elem.html(encoded);
         return elem.get(0).outerHTML;
     };
@@ -1193,7 +1184,7 @@
         return ' <i class="icon-mail-send" title="Received Message"></i> <a class="user">' +user.username+'</a>';
     };
     // END PRIVATE MESSAGE
-    
+
     // EMOTE COUNT
     ChatEmoteMessage = function(emote, timestamp){
         this.init(emote, timestamp);
@@ -1211,10 +1202,10 @@
     ChatEmoteMessage.prototype.wrapMessage = function(){
         var elem     = $('<span class="msg"/>').text(this.message),
             encoded  = elem.html();
-        
+
         for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
             encoded = destiny.chat.gui.formatters[i].format(encoded, null, this.message);
-        
+
         elem.html(encoded);
         return elem.get(0).outerHTML;
     };
@@ -1235,11 +1226,11 @@
 
         if(this.emotecountui == null)
             this.emotecountui = this.ui.find('.emotecount');
-        
+
         this.emotecountui.detach().attr('class', 'emotecount' + stepClass).html(this.getEmoteCountLabel()).appendTo(this.ui);
     };
     // END EMOTE COUNT
 
 
-    
+
 })(jQuery);
