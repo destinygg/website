@@ -125,8 +125,13 @@ class AuthenticationController {
 
         try {
             $success = $user->setMinecraftUUID( $userid, $params['uuid'] );
-            if (!$success)
-              return new Response ( Http::STATUS_FORBIDDEN, 'uuidAlreadySet' );
+            if (!$success) {
+              $existingUserId = $user->getUserIdFromMinecraftUUID ( $params ['uuid'] );
+
+              // only fail if the already set uuid is not the same
+              if ( !$existingUserId or $existingUserId != $userid )
+                return new Response ( Http::STATUS_FORBIDDEN, 'uuidAlreadySet' );
+            }
 
         } catch ( \Doctrine\DBAL\DBALException $e ) {
             return new Response ( Http::STATUS_BAD_REQUEST, 'duplicateUUID' );
