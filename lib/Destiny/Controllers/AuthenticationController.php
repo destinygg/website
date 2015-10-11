@@ -38,11 +38,10 @@ class AuthenticationController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
-     * @param Request $request
      * @return Response
      * @throws Exception
      */
-    public function authMinecraftGET(array $params, Request $request) {
+    public function authMinecraftGET(array $params) {
         if(! $this->checkPrivateKey($params))
             return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
@@ -57,7 +56,7 @@ class AuthenticationController {
         if ( !$userId )
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
-        $ban = $user->getUserActiveBan( $userId, $request->ipAddress() );
+        $ban = $user->getUserActiveBan( $userId, @$params ['ipaddress'] );
         if (!empty( $ban ))
           return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
 
@@ -85,11 +84,10 @@ class AuthenticationController {
      * @HttpMethod ({"POST"})
      *
      * @param array $params
-     * @param Request $request
      * @return Response
      * @throws Exception
      */
-    public function authMinecraftPOST(array $params, Request $request) {
+    public function authMinecraftPOST(array $params) {
         if(! $this->checkPrivateKey($params))
             return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
@@ -107,7 +105,7 @@ class AuthenticationController {
         if (! $userid)
             return new Response ( Http::STATUS_NOT_FOUND, 'nameNotFound' );
 
-        $ban = $user->getUserActiveBan( $userid, $request->ipAddress() );
+        $ban = $user->getUserActiveBan( $userid, @$params ['ipaddress'] );
         if (!empty( $ban ))
           return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
 
