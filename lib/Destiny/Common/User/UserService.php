@@ -13,12 +13,12 @@ use Doctrine\DBAL\Connection;
  * @method static UserService instance()
  */
 class UserService extends Service {
-  
+
   /**
    * @var array
    */
   protected $roles;
-  
+
   /**
    * @param int $userId
    * @param array $roles
@@ -67,7 +67,7 @@ class UserService extends Service {
     $conn = Application::instance ()->getConnection ();
     $conn->insert ( 'dfl_users_roles', array (
       'userId' => $userId,
-      'roleId' => $roleId 
+      'roleId' => $roleId
     ) );
     return $conn->lastInsertId ();
   }
@@ -78,7 +78,7 @@ class UserService extends Service {
   public function removeAllUserRoles($userId) {
     $conn = Application::instance ()->getConnection ();
     $conn->delete ( 'dfl_users_roles', array (
-      'userId' => $userId 
+      'userId' => $userId
     ) );
   }
 
@@ -157,7 +157,7 @@ class UserService extends Service {
     $conn = Application::instance ()->getConnection ();
     $user ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
     $conn->update ( 'dfl_users', $user, array (
-      'userId' => $userId 
+      'userId' => $userId
     ) );
   }
 
@@ -168,7 +168,7 @@ class UserService extends Service {
   public function getUserRolesByUserId($userId) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT b.roleName FROM dfl_users_roles AS a 
+      SELECT b.roleName FROM dfl_users_roles AS a
       INNER JOIN dfl_roles b ON (b.roleId = a.roleId)
       WHERE a.userId = :userId
     ' );
@@ -189,9 +189,9 @@ class UserService extends Service {
   public function getUserByAuthId($authId, $authProvider) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT u.* FROM dfl_users_auth AS a 
+      SELECT u.* FROM dfl_users_auth AS a
       INNER JOIN dfl_users AS u ON (u.userId = a.userId)
-      WHERE a.authId = :authId AND a.authProvider = :authProvider 
+      WHERE a.authId = :authId AND a.authProvider = :authProvider
       LIMIT 0,1
     ' );
     $stmt->bindValue ( 'authId', $authId, \PDO::PARAM_STR );
@@ -209,9 +209,9 @@ class UserService extends Service {
   public function getUserAuthProviderExists($authId, $authProvider) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT COUNT(*) FROM dfl_users_auth AS a 
+      SELECT COUNT(*) FROM dfl_users_auth AS a
       INNER JOIN dfl_users AS u ON (u.userId = a.userId)
-      WHERE a.authId = :authId AND a.authProvider = :authProvider 
+      WHERE a.authId = :authId AND a.authProvider = :authProvider
       LIMIT 1
     ' );
     $stmt->bindValue ( 'authId', $authId, \PDO::PARAM_STR );
@@ -229,8 +229,8 @@ class UserService extends Service {
   public function getUserAuthProfile($userId, $authProvider) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT a.* FROM dfl_users_auth AS a 
-      WHERE a.userId = :userId AND a.authProvider = :authProvider 
+      SELECT a.* FROM dfl_users_auth AS a
+      WHERE a.userId = :userId AND a.authProvider = :authProvider
       LIMIT 0,1
     ' );
     $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
@@ -246,7 +246,7 @@ class UserService extends Service {
   public function getAuthProfilesByUserId($userId) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT a.* FROM dfl_users_auth AS a 
+      SELECT a.* FROM dfl_users_auth AS a
       WHERE a.userId = :userId
     ' );
     $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
@@ -264,7 +264,7 @@ class UserService extends Service {
     $auth ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
     $conn->update ( 'dfl_users_auth', $auth, array (
       'userId' => $userId,
-      'authProvider' => $authProvider 
+      'authProvider' => $authProvider
     ) );
   }
 
@@ -281,7 +281,7 @@ class UserService extends Service {
       'authCode' => $auth ['authCode'],
       'authDetail' => $auth ['authDetail'],
       'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
-      'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
+      'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
     ), array (
       \PDO::PARAM_INT,
       \PDO::PARAM_STR,
@@ -289,7 +289,7 @@ class UserService extends Service {
       \PDO::PARAM_STR,
       \PDO::PARAM_STR,
       \PDO::PARAM_STR,
-      \PDO::PARAM_STR 
+      \PDO::PARAM_STR
     ) );
   }
 
@@ -301,7 +301,7 @@ class UserService extends Service {
     $conn = Application::instance ()->getConnection ();
     $conn->delete ( 'dfl_users_auth', array (
       'userId' => $userId,
-      'authProvider' => $authProvider 
+      'authProvider' => $authProvider
     ) );
   }
 
@@ -315,7 +315,7 @@ class UserService extends Service {
   public function findUsersByUsername($username, $limit = 10, $start = 0) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT u.userId,u.username,u.email FROM dfl_users AS u 
+      SELECT u.userId,u.username,u.email FROM dfl_users AS u
       WHERE u.username LIKE :username
       ORDER BY u.username DESC
       LIMIT :start,:limit
@@ -336,7 +336,7 @@ class UserService extends Service {
   public function listUsers($limit, $page = 1) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,s.subscriptionType,u.createdDate,s.recurring,s.status 
+      SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,s.subscriptionType,u.createdDate,s.recurring,s.status
       FROM dfl_users AS u
       LEFT JOIN dfl_users_subscriptions AS s ON (u.userId = s.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
       ORDER BY u.userId DESC
@@ -369,9 +369,9 @@ class UserService extends Service {
   public function findUsers($string, $limit = 10, $start = 0) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT u.userId,u.username,u.email FROM dfl_users AS u 
+      SELECT u.userId,u.username,u.email FROM dfl_users AS u
       WHERE u.username LIKE :wildcard1 OR email LIKE :wildcard1
-      ORDER BY CASE 
+      ORDER BY CASE
       WHEN u.username LIKE :wildcard2 THEN 0
       WHEN u.username LIKE :wildcard3 THEN 1
       WHEN u.username LIKE :wildcard4 THEN 2
@@ -402,7 +402,7 @@ class UserService extends Service {
       SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,s.subscriptionType,u.createdDate,s.recurring,s.status FROM dfl_users AS u
       LEFT JOIN dfl_users_subscriptions AS s ON (u.userId = s.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
       WHERE u.username LIKE :wildcard1 OR email LIKE :wildcard1
-      ORDER BY CASE 
+      ORDER BY CASE
       WHEN u.username LIKE :wildcard2 THEN 0
       WHEN u.username LIKE :wildcard3 THEN 1
       WHEN u.username LIKE :wildcard4 THEN 2
@@ -420,7 +420,7 @@ class UserService extends Service {
     $stmt->bindValue ( 'start', ($page-1)*$limit, \PDO::PARAM_INT );
     $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
     $stmt->execute ();
-    
+
     $pagination = array ();
     $pagination ['list'] = $stmt->fetchAll ();
     $pagination ['total'] = $conn->fetchColumn ( 'SELECT FOUND_ROWS()' );
@@ -441,7 +441,7 @@ class UserService extends Service {
   public function getAddressByUserId($userId, $limit = 1, $start = 0) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT * FROM users_address AS a 
+      SELECT * FROM users_address AS a
       WHERE a.userId = :userId
       LIMIT :start,:limit
     ' );
@@ -451,13 +451,13 @@ class UserService extends Service {
     $stmt->execute ();
     return $stmt->fetch ();
   }
-  
+
   /**
    * @param array $address
    */
   public function addAddress(array $address){
     $conn = Application::instance ()->getConnection ();
-    $conn->insert ( 'users_address', 
+    $conn->insert ( 'users_address',
     array (
       'userId'       => $address ['userId'],
       'fullName'     => $address ['fullName'],
@@ -468,7 +468,7 @@ class UserService extends Service {
       'zip'          => $address ['zip'],
       'country'      => $address ['country'],
       'createdDate'  => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
-      'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
+      'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
     ), array (
       \PDO::PARAM_INT,
       \PDO::PARAM_STR,
@@ -479,10 +479,10 @@ class UserService extends Service {
       \PDO::PARAM_STR,
       \PDO::PARAM_STR,
       \PDO::PARAM_STR,
-      \PDO::PARAM_STR 
+      \PDO::PARAM_STR
     ) );
   }
-  
+
   /**
    * @param array $address
    */
@@ -536,7 +536,7 @@ class UserService extends Service {
     $stmt->execute ();
     return $stmt->fetch ();
   }
-  
+
   /**
    * @param int $banId
    * @return array
@@ -566,7 +566,7 @@ class UserService extends Service {
     $stmt->execute ();
     return $stmt->fetch ();
   }
-  
+
   /**
    * update an existing ban
    * @param array $ban
@@ -660,7 +660,7 @@ class UserService extends Service {
 
       $userids[] = $id;
     }
-    
+
     if ( empty( $userids ) )
       return $userids;
 
@@ -689,7 +689,7 @@ class UserService extends Service {
    */
   private function callRedisScript( $scriptname, $argument ) {
     $redis = Application::instance ()->getRedis ();
-    
+
     $dir   = Config::$a ['redis'] ['scriptdir'];
     $hash  = @file_get_contents( $dir . $scriptname . '.hash' );
 
@@ -717,15 +717,15 @@ class UserService extends Service {
     $stmt = $conn->executeQuery("
       SELECT u.userId FROM `dfl_users` u
       WHERE u.username IN (?)
-    ", 
-      array($usernames), 
+    ",
+      array($usernames),
       array(Connection::PARAM_STR_ARRAY)
     );
     $ids = array();
     $result = $stmt->fetchAll();
     foreach($result as $item) {
       $ids[] = $item['userId'];
-    }    
+    }
     return $ids;
   }
 
@@ -893,7 +893,7 @@ class UserService extends Service {
     $ret = array();
     while($row = $stmt->fetch())
       $ret[] = $row['authId'];
-    
+
     return $ret;
   }
 
@@ -902,12 +902,15 @@ class UserService extends Service {
     $stmt = $conn->prepare("
       UPDATE dfl_users
       SET minecraftuuid = :uuid
-      WHERE userId = :userid
+      WHERE
+        userId = :userid AND
+        (minecraftuuid IS NULL OR minecraftuuid = '')
       LIMIT 1
     ");
     $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
     $stmt->bindValue('uuid', $uuid, \PDO::PARAM_STR);
     $stmt->execute();
+    return (bool) $stmt->rowCount();
   }
 
   public function getUserIdFromMinecraftUUID( $uuid ) {

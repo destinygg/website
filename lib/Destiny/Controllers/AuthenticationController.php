@@ -38,10 +38,11 @@ class AuthenticationController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
+     * @param Request $request
      * @return Response
      * @throws Exception
      */
-    public function authMinecraftGET(array $params) {
+    public function authMinecraftGET(array $params, Request $request) {
         if(! $this->checkPrivateKey($params))
             return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
@@ -51,11 +52,16 @@ class AuthenticationController {
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
             return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
-        $userId = UserService::instance ()->getUserIdFromMinecraftUUID ( $params ['uuid'] );
+        $user = UserService::instance ();
+        $userId = $user->getUserIdFromMinecraftUUID ( $params ['uuid'] );
         if ( !$userId )
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
-        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
+        $ban = $user->getUserActiveBan( $userId, $request->ipAddress() );
+        if (!empty( $ban ))
+          return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
+
+        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId, $request->ipAddress() );
         if (empty ( $sub )) {
             $userRow = UserService::instance ()->getUserById( $userId );
             if ( $userRow['istwitchsubscriber'] )
@@ -79,10 +85,11 @@ class AuthenticationController {
      * @HttpMethod ({"POST"})
      *
      * @param array $params
+     * @param Request $request
      * @return Response
      * @throws Exception
      */
-    public function authMinecraftPOST(array $params) {
+    public function authMinecraftPOST(array $params, Request $request) {
         if(! $this->checkPrivateKey($params))
             return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
@@ -100,6 +107,10 @@ class AuthenticationController {
         if (! $userid)
             return new Response ( Http::STATUS_NOT_FOUND, 'nameNotFound' );
 
+        $ban = $user->getUserActiveBan( $userid, $request->ipAddress() );
+        if (!empty( $ban ))
+          return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
+
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
         $userRow = $user->getUserById( $userid );
         if (empty ( $userRow ))
@@ -115,7 +126,10 @@ class AuthenticationController {
         }
 
         try {
-            $user->setMinecraftUUID( $userid, $params['uuid'] );
+            $success = $user->setMinecraftUUID( $userid, $params['uuid'] );
+            if (!$success)
+              return new Response ( Http::STATUS_FORBIDDEN, 'uuidAlreadySet' );
+
         } catch ( \Doctrine\DBAL\DBALException $e ) {
             return new Response ( Http::STATUS_BAD_REQUEST, 'duplicateUUID' );
         }
