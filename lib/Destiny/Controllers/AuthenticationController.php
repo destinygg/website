@@ -60,7 +60,7 @@ class AuthenticationController {
         if (!empty( $ban ))
           return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
 
-        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId, $request->ipAddress() );
+        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
         if (empty ( $sub )) {
             $userRow = UserService::instance ()->getUserById( $userId );
             if ( $userRow['istwitchsubscriber'] )
