@@ -110,6 +110,7 @@
   }
 }
 
+
 .chat-emote-DANKMEMES {
   animation: DANKMEMES-anim 1s 2;
 }
@@ -140,6 +141,7 @@
   }
 }
 
+
 .chat-emote-PICNIC {
   animation: PICNIC-anim 350ms 3;
 }
@@ -165,6 +167,7 @@
     transform: scale(1.2);
   }
 }
+
 
 .chat-emote-WEEWOO {
   animation: WEEWOO-anim 1.5s 1;
@@ -249,6 +252,105 @@
   91% {
     -webkit-filter: hue-rotate(0deg) saturate(100%);
     filter: hue-rotate(0deg) saturate(100%);
+  }
+}
+
+
+.chat-emote-Nappa {
+  animation: Nappa-anim 750ms 1;
+}
+
+.chat-emote-Nappa:hover {
+  animation: Nappa-anim-hover 750ms infinite;
+}
+
+@keyframes Nappa-anim {
+  0% {
+    transform: translate(0px 0px) scale(0.5);
+  }
+  5%,15%,25%,35% {
+    transform: translate(0px,3px)
+  }
+  15%,35%,55% {
+    transform: translate(0px,-3px)
+  }
+  10%,20%,30%,40%,50%{
+    transform: translate(3px,0px)
+  }
+  15.1% {
+    transform: scale(0.5);
+    -webkit-filter: hue-rotate(-5deg);
+    filter: hue-rotate(-5deg);
+  }
+  30.1% {
+    transform: scale(0.75);
+    opacity: 0.75;
+    -webkit-filter: hue-rotate(-15deg) saturate(125%);
+    filter: hue-rotate(-5deg) saturate(125%);;
+
+  }
+  60%{
+    transform: scale(1.25);
+    -webkit-filter: hue-rotate(-25deg) saturate(150%);
+    filter: hue-rotate(-25deg) saturate(150%);;
+
+    opacity: 0.75;
+  }
+  70%{
+    opacity: 0;
+  }
+  90%{
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  100%{
+    transform: translate(0px,0px) scale(1.0);
+    opacity: 1;
+  }
+}
+
+@keyframes Nappa-anim-hover {
+  0% {
+    transform: translate(0px 0px) scale(0.5);
+  }
+  5%,15%,25%,35% {
+    transform: translate(0px,3px)
+  }
+  15%,35%,55% {
+    transform: translate(0px,-3px)
+  }
+  10%,20%,30%,40%,50%{
+    transform: translate(3px,0px)
+  }
+  15.1% {
+    transform: scale(0.5);
+    -webkit-filter: hue-rotate(-5deg);
+    filter: hue-rotate(-5deg);
+  }
+  30.1% {
+    transform: scale(0.75);
+    opacity: 0.75;
+    -webkit-filter: hue-rotate(-15deg) saturate(125%);
+    filter: hue-rotate(-5deg) saturate(125%);;
+
+  }
+  60%{
+    transform: scale(1.25);
+    -webkit-filter: hue-rotate(-25deg) saturate(150%);
+    filter: hue-rotate(-25deg) saturate(150%);;
+
+    opacity: 0.75;
+  }
+  70%{
+    opacity: 0;
+  }
+  90%{
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  100%{
+    transform: translate(0px,0px) scale(1.0);
+    opacity: 1;
   }
 }
 
