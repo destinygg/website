@@ -75,6 +75,7 @@ return array (
 			'PICNIC',
 			'Memegasm',
 			'WEEWOO',
+			'KappaRoss',
 		),
 		'twitchemotes' => array(
 			'nathanDad',
@@ -138,10 +139,10 @@ return array (
 		'Australia'		=> DateTimeZone::AUSTRALIA,
 		'Europe'		=> DateTimeZone::EUROPE,
 		'Indian'		=> DateTimeZone::INDIAN,
-		'Pacific'		=> DateTimeZone::PACIFIC 
+		'Pacific'		=> DateTimeZone::PACIFIC
 	),
 	'cdn' => array (
-		'domain' 		=> '' 
+		'domain' 		=> ''
 	),
 	'cookie' => array (
 		'domain' 		=> '',
@@ -180,7 +181,7 @@ return array (
 		'shortdescription'  => 'Destiny is a professional streamer, playing games like StarCraft II, CS:GO, Hearth Stone, League of Legends and many more...',
 		'keywords'			=> 'Steven Bonnell,Destiny,Destiny.gg,StarCraft,StarCraft2,Counter Strike,CS:GO,League of Legends,Hearth Stone,streamer,stream,game,pc,build a box',
 		'video'				=> 'http://www-cdn.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny',
-		'videoSecureUrl'	=> 'https://secure.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny' 
+		'videoSecureUrl'	=> 'https://secure.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny'
 	),
 	'paypal' => array (
 		'support_email'		=> 'support@destiny.gg',
@@ -194,7 +195,7 @@ return array (
 	'youtube' => array (
 		'apikey'		=> '',
 		'playlistId'	=> '',
-		'user'			=> '' 
+		'user'			=> ''
 	),
 	'analytics' => array (
 		'account' 				=> '',
@@ -205,17 +206,17 @@ return array (
 			'google_ad_client'	=> '',
 			'google_ad_slot'	=> '',
 			'google_ad_width'	=> 300,
-			'google_ad_height'	=> 250 
-		) 
+			'google_ad_height'	=> 250
+		)
 	),
 	'g-recaptcha' => array (
 		'key'                   => '',
 		'secret'                => '',
 	),
-	'calendar' 					=>  '', 
+	'calendar' 					=>  '',
 	'lastfm' => array (
 		'apikey'				=> '',
-		'user'					=> '' 
+		'user'					=> ''
 	),
 	'twitch' => array (
 		'user'					=> '',
@@ -224,23 +225,23 @@ return array (
 		'broadcasterAuth'		=> false,
 		'broadcaster' => array (
 			'user'				=> ''
-		) 
+		)
 	),
 	'twitter' => array (
 		'user'					=> '',
 		'consumer_key'			=> '',
-		'consumer_secret'		=> '' 
+		'consumer_secret'		=> ''
 	),
 	'subscriptionType'				=> 'destiny.gg',
 	'commerce' => array (
 		'currencies' => array (
 			'USD' => array (
 				'code'				=> 'USD',
-				'symbol'			=> '$' 
-			) 
+				'symbol'			=> '$'
+			)
 		),
 		'reciever' => array (
-				'brandName'			=> 'Destiny.gg - Subscriptions' 
+				'brandName'			=> 'Destiny.gg - Subscriptions'
 		),
 		'receiver_email'			=> '',
 		'currency'					=> 'USD',
@@ -253,7 +254,7 @@ return array (
 				'agreement'			=> '$5.00 (per month) recurring subscription',
 				'amount'			=> '5.00',
 				'billingFrequency'	=> 1,
-				'billingPeriod'		=> 'Month' 
+				'billingPeriod'		=> 'Month'
 			),
 			'3-MONTH-SUB' => array (
 				'id'				=> '3-MONTH-SUB',
@@ -263,7 +264,7 @@ return array (
 				'agreement'			=> '$12.00 (per 3 months) recurring subscription',
 				'amount'			=> '12.00',
 				'billingFrequency'	=> 3,
-				'billingPeriod'		=> 'Month' 
+				'billingPeriod'		=> 'Month'
 			),
 			'1-MONTH-SUB2' => array (
 				'id'				=> '1-MONTH-SUB2',
@@ -273,7 +274,7 @@ return array (
 				'agreement'			=> '$10.00 (per month) recurring subscription',
 				'amount'			=> '10.00',
 				'billingFrequency'	=> 1,
-				'billingPeriod'		=> 'Month' 
+				'billingPeriod'		=> 'Month'
 			),
 			'3-MONTH-SUB2' => array (
 				'id'				=> '3-MONTH-SUB2',
@@ -283,7 +284,7 @@ return array (
 				'agreement'			=> '$24.00 (per 3 months) recurring subscription',
 				'amount'			=> '24.00',
 				'billingFrequency'	=> 3,
-				'billingPeriod'		=> 'Month' 
+				'billingPeriod'		=> 'Month'
 			) ,
 			'1-MONTH-SUB3' => array (
 				'id'				=> '1-MONTH-SUB3',
@@ -293,7 +294,7 @@ return array (
 				'agreement'			=> '$20.00 (per month) recurring subscription',
 				'amount'			=> '20.00',
 				'billingFrequency'	=> 1,
-				'billingPeriod'		=> 'Month' 
+				'billingPeriod'		=> 'Month'
 			),
 			'3-MONTH-SUB3' => array (
 				'id'				=> '3-MONTH-SUB3',
@@ -303,7 +304,7 @@ return array (
 				'agreement'			=> '$48.00 (per 3 months) recurring subscription',
 				'amount'			=> '48.00',
 				'billingFrequency'	=> 3,
-				'billingPeriod'		=> 'Month' 
+				'billingPeriod'		=> 'Month'
 			) ,
 			'1-MONTH-SUB4' => array (
 				'id'				=> '1-MONTH-SUB4',
@@ -313,7 +314,7 @@ return array (
 				'agreement'			=> '$40.00 (per month) recurring subscription',
 				'amount'			=> '40.00',
 				'billingFrequency'	=> 1,
-				'billingPeriod'		=> 'Month' 
+				'billingPeriod'		=> 'Month'
 			),
 			'3-MONTH-SUB4' => array (
 				'id'				=> '3-MONTH-SUB4',
@@ -323,8 +324,8 @@ return array (
 				'agreement'			=> '$96.00 (per 3 months) recurring subscription',
 				'amount'			=> '96.00',
 				'billingFrequency'	=> 3,
-				'billingPeriod'		=> 'Month' 
-			) 
+				'billingPeriod'		=> 'Month'
+			)
 		)
 	),
 	'scheduler' => array(
