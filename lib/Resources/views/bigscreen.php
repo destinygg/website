@@ -14,7 +14,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="bigscreen" class="thin">
-        
+
     <?php include Tpl::file('seg/top.php') ?>
 
     <div id="page-content" class="container clearfix">
@@ -41,15 +41,10 @@ use Destiny\Common\Config;
                     <div class="pull-right channel-stat" style="text-align:right;"><?=(isset($model->streamInfo['status'])) ? Tpl::out($model->streamInfo['status']) : ''?></div>
                 </div>
             </div>
-
             <div id="stream-wrap">
-                <div class="stream-overlay to-botright"></div>
-                <div class="stream-overlay to-botleft"></div>
-                <div class="stream-overlay to-main"></div>
-                <div class="stream-overlay fsbtn" title="Fullscreen"></div>
-                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/embed" scrolling="no" seamless></iframe>
+                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://player.twitch.tv/?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless allowfullscreen></iframe>
             </div>
-            
+
         </div>
 
         <div id="chat-panel">
@@ -69,8 +64,8 @@ use Destiny\Common\Config;
         </div>
 
     </div>
-    
+
     <?php include Tpl::file('seg/commonbottom.php') ?>
-    
+
 </body>
 </html>
