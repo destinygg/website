@@ -1,9 +1,14 @@
 <?php
 namespace Destiny\Tasks;
 
+use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
+use Destiny\Common\TaskInterface;
 use Destiny\Youtube\YoutubeApiService;
 
+/**
+ * @Schedule(frequency=30,period="minute")
+ */
 class YoutubeFeed implements TaskInterface {
 
     public function execute() {

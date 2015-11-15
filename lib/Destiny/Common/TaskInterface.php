@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Tasks;
+namespace Destiny\Common;
 
 interface TaskInterface {
     function execute();

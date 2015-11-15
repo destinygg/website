@@ -99,7 +99,6 @@ CREATE TABLE `dfl_scheduled_tasks` (
   `lastExecuted` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `frequency` int(14) DEFAULT NULL,
   `period` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `executeOnNextRun` tinyint(1) DEFAULT NULL,
   `executeCount` int(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

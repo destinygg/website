@@ -2,10 +2,15 @@
 
 namespace Destiny\Tasks;
 
+use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Commerce\SubscriptionStatus;
+use Destiny\Common\TaskInterface;
 use Destiny\Common\Utils\Options;
 
+/**
+ * @Schedule(frequency=1,period="hour")
+ */
 class RedditSubscribers implements TaskInterface {
     
     public $output;

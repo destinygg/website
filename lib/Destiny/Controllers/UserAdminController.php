@@ -174,7 +174,7 @@ class UserAdminController {
         
         $authService = AuthenticationService::instance ();
         $authService->flagUserForUpdate ( $params ['id'] );
-        $model->title = 'Subsription';
+        $model->title = 'Subscription';
         return "admin/subscription";
     }
     
@@ -216,7 +216,7 @@ class UserAdminController {
         $model->subscription = $subscription;
         $model->order = $order;
         $model->payments = $payments;
-        $model->title = 'Subsription';
+        $model->title = 'Subscription';
         return "admin/subscription";
     }
 

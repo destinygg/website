@@ -1,9 +1,14 @@
 <?php
 namespace Destiny\Tasks;
 
+use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Config;
 use Destiny\Common\Application;
+use Destiny\Common\TaskInterface;
 
+/**
+ * @Schedule(frequency=30,period="minute")
+ */
 class TwitterFeed implements TaskInterface {
 
     public function execute() {

@@ -5,9 +5,6 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Options;
 use Psr\Log\LoggerInterface;
 
-/**
- * Simple way of executing actions based on logfiles and cooldowns
- */
 class Scheduler {
     
     /**
@@ -19,6 +16,17 @@ class Scheduler {
      * @var array
      */
     public $schedule = array ();
+
+    /**
+     * @var array
+     */
+    private $struct = array(
+        'action' => '',
+        'lastExecuted' => '',
+        'frequency' => '',
+        'period' => '',
+        'executeCount' => 0
+    );
 
     /**
      * [logger,schedule]
@@ -33,6 +41,17 @@ class Scheduler {
      * @return void
      */
     public function loadSchedule() {
+        TaskAnnotationLoader::loadClasses (
+            new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Tasks/' ),
+            Application::instance()->getAnnotationReader (),
+            $this
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function execute() {
         foreach ( $this->schedule as $i => $action ) {
             $task = $this->getTask ( $this->schedule [$i] ['action'] );
             if (empty ( $task )) {
@@ -43,6 +62,34 @@ class Scheduler {
                 $this->schedule [$i] = array_merge ( $this->schedule [$i], $task );
             }
         }
+        $startTime = microtime ( true );
+        try {
+            $this->logger->debug ( 'Schedule starting' );
+            foreach ( $this->schedule as $i => $action ) {
+                $nextExecute = Date::getDateTime ( $this->schedule [$i] ['lastExecuted'] );
+                $nextExecute->modify ( '+' . $this->schedule [$i] ['frequency'] . ' ' . $this->schedule [$i] ['period'] );
+                if (time () > $nextExecute->getTimestamp ()) {
+                    $this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
+                    $this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
+                    $this->updateTask ( $this->schedule [$i] );
+                    $this->executeTask ( $this->schedule [$i] );
+                }
+            }
+            $this->logger->debug ( 'Schedule complete' );
+
+        } catch ( Exception $e ) {
+            $this->logger->error ( $e->getMessage () );
+        } catch ( \Exception $e ) {
+            $this->logger->critical ( $e->getMessage () );
+        }
+        $this->logger->debug ( 'Completed in ' . (microtime ( true ) - $startTime) . ' seconds' );
+    }
+
+    /**
+     * @param array $task
+     */
+    public function addTask(array $task){
+        $this->schedule[] = array_merge($this->struct, $task);
     }
 
     /**
@@ -63,7 +110,6 @@ class Scheduler {
     protected function updateTask(array $task) {
         $conn = Application::instance ()->getConnection ();
         $conn->update ( 'dfl_scheduled_tasks', array (
-            'executeOnNextRun' => ($task ['executeOnNextRun']) ? 1:0,
             'lastExecuted' => $task ['lastExecuted'],
             'executeCount' => $task ['executeCount'] 
         ), array (
@@ -85,8 +131,7 @@ class Scheduler {
             'lastExecuted' => $task ['lastExecuted'],
             'frequency' => $task ['frequency'],
             'period' => $task ['period'],
-            'executeOnNextRun' => ($task ['executeOnNextRun']) ? 1:0,
-            'executeCount' => $task ['executeCount'] 
+            'executeCount' => $task ['executeCount']
         ), array (
             \PDO::PARAM_STR,
             \PDO::PARAM_STR,
@@ -108,35 +153,6 @@ class Scheduler {
             }
         }
         return null;
-    }
-
-    /**
-     * @return void
-     */
-    public function executeSchedule() {
-        $this->logger->debug ( 'Schedule starting' );
-        foreach ( $this->schedule as $i => $action ) {
-            // First run/ Execute on next run
-            if ($this->schedule [$i] ['executeOnNextRun']) {
-                $this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
-                $this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
-                $this->schedule [$i] ['executeOnNextRun'] = false;
-                $this->updateTask ( $this->schedule [$i] );
-                $this->executeTask ( $this->schedule [$i] );
-                continue;
-            }
-            // Schedule run
-            $nextExecute = Date::getDateTime ( $this->schedule [$i] ['lastExecuted'] );
-            $nextExecute->modify ( '+' . $this->schedule [$i] ['frequency'] . ' ' . $this->schedule [$i] ['period'] );
-            if (time () > $nextExecute->getTimestamp ()) {
-                $this->schedule [$i] ['executeCount'] = intval ( $this->schedule [$i] ['executeCount'] ) + 1;
-                $this->schedule [$i] ['lastExecuted'] = date ( \DateTime::ATOM );
-                $this->schedule [$i] ['executeOnNextRun'] = false;
-                $this->updateTask ( $this->schedule [$i] );
-                $this->executeTask ( $this->schedule [$i] );
-            }
-        }
-        $this->logger->debug ( 'Schedule complete' );
     }
 
     /**
@@ -162,7 +178,7 @@ class Scheduler {
         $actionClass = 'Destiny\\Tasks\\' . $task ['action'];
         if (class_exists ( $actionClass, true )) {
             $actionObj = new $actionClass ($task);
-            /* @var $actionObj \Destiny\Tasks\TaskInterface */
+            /* @var $actionObj \Destiny\Common\TaskInterface */
             $actionObj->execute ();
         } else {
             throw new Exception ( sprintf ( 'Action not found: %s', $actionClass ) );
