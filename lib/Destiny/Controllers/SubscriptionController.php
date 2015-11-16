@@ -147,8 +147,12 @@ class SubscriptionController {
         // Cancel the payment profile
         if (! empty ( $subscription ['paymentProfileId'] )) {
             $paymentProfile = $ordersService->getPaymentProfileById ( $subscription ['paymentProfileId'] );
-            if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
+            if (strcasecmp ( $paymentProfile ['state'], PaymentProfileStatus::ACTIVE_PROFILE ) === 0) {
                $payPalAPIService->cancelPaymentProfile ( $paymentProfile );
+               $ordersService->updatePaymentProfile (array(
+                   'profileId' => $paymentProfile ['profileId'],
+                   'state' => PaymentProfileStatus::CANCELLED_PROFILE
+               ));
             }
         }
         
@@ -159,7 +163,6 @@ class SubscriptionController {
         
         $subscription ['recurring'] = false;
         $subscriptionsService->updateSubscriptionRecurring ( $subscription ['subscriptionId'], false );
-        
         $authenticationService->flagUserForUpdate ( $subscription ['userId'] );
         
         $model->subscription = $subscription;
@@ -167,7 +170,6 @@ class SubscriptionController {
         $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
-
 
     /**
      * @Route ("/subscription/{orderId}/error")
@@ -315,7 +317,7 @@ class SubscriptionController {
               'subscriptionTier'   => $subscriptionType ['tier'],
               'createdDate'        => $start->format ( 'Y-m-d H:i:s' ),
               'endDate'            => $end->format ( 'Y-m-d H:i:s' ),
-              'recurring'          => 0,
+              'recurring'          => ($recurring) ? 1:0,
               'status'             => SubscriptionStatus::_NEW
             );
 
@@ -328,12 +330,13 @@ class SubscriptionController {
             // Insert subscription
             $subscriptionId = $subscriptionsService->addSubscription ( $subscription );
 
-            // Add payment profile
+            // Payment date is 1 day before subscription rolls over.
             $paymentProfile = null;
             if ($recurring) {
-                $billingStartDate = Date::getDateTime ( date ( 'm/d/y' ) );
-                $billingStartDate->modify ( '+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower ( $subscriptionType ['billingPeriod'] ) );
-                $paymentProfile = $ordersService->createPaymentProfile ( $userId, $order, $subscriptionType, $billingStartDate );
+                $nextPaymentDate = Date::getDateTime ();
+                $nextPaymentDate->modify ( '+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower ( $subscriptionType ['billingPeriod'] ) );
+                $nextPaymentDate->modify( '-1 DAY' );
+                $paymentProfile = $ordersService->createPaymentProfile ( $userId, $order, $subscriptionType, $nextPaymentDate );
             }
             
             $setECResponse = $payPalApiService->createECResponse ( '/subscription/process', $order, $subscriptionType, $recurring );
@@ -345,12 +348,18 @@ class SubscriptionController {
         }catch (Exception $e){
 
             if (! empty ( $order )){
-                $ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
+                $ordersService->updateOrder(array(
+                    'orderId' => $order ['orderId'],
+                    'state' => OrderStatus::ERROR
+                ));
                 $log->error ( $e->getMessage(), $order );
                 return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/error';
             }
             if (! empty ( $paymentProfile )){
-                $ordersService->updatePaymentStatus ( $paymentProfile ['paymentId'], PaymentStatus::ERROR );
+                $ordersService->updatePayment(array(
+                    'paymentId' => $paymentProfile ['paymentId'],
+                    'paymentStatus' => PaymentStatus::ERROR
+                ));
                 $log->error ( $e->getMessage(), $paymentProfile );
             }
             if (! empty ( $subscriptionId )){
@@ -378,16 +387,15 @@ class SubscriptionController {
         $ordersService = OrdersService::instance ();
         $subscriptionsService = SubscriptionsService::instance ();
         $userService = UserService::instance ();
-      
         $userId = Session::getCredentials ()->getUserId ();
-      
         $order = $ordersService->getOrderByIdAndUserId ( $params ['orderId'], $userId );
+
         if (empty ( $order )) {
            throw new Exception ( sprintf ( 'Invalid order record orderId:%s userId:%s', $params ['orderId'], $userId ) );
         }
-      
-        $subscription = $subscriptionsService->getSubscriptionByOrderId ( $order ['orderId'] );
+
         // Make sure the order is assigned to this user, or at least they are the gifter
+        $subscription = $subscriptionsService->getSubscriptionByOrderId ( $order ['orderId'] );
         if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) ){
             throw new Exception ( 'Invalid subscription record' );
         }
@@ -434,49 +442,38 @@ class SubscriptionController {
         $payPalApiService = PayPalApiService::instance ();
         $chatIntegrationService = ChatIntegrationService::instance ();
         $authenticationService = AuthenticationService::instance ();
-        
+        $log = Application::instance ()->getLogger ();
         $userId = Session::getCredentials ()->getUserId ();
-        
-        // Get the order
         $order = $ordersService->getOrderByIdAndUserId ( $params ['orderId'], $userId );
+
         if (empty ( $order ) || strcasecmp($order ['state'], OrderStatus::_NEW) !== 0) {
             throw new Exception ( 'Invalid order record' );
         }
           
         try {
 
-            // If we got a failed response URL
             if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {
                 throw new Exception ( 'Order request failed' );
             }
             
-            // Get the subscription from the order
             $orderSubscription = $subscriptionsService->getSubscriptionByOrderId ( $order ['orderId'] );
-            $subscriptionUser =  $userService->getUserById ( $orderSubscription['userId'] );
-
-            // Make sure the subscription is valid
             if (empty ( $orderSubscription )) {
                 throw new Exception ( 'Invalid order subscription' );
             }
 
-            // Make sure the subscription is either owned or gifted by the user
+            $subscriptionUser =  $userService->getUserById ( $orderSubscription['userId'] );
             if($subscriptionUser['userId'] != $userId && $orderSubscription['gifter'] != $userId){
                 throw new Exception ( 'Invalid order subscription' );
             }
             
             $subscriptionType = $subscriptionsService->getSubscriptionType ( $orderSubscription ['subscriptionType'] );
             $paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
-            
-            // Get the checkout info
             $ecResponse = $payPalApiService->retrieveCheckoutInfo ( $params ['token'] );
             if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success') {
                 throw new Exception ( 'Failed to retrieve express checkout details' );
             }
             
-            // Moved this down here, as if the order status is error, the payerID is not returned
-            FilterParams::required ( $params, 'PayerID' );
-            
-            // Point of no return - we only every want a person to get here if their order was a successful sequence
+            FilterParams::required ( $params, 'PayerID' ); // if the order status is an error, the payerID is not returned
             Session::set ( 'token' );
             Session::set ( 'orderId' );
             
@@ -487,23 +484,48 @@ class SubscriptionController {
                     throw new Exception ( 'Failed to create recurring payment request' );
                 }
                 $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
-                $paymentStatus = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileStatus;
                 if (empty ( $paymentProfileId )) {
                     throw new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
                 }
-                // Set the payment profile to active, and paymetProfileId
-                $ordersService->updatePaymentProfileId ( $paymentProfile ['profileId'], $paymentProfileId, $paymentStatus );
+                // todo: the profile state very rarely will not be ActiveProfile, need to refactor the logic later on to handle it
+                $ordersService->updatePaymentProfile(array (
+                    'profileId' => $paymentProfile['profileId'],
+                    'paymentProfileId' => $paymentProfileId,
+                    'state' => PaymentProfileStatus::ACTIVE_PROFILE
+                ));
 
-                // Update the payment profile
-                $subscriptionsService->updateSubscriptionPaymentProfile ( $orderSubscription ['subscriptionId'], $paymentProfile ['profileId'], true );
+                $subscriptionsService->updateSubscription (array(
+                    'subscriptionId' => $orderSubscription ['subscriptionId'],
+                    'paymentProfileId' => $paymentProfile ['profileId']
+                ));
             }
-            
-            // Complete the checkout
+
+            // Record the payments as well as check if any are not in the completed state
+            $orderStatus = OrderStatus::COMPLETED;
             $DoECResponse = $payPalApiService->getECPaymentResponse ( $params ['PayerID'], $params ['token'], $order );
             if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
                 if (isset ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo )) {
-                    $payPalApiService->recordECPayments ( $DoECResponse, $params ['PayerID'], $order );
-                    $ordersService->updateOrderState ( $order ['orderId'], $order ['state'] );
+                    for($i = 0; $i < count ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo ); ++ $i) {
+                        $paymentInfo = $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo [$i];
+                        $payment = array ();
+                        $payment ['orderId'] = $order ['orderId'];
+                        $payment ['payerId'] = $params ['PayerID'];
+                        $payment ['amount'] = $paymentInfo->GrossAmount->value;
+                        $payment ['currency'] = $paymentInfo->GrossAmount->currencyID;
+                        $payment ['transactionId'] = $paymentInfo->TransactionID;
+                        $payment ['transactionType'] = $paymentInfo->TransactionType;
+                        $payment ['paymentType'] = $paymentInfo->PaymentType;
+                        $payment ['paymentStatus'] = $paymentInfo->PaymentStatus;
+                        $payment ['paymentDate'] = Date::getDateTime ( $paymentInfo->PaymentDate )->format ( 'Y-m-d H:i:s' );
+                        $ordersService->addOrderPayment ( $payment );
+                        if ($paymentInfo->PaymentStatus != PaymentStatus::COMPLETED) {
+                            $orderStatus = OrderStatus::PENDING;
+                        }
+                    }
+                    $ordersService->updateOrder(array(
+                        'orderId' => $order ['orderId'],
+                        'state' => $orderStatus
+                    ));
                 } else {
                     throw new Exception ( 'No payments for express checkout order' );
                 }
@@ -511,83 +533,60 @@ class SubscriptionController {
                 throw new Exception ( $DoECResponse->Errors [0]->LongMessage );
             }
 
-            // If the user already has a subscription and ONLY if this subscription was NOT a gift
-            if(!isset($orderSubscription ['gifter']) || empty($orderSubscription ['gifter'])){
-
-                $activeSubscription = $subscriptionsService->getUserActiveSubscription ( $subscriptionUser['userId'] );
-                if (! empty ( $activeSubscription )) {
-
-                    // Cancel any attached payment profiles
-                    $ordersService = OrdersService::instance ();
-                    $paymentProfile = $ordersService->getPaymentProfileById ( $activeSubscription ['paymentProfileId'] );
-                    if (! empty ( $paymentProfile )) {
-                        $payPalApiService->cancelPaymentProfile ( $paymentProfile );
-                        $subscriptionsService->updateSubscriptionRecurring ( $activeSubscription ['subscriptionId'], false );
-                    }
-
-                    // Cancel the active subscription
-                    $subscriptionsService->updateSubscriptionState ( $activeSubscription ['subscriptionId'], SubscriptionStatus::CANCELLED );
-                }
+            // Check if this is a gift, check that the giftee is still eligible
+            // Update the state to ERROR
+            if(!empty($orderSubscription['gifter']) && !$subscriptionsService->getCanUserReceiveGift ( $userId, $subscriptionUser['userId'] )){
+                $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ERROR );
+                throw new Exception(sprintf('Duplicate subscription attempt, Gifter: %d GifteeId: %d, OrderId: %d', $userId, $subscriptionUser['userId'], $order ['orderId']));
             }
 
-            // Check if this is a gift, check that the giftee is still eligable
-            if(!empty($orderSubscription['gifter']) && !$subscriptionsService->getCanUserReceiveGift ( $userId, $subscriptionUser['userId'] )){
+            // Activate subscription
+            $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
 
-                // Update the state to ERROR and log a critical error
-                Application::instance ()->getLogger ()->critical ( sprintf('Duplicate subscription attempt, Gifter: %d GifteeId: %d, OrderId: %d', $userId, $subscriptionUser['userId'], $order ['orderId']) );
-                $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ERROR );
+            // only unban the user if the ban is non-permanent or the tier of the subscription is >= 2
+            // we unban the user if no ban is found because it also unmutes
+            $ban = $userService->getUserActiveBan ( $subscriptionUser['userId'] );
+            if (empty ( $ban ) or ( !empty( $ban ['endtimestamp'] ) or $orderSubscription['subscriptionTier'] >= 2 ) ) {
+               $chatIntegrationService->sendUnban ( $subscriptionUser['userId'] );
+            }
+            $authenticationService->flagUserForUpdate ( $subscriptionUser['userId'] );
 
+            // Broadcast
+            $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
+            if(!empty($orderSubscription['gifter'])){
+                $gifter   = $userService->getUserById( $orderSubscription['gifter'] );
+                $userName = $gifter['username'];
+                $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
             }else{
-
-                // Unban the user if a ban is found
-                $ban = $userService->getUserActiveBan ( $subscriptionUser['userId'] );
-                // only unban the user if the ban is non-permanent or the tier of the subscription is >= 2
-                // we unban the user if no ban is found because it also unmutes
-                if (empty ( $ban ) or ( !empty( $ban ['endtimestamp'] ) or $orderSubscription['subscriptionTier'] >= 2 ) ) {
-                   $chatIntegrationService->sendUnban ( $subscriptionUser['userId'] );
-                }
-
-                // Activate the subscription (state)
-                $subscriptionsService->updateSubscriptionState ( $orderSubscription ['subscriptionId'], SubscriptionStatus::ACTIVE );
-
-                // Flag the user for 'update'
-                $authenticationService->flagUserForUpdate ( $subscriptionUser['userId'] );
-
-                // Random emote
-                $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
-
-                // Broadcast
-                if(!empty($orderSubscription['gifter'])){
-                    $gifter   = $userService->getUserById( $orderSubscription['gifter'] );
-                    $userName = $gifter['username'];
-                    $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
-                }else{
-                    $userName = $subscriptionUser['username'];
-                    $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
-                }
-
-                // Get the subscription message, and remove it from the session
-                $subMessage = Session::set('subMessage');
-                if(!empty($subMessage)){
-                    $chatIntegrationService->sendBroadcast ( sprintf ( "%s: %s", $userName, $subMessage ) );
-                }
-
+                $userName = $subscriptionUser['username'];
+                $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $subscriptionUser['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
+            }
+            $subMessage = Session::set('subMessage');
+            if(!empty($subMessage)){
+                $chatIntegrationService->sendBroadcast ( sprintf ( "%s: %s", $userName, $subMessage ) );
             }
 
             // Redirect to completion page
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/complete';
           
-        }catch (Exception $e){
+        } catch (Exception $e) {
 
-            if (! empty ( $order ))
-              $ordersService->updateOrderState ( $order ['orderId'], OrderStatus::ERROR );
-            if (! empty ( $paymentProfile ))
-              $ordersService->updatePaymentStatus ( $paymentProfile ['paymentId'], PaymentStatus::ERROR );
+            if (! empty ( $order )){
+                $ordersService->updateOrder(array(
+                    'orderId' => $order ['orderId'],
+                    'state' => OrderStatus::ERROR
+                ));
+            }
+            if (! empty ( $paymentProfile )){
+                $ordersService->updatePayment(array(
+                    'paymentId' => $paymentProfile ['paymentId'],
+                    'paymentStatus' => PaymentStatus::ERROR
+                ));
+            }
             if (! empty ( $orderSubscription ))
               $subscriptionsService->updateSubscriptionState ( $orderSubscription['subscriptionId'], SubscriptionStatus::ERROR );
 
-            $log = Application::instance ()->getLogger ();
-            $log->error ( $e->getMessage(), $order );
+            $log->critical ( $e->getMessage(), $order );
 
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/error';
         }

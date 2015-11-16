@@ -43,7 +43,6 @@ class PayPalApiService extends Service {
      * @throws Exception
      */
     public function cancelPaymentProfile(array $paymentProfile) {
-        $orderService = OrdersService::instance ();
         // PPService
         $paypalService = new PayPalAPIInterfaceServiceService ();
         $getRPPDetailsRequest = new GetRecurringPaymentsProfileDetailsRequestType ();
@@ -57,8 +56,8 @@ class PayPalApiService extends Service {
         $profileStatus = $getRPPDetailsResponse->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus;
 
         // Active profile, send off the cancel
-        if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVEPROFILE ) === 0 || strcasecmp ( $profileStatus, PaymentProfileStatus::CANCELLEDPROFILE ) === 0) {
-            if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVEPROFILE ) === 0) {
+        if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVE_PROFILE ) === 0 || strcasecmp ( $profileStatus, PaymentProfileStatus::CANCELLED_PROFILE ) === 0) {
+            if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVE_PROFILE ) === 0) {
                 // Do we have a payment profile, we need to cancel it with paypal
                 $manageRPPStatusRequestDetails = new ManageRecurringPaymentsProfileStatusRequestDetailsType ();
                 $manageRPPStatusRequestDetails->Action = 'Cancel';
@@ -72,7 +71,6 @@ class PayPalApiService extends Service {
                     throw new Exception ( $manageRPPStatusResponse->Errors [0]->LongMessage );
                 }
             }
-            $orderService->updatePaymentProfileState ( $paymentProfile ['profileId'], PaymentProfileStatus::CANCELLEDPROFILE );
         }
       
     }
@@ -258,40 +256,6 @@ class PayPalApiService extends Service {
         
         $paypalService = new PayPalAPIInterfaceServiceService ();
         return $paypalService->DoExpressCheckoutPayment ( $DoECReq );
-    }
-    
-    /**
-     * Record the payments from a EC payment response
-     * 
-     * @param DoExpressCheckoutPaymentResponseType $DoECResponse
-     * @param string $payerId
-     * @param array $order
-     * @return array
-     */
-    public function recordECPayments(DoExpressCheckoutPaymentResponseType $DoECResponse, $payerId, array &$order) {
-        $payments = array ();
-        $orderService = OrdersService::instance ();
-        $orderStatus = OrderStatus::COMPLETED;
-        for($i = 0; $i < count ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo ); ++ $i) {
-            $paymentInfo = $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo [$i];
-            $payment = array ();
-            $payment ['orderId'] = $order ['orderId'];
-            $payment ['payerId'] = $payerId;
-            $payment ['amount'] = $paymentInfo->GrossAmount->value;
-            $payment ['currency'] = $paymentInfo->GrossAmount->currencyID;
-            $payment ['transactionId'] = $paymentInfo->TransactionID;
-            $payment ['transactionType'] = $paymentInfo->TransactionType;
-            $payment ['paymentType'] = $paymentInfo->PaymentType;
-            $payment ['paymentStatus'] = $paymentInfo->PaymentStatus;
-            $payment ['paymentDate'] = Date::getDateTime ( $paymentInfo->PaymentDate )->format ( 'Y-m-d H:i:s' );
-            $orderService->addOrderPayment ( $payment );
-            $payments [] = $payment;
-            if ($paymentInfo->PaymentStatus != PaymentStatus::COMPLETED) {
-                $orderStatus = OrderStatus::PENDING;
-            }
-        }
-        $order['state'] = $orderStatus;
-        return $order;
     }
 
 }

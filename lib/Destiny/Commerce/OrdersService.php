@@ -50,19 +50,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * @param int $id
-     * @param string $state
-     */
-    public function updateOrderState($id, $state) {
-        $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_orders', array (
-            'state' => $state 
-        ), array (
-            'orderId' => $id 
-        ) );
-    }
-
-    /**
      * @param int $orderId
      * @return mixed
      */
@@ -168,44 +155,27 @@ class OrdersService extends Service {
     }
 
     /**
-     * @param int $paymentProfileId
-     * @param \DateTime $billingNextDate
+     * @param array $paymentProfile
      */
-    public function updatePaymentProfileNextPayment($paymentProfileId, \DateTime $billingNextDate) {
+    public function updatePaymentProfile(array $paymentProfile) {
         $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_orders_payment_profiles', array (
-            'billingNextDate' => $billingNextDate->format ( 'Y-m-d H:i:s' ) 
-        ), array (
-            'profileId' => $paymentProfileId 
-        ) );
+        $conn->update ( 'dfl_orders_payment_profiles', $paymentProfile, array ('profileId' => $paymentProfile['profileId']) );
     }
 
     /**
-     * @param int $paymentProfileId
-     * @param string $state
+     * @param array $order
      */
-    public function updatePaymentProfileState($paymentProfileId, $state) {
+    public function updateOrder(array $order) {
         $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_orders_payment_profiles', array (
-            'state' => $state 
-        ), array (
-            'profileId' => $paymentProfileId 
-        ) );
+        $conn->update ( 'dfl_orders_payment_profiles', $order, array ('profileId' => $order['orderId']) );
     }
 
     /**
-     * @param int $profileId
-     * @param int $paymentProfileId
-     * @param string $state
+     * @param array $payment
      */
-    public function updatePaymentProfileId($profileId, $paymentProfileId, $state) {
+    public function updatePayment(array $payment) {
         $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_orders_payment_profiles', array (
-            'paymentProfileId' => $paymentProfileId,
-            'state' => $state 
-        ), array (
-            'profileId' => $profileId 
-        ) );
+        $conn->update ( 'dfl_orders_payments', $payment, array ('paymentId' => $payment['paymentId']) );
     }
 
     /**
@@ -238,28 +208,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * @param int $userId
-     * @param int $limit
-     * @param int $start
-     * @return array
-     */
-    public function getPaymentsByUser($userId, $limit = 10, $start = 0) {
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( '
-            SELECT payments.* FROM dfl_orders_payments AS `payments`
-            INNER JOIN dfl_orders AS `orders` ON (orders.orderId = payments.orderId)
-            WHERE orders.userId = :userId
-            ORDER BY payments.paymentDate DESC
-            LIMIT :start,:limit
-        ' );
-        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
-    }
-
-    /**
      * @todo this returns payments in ASC order, the getPaymentsByUser returns them in DESC order
      *
      * @param int $orderId
@@ -285,22 +233,6 @@ class OrdersService extends Service {
     }
 
     /**
-     * @param int $paymentId
-     * @return array
-     */
-    public function getPaymentById($paymentId) {
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( '
-            SELECT payments.* FROM dfl_orders_payments AS `payments`
-            WHERE payments.paymentId = :paymentId
-            LIMIT 0,1
-        ' );
-        $stmt->bindValue ( 'paymentId', $paymentId, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetch ();
-    }
-
-    /**
      * @param array $payment
      * @return int paymentId
      */
@@ -319,19 +251,6 @@ class OrdersService extends Service {
             'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
         ) );
         return $conn->lastInsertId ();
-    }
-
-    /**
-     * @param number $paymentId
-     * @param string $state
-     */
-    public function updatePaymentStatus($paymentId, $state) {
-        $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_orders_payments', array (
-            'paymentStatus' => $state 
-        ), array (
-            'paymentId' => $paymentId 
-        ) );
     }
 
     /**
@@ -373,7 +292,7 @@ class OrdersService extends Service {
         $paymentProfile ['billingPeriod'] = $subscriptionType ['billingPeriod'];
         $paymentProfile ['billingStartDate'] = $billingStartDate->format ( 'Y-m-d H:i:s' );
         $paymentProfile ['billingNextDate'] = $billingStartDate->format ( 'Y-m-d H:i:s' );
-        $paymentProfile ['state'] = PaymentStatus::_NEW;
+        $paymentProfile ['state'] = PaymentProfileStatus::_NEW;
         $paymentProfile ['profileId'] = $ordersService->addPaymentProfile ( $paymentProfile );
         return $paymentProfile;
     }

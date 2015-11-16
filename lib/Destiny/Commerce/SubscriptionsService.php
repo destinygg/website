@@ -13,58 +13,52 @@ use Destiny\Common\Authentication\AuthenticationService;
 class SubscriptionsService extends Service {
 
     /**
-    * Expires subscriptions based on their end date
-    *
-    * @return int the number of expired subscriptions
-    */
-    public function expiredSubscriptions() {
-        $conn = Application::instance ()->getConnection ();
-        $authenticationService = AuthenticationService::instance ();
-
-        // Expire recurring subs with a 24 hour grace period
-        $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE recurring = 1 AND status = :status AND endDate + INTERVAL 1 HOUR <= NOW()' );
-        $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+     * Return recurring subscriptions that have a expired end date, but a active profile.
+     *
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getRecurringSubscriptionsToRenew(){
+        $conn = Application::instance()->getConnection();
+        $stmt = $conn->prepare ( '
+            SELECT s.* FROM dfl_users_subscriptions s
+            INNER JOIN dfl_orders_payment_profiles p ON (p.orderId = s.orderId)
+            WHERE s.recurring = 1 AND s.status = :subscriptionStatus AND p.state = :paymentStatus AND s.endDate <= NOW() AND p.billingNextDate > NOW()
+        ' );
+        $stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'paymentStatus', PaymentProfileStatus::ACTIVE_PROFILE, \PDO::PARAM_STR );
         $stmt->execute ();
-        $subscriptions = $stmt->fetchAll ();
-        if (! empty ( $subscriptions )) {
-          foreach ( $subscriptions as $sub ) {
-            $authenticationService->flagUserForUpdate ( $sub ['userId'] );
-            $conn->update ( 'dfl_users_subscriptions', 
-                array ('status' => SubscriptionStatus::EXPIRED), 
-                array ('subscriptionId' => $sub ['subscriptionId']) 
-            );
-          }
-        }
-
-        // Expire NONE recurring subs immediately
-        $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE (recurring = 0 OR recurring IS NULL) AND status = :status AND endDate <= NOW()' );
-        $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
-        $stmt->execute ();
-        $subscriptions = $stmt->fetchAll ();
-        if (! empty ( $subscriptions )) {
-          foreach ( $subscriptions as $sub ) {
-            $authenticationService->flagUserForUpdate ( $sub ['userId'] );
-            $conn->update ( 'dfl_users_subscriptions',
-                array ('status' => SubscriptionStatus::EXPIRED),
-                array ('subscriptionId' => $sub ['subscriptionId'])
-            );
-          }
-        }
+        return $stmt->fetchAll ();
     }
+
+    /**
+     * Return all subscriptions where the state is active and the end date is < now
+     *
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getExpiredSubscriptions() {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE status = :status AND endDate <= NOW()' );
+        $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+        $stmt->execute ();
+        return $stmt->fetchAll ();
+    }
+
 
     /**
     * Get a subscription type by id
     *
-    * @param string $subscriptionId
+    * @param string $typeId
     * @return array
     * @throws Exception
     */
-    public function getSubscriptionType($subscriptionId) {
+    public function getSubscriptionType($typeId) {
         $subscriptions = Config::$a ['commerce'] ['subscriptions'];
-        if (! empty ( $subscriptionId ) && isset ( $subscriptions [$subscriptionId] )) {
-          return $subscriptions [$subscriptionId];
+        if (! empty ( $typeId ) && isset ( $subscriptions [$typeId] )) {
+          return $subscriptions [$typeId];
         }
-        throw new Exception ( sprintf('Subscription type [%s] not found', $subscriptionId) );
+        throw new Exception ( sprintf('Subscription type [%s] not found', $typeId) );
     }
 
     /**
@@ -322,9 +316,10 @@ class SubscriptionsService extends Service {
         $stmt = $conn->prepare ( '
           SELECT * FROM dfl_users_subscriptions 
           WHERE userId = :userId
-          AND status != \'New\'
+          AND status != :notStatus
           ORDER BY createdDate DESC LIMIT :start,:limit
         ' );
+        $stmt->bindValue ( 'notStatus', \PDO::PARAM_STR );
         $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
