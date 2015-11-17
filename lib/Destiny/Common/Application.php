@@ -149,7 +149,7 @@ class Application extends Service {
             
         } catch ( Exception $e ) {
             
-            $this->logger->error ( $e->getMessage () );
+            $this->logger->error ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
             if ($transactional && $conn->isTransactionActive()) {
                 $conn->rollback ();
             }
@@ -161,7 +161,7 @@ class Application extends Service {
                 
         } catch ( \Exception $e ) {
 
-            $this->logger->critical ( $e->getMessage () );
+            $this->logger->critical ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
             if ($transactional) {
                 $conn->rollback ();
             }
