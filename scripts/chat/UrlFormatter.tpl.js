@@ -77,8 +77,7 @@ destiny.fn.UrlFormatter.prototype.format = function(str) {
 
 		url = self.encodeUrl(m[0]);
 		var extra = self.encodeUrl(decodedUrl.substring(m[0].length));
-		return '<a target="_blank" class="externallink' + extraclass + '" href="' + scheme + url + '"
-rel="nofollow">' + url + '</a>' + extra;
+		return '<a target="_blank" class="externallink' + extraclass + '" href="' + scheme + url + '" rel="nofollow">' + url + '</a>' + extra;
 	});
 };
 
