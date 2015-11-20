@@ -62,7 +62,6 @@ class Application extends Service {
         $route = $this->router->findRoute ( $request );
         $conn = $this->getConnection ();
         $model = new ViewModel ();
-        $transactional = false;
 
         if ( $route == null ) {
             $model->title = Http::$HEADER_STATUSES [Http::STATUS_NOT_FOUND];
@@ -91,7 +90,6 @@ class Application extends Service {
 
         try {
 
-            $transactional = $route->getTransactional();
             $className = $route->getClass ();
             $classMethod = $route->getClassMethod ();
             $classReflection = new \ReflectionClass ( $className );
@@ -117,15 +115,9 @@ class Application extends Service {
                 }
             }
 
-            if ($transactional)
-                $conn->beginTransaction ();
-
             // Execute the controller
             $response = $methodReflection->invokeArgs ($classInstance, $args);
 
-            if ($transactional && $conn->isTransactionActive() && !$conn->isRollbackOnly())
-                $conn->commit ();
-            
             if (empty ( $response ))
                 throw new Exception ( 'Invalid action response' );
             
@@ -150,9 +142,8 @@ class Application extends Service {
         } catch ( Exception $e ) {
             
             $this->logger->error ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
-            if ($transactional && $conn->isTransactionActive()) {
+            if ($conn->isTransactionActive())
                 $conn->rollback ();
-            }
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( $e->getMessage () );
             $model->code = Http::STATUS_ERROR;
@@ -162,9 +153,8 @@ class Application extends Service {
         } catch ( \Exception $e ) {
 
             $this->logger->critical ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
-            if ($transactional) {
+            if ($conn->isTransactionActive())
                 $conn->rollback ();
-            }
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( 'Maximum over-rustle has been achieved' );
             $model->code = Http::STATUS_ERROR;

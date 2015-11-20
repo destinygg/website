@@ -12,7 +12,6 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\Transactional;
 use Destiny\Commerce\OrdersService;
 use PayPal\IPN\PPIPNMessage;
 
@@ -23,7 +22,6 @@ class IpnController {
 
     /**
      * @Route ("/ipn")
-     * @Transactional
      *
      * Handles the incoming HTTP request
      * @return Response
@@ -157,12 +155,20 @@ class IpnController {
                 $log->debug(sprintf('Payment skipped %s', $data ['recurring_payment_id']));
                 break;
 
-            // Sent if user cancels subscription from Paypal's site.
             case 'recurring_payment_profile_cancel' :
                 $paymentProfile = $this->getPaymentProfile($data);
                 $orderService->updatePaymentProfile(array (
                     'profileId' => $paymentProfile['profileId'],
                     'state' => PaymentProfileStatus::CANCELLED_PROFILE
+                ));
+                $log->debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                break;
+
+            case 'recurring_payment_failed' :
+                $paymentProfile = $this->getPaymentProfile($data);
+                $orderService->updatePaymentProfile(array (
+                    'profileId' => $paymentProfile['profileId'],
+                    'state' => PaymentProfileStatus::FAILED
                 ));
                 $log->debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;

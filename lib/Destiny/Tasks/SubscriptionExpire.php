@@ -18,7 +18,6 @@ class SubscriptionExpire implements TaskInterface {
 
     public function execute() {
         $log = Application::instance()->getLogger();
-        $conn = Application::instance()->getConnection();
         $authenticationService = AuthenticationService::instance();
         $subscriptionService = SubscriptionsService::instance ();
         $users = array();
@@ -30,7 +29,10 @@ class SubscriptionExpire implements TaskInterface {
                 $subType = $subscriptionService->getSubscriptionType ( $subscription ['subscriptionType'] );
                 $end = Date::getDateTime ( $subscription ['endDate'] );
                 $end->modify ( '+' . $subType ['billingFrequency'] . ' ' . strtolower ( $subType ['billingPeriod'] ) );
-                $subscriptionService->updateSubscriptionDateEnd ( $subscription ['subscriptionId'], $end );
+                $subscriptionService->updateSubscription (array(
+                    'subscriptionId' => $subscription ['subscriptionId'],
+                    'endDate' => $end->format ( 'Y-m-d H:i:s' )
+                ));
                 $this->sendResubscribeBroadcast ( $subscription );
                 $users[] = $subscription ['userId'];
             } catch (\Exception $e) {
@@ -43,10 +45,10 @@ class SubscriptionExpire implements TaskInterface {
         if (! empty ( $subscriptions )) {
             foreach ( $subscriptions as $subscription ) {
                 $users[] = $subscription ['userId'];
-                $conn->update ( 'dfl_users_subscriptions',
-                    array ('status' => SubscriptionStatus::EXPIRED),
-                    array ('subscriptionId' => $subscription ['subscriptionId'])
-                );
+                $subscriptionService->updateSubscription(array(
+                    'subscriptionId' => $subscription ['subscriptionId'],
+                    'status' => SubscriptionStatus::EXPIRED
+                ));
             }
         }
 

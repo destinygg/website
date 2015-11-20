@@ -35,11 +35,6 @@ class Route {
      */
     public $feature;
 
-    /**
-     * @var boolean
-     */
-    public $transactional;
-
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
             Options::setOptions ( $this, $params );
@@ -53,8 +48,7 @@ class Route {
             'classMethod',
             'httpMethod',
             'secure',
-            'feature',
-            'transactional'
+            'feature'
         );
     }
 
@@ -108,14 +102,6 @@ class Route {
 
     public function setFeature($feature) {
         $this->feature = $feature;
-    }
-
-    public function getTransactional() {
-        return $this->transactional;
-    }
-
-    public function setTransactional($transactional) {
-        $this->transactional = $transactional;
     }
 
 }

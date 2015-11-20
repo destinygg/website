@@ -7,7 +7,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Exception;
 use Destiny\Common\Application;
 use Destiny\Common\Scheduler;
@@ -62,7 +61,6 @@ class AdminController {
     /**
      * @Route ("/admin/cron")
      * @Secure ({"ADMIN"})
-     * @Transactional
      *
      * @param array $params
      * @return array|Response

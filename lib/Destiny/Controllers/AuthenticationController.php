@@ -4,7 +4,6 @@ namespace Destiny\Controllers;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Google\GoogleAuthHandler;
@@ -149,7 +148,6 @@ class AuthenticationController {
 
     /**
      * @Route ("/api/auth")
-     * @Transactional
      *
      * @param array $params
      * @return Response
@@ -166,7 +164,6 @@ class AuthenticationController {
 
     /**
      * @Route ("/auth/twitch")
-     * @Transactional
      *
      * @param array $params
      * @param ViewModel $model
@@ -184,7 +181,6 @@ class AuthenticationController {
 
     /**
      * @Route ("/auth/twitter")
-     * @Transactional
      *
      * @param array $params
      * @param ViewModel $model
@@ -202,7 +198,6 @@ class AuthenticationController {
 
     /**
      * @Route ("/auth/google")
-     * @Transactional
      *
      * @param array $params
      * @param ViewModel $model
@@ -220,7 +215,6 @@ class AuthenticationController {
 
     /**
      * @Route ("/auth/reddit")
-     * @Transactional
      *
      * @param array $params
      * @param ViewModel $model

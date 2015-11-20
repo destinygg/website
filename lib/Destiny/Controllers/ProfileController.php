@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
@@ -12,7 +13,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\OrdersService;
@@ -132,7 +132,6 @@ class ProfileController {
    * @Route ("/profile/update")
    * @HttpMethod ({"POST"})
    * @Secure ({"USER"})
-   * @Transactional
    *
    * @param array $params
    * @return string
@@ -265,12 +264,11 @@ class ProfileController {
    * @Route ("/profile/authtoken/create")
    * @HttpMethod ({"POST"})
    * @Secure ({"USER"})
-   * @Transactional
    *
    * @param array $params
    * @param Request $request
    * @return string
-   * @throws Exception
+   * @throws \Exception
    */
     public function profileAuthTokenCreate(array $params, Request $request) {
       if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
@@ -285,8 +283,19 @@ class ProfileController {
       if (count ( $tokens ) >= 5) {
         throw new Exception ( 'You have reached the maximum [5] allowed login keys.' );
       }
-      $token = $apiAuthService->createAuthToken ( $userId );
-      $apiAuthService->addAuthToken ( $userId, $token );
+
+      $log = Application::instance()->getLogger();
+      $conn = Application::instance()->getConnection();
+      $conn->beginTransaction();
+      try {
+        $token = $apiAuthService->createAuthToken ( $userId );
+        $apiAuthService->addAuthToken ( $userId, $token );
+        $conn->commit();
+      } catch ( \Exception $e ) {
+        $log->critical("Error creating auth token");
+        $conn->rollBack();
+        throw $e;
+      }
       Session::set ( 'modelSuccess', 'Auth token created!' );
       return 'redirect: /profile/authentication';
     }
@@ -295,7 +304,6 @@ class ProfileController {
    * @Route ("/profile/authtoken/{authToken}/delete")
    * @HttpMethod ({"POST"})
    * @Secure ({"USER"})
-   * @Transactional
    *
    * @param array $params
    * @return string
@@ -370,7 +378,6 @@ class ProfileController {
      * @Route ("/profile/address/update")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @Transactional
      *
      * @param array $params
      * @return string

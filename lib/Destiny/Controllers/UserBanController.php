@@ -9,7 +9,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
 
@@ -113,7 +112,6 @@ class UserBanController {
      * @Route ("/admin/user/{userId}/ban/{id}/update")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"POST"})
-     * @Transactional
      *
      * @param array $params
      * @return string

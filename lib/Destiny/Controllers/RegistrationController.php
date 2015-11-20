@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Common\Application;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
@@ -12,7 +13,6 @@ use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Transactional;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Google\GoogleRecaptchaHandler;
@@ -78,13 +78,12 @@ class RegistrationController {
     /**
      * @Route ("/register")
      * @HttpMethod ({"POST"})
-     * @Transactional
      *
      * @param array $params
      * @param ViewModel $model
      * @param Request $request
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     public function registerProcess(array $params, ViewModel $model, Request $request) {
         $userService = UserService::instance ();
@@ -99,27 +98,39 @@ class RegistrationController {
         $authCreds->setUsername ( $username );
         $authCreds->setEmail ( $email );
 
-        if ($rememberme) {
+        if ($rememberme)
             Session::set ( 'rememberme', 1 );
-        }
-        
-        try {
-        
-            if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
-                throw new Exception ( 'You must solve the recaptcha.' );
 
+        try {
+            if (!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
+                throw new Exception ('You must solve the recaptcha.');
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
             $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
-        
-            $authService->validateUsername ( $username );
-            $authService->validateEmail ( $email );
-            if (! empty ( $country )) {
-                $countryArr = Country::getCountryByCode ( $country );
-                if (empty ( $countryArr )) {
-                    throw new Exception ( 'Invalid country' );
+            $authService->validateUsername($username);
+            $authService->validateEmail($email);
+            if (!empty ($country)) {
+                $countryArr = Country::getCountryByCode($country);
+                if (empty ($countryArr)) {
+                    throw new Exception ('Invalid country');
                 }
                 $country = $countryArr ['alpha-2'];
             }
+        } catch ( Exception $e ) {
+            $model->title = 'Register Error';
+            $model->username = $username;
+            $model->email = $email;
+            $model->follow = (isset($params['follow'])) ? $params['follow']:'';
+            $model->authProvider = $authCreds->getAuthProvider ();
+            $model->code = $authCreds->getAuthCode ();
+            $model->error = $e;
+            return 'register';
+        }
+
+        $log = Application::instance()->getLogger();
+        $conn = Application::instance()->getConnection();
+        $conn->beginTransaction();
+
+        try {
             $user = array ();
             $user ['username'] = $username;
             $user ['email'] = $email;
@@ -131,21 +142,19 @@ class RegistrationController {
                 'authProvider' => $authCreds->getAuthProvider (),
                 'authId' => $authCreds->getAuthId (),
                 'authCode' => $authCreds->getAuthCode (),
-                'authDetail' => $authCreds->getAuthDetail () 
+                'authDetail' => $authCreds->getAuthDetail ()
             ) );
+            $conn->commit();
             Session::set ( 'authSession' );
-            $authCredHandler = new AuthenticationRedirectionFilter ();
-            return $authCredHandler->execute ( $authCreds );
-        } catch ( Exception $e ) {
-            $model->title = 'Register Error';
-            $model->username = $username;
-            $model->email = $email;
-            $model->follow = (isset($params['follow'])) ? $params['follow']:'';
-            $model->authProvider = $authCreds->getAuthProvider ();
-            $model->code = $authCreds->getAuthCode ();
-            $model->error = $e;
-            return 'register';
+        } catch ( \Exception $e ) {
+            $log->critical("Error registering user");
+            $conn->rollBack();
+            throw $e;
         }
+
+        $authCredHandler = new AuthenticationRedirectionFilter ();
+        return $authCredHandler->execute ( $authCreds );
+
     }
 
 }

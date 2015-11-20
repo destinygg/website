@@ -42,8 +42,6 @@ abstract class ControllerAnnotationLoader {
             $secure = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Secure' );
             /** @var \Destiny\Common\Annotation\Feature $feature */
             $feature = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Feature' );
-            /** @var \Destiny\Common\Annotation\Transactional $transactional */
-            $transactional = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Transactional' );
 
             for($i=0; $i < count($routes); ++$i){
                 $router->addRoute ( new Route ( array (
@@ -53,7 +51,6 @@ abstract class ControllerAnnotationLoader {
                     'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
                     'secure' => ($secure) ? $secure->roles : null,
                     'feature' => ($feature) ? $feature->features : null,
-                    'transactional' => ($transactional) ? true : false,
                 ) ) );
             }
         }

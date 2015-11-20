@@ -113,71 +113,6 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * @param int $subscriptionId
-    * @param \DateTime $endDate
-    */
-    public function updateSubscriptionDateEnd($subscriptionId, \DateTime $endDate) {
-        $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_users_subscriptions', array (
-          'endDate' => $endDate->format ( 'Y-m-d H:i:s' ) 
-        ), array (
-          'subscriptionId' => $subscriptionId 
-        ) );
-    }
-
-    /**
-     * @param int $subscriptionId
-     * @param boolean $recurring
-     */
-    public function updateSubscriptionRecurring($subscriptionId, $recurring) {
-        $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_users_subscriptions', array (
-          'recurring' => ($recurring) ? 1:0 
-        ), array (
-          'subscriptionId' => $subscriptionId 
-        ), array (
-          \PDO::PARAM_BOOL,
-          \PDO::PARAM_INT 
-        ) );
-    }
-
-    /**
-     * @param int $subscriptionId
-     * @param string $status
-     */
-    public function updateSubscriptionState($subscriptionId, $status) {
-        $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_users_subscriptions', array (
-          'status' => $status 
-        ), array (
-          'subscriptionId' => $subscriptionId 
-        ), array (
-          \PDO::PARAM_STR,
-          \PDO::PARAM_INT 
-        ) );
-    }
-
-    /**
-    * @param int $subscriptionId
-    * @param int $profileId
-    * @param boolean $recurring
-    * @return int
-    */
-    public function updateSubscriptionPaymentProfile($subscriptionId, $profileId, $recurring) {
-        $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_users_subscriptions', array (
-          'paymentProfileId' => $profileId,
-          'recurring' => $recurring 
-        ), array (
-          'subscriptionId' => $subscriptionId 
-        ), array (
-          \PDO::PARAM_STR,
-          \PDO::PARAM_BOOL,
-          \PDO::PARAM_INT 
-        ) );
-    }
-
-    /**
     * @param int $tier
     * @return array<array>
     */
@@ -298,9 +233,7 @@ class SubscriptionsService extends Service {
     */
     public function updateSubscription(array $subscription) {
         $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_users_subscriptions', $subscription, array (
-            'subscriptionId' => $subscription ['subscriptionId'] 
-        ) );
+        $conn->update ( 'dfl_users_subscriptions', $subscription, array ('subscriptionId' => $subscription ['subscriptionId']) );
     }
 
     /**
@@ -376,7 +309,7 @@ class SubscriptionsService extends Service {
           return false;
         }
 
-        // make sure the giftee doesnt have an active subscription
+        // make sure the giftee doesn't have an active subscription
         $subscription = $this->getUserActiveSubscription ($giftee);
         if(!empty($subscription)){
           return false;

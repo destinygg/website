@@ -2,6 +2,7 @@
 
 namespace Destiny\Controllers;
 
+use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
@@ -10,7 +11,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Annotation\Transactional;
 use Destiny\Chat\ChatlogService;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
@@ -77,17 +77,17 @@ class UserAdminController {
         }
         return 'admin/user';
     }
-    
+
     /**
      * @Route ("/admin/user/{id}/edit")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"POST"})
-     * @Transactional
      *
-     * @param array $params         
-     * @param ViewModel $model          
-     * @throws Exception
+     * @param array $params
+     * @param ViewModel $model
      * @return string
+     * @throws Exception
+     * @throws \Exception
      */
     public function adminUserEditProcess(array $params, ViewModel $model) {
         $model->title = 'User';
@@ -119,7 +119,6 @@ class UserAdminController {
             $country = $countryArr ['alpha-2'];
         }
         
-        // Data for update
         $userData = array (
             'username' => $username,
             'country' => $country,
@@ -128,21 +127,28 @@ class UserAdminController {
             'minecraftuuid' => $minecraftuuid,
             'allowGifting' => $allowGifting
         );
-        $userService->updateUser ( $user ['userId'], $userData );
-        $user = $userService->getUserById ( $params ['id'] );
-        
-        // Features
-        if (! isset ( $params ['features'] ))
-           $params ['features'] = array ();
-          
-          // Roles
-        if (! isset ( $params ['roles'] ))
-            $params ['roles'] = array ();
-        
-        $userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
-        $userService->setUserRoles ( $user ['userId'], $params ['roles'] );
-        $authService->flagUserForUpdate ( $user ['userId'] );
-        
+
+        $log = Application::instance()->getLogger();
+        $conn = Application::instance()->getConnection();
+        $conn->beginTransaction();
+
+        try {
+            $userService->updateUser ( $user ['userId'], $userData );
+            $user = $userService->getUserById ( $params ['id'] );
+            if (! isset ( $params ['features'] ))
+                $params ['features'] = array ();
+            if (! isset ( $params ['roles'] ))
+                $params ['roles'] = array ();
+            $userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
+            $userService->setUserRoles ( $user ['userId'], $params ['roles'] );
+            $authService->flagUserForUpdate ( $user ['userId'] );
+            $conn->commit();
+        } catch (\Exception $e){
+            $log->critical("Error updating user", $user);
+            $conn->rollBack();
+            throw $e;
+        }
+
         Session::set ( 'modelSuccess', 'User profile updated' );
         return 'redirect: /admin/user/'.$user ['userId'].'/edit';
     }
