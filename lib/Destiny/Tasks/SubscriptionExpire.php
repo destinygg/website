@@ -27,11 +27,19 @@ class SubscriptionExpire implements TaskInterface {
         foreach ( $subscriptions as $subscription ){
             try {
                 $subType = $subscriptionService->getSubscriptionType ( $subscription ['subscriptionType'] );
+
+                // Because subscriptions can be revived after months of skipped payments;
+                // The end date may not simply be behind by the subscription frequency.
                 $end = Date::getDateTime ( $subscription ['endDate'] );
+                $diff = $end->diff(new \DateTime ( 'NOW' ));
+                $end->modify ( '+' . (intval(($diff->format('%y') * 12)) + intval($diff->format('%m'))) . ' month' );
+                //
+
                 $end->modify ( '+' . $subType ['billingFrequency'] . ' ' . strtolower ( $subType ['billingPeriod'] ) );
                 $subscriptionService->updateSubscription (array(
                     'subscriptionId' => $subscription ['subscriptionId'],
-                    'endDate' => $end->format ( 'Y-m-d H:i:s' )
+                    'endDate' => $end->format ( 'Y-m-d H:i:s' ),
+                    'status' => SubscriptionStatus::ACTIVE
                 ));
                 $this->sendResubscribeBroadcast ( $subscription );
                 $users[] = $subscription ['userId'];
