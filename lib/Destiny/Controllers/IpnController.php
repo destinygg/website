@@ -131,6 +131,13 @@ class IpnController {
                     'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s')
                 ));
 
+                if(strcasecmp($data ['payment_status'], PaymentStatus::COMPLETED) === 0){
+                    $orderService->updatePaymentProfile(array (
+                        'profileId' => $paymentProfile['profileId'],
+                        'status' => PaymentProfileStatus::ACTIVE_PROFILE
+                    ));
+                }
+
                 $payment = array();
                 $payment ['orderId'] = $paymentProfile ['orderId'];
                 $payment ['payerId'] = $data ['payer_id'];
