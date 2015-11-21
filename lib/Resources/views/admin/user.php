@@ -168,7 +168,7 @@ use Destiny\Commerce\SubscriptionStatus;
   </section>
   
   <section class="container collapsible">
-    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscriptions</h3>
     <div class="content content-dark clearfix">
       <div class="ds-block">
         <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/add" class="btn btn-primary">New subscription</a>
@@ -179,6 +179,7 @@ use Destiny\Commerce\SubscriptionStatus;
           <tr>
             <td>Subscription Type</td>
             <td>Status</td>
+            <td>Gifter</td>
             <td>Created</td>
             <td>Ending</td>
           </tr>
@@ -199,6 +200,11 @@ use Destiny\Commerce\SubscriptionStatus;
               <span class="subtle"><?=Tpl::out($subinfo['status'])?></span>
               <?php endif; ?>
             </td>
+            <td>
+              <?php if(!empty($subinfo['gifter'])): ?>
+              <a href="/admin/user/<?=$subinfo['gifter']?>/edit"><?=Tpl::out($model->gifters[$subinfo['gifter']]['username'])?></a>
+              <?php endif; ?>
+            </td>
             <td><?=Tpl::moment(Date::getDateTime($subinfo['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
             <td><?=Tpl::moment(Date::getDateTime($subinfo['endDate']), Date::STRING_FORMAT_YEAR)?></td>
           </tr>
@@ -209,6 +215,55 @@ use Destiny\Commerce\SubscriptionStatus;
       <div class="ds-block">
         <p>No active subscriptions</p>
       </div>
+      <?php endif; ?>
+    </div>
+  </section>
+
+  <section class="container collapsible">
+    <h3><span class="fa fa-fw fa-chevron-right expander"></span> Gifts</h3>
+    <div class="content content-dark clearfix">
+      <?php if(!empty($model->gifts)): ?>
+        <table class="grid">
+          <thead>
+          <tr>
+            <td>Subscription Type</td>
+            <td>Status</td>
+            <td>Gifted To</td>
+            <td>Created</td>
+            <td>Ending</td>
+          </tr>
+          </thead>
+          <tbody>
+          <?php foreach($model->gifts as $subinfo): ?>
+            <tr>
+              <td>
+                <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit"><?=Tpl::out($subinfo['tierLabel'])?></a>
+                <?php if($subinfo['recurring'] == '1'): ?>
+                  <span class="subtle">(Recurring)</span>
+                <?php endif; ?>
+              </td>
+              <td>
+                <?php if(strcasecmp($subinfo['status'], SubscriptionStatus::ACTIVE) === 0): ?>
+                  <span class="badge badge-success"><?=Tpl::out($subinfo['status'])?></span>
+                <?php else: ?>
+                  <span class="subtle"><?=Tpl::out($subinfo['status'])?></span>
+                <?php endif; ?>
+              </td>
+              <td>
+                <?php if(!empty($subinfo['userId'])): ?>
+                  <a href="/admin/user/<?=$subinfo['userId']?>/edit"><?=Tpl::out($model->recipients[$subinfo['userId']]['username'])?></a>
+                <?php endif; ?>
+              </td>
+              <td><?=Tpl::moment(Date::getDateTime($subinfo['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
+              <td><?=Tpl::moment(Date::getDateTime($subinfo['endDate']), Date::STRING_FORMAT_YEAR)?></td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php else: ?>
+        <div class="ds-block">
+          <p>No active subscription gifts</p>
+        </div>
       <?php endif; ?>
     </div>
   </section>

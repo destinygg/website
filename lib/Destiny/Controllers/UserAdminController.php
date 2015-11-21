@@ -38,8 +38,6 @@ class UserAdminController {
      * @return string
      */
     public function adminUserEdit(array $params, ViewModel $model) {
-        $model->title = 'User';
-        
         FilterParams::required($params, 'id');
         
         $user = UserService::instance ()->getUserById ( $params ['id'] );
@@ -70,11 +68,28 @@ class UserAdminController {
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
         $model->address = $userService->getAddressByUserId ( $user ['userId'] );
         $model->subscriptions = $subscriptionsService->getUserSubscriptions($user ['userId']);
+        $model->gifts = $subscriptionsService->getSubscriptionsByGifter($user ['userId']);
+
+        $gifters = array();
+        $recipients = array();
+
+        foreach ( $model->subscriptions as $subscription ){
+            if(!empty($subscription['gifter'])){
+                $gifters[$subscription['gifter']] = $userService->getUserById($subscription['gifter']);
+            }
+        }
+        foreach ( $model->gifts as $subscription ){
+            $recipients[$subscription['userId']] = $userService->getUserById($subscription['userId']);
+        }
+
+        $model->gifters = $gifters;
+        $model->recipients = $recipients;
 
         if (Session::get ( 'modelSuccess' )) {
             $model->success = Session::get ( 'modelSuccess' );
             Session::set ( 'modelSuccess' );
         }
+        $model->title = 'User';
         return 'admin/user';
     }
 
@@ -242,6 +257,7 @@ class UserAdminController {
         FilterParams::required ( $params, 'status' );
         FilterParams::required ( $params, 'createdDate' );
         FilterParams::required ( $params, 'endDate' );
+        FilterParams::required ( $params, 'gifter' );
         
         $subscriptionsService = SubscriptionsService::instance ();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);
@@ -253,6 +269,7 @@ class UserAdminController {
         $subscription ['createdDate'] = $params ['createdDate'];
         $subscription ['endDate'] = $params ['endDate'];
         $subscription ['userId'] = $params ['id'];
+        $subscription ['gifter'] = $params ['gifter'];
         $subscription ['subscriptionSource'] = (isset ( $params ['subscriptionSource'] ) && ! empty ( $params ['subscriptionSource'] )) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
         
         if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {

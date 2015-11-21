@@ -266,20 +266,18 @@ class SubscriptionsService extends Service {
     public function getUserSubscriptions($userId, $limit = 100, $start = 0) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-          SELECT * FROM dfl_users_subscriptions 
+          SELECT * FROM dfl_users_subscriptions
           WHERE userId = :userId
-          AND status != :notStatus
           ORDER BY createdDate DESC LIMIT :start,:limit
         ' );
-        $stmt->bindValue ( 'notStatus', \PDO::PARAM_STR );
         $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
         $stmt->execute ();
         $subscriptions = $stmt->fetchAll ();
         for($i = 0; $i < count ( $subscriptions ); $i ++) {
-          $subType = $this->getSubscriptionType ( $subscriptions [$i] ['subscriptionType'] );
-          $subscriptions [$i] ['tierLabel'] = $subType ['tierLabel'];
+            $subType = $this->getSubscriptionType ( $subscriptions [$i] ['subscriptionType'] );
+            $subscriptions [$i] ['tierLabel'] = $subType ['tierLabel'];
         }
         return $subscriptions;
     }
@@ -293,7 +291,7 @@ class SubscriptionsService extends Service {
     public function getSubscriptionById($subscriptionId) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-            SELECT * FROM dfl_users_subscriptions 
+            SELECT * FROM dfl_users_subscriptions
             WHERE subscriptionId = :subscriptionId
             LIMIT 1
         ' );
@@ -335,5 +333,32 @@ class SubscriptionsService extends Service {
         }
 
         return true;
+    }
+
+    /**
+     * @param number $gifterId
+     * @param int $limit
+     * @param int $start
+     * @return array
+     * @throws Exception
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getSubscriptionsByGifter($gifterId, $limit = 100, $start = 0) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare ( '
+          SELECT * FROM dfl_users_subscriptions
+          WHERE gifter = :gifter
+          ORDER BY createdDate DESC LIMIT :start,:limit
+        ' );
+        $stmt->bindValue ( 'gifter', $gifterId, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+        $stmt->execute ();
+        $subscriptions = $stmt->fetchAll ();
+        for($i = 0; $i < count ( $subscriptions ); $i ++) {
+            $subType = $this->getSubscriptionType ( $subscriptions [$i] ['subscriptionType'] );
+            $subscriptions [$i] ['tierLabel'] = $subType ['tierLabel'];
+        }
+        return $subscriptions;
     }
 }

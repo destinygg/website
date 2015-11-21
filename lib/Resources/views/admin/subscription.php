@@ -57,6 +57,13 @@ use Destiny\Common\Utils\Date;
               <?php endforeach; ?>
             </select>
           </div>
+
+          <div class="form-group">
+            <label class="control-label" for="inputGifter">Gifter</label>
+            <div class="controls">
+              <input type="text" class="form-control" name="gifter" id="inputGifter" value="<?=Tpl::out($model->subscription['gifter'])?>" placeholder="Gifter user id">
+            </div>
+          </div>
           
           <div class="form-group">
             <label>Status:</label>
