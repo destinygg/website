@@ -33,6 +33,7 @@ use Destiny\Common\Config;
           <tr>
             <td style="width: 20px;"></td>
             <td style="width: 200px;">User</td>
+            <td style="width: 200px;">Gifter</td>
             <td style="width: 100px;">Recurring</td>
             <td style="width: 80px;">Created on</td>
             <td>Ends on</td>
@@ -44,6 +45,7 @@ use Destiny\Common\Config;
         <tr>
           <td><?=$i?></td>
           <td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
+          <td><a href="/admin/user/<?=$sub['gifter']?>/edit"><?=Tpl::out($sub['gifterUsername'])?></a></td>
           <td><?=($sub['recurring'] == 1) ? 'Yes':'No'?></td>
           <td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?></td>
           <td><?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>

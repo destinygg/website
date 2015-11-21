@@ -138,9 +138,21 @@ class SubscriptionsService extends Service {
     public function getSubscriptionsByTier($tier) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-          SELECT u.userId,u.username,u.email,s.subscriptionType,s.createdDate,s.endDate,s.subscriptionSource,s.recurring,s.status 
+          SELECT
+            u.userId,
+            u.username,
+            u.email,
+            s.subscriptionType,
+            s.createdDate,
+            s.endDate,
+            s.subscriptionSource,
+            s.recurring,
+            s.status,
+            s.gifter,
+            u2.username `gifterUsername`
           FROM dfl_users_subscriptions AS s
           INNER JOIN dfl_users AS u ON (u.userId = s.userId)
+          LEFT JOIN dfl_users AS u2 ON (u2.userId = s.gifter)
           WHERE s.subscriptionTier = :subscriptionTier AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource
           ORDER BY s.createdDate ASC
         ' );
