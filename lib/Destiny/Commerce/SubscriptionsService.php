@@ -23,7 +23,7 @@ class SubscriptionsService extends Service {
         $stmt = $conn->prepare ( '
             SELECT s.* FROM dfl_users_subscriptions s
             INNER JOIN dfl_orders_payment_profiles p ON (p.orderId = s.orderId)
-            WHERE s.recurring = 1 AND s.status = :subscriptionStatus AND s.endDate <= NOW() AND p.billingNextDate > NOW()
+            WHERE s.recurring = 1 AND p.state = :paymentStatus AND s.endDate <= NOW() AND p.billingNextDate > NOW()
         ' );
         $stmt->bindValue ( 'paymentStatus', PaymentProfileStatus::ACTIVE_PROFILE, \PDO::PARAM_STR );
         $stmt->execute ();
@@ -89,7 +89,7 @@ class SubscriptionsService extends Service {
           SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
           WHERE s.userId = :userId AND s.status = :status 
-          ORDER BY s.createdDate DESC 
+          ORDER BY s.subscriptionTier DESC, s.createdDate DESC
           LIMIT 0,1
         ' );
         $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
@@ -109,6 +109,26 @@ class SubscriptionsService extends Service {
         $stmt->bindValue ( 'status', SubscriptionStatus::PENDING, \PDO::PARAM_STR );
         $stmt->execute ();
         return $stmt->fetch ();
+    }
+
+    /**
+    * @param int $subscriptionId
+    * @param int $profileId
+    * @param boolean $recurring
+    * @return int
+    */
+    public function updateSubscriptionPaymentProfile($subscriptionId, $profileId, $recurring) {
+        $conn = Application::instance ()->getConnection ();
+        $conn->update ( 'dfl_users_subscriptions', array (
+          'paymentProfileId' => $profileId,
+          'recurring' => $recurring
+        ), array (
+          'subscriptionId' => $subscriptionId
+        ), array (
+          \PDO::PARAM_STR,
+          \PDO::PARAM_BOOL,
+          \PDO::PARAM_INT
+        ) );
     }
 
     /**
@@ -308,7 +328,7 @@ class SubscriptionsService extends Service {
           return false;
         }
 
-        // make sure the giftee doesn't have an active subscription
+        // make sure the giftee doesnt have an active subscription
         $subscription = $this->getUserActiveSubscription ($giftee);
         if(!empty($subscription)){
           return false;

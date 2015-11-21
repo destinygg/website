@@ -131,12 +131,10 @@ class IpnController {
                     'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s')
                 ));
 
-                if(strcasecmp($data ['payment_status'], PaymentStatus::COMPLETED) === 0){
-                    $orderService->updatePaymentProfile(array (
-                        'profileId' => $paymentProfile['profileId'],
-                        'status' => PaymentProfileStatus::ACTIVE_PROFILE
-                    ));
-                }
+                $orderService->updatePaymentProfile(array (
+                    'profileId' => $paymentProfile['profileId'],
+                    'status' => PaymentProfileStatus::ACTIVE_PROFILE
+                ));
 
                 $payment = array();
                 $payment ['orderId'] = $paymentProfile ['orderId'];
@@ -182,12 +180,9 @@ class IpnController {
             // Sent on first post-back when the user subscribes
             case 'recurring_payment_profile_created' :
                 $paymentProfile = $this->getPaymentProfile($data);
-                if (strcasecmp($data ['profile_status'], 'Active') === 0) { // paypal uses "Active" here and "ActiveProfile" everywhere else ...
-                    $data ['profile_status'] = PaymentProfileStatus::ACTIVE_PROFILE;
-                }
                 $orderService->updatePaymentProfile(array (
                     'profileId' => $paymentProfile['profileId'],
-                    'state' => $data ['payment_status']
+                    'status' => PaymentProfileStatus::ACTIVE_PROFILE
                 ));
                 $log->debug(sprintf('Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
