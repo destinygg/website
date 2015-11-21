@@ -33,7 +33,6 @@ use Destiny\Common\Config;
           <tr>
             <td style="width: 20px;"></td>
             <td style="width: 200px;">User</td>
-            <td style="width: 200px;">Gifter</td>
             <td style="width: 100px;">Recurring</td>
             <td style="width: 80px;">Created on</td>
             <td>Ends on</td>
@@ -44,8 +43,12 @@ use Destiny\Common\Config;
         <?php foreach($tier as $sub): ?>
         <tr>
           <td><?=$i?></td>
-          <td><a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a></td>
-          <td><a href="/admin/user/<?=$sub['gifter']?>/edit"><?=Tpl::out($sub['gifterUsername'])?></a></td>
+          <td>
+            <a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a>
+            <?php if(!empty($sub['gifter'])): ?>
+              &nbsp; (<a title="Gifted by" href="/admin/user/<?=$sub['gifter']?>/edit"><span class="fa fa-gift" title="Gift"></span> <?=Tpl::out($sub['gifterUsername'])?></a>)
+            <?php endif; ?>
+          </td>
           <td><?=($sub['recurring'] == 1) ? 'Yes':'No'?></td>
           <td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?></td>
           <td><?=Tpl::moment(Date::getDateTime($sub['endDate']), Date::STRING_FORMAT)?></td>

@@ -202,14 +202,14 @@ $(function(){
             streampanel = $('#stream-panel'),
             chatframe   = $('iframe#chat-frame'),
             overlay     = $('<div class="overlay" />');
-        
-        $('iframe#chat-frame').on('load', function(){
+
+        chatframe.on('load', function(){
             var chatwindow = this.contentWindow;
             
             if(!chatwindow)
                 return;
 
-            $('#chat-panel-tools').each(function(e){
+            $('#chat-panel-tools').each(function(){
                 $(this).on('click', '#popout', function(){
                     window.open('/embed/chat', '_blank', window.getOptionsString());
                     $('body').addClass('nochat');
