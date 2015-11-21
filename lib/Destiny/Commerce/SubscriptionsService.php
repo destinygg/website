@@ -23,9 +23,8 @@ class SubscriptionsService extends Service {
         $stmt = $conn->prepare ( '
             SELECT s.* FROM dfl_users_subscriptions s
             INNER JOIN dfl_orders_payment_profiles p ON (p.orderId = s.orderId)
-            WHERE s.recurring = 1 AND s.status = :subscriptionStatus AND p.state = :paymentStatus AND s.endDate <= NOW() AND p.billingNextDate > NOW()
+            WHERE s.recurring = 1 AND s.status = :subscriptionStatus AND s.endDate <= NOW() AND p.billingNextDate > NOW()
         ' );
-        $stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
         $stmt->bindValue ( 'paymentStatus', PaymentProfileStatus::ACTIVE_PROFILE, \PDO::PARAM_STR );
         $stmt->execute ();
         return $stmt->fetchAll ();
