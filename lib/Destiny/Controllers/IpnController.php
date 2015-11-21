@@ -128,8 +128,7 @@ class IpnController {
                 $nextPaymentDate = Date::getDateTime($data ['next_payment_date']);
                 $orderService->updatePaymentProfile(array (
                     'profileId' => $paymentProfile['profileId'],
-                    'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s'),
-                    'state' => $data ['payment_status']
+                    'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s')
                 ));
 
                 $payment = array();
