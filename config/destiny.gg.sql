@@ -32,19 +32,6 @@ CREATE TABLE `dfl_features` (
   PRIMARY KEY (`featureId`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `dfl_orders` (
-  `orderId` int(14) NOT NULL AUTO_INCREMENT,
-  `userId` int(14) DEFAULT NULL,
-  `state` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `amount` float DEFAULT NULL,
-  `currency` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `createdDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`orderId`),
-  KEY `userId` (`userId`),
-  KEY `userOrderState` (`userId`,`state`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `dfl_orders_ipn` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
   `ipnTrackId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -55,27 +42,9 @@ CREATE TABLE `dfl_orders_ipn` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `dfl_orders_payment_profiles` (
-  `profileId` int(14) NOT NULL AUTO_INCREMENT,
-  `userId` int(14) DEFAULT NULL,
-  `orderId` int(14) DEFAULT NULL,
-  `paymentProfileId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `state` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `amount` float DEFAULT NULL,
-  `currency` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `billingFrequency` int(2) DEFAULT NULL,
-  `billingPeriod` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `billingStartDate` datetime DEFAULT NULL,
-  `billingNextDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`profileId`),
-  KEY `userId` (`userId`),
-  KEY `userOrderId` (`userId`,`orderId`),
-  KEY `paymentProfileId` (`paymentProfileId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `dfl_orders_payments` (
   `paymentId` int(14) NOT NULL AUTO_INCREMENT,
-  `orderId` int(14) DEFAULT NULL,
+  `subscriptionId` int(14) DEFAULT NULL,
   `amount` float DEFAULT NULL,
   `currency` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
   `transactionId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -172,9 +141,11 @@ CREATE TABLE `dfl_users_subscriptions` (
   `endDate` DATETIME DEFAULT NULL,
   `status` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `recurring` TINYINT(4) DEFAULT NULL,
-  `orderId` INT(14) DEFAULT NULL,
-  `paymentProfileId` INT(14) DEFAULT NULL,
-  `gifter` INT(14) DEFAULT NULL,
+  `paymentProfileId` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `billingStartDate` DATETIME DEFAULT NULL,
+  `billingNextDate` DATETIME DEFAULT NULL,
+  `paymentStatus` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gifter` int(14) DEFAULT NULL,
   PRIMARY KEY (`subscriptionId`),
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
@@ -207,31 +178,3 @@ CREATE TABLE `privatemessages` (
   KEY `targetuserid` (`targetuserid`),
   KEY `userid` (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-/* INSERT DEFAULT DATA */
-
-INSERT INTO `dfl_users` (userId, username, email, country, createdDate, modifiedDate, userStatus, nameChangedCount, nameChangedDate) VALUES 
-(NULL, 'Admin', 'admin@destiny.gg', '', NOW(), NOW(), 'Active', 0, NULL);
-
-INSERT INTO `dfl_roles` (roleId, roleName) VALUES 
-(1, 'ADMIN');
-
-INSERT INTO `dfl_users_roles` (userId, roleId) VALUES 
-(1, 1);
-
-INSERT  INTO `dfl_features`(`featureId`,`featureName`,`featureLabel`) VALUES 
-(1, 'protected', 'Protected'),
-(2, 'subscriber', 'Subscriber'),
-(3, 'vip', 'Vip'),
-(4, 'moderator', 'Moderator'),
-(5, 'admin', 'Admin'),
-(6, 'bot', 'Bot'),
-(7, 'flair1', 'Subscriber Tier 2'),
-(8, 'flair2', 'Notable'),
-(9, 'flair3', 'Subscriber Tier 3'),
-(10, 'flair4', 'Trusted'),
-(11, 'flair5', 'Contributor'),
-(12, 'flair6', 'Composition Challenge Winner'),
-(13, 'flair7', 'Eve Notable'),
-(14, 'flair8', 'Subscriber Tier 4');

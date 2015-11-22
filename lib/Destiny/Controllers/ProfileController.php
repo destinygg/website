@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
@@ -15,7 +16,6 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
-use Destiny\Commerce\OrdersService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Api\ApiAuthenticationService;
 use Destiny\Common\Response;
@@ -32,25 +32,6 @@ use Destiny\Google\GoogleRecaptchaHandler;
  * @Controller
  */
 class ProfileController {
-
-    /**
-     * Get a subscriptions payment profile
-     * @TODO clean up
-     *
-     * @param array $subscription         
-     * @return array
-     */
-    private function getPaymentProfile(array $subscription) {
-      $orderService = OrdersService::instance ();
-      $paymentProfile = null;
-      if (! empty ( $subscription ) && ! empty ( $subscription ['paymentProfileId'] )) {
-        $paymentProfile = $orderService->getPaymentProfileById ( $subscription ['paymentProfileId'] );
-        if (! empty ( $paymentProfile )) {
-          $paymentProfile ['billingCycle'] = $orderService->buildBillingCycleString ( $paymentProfile ['billingFrequency'], $paymentProfile ['billingPeriod'] );
-        }
-      }
-      return $paymentProfile;
-    }
 
   /**
    * @Route ("/profile/info")
@@ -104,10 +85,9 @@ class ProfileController {
       $subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions( $userId );
       for ( $i=0; $i < count($subscriptions); $i++ ){
         $subscriptions [$i]['type'] = $subscriptionsService->getSubscriptionType ( $subscriptions [$i]['subscriptionType'] );
-        $subscriptions [$i]['paymentProfile'] = $this->getPaymentProfile ( $subscriptions [$i] );
       }
 
-      $gifts = $subscriptionsService->getActiveSubscriptionsByGifterId ( $userId );
+      $gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus ( $userId, SubscriptionStatus::ACTIVE );
       for ( $i=0; $i < count($gifts); $i++ ){
         $gifts [$i]['type'] = $subscriptionsService->getSubscriptionType ( $gifts [$i]['subscriptionType'] );
       }

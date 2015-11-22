@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
@@ -39,7 +39,7 @@ use Destiny\Common\Config;
         <form action="/" method="GET">
         
           <div class="ds-block">
-            <p>Your order was successful, The order reference is <span class="label label-default">#<?=$model->order['orderId']?></span>
+            <p>Your order was successful, The order reference is <span class="label label-default">#<?=$model->subscription['subscriptionId']?></span>
             <br />Please email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for any queries or issues.
             <br /><br />Thank you for your support!</p>
           </div>

@@ -1,10 +1,9 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Commerce\PaymentProfileStatus;
-use Destiny\Common\Response;
-use Destiny\Commerce\OrderStatus;
 use Destiny\Commerce\PaymentStatus;
+use Destiny\Commerce\SubscriptionsService;
+use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
@@ -74,13 +73,13 @@ class IpnController {
 
         $log = Application::instance()->getLogger();
         $orderService = OrdersService::instance();
+        $subscriptionsService = SubscriptionsService::instance();
 
-        switch (strtolower($txnType)) {
+        switch (strtoupper($txnType)) {
 
-            // Post back from checkout, make sure the payment lines up
             // This is sent when a express checkout has been performed by a user
-            case 'express_checkout' :
-
+            // We need to handle the case where orders go through, but have pending payments.
+            case 'EXPRESS_CHECKOUT' :
                 $payment = $orderService->getPaymentByTransactionId($txnId);
                 if (!empty ($payment)) {
 
@@ -94,95 +93,84 @@ class IpnController {
                         'paymentId' => $payment ['paymentId'],
                         'paymentStatus' => $data ['payment_status']
                     ));
-                    $log->notice(sprintf('Updated payment status %s status %s', $data ['txn_id'], $data ['payment_status']));
 
-                    // If the payment status WAS PENDING, and the IPN payment status is COMPLETED
-                    // This is for the E-CHECK payment method
-                    if (strcasecmp($payment ['paymentStatus'], PaymentStatus::PENDING) === 0 && strcasecmp($data ['payment_status'], PaymentStatus::COMPLETED) === 0) {
-                        $order = $orderService->getOrderByPaymentId($payment ['paymentId']);
-                        if (!empty ($order)) {
-                            $orderService->updateOrder(array(
-                                'orderId' => $order ['orderId'],
-                                'state' => OrderStatus::COMPLETED
-                            ));
-                            $log->debug(sprintf('Updated order status %s status %s', $order ['orderId'], OrderStatus::COMPLETED));
-                        }
+                    // Update the subscription paymentStatus to active (may have been pending)
+                    // TODO we set the paymentStatus to active without checking it because we get the opportunity to check it after subscription completion
+                    $subscription = $subscriptionsService->getSubscriptionById ( $payment ['subscriptionId'] );
+                    if (!empty ($subscription)) {
+                        $subscriptionsService->updateSubscription(array(
+                            'subscriptionId' => $subscription['subscriptionId'],
+                            'paymentStatus' => PaymentStatus::ACTIVE
+                        ));
                     }
+
                 } else {
                     $log->info(sprintf('Express checkout IPN called, but no payment found [%s]', $txnId));
                 }
                 break;
 
-            // Recurring payment, renew subscriptions, or set to pending depending on the type
             // This is sent from paypal when a recurring payment is billed
-            case 'recurring_payment' :
-
-                if (!isset ($data ['payment_status'])) {
+            case 'RECURRING_PAYMENT' :
+                if (!isset ($data ['payment_status']))
                     throw new Exception ('Invalid payment status');
-                }
-                if (!isset ($data ['next_payment_date'])) {
+                if (!isset ($data ['next_payment_date']))
                     throw new Exception ('Invalid next_payment_date');
-                }
 
-                $paymentProfile = $this->getPaymentProfile($data);
                 $nextPaymentDate = Date::getDateTime($data ['next_payment_date']);
-                $orderService->updatePaymentProfile(array (
-                    'profileId' => $paymentProfile['profileId'],
-                    'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s')
+                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
+                $subscriptionsService->updateSubscription(array(
+                    'subscriptionId' => $subscription['subscriptionId'],
+                    'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s'),
+                    'paymentStatus' => PaymentStatus::ACTIVE
                 ));
 
-                $orderService->updatePaymentProfile(array (
-                    'profileId' => $paymentProfile['profileId'],
-                    'status' => PaymentProfileStatus::ACTIVE_PROFILE
+                $orderService->addPayment(array(
+                    'subscriptionId'  => $subscription ['subscriptionId'],
+                    'payerId'         => $data ['payer_id'],
+                    'amount'          => $data ['mc_gross'],
+                    'currency'        => $data ['mc_currency'],
+                    'transactionId'   => $txnId,
+                    'transactionType' => $txnType,
+                    'paymentType'     => $data ['payment_type'],
+                    'paymentStatus'   => $data ['payment_status'],
+                    'paymentDate'     => Date::getDateTime($data ['payment_date'])->format('Y-m-d H:i:s'),
                 ));
-
-                $payment = array();
-                $payment ['orderId'] = $paymentProfile ['orderId'];
-                $payment ['payerId'] = $data ['payer_id'];
-                $payment ['amount'] = $data ['mc_gross'];
-                $payment ['currency'] = $data ['mc_currency'];
-                $payment ['transactionId'] = $txnId;
-                $payment ['transactionType'] = $txnType;
-                $payment ['paymentType'] = $data ['payment_type'];
-                $payment ['paymentStatus'] = $data ['payment_status'];
-                $payment ['paymentDate'] = Date::getDateTime($data ['payment_date'])->format('Y-m-d H:i:s');
-                $orderService->addOrderPayment($payment);
                 $log->notice(sprintf('Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
 
-            case 'recurring_payment_skipped':
-                $paymentProfile = $this->getPaymentProfile($data);
-                $orderService->updatePaymentProfile(array (
-                    'profileId' => $paymentProfile['profileId'],
-                    'state' => PaymentProfileStatus::SKIPPED
+            case 'RECURRING_PAYMENT_SKIPPED':
+                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
+                $subscriptionsService->updateSubscription(array (
+                    'subscriptionId' => $subscription['subscriptionId'],
+                    'paymentStatus' => PaymentStatus::SKIPPED
                 ));
                 $log->debug(sprintf('Payment skipped %s', $data ['recurring_payment_id']));
                 break;
 
-            case 'recurring_payment_profile_cancel' :
-                $paymentProfile = $this->getPaymentProfile($data);
-                $orderService->updatePaymentProfile(array (
-                    'profileId' => $paymentProfile['profileId'],
-                    'state' => PaymentProfileStatus::CANCELLED_PROFILE
+            case 'RECURRING_PAYMENT_PROFILE_CANCEL' :
+                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
+                $subscriptionsService->updateSubscription(array (
+                    'subscriptionId' => $subscription['subscriptionId'],
+                    'paymentStatus' => PaymentStatus::CANCELLED
                 ));
                 $log->debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
 
-            case 'recurring_payment_failed' :
-                $paymentProfile = $this->getPaymentProfile($data);
-                $orderService->updatePaymentProfile(array (
-                    'profileId' => $paymentProfile['profileId'],
-                    'state' => PaymentProfileStatus::FAILED
+            case 'RECURRING_PAYMENT_FAILED' :
+                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
+                $subscriptionsService->updateSubscription(array (
+                    'subscriptionId' => $subscription['subscriptionId'],
+                    'paymentStatus' => PaymentStatus::FAILED
                 ));
                 $log->debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
 
             // Sent on first post-back when the user subscribes
-            case 'recurring_payment_profile_created' :
-                $paymentProfile = $this->getPaymentProfile($data);
-                $orderService->updatePaymentProfile(array (
-                    'profileId' => $paymentProfile['profileId'],
-                    'status' => PaymentProfileStatus::ACTIVE_PROFILE
+            case 'RECURRING_PAYMENT_PROFILE_CREATED' :
+                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
+                $subscriptionsService->updateSubscription(array (
+                    'subscriptionId' => $subscription['subscriptionId'],
+                    'paymentStatus' => PaymentStatus::ACTIVE
                 ));
                 $log->debug(sprintf('Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
@@ -191,19 +179,19 @@ class IpnController {
 
     /**
      * @param array $data
-     * @return array
+     * @return array|null
      * @throws Exception
      */
-    protected function getPaymentProfile(array $data) {
-        if (!isset ($data ['recurring_payment_id']) || empty ($data ['recurring_payment_id'])) {
-            throw new Exception ('Invalid recurring_payment_id');
+    protected function getSubscriptionByPaymentProfileData( array $data ){
+        $subscription = null;
+        if (isset ($data ['recurring_payment_id']) && empty ($data ['recurring_payment_id'])) {
+            $subscriptionService = SubscriptionsService::instance();
+            $subscription = $subscriptionService->getSubscriptionByPaymentProfileId( $data ['recurring_payment_id'] );
         }
-        $orderService = OrdersService::instance();
-        $paymentProfile = $orderService->getPaymentProfileByPaymentProfileId($data ['recurring_payment_id']);
-        if (empty ($paymentProfile)) {
-            throw new Exception ('Invalid payment profile');
+        if(empty($subscription)){
+            throw new Exception( 'Could not load subscription by payment data' );
         }
-        return $paymentProfile;
+        return $subscription;
     }
 
 }

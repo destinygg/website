@@ -1,5 +1,6 @@
-<?
+<?php
 namespace Destiny;
+use Destiny\Commerce\PaymentStatus;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
@@ -44,10 +45,10 @@ use Destiny\Commerce\SubscriptionStatus;
                 <dd><?=Date::getRemainingTime(Date::getDateTime($subscription['endDate']))?></dd>
               </dl>
 
-              <?php if(!empty($subscription['paymentProfile']) && strcasecmp($subscription['paymentProfile']['state'], 'ActiveProfile')===0): ?>
+              <?php if(strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE)===0): ?>
                 <?php
-                $billingNextDate = Date::getDateTime($subscription['paymentProfile']['billingNextDate']);
-                $billingStartDate = Date::getDateTime($subscription['paymentProfile']['billingStartDate']);
+                $billingNextDate = Date::getDateTime($subscription['billingNextDate']);
+                $billingStartDate = Date::getDateTime($subscription['billingStartDate']);
                 ?>
                 <dl>
                   <dt>Next billing date</dt>

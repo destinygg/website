@@ -12,6 +12,21 @@ use Destiny\Common\Exception;
 class SubscriptionsService extends Service {
 
     /**
+     * Get a subscription type by id
+     *
+     * @param string $typeId
+     * @return array
+     * @throws Exception
+     */
+    public function getSubscriptionType($typeId) {
+        $subscriptions = Config::$a ['commerce'] ['subscriptions'];
+        if (! empty ( $typeId ) && isset ( $subscriptions [$typeId] )) {
+            return $subscriptions [$typeId];
+        }
+        throw new Exception ( sprintf('Subscription type [%s] not found', $typeId) );
+    }
+
+    /**
      * Return recurring subscriptions that have a expired end date, but a active profile.
      *
      * @return array
@@ -21,10 +36,9 @@ class SubscriptionsService extends Service {
         $conn = Application::instance()->getConnection();
         $stmt = $conn->prepare ( '
             SELECT s.* FROM dfl_users_subscriptions s
-            INNER JOIN dfl_orders_payment_profiles p ON (p.orderId = s.orderId)
-            WHERE s.recurring = 1 AND p.state = :paymentStatus AND s.endDate <= NOW() AND p.billingNextDate > NOW()
+            WHERE s.recurring = 1 AND s.paymentStatus = :paymentStatus AND s.endDate <= NOW() AND s.billingNextDate > NOW()
         ' );
-        $stmt->bindValue ( 'paymentStatus', PaymentProfileStatus::ACTIVE_PROFILE, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'paymentStatus', PaymentStatus::ACTIVE, \PDO::PARAM_STR );
         $stmt->execute ();
         return $stmt->fetchAll ();
     }
@@ -35,7 +49,7 @@ class SubscriptionsService extends Service {
      * @return array
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function getExpiredSubscriptions() {
+    public function getSubscriptionsToExpire() {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( 'SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE status = :status AND endDate <= NOW()' );
         $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
@@ -43,41 +57,12 @@ class SubscriptionsService extends Service {
         return $stmt->fetchAll ();
     }
 
-
-    /**
-    * Get a subscription type by id
-    *
-    * @param string $typeId
-    * @return array
-    * @throws Exception
-    */
-    public function getSubscriptionType($typeId) {
-        $subscriptions = Config::$a ['commerce'] ['subscriptions'];
-        if (! empty ( $typeId ) && isset ( $subscriptions [$typeId] )) {
-          return $subscriptions [$typeId];
-        }
-        throw new Exception ( sprintf('Subscription type [%s] not found', $typeId) );
-    }
-
-    /**
-    * Get the first subscription
-    * Note: This does not take into account end date.
-    *
-    * @param int $userId
-    * @return array
-    */
-    public function getUserSubscription($userId) {
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId ORDER BY createdDate DESC LIMIT 0,1' );
-        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetch ();
-    }
-
     /**
      * Get the first active subscription
      * Note: This does not take into account end date.
-     * It relies on the subscription status Active
+     * It relies on the subscription status Active.
+     * It also orders by subscriptionTier and createdDate
+     * Returning only the highest and newest tier subscription.
      *
      * @param int $userId
      * @return array
@@ -119,9 +104,10 @@ class SubscriptionsService extends Service {
     /**
      * @param int $subscriptionId
      * @param int $userId
+     * @param string $status
      * @return array
      */
-    public function getUserActiveSubscriptionByIdAndUserId($subscriptionId, $userId) {
+    public function getSubscriptionByIdAndUserIdAndStatus($subscriptionId, $userId, $status) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
           SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
@@ -131,42 +117,42 @@ class SubscriptionsService extends Service {
         ' );
         $stmt->bindValue ( 'subscriptionId', $subscriptionId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'status', $status, \PDO::PARAM_STR );
+        $stmt->execute ();
+        return $stmt->fetch ();
+    }
+
+    /**
+     * @param int $subscriptionId
+     * @param int $userId
+     * @return array
+     */
+    public function getSubscriptionByIdAndUserId($subscriptionId, $userId) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare ( '
+          SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
+          LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
+          WHERE s.userId = :userId AND s.subscriptionId = :subscriptionId
+          LIMIT 1
+        ' );
+        $stmt->bindValue ( 'subscriptionId', $subscriptionId, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
         $stmt->execute ();
         return $stmt->fetch ();
     }
 
     /**
     * @param int $userId
+    * @param string $status
     * @return array
     */
-    public function getUserPendingSubscription($userId) {
+    public function getSubscriptionByUserIdAndStatus( $userId, $status ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( 'SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND status = :status ORDER BY createdDate DESC LIMIT 0,1' );
         $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'status', SubscriptionStatus::PENDING, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'status', $status, \PDO::PARAM_STR );
         $stmt->execute ();
         return $stmt->fetch ();
-    }
-
-    /**
-    * @param int $subscriptionId
-    * @param int $profileId
-    * @param boolean $recurring
-    * @return int
-    */
-    public function updateSubscriptionPaymentProfile($subscriptionId, $profileId, $recurring) {
-        $conn = Application::instance ()->getConnection ();
-        $conn->update ( 'dfl_users_subscriptions', array (
-          'paymentProfileId' => $profileId,
-          'recurring' => $recurring
-        ), array (
-          'subscriptionId' => $subscriptionId
-        ), array (
-          \PDO::PARAM_STR,
-          \PDO::PARAM_BOOL,
-          \PDO::PARAM_INT
-        ) );
     }
 
     /**
@@ -203,28 +189,10 @@ class SubscriptionsService extends Service {
 
     /**
     * @param int $gifterId
+    * @param string $status
     * @return array<array>
     */
-    public function getSubscriptionsByGifterId( $gifterId ) {
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( '
-          SELECT s.*, u2.username, u.username `gifterUsername` 
-          FROM dfl_users_subscriptions s
-          LEFT JOIN dfl_users u ON (u.userId = s.gifter)
-          LEFT JOIN dfl_users u2 ON (u2.userId = s.userId)
-          WHERE s.gifter = :gifter
-          ORDER BY createdDate DESC
-        ' );
-        $stmt->bindValue ( 'gifter', $gifterId, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
-    }
-
-    /**
-    * @param int $gifterId
-    * @return array<array>
-    */
-    public function getActiveSubscriptionsByGifterId( $gifterId ) {
+    public function getSubscriptionsByGifterIdAndStatus( $gifterId, $status ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
           SELECT s.*, u2.username, u.username `gifterUsername` 
@@ -235,17 +203,18 @@ class SubscriptionsService extends Service {
           ORDER BY endDate ASC
         ' );
         $stmt->bindValue ( 'gifter', $gifterId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'status', $status, \PDO::PARAM_STR );
         $stmt->execute ();
         return $stmt->fetchAll ();
     }
 
     /**
-    * @param int $subscriptionId
-    * @param int $gifterId
-    * @return array<array>
-    */
-    public function getActiveSubscriptionByIdAndGifterId( $subscriptionId, $gifterId ) {
+     * @param int $subscriptionId
+     * @param int $gifterId
+     * @param $status
+     * @return array <array>
+     */
+    public function getSubscriptionByIdAndGifterIdAndStatus( $subscriptionId, $gifterId, $status ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
           SELECT s.*, u2.username, u.username `gifterUsername` 
@@ -258,32 +227,9 @@ class SubscriptionsService extends Service {
         ' );
         $stmt->bindValue ( 'gifter', $gifterId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'subscriptionId', $subscriptionId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'status', $status, \PDO::PARAM_STR );
         $stmt->execute ();
         return $stmt->fetch ();
-    }
-
-    /**
-    * @param number $orderId
-    * @return array
-    */
-    public function getSubscriptionByOrderId($orderId){
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( '
-          SELECT * FROM dfl_users_subscriptions WHERE orderId = :orderId 
-          ORDER BY createdDate DESC 
-          LIMIT 0,1
-        ' );
-        $stmt->bindValue ( 'orderId', $orderId, \PDO::PARAM_INT );
-        $stmt->execute ();
-
-        $subscription = $stmt->fetch ();
-        if (! empty ( $subscription )) {
-          $subType = $this->getSubscriptionType ( $subscription ['subscriptionType'] );
-          $subscription ['tierLabel'] = $subType ['tierLabel'];
-        }
-
-        return $subscription;
     }
 
     /**
@@ -313,7 +259,7 @@ class SubscriptionsService extends Service {
      * @throws Exception
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function getUserSubscriptions($userId, $limit = 100, $start = 0) {
+    public function getSubscriptionsByUserId($userId, $limit = 100, $start = 0) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
           SELECT * FROM dfl_users_subscriptions
@@ -324,12 +270,7 @@ class SubscriptionsService extends Service {
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
         $stmt->execute ();
-        $subscriptions = $stmt->fetchAll ();
-        for($i = 0; $i < count ( $subscriptions ); $i ++) {
-            $subType = $this->getSubscriptionType ( $subscriptions [$i] ['subscriptionType'] );
-            $subscriptions [$i] ['tierLabel'] = $subType ['tierLabel'];
-        }
-        return $subscriptions;
+        return $stmt->fetchAll ();
     }
 
     /**
@@ -347,12 +288,7 @@ class SubscriptionsService extends Service {
         ' );
         $stmt->bindValue ( 'subscriptionId', $subscriptionId, \PDO::PARAM_INT );
         $stmt->execute ();
-        $subscription = $stmt->fetch ();
-        if (! empty ( $subscription )) {
-          $subType = $this->getSubscriptionType ( $subscription ['subscriptionType'] );
-          $subscription ['tierLabel'] = $subType ['tierLabel'];
-        }
-        return $subscription;
+        return $stmt->fetch ();
     }
 
     /**
@@ -376,7 +312,7 @@ class SubscriptionsService extends Service {
           return false;
         }
 
-        // make sure the giftee doesnt have an active subscription
+        // make sure the giftee doesn't have an active subscription
         $subscription = $this->getUserActiveSubscription ($giftee);
         if(!empty($subscription)){
           return false;
@@ -404,11 +340,22 @@ class SubscriptionsService extends Service {
         $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
         $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
         $stmt->execute ();
-        $subscriptions = $stmt->fetchAll ();
-        for($i = 0; $i < count ( $subscriptions ); $i ++) {
-            $subType = $this->getSubscriptionType ( $subscriptions [$i] ['subscriptionType'] );
-            $subscriptions [$i] ['tierLabel'] = $subType ['tierLabel'];
-        }
-        return $subscriptions;
+        return $stmt->fetchAll ();
+    }
+
+    /**
+     * @param string $paymentProfileId
+     * @return array
+     */
+    public function getSubscriptionByPaymentProfileId( $paymentProfileId ){
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare ( '
+            SELECT * FROM dfl_users_subscriptions
+            WHERE paymentProfileId = :subscriptionId
+            LIMIT 1
+        ' );
+        $stmt->bindValue ( 'paymentProfileId', $paymentProfileId, \PDO::PARAM_STR );
+        $stmt->execute ();
+        return $stmt->fetch ();
     }
 }

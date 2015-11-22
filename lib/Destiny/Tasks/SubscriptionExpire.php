@@ -49,7 +49,7 @@ class SubscriptionExpire implements TaskInterface {
         }
 
         // Expire subscriptions
-        $subscriptions = $subscriptionService->getExpiredSubscriptions();
+        $subscriptions = $subscriptionService->getSubscriptionsToExpire();
         if (! empty ( $subscriptions )) {
             foreach ( $subscriptions as $subscription ) {
                 $users[] = $subscription ['userId'];
@@ -65,6 +65,15 @@ class SubscriptionExpire implements TaskInterface {
         foreach ($users as $id) {
             $authenticationService->flagUserForUpdate ( $id );
         };
+
+        // Clean-up old unfinished subscriptions (where users have aborted the process)
+        $conn = Application::instance()->getConnection();
+        $stmt = $conn->prepare ( '
+          DELETE FROM `dfl_users_subscriptions`
+          WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 24 HOUR)
+        ' );
+        $stmt->bindValue ( 'status', SubscriptionStatus::_NEW, \PDO::PARAM_STR );
+        $stmt->execute ();
     }
 
     private function sendResubscribeBroadcast(array $subscription) {

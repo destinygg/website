@@ -188,7 +188,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <?php foreach($model->subscriptions as $subinfo): ?>
           <tr>
             <td>
-              <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit"><?=Tpl::out($subinfo['tierLabel'])?></a>
+              <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">Tier <?=Tpl::out($subinfo['subscriptionTier'])?></a>
               <?php if($subinfo['recurring'] == '1'): ?>
               <span class="subtle">(Recurring)</span>
               <?php endif; ?>
@@ -237,7 +237,7 @@ use Destiny\Commerce\SubscriptionStatus;
           <?php foreach($model->gifts as $subinfo): ?>
             <tr>
               <td>
-                <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit"><?=Tpl::out($subinfo['tierLabel'])?></a>
+                <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">TIER <?=Tpl::out($subinfo['subscriptionTier'])?></a>
                 <?php if($subinfo['recurring'] == '1'): ?>
                   <span class="subtle">(Recurring)</span>
                 <?php endif; ?>

@@ -41,10 +41,10 @@ use Destiny\Common\Config;
 
             <p>An error has occurred during the subscription process.
             
-            <?php if(!empty($model->orderId)): ?>
-            <br />Your reference is #<?=Tpl::out($model->orderId)?>
+            <?php if(!empty($model->subscription)): ?>
+            <br />Your reference is #<?=Tpl::out($model->subscription['subscriptionId'])?>
             <?php endif; ?>
-            
+
             <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. 
             </p>
             

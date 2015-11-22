@@ -67,7 +67,7 @@ class UserAdminController {
         $model->ban = $ban;
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
         $model->address = $userService->getAddressByUserId ( $user ['userId'] );
-        $model->subscriptions = $subscriptionsService->getUserSubscriptions($user ['userId']);
+        $model->subscriptions = $subscriptionsService->getSubscriptionsByUserId($user ['userId']);
         $model->gifts = $subscriptionsService->getSubscriptionsByGifter($user ['userId']);
 
         $gifters = array();
@@ -219,12 +219,10 @@ class UserAdminController {
         
         $subscription = array ();
         $payments = array ();
-        $order = array ();
-        
+
         if (! empty ( $params ['subscriptionId'] )) {
             $subscription = $subscriptionsService->getSubscriptionById ( $params ['subscriptionId'] );
-            $order = $ordersService->getOrderById ( $subscription ['orderId'] );
-            $payments = $ordersService->getPaymentsByOrderId ( $subscription ['orderId'] );
+            $payments = $ordersService->getPaymentsBySubscriptionId ( $subscription ['subscriptionId'] );
         }
         
         if (Session::get ( 'modelSuccess' )) {
@@ -235,7 +233,6 @@ class UserAdminController {
         $model->user = $userService->getUserById ( $params ['id'] );
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         $model->subscription = $subscription;
-        $model->order = $order;
         $model->payments = $payments;
         $model->title = 'Subscription';
         return "admin/subscription";

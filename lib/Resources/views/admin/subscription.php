@@ -94,7 +94,6 @@ use Destiny\Common\Utils\Date;
           <div class="form-group">
             <label>Recurring:</label>
             <strong><?=($model->subscription['recurring'] == '1') ? 'Yes':'No'?></strong>
-            <span class="help-block">Cannot set recurring subscription via admin.</span>
           </div>
         </div>
         
@@ -106,33 +105,33 @@ use Destiny\Common\Utils\Date;
       </form>
     </div>
   </section>
-  
-  <?php if(!empty($model->order)): ?>
+
+  <?php if(!empty($model->subscription['paymentProfileId'])): ?>
   <section class="container">
-    <h3>Order details #<?=Tpl::out($model->order['orderId'])?></h3>
+    <h3>Payment Status</h3>
     <div class="content content-dark clearfix">
       <table class="grid">
         <thead>
-          <tr>
-            <td>Status</td>
-            <td>Amount</td>
-            <td>Created</td>
-            <td>Desc</td>
-          </tr>
+        <tr>
+          <td>Status</td>
+          <td>Payment Profile Id</td>
+          <td>Start Payment Date</td>
+          <td>Next Payment Date</td>
+        </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><?=Tpl::out($model->order['state'])?></td>
-            <td><?=Tpl::out($model->order['amount'])?> <?=Tpl::out($model->order['currency'])?></td>
-            <td><?=Tpl::moment(Date::getDateTime($model->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
-            <td><?=Tpl::out($model->order['description'])?></td>
-          </tr>
+        <tr>
+          <td><?=Tpl::out($model->subscription['paymentStatus'])?></td>
+          <td><?=Tpl::out($model->subscription['paymentProfileId'])?></td>
+          <td><?=Tpl::moment(Date::getDateTime($model->subscription['billingStartDate']), Date::STRING_FORMAT_YEAR)?></td>
+          <td><?=Tpl::moment(Date::getDateTime($model->subscription['billingNextDate']), Date::STRING_FORMAT_YEAR)?></td>
+        </tr>
         </tbody>
       </table>
     </div>
   </section>
   <?php endif; ?>
-  
+
   <?php if(!empty($model->payments)): ?>
   <section class="container">
     <h3>Payments</h3>
