@@ -61,16 +61,21 @@ class SubscriptionController {
     }
     
     /**
-     * @Route ("/subscription/cancel")
+     * @Route ("/subscription/{id}/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      *
+     * @param array $params
      * @param ViewModel $model
      * @throws Exception
      * @return string
      */
-    public function subscriptionCancel(ViewModel $model) {
-        $subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( Session::getCredentials ()->getUserId () );
+    public function subscriptionCancel(array $params, ViewModel $model) {
+        FilterParams::required($params, 'id');
+        $subscriptionsService = SubscriptionsService::instance ();
+        $userId = Session::getCredentials ()->getUserId ();
+        $subscriptionId = $params['id'];
+        $subscription = $subscriptionsService->getUserActiveSubscriptionByIdAndUserId ( $subscriptionId, $userId );
         if (empty ( $subscription )) {
             throw new Exception ( 'Must have an active subscription' );
         }
@@ -80,7 +85,7 @@ class SubscriptionController {
     }
     
     /**
-     * @Route ("/subscription/{id}/cancel")
+     * @Route ("/subscription/gift/{id}/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      *

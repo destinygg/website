@@ -15,17 +15,17 @@ use Destiny\Common\Utils\Date;
 
     <?php include Tpl::file('seg/top.php') ?>
     <?php include Tpl::file('seg/headerband.php') ?>
-    
+
     <section class="container">
       <h1 class="page-title">
         <span>Cancel</span>
         <small>subscription</small>
       </h1>
     </section>
-      
+
     <section class="container">
       <div class="content content-dark clearfix">
-        
+
         <?php if($model->subscriptionCancelled): ?>
         <div class="ds-block">
           <div class="form-group">
@@ -46,7 +46,7 @@ use Destiny\Common\Utils\Date;
                 <span class="label label-default" title="This subscription is not automatically renewed">Not recurring</span>
                 <?php endif; ?>
               </dd>
-              
+
               <dt>Time remaining:</dt>
               <dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
               <dt>Created date:</dt>
@@ -66,7 +66,7 @@ use Destiny\Common\Utils\Date;
           <a class="btn btn-link" href="/profile">Back to profile</a>
         </div>
         <?php endif; ?>
-      
+
         <?php if(!$model->subscriptionCancelled): ?>
         <form action="/subscription/cancel" method="post" autocomplete="off">
 
@@ -86,7 +86,7 @@ use Destiny\Common\Utils\Date;
                   <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
                   <?php endif; ?>
                 </dd>
-                
+
                 <dt>Source:</dt>
                 <dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
                 <dt>Created date:</dt>
@@ -124,9 +124,9 @@ use Destiny\Common\Utils\Date;
       </div>
     </section>
   </div>
-    
+
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
-  
+
 </body>
 </html>

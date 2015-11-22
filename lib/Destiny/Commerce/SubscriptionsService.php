@@ -76,13 +76,13 @@ class SubscriptionsService extends Service {
     }
 
     /**
-    * Get the first active subscription
-    * Note: This does not take into account end date.
-    * It relies on the subscription status Active
-    *
-    * @param int $userId
-    * @return array
-    */
+     * Get the first active subscription
+     * Note: This does not take into account end date.
+     * It relies on the subscription status Active
+     *
+     * @param int $userId
+     * @return array
+     */
     public function getUserActiveSubscription($userId) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -92,6 +92,45 @@ class SubscriptionsService extends Service {
           ORDER BY s.subscriptionTier DESC, s.createdDate DESC
           LIMIT 0,1
         ' );
+        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+        $stmt->execute ();
+        return $stmt->fetch ();
+    }
+
+    /**
+     * @param int $userId
+     * @return array
+     */
+    public function getUserActiveAndPendingSubscriptions($userId) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare ( '
+          SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
+          LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
+          WHERE s.userId = :userId AND (s.status = :activeStatus OR s.status = :pendingStatus)
+          ORDER BY s.subscriptionTier DESC, s.createdDate DESC
+        ' );
+        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'activeStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'pendingStatus', SubscriptionStatus::PENDING, \PDO::PARAM_STR );
+        $stmt->execute ();
+        return $stmt->fetchAll ();
+    }
+
+    /**
+     * @param int $subscriptionId
+     * @param int $userId
+     * @return array
+     */
+    public function getUserActiveSubscriptionByIdAndUserId($subscriptionId, $userId) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare ( '
+          SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
+          LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
+          WHERE s.userId = :userId AND s.status = :status AND s.subscriptionId = :subscriptionId
+          LIMIT 1
+        ' );
+        $stmt->bindValue ( 'subscriptionId', $subscriptionId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
         $stmt->execute ();

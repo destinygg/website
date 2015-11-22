@@ -77,19 +77,6 @@ class ProfileController {
       $subscriptionsService = SubscriptionsService::instance ();
       $userId = Session::getCredentials ()->getUserId ();
       
-      $subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
-      if (empty ( $subscription )) {
-        $subscription = $subscriptionsService->getUserPendingSubscription ( $userId );
-      }
-      
-      $paymentProfile = null;
-      $subscriptionType = null;
-      
-      if (! empty ( $subscription ) && ! empty ( $subscription ['subscriptionType'] )) {
-        $subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
-        $paymentProfile = $this->getPaymentProfile ( $subscription );
-      }
-      
       $address = $userService->getAddressByUserId ( $userId );
       if (empty ( $address )) {
         $address = array ();
@@ -113,16 +100,21 @@ class ProfileController {
       
       $model->title = 'Profile';
       $model->user = $userService->getUserById ( $userId );
-      $model->subscription = $subscription;
-      $model->subscriptionType = $subscriptionType;
+
+      $subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions( $userId );
+      for ( $i=0; $i < count($subscriptions); $i++ ){
+        $subscriptions [$i]['type'] = $subscriptionsService->getSubscriptionType ( $subscriptions [$i]['subscriptionType'] );
+        $subscriptions [$i]['paymentProfile'] = $this->getPaymentProfile ( $subscriptions [$i] );
+      }
 
       $gifts = $subscriptionsService->getActiveSubscriptionsByGifterId ( $userId );
       for ( $i=0; $i < count($gifts); $i++ ){
         $gifts [$i]['type'] = $subscriptionsService->getSubscriptionType ( $gifts [$i]['subscriptionType'] );
       }
-      $model->gifts = $gifts;
 
-      $model->paymentProfile = $paymentProfile;
+      $model->gifts = $gifts;
+      $model->subscriptions = $subscriptions;
+
       $model->address = $address;
       $model->title = 'Account';
       return 'profile';

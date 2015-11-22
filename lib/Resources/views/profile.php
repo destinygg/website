@@ -24,73 +24,63 @@ use Destiny\Commerce\SubscriptionStatus;
     
     <section class="container collapsible">
       <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>
-      
-      <?php if(!empty($model->subscription) && !empty($model->subscriptionType)): ?>
+      <?php if(!empty($model->subscriptions)): ?>
       <div class="content">
 
-        <div class="content-dark clearfix">
-
+        <?php foreach($model->subscriptions as $subscription): ?>
+        <div class="content-dark clearfix" style="margin-bottom:10px;">
           <div class="ds-block">
             <div class="subscription" style="width: auto;">
-            
-              <h3><?=$model->subscriptionType['tierLabel']?></h3>
+              <h3><?=$subscription['type']['tierLabel']?></h3>
+
               <p>
-                <span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)
-                <?php if($model->subscription['recurring'] == 1): ?>
-                <span class="label label-success">Recurring</span>
-                <?php else: ?>
-                <span class="label label-default">Not recurring</span>
-                <?php endif; ?>
+                <span class="sub-amount">$<?=$subscription['type']['amount']?></span>
+                (<?=$subscription['type']['billingFrequency']?> <?=strtolower($subscription['type']['billingPeriod'])?>
+                <?php if($subscription['recurring'] == 1): ?><strong>Recurring</strong><?php endif; ?>)
               </p>
-              
-              <?php if($model->subscription['recurring'] == 0): ?>
+
               <dl>
                 <dt>Remaining time</dt>
-                <dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
-              </dl> 
-              <?php endif; ?>
-              
-              <?php if(strcasecmp($model->paymentProfile['state'], 'ActiveProfile')===0): ?>
-              <dl>
-                <dt>Time remaining until renewal</dt>
-                <dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
-              </dl> 
-              <dl>
-                <?php 
-                $billingNextDate = Date::getDateTime($model->paymentProfile['billingNextDate']);
-                $billingStartDate = Date::getDateTime($model->paymentProfile['billingStartDate']);
-                ?>
-                <dt>Next billing date</dt>
-                <?php if($billingNextDate > $billingStartDate): ?>
-                <dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
-                <?php else: ?>
-                <dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
-                <?php endif; ?>
+                <dd><?=Date::getRemainingTime(Date::getDateTime($subscription['endDate']))?></dd>
               </dl>
-              <?php endif; ?>
-              
-              <?php if(strcasecmp($model->subscription['status'], SubscriptionStatus::PENDING)===0): ?>
-              <dl>
-                <dt>This subscription is currently</dt>
-                <dd><span class="label label-warning"><?=Tpl::out(strtoupper($model->subscription['status']))?></span></dd>
-              </dl> 
+
+              <?php if(!empty($subscription['paymentProfile']) && strcasecmp($subscription['paymentProfile']['state'], 'ActiveProfile')===0): ?>
+                <?php
+                $billingNextDate = Date::getDateTime($subscription['paymentProfile']['billingNextDate']);
+                $billingStartDate = Date::getDateTime($subscription['paymentProfile']['billingStartDate']);
+                ?>
+                <dl>
+                  <dt>Next billing date</dt>
+                  <?php if($billingNextDate > $billingStartDate): ?>
+                    <dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
+                  <?php else: ?>
+                    <dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
+                  <?php endif; ?>
+                </dl>
               <?php endif; ?>
 
-              <?php if(!empty($model->subscription['gifterUsername'])): ?>
-              <p>
-                <span class="fa fa-gift"></span> This subscription was gifted by <span class="label label-success"><?=Tpl::out($model->subscription['gifterUsername'])?></span>
-              </p>
+              <?php if(strcasecmp($subscription['status'], SubscriptionStatus::PENDING)===0): ?>
+                <dl>
+                  <dt>This subscription is currently</dt>
+                  <dd><span class="label label-warning"><?=Tpl::out(strtoupper($subscription['status']))?></span></dd>
+                </dl>
               <?php endif; ?>
-              
+
+              <?php if(!empty($subscription['gifterUsername'])): ?>
+                <p>
+                  <span class="fa fa-gift"></span> This subscription was gifted by <span class="label label-success"><?=Tpl::out($subscription['gifterUsername'])?></span>
+                </p>
+              <?php endif; ?>
+
+
+              <div style="margin-top:20px;">
+                <a class="btn btn-danger btn-sm" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Cancel subscription</a>
+              </div>
+
             </div>
           </div>
-      
-          <div class="form-actions block-foot" style="margin-top:0;">
-            <a class="btn btn-lg btn-primary" href="/subscribe">Update</a>
-            <a class="btn btn-link" href="/subscription/cancel">Cancel subscription</a>
-          </div>
-
         </div>
+        <?php endforeach; ?>
       
       </div>
 
@@ -112,16 +102,18 @@ use Destiny\Commerce\SubscriptionStatus;
           <div class="ds-block">
             <div>
 
-              <?php if($gift['recurring'] == 1): ?>
-              <a class="btn btn-danger pull-right cancel-gift" href="/subscription/<?= $gift['subscriptionId'] ?>/cancel">Cancel</a>
-              <?php endif; ?>
-
               <h3><?= Tpl::out( $gift['type']['tierLabel'] ) ?> <small>Gifted to <span class="label label-primary"><?= $gift['username'] ?></span></small></h3>
               <p>
                 <span class="sub-amount">$<?=$gift['type']['amount']?></span> 
                 <span>(<?=$gift['type']['billingFrequency']?> <?=strtolower($gift['type']['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif; ?>)</span>
                 <small>started on <?=Tpl::moment(Date::getDateTime($gift['createdDate']), Date::FORMAT)?></small>
               </p>
+
+              <?php if($gift['recurring'] == 1): ?>
+              <div style="margin-top:20px;">
+                <a class="btn btn-sm btn-danger cancel-gift" href="/subscription/gift/<?= $gift['subscriptionId'] ?>/cancel">Cancel</a>
+              </div>
+              <?php endif; ?>
               
             </div>
           </div>
