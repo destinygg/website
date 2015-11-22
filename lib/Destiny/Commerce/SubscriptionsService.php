@@ -5,7 +5,6 @@ use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
-use Destiny\Common\Authentication\AuthenticationService;
 
 /**
  * @method static SubscriptionsService instance()

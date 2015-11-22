@@ -362,66 +362,26 @@ class SubscriptionController {
                 $ordersService->createPaymentProfile ( $userId, $order, $subscriptionType, $nextPaymentDate );
             }
 
+
+
+
+
             // Send request to paypal
-            $setECResponse = $payPalApiService->createECResponse ( '/subscription/process', $order, $subscriptionType, $recurring );
-            if (empty ( $setECResponse ) || $setECResponse->Ack != 'Success') {
-                throw new Exception ( $setECResponse->Errors->ShortMessage );
+            $token = $payPalApiService->createECResponse ( '/subscription/process', $order, $subscriptionType, $recurring );
+            if (empty ( $token )) {
+                throw new Exception ( "Error getting paypal response" );
             }
 
             // Commit transaction and continue to paypal.
             $conn->commit();
 
-            return 'redirect: ' . Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $setECResponse->Token );
+            return 'redirect: ' . Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $token );
 
         } catch ( \Exception $e ) {
             $log->critical("Error creating order");
             $conn->rollBack();
+            throw $e;
         }
-    }
-
-    /**
-     * @Route ("/subscription/{orderId}/complete")
-     * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     * @throws Exception
-     * @throws \Destiny\Common\Utils\FilterParamsException
-     */
-    public function subscriptionComplete(array $params, ViewModel $model) {
-        FilterParams::required($params, 'orderId');
-        
-        $ordersService = OrdersService::instance ();
-        $subscriptionsService = SubscriptionsService::instance ();
-        $userService = UserService::instance ();
-        $userId = Session::getCredentials ()->getUserId ();
-        $order = $ordersService->getOrderByIdAndUserId ( $params ['orderId'], $userId );
-
-        if (empty ( $order ))
-           throw new Exception ( sprintf ( 'Invalid order record orderId:%s userId:%s', $params ['orderId'], $userId ) );
-
-        // Make sure the order is assigned to this user, or at least they are the gifter
-        $subscription = $subscriptionsService->getSubscriptionByOrderId ( $order ['orderId'] );
-        if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) )
-            throw new Exception ( 'Invalid subscription record' );
-
-        // Load the giftee
-        if(!empty($subscription['gifter'])){
-            $giftee = $userService->getUserById ( $subscription['userId'] );
-            $model->giftee = $giftee;
-        }
-
-        $subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
-        $paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
-      
-        // Show the order complete screen
-        $model->order = $order;
-        $model->subscription = $subscription;
-        $model->subscriptionType = $subscriptionType;
-        $model->paymentProfile = $paymentProfile;
-        $model->title = 'Subscription Complete';
-        return 'order/ordercomplete';
     }
 
     /**
@@ -460,36 +420,31 @@ class SubscriptionController {
             if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false)
                 throw new Exception ( 'Order request failed' );
 
+            if (! $payPalApiService->retrieveCheckoutInfo ( $params ['token'] ))
+                throw new Exception ( 'Failed to retrieve express checkout details' );
+
             $orderSubscription = $subscriptionsService->getSubscriptionByOrderId ( $order ['orderId'] );
             if (empty ( $orderSubscription ))
                 throw new Exception ( 'Invalid order subscription' );
+            $subscriptionType = $subscriptionsService->getSubscriptionType ( $orderSubscription ['subscriptionType'] );
 
             $subscriptionUser =  $userService->getUserById ( $orderSubscription['userId'] );
             if($subscriptionUser['userId'] != $userId && $orderSubscription['gifter'] != $userId)
                 throw new Exception ( 'Invalid order subscription' );
-
-            $subscriptionType = $subscriptionsService->getSubscriptionType ( $orderSubscription ['subscriptionType'] );
-            $paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
-            $ecResponse = $payPalApiService->retrieveCheckoutInfo ( $params ['token'] );
-            if (! isset ( $ecResponse ) || $ecResponse->Ack != 'Success')
-                throw new Exception ( 'Failed to retrieve express checkout details' );
 
             FilterParams::required ( $params, 'PayerID' ); // if the order status is an error, the payerID is not returned
             Session::set ( 'token' );
             Session::set ( 'orderId' );
             
             // Recurring payment
+            $paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
             if (! empty ( $paymentProfile )) {
-                $createRPProfileResponse = $payPalApiService->createRecurringPaymentProfile ( $paymentProfile, $params ['token'], $subscriptionType );
-
-                if (! isset ( $createRPProfileResponse ) || $createRPProfileResponse->Ack != 'Success')
-                    throw new Exception ( 'Failed to create recurring payment request' );
-
-                $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
+                $paymentProfileId = $payPalApiService->createRecurringPaymentProfile ( $paymentProfile, $params ['token'], $subscriptionType );
                 if (empty ( $paymentProfileId ))
                     throw new Exception ( 'Invalid recurring payment profileId returned from Paypal' );
 
                 // todo: the profile state very rarely will NOT be ActiveProfile, need to refactor the logic later on to handle it
+                // Payment profile has already been created in the order creation process
                 $ordersService->updatePaymentProfile(array (
                     'profileId' => $paymentProfile['profileId'],
                     'paymentProfileId' => $paymentProfileId,
@@ -503,44 +458,25 @@ class SubscriptionController {
             }
 
             // Record the payments as well as check if any are not in the completed state
+            // we put the order in "PENDING" state if a payment is found not completed
             $orderStatus = OrderStatus::COMPLETED;
             $DoECResponse = $payPalApiService->getECPaymentResponse ( $params ['PayerID'], $params ['token'], $order );
-            if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
-                if (isset ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo )) {
-                    for($i = 0; $i < count ( $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo ); ++ $i) {
-                        $paymentInfo = $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo [$i];
-                        $payment = array ();
-                        $payment ['orderId'] = $order ['orderId'];
-                        $payment ['payerId'] = $params ['PayerID'];
-                        $payment ['amount'] = $paymentInfo->GrossAmount->value;
-                        $payment ['currency'] = $paymentInfo->GrossAmount->currencyID;
-                        $payment ['transactionId'] = $paymentInfo->TransactionID;
-                        $payment ['transactionType'] = $paymentInfo->TransactionType;
-                        $payment ['paymentType'] = $paymentInfo->PaymentType;
-                        $payment ['paymentStatus'] = $paymentInfo->PaymentStatus;
-                        $payment ['paymentDate'] = Date::getDateTime ( $paymentInfo->PaymentDate )->format ( 'Y-m-d H:i:s' );
-                        $ordersService->addOrderPayment ( $payment );
-                        // TODO: clean-up this is strange logic -- paypal sends a "list" of payments - for us there is only one.
-                        if ($paymentInfo->PaymentStatus != PaymentStatus::COMPLETED) {
-                            $orderStatus = OrderStatus::PENDING;
-                        }
-                    }
-                    $ordersService->updateOrder(array(
-                        'orderId' => $order ['orderId'],
-                        'state' => $orderStatus
-                    ));
-                } else {
-                    throw new Exception ( 'No payments for express checkout order' );
+            $payments = $payPalApiService->getResponsePayments( $DoECResponse );
+            foreach ( $payments as $payment ){
+                $payment ['orderId'] = $order ['orderId'];
+                $payment ['payerId'] = $params ['PayerID'];
+                $ordersService->addOrderPayment ( $payment );
+                // TODO: Payment provides no way of telling if the transaction with ALL payments was successful
+                if ($payment['paymentStatus'] != PaymentStatus::COMPLETED) {
+                    $orderStatus = OrderStatus::PENDING;
                 }
-            } else {
-                throw new Exception ( $DoECResponse->Errors [0]->LongMessage );
             }
 
-            // Check if this is a gift, check that the giftee is still eligible
-            // Update the state to ERROR
-            if(!empty($orderSubscription['gifter']) && !$subscriptionsService->getCanUserReceiveGift ( $userId, $subscriptionUser['userId'] )){
-                throw new Exception(sprintf('Duplicate subscription attempt, Gifter: %d GifteeId: %d, OrderId: %d', $userId, $subscriptionUser['userId'], $order ['orderId']));
-            }
+            // Update the order
+            $ordersService->updateOrder(array(
+                'orderId' => $order ['orderId'],
+                'state' => $orderStatus
+            ));
 
             // Activate subscription
             $subscriptionsService->updateSubscription (array(
@@ -554,7 +490,6 @@ class SubscriptionController {
             if (empty ( $ban ) or ( !empty( $ban ['endtimestamp'] ) or $orderSubscription['subscriptionTier'] >= 2 ) ) {
                $chatIntegrationService->sendUnban ( $subscriptionUser['userId'] );
             }
-            $authenticationService->flagUserForUpdate ( $subscriptionUser['userId'] );
 
             // Broadcast
             $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
@@ -570,6 +505,9 @@ class SubscriptionController {
             if(!empty($subMessage)){
                 $chatIntegrationService->sendBroadcast ( sprintf ( "%s: %s", $userName, $subMessage ) );
             }
+
+            // Update the user
+            $authenticationService->flagUserForUpdate ( $subscriptionUser['userId'] );
 
             // Redirect to completion page
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/complete';
@@ -598,6 +536,51 @@ class SubscriptionController {
             $log->critical ( $e->getMessage(), $order );
             return 'redirect: /subscription/' . urlencode ( $order ['orderId'] ) . '/error';
         }
+    }
+
+    /**
+     * @Route ("/subscription/{orderId}/complete")
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
+     */
+    public function subscriptionComplete(array $params, ViewModel $model) {
+        FilterParams::required($params, 'orderId');
+
+        $ordersService = OrdersService::instance ();
+        $subscriptionsService = SubscriptionsService::instance ();
+        $userService = UserService::instance ();
+        $userId = Session::getCredentials ()->getUserId ();
+        $order = $ordersService->getOrderByIdAndUserId ( $params ['orderId'], $userId );
+
+        if (empty ( $order ))
+            throw new Exception ( sprintf ( 'Invalid order record orderId:%s userId:%s', $params ['orderId'], $userId ) );
+
+        // Make sure the order is assigned to this user, or at least they are the gifter
+        $subscription = $subscriptionsService->getSubscriptionByOrderId ( $order ['orderId'] );
+        if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) )
+            throw new Exception ( 'Invalid subscription record' );
+
+        // Load the giftee
+        if(!empty($subscription['gifter'])){
+            $giftee = $userService->getUserById ( $subscription['userId'] );
+            $model->giftee = $giftee;
+        }
+
+        $subscriptionType = $subscriptionsService->getSubscriptionType ( $subscription ['subscriptionType'] );
+        $paymentProfile = $ordersService->getPaymentProfileByOrderId ( $order ['orderId'] );
+
+        // Show the order complete screen
+        $model->order = $order;
+        $model->subscription = $subscription;
+        $model->subscriptionType = $subscriptionType;
+        $model->paymentProfile = $paymentProfile;
+        $model->title = 'Subscription Complete';
+        return 'order/ordercomplete';
     }
 
     /**

@@ -1,10 +1,12 @@
 <?php
 namespace Destiny\Commerce;
 
+use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
+use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsRequestType;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsReq;
@@ -31,7 +33,6 @@ use PayPal\EBLBaseComponents\PaymentDetailsItemType;
 use PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
-use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
 
 /**
  * @method static PayPalApiService instance()
@@ -79,9 +80,11 @@ class PayPalApiService extends Service {
      * @param array $paymentProfile
      * @param string $token
      * @param array $subscriptionType
-     * @return \PayPal\PayPalAPI\CreateRecurringPaymentsProfileResponseType
+     * @return string $paymentProfileId
      */
     public function createRecurringPaymentProfile(array $paymentProfile, $token, array $subscriptionType) {
+        $paymentProfileId = null;
+
         $billingStartDate = Date::getDateTime ( $paymentProfile ['billingStartDate'] );
         
         $RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
@@ -109,7 +112,13 @@ class PayPalApiService extends Service {
         $createRPProfileReq->CreateRecurringPaymentsProfileRequest = $createRPProfileRequest;
         
         $paypalService = new PayPalAPIInterfaceServiceService ();
-        return $paypalService->CreateRecurringPaymentsProfile ( $createRPProfileReq );
+        $createRPProfileResponse = $paypalService->CreateRecurringPaymentsProfile ( $createRPProfileReq );
+
+        if ( isset ( $createRPProfileResponse ) && $createRPProfileResponse->Ack != 'Success'){
+            $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
+        }
+
+        return $paymentProfileId;
     }
 
     /**
@@ -147,7 +156,7 @@ class PayPalApiService extends Service {
         $setECReqDetails->PaymentDetails [0] = $paymentDetails;
         
         // Paypal UI settings
-        $setECReqDetails->BrandName = Config::$a ['commerce'] ['reciever'] ['brandName'];
+        $setECReqDetails->BrandName = Config::$a ['commerce'] ['receiver'] ['brandName'];
         
         // Execute checkout
         $setECReqType = new SetExpressCheckoutRequestType ();
@@ -166,10 +175,11 @@ class PayPalApiService extends Service {
      * @param array $order
      * @param array $subscriptionType
      * @param bool $recurring
-     * @return \PayPal\PayPalAPI\SetExpressCheckoutResponseType
+     * @return string $token
      */
     public function createECResponse($responseUrl, array $order, array $subscriptionType, $recurring = false) {
-        // @todo should pass these urls in
+
+        $token = null;
         $returnUrl = Http::getBaseUrl () . $responseUrl .'?success=true&orderId=' . urlencode ( $order ['orderId'] );
         $cancelUrl = Http::getBaseUrl () . $responseUrl .'?success=false&orderId=' . urlencode ( $order ['orderId'] );
         
@@ -205,7 +215,7 @@ class PayPalApiService extends Service {
         $setECReqDetails->PaymentDetails [0] = $paymentDetails;
         
         // Paypal UI settings
-        $setECReqDetails->BrandName = Config::$a ['commerce'] ['reciever'] ['brandName'];
+        $setECReqDetails->BrandName = Config::$a ['commerce'] ['receiver'] ['brandName'];
         
         // Execute checkout
         $setECReqType = new SetExpressCheckoutRequestType ();
@@ -214,20 +224,30 @@ class PayPalApiService extends Service {
         $setECReq->SetExpressCheckoutRequest = $setECReqType;
         
         $paypalService = new PayPalAPIInterfaceServiceService ();
-        return $paypalService->SetExpressCheckout ( $setECReq );
+        $response = $paypalService->SetExpressCheckout ( $setECReq );
+
+        if (!empty ( $response ) && $response->Ack != 'Success') {
+            $token = $response->Token;
+        } else {
+            $log = Application::instance()->getLogger();
+            $log->critical("Error getting checkout response: " . $response->Errors->ShortMessage );
+        }
+
+        return $token;
     }
 
     /**
      * Retrieve the checkout instance from paypal
      *
      * @param string $token
-     * @return \PayPal\PayPalAPI\GetExpressCheckoutDetailsResponseType
+     * @return boolean
      */
     public function retrieveCheckoutInfo($token) {
         $paypalService = new PayPalAPIInterfaceServiceService ();
         $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq ();
         $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType ( $token );
-        return $paypalService->GetExpressCheckoutDetails ( $getExpressCheckoutReq );
+        $response = $paypalService->GetExpressCheckoutDetails ( $getExpressCheckoutReq );
+        return ( isset ( $response ) && $response->Ack == 'Success');
     }
 
     /**
@@ -236,7 +256,7 @@ class PayPalApiService extends Service {
      * @param string $payerId
      * @param string $token
      * @param array $order
-     * @return \PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType
+     * @return DoExpressCheckoutPaymentResponseType
      */
     public function getECPaymentResponse($payerId, $token, array $order) {
         $DoECRequestDetails = new DoExpressCheckoutPaymentRequestDetailsType ();
@@ -256,6 +276,31 @@ class PayPalApiService extends Service {
         
         $paypalService = new PayPalAPIInterfaceServiceService ();
         return $paypalService->DoExpressCheckoutPayment ( $DoECReq );
+    }
+
+    /**
+     * @param DoExpressCheckoutPaymentResponseType $DoECResponse
+     * @return array <array>
+     */
+    public function getResponsePayments(DoExpressCheckoutPaymentResponseType $DoECResponse){
+        $payments = array();
+        if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
+            if (isset ($DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo)) {
+                for ($i = 0; $i < count($DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo); ++$i) {
+                    $paymentInfo = $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo [$i];
+                    $payment = array ();
+                    $payment ['amount'] = $paymentInfo->GrossAmount->value;
+                    $payment ['currency'] = $paymentInfo->GrossAmount->currencyID;
+                    $payment ['transactionId'] = $paymentInfo->TransactionID;
+                    $payment ['transactionType'] = $paymentInfo->TransactionType;
+                    $payment ['paymentType'] = $paymentInfo->PaymentType;
+                    $payment ['paymentStatus'] = $paymentInfo->PaymentStatus;
+                    $payment ['paymentDate'] = Date::getDateTime ( $paymentInfo->PaymentDate )->format ( 'Y-m-d H:i:s' );
+                    $payments[] = $payment;
+                }
+            }
+        }
+        return $payments;
     }
 
 }

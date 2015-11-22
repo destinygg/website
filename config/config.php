@@ -240,7 +240,7 @@ return array (
 				'symbol'			=> '$'
 			)
 		),
-		'reciever' => array (
+		'receiver' => array (
 				'brandName'			=> 'Destiny.gg - Subscriptions'
 		),
 		'receiver_email'			=> '',
