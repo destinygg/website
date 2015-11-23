@@ -1616,6 +1616,9 @@ body.error #error-container {
 .graph-legend .t3 .tier-block {
   background-color: rgba(220,0,0,0.5);
 }
+.graph-legend .t4 .tier-block {
+  background-color: rgba(220,0,220,0.5);
+}
 .card .graph-outer {
   border-radius: 3px;
   background: #222;

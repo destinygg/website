@@ -69,6 +69,7 @@ use Destiny\Common\Utils\Date;
                             <span class="t1"><i class="tier-block"></i> Tier 1</span>
                             <span class="t2"><i class="tier-block"></i> Tier 2</span>
                             <span class="t3"><i class="tier-block"></i> Tier 3</span>
+                            <span class="t4"><i class="tier-block"></i> Tier 4</span>
                         </div>
                         <canvas style="height: 300px;"></canvas>
                     </div>
@@ -172,6 +173,7 @@ use Destiny\Common\Utils\Date;
                 var dataSet1 = [],
                     dataSet2 = [],
                     dataSet3 = [],
+                    dataSet4 = [],
                     dataLabels = [],
                     dates = [],
                     a = moment({hour: 1}).subtract(days, 'days'),
@@ -182,6 +184,7 @@ use Destiny\Common\Utils\Date;
                     dataSet1.push(0);
                     dataSet2.push(0);
                     dataSet3.push(0);
+                    dataSet4.push(0);
                 }
                 for(var i=0; i<data.length; ++i){
                     var x = dates.indexOf(data[i].date);
@@ -195,6 +198,9 @@ use Destiny\Common\Utils\Date;
                                 break;
                             case "3":
                                 dataSet3[x] = data[i]['total'];
+                                break;
+                            case "4":
+                                dataSet4[x] = data[i]['total'];
                                 break;
                         }
                     }
@@ -232,6 +238,16 @@ use Destiny\Common\Utils\Date;
                             pointStrokeColor: "#fff",
                             pointHighlightFill: "#fff",
                             pointHighlightStroke: "rgba(220,0,0,1)"
+                        }),
+                        $.extend({}, GraphUtil.defaultDataSet, {
+                            label: "Tier 4",
+                            data: dataSet4,
+                            fillColor: "rgba(220,0,220,0.1)",
+                            strokeColor: "rgba(220,0,220,1)",
+                            pointColor: "rgba(220,0,220,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(220,0,220,1)"
                         })
                     ]
                 }, GraphUtil.defaultGraph);
