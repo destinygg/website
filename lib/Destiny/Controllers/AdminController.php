@@ -42,40 +42,6 @@ class AdminController {
     }
 
     /**
-     * @Route ("/admin")
-     * @Secure ({"ADMIN"})
-     * @HttpMethod ({"GET","POST"})
-     *
-     * @param array $params         
-     * @param ViewModel $model          
-     * @return string
-     */
-    public function admin(array $params, ViewModel $model) {
-        if (empty ( $params ['page'] )) {
-            $params ['page'] = 1;
-        }
-        if (empty ( $params ['size'] )) {
-            $params ['size'] = 20;
-        }
-        if (empty ( $params ['search'] )) {
-            $params ['search'] = '';
-        }
-        $model->title = 'Administration';
-        $model->user = Session::getCredentials ()->getData ();
-
-        if(empty($params ['search']))
-            $model->users = UserService::instance ()->listUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ) );
-        else
-            $model->users = UserService::instance ()->searchUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ), $params ['search'] );
-
-        $model->size = $params ['size'];
-        $model->page = $params ['page'];
-        $model->search = $params ['search'];
-        $model->title = 'Admin';
-        return 'admin/users';
-    }
-
-    /**
      * @Route ("/admin/users")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET","POST"})

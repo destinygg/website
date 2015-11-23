@@ -108,7 +108,7 @@
     });
 
     usrlist.on('gridupdate', function(){
-      window.location.href = '/admin/?size='+encodeURIComponent(size)+'&page='+encodeURIComponent(page)+'&search='+encodeURIComponent(searchString);
+      window.location.href = '/admin/users/?size='+encodeURIComponent(size)+'&page='+encodeURIComponent(page)+'&search='+encodeURIComponent(searchString);
     });
 
     userSearchForm.on('submit', function(){
