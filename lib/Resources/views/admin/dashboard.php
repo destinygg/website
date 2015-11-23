@@ -88,7 +88,6 @@ use Destiny\Common\Utils\Date;
 
     <?php include Tpl::file('seg/commonbottom.php') ?>
     <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
-    <script src="<?=Config::cdn()?>/vendor/chart.js/Chart.min.v1.0.2.js"></script>
 
 <script>
 (function($){

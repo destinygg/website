@@ -37,7 +37,8 @@ module.exports = function(grunt) {
                         'static/vendor/jquery.validate/jquery.validate.min.js',
                         'static/vendor/jquery.nanoscroller-0.8.7/jquery.nanoscroller.min.js',
                         'static/vendor/bootstrap-3.3.5/js/bootstrap.js',
-                        'static/vendor/moment/moment-2.10.3.min.js'
+                        'static/vendor/moment/moment-2.10.3.min.js',
+                        'static/vendor/chart.js/Chart.min.v1.0.2.js'
                     ]
                 }
             },
