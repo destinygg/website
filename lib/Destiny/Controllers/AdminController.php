@@ -1,6 +1,8 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatlogService;
+use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
@@ -23,6 +25,21 @@ use Destiny\Common\Utils\FilterParams;
  * @Controller
  */
 class AdminController {
+
+    /**
+     * @Route ("/admin/dashboard")
+     * @Route ("/admin")
+     * @Secure ({"ADMIN"})
+     * @HttpMethod ({"GET","POST"})
+     *
+     * @param ViewModel $model
+     * @return string
+     */
+    public function dashboard(ViewModel $model) {
+        $chatLogService = ChatlogService::instance();
+        $model->broadcasts = $chatLogService->getLastBroadcasts ( 10 );
+        return 'admin/dashboard';
+    }
 
     /**
      * @Route ("/admin")
@@ -55,7 +72,41 @@ class AdminController {
         $model->page = $params ['page'];
         $model->search = $params ['search'];
         $model->title = 'Admin';
-        return 'admin/admin';
+        return 'admin/users';
+    }
+
+    /**
+     * @Route ("/admin/users")
+     * @Secure ({"ADMIN"})
+     * @HttpMethod ({"GET","POST"})
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function users(array $params, ViewModel $model) {
+        if (empty ( $params ['page'] )) {
+            $params ['page'] = 1;
+        }
+        if (empty ( $params ['size'] )) {
+            $params ['size'] = 20;
+        }
+        if (empty ( $params ['search'] )) {
+            $params ['search'] = '';
+        }
+        $model->title = 'Administration';
+        $model->user = Session::getCredentials ()->getData ();
+
+        if(empty($params ['search']))
+            $model->users = UserService::instance ()->listUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ) );
+        else
+            $model->users = UserService::instance ()->searchUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ), $params ['search'] );
+
+        $model->size = $params ['size'];
+        $model->page = $params ['page'];
+        $model->search = $params ['search'];
+        $model->title = 'Admin';
+        return 'admin/users';
     }
 
     /**
@@ -140,6 +191,95 @@ class AdminController {
         $response = new Response ( Http::STATUS_OK );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         $response->setBody ( json_encode ( $users ) );
+        return $response;
+    }
+
+    /**
+     * @Route ("/admin/chart/{type}")
+     * @Secure ({"ADMIN"})
+     *
+     * @param array $params
+     * @return Response
+     */
+    public function chartData(array $params){
+        FilterParams::required($params, 'type');
+        $statisticsService = StatisticsService::instance();
+        $cacheDriver = Application::instance()->getCacheDriver ();
+        $data = array();
+        switch(strtoupper($params['type'])){
+            case 'REVENUELASTXDAYS':
+                FilterParams::required($params, 'days');
+                $key = 'RevenueLastXDays '. intval($params['days']);
+                if(!$cacheDriver->contains($key)){
+                    $data = $statisticsService->getRevenueLastXDays( intval($params['days']) );
+                    $cacheDriver->save($key, $data, 30);
+                } else {
+                    $data = $cacheDriver->fetch($key);
+                }
+                break;
+            case 'REVENUELASTXMONTHS':
+                FilterParams::required($params, 'months');
+                $key = 'RevenueLastXMonths '. intval($params['months']);
+                if(!$cacheDriver->contains($key)){
+                    $data = $statisticsService->getRevenueLastXMonths( intval($params['months']) );
+                    $cacheDriver->save($key, $data, 30);
+                } else {
+                    $data = $cacheDriver->fetch($key);
+                }
+                break;
+            case 'REVENUELASTXYEARS':
+                FilterParams::required($params, 'years');
+                $key = 'RevenueLastXYears '. intval($params['years']);
+                if(!$cacheDriver->contains($key)){
+                    $data = $statisticsService->getRevenueLastXYears( intval($params['years']) );
+                    $cacheDriver->save($key, $data, 30);
+                } else {
+                    $data = $cacheDriver->fetch($key);
+                }
+                break;
+            case 'NEWSUBSCRIBERSLASTXDAYS':
+                FilterParams::required($params, 'days');
+                $key = 'NewSubscribersLastXDays '. intval($params['days']);
+                if(!$cacheDriver->contains($key)){
+                    $data = $statisticsService->getNewSubscribersLastXDays( intval($params['days']) );
+                    $cacheDriver->save($key, $data, 30);
+                } else {
+                    $data = $cacheDriver->fetch($key);
+                }
+                break;
+            case 'NEWSUBSCRIBERSLASTXMONTHS':
+                FilterParams::required($params, 'months');
+                $key = 'NewSubscribersLastXMonths '. intval($params['months']);
+                if(!$cacheDriver->contains($key)){
+                    $data = $statisticsService->getNewSubscribersLastXMonths( intval($params['months']) );
+                    $cacheDriver->save($key, $data, 30);
+                } else {
+                    $data = $cacheDriver->fetch($key);
+                }
+                break;
+            case 'NEWSUBSCRIBERSLASTXYEARS':
+                FilterParams::required($params, 'years');
+                $key = 'NewSubscribersLastXYears '. intval($params['years']);
+                if(!$cacheDriver->contains($key)){
+                    $data = $statisticsService->getNewSubscribersLastXYears( intval($params['years']) );
+                    $cacheDriver->save($key, $data, 30);
+                } else {
+                    $data = $cacheDriver->fetch($key);
+                }
+                break;
+            case 'NEWTIEREDSUBSCRIBERSLASTXDAYS':
+                FilterParams::required($params, 'days');
+                $key = 'NewTieredSubscribersLastXDays '. intval($params['days']);
+                if(!$cacheDriver->contains($key)){
+                    $data = $statisticsService->getNewTieredSubscribersLastXDays( intval($params['days']) );
+                    $cacheDriver->save($key, $data, 30);
+                } else {
+                    $data = $cacheDriver->fetch($key);
+                }
+                break;
+        }
+        $response = new Response ( Http::STATUS_OK, json_encode ( $data ) );
+        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         return $response;
     }
 

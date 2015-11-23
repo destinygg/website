@@ -132,4 +132,34 @@ class ChatlogService extends Service {
         return $stmt->fetchAll ();
     }
 
+
+    /**
+     * @param int $limit
+     * @param int $start
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getLastBroadcasts($limit=1, $start=0){
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare ( '
+            SELECT
+                u.username,
+                u2.username AS target,
+                l.event,
+                l.data,
+                l.timestamp
+            FROM
+                chatlog AS l
+                LEFT JOIN dfl_users AS u ON u.userId = l.userid
+                LEFT JOIN dfl_users AS u2 ON u2.userId = l.targetuserid
+            WHERE
+                l.event IN(\'BROADCAST\')
+            ORDER BY l.id DESC
+            LIMIT :start,:limit
+        ' );
+        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+        $stmt->execute ();
+        return $stmt->fetchAll ();
+    }
 }

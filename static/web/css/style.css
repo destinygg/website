@@ -1589,3 +1589,41 @@ body.error #error-container {
   text-align: center;
   padding: 50px 0;
 }
+
+
+.graph-legend {
+  font-size: 11px;
+  color: #838383;
+}
+.graph-legend .tier-block {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  border-radius: 1px;
+}
+.graph-legend .t1,
+.graph-legend .t2,
+.graph-legend .t3 {
+  margin: 5px 5px 0 5px;
+  display: inline-block;
+}
+.graph-legend .t1 .tier-block {
+  background-color: rgba(0,0,220,0.5);
+}
+.graph-legend .t2 .tier-block {
+  background-color: rgba(0,220,0,0.5);
+}
+.graph-legend .t3 .tier-block {
+  background-color: rgba(220,0,0,0.5);
+}
+.card .graph-outer {
+  border-radius: 3px;
+  background: #222;
+  overflow: hidden;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+.card .graph-outer canvas {
+  padding: 10px;
+  width: 100%;
+  max-height: 300px;
+}

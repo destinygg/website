@@ -14,14 +14,7 @@ use Destiny\Common\Config;
 
   <?php include Tpl::file('seg/top.php') ?>
 
-  <section class="container">
-    <ol class="breadcrumb" style="margin-bottom:0;">
-      <li><a href="/admin">Users</a></li>
-      <li><a href="/admin/chat">Chat</a></li>
-      <li><a href="/admin/subscribers">Subscribers</a></li>
-      <li class="active">Bans</li>
-    </ol>
-  </section>
+  <?php include Tpl::file('seg/admin.nav.php') ?>
 
   <section class="container">
     <?php if ( ! empty( $model->activeBans ) ): ?>

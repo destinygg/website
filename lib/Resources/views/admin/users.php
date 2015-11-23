@@ -14,14 +14,7 @@ use Destiny\Common\Utils\Date;
 
   <?php include Tpl::file('seg/top.php') ?>
 
-  <section class="container">
-    <ol class="breadcrumb" style="margin-bottom:0;">
-      <li class="active">Users</li>
-      <li><a href="/admin/chat">Chat</a></li>
-      <li><a href="/admin/subscribers">Subscribers</a></li>
-      <li><a href="/admin/bans">Bans</a></li>
-    </ol>
-  </section>
+  <?php include Tpl::file('seg/admin.nav.php') ?>
   
   <section class="container">
   

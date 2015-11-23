@@ -13,15 +13,8 @@ use Destiny\Common\Config;
 <body id="admin" class="thin">
 
   <?php include Tpl::file('seg/top.php') ?>
-  
-  <section class="container">
-    <ol class="breadcrumb" style="margin-bottom:0;">
-      <li><a href="/admin">Users</a></li>
-      <li><a href="/admin/chat">Chat</a></li>
-      <li class="active">Subscribers</li>
-      <li><a href="/admin/bans">Bans</a></li>
-    </ol>
-  </section>
+
+  <?php include Tpl::file('seg/admin.nav.php') ?>
   
   <?php function buildSubscribersTier(array $tier = null, $num){?>
   <?php if(!empty($tier)): ?>

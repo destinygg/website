@@ -13,14 +13,7 @@ use Destiny\Common\Config;
 
   <?php include Tpl::file('seg/top.php') ?>
 
-  <section class="container">
-    <ol class="breadcrumb" style="margin-bottom:0;">
-      <li><a href="/admin">Users</a></li>
-      <li><a href="/admin/chat">Chat</a></li>
-      <li><a href="/admin/subscribers">Subscribers</a></li>
-      <li><a href="/admin/bans">Bans</a></li>
-    </ol>
-  </section>
+  <?php include Tpl::file('seg/admin.nav.php') ?>
   
   <section class="container">
     <h3>Ban / Mute <small>(<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit"><?=Tpl::out($model->user['username'])?></a>)</small></h3>
