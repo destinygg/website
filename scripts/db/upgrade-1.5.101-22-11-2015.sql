@@ -17,7 +17,7 @@ WHERE p.subscriptionId IS NULL;
 # Rename the current INT paymentProfileId field
 # Add the new paymentProfileId VARCHAR field
 ALTER TABLE `dfl_users_subscriptions`
-CHANGE `paymentProfileId` `_paymentProfileId` VARCHAR(255) CHARSET utf8 COLLATE utf8_unicode_ci NULL,;
+CHANGE `paymentProfileId` `_paymentProfileId` VARCHAR(255) CHARSET utf8 COLLATE utf8_unicode_ci NULL;
 ALTER TABLE `dfl_users_subscriptions`
 ADD COLUMN `paymentProfileId` VARCHAR(255) NULL AFTER `_paymentProfileId`;
 
@@ -48,3 +48,4 @@ DROP COLUMN orderId;
 # Finally, drop the non-required tables
 DROP TABLE `dfl_orders`;
 DROP TABLE `dfl_orders_payment_profiles`;
+DROP TABLE `dfl_orders_items`;
