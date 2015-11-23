@@ -93,7 +93,7 @@ use Destiny\Common\Utils\Date;
 (function($){
 
     (function(){
-        var days = 5,
+        var days = 14,
             graph = $('#graph1'),
             label = "Revenue Last "+ days +" Days";
         $(graph).find('h4').text(label);
@@ -178,7 +178,7 @@ use Destiny\Common\Utils\Date;
                     b = moment({hour: 1});
                 for (var m = a; m.isBefore(b) || m.isSame(b); m.add(1, 'days')) {
                     dates.push(m.format('YYYY-MM-DD'));
-                    dataLabels.push(m.format('ddd'));
+                    dataLabels.push(m.format('MM/D'));
                     dataSet1.push(0);
                     dataSet2.push(0);
                     dataSet3.push(0);
@@ -211,7 +211,7 @@ use Destiny\Common\Utils\Date;
                             pointColor: "rgba(0,0,220,1)",
                             pointStrokeColor: "#fff",
                             pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(0,0,220,1)",
+                            pointHighlightStroke: "rgba(0,0,220,1)"
                         }),
                         $.extend({}, GraphUtil.defaultDataSet, {
                             label: "Tier 2",
