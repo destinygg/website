@@ -17,3 +17,4 @@ config/config.local.php
 *.swp
 
 /.idea
+/static/chat/UrlFormatter.js
