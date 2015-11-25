@@ -351,7 +351,7 @@ class SubscriptionsService extends Service {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
             SELECT * FROM dfl_users_subscriptions
-            WHERE paymentProfileId = :subscriptionId
+            WHERE paymentProfileId = :paymentProfileId
             LIMIT 1
         ' );
         $stmt->bindValue ( 'paymentProfileId', $paymentProfileId, \PDO::PARAM_STR );
