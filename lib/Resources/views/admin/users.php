@@ -13,7 +13,6 @@ use Destiny\Common\Utils\Date;
 <body id="admin" class="thin">
 
   <?php include Tpl::file('seg/top.php') ?>
-
   <?php include Tpl::file('seg/admin.nav.php') ?>
   
   <section class="container">
@@ -70,24 +69,13 @@ use Destiny\Common\Utils\Date;
           <thead>
             <tr>
               <td>User <small>(<?=$model->users['total']?>)</small></td>
-              <td>Subscription</td>
               <td>Created on</td>
             </tr>
           </thead>
           <tbody>
           <?php foreach($model->users['list'] as $user): ?>
-          <?php $subType = (isset(Config::$a['commerce']['subscriptions'][$user['subscriptionType']])) ? Config::$a['commerce']['subscriptions'][$user['subscriptionType']] : null;?>
           <tr>
             <td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a> (<?=Tpl::out($user['email'])?>)</td>
-            <td>
-              <div>
-                <?php if(empty($subType)): ?>
-                <span>None</span>
-                <?php endif; ?>
-                <span><?=Tpl::out($subType['tierLabel'])?></span>
-                <?=($user['recurring'] == 1) ? '<small>Recurring</small>':''?>
-              </div>
-            </td>
             <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT)?></td>
           </tr>
           <?php endforeach; ?>

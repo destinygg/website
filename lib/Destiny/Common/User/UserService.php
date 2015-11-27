@@ -333,17 +333,14 @@ class UserService extends Service {
    * @return array
    * @throws \Doctrine\DBAL\DBALException
    */
-  public function listUsers($limit, $page = 1) {
+  public function getUsers($limit, $page = 1) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,s.subscriptionType,u.createdDate,s.recurring,s.status
+      SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
       FROM dfl_users AS u
-      LEFT JOIN dfl_users_subscriptions AS s ON (u.userId = s.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
       ORDER BY u.userId DESC
       LIMIT :start,:limit
     ' );
-    $stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
-    $stmt->bindValue ( 'subscriptionSource', Config::$a ['subscriptionType'], \PDO::PARAM_STR );
     $stmt->bindValue ( 'start', ($page-1)*$limit, \PDO::PARAM_INT );
     $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
     $stmt->execute ();
@@ -358,38 +355,6 @@ class UserService extends Service {
   }
 
   /**
-   * @TODO Complicated order query to emulate "relevancy"
-   *
-   * @param string $string
-   * @param int|number $limit
-   * @param int|number $start
-   * @return array
-   * @throws \Doctrine\DBAL\DBALException
-   */
-  public function findUsers($string, $limit = 10, $start = 0) {
-    $conn = Application::instance ()->getConnection ();
-    $stmt = $conn->prepare ( '
-      SELECT u.userId,u.username,u.email FROM dfl_users AS u
-      WHERE u.username LIKE :wildcard1 OR email LIKE :wildcard1
-      ORDER BY CASE
-      WHEN u.username LIKE :wildcard2 THEN 0
-      WHEN u.username LIKE :wildcard3 THEN 1
-      WHEN u.username LIKE :wildcard4 THEN 2
-      ELSE 3
-      END, u.username
-      LIMIT :start,:limit
-    ' );
-    $stmt->bindValue ( 'wildcard1', '%' . $string . '%', \PDO::PARAM_STR );
-    $stmt->bindValue ( 'wildcard2', $string . ' %', \PDO::PARAM_STR );
-    $stmt->bindValue ( 'wildcard3', $string . '%', \PDO::PARAM_STR );
-    $stmt->bindValue ( 'wildcard4', '% %' . $string . '% %', \PDO::PARAM_STR );
-    $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-    $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-    $stmt->execute ();
-    return $stmt->fetchAll ();
-  }
-
-  /**
    * @param int $limit
    * @param $page
    * @param string $search
@@ -399,8 +364,7 @@ class UserService extends Service {
   public function searchUsers($limit, $page, $search) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
-      SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,s.subscriptionType,u.createdDate,s.recurring,s.status FROM dfl_users AS u
-      LEFT JOIN dfl_users_subscriptions AS s ON (u.userId = s.userId AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource)
+      SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate FROM dfl_users AS u
       WHERE u.username LIKE :wildcard1 OR email LIKE :wildcard1
       ORDER BY CASE
       WHEN u.username LIKE :wildcard2 THEN 0
@@ -415,8 +379,6 @@ class UserService extends Service {
     $stmt->bindValue ( 'wildcard2', $search . ' %', \PDO::PARAM_STR );
     $stmt->bindValue ( 'wildcard3', $search . '%', \PDO::PARAM_STR );
     $stmt->bindValue ( 'wildcard4', '% %' . $search . '% %', \PDO::PARAM_STR );
-    $stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
-    $stmt->bindValue ( 'subscriptionSource', Config::$a ['subscriptionType'], \PDO::PARAM_STR );
     $stmt->bindValue ( 'start', ($page-1)*$limit, \PDO::PARAM_INT );
     $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
     $stmt->execute ();

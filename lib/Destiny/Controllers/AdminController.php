@@ -64,7 +64,7 @@ class AdminController {
         $model->user = Session::getCredentials ()->getData ();
 
         if(empty($params ['search']))
-            $model->users = UserService::instance ()->listUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ) );
+            $model->users = UserService::instance ()->getUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ) );
         else
             $model->users = UserService::instance ()->searchUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ), $params ['search'] );
 
@@ -73,6 +73,23 @@ class AdminController {
         $model->search = $params ['search'];
         $model->title = 'Admin';
         return 'admin/users';
+    }
+
+    /**
+     * @Route ("/admin/user/find")
+     * @Secure ({"ADMIN"})
+     *
+     * @param array $params
+     * @return Response
+     */
+    public function adminUserFind(array $params) {
+        FilterParams::required($params, 's');
+        $userService = UserService::instance ();
+        $users = $userService->searchUsers ( 10, 0, trim($params ['s']) );
+        $response = new Response ( Http::STATUS_OK );
+        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+        $response->setBody ( json_encode ( $users ) );
+        return $response;
     }
 
     /**
@@ -141,23 +158,6 @@ class AdminController {
         $chatService = ChatIntegrationService::instance ();
         $chatService->purgeBans();
         return 'redirect: /admin/bans';
-    }
-
-    /**
-     * @Route ("/admin/user/find")
-     * @Secure ({"ADMIN"})
-     *
-     * @param array $params
-     * @return Response
-     */
-    public function adminUserFind(array $params) {
-        FilterParams::required($params, 's');
-        $userService = UserService::instance ();
-        $users = $userService->findUsers ( trim($params ['s']), 10 );
-        $response = new Response ( Http::STATUS_OK );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        $response->setBody ( json_encode ( $users ) );
-        return $response;
     }
 
     /**

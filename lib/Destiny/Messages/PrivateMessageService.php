@@ -398,7 +398,17 @@ class PrivateMessageService extends Service {
                 NOW() `timestamp`, 
                 0 `isread`
             FROM dfl_users u
-            LEFT JOIN dfl_users_subscriptions s ON (s.userId = u.userId AND s.status = 'Active')
+            LEFT JOIN dfl_users_subscriptions AS `s` ON (
+                s.subscriptionId = (
+                    SELECT subs2.subscriptionId
+                    FROM dfl_users_subscriptions AS subs2
+                    WHERE
+                        subs2.userId = u.userId AND
+                        subs2.status = 'Active'
+                    ORDER BY subs2.subscriptionTier DESC, subs2.subscriptionId DESC
+                    LIMIT 1
+                )
+            )
             WHERE u.username IN (?) OR s.subscriptionTier IN (?)
             GROUP BY u.userId
         ", 

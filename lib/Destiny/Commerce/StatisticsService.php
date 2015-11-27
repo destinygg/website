@@ -60,7 +60,8 @@ class StatisticsService extends Service {
     public function getNewSubscribersLastXDays ( $days ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-            SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-%d\') `date` FROM `dfl_users_subscriptions` s
+            SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-%d\') `date`
+            FROM `dfl_users_subscriptions` s
             WHERE s.createdDate BETWEEN CURDATE()-INTERVAL :days DAY AND CURDATE() + INTERVAL 1 DAY
             AND s.status IN (\'Expired\',\'Active\',\'Cancelled\')
             GROUP BY DATE(s.createdDate)
@@ -74,7 +75,8 @@ class StatisticsService extends Service {
     public function getNewTieredSubscribersLastXDays ( $days ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-            SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-%d\') `date`, s.subscriptionTier FROM `dfl_users_subscriptions` s
+            SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-%d\') `date`, s.subscriptionTier
+            FROM `dfl_users_subscriptions` s
             WHERE s.createdDate BETWEEN CURDATE()-INTERVAL :days DAY AND CURDATE() + INTERVAL 1 DAY
             AND s.status IN (\'Expired\',\'Active\',\'Cancelled\')
             GROUP BY DATE(s.createdDate), s.subscriptionTier
@@ -88,7 +90,8 @@ class StatisticsService extends Service {
     public function getNewSubscribersLastXMonths ( $months ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
-            SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-01\') `date` FROM `dfl_users_subscriptions` s
+            SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-01\') `date`
+            FROM `dfl_users_subscriptions` s
             WHERE s.createdDate BETWEEN CURDATE()-INTERVAL :months MONTH AND CURDATE() + INTERVAL 1 DAY
             AND s.status IN (\'Expired\',\'Active\',\'Cancelled\')
             GROUP BY DATE_FORMAT(s.createdDate, \'%Y%m\')

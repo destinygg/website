@@ -47,7 +47,7 @@ class ChatlogService extends Service {
                         WHERE
                             subs2.userId = u.userId AND
                             subs2.status = :status
-                        ORDER BY subs2.subscriptionId DESC
+                        ORDER BY subs2.subscriptionTier DESC, subs2.subscriptionId DESC
                         LIMIT 1
                     )
                 )
