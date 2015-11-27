@@ -184,13 +184,13 @@ class IpnController {
      */
     protected function getSubscriptionByPaymentProfileData( array $data ){
         $subscription = null;
-        if (isset ($data ['recurring_payment_id']) && empty ($data ['recurring_payment_id'])) {
+        if (isset ($data ['recurring_payment_id']) && !empty ($data ['recurring_payment_id'])) {
             $subscriptionService = SubscriptionsService::instance();
             $subscription = $subscriptionService->getSubscriptionByPaymentProfileId( $data ['recurring_payment_id'] );
         }
         if(empty($subscription)){
             $log = Application::instance()->getLogger();
-            $log->critical('Could not load subscriptiob using IPN', $data);
+            $log->critical('Could not load subscription using IPN', $data);
             throw new Exception( 'Could not load subscription by payment data' );
         }
         return $subscription;
