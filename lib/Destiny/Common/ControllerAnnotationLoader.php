@@ -40,8 +40,6 @@ abstract class ControllerAnnotationLoader {
             $httpMethod = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\HttpMethod' );
             /** @var \Destiny\Common\Annotation\Secure $feature */
             $secure = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Secure' );
-            /** @var \Destiny\Common\Annotation\Feature $feature */
-            $feature = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Feature' );
 
             for($i=0; $i < count($routes); ++$i){
                 $router->addRoute ( new Route ( array (
@@ -49,8 +47,7 @@ abstract class ControllerAnnotationLoader {
                     'classMethod' => $method->name,
                     'class' => $refl->name,
                     'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
-                    'secure' => ($secure) ? $secure->roles : null,
-                    'feature' => ($feature) ? $feature->features : null,
+                    'secure' => ($secure) ? $secure->roles : null
                 ) ) );
             }
         }
