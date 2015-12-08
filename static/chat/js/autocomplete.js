@@ -21,7 +21,7 @@
 
         setInterval(this.expireUsers, 100000); // 1 minute
         this.input.on({
-            mousedown: function(e) {
+            mousedown: function() {
                 self.resetSearch();
             },
             keydown: function(e) {
@@ -126,6 +126,9 @@
         };
     };
     ChatAutoComplete.prototype.sortResults = function(a, b) {
+        if(!a || !b)
+            return 0;
+
         // order promoted things first
         if (a.promoted != b.promoted)
             return a.promoted > b.promoted? -1: 1;
@@ -139,8 +142,8 @@
             return a.weight > b.weight? -1: 1;
 
         // order lexically fourth
-        var a = a.data.toLowerCase(),
-            b = b.data.toLowerCase();
+        a = a.data.toLowerCase();
+        b = b.data.toLowerCase();
 
         if (a == b)
             return 0;
@@ -183,12 +186,12 @@
 
                 if (!data.isemote && data.weight <= tenminutesago)
                     data.weight = 1;
-            };
-        };
+            }
+        }
     };
     ChatAutoComplete.prototype.markLastComplete = function() {
         if(!this.lastComplete)
-            return
+            return;
 
         var data = this.buckets[this.getBucketId(this.lastComplete)] || {};
 

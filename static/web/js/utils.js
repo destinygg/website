@@ -42,14 +42,18 @@ function getRandomInt (min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-String.prototype.trim = function(){
-	return $.trim(this);
-};
+if (!String.prototype.trim) {
+	String.prototype.trim = function () {
+		return $.trim(this);
+	};
+}
 
-String.prototype.replaceAll = function (find, replace) {
-	var str = this;
-	return str.replace(new RegExp(find, 'g'), replace);
-};
+if (!String.prototype.replaceAll) {
+	String.prototype.replaceAll = function (find, replace) {
+		var str = this;
+		return str.replace(new RegExp(find, 'g'), replace);
+	};
+}
 
 if (!String.prototype.format) {
 	String.prototype.format = function() {

@@ -6,7 +6,8 @@
 	// Green Text formatter
 	destiny.fn.GreenTextFormatter = function(chat){
 		return this;
-	}
+	};
+
 	destiny.fn.GreenTextFormatter.prototype.format = function(str, user){
 		if(user && str.indexOf("&gt;") === 0){
 			if(
@@ -19,7 +20,8 @@
 				str = '<span class="greentext">'+str+'</span>';
 		}
 		return str;
-	}
+	};
+
 
 	// Emote line formatter
 	destiny.fn.EmoteFormatter = function(chat){
@@ -28,6 +30,7 @@
 		this.twitchemoteregex = new RegExp('(^|\\s)('+chat.emoticons.join('|')+'|'+chat.twitchemotes.join('|')+')(?=$|\\s)', 'gm');
 		return this;
 	};
+
 	destiny.fn.EmoteFormatter.prototype.format = function(str, user){
 		var emoteregex = this.emoteregex;
 		if (user && (user.features || []).length > 0) {
@@ -44,6 +47,7 @@
 		this.userregex = /((?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
 		return this;
 	};
+
 	destiny.fn.MentionedUserFormatter.prototype.format = function(str, user) {
 		var users = this.users;
 		return str.replace(this.userregex, function(match, prefix, nick) {

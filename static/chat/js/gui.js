@@ -1,8 +1,5 @@
 (function($){
 
-    // Global chat instance
-    destiny.chat;
-
     //ChatGUI $('#element) shortcut
     $.fn.ChatGui = function(user, options){
         destiny.chat = new chat(this, user, options);
@@ -120,7 +117,7 @@
                     data[i] = data[i].trim();
                     if (!data[i])
                         data.splice(i, 1)
-                };
+                }
                 chat.saveChatOption('customhighlight', data );
                 chat.loadHighlighters();
             });
@@ -245,8 +242,8 @@
             this.privatemessagelist.visible = false;
             chat.setUnreadMessageCount(this.unreadMessageCount);
             $(document).on('privmsg-update', function() {
-                this.unreadMessageCount = parseInt(localStorage['unreadMessageCount'] || 0, 10);
-                chat.setUnreadMessageCount(this.unreadMessageCount);
+                chat.unreadMessageCount = parseInt(localStorage['unreadMessageCount'] || 0, 10);
+                chat.setUnreadMessageCount(chat.unreadMessageCount);
             });
 
             // User list
@@ -286,7 +283,7 @@
                         return;
                     }
                     elem.prev().show().prev().show();
-                    users.sort()
+                    users.sort();
                     for (var i = 0; i < users.length; i++) {
                         elem.append(elems[users[i]]);
                     }
@@ -492,7 +489,7 @@
                     case 'hideflairicons':
                         self.ui.toggleClass('chat-icons', (!value));
                         break;
-                };
+                }
             });
         },
 
@@ -513,10 +510,9 @@
 
                 }
                 this.put(new ChatUIMessage('<hr/>'));
-            };
+            }
             this.scrollPlugin.updateAndScroll(true);
             this.backlogLoading = false;
-            return;
         },
 
         loadBroadcasts: function(){
@@ -526,7 +522,6 @@
                     this.addBroadcastUI( this.broadcasts[i] );
             }
             this.backlogLoading = false;
-            return;
         },
 
         // Add a message to the UI
@@ -563,7 +558,7 @@
                 var unwantedlines = lines.slice(0, lineCount - this.maxlines);
                 for (var i = unwantedlines.length - 1; i >= 0; i--) {
                     $(unwantedlines[i]).remove();
-                };
+                }
             }
 
             this.userMessages.push(message);
@@ -686,7 +681,6 @@
         },
 
         resolveMessage: function(data){
-            var found = false;
             for(var i in this.userMessages){
                 if(this.userMessages[i].message == data.data){
 
@@ -821,12 +815,12 @@
                 encoded = this.formatters[i].format(encoded, this.user, encoded);
 
             var broadcasts     = this.ui.find('#chat-broadcasts'),
-                prevbroadcasts = broadcasts.find('.chat-broadcast:not(.template)');
+                prevbroadcasts = broadcasts.find('.chat-broadcast:not(.template)'),
                 broadcasttpl   = broadcasts.find('.chat-broadcast.template:first');
 
             if(prevbroadcasts.length >= this.maxbroadcasts){
                 prevbroadcasts[prevbroadcasts.length-1].remove();
-            };
+            }
 
             var broadcastui  = broadcasttpl.clone().removeClass('template');
             broadcastui.find('.message').html(encoded);
@@ -853,9 +847,9 @@
             localStorage['unreadMessageCount'] = count;
 
             var countui = this.ui.find('.chat-pm-count');
-            countui.text(this.unreadMessageCount)
+            countui.text(this.unreadMessageCount);
             countui.toggleClass('hidden', !count);
-        },
+        }
 
     });
 
@@ -1171,14 +1165,14 @@
         return this.ui.appendTo(container);
     };
     ChatUserPrivateMessage.prototype.wrap = function(html, css) {
-        return '\
-            <div class="'+this.type+'-msg'+((css) ? ' '+css:'')+' private-message" data-messageid="'+this.messageid+'" data-username="'+this.user.username.toLowerCase()+'">\
-                '+html+' \
-                <span class="message-actions">
-                    <a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>\
-                </span>\
-                <i class="speech-arrow"></i>\
-            </div>';
+        return '' +
+            '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+' private-message" data-messageid="'+this.messageid+'" data-username="'+this.user.username.toLowerCase()+'">'+
+                html+
+                '<span class="message-actions">'+
+                    '<a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>'+
+                '</span>'+
+                '<i class="speech-arrow"></i>'+
+            '</div>';
     };
     ChatUserPrivateMessage.prototype.wrapUser = function(user){
         return ' <i class="icon-mail-send" title="Received Message"></i> <a class="user">' +user.username+'</a>';
