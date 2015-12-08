@@ -5,6 +5,7 @@ config/config.local.php
 /.project
 /.buildpath
 /vagrant
+/.sass-cache
 
 /config/cert_key.pem
 /config/sdk_config.ini
@@ -17,4 +18,4 @@ config/config.local.php
 *.swp
 
 /.idea
-/static/chat/UrlFormatter.js
+/static/chat/js/UrlFormatter.js

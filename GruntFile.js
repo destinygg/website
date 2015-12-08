@@ -49,7 +49,6 @@ module.exports = function(grunt) {
                     'static/web/js/destiny.min.js': [
                         'static/web/js/utils.js',
                         'static/web/js/destiny.js',
-                        'static/web/js/feed.js',
                         'static/web/js/ui.js'
                     ]
                 }
@@ -78,34 +77,14 @@ module.exports = function(grunt) {
                     ]
                 }
             }
-
-            
         },
 
-        // Compress and compile CSS (LESS not required)
-        less : {
-            build : {
-                options : {
-                    compress     : true,
-                    yuicompress  : true,
-                    optimization : 2
-                },
-                files : {
-
-                    // Web CSS
-                    'static/web/css/style.min.css' : [
-                        'static/web/css/style.css'
-                    ],
-
-                    // Messages CSS
-                    'static/web/css/messages.min.css' : [
-                        'static/web/css/messages.css'
-                    ],
-
-                    // Chat CSS
+        concat: {
+            build: {
+                files: {
                     'static/chat/css/style.min.css' : [
                         'static/vendor/jquery.nanoscroller-0.8.7/nanoscroller.css',
-                        'static/chat/css/style.css',
+                        'static/chat/css/style.scss',
                         'scripts/emotes/emoticons.css',
                         'scripts/icons/icons.css'
                     ]
@@ -113,9 +92,20 @@ module.exports = function(grunt) {
             }
         },
 
-        // "Glue" image sprites
+        sass: {
+            build : {
+                options : {
+                    style : 'compressed'
+                },
+                files: {
+                    'static/web/css/style.min.css': 'static/web/css/style.scss',
+                    'static/web/css/messages.min.css' : 'static/web/css/messages.scss',
+                    'static/chat/css/style.min.css': 'static/chat/css/style.min.css'
+                }
+            }
+        },
+
         glue: {
-            // Emoticons - you should run less:emoticons after running this
             emoticons: {
                 src     : 'scripts/emotes/emoticons',
                 options : '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes --css-template=scripts/emotes/emoticons.jinja --img=scripts/emotes --url=../img/ --crop --pseudo-class-separator=_'
@@ -123,7 +113,7 @@ module.exports = function(grunt) {
             icons: {
                 src     : 'scripts/icons/icons',
                 options : '--sprite-namespace= --namespace=icon --css=scripts/icons --img=scripts/icons --css-template=scripts/icons/icons.jinja --url=../img/ --pseudo-class-separator=_'
-            },
+            }
         },
 
         tldFetcher: {
@@ -161,7 +151,8 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-glue');
@@ -178,7 +169,8 @@ module.exports = function(grunt) {
 
     // Build css
     grunt.registerTask('build:css', [
-        'less:build'
+        'concat:build',
+        'sass:build'
     ]);
 
     // Build images, fonts etc
