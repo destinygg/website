@@ -20,31 +20,9 @@ use Destiny\Common\Config;
     <div id="page-content" class="container clearfix">
 
         <div id="stream-panel">
-
-            <div class="panelheader clearfix">
-                <div class="toolgroup clearfix">
-                    <div class="pull-left channel-stat game">
-                    <?php if(!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])): ?>
-                        <span class="fa fa-clock-o"></span>
-                        <span>
-                        <?php if(isset($model->streamInfo['lastbroadcast'])): ?>
-                        Last broadcast ended <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?>
-                        <?php endif; ?>
-                        </span>
-                        <?php else: ?>
-                        <span class="fa fa-clock-o"></span> <span>Started <?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span>
-                        <?php if(isset($model->streamInfo['stream']) && intval($model->streamInfo['stream']['channel']['delay']) > 1): ?>
-                        - <?=(intval($model->streamInfo['stream']['channel']['delay'])/60)?>m delay
-                        <?php endif; ?>
-                    <?php endif; ?>
-                    </div>
-                    <div class="pull-right channel-stat" style="text-align:right;"><?=(isset($model->streamInfo['status'])) ? Tpl::out($model->streamInfo['status']) : ''?></div>
-                </div>
-            </div>
             <div id="stream-wrap">
                 <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://player.twitch.tv/?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless allowfullscreen></iframe>
             </div>
-
         </div>
 
         <div id="chat-panel">
