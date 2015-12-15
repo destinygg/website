@@ -4,7 +4,6 @@ namespace Destiny\Common\User;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
-use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;

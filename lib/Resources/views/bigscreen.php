@@ -1,6 +1,5 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>
