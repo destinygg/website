@@ -11,12 +11,22 @@
     "url": "git://github.com/destinygg/website.git"
   },
   "keywords": [
-    "destinygg"
+    "destiny.gg",
+    "destinygg",
+    "dgg"
   ],
-  "author": "",
-  "license": "proprietary",
-  "bugs": {
-    "url": "https://github.com/destinygg/website/issues"
+  "author": "Destiny.gg Foundation",
+  "contributors": [],
+  "homepage": "http://www.destiny.gg/",
+  "license": "SEE LICENSE IN <LICENSE.md>",
+  "bugs": "https://github.com/destinygg/website/issues",
+  "directories": [
+    "./lib",
+    "./scripts",
+    "./public",
+    "./static"
+  ],
+  "dependencies" : {
   },
   "devDependencies": {
     "grunt": "~0.4.5",
@@ -28,5 +38,9 @@
     "grunt-contrib-concat": "~0.5.1",
     "grunt-glue": "~0.1.1",
     "grunt-bump": "~0.0.16"
+  },
+  "engines": {
+    "node":"~5.0.2",
+    "npm":"~3.3.12"
   }
 }
