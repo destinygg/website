@@ -95,7 +95,7 @@ module.exports = function(grunt) {
         sass: {
             build : {
                 options : {
-                    style : 'compressed'
+                    outputStyle : 'compressed'
                 },
                 files: {
                     'static/web/css/style.min.css': 'static/web/css/style.scss',
@@ -151,10 +151,10 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-glue');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadTasks('tasks');
