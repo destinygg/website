@@ -190,6 +190,7 @@ class AdminUserController {
           'createdDate' => gmdate('Y-m-d H:i:s'),
           'endDate' => gmdate('Y-m-d H:i:s'),
           'status' => 'Active',
+          'gifter' => '',
           'recurring' => false
         );
         
@@ -254,7 +255,7 @@ class AdminUserController {
         FilterParams::required ( $params, 'status' );
         FilterParams::required ( $params, 'createdDate' );
         FilterParams::required ( $params, 'endDate' );
-        FilterParams::required ( $params, 'gifter' );
+        FilterParams::declared ( $params, 'gifter' );
         
         $subscriptionsService = SubscriptionsService::instance ();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);
@@ -266,8 +267,10 @@ class AdminUserController {
         $subscription ['createdDate'] = $params ['createdDate'];
         $subscription ['endDate'] = $params ['endDate'];
         $subscription ['userId'] = $params ['id'];
-        $subscription ['gifter'] = $params ['gifter'];
         $subscription ['subscriptionSource'] = (isset ( $params ['subscriptionSource'] ) && ! empty ( $params ['subscriptionSource'] )) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
+
+        if(!empty($params ['gifter']))
+            $subscription ['gifter'] = $params ['gifter'];
         
         if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {
             $subscription ['subscriptionId'] = $params ['subscriptionId'];
