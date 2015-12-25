@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common;
 
-abstract class Crypto {
+class Crypto {
 
     static protected function initCrypt( $iv = null ) {
         // http://www.daemonology.net/blog/2009-06-11-cryptographic-right-answers.html
@@ -30,14 +30,11 @@ abstract class Crypto {
     static public function encrypt( $data ) {
         $crypt       = self::initCrypt();
         $crypteddata = mcrypt_generic( $crypt['mod'], $data );
-        $randomiv    = true;
-        if ( $randomiv ) {
-            $crypteddata = $crypt['iv'] . $crypteddata;
-            $crypteddata =
-                hash_hmac( 'sha256', $crypteddata, Config::$a['crypto']['hashseed'], true ) .
-                $crypteddata
-            ;
-        }
+        $crypteddata = $crypt['iv'] . $crypteddata;
+        $crypteddata =
+            hash_hmac( 'sha256', $crypteddata, Config::$a['crypto']['hashseed'], true ) .
+            $crypteddata
+        ;
 
         $ret = rawurlencode( base64_encode( $crypteddata ) );
 
@@ -54,7 +51,7 @@ abstract class Crypto {
         if ( !self::constantTimeCompare( $hmac, $hmac2 ) )
             return '';
 
-        $ivlength = mcrypt_get_iv_size( 'rijndael-256', 'ctr' );
+        $ivlength    = mcrypt_get_iv_size( 'rijndael-256', 'ctr' );
         $iv          = substr( $crypteddata, 0, $ivlength );
         $crypteddata = substr( $crypteddata, $ivlength );
 
@@ -69,7 +66,7 @@ abstract class Crypto {
         if (strlen($known_str) == 0)
             throw new \InvalidArgumentException("This function cannot safely compare against an empty given string");
 
-        $res = strlen($given_str) ^ strlen($known_str);
+        $res       = strlen($given_str) ^ strlen($known_str);
         $given_len = strlen($given_str);
         $known_len = strlen($known_str);
 

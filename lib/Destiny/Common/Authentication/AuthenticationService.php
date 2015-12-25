@@ -272,22 +272,28 @@ class AuthenticationService extends Service {
      * @return array
      */
     protected function getRememberMe() {
+        $log = Application::instance()->getLogger();
         $cookie = Session::instance()->getRememberMeCookie();
         $rawData = $cookie->getValue();
         $user = null;
         try {
             if (! empty ( $rawData )) {
-                $data = unserialize(Crypto::decrypt($rawData));
-                if(isset($data['expires']) && isset($data['userId'])) {
-                    $expires = Date::getDateTime($data['expires']);
-                    if ($expires > Date::getDateTime()) {
-                        $user = UserService::instance()->getUserById(intval($data['userId']));
+                if(strlen($rawData) >= 64) {
+                    $data = unserialize(Crypto::decrypt($rawData));
+                    if (isset($data['expires']) && isset($data['userId'])) {
+                        $expires = Date::getDateTime($data['expires']);
+                        if ($expires > Date::getDateTime()) {
+                            $user = UserService::instance()->getUserById(intval($data['userId']));
+                        }
                     }
+                } else {
+                    $log->warning("Remember me cookie token too small.");
+                    $cookie->clearCookie();
                 }
             }
         } catch (\Exception $e) {
-            $log = Application::instance()->getLogger();
             $log->error($e->getMessage());
+            $cookie->clearCookie();
         }
         return $user;
     }
