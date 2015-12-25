@@ -76,6 +76,8 @@ return array (
 			'Memegasm',
 			'WEEWOO',
 			'KappaRoss',
+			'ASLAN',
+			'DJAslan',
 		),
 		'twitchemotes' => array(
 			'nathanDad',
