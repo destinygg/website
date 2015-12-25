@@ -1,5 +1,8 @@
 <?php
 return array (
+	'crypto' => array (
+		'hashseed' => '***REPLACE***'
+	),
 	// the key is the LOWERCASE domain to blacklist, the value is something non-null
 	'blacklistedDomains' => array(
 	),

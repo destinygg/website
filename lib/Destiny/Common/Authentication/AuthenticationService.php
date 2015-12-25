@@ -3,6 +3,7 @@ namespace Destiny\Common\Authentication;
 
 use Destiny\Common\Config;
 use Destiny\Common\Application;
+use Destiny\Common\Crypto;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
@@ -101,21 +102,17 @@ class AuthenticationService extends Service {
 
         // Check the Remember me cookie if the session is invalid
         if( !Session::hasRole ( UserRole::USER ) ){
-            $rememberMe = $this->getRememberMe ();
-            if (!empty($rememberMe) && isset($rememberMe['userId']) && !empty ( $rememberMe['userId'] )) {
-                $user = UserService::instance ()->getUserById ( $rememberMe['userId'] );
-                if (! empty ( $user )) {
+            $user = $this->getRememberMe ();
+            if (!empty($user)) {
+                Session::start();
+                Session::updateCredentials ( $this->getUserCredentials ( $user, 'rememberme' ) );
 
-                    Session::start();
-                    Session::updateCredentials ( $this->getUserCredentials ( $user, 'rememberme' ) );
+                // This writes to the DB a bit more than it needs to, low impact, leaving here.
+                $this->setRememberMe ( $user );
 
-                    // This writes to the DB a bit more than it needs to, low impact, leaving here.
-                    $this->setRememberMe ( $user );
-
-                    // flagUserForUpdate updates the credentials AGAIN, but since its low impact
-                    // Instead of doing the logic in two places 
-                    $this->flagUserForUpdate ( $user['userId'] );
-                }
+                // flagUserForUpdate updates the credentials AGAIN, but since its low impact
+                // Instead of doing the logic in two places
+                $this->flagUserForUpdate ( $user['userId'] );
             }
         }
 
@@ -243,46 +240,45 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Generates a rememberme record and cookie
+     * Generates a rememberme cookie
      * Note the rememberme cookie has a long expiry unlike the session cookie
      *
      * @param array $user
-     * @return null|string
      */
     protected function setRememberMe(array $user) {
-        $rememberMeService = RememberMeService::instance ();
         $cookie = Session::instance()->getRememberMeCookie();
-        $token = $cookie->getValue();
+        $rawData = $cookie->getValue();
 
-        // Clean out old token
-        if (! empty ( $token )) {
-            $rememberMeService->deleteRememberMe ( $user ['userId'], $token, 'rememberme' );
+        if (! empty ( $rawData ))
             $cookie->clearCookie();
-        }
 
-        // Create the new token and record
-        $createdDate = Date::getDateTime ( 'NOW' );
-        $expireDate = Date::getDateTime ( 'NOW + 30 day' );
-        $token = bin2hex(openssl_random_pseudo_bytes(16));
-        $rememberMeService->addRememberMe ( $user ['userId'], $token, 'rememberme', $expireDate, $createdDate );
-        $cookie->setValue ( $token, $expireDate->getTimestamp () );
-        return $token;
+        $expires = Date::getDateTime ( 'NOW + 30 day' )->getTimestamp();
+        $data = Crypto::encrypt(serialize([
+            'userId' => $user['userId'],
+            'expires' => $expires
+        ]));
+
+        $cookie->setValue ( $data, $expires );
     }
 
     /**
-     * Returns the remember me record for the current cookie
+     * Returns the user record associated with a remember me cookie
      *
      * @return array
      */
     protected function getRememberMe() {
-        $rememberMeService = RememberMeService::instance ();
         $cookie = Session::instance()->getRememberMeCookie();
-        $token = $cookie->getValue();
-        $rememberMe = null;
-        if (! empty ( $token )) {
-            $rememberMe = $rememberMeService->getRememberMe ( $token, 'rememberme' );
+        $rawData = $cookie->getValue();
+        $user = null;
+        if (! empty ( $rawData )) {
+            $data = unserialize(Crypto::decrypt($rawData));
+            if(isset($data['expires']) && isset($data['userId'])){
+                $expires = Date::getDateTime( $data['expires'] );
+                if( $expires > Date::getDateTime() )
+                    $user = UserService::instance ()->getUserById ( intval($data['userId']) );
+            }
         }
-        return $rememberMe;
+        return $user;
     }
 
     /**
