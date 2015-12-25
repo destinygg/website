@@ -263,7 +263,7 @@ class AuthenticationService extends Service {
         // Create the new token and record
         $createdDate = Date::getDateTime ( 'NOW' );
         $expireDate = Date::getDateTime ( 'NOW + 30 day' );
-        $token = md5 ( $user ['userId'] . $createdDate->getTimestamp () . $expireDate->getTimestamp () . rand(1000, 9999) );
+        $token = bin2hex(openssl_random_pseudo_bytes(16));
         $rememberMeService->addRememberMe ( $user ['userId'], $token, 'rememberme', $expireDate, $createdDate );
         $cookie->setValue ( $token, $expireDate->getTimestamp () );
         return $token;
@@ -279,17 +279,6 @@ class AuthenticationService extends Service {
         $cookie = Session::instance()->getRememberMeCookie();
         $token = $cookie->getValue();
         $rememberMe = null;
-
-        // throw back to when I used a json string in the rememberme cookie
-        // this is here so no-ones remember me cookie failed after upgrade.
-        if(!empty($token) && $token[0] == "{"){
-            $cookieData = @json_decode ( $token, true );
-            if(!empty ( $cookieData ) && isset($cookieData ['token'])){
-                $token = $cookieData ['token'];
-            }
-        }
-
-        // If the token is not empty query the DB for the remember me record
         if (! empty ( $token )) {
             $rememberMe = $rememberMeService->getRememberMe ( $token, 'rememberme' );
         }
