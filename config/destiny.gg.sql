@@ -116,15 +116,6 @@ CREATE TABLE `dfl_users_features` (
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `dfl_users_rememberme` (
-  `userId` int(14) NOT NULL,
-  `token` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `tokenType` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `createdDate` datetime DEFAULT NULL,
-  `expireDate` datetime DEFAULT NULL,
-  KEY `token` (`token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `dfl_users_roles` (
   `userId` int(14) NOT NULL,
   `roleId` tinyint(1) NOT NULL,
