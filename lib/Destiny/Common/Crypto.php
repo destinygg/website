@@ -16,20 +16,17 @@ class Crypto {
     static protected function initCrypt( $iv = null ) {
         $cryptmod = mcrypt_module_open( MCRYPT_RIJNDAEL_256, null, 'ctr', null );
         $keylen   = mcrypt_enc_get_key_size( $cryptmod );
-        $seed     = Config::$a['crypto']['seed'];
+        $key      = Config::$a['crypto']['key'];
 
         // when encrypting, caller should never provide an IV
         // always randomly generate a new IV for every message
         if ( !$iv )
             $iv  = mcrypt_create_iv( mcrypt_enc_get_iv_size( $cryptmod ), MCRYPT_DEV_URANDOM );
 
-        // just to make sure the seed has enough length, maybe throw an exception
-        // instead if the seed is not long enough?
-        if ( strlen( $seed ) >= $keylen )
-            $key = substr( $seed, 0, $keylen );
-        else
-            $key = str_pad( $seed, $keylen - strlen( $seed ) );
+        if ( strlen( $key ) < $keylen )
+            throw new \Exception("Config[crypto][key] is too short!");
 
+        $key = substr( $key, 0, $keylen );
         mcrypt_generic_init( $cryptmod, $key, $iv );
 
         return array(
@@ -42,6 +39,8 @@ class Crypto {
     // encrypt produces message in the form of:
     // |32bytes of hmac|32bytes of IV|encrypted payload|
     // we always generate a separate random IV for every single message
+    // when providing the data, try to avoid using something easily guessable
+    // so maybe include something random
     static public function encrypt( $data ) {
         // initialize the mcrypt module with a random IV
         $crypt       = self::initCrypt();
@@ -82,7 +81,7 @@ class Crypto {
         // everything else is the actual encrypted data
         $crypteddata = substr( $crypteddata, $ivlength );
 
-        // pass in the IV
+        // pass in the IV so that decryption can work
         $crypt       = self::initCrypt( $iv );
         $ret         = mdecrypt_generic( $crypt['mod'], $crypteddata );
 
