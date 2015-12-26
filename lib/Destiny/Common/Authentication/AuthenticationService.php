@@ -272,7 +272,6 @@ class AuthenticationService extends Service {
      * @return array
      */
     protected function getRememberMe() {
-        $log = Application::instance()->getLogger();
         $cookie = Session::instance()->getRememberMeCookie();
         $rawData = $cookie->getValue();
         $user = null;
@@ -287,11 +286,11 @@ class AuthenticationService extends Service {
                         }
                     }
                 } else {
-                    $log->warning("Remember me cookie token too small.");
                     $cookie->clearCookie();
                 }
             }
         } catch (\Exception $e) {
+            $log = Application::instance()->getLogger();
             $log->error($e->getMessage());
             $cookie->clearCookie();
         }
