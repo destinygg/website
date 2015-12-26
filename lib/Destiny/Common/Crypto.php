@@ -8,6 +8,11 @@ namespace Destiny\Common;
  * |HMAC of IV and PAYLOAD|RANDOM IV|PAYLOAD|
  * since the HMAC and IV are both 32 bytes, the minimum length of a message is
  * 32byte HMAC + 32byte IV + payload + base64 overhead
+ * Note: the key and the seed MUST be different, if the plaintext for encrypted
+ * data can be guessed, the key can be reversed but the seed for the hash will
+ * still offer protection
+ * THUS if the plaintext is easily guessable, one must assume the key is
+ * compromised, so use accordingly and NEVER use without HMAC
  */
 class Crypto {
 
