@@ -106,8 +106,6 @@ class AuthenticationService extends Service {
             if (!empty($user)) {
                 Session::start();
                 Session::updateCredentials ( $this->getUserCredentials ( $user, 'rememberme' ) );
-
-                // This writes to the DB a bit more than it needs to, low impact, leaving here.
                 $this->setRememberMe ( $user );
 
                 // flagUserForUpdate updates the credentials AGAIN, but since its low impact
@@ -244,6 +242,7 @@ class AuthenticationService extends Service {
      * Note the rememberme cookie has a long expiry unlike the session cookie
      *
      * @param array $user
+     * @throws \Exception
      */
     protected function setRememberMe(array $user) {
         $cookie = Session::instance()->getRememberMeCookie();
@@ -252,48 +251,50 @@ class AuthenticationService extends Service {
         if (! empty ( $rawData ))
             $cookie->clearCookie();
 
-        $expires = Date::getDateTime ( 'NOW + 30 day' )->getTimestamp();
+        $expires = Date::getDateTime (time() + mt_rand(0,2592000)); // 0-30 days
+        $expires->add(new \DateInterval('P30D'));
+        $timestamp = $expires->getTimestamp();
 
-        try {
-            $data = Crypto::encrypt(serialize([
-                'userId' => $user['userId'],
-                'expires' => $expires
-            ]));
-            $cookie->setValue ( $data, $expires );
-        } catch (\Exception $e) {
-            $log = Application::instance()->getLogger();
-            $log->error($e->getMessage());
-        }
+        $data = Crypto::encrypt(serialize([
+            'userId' => $user['userId'],
+            'expires' => $timestamp
+        ]));
+        $cookie->setValue ( $data, $timestamp );
     }
 
     /**
      * Returns the user record associated with a remember me cookie
      *
      * @return array
+     * @throws \Exception
      */
     protected function getRememberMe() {
         $cookie = Session::instance()->getRememberMeCookie();
         $rawData = $cookie->getValue();
         $user = null;
-        try {
-            if (! empty ( $rawData )) {
-                if(strlen($rawData) >= 64) {
-                    $data = unserialize(Crypto::decrypt($rawData));
-                    if (isset($data['expires']) && isset($data['userId'])) {
-                        $expires = Date::getDateTime($data['expires']);
-                        if ($expires > Date::getDateTime()) {
-                            $user = UserService::instance()->getUserById(intval($data['userId']));
-                        }
-                    }
-                } else {
-                    $cookie->clearCookie();
-                }
-            }
-        } catch (\Exception $e) {
-            $log = Application::instance()->getLogger();
-            $log->error($e->getMessage());
-            $cookie->clearCookie();
-        }
+        if ( empty ( $rawData ))
+            goto end;
+
+        if(strlen($rawData) < 64)
+            goto cleanup;
+
+        $data = unserialize(Crypto::decrypt($rawData));
+        if (! $data)
+            goto cleanup;
+
+        if (!isset($data['expires']) or !isset($data['userId']))
+            goto cleanup;
+
+        $expires = Date::getDateTime($data['expires']);
+        if ($expires <= Date::getDateTime())
+            goto cleanup;
+
+        $user = UserService::instance()->getUserById(intval($data['userId']));
+        goto end;
+
+        cleanup:
+        $cookie->clearCookie();
+        end:
         return $user;
     }
 
