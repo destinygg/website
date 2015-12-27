@@ -5,7 +5,7 @@ namespace Destiny\Common;
  * http://www.daemonology.net/blog/2009-06-11-cryptographic-right-answers.html
  * as close as possible, namely: use aes256 in ctr mode and use an hmac to
  * authenticate the payload, encrypted payloads are in the form of
- * |HMAC of IV and PAYLOAD|RANDOM IV|PAYLOAD|
+ * |PAYLOAD|RANDOM IV|HMAC of IV and PAYLOAD|
  * since the HMAC and IV are both 32 bytes, the minimum length of a message is
  * 32byte HMAC + 32byte IV + payload + base64 overhead
  * Note: the key and the seed MUST be different, if the plaintext for encrypted
@@ -13,6 +13,8 @@ namespace Destiny\Common;
  * still offer protection
  * THUS if the plaintext is easily guessable, one must assume the key is
  * compromised, so use accordingly and NEVER use without HMAC
+ * TODO: use sha3 if available finally, make sure the hardcoded length of
+ * the HMAC still matches
  */
 class Crypto {
 
@@ -42,22 +44,19 @@ class Crypto {
     }
 
     // encrypt produces message in the form of:
-    // |32bytes of hmac|32bytes of IV|encrypted payload|
+    // |encrypted payload|32bytes of IV|32bytes of hmac|
     // we always generate a separate random IV for every single message
     // when providing the data, try to avoid using something easily guessable
     // so maybe include something random
     static public function encrypt( $data ) {
         // initialize the mcrypt module with a random IV
-        $crypt       = self::initCrypt();
+        $crypt        = self::initCrypt();
         // encrypt the data
-        $crypteddata = mcrypt_generic( $crypt['mod'], $data );
-        // prepend the IV to the encrypted data
-        $crypteddata = $crypt['iv'] . $crypteddata;
-        // prepend the HMAC, protecting everything else
-        $crypteddata =
-            hash_hmac( 'sha256', $crypteddata, Config::$a['crypto']['seed'], true ) .
-            $crypteddata
-        ;
+        $crypteddata  = mcrypt_generic( $crypt['mod'], $data );
+        // append the IV to the encrypted data
+        $crypteddata .= $crypt['iv'];
+        // append the HMAC, protecting everything else
+        $crypteddata .= hash_hmac( 'sha256', $crypteddata, Config::$a['crypto']['seed'], true );
 
         // make it safe to use as a cookie
         $ret = base64_encode( $crypteddata );
@@ -68,10 +67,10 @@ class Crypto {
 
     static public function decrypt( $data ) {
         $crypteddata = base64_decode( $data );
-        // HMAC is the first 32 bytes
-        $givenhmac   = substr( $crypteddata, 0, 32 );
+        // HMAC is the last 32 bytes
+        $givenhmac   = substr( $crypteddata, -32 );
         // now we check that the payload actually matches the HMAC
-        $crypteddata = substr( $crypteddata, 32 );
+        $crypteddata = substr( $crypteddata, 0, -32 ); // data without the HMAC
         $knownhmac   = hash_hmac( 'sha256', $crypteddata, Config::$a['crypto']['seed'], true );
 
         // compare the HMACs in a side-channel safe way
@@ -81,10 +80,10 @@ class Crypto {
         // the IV is the next 32 bytes, the actual size of the IV is not really
         // important since we get it dynamically
         $ivlength    = mcrypt_get_iv_size( 'rijndael-256', 'ctr' );
-        $iv          = substr( $crypteddata, 0, $ivlength );
+        $iv          = substr( $crypteddata, -$ivlength );
 
-        // everything else is the actual encrypted data
-        $crypteddata = substr( $crypteddata, $ivlength );
+        // everything else is the encrypted payload
+        $crypteddata = substr( $crypteddata, 0, -$ivlength );
 
         // pass in the IV so that decryption can work
         $crypt       = self::initCrypt( $iv );
