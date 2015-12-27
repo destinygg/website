@@ -93,33 +93,6 @@ class AdminController {
     }
 
     /**
-     * @Route ("/admin/cron")
-     * @Secure ({"ADMIN"})
-     *
-     * @param array $params
-     * @return array|Response
-     * @throws Exception
-     */
-    public function adminCron(array $params) {
-        if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-            throw new Exception ( 'Action id required.' );
-        }
-        set_time_limit ( 180 );
-        $log = Application::instance ()->getLogger ();
-        
-        $response = array ();
-        $scheduler = new Scheduler ( Config::$a ['scheduler'] );
-        $scheduler->setLogger ( $log );
-        $scheduler->loadSchedule ();
-        $scheduler->executeTaskByName ( $params ['id'] );
-        $response ['message'] = sprintf ( 'Execute %s', $params ['id'] );
-        
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
-    }
-
-    /**
      * @Route ("/admin/subscribers")
      * @Secure ({"ADMIN"})
      *
