@@ -251,15 +251,15 @@ class AuthenticationService extends Service {
         if (! empty ( $rawData ))
             $cookie->clearCookie();
 
-        $expires = Date::getDateTime (time() + mt_rand(0,2592000)); // 0-30 days
-        $expires->add(new \DateInterval('P30D'));
-        $timestamp = $expires->getTimestamp();
+        $expires = Date::getDateTime (time() + mt_rand(0,2419200)); // 0-28 days
+        $expires->add(new \DateInterval('P1M'));
 
         $data = Crypto::encrypt(serialize([
             'userId' => $user['userId'],
-            'expires' => $timestamp
+            'expires' => $expires->getTimestamp()
         ]));
-        $cookie->setValue ( $data, $timestamp );
+
+        $cookie->setValue ( $data, Date::getDateTime ('NOW + 2 MONTHS')->getTimestamp() );
     }
 
     /**
