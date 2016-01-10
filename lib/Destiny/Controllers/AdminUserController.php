@@ -125,6 +125,12 @@ class AdminUserController {
         $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
         $minecraftuuid = (isset ( $params ['minecraftuuid'] ) && ! empty ( $params ['minecraftuuid'] )) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
 
+        if(mb_strlen($minecraftname) > 16)
+            mb_substr($minecraftname, 0, 16);
+
+        if(mb_strlen($minecraftuuid) > 36)
+            mb_substr($minecraftuuid, 0, 36);
+
         $authService->validateEmail ( $email, $user );
         if (! empty ( $country )) {
             $countryArr = Country::getCountryByCode ( $country );

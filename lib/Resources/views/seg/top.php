@@ -61,7 +61,7 @@ use Destiny\Common\Session;
                 <?php endif; ?>
 
                 <li><a title="Blog @ destiny.gg" href="//blog.destiny.gg">Blog</a></li>
-                <li><a title="twitter.com" href="//twitter.com/Steven_Bonnell/">Twitter</a></li>
+                <li><a title="twitter.com" href="//twitter.com/OmniDestiny/">Twitter</a></li>
                 <li><a title="youtube.com" href="//www.youtube.com/user/Destiny">Youtube</a></li>
                 <li><a title="reddit.com" href="//www.reddit.com/r/Destiny/">Reddit</a></li>
                 <li><a title="facebook.com" href="//www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
