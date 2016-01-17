@@ -55,6 +55,11 @@ class IpnController {
             // Return success response
             return new Response (Http::STATUS_OK);
 
+        } catch (SubscriptionNotFoundException $e) {
+
+            $log->critical($e->getMessage());
+            return new Response (Http::STATUS_OK);
+
         } catch (\Exception $e) {
 
             $log->critical($e->getMessage());
@@ -180,7 +185,7 @@ class IpnController {
     /**
      * @param array $data
      * @return array|null
-     * @throws Exception
+     * @throws SubscriptionNotFoundException|Exception
      */
     protected function getSubscriptionByPaymentProfileData( array $data ){
         $subscription = null;
@@ -191,9 +196,11 @@ class IpnController {
         if(empty($subscription)){
             $log = Application::instance()->getLogger();
             $log->critical('Could not load subscription using IPN', $data);
-            throw new Exception( 'Could not load subscription by payment data' );
+            throw new SubscriptionNotFoundException( 'Could not load subscription by payment data' );
         }
         return $subscription;
     }
 
 }
+
+class SubscriptionNotFoundException extends Exception {}
