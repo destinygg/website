@@ -23,8 +23,8 @@ backend dgglogs {
 }
 
 sub dgg_recv {
-	// do not do anything with the dev/phpma/dba site
-	if (req.http.host ~ "(stage|dev|phpma)\.destiny\.gg$") {
+	// do not do anything with the stage/dev/sql site
+	if (req.http.host ~ "(stage|dev|sql)\.destiny\.gg$") {
 		return (pass);
 	}
 
