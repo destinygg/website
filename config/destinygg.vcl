@@ -1,4 +1,11 @@
+vcl 4.0;
+
 backend default {
+	.host = "127.0.0.1";
+	.port = "8000";
+}
+
+backend dgg {
 	.host = "127.0.0.1";
 	.port = "8080";
 	.probe = {
@@ -10,24 +17,12 @@ backend default {
 	}
 }
 
-acl purge {
-	"localhost";
-	// also supports IP ranges
+backend dgglogs {
+	.host = "127.0.0.1";
+	.port = "9000";
 }
 
-sub vcl_recv {
-
-	// allow purging of single cache objects from localhost
-	if (req.request == "PURGE") {
-		if (!client.ip ~ purge) {
-			error 405 "Not allowed.";
-		}
-		return (lookup);
-	}
-
-	// allow varnish to serve stale content as needed
-	set req.grace = 2m;
-
+sub dgg_recv {
 	// do not do anything with the dev/phpma/dba site
 	if (req.http.host ~ "(stage|dev|phpma)\.destiny\.gg$") {
 		return (pass);
@@ -63,6 +58,34 @@ sub vcl_recv {
 		unset req.http.cookie;
 	}
 
+	// dont cache wordpress if the user is logged in
+	if ( req.http.host ~ "^blog\." && ( req.http.cookie ~ "wordpress_logged_in" || req.url ~ "vaultpress=true" ) ) {
+		return( pass );
+	}
+
+	// drop any cookies sent to wordpress
+	if ( req.http.host ~ "^blog\." && req.url !~ "wp-(login|admin)" ) {
+		unset req.http.cookie;
+	}
+}
+
+sub dgglogs_recv {
+	// cache static asset folders
+	if (req.url ~ "^/(js|img)/") {
+		unset req.http.cookie;
+	}
+
+	// cache any other static asset
+	if ( req.url ~ "(?i)\.(png|gif|jpeg|jpg|ico|swf|css|js|html|htm)(\?[a-z0-9]+)?$" ) {
+		unset req.http.cookie;
+	}
+
+	if (req.url ~ "^/oldworlds/") {
+		return (pass);
+	}
+}
+
+sub vcl_recv {
 	// Handle compression correctly. Different browsers send different
 	// "Accept-Encoding" headers, even though they mostly all support the same
 	// compression mechanisms. By consolidating these compression headers into
@@ -85,46 +108,49 @@ sub vcl_recv {
 
 	}
 
-	// dont cache wordpress if the user is logged in
-	if ( req.http.host ~ "^blog\." && ( req.http.cookie ~ "wordpress_logged_in" || req.url ~ "vaultpress=true" ) ) {
-		return( pass );
+	if (req.http.host ~ "overrustlelogs\.net$") {
+		set req.backend_hint = dgglogs;
+		call dgglogs_recv;
+	} elseif (req.http.host ~ "destiny\.gg$") {
+		set req.backend_hint = dgg;
+		call dgg_recv;
 	}
-
-	// drop any cookies sent to wordpress
-	if ( req.http.host ~ "^blog\." && req.url !~ "wp-(login|admin)" ) {
-		unset req.http.cookie;
-	}
-
 }
 
-sub vcl_fetch {
+sub dgglogs_response {
+	// cache static content - cloudflare should help with this
+	if (bereq.url ~ "\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|tar|wav|bmp|rtf|js|flv|swf|html|htm)$") {
+		unset beresp.http.set-cookie;
+		set beresp.ttl = 1h;
+	}
 
+	// Set the TTL for cache object to five minutes
+	set beresp.ttl = 5m;
+
+	// allow stale content if shit gets fucked
+	set beresp.grace = 24h;
+}
+
+sub dgg_response {
 	// allow stale content if the backend is having a shitfit
-	set beresp.grace = 2m;
+	set beresp.grace = 1d;
 
 	// mainly to override the cache headers sent by php
-	if ( (req.url == "/" && req.http.Cookie !~ "sid=|rememberme=") || req.url ~ "^/[^/]\.json$") {
+	if ( (bereq.url == "/" && bereq.http.Cookie !~ "sid=|rememberme=") || bereq.url ~ "^/[^/]\.json$") {
 		set beresp.ttl = 30s;
 	}
 
 	// do not cache the chat history for long
-	if ( req.url ~ "(?i)^/chat/history" ) {
+	if ( bereq.url ~ "(?i)^/chat/history" ) {
 		set beresp.ttl = 200ms;
 	}
-
 }
 
-sub vcl_hit {
-	if (req.request == "PURGE") {
-		purge;
-		error 200 "Purged.";
-	}
-}
-
-sub vcl_miss {
-	if (req.request == "PURGE") {
-		purge;
-		error 200 "Purged.";
+sub vcl_backend_response {
+	if (bereq.http.host ~ "overrustlelogs\.net$") {
+		call dgglogs_response;
+	} elseif (bereq.http.host ~ "destiny\.gg$") {
+		call dgg_response;
 	}
 }
 
