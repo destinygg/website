@@ -157,3 +157,16 @@ sub vcl_backend_response {
 sub vcl_hash {
 	hash_data(req.http.X-Forwarded-Proto);
 }
+
+sub vcl_deliver {
+	if (obj.hits > 0) {
+		set resp.http.X-Cache = resp.http.Age;
+	} else {
+		set resp.http.X-Cache = "MISS";
+	}
+
+	unset resp.http.Age;
+	unset resp.http.X-Varnish;
+	unset resp.http.WP-Super-Cache;
+	unset resp.http.Via;
+}
