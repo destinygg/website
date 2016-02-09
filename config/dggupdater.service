@@ -1,0 +1,11 @@
+[Unit]
+Description=dggupdater bans tor and refreshes the OCSP stapling in haproxy
+After=network.target haproxy.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/sztanpet/dggupdater
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
