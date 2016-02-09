@@ -171,7 +171,17 @@ $(function(){
             $c.toggleClass('active');
         });
     });
-    
+    $('.btn-show-all').on('click', function(){
+        $(".collapsible").each(function(){
+            var $c = $(this),
+                $t = $c.find('> h3'),
+                $v = $c.find('> content');
+            $t.find('>.expander').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+            $v.show();
+            $c.addClass('active');
+        });
+    });
+
     // Tabs selector - dont know why I need this
     if (location.hash !== '') 
         $('a[href="' + location.hash + '"]').tab('show');

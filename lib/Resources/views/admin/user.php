@@ -27,10 +27,11 @@ use Destiny\Commerce\SubscriptionStatus;
     </div>
   </section>
   <?php endif; ?>
-  
+
   <section class="container collapsible">
     <h3>
-      <span class="fa fa-fw fa-chevron-right expander"></span> Details 
+      <div class="pull-right"><button class="btn btn-link btn-show-all" style="outline: none;">Show all</button></div>
+      <span class="fa fa-fw fa-chevron-right expander"></span> Details
       <small>(<?=Tpl::out($model->user['username'])?>)</small>
     </h3>
     <div class="content content-dark clearfix">
