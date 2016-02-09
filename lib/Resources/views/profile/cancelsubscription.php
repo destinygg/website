@@ -1,4 +1,5 @@
 <?php
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 ?>
@@ -74,10 +75,6 @@ use Destiny\Common\Utils\Date;
 
           <div class="ds-block">
             <div class="form-group">
-              <label class="label label-danger">WARNING</label> Cancelling an active subscription can only be undone by an administrator.
-            </div>
-
-            <div class="form-group">
               <dl class="dl-horizontal">
                 <dt>Status:</dt>
                 <dd>
@@ -104,18 +101,18 @@ use Destiny\Common\Utils\Date;
               </dl>
             </div>
 
-            <div class="form-group">
-              <div class="checkbox">
-                <label>
-                  <input name="cancelRemainingTime" type="checkbox" value="1" /> Cancel the remaining subscription time <em>immediately</em>
-                </label>
-              </div>
-            </div>
+            <input name="cancelSubscription" type="hidden" value="0" />
+            <div class="g-recaptcha" data-sitekey="<?= Config::$a ['g-recaptcha'] ['key'] ?>"></div>
 
           </div>
 
           <div class="form-actions">
-            <button type="submit" class="btn btn-danger btn-lg">Cancel subscription</button>
+            <?php if($model->subscription['status'] == 'Active'): ?>
+            <button type="button" id="cancelSubscriptionBtn" class="btn btn-danger">Cancel Subscription</button>
+            <?php endif; ?>
+            <?php if($model->subscription['recurring'] == '1'): ?>
+            <button type="button" id="stopRecurringBtn" class="btn btn-warning">Stop Recurring Payments</button>
+            <?php endif; ?>
             <a class="btn btn-link" href="/profile">Back to profile</a>
           </div>
         </form>
@@ -127,6 +124,20 @@ use Destiny\Common\Utils\Date;
 
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
+
+  <script src="//www.google.com/recaptcha/api.js"></script>
+  <script>
+    (function(){
+      $('button#cancelSubscriptionBtn').on('click', function(){
+        $('input[name="cancelSubscription"]').val('1');
+        $(this).closest('form').submit();
+      });
+      $('button#stopRecurringBtn').on('click', function(){
+        $('input[name="cancelSubscription"]').val('0');
+        $(this).closest('form').submit();
+      });
+    })();
+  </script>
 
 </body>
 </html>

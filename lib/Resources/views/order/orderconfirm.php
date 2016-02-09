@@ -91,28 +91,26 @@ use Destiny\Common\Config;
           </div>
 
           <?php endif; ?>
-
-          <div class="ds-block">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="renew" value="1" checked="checked" /> Automatically renew this subscription
-              </label>
-            </div>
+          <div id="extraMessage" class="ds-block">
+            <div>Send a message with your subscription (optional):</div>
+            <textarea name="sub-message" autocomplete="off" maxlength="250" rows="5" class="form-control" placeholder=""></textarea>
+            <small style="display: none;">Maximum message length 250 characters</small>
           </div>
 
           <div class="ds-block">
-            <label>
-              <div>Send a message with your subscription (optional):</div>
-            </label>
-            <textarea name="sub-message" autocomplete="off" maxlength="250" class="form-control" placeholder=""></textarea>
-            <small>Maximum message length 250 characters</small>
+            <div class="checkbox">
+              <label for="renew">
+                <div><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></div>
+                <small>Automatically bill every <?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>(s)</small>
+              </label>
+            </div>
           </div>
 
           <div class="form-actions">
             <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
             <button type="submit" class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Pay subscription</button>
             <a href="/subscribe" class="btn btn-link">Cancel</a>
-            <p style="font-size: 12px; margin: 15px 0 0 0; color: #">
+            <p style="font-size: 12px; margin: 15px 0 0 0; color: #555;">
               <span>By clicking the &quot;Pay subscription&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</span>
             </p>
           </div>
@@ -134,7 +132,9 @@ use Destiny\Common\Config;
         frm.find('[type="submit"]').removeAttr("disabled");
       }, 30000);
     });
-    $('textarea[name="sub-message"]').focus();
+    $('textarea[name="sub-message"]').on('keyup', function(){
+      $('#extraMessage small').css('display',($(this).val().length > 200) ? 'block':'none');
+    });
   });
   </script>
   

@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Exception;
+use Destiny\Common\Request;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
@@ -23,6 +24,7 @@ use Destiny\Commerce\PaymentStatus;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
+use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\PayPal\PayPalApiService;
 
 /**
@@ -114,18 +116,22 @@ class SubscriptionController {
         $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
-    
+
     /**
      * @Route ("/subscription/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
-     * @throws \Exception
+     * @param array $params
+     * @param ViewModel $model
+     * @param Request $request
      * @return string
+     * @throws Exception
+     * @throws \Destiny\Common\Utils\FilterParamsException
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \Exception
      */
-    public function subscriptionCancelProcess(array $params, ViewModel $model) {
+    public function subscriptionCancelProcess(array $params, ViewModel $model, Request $request) {
         FilterParams::required($params, 'subscriptionId');
 
         $payPalAPIService = PayPalApiService::instance ();
@@ -134,6 +140,9 @@ class SubscriptionController {
         
         $userId = Session::getCredentials ()->getUserId ();
         $subscription = $subscriptionsService->getSubscriptionById ( $params['subscriptionId'] );
+
+        $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+        $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
 
         if(empty($subscription)){
            throw new Exception( 'Invalid subscription' );
@@ -157,20 +166,27 @@ class SubscriptionController {
             if (! empty ( $subscription ['paymentProfileId'] )) {
                 if (strcasecmp ( $subscription ['paymentStatus'], PaymentStatus::ACTIVE ) === 0) {
                     $payPalAPIService->cancelPaymentProfile ( $subscription ['paymentProfileId'] );
-                    $subscriptionsService->updateSubscription(array(
-                        'subscriptionId' => $subscription['subscriptionId'],
-                        'paymentStatus' => PaymentStatus::CANCELLED
-                    ));
+                    $subscription['paymentStatus'] = PaymentStatus::CANCELLED;
                 }
+                $subscription['recurring'] = 0;
             }
 
-            // Update subscription
-            if(isset($params['cancelRemainingTime']) && $params['cancelRemainingTime'] == '1'){
+            // Cancel subscription
+            if(isset($params['cancelSubscription']) && $params['cancelSubscription'] == '1'){
+                $subscription['status'] = SubscriptionStatus::CANCELLED;
                 $subscriptionsService->updateSubscription (array(
                     'subscriptionId' => $subscription ['subscriptionId'],
-                    'status' => SubscriptionStatus::CANCELLED
+                    'status' => $subscription['status']
                 ));
             }
+
+            // Update the subscription info
+            $subscriptionsService->updateSubscription(array(
+                'subscriptionId' => $subscription['subscriptionId'],
+                'paymentStatus'  => $subscription['paymentStatus'],
+                'recurring'      => $subscription['recurring'],
+                'status'         => $subscription['status']
+            ));
 
             $authenticationService->flagUserForUpdate ( $subscription ['userId'] );
             $conn->commit();

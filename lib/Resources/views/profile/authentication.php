@@ -10,7 +10,6 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
-<script src="//www.google.com/recaptcha/api.js"></script>
 <style>
   .btn-post { min-width: 75px; }
 </style>
@@ -113,6 +112,7 @@ use Destiny\Common\Config;
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
 
+  <script src="//www.google.com/recaptcha/api.js"></script>
   <script>
   $('.btn-post').on('click', function(){
     var a = $(this), form = $(this).closest('form');

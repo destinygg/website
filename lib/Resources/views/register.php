@@ -11,7 +11,6 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
-<script src="//www.google.com/recaptcha/api.js"></script>
 </head>
 <body id="register">
   <div id="page-wrap">
@@ -106,6 +105,7 @@ use Destiny\Common\Config;
   
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
+  <script src="//www.google.com/recaptcha/api.js"></script>
   
 </body>
 </html>

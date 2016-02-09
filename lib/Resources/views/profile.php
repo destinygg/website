@@ -25,6 +25,17 @@ use Destiny\Commerce\SubscriptionStatus;
     
     <section class="container collapsible">
       <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>
+
+      <?php if($model->user['istwitchsubscriber'] == 1): ?>
+      <div class="content">
+        <div class="content-dark clearfix" style="margin-bottom:10px;">
+          <div class="ds-block">
+             <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
+          </div>
+        </div>
+      </div>
+      <?php endif; ?>
+
       <?php if(!empty($model->subscriptions)): ?>
       <div class="content">
 
@@ -73,21 +84,20 @@ use Destiny\Commerce\SubscriptionStatus;
                 </p>
               <?php endif; ?>
 
-
               <div style="margin-top:20px;">
-                <a class="btn btn-danger btn-sm" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Cancel subscription</a>
+                <a class="btn btn-primary btn-sm" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Cancel subscription</a>
               </div>
 
             </div>
           </div>
         </div>
         <?php endforeach; ?>
-      
+
       </div>
 
       <?php else: ?>
       <div class="content content-dark clearfix">
-        <div class="ds-block">Not subscribed? <a title="Subscribe" href="/subscribe">Try it out</a></div>
+        <div class="ds-block">No destiny.gg subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
       </div>
       <?php endif; ?>
       
@@ -166,10 +176,10 @@ use Destiny\Commerce\SubscriptionStatus;
               </div>
               
               <div class="form-group">
-                <label>Nationality:
+                <label for="country">Nationality:
                 <br><small>The country you indentify with</small>
                 </label> 
-                <select class="form-control" name="country">
+                <select class="form-control" name="country" id="country">
                   <option value="">Select your country</option>
                   <?$countries = Country::getCountries();?>
                   <option value="">&nbsp;</option>
@@ -179,16 +189,16 @@ use Destiny\Commerce\SubscriptionStatus;
                     selected="selected" <?endif;?>>United Kingdom</option>
                   <option value="">&nbsp;</option>
                   <?foreach($countries as $country):?>
-                  <option value="<?=$country['alpha-2']?>"<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
+                  <option value="<?=$country['alpha-2']?>" <?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected"<?endif;?>><?=Tpl::out($country['name'])?></option>
                   <?endforeach;?>
                 </select>
               </div>
               
               <div class="form-group">
-                <label>Accept Gifts:
+                <label for="allowGifting">Accept Gifts:
                 <br><small>Whether or not you would like the ability to receive gifts (subscriptions) from other people.</small>
                 </label> 
-                <select class="form-control" name="allowGifting">
+                <select class="form-control" name="allowGifting" id="allowGifting">
                   <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?endif;?>>Yes, I accept gifts</option>
                   <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?endif;?>>No, I do not accept gifts</option>
                 </select>
@@ -248,8 +258,8 @@ use Destiny\Commerce\SubscriptionStatus;
                 <input class="form-control" type="text" name="zip" value="<?=Tpl::out($model->address['zip'])?>" placeholder="Zip/Postal Code" />
               </div>
               <div class="form-group">
-                <label>Country:</label> 
-                <select class="form-control" name="country">
+                <label for="country">Country:</label>
+                <select class="form-control" name="country" id="country">
                   <option value="">Select your country</option>
                   <?$countries = Country::getCountries();?>
                   <option value="">&nbsp;</option>
@@ -259,7 +269,7 @@ use Destiny\Commerce\SubscriptionStatus;
                     selected="selected" <?endif;?>>United Kingdom</option>
                   <option value="">&nbsp;</option>
                   <?foreach($countries as $country):?>
-                  <option value="<?=$country['alpha-2']?>"<?if($model->address['country'] != 'US' && $model->address['country'] != 'GB' && $model->address['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
+                  <option value="<?=$country['alpha-2']?>" <?if($model->address['country'] != 'US' && $model->address['country'] != 'GB' && $model->address['country'] == $country['alpha-2']):?>selected="selected"<?endif;?>><?=Tpl::out($country['name'])?></option>
                   <?endforeach;?>
                 </select>
               </div>
