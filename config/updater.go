@@ -144,10 +144,15 @@ func (h *haproxy) Write(b []byte) (int, error) {
 
 	ret, err := c.Write(b)
 	handleErr(err)
+	c.(*net.UnixConn).CloseWrite()
 
 	c.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
-	n, _ := c.Read(h.scratch)
-	if n > 0 {
+	n, e := c.Read(h.scratch)
+	if e != nil && e.Error() != "EOF" {
+		log.Printf("Read err: %v\n", e.Error())
+	}
+
+	if n > 1 { // if 1, it will be a newline indicating success
 		log.Println(string(h.scratch[:n]))
 	}
 
@@ -171,7 +176,8 @@ func (h *haproxy) UpdateIPMap(path string) {
 
 	nodes := getTorNodes(ips, ports)
 	for _, node := range nodes {
-		f.WriteString(node + " 1 \n")
+		_, err = f.WriteString(node + " 1 \n")
+		handleErr(err)
 
 		b.Reset()
 		b.WriteString("add map ")
