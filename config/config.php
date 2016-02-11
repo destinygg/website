@@ -85,6 +85,7 @@ return array (
 			'DJAslan',
 			'TRUMPED',
 			'BASEDWATM8',
+			'BERN',
 		),
 		'twitchemotes' => array(
 			'nathanDad',
