@@ -88,9 +88,7 @@ func getTorNodes(ips, ports []string) []string {
 	m := map[string]struct{}{}
 	for _, u := range urls {
 		res, err := http.Get(u)
-		if err != nil {
-			log.Fatal(err)
-		}
+		handleErr(err)
 
 		sc := bufio.NewScanner(res.Body)
 		for sc.Scan() {
@@ -109,9 +107,8 @@ func getTorNodes(ips, ports []string) []string {
 		}
 
 		res.Body.Close()
-		if err := sc.Err(); err != nil {
-			log.Fatal(err)
-		}
+		err = sc.Err()
+		handleErr(err)
 	}
 
 	log.Printf("Banning %v Tor nodes\n", len(m))
@@ -124,29 +121,29 @@ func getTorNodes(ips, ports []string) []string {
 }
 
 type haproxy struct {
-	sock    *net.UnixConn
+	sock    net.Conn
 	done    chan struct{}
-	scratch []byte
 	wg      sync.WaitGroup
+	scratch []byte
+	buf     bytes.Buffer
 }
 
 func (h *haproxy) Init(path string) {
 	h.done = make(chan struct{})
 	c, err := net.Dial("unix", path)
 	handleErr(err)
-	sock, ok := c.(*net.UnixConn)
-	if !ok {
-		log.Fatalln("not a unix conn")
-	}
 
-	h.sock = sock
+	h.sock = c
 	h.scratch = make([]byte, 512)
 	h.wg.Add(1)
 	go h.read()
 }
 
 func (h *haproxy) Close() {
-	h.sock.CloseWrite()
+	if c, ok := h.sock.(*net.UnixConn); ok {
+		c.CloseWrite()
+	}
+
 	close(h.done)
 	h.wg.Wait()
 	h.sock.Close()
@@ -191,11 +188,9 @@ func (h *haproxy) read() {
 	}
 }
 
-func (h *haproxy) Write(b []byte) (int, error) {
-	ret, err := h.sock.Write(b)
+func (h *haproxy) Write() {
+	_, err := h.sock.Write(h.buf.Bytes())
 	handleErr(err)
-
-	return ret, err
 }
 
 func (h *haproxy) UpdateIPMap(path string) {
@@ -205,11 +200,11 @@ func (h *haproxy) UpdateIPMap(path string) {
 
 	// first clear the banned IPs, this leaves a small window where
 	// users could connect
-	b := bytes.NewBufferString(`clear map `)
-	b.WriteString(path)
-	b.WriteString(";")
-	_, err = h.Write(b.Bytes())
-	handleErr(err)
+	h.buf.Reset()
+	h.buf.WriteString(`clear map `)
+	h.buf.WriteString(path)
+	h.buf.WriteString(";")
+	h.Write()
 
 	ips := getIPs()
 	ports := []string{"80", "443"}
@@ -219,14 +214,13 @@ func (h *haproxy) UpdateIPMap(path string) {
 		_, err = f.WriteString(node + " 1 \n")
 		handleErr(err)
 
-		b.Reset()
-		b.WriteString("add map ")
-		b.WriteString(path)
-		b.WriteString(" ")
-		b.WriteString(node)
-		b.WriteString(" 1;")
-		_, err = h.Write(b.Bytes())
-		handleErr(err)
+		h.buf.Reset()
+		h.buf.WriteString("add map ")
+		h.buf.WriteString(path)
+		h.buf.WriteString(" ")
+		h.buf.WriteString(node)
+		h.buf.WriteString(" 1;")
+		h.Write()
 	}
 }
 
@@ -252,16 +246,16 @@ func (h *haproxy) UpdateOCSP(issuer, cert, url string) {
 	d := &bytes.Buffer{}
 	io.Copy(d, f)
 
-	res := bytes.NewBufferString("set ssl ocsp-response ")
+	h.buf.Reset()
+	h.buf.WriteString("set ssl ocsp-response ")
 
 	// encode the ocsp into base64 and write it to the buffer
-	encoder := base64.NewEncoder(base64.StdEncoding, res)
+	encoder := base64.NewEncoder(base64.StdEncoding, &h.buf)
 	encoder.Write(d.Bytes())
 	encoder.Close()
 
-	res.WriteString(";")
-	_, err = h.Write(res.Bytes())
-	handleErr(err)
+	h.buf.WriteString(";")
+	h.Write()
 }
 
 func main() {
