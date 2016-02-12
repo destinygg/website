@@ -14,6 +14,8 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -122,39 +124,76 @@ func getTorNodes(ips, ports []string) []string {
 }
 
 type haproxy struct {
-	path    string
+	sock    *net.UnixConn
+	done    chan struct{}
 	scratch []byte
+	wg      sync.WaitGroup
 }
 
 func (h *haproxy) Init(path string) {
+	h.done = make(chan struct{})
 	c, err := net.Dial("unix", path)
 	handleErr(err)
-	h.path = path
+	sock, ok := c.(*net.UnixConn)
+	if !ok {
+		log.Fatalln("not a unix conn")
+	}
+
+	h.sock = sock
 	h.scratch = make([]byte, 512)
-	c.Close()
+	h.wg.Add(1)
+	go h.read()
+}
+
+func (h *haproxy) Close() {
+	h.sock.CloseWrite()
+	close(h.done)
+	h.wg.Wait()
+	h.sock.Close()
+}
+
+func (h *haproxy) read() {
+	var done bool
+	defer h.wg.Done()
+
+	for {
+		h.sock.SetReadDeadline(time.Now().Add(time.Second))
+		n, err := h.sock.Read(h.scratch)
+		if operr, ok := err.(*net.OpError); ok {
+			if operr.Temporary() {
+				log.Printf("Read err: %v\n", err.Error())
+				continue
+			}
+
+			if !operr.Temporary() && !operr.Timeout() {
+				// not timeout and not temporary ergo fatal
+				handleErr(err)
+			}
+		}
+
+		if n == 0 && done {
+			break
+		}
+
+		// there will be a newline indicating success for every
+		// pipelined command if no error found
+		// we do not care about success
+		s := strings.TrimSpace(string(h.scratch[:n]))
+		if len(s) > 0 {
+			log.Printf("Response from haproxy: %q\n", s)
+		}
+
+		select {
+		case <-h.done: // channel got closed, we are quitting
+			done = true
+		default:
+		}
+	}
 }
 
 func (h *haproxy) Write(b []byte) (int, error) {
-	// cant connect to the unix socket too quickly or it will error out with
-	// connect: resource temporarily unavailable
-	// thus the read with the deadline
-	c, err := net.Dial("unix", h.path)
+	ret, err := h.sock.Write(b)
 	handleErr(err)
-	defer c.Close()
-
-	ret, err := c.Write(b)
-	handleErr(err)
-	c.(*net.UnixConn).CloseWrite()
-
-	c.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
-	n, e := c.Read(h.scratch)
-	if e != nil && e.Error() != "EOF" {
-		log.Printf("Read err: %v\n", e.Error())
-	}
-
-	if n > 1 { // if 1, it will be a newline indicating success
-		log.Println(string(h.scratch[:n]))
-	}
 
 	return ret, err
 }
@@ -168,6 +207,7 @@ func (h *haproxy) UpdateIPMap(path string) {
 	// users could connect
 	b := bytes.NewBufferString(`clear map `)
 	b.WriteString(path)
+	b.WriteString(";")
 	_, err = h.Write(b.Bytes())
 	handleErr(err)
 
@@ -184,7 +224,7 @@ func (h *haproxy) UpdateIPMap(path string) {
 		b.WriteString(path)
 		b.WriteString(" ")
 		b.WriteString(node)
-		b.WriteString(" 1")
+		b.WriteString(" 1;")
 		_, err = h.Write(b.Bytes())
 		handleErr(err)
 	}
@@ -212,14 +252,15 @@ func (h *haproxy) UpdateOCSP(issuer, cert, url string) {
 	d := &bytes.Buffer{}
 	io.Copy(d, f)
 
-	b := bytes.NewBufferString("set ssl ocsp-response ")
+	res := bytes.NewBufferString("set ssl ocsp-response ")
 
 	// encode the ocsp into base64 and write it to the buffer
-	encoder := base64.NewEncoder(base64.StdEncoding, b)
+	encoder := base64.NewEncoder(base64.StdEncoding, res)
 	encoder.Write(d.Bytes())
 	encoder.Close()
 
-	_, err = h.Write(b.Bytes())
+	res.WriteString(";")
+	_, err = h.Write(res.Bytes())
 	handleErr(err)
 }
 
@@ -232,5 +273,6 @@ func main() {
 	log.Println("Tor node IP bans updated")
 	h.UpdateOCSP(*issuerPath, *certPath, *ocspURL)
 	log.Println("OCSP refreshed")
+	h.Close()
 	os.Exit(0) // success
 }
