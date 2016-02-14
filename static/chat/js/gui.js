@@ -47,7 +47,6 @@
         hintPopup          : null,
 
         broadcastdisplaytime : 300000,
-        broadcasts           : broadcasts,
         broadcastdismiss     : (localStorage['chatbroadcastdismiss'] || null),
         maxbroadcasts        : 1,
         unreadMessageCount   : parseInt(localStorage['unreadMessageCount'] || 0, 10),
@@ -495,32 +494,18 @@
 
         loadBacklog: function() {
             this.backlogLoading = true;
-            if(this.backlog.length > 0){
-                for (var i = this.backlog.length - 1; i >= 0; i--) {
-                    var line    = this.backlog[i],
-                        message = this.engine.dispatchBacklog(line);
-
-                    if (!message)
-                        continue;
-
-                    if (this.engine.controlevents[ line.event ])
-                        this.put(message);
-                    else
-                        this.handleHighlight(this.put(message));
-
-                }
-                this.put(new ChatUIMessage('<hr/>'));
+            if(this.backlog.length == 0) {
+                this.backlogLoading = false;
+                return;
             }
+
+            for (var i = 0, j = this.backlog.length; i < j; i++)
+                this.engine.parseAndDispatch({
+                    data: this.backlog[i]
+                });
+
+            this.put(new ChatUIMessage('<hr/>'));
             this.scrollPlugin.updateAndScroll(true);
-            this.backlogLoading = false;
-        },
-
-        loadBroadcasts: function(){
-            this.backlogLoading = true;
-            if(this.broadcasts.length > 0){
-                for (var i = this.broadcasts.length - 1; i >= 0; i--)
-                    this.addBroadcastUI( this.broadcasts[i] );
-            }
             this.backlogLoading = false;
         },
 
@@ -797,45 +782,6 @@
         removeUserMessages: function(username) {
             this.lines.children('div[data-username="'+username.toLowerCase()+'"]').remove();
             this.scrollPlugin.reset();
-        },
-
-        addBroadcastUI: function(message){
-
-            if ( typeof( message ) == 'string' ) return;
-            if (message.data.substring(0, 9) == 'redirect:') return;
-            // Dont show the broadcast if the user has already dismissed it
-            if(this.broadcastdismiss != null && moment.utc(message.timestamp).unix() < this.broadcastdismiss){
-                return;
-            }
-
-            var self    = this,
-                encoded = message.data;
-
-            for(var i=0; i< this.formatters.length; ++i)
-                encoded = this.formatters[i].format(encoded, this.user, encoded);
-
-            var broadcasts     = this.ui.find('#chat-broadcasts'),
-                prevbroadcasts = broadcasts.find('.chat-broadcast:not(.template)'),
-                broadcasttpl   = broadcasts.find('.chat-broadcast.template:first');
-
-            if(prevbroadcasts.length >= this.maxbroadcasts){
-                prevbroadcasts[prevbroadcasts.length-1].remove();
-            }
-
-            var broadcastui  = broadcasttpl.clone().removeClass('template');
-            broadcastui.find('.message').html(encoded);
-            broadcastui.appendTo(broadcasts);
-            broadcastui.timeout = setTimeout(function(){
-                broadcastui.fadeOut('fast', broadcastui.remove);
-            }, this.broadcastdisplaytime);
-            broadcastui.on('click', 'button.close', function(){
-                clearTimeout(broadcastui.timeout);
-                broadcastui.fadeOut('fast', broadcastui.remove);
-                self.broadcastdismiss = moment().unix();
-                localStorage['chatbroadcastdismiss'] = self.broadcastdismiss;
-                return false;
-            });
-            broadcastui.removeClass('hidden');
         },
 
         setUnreadMessageCount: function(count){

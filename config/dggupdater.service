@@ -5,7 +5,7 @@ After=network.target haproxy.service
 [Service]
 Type=oneshot
 ExecStart=/home/sztanpet/dggupdater
-Restart=on-failure
+#Restart=on-failure # uncomment when systemd finally supports it
 
 [Install]
 WantedBy=multi-user.target

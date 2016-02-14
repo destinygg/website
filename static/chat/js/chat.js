@@ -65,7 +65,6 @@ chat.prototype.start = function(){
 		return this.gui.push(new ChatErrorMessage(this.errorstrings.requiresocket));
 
 	this.gui.loadBacklog();
-	this.gui.loadBroadcasts();
 	this.loadIgnoreList();
 	this.dispatchBacklog = $.proxy(this.dispatchBacklog, this);
 	this.gui.push(new ChatStatusMessage("Connecting..."));

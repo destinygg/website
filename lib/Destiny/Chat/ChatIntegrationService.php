@@ -173,4 +173,9 @@ class ChatIntegrationService extends Service {
             $redis->exec();
         }
     }
+
+    public function getChatLog() {
+        $redis = Application::instance ()->getRedis ();
+        return $redis->lRange('CHAT:chatlog', 0, -1);
+    }
 }
