@@ -6,7 +6,6 @@ use Destiny\Common\Session;
 
 <h2 class="page-title" style="margin-left: 20px;">
 	<span><?= Tpl::out(Session::getCredentials ()->getUsername ()) ?></span>
-	<small><i class="fa fa-envelope-o" title="<?= Tpl::out(Session::getCredentials ()->getEmail ()) ?>"></i></small>
 </h2>
 
 <section class="container">

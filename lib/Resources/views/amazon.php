@@ -13,7 +13,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body id="amazon">
-    <section id="page-wrap">
+    <div id="page-wrap">
         <?php include Tpl::file('seg/top.php') ?>
         <?php include Tpl::file('seg/headerband.php') ?>
         <div class="container">
@@ -48,7 +48,7 @@ use Destiny\Common\Config;
                 <div class="col-md-4"></div>
             </div>
         </div>
-    </section>
+    </div>
     <?php include Tpl::file('seg/foot.php') ?>
     <?php include Tpl::file('seg/commonbottom.php') ?>
 </body>

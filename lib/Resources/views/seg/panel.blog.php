@@ -6,7 +6,7 @@ if (! empty ( $model->articles )) :
 <section class="container">
 	<div class="content content-dark content-split clearfix row-no-padding">
 
-		<div id="stream-blog" class="col-sm-6 stream">
+		<div class="media-block col-sm-6 stream">
 			<h3 class="title">
 				<span>Blog</span> <a href="http://blog.destiny.gg">destiny.gg</a>
 			</h3>
@@ -33,7 +33,7 @@ if (! empty ( $model->articles )) :
 			</div>
 		</div>
 
-		<div id="stream-schedule" class="col-sm-6 stream">
+		<div class="media-block col-sm-6 stream">
 			<h3 class="title">&nbsp;</h3>
 			<div class="entries">
 				<?php for ($i=3; $i<6; ++$i):?>

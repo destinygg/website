@@ -639,14 +639,6 @@ i.icon-reddit {
   }
 }
 
-
-#stream-blog .media-heading {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  height: 20px;
-}
-
 #stream-twitter .media-heading {
   font-size: 85%;
 }
@@ -1572,4 +1564,17 @@ body.error #error-container {
   padding: 10px;
   width: 100%;
   max-height: 300px;
+}
+
+/** Custom width adjustment for navigation bar **/
+@media (max-width: 875px) {
+  .visible-nxs {
+    display: block;
+  }
+  .visible-nxs.fa {
+    display: inline-block;
+  }
+  .hidden-nxs {
+    display: none;
+  }
 }

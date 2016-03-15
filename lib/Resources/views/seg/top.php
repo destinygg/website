@@ -19,8 +19,8 @@ use Destiny\Common\Session;
 
             <li class="bigscreen">
                 <a title="So. Much. Girth." href="/bigscreen" rel="bigscreen">
-                    <i class="hidden-xs hidden-sm icon-bigscreen"></i>
-                    <span class="">Big screen</span>
+                    <i class="icon-bigscreen"></i>
+                    <span class="hidden-nxs">Big screen</span>
                 </a>
             </li>
             <li class="divider-vertical"></li>
@@ -45,8 +45,8 @@ use Destiny\Common\Session;
             <?php else:?>
             <li>
                 <a href="/login" rel="login">
-                    <span class="visible-xs fa fa-sign-in"></span>
-                    <span class="hidden-xs">Sign In</span>
+                    <span class="fa fa-sign-in visible-nxs"></span>
+                    <span class="sign-in-link hidden-nxs">Sign In</span>
                 </a>
             </li>
             <?php endif; ?>
@@ -54,6 +54,8 @@ use Destiny\Common\Session;
 
         <div class="navbar-collapse collapse" id="collapsemenu">
             <ul class="nav navbar-nav">
+
+                <li class="visible-xs"><a title="Bigscreen" href="/bigscreen">Bigscreen</a></li>
 
                 <?php if(Session::hasRole(UserRole::USER)): ?>
                 <li class="visible-xs"><a title="Your account" href="/profile">Profile</a></li>
@@ -65,6 +67,7 @@ use Destiny\Common\Session;
                 <li><a title="youtube.com" href="//www.youtube.com/user/Destiny">Youtube</a></li>
                 <li><a title="reddit.com" href="//www.reddit.com/r/Destiny/">Reddit</a></li>
                 <li><a title="facebook.com" href="//www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
+                <li><a title="Amazon" href="/amazon">Amazon</a></li>
 
                 <?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
                 <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe Now!</span></a></li>

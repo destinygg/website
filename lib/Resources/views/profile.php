@@ -139,6 +139,11 @@ use Destiny\Commerce\SubscriptionStatus;
       <h3><span class="fa fa-fw fa-chevron-right expander"></span> Account</h3>
       
       <div class="content content-dark clearfix">
+
+          <div class="ds-block">
+            <small><a href="/logout"><span class="fa fa-sign-out"></span> Sign out</a> of this account.</small>
+          </div>
+
           <form id="profileSaveForm" action="/profile/update" method="post" role="form">
             
             <div class="ds-block">
@@ -284,7 +289,7 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
     
   </div>
-  
+
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
   
