@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Chat\ChatlogService;
 use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
@@ -9,13 +8,10 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Exception;
 use Destiny\Common\Application;
-use Destiny\Common\Scheduler;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
-use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
@@ -32,12 +28,9 @@ class AdminController {
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET","POST"})
      *
-     * @param ViewModel $model
      * @return string
      */
-    public function dashboard(ViewModel $model) {
-        $chatLogService = ChatlogService::instance();
-        $model->broadcasts = $chatLogService->getLastBroadcasts ( 10 );
+    public function dashboard() {
         return 'admin/dashboard';
     }
 

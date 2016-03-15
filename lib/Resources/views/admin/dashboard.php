@@ -13,27 +13,7 @@ use Destiny\Common\Utils\Date;
 <body id="admin" class="thin">
 
     <?php include Tpl::file('seg/top.php') ?>
-
     <?php include Tpl::file('seg/admin.nav.php') ?>
-
-    <section class="container">
-        <h3>Latest Broadcasts</h3>
-        <div class="content content-dark clearfix">
-            <?php if(!empty($model->broadcasts)): ?>
-            <div id="broadcast-context" class="ds-block">
-                <ul class="unstyled" style="padding: 0;">
-                    <?php foreach($model->broadcasts as $line): ?>
-                        <li style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <small class="subtle"><?=Tpl::moment(Date::getDateTime($line['timestamp']), Date::STRING_FORMAT, 'h:mm:ss')?></small>
-                            <span><?=Tpl::out($line['data'])?></span>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            <?php endif; ?>
-            <div></div>
-        </div>
-    </section>
 
     <section class="container">
         <div class="row">

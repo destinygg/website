@@ -364,19 +364,6 @@ use Destiny\Commerce\SubscriptionStatus;
         </blockquote>
       </div>
       
-      <?php if(!empty($model->banContext)): ?>
-      <div id="ban-context" class="ds-block">
-        <ul class="unstyled" style="height:383px;">
-          <?php foreach($model->banContext as $line): ?>
-          <li style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            <small class="subtle"><?=Tpl::moment(Date::getDateTime($line['timestamp']), Date::STRING_FORMAT, 'h:mm:ss')?></small>
-            <span>&lt;<?=Tpl::out($line['username'])?>&gt; <?=Tpl::out($line['data'])?></span> 
-          </li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-      <?php endif; ?>
-      
       <div class="form-actions">
         <a href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/edit" class="btn btn-primary">Edit ban</a>
         <a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$model->user['userId']?>/ban/remove" class="btn btn-danger">Remove ban</a>

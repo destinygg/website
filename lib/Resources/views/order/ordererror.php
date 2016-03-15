@@ -36,34 +36,31 @@ use Destiny\Common\Config;
           </div>
         </div>
 
-        <form action="/subscription/confirm" method="post">
-          <div class="ds-block">
+        <div class="ds-block">
 
-            <p>An error has occurred during the subscription process.
-            
-            <?php if(!empty($model->subscription)): ?>
-            <br />Your reference is #<?=Tpl::out($model->subscription['subscriptionId'])?>
-            <?php endif; ?>
+          <p>An error has occurred during the subscription process.
 
-            <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries. 
-            </p>
-            
-            <?php if(!empty($model->error)): ?>
-            <div class="alert alert-danger">
-              <strong>Error!</strong>
-              <?=Tpl::out($model->error->getMessage())?>
-            </div>
-            <?php endif; ?>
-            
+          <?php if(!empty($model->subscription)): ?>
+          <br />Your reference is #<?=Tpl::out($model->subscription['subscriptionId'])?>
+          <?php endif; ?>
+
+          <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries.
+          </p>
+
+          <?php if(!empty($model->error)): ?>
+          <div class="alert alert-danger">
+            <strong>Error!</strong>
+            <?=Tpl::out($model->error->getMessage())?>
           </div>
+          <?php endif; ?>
 
-          <div class="form-actions">
-            <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
-            <a href="/subscribe" class="btn btn-link">Subscriptions</a>
-            <a href="/profile" class="btn btn-link">Back to profile</a>
-          </div>
+        </div>
 
-        </form>
+        <div class="form-actions">
+          <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
+          <a href="/subscribe" class="btn btn-link">Subscriptions</a>
+          <a href="/profile" class="btn btn-link">Back to profile</a>
+        </div>
 
       </div>
     </section>

@@ -33,7 +33,7 @@ function chat(element, user, options) {
 		"SUBONLY": true
 	};
 	this.errorstrings       = {
-		"unknown"               : "Unknown error, this usuall indicates an internal problem :(",
+		"unknown"               : "Unknown error, this usually indicates an internal problem :(",
 		"nopermission"          : "You do not have the required permissions to use that",
 		"protocolerror"         : "Invalid or badly formatted",
 		"needlogin"             : "You have to be logged in to use that",
@@ -659,3 +659,4 @@ chat.prototype.parseTimeInterval = function(str) {
 	});
 	return nanoseconds;
 };
+

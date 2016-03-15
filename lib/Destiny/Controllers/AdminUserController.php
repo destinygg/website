@@ -11,7 +11,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Chat\ChatlogService;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
@@ -48,7 +47,6 @@ class AdminUserController {
         $userService = UserService::instance ();
         $userFeaturesService = UserFeaturesService::instance ();
         $apiAuthenticationService = ApiAuthenticationService::instance ();
-        $chatlogService = ChatlogService::instance ();
         $subscriptionsService = SubscriptionsService::instance();
         
         $user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
@@ -58,13 +56,7 @@ class AdminUserController {
         $model->user = $user;
         $model->smurfs = $userService->findSameIPUsers( $user ['userId'] );
         $model->features = $userFeaturesService->getDetailedFeatures ();
-        $ban = $userService->getUserActiveBan ( $user ['userId'] );
-        $banContext = array ();
-        if (! empty ( $ban )) {
-            $banContext = $chatlogService->getChatLogBanContext ( $user ['userId'], Date::getDateTime ( $ban ['starttimestamp'] ), 18 );
-        }
-        $model->banContext = $banContext;
-        $model->ban = $ban;
+        $model->ban = $userService->getUserActiveBan ( $user ['userId'] );
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
         $model->address = $userService->getAddressByUserId ( $user ['userId'] );
         $model->subscriptions = $subscriptionsService->getSubscriptionsByUserId($user ['userId']);
@@ -275,8 +267,9 @@ class AdminUserController {
         $subscription ['userId'] = $params ['id'];
         $subscription ['subscriptionSource'] = (isset ( $params ['subscriptionSource'] ) && ! empty ( $params ['subscriptionSource'] )) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
 
-        if(!empty($params ['gifter']))
+        if(!empty($params ['gifter'])){
             $subscription ['gifter'] = $params ['gifter'];
+        }
         
         if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {
             $subscription ['subscriptionId'] = $params ['subscriptionId'];
