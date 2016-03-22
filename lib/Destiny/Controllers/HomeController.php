@@ -108,18 +108,6 @@ class HomeController {
     }
 
     /**
-     * @Route ("/ting")
-     *
-     * @param ViewModel $model
-     * @return string
-     */
-    public function ting(ViewModel $model) {
-        $model->url = 'http://ting.7eer.net/c/72409/87559/2020';
-        $model->title = 'Ting';
-        return 'outbound';
-    }
-
-    /**
      * @Route ("/amazon")
      *
      * @param ViewModel $model
@@ -131,15 +119,21 @@ class HomeController {
     }
 
     /**
-     * @Route ("/eve")
+     * @Route ("/ting")
      *
-     * @param ViewModel $model
      * @return string
      */
-    public function eve(ViewModel $model) {
-        $model->url = 'https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
-        $model->title = 'EvE';
-        return 'outbound';
+    public function ting() {
+        return 'redirect: http://ting.7eer.net/c/72409/87559/2020';
+    }
+
+    /**
+     * @Route ("/eve")
+     *
+     * @return string
+     */
+    public function eve() {
+        return 'redirect: https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy';
     }
 
     /**
@@ -158,6 +152,15 @@ class HomeController {
      */
     public function shirts() {
         return 'redirect: http://teespring.com/twitch/desteeny2';
+    }
+
+    /**
+     * @Route ("/chair")
+     *
+     * @return string
+     */
+    public function chair() {
+        return 'redirect: http://www.4gamergear.com#oid=1027_1';
     }
     
 }
