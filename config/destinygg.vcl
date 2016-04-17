@@ -137,7 +137,7 @@ sub dgg_response {
 
 	// do not cache the chat history for long
 	if ( bereq.url ~ "(?i)^/chat/history" ) {
-		set beresp.ttl = 200ms;
+		set beresp.ttl = 100ms;
 	}
 }
 
