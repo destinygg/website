@@ -120,9 +120,11 @@ sub vcl_recv {
 sub dgglogs_response {
 	// cache static content - cloudflare should help with this
 	if (bereq.url ~ "\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|tar|wav|bmp|rtf|js|flv|swf|html|htm)$") {
-		unset beresp.http.set-cookie;
 		set beresp.ttl = 1h;
 	}
+
+	// the content is all public so we never care about cookies
+	unset beresp.http.set-cookie;
 
 	// Set the TTL for cache object to five minutes
 	set beresp.ttl = 5m;
