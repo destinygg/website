@@ -70,15 +70,8 @@ sub dgg_recv {
 }
 
 sub dgglogs_recv {
-	// cache static asset folders
-	if (req.url ~ "^/(js|img)/") {
-		unset req.http.cookie;
-	}
-
-	// cache any other static asset
-	if ( req.url ~ "(?i)\.(png|gif|jpeg|jpg|ico|swf|css|js|html|htm)(\?[a-z0-9]+)?$" ) {
-		unset req.http.cookie;
-	}
+	// no authenticated content to care about, just get rid of all cookies
+	unset req.http.cookie;
 
 	if (req.url ~ "^/oldworlds/") {
 		return (pass);
