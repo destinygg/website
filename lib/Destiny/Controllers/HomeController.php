@@ -162,5 +162,13 @@ class HomeController {
     public function chair() {
         return 'redirect: http://www.4gamergear.com#oid=1027_1';
     }
-    
+
+    /**
+     * @Route ("/forge")
+     *
+     * @return string
+     */
+    public function forge() {
+        return 'redirect: https://bit.ly/ForgeDestiny';
+    }
 }
