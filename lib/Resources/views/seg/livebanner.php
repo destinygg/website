@@ -18,7 +18,7 @@ $isoffline = (!isset($model->streamInfo['stream']) || empty($model->streamInfo['
           <h1 title="<?=Tpl::out($model->streamInfo['status'])?>"><?=Tpl::out($model->streamInfo['status'])?></h1>
           <div class="banner-content-text">
             Currently playing <strong class="live-info-game"><?=Tpl::out($model->streamInfo['game'])?></strong><br />
-            Started <span class="live-info-updated"><?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast']))?></span><br />
+            Started <span class="live-info-updated"><?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['created_at']))?></span><br />
             ~<span class="live-info-viewers"><?=Tpl::out((!empty($model->streamInfo['stream'])) ? $model->streamInfo['stream']['viewers'] : 0)?></span> viewers
           </div>
           <a href="/bigscreen" class="btn btn-lg btn-primary"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>

@@ -48,7 +48,7 @@ class TwitchApiService extends Service {
                 }
                 
                 if (is_object ( $json ) && isset ( $json ['stream'] ) && $json ['stream'] != null) {
-                    $json ['stream'] ['channel'] ['updated_at'] = Date::getDateTime ( $json ['stream'] ['channel'] ['updated_at'] )->format ( Date::FORMAT );
+                    $json ['stream'] ['created_at'] = Date::getDateTime ( $json ['stream'] ['created_at'] )->format ( Date::FORMAT );
                 }
                 
                 $json ['lastbroadcast'] = Date::getDateTime ( $channel ['updated_at'] )->format ( Date::FORMAT );
