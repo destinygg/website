@@ -171,4 +171,50 @@ class HomeController {
     public function forge() {
         return 'redirect: https://bit.ly/ForgeDestiny';
     }
+
+    /**
+     * @Route ("/twitter")
+     *
+     * @return string
+     */
+    public function twitter() {
+        return 'redirect: https://twitter.com/OmniDestiny';
+    }
+
+    /**
+     * @Route ("/facebook")
+     *
+     * @return string
+     */
+    public function facebook() {
+        return 'redirect: https://www.facebook.com/Steven.Bonnell.II';
+    }
+
+    /**
+     * @Route ("/youtube")
+     *
+     * @return string
+     */
+    public function youtube() {
+        return 'redirect: https://www.youtube.com/user/Destiny';
+    }
+
+    /**
+     * @Route ("/reddit")
+     *
+     * @return string
+     */
+    public function reddit() {
+        return 'redirect: https://www.reddit.com/r/Destiny';
+    }
+
+    /**
+     * @Route ("/github")
+     *
+     * @return string
+     */
+    public function github() {
+        return 'redirect: https://github.com/destinygg';
+    }
+
 }
