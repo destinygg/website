@@ -9,7 +9,7 @@ use Destiny\Common\Config;
     <div id="stream-twitter" class="media-block col-sm-6 stream">
       <h3 class="title">
         <span>Tweets</span>
-        <a href="//twitter.com/<?=Config::$a['twitter']['user']?>/">twitter.com</a>
+        <a href="/twitter">twitter.com</a>
       </h3>
       <div class="entries">
       <?if(!empty($model->tweets)):?>
@@ -36,7 +36,7 @@ use Destiny\Common\Config;
     <div id="stream-lastfm" class="media-block col-sm-6 stream">
       <h3 class="title">
         <span>Music</span>
-        <a href="//www.last.fm/user/<?=Config::$a['lastfm']['user']?>">last.fm</a>
+        <a href="/lastfm">last.fm</a>
       </h3>
       <div class="entries">
       <?if(!empty($model->music) && isset($model->music['recenttracks']['track']) && !empty($model->music['recenttracks']['track'])):?>

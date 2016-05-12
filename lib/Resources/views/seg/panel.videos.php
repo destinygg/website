@@ -8,7 +8,7 @@ use Destiny\Common\Config;
 	<div class="content content-dark content-split clearfix row-no-padding">
 		<div id="youtube" class="col-sm-6 stream">
 			<h3 class="title clearfix">
-				<span>Videos</span> <a href="//www.youtube.com/user/<?=Config::$a['youtube']['user']?>/videos?view=0" class="youtube-title">youtube.com</a>
+				<span>Videos</span> <a href="/youtube" class="youtube-title">youtube.com</a>
 			</h3>
 			<ul class="thumbnails">
 			<?if(isset($model->playlist['items']) && !empty($model->playlist['items'])):?>
@@ -31,7 +31,7 @@ use Destiny\Common\Config;
 		</div>
 		<div id="broadcasts" class="col-sm-6 stream">
 			<h3 class="title clearfix">
-				<span>Broadcasts</span> <a href="//www.twitch.tv/<?=Config::$a['twitch']['user']?>/profile/pastBroadcasts" class="twitch-title">twitch.tv</a>
+				<span>Broadcasts</span> <a href="/twitch" class="twitch-title">twitch.tv</a>
 			</h3>
 			<ul class="thumbnails">
 			<?if(isset($model->broadcasts) && !empty($model->broadcasts['videos'])):?>

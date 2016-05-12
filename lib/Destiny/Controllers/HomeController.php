@@ -217,4 +217,40 @@ class HomeController {
         return 'redirect: https://github.com/destinygg';
     }
 
+    /**
+     * @Route ("/twitch")
+     *
+     * @return string
+     */
+    public function twitch() {
+        return 'redirect: https://www.twitch.tv/destiny';
+    }
+
+    /**
+     * @Route ("/lastfm")
+     *
+     * @return string
+     */
+    public function lastfm() {
+        return 'redirect: http://www.last.fm/user/StevenBonnellII';
+    }
+
+    /**
+     * @Route ("/donate")
+     *
+     * @return string
+     */
+    public function donate() {
+        return 'redirect: https://www.twitchalerts.com/donate/destiny';
+    }
+
+    /**
+     * @Route ("/blog")
+     *
+     * @return string
+     */
+    public function blog() {
+        return 'redirect: http://blog.destiny.gg';
+    }
+
 }

@@ -62,11 +62,11 @@ use Destiny\Common\Session;
                 <li class="divider-vertical visible-xs"></li>
                 <?php endif; ?>
 
-                <li><a title="Blog @ destiny.gg" href="//blog.destiny.gg">Blog</a></li>
+                <li><a title="Blog @ destiny.gg" href="/blog">Blog</a></li>
                 <li><a title="twitter.com" href="/twitter">Twitter</a></li>
                 <li><a title="youtube.com" href="/youtube">Youtube</a></li>
                 <li><a title="reddit.com" href="/reddit">Reddit</a></li>
-                <li><a title="facebook.com" href="//www.facebook.com/Steven.Bonnell.II">Facebook</a></li>
+                <li><a title="facebook.com" href="/facebook">Facebook</a></li>
                 <li><a title="Amazon" href="/amazon">Amazon</a></li>
 
                 <?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
