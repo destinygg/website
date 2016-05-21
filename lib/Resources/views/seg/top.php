@@ -69,7 +69,7 @@ use Destiny\Common\Session;
                 <li><a title="facebook.com" href="/facebook">Facebook</a></li>
                 <li><a title="Amazon" href="/amazon">Amazon</a></li>
 
-                <?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
+                <?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
                 <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe Now!</span></a></li>
                 <?php else: ?>
                 <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>

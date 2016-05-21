@@ -23,7 +23,7 @@ $isoffline = !($model->streaminfo['live']);
             <?php endif; ?>
             <?php if(intval($model->streaminfo['viewers']) > 0): ?>
             ~<span class="live-info-viewers"><?=Tpl::out($model->streaminfo['viewers'])?></span> viewers
-            <? endif; ?>
+            <?php endif; ?>
           </div>
           <a href="/bigscreen" class="btn btn-lg btn-primary"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>
           <div class="banner-popout-links btn-group pull-right" data-toggle="buttons" style="margin-top: 10px;">

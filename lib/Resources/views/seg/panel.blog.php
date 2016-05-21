@@ -1,4 +1,4 @@
-<?
+<?php
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 if (! empty ( $model->articles )) :
@@ -29,7 +29,7 @@ if (! empty ( $model->articles )) :
 						<?=Tpl::moment(Date::getDateTime($article['date']),Date::FORMAT)?>
 					</div>
 				</div>
-				<?endfor;?>
+				<?php endfor;?>
 			</div>
 		</div>
 
@@ -54,10 +54,10 @@ if (! empty ( $model->articles )) :
 						<?=Tpl::moment(Date::getDateTime($article['date']),Date::FORMAT)?>
 					</div>
 				</div>
-				<?endfor;?>
+				<?php endfor;?>
 			</div>
 		</div>
 
 	</div>
 </section>
-<?endif;?>
+<?php endif;?>

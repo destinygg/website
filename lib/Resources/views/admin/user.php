@@ -75,30 +75,30 @@ use Destiny\Commerce\SubscriptionStatus;
               <option value="">Select your country</option>
               <?$countries = Country::getCountries();?>
               <option value="">&nbsp;</option>
-              <option value="US" <?if($model->user['country'] == 'US'):?>
-                selected="selected" <?endif;?>>United States</option>
-              <option value="GB" <?if($model->user['country'] == 'GB'):?>
-                selected="selected" <?endif;?>>United Kingdom</option>
+              <option value="US" <?php if($model->user['country'] == 'US'): ?>
+                selected="selected" <?php endif;?>>United States</option>
+              <option value="GB" <?php if($model->user['country'] == 'GB'): ?>
+                selected="selected" <?php endif;?>>United Kingdom</option>
               <option value="">&nbsp;</option>
-              <?foreach($countries as $country):?>
-              <option value="<?=$country['alpha-2']?>"<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
-              <?endforeach;?>
+              <?php foreach($countries as $country): ?>
+              <option value="<?=$country['alpha-2']?>" <?php if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>
+              <?php endforeach; ?>
             </select>
           </div>
 
           <div class="form-group">
             <label>Twitch Subscriber:</label>
             <select class="form-control" name="istwitchsubscriber">
-              <option value="1"<?php if($model->user['istwitchsubscriber'] == 1):?> selected="selected"<?endif;?>>Yes</option>
-              <option value="0"<?php if($model->user['istwitchsubscriber'] == 0):?> selected="selected"<?endif;?>>No</option>
+              <option value="1"<?php if($model->user['istwitchsubscriber'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+              <option value="0"<?php if($model->user['istwitchsubscriber'] == 0):?> selected="selected"<?php endif;?>>No</option>
             </select>
           </div>
           
           <div class="form-group">
             <label>Accept Gifts:</label> 
             <select class="form-control" name="allowGifting">
-              <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?endif;?>>Yes, accept gifts</option>
-              <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?endif;?>>No, do not accept gifts</option>
+              <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?php endif;?>>Yes, accept gifts</option>
+              <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?php endif;?>>No, do not accept gifts</option>
             </select>
           </div>
           

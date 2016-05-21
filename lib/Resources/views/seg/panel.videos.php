@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
@@ -11,9 +11,9 @@ use Destiny\Common\Config;
 				<span>Videos</span> <a href="/youtube" class="youtube-title">youtube.com</a>
 			</h3>
 			<ul class="thumbnails">
-			<?if(isset($model->playlist['items']) && !empty($model->playlist['items'])):?>
-			<?foreach($model->playlist['items'] as $vid ):?>
-				<?$title = Tpl::out($vid['snippet']['title'])?>
+			<?php if(isset($model->playlist['items']) && !empty($model->playlist['items'])): ?>
+			<?php foreach($model->playlist['items'] as $vid ): ?>
+				<?php $title = Tpl::out($vid['snippet']['title'])?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
 						<a
@@ -23,10 +23,10 @@ use Destiny\Common\Config;
 						</a>
 					</div>
 				</li>
-			<?endforeach;?>
-			<?else:?>
+			<?php endforeach;?>
+			<?php else:?>
 				<li><p class="loading">Loading videos ...</p></li>
-			<?endif;?>
+			<?php endif;?>
 			</ul>
 		</div>
 		<div id="broadcasts" class="col-sm-6 stream">
@@ -34,20 +34,20 @@ use Destiny\Common\Config;
 				<span>Broadcasts</span> <a href="/twitch" class="twitch-title">twitch.tv</a>
 			</h3>
 			<ul class="thumbnails">
-			<?if(isset($model->broadcasts) && !empty($model->broadcasts['videos'])):?>
-			<?foreach( $model->broadcasts['videos'] as $broadcast ):?>
-				<?$time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
+			<?php if(isset($model->broadcasts) && !empty($model->broadcasts['videos'])):?>
+			<?php foreach( $model->broadcasts['videos'] as $broadcast ):?>
+				<?php $time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$time?>">
 						<a href="<?=$broadcast['url']?>"> <img alt="<?=$time?>" src="<?=Config::cdn()?>/web/img/320x240.gif" data-src="<?=$broadcast['preview']?>" /></a>
 					</div>
 				</li>
-			<?endforeach;?>
-			<?else:?>
+			<?php endforeach;?>
+			<?php else:?>
 				<li>
 					<p class="loading">Loading broadcasts ...</p>
 				</li>
-			<?endif;?>
+			<?php endif;?>
 			</ul>
 		</div>
 	</div>

@@ -83,6 +83,7 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     'static/chat/css/style.min.css' : [
+                        'static/vendor/jquery.nanoscroller-0.8.7/nanoscroller.css',
                         'static/chat/css/style.scss',
                         'scripts/emotes/emoticons.css',
                         'scripts/icons/icons.css'
