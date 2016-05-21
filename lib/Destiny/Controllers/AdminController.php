@@ -3,6 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Session;
+use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -200,10 +201,14 @@ class AdminController {
                 }
                 break;
             case 'NEWTIEREDSUBSCRIBERSLASTXDAYS':
-                FilterParams::required($params, 'days');
-                $key = 'NewTieredSubscribersLastXDays '. intval($params['days']);
+                FilterParams::required($params, 'fromDate');
+                FilterParams::required($params, 'toDate');
+                $fromDate = Date::getDateTime($params['fromDate']);
+                $toDate = Date::getDateTime($params['toDate']);
+                $toDate->setTime(23, 59, 59);
+                $key = 'NewTieredSubscribersLastXDays'. $fromDate->format('Ymdhis'). $toDate->format('Ymdhis');
                 if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getNewTieredSubscribersLastXDays( intval($params['days']) );
+                    $data = $statisticsService->getNewTieredSubscribersLastXDays( $fromDate, $toDate );
                     $cacheDriver->save($key, $data, 30);
                 } else {
                     $data = $cacheDriver->fetch($key);

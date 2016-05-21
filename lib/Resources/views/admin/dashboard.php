@@ -17,41 +17,32 @@ use Destiny\Common\Utils\Date;
 
     <section class="container">
         <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12 card">
-                <div id="graph1" class="card-inner">
+            <div class="col-md-12 col-sm-12 card">
+                <div id="graph4" class="card-inner">
                     <h4></h4>
                     <div class="graph-outer">
-                        <canvas></canvas>
+                        <canvas height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 card">
+                <div id="graph1" class="card-inner">
+                    <div class="graph-outer">
+                        <canvas height="300"></canvas>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-12 card">
                 <div id="graph2" class="card-inner">
-                    <h4></h4>
                     <div class="graph-outer">
-                        <canvas></canvas>
+                        <canvas height="300"></canvas>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-12 col-sm-12 card">
                 <div id="graph3" class="card-inner">
-                    <h4></h4>
                     <div class="graph-outer">
-                        <canvas></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12 col-sm-12 card">
-                <div id="graph4" class="card-inner">
-                    <h4></h4>
-                    <div class="graph-outer">
-                        <div class="graph-legend">
-                            <span class="t1"><i class="tier-block"></i> Tier 1</span>
-                            <span class="t2"><i class="tier-block"></i> Tier 2</span>
-                            <span class="t3"><i class="tier-block"></i> Tier 3</span>
-                            <span class="t4"><i class="tier-block"></i> Tier 4</span>
-                        </div>
-                        <canvas style="height: 300px;"></canvas>
+                        <canvas height="300"></canvas>
                     </div>
                 </div>
             </div>
@@ -74,6 +65,134 @@ use Destiny\Common\Utils\Date;
 (function($){
 
     (function(){
+        var graph = $('#graph4');
+        var currDate = moment();
+        var title = $(graph).find('h4');
+        var ctx = $(graph).find('canvas').get(0).getContext("2d");
+        var currChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        stacked: true
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        stacked: true
+                    }]
+                }
+            }
+        });
+
+        title
+            .on('click', '.fa-arrow-left', function(){
+                console.log(currDate.subtract(1, 'months'));
+                updateGraph(currDate);
+            })
+            .on('click', '.fa-arrow-right', function(){
+                console.log(currDate.add(1, 'months'));
+                updateGraph(currDate);
+            });
+
+        var updateGraph = function(selectedDate){
+            var fromDate = moment(selectedDate.format('YYYY-MM-DD')).startOf('month'),
+                toDate = moment(selectedDate.format('YYYY-MM-DD')).endOf('month');
+
+            title.html("Subscriptions <a href='#'><i class='fa fa-arrow-left'></i></a> " + toDate.format('MMMM YYYY') + " <a href='#'><i class='fa fa-arrow-right'></i></a>");
+            $.ajax({
+                url: '/admin/chart/NewTieredSubscribersLastXDays.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
+                success: function(data){
+                    var dataSet1 = [],
+                        dataSet2 = [],
+                        dataSet3 = [],
+                        dataSet4 = [],
+                        dataLabels = [],
+                        dates = [];
+                    for (var m = fromDate; m.isBefore(toDate) || m.isSame(toDate); m.add(1, 'days')) {
+                        dates.push(m.format('YYYY-MM-DD'));
+                        dataLabels.push(m.format('MM/D'));
+                        dataSet1.push(0);
+                        dataSet2.push(0);
+                        dataSet3.push(0);
+                        dataSet4.push(0);
+                    }
+                    for(var i=0; i<data.length; ++i){
+                        var x = dates.indexOf(data[i].date);
+                        if(x != -1){
+                            switch(data[i]['subscriptionTier']){
+                                case "1":
+                                    dataSet1[x] = parseInt(data[i]['total']);
+                                    break;
+                                case "2":
+                                    dataSet2[x] = parseInt(data[i]['total']);
+                                    break;
+                                case "3":
+                                    dataSet3[x] = parseInt(data[i]['total']);
+                                    break;
+                                case "4":
+                                    dataSet4[x] = parseInt(data[i]['total']);
+                                    break;
+                            }
+                        }
+                    }
+
+                    currChart.data.labels = dataLabels;
+                    currChart.data.datasets = [
+                        {
+                            label: "Tier 1",
+                            data: dataSet1,
+                            borderWidth: 0.4,
+                            backgroundColor: "rgba(51, 122, 183,0.6)",
+                            borderColor: "rgba(51, 122, 183,1)",
+                            pointBorderColor: "rgba(51, 122, 183,1)",
+                            pointBackgroundColor: "rgba(51, 122, 183,1)"
+                        },
+                        {
+                            label: "Tier 2",
+                            data: dataSet2,
+                            borderWidth: 0.4,
+                            backgroundColor: "rgba(0,220,0,0.6)",
+                            borderColor: "rgba(0,220,0,1)",
+                            pointBorderColor: "rgba(0,220,0,1)",
+                            pointBackgroundColor: "#fff"
+                        },
+                        {
+                            label: "Tier 3",
+                            data: dataSet3,
+                            borderWidth: 0.4,
+                            backgroundColor: "rgba(220,0,0,0.6)",
+                            borderColor: "rgba(220,0,0,1)",
+                            pointBorderColor: "rgba(220,0,0,1)",
+                            pointBackgroundColor: "rgba(220,0,0,1)"
+                        },
+                        {
+                            label: "Tier 4",
+                            data: dataSet4,
+                            borderWidth: 0.4,
+                            backgroundColor: "rgba(220,0,220,0.6)",
+                            borderColor: "rgba(220,0,220,1)",
+                            pointBorderColor: "rgba(220,0,220,1)",
+                            pointBackgroundColor: "rgba(220,0,220,1)"
+                        }
+                    ];
+                    currChart.update();
+                }
+            });
+        };
+
+        updateGraph(currDate);
+
+    })();
+
+    (function(){
         var days = 14,
             graph = $('#graph1'),
             label = "Revenue Last "+ days +" Days";
@@ -82,16 +201,41 @@ use Destiny\Common\Utils\Date;
             url: '/admin/chart/RevenueLastXDays.json?days='+days,
             success: function(data){
                 data = GraphUtil.prepareGraphData(data, 'sum', days, 'days');
-                var canvas = $(graph).find('canvas').get(0);
-                new Chart(canvas.getContext("2d")).Line({
-                    labels: data.labels,
-                    datasets:[$.extend({
-                        label: label,
-                        data: data.data
-                    }, GraphUtil.defaultDataSet)]
-                }, $.extend({}, GraphUtil.defaultGraph, {
-                    scaleLabel: GraphUtil.formatCurrency
-                }));
+                var ctx = $(graph).find('canvas').get(0).getContext("2d");
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets:[{
+                            label: label,
+                            borderWidth: 0.4,
+                            backgroundColor: "rgba(220,220,220,0.2)",
+                            borderColor: "rgba(220,220,220,1)",
+                            pointBorderColor: "rgba(220,220,220,1)",
+                            pointBackgroundColor: "#fff",
+                            pointBorderWidth: 1,
+                            data: data.data
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        tooltips: {
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    return GraphUtil.formatCurrency(tooltipItem.yLabel);
+                                }
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    callback: GraphUtil.formatCurrency
+                                }
+                            }]
+                        }
+                    }
+                });
             }
         })
     })();
@@ -105,16 +249,41 @@ use Destiny\Common\Utils\Date;
             url: '/admin/chart/RevenueLastXMonths.json?months='+months,
             success: function(data){
                 data = GraphUtil.prepareGraphData(data, 'sum', months, 'months');
-                var canvas = $(graph).find('canvas').get(0);
-                new Chart(canvas.getContext("2d")).Line({
-                    labels: data.labels,
-                    datasets:[$.extend({
-                        label: label,
-                        data: data.data
-                    }, GraphUtil.defaultDataSet)]
-                }, $.extend({}, GraphUtil.defaultGraph, {
-                    scaleLabel: GraphUtil.formatCurrency
-                }));
+                var ctx = $(graph).find('canvas').get(0).getContext("2d");
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets:[{
+                            label: label,
+                            borderWidth: 0.4,
+                            backgroundColor: "rgba(220,220,220,0.2)",
+                            borderColor: "rgba(220,220,220,1)",
+                            pointBorderColor: "rgba(220,220,220,1)",
+                            pointBackgroundColor: "#fff",
+                            pointBorderWidth: 1,
+                            data: data.data
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        tooltips: {
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    return GraphUtil.formatCurrency(tooltipItem.yLabel);
+                                }
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    callback: GraphUtil.formatCurrency
+                                }
+                            }]
+                        }
+                    }
+                });
             }
         })
     })();
@@ -128,109 +297,41 @@ use Destiny\Common\Utils\Date;
             url: '/admin/chart/RevenueLastXYears.json?years='+years,
             success: function(data){
                 data = GraphUtil.prepareGraphData(data, 'sum', years, 'years');
-                var canvas = $(graph).find('canvas').get(0);
-                new Chart(canvas.getContext("2d")).Line({
-                    labels: data.labels,
-                    datasets:[$.extend({
-                        label: label,
-                        data: data.data
-                    }, GraphUtil.defaultDataSet)]
-                }, $.extend({}, GraphUtil.defaultGraph, {
-                    scaleLabel: GraphUtil.formatCurrency
-                }));
-            }
-        })
-    })();
-
-    (function(){
-        var days = 30,
-            graph = $('#graph4'),
-            label = "Subscriptions Last "+ days +" Days";
-        $(graph).find('h4').text(label);
-        $.ajax({
-            url: '/admin/chart/NewTieredSubscribersLastXDays.json?days='+days,
-            success: function(data){
-                var dataSet1 = [],
-                    dataSet2 = [],
-                    dataSet3 = [],
-                    dataSet4 = [],
-                    dataLabels = [],
-                    dates = [],
-                    a = moment({hour: 1}).subtract(days, 'days'),
-                    b = moment({hour: 1});
-                for (var m = a; m.isBefore(b) || m.isSame(b); m.add(1, 'days')) {
-                    dates.push(m.format('YYYY-MM-DD'));
-                    dataLabels.push(m.format('MM/D'));
-                    dataSet1.push(0);
-                    dataSet2.push(0);
-                    dataSet3.push(0);
-                    dataSet4.push(0);
-                }
-                for(var i=0; i<data.length; ++i){
-                    var x = dates.indexOf(data[i].date);
-                    if(x != -1){
-                        switch(data[i]['subscriptionTier']){
-                            case "1":
-                                dataSet1[x] = data[i]['total'];
-                                break;
-                            case "2":
-                                dataSet2[x] = data[i]['total'];
-                                break;
-                            case "3":
-                                dataSet3[x] = data[i]['total'];
-                                break;
-                            case "4":
-                                dataSet4[x] = data[i]['total'];
-                                break;
+                var ctx = $(graph).find('canvas').get(0).getContext("2d");
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets:[{
+                            label: label,
+                            borderWidth: 0.4,
+                            backgroundColor: "rgba(220,220,220,0.2)",
+                            borderColor: "rgba(220,220,220,1)",
+                            pointBorderColor: "rgba(220,220,220,1)",
+                            pointBackgroundColor: "#fff",
+                            pointBorderWidth: 1,
+                            data: data.data
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        tooltips: {
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    return GraphUtil.formatCurrency(tooltipItem.yLabel);
+                                }
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    callback: GraphUtil.formatCurrency
+                                }
+                            }]
                         }
                     }
-                }
-                var canvas = $(graph).find('canvas').get(0);
-                new Chart(canvas.getContext("2d")).Line({
-                    labels: dataLabels,
-                    datasets:[
-                        $.extend({}, GraphUtil.defaultDataSet, {
-                            label: "Tier 1",
-                            data: dataSet1,
-                            fillColor: "rgba(0,0,220,0.1)",
-                            strokeColor: "rgba(0,0,220,1)",
-                            pointColor: "rgba(0,0,220,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(0,0,220,1)"
-                        }),
-                        $.extend({}, GraphUtil.defaultDataSet, {
-                            label: "Tier 2",
-                            data: dataSet2,
-                            fillColor: "rgba(0,220,0,0.1)",
-                            strokeColor: "rgba(0,220,0,1)",
-                            pointColor: "rgba(0,220,0,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(0,220,0,1)"
-                        }),
-                        $.extend({}, GraphUtil.defaultDataSet, {
-                            label: "Tier 3",
-                            data: dataSet3,
-                            fillColor: "rgba(220,0,0,0.1)",
-                            strokeColor: "rgba(220,0,0,1)",
-                            pointColor: "rgba(220,0,0,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(220,0,0,1)"
-                        }),
-                        $.extend({}, GraphUtil.defaultDataSet, {
-                            label: "Tier 4",
-                            data: dataSet4,
-                            fillColor: "rgba(220,0,220,0.1)",
-                            strokeColor: "rgba(220,0,220,1)",
-                            pointColor: "rgba(220,0,220,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(220,0,220,1)"
-                        })
-                    ]
-                }, GraphUtil.defaultGraph);
+                });
             }
         })
     })();

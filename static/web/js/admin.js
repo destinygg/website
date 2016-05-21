@@ -2,28 +2,6 @@
 
   var GraphUtil = {};
 
-  GraphUtil.defaultDataSet = {
-    fillColor: "rgba(220,220,220,0.2)",
-    strokeColor: "rgba(220,220,220,1)",
-    pointColor: "rgba(220,220,220,1)",
-    pointStrokeColor: "#fff",
-    pointHighlightFill: "#fff",
-    pointHighlightStroke: "rgba(220,220,220,1)"
-  };
-
-  GraphUtil.defaultGraph = {
-    animation: false,
-    maintainAspectRatio: false,
-    bezierCurveTension : 0.4,
-    datasetStrokeWidth : 2,
-    scaleShowGridLines : true,
-    scaleGridLineColor : "rgba(255,255,255,.05)",
-    scaleGridLineWidth : 1,
-    scaleShowHorizontalLines: true,
-    scaleShowVerticalLines: true,
-    responsive: true
-  };
-
   GraphUtil.prepareGraphData = function prepareGraphData ( data, property, timeRange, timeUnit ) {
     var graphData = {};
     switch (timeUnit.toUpperCase()) {
@@ -63,7 +41,7 @@
   };
 
   GraphUtil.formatCurrency = function formatCurrency(label) {
-    return  '$' + label.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return  '$' + label.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   window.GraphUtil = GraphUtil;

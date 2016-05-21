@@ -4,22 +4,26 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 
-$isoffline = (!isset($model->streamInfo['stream']) || empty($model->streamInfo['stream'])) ? true:false;
+$isoffline = !($model->streaminfo['live']);
 ?>
 <div id="status-banners">
 
   <section id="online-banner-view" class="container" <?= ($isoffline) ? 'style="display: none"' : '' ?>>
     <div class="banner-view-wrap clearfix">
       <div class="banner-thumbnail">
-        <a href="/bigscreen" title="<?=(isset($model->streamInfo['status'])) ? Tpl::out($model->streamInfo['status']) : ''?>" style="<?=(!empty($model->streamInfo['stream'])) ? 'background: url('. Tpl::out($model->streamInfo['stream']['preview']['medium']) .') no-repeat center center;' : ''?>"></a>
+        <a href="/bigscreen" title="<?=(isset($model->streaminfo['status'])) ? Tpl::out($model->streaminfo['status']) : ''?>" style="<?=(!empty($model->streaminfo['preview']['medium'])) ? 'background: url('. Tpl::out($model->streaminfo['preview']['medium']) .') no-repeat center center;' : ''?>"></a>
       </div>
       <div class="banner-content-wrap">
         <div>
-          <h1 title="<?=Tpl::out($model->streamInfo['status'])?>"><?=Tpl::out($model->streamInfo['status'])?></h1>
+          <h1 title="<?=Tpl::out($model->streaminfo['status'])?>"><?=Tpl::out($model->streaminfo['status'])?></h1>
           <div class="banner-content-text">
-            Currently playing <strong class="live-info-game"><?=Tpl::out($model->streamInfo['game'])?></strong><br />
-            Started <span class="live-info-updated"><?=Date::getElapsedTime(Date::getDateTime($model->streamInfo['stream']['created_at']))?></span><br />
-            ~<span class="live-info-viewers"><?=Tpl::out((!empty($model->streamInfo['stream'])) ? $model->streamInfo['stream']['viewers'] : 0)?></span> viewers
+            Currently playing <strong class="live-info-game"><?=Tpl::out($model->streaminfo['game'])?></strong><br />
+            <?php if(!empty($model->lastbroadcast)): ?>
+            Started <span class="live-info-updated"><?=Date::getElapsedTime(Date::getDateTime($model->streaminfo['created_at']))?></span><br />
+            <?php endif; ?>
+            <?php if(intval($model->streaminfo['viewers']) > 0): ?>
+            ~<span class="live-info-viewers"><?=Tpl::out($model->streaminfo['viewers'])?></span> viewers
+            <? endif; ?>
           </div>
           <a href="/bigscreen" class="btn btn-lg btn-primary"><i style="margin-top: 2px;" class="icon-bigscreen animated"></i> Watch the live stream</a>
           <div class="banner-popout-links btn-group pull-right" data-toggle="buttons" style="margin-top: 10px;">
@@ -34,15 +38,19 @@ $isoffline = (!isset($model->streamInfo['stream']) || empty($model->streamInfo['
   <section id="offline-banner-view" class="container" <?= (!$isoffline) ? 'style="display: none"' : '' ?>>
     <div class="banner-view-wrap clearfix">
       <div class="banner-thumbnail">
-        <a href="/bigscreen" title="<?=Tpl::out($model->streamInfo['status'])?>" style="background: url(<?=(!empty($model->broadcasts) && isset($model->broadcasts['videos'])) ? Tpl::out($model->broadcasts['videos'][0]['preview']) : Tpl::out($model->broadcasts['video_banner'])?>) no-repeat center center;"></a>
+        <a href="/bigscreen" title="<?=Tpl::out($model->streaminfo['status'])?>" style="background: url(<?=(!empty($model->broadcasts) && isset($model->broadcasts['videos'])) ? Tpl::out($model->broadcasts['videos'][0]['preview']) : Tpl::out($model->broadcasts['video_banner'])?>) no-repeat center center;"></a>
       </div>
       <div class="banner-content-wrap">
         <div>
           <h1>Stream currently offline</h1>
           <div class="banner-content-text">
-            <span class="offline-status"><?= Tpl::out($model->streamInfo['status']) ?></span><br />
-            Last broadcast ended <strong class="offline-info-lastbroadcast"><?=(isset($model->streamInfo['lastbroadcast'])) ? Date::getElapsedTime(Date::getDateTime($model->streamInfo['lastbroadcast'])) : ''?></strong><br />
-            Was playing <strong class="offline-info-game"><?=(isset($model->streamInfo['game'])) ? Tpl::out($model->streamInfo['game']) : ''?></strong><br />
+            <span class="offline-status"><?= Tpl::out($model->streaminfo['status']) ?></span><br />
+            <?php if(!empty($model->lastbroadcast)): ?>
+            Last broadcast ended <strong class="offline-info-lastbroadcast"><?=Date::getElapsedTime(Date::getDateTime($model->lastbroadcast))?></strong><br />
+            <?php endif; ?>
+            <?php if(isset($model->streaminfo['game']) && !empty($model->streaminfo['game'])): ?>
+            Was playing <strong class="offline-info-game"><?=Tpl::out($model->streaminfo['game'])?></strong><br />
+            <?php endif; ?>
           </div>
           <a href="/bigscreen" class="btn btn-lg btn-primary">Join the chat while you wait!</a>
           <div class="banner-popout-links btn-group pull-right" data-toggle="buttons" style="margin-top: 10px;">
