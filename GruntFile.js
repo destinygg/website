@@ -36,7 +36,7 @@ module.exports = function(grunt) {
                         'static/vendor/jquery.mousewheel/jquery.mousewheel.min.js',
                         'static/vendor/jquery.validate/jquery.validate.min.js',
                         'static/vendor/jquery.nanoscroller-0.8.7/jquery.nanoscroller.min.js',
-                        'static/vendor/bootstrap-3.3.5/js/bootstrap.js',
+                        'static/vendor/bootstrap-3.3.6/js/bootstrap.js',
                         'static/vendor/moment/moment-2.13.0.min.js',
                         'static/vendor/chart.js/Chart.min.v2.1.3.js'
                     ]
@@ -83,7 +83,6 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     'static/chat/css/style.min.css' : [
-                        'static/vendor/jquery.nanoscroller-0.8.7/nanoscroller.css',
                         'static/chat/css/style.scss',
                         'scripts/emotes/emoticons.css',
                         'scripts/icons/icons.css'
