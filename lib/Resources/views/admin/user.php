@@ -85,6 +85,14 @@ use Destiny\Commerce\SubscriptionStatus;
               <?endforeach;?>
             </select>
           </div>
+
+          <div class="form-group">
+            <label>Twitch Subscriber:</label>
+            <select class="form-control" name="istwitchsubscriber">
+              <option value="1"<?php if($model->user['istwitchsubscriber'] == 1):?> selected="selected"<?endif;?>>Yes</option>
+              <option value="0"<?php if($model->user['istwitchsubscriber'] == 0):?> selected="selected"<?endif;?>>No</option>
+            </select>
+          </div>
           
           <div class="form-group">
             <label>Accept Gifts:</label> 

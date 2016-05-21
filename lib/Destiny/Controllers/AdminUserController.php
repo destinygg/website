@@ -116,6 +116,7 @@ class AdminUserController {
         $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
         $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
         $minecraftuuid = (isset ( $params ['minecraftuuid'] ) && ! empty ( $params ['minecraftuuid'] )) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
+        $istwitchsubscriber = (isset ( $params ['istwitchsubscriber'] )) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
 
         if(mb_strlen($minecraftname) > 16)
             mb_substr($minecraftname, 0, 16);
@@ -138,7 +139,8 @@ class AdminUserController {
             'email' => $email,
             'minecraftname' => $minecraftname,
             'minecraftuuid' => $minecraftuuid,
-            'allowGifting' => $allowGifting
+            'allowGifting' => $allowGifting,
+            'istwitchsubscriber' => $istwitchsubscriber
         );
 
         $log = Application::instance()->getLogger();
