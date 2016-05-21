@@ -71,11 +71,11 @@ use Destiny\Common\Session;
 
                 <?if(!Session::hasRole(UserRole::SUBSCRIBER)):?>
                 <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe Now!</span></a></li>
-                <?php endif; ?>
-
-                <?if(Session::hasRole(UserRole::SUBSCRIBER)):?>
+                <?php else: ?>
                 <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
                 <?php endif; ?>
+
+                <li><a href="/donate" title="Donate">Donate</a></li>
 
             </ul>
         </div>
