@@ -43,15 +43,11 @@ abstract class Country {
             }
         }
         if (empty ( self::$codeIndex )) {
-            self::buildIndex ();
+            foreach ( self::$countries as $i => $country ) {
+                self::$codeIndex [strtolower ( $country ['alpha-2'] )] = $i;
+            }
         }
         return self::$countries;
-    }
-
-    private static function buildIndex() {
-        foreach ( self::$countries as $i => $country ) {
-            self::$codeIndex [strtolower ( $country ['alpha-2'] )] = $i;
-        }
     }
 
     public static function getCountryByCode($code) {

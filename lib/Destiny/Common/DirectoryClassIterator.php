@@ -58,7 +58,7 @@ class DirectoryClassIterator implements Iterator {
         foreach ( $files as $file ) {
             // PSR-0 format namespace / folder / filename
             // strip the base off, and treat the rest as the namespace path, with the .php removed
-            $class = str_replace ( '/', '\\', substr ( $file->getPathName (), strlen ( $this->base ), - 4 ) );
+            $class = str_replace ( '/', '\\', substr ( $file->getPathname (), strlen ( $this->base ), - 4 ) );
             
             // No class found, no annotations
             if (! $class) continue;

@@ -142,7 +142,7 @@ class SubscriptionController {
         $subscription = $subscriptionsService->getSubscriptionById ( $params['subscriptionId'] );
 
         $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-        $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
+        $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
 
         if(empty($subscription)){
            throw new Exception( 'Invalid subscription' );

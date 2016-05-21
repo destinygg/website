@@ -90,7 +90,7 @@ class SessionCredentials {
     public function getData() {
         return array (
             'email' => $this->getEmail (),
-            'username' => $this->getUserName (),
+            'username' => $this->getUsername (),
             'userId' => $this->getUserId (),
             'userStatus' => $this->getUserStatus (),
             'country' => $this->getCountry (),

@@ -596,7 +596,7 @@ class UserService extends Service {
    */
   public function getIPByUserId( $userid ) {
     $redis   = Application::instance ()->getRedis ();
-    return $redis->zrange('CHAT:userips-' . $userid, 0, -1);
+    return $redis->zRange('CHAT:userips-' . $userid, 0, -1);
   }
 
   /**

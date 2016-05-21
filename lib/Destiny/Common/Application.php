@@ -143,7 +143,7 @@ class Application extends Service {
             
             $this->logger->error ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
             if ($conn->isTransactionActive())
-                $conn->rollback ();
+                $conn->rollBack ();
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( $e->getMessage () );
             $model->code = Http::STATUS_ERROR;
@@ -154,7 +154,7 @@ class Application extends Service {
 
             $this->logger->critical ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
             if ($conn->isTransactionActive())
-                $conn->rollback ();
+                $conn->rollBack ();
             $response = new Response ( Http::STATUS_ERROR );
             $model->error = new Exception ( 'Maximum over-rustle has been achieved' );
             $model->code = Http::STATUS_ERROR;

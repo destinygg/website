@@ -36,7 +36,7 @@ class IpnController {
             $data = $ipnMessage->getRawData();
             $log->info(sprintf('Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId(), $data ['txn_type']));
             $orderService = OrdersService::instance();
-            $orderService->addIPNRecord(array(
+            $orderService->addIpnRecord(array(
                 'ipnTrackId' => $data ['ipn_track_id'],
                 'ipnTransactionId' => $data ['txn_id'],
                 'ipnTransactionType' => $data ['txn_type'],

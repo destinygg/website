@@ -247,7 +247,7 @@ class ProfileController {
         throw new Exception ( 'You must solve the recaptcha.' );
 
       $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-      $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
+      $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
 
       $apiAuthService = ApiAuthenticationService::instance ();
       $userId = Session::getCredentials ()->getUserId ();
