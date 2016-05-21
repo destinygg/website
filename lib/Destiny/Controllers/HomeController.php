@@ -31,15 +31,15 @@ class HomeController {
             $model->unreadMessageCount = $privateMessageService->getUnreadMessageCount($userid);
         }
 
-        $app = Application::instance ();
-        $cacheDriver = $app->getCacheDriver ();
+        $cacheDriver = Application::instance ()->getCacheDriver ();
         $model->articles = $cacheDriver->fetch ( 'recentblog' );
         $model->summoners = $cacheDriver->fetch ( 'summoners' );
         $model->tweets = $cacheDriver->fetch ( 'twitter' );
         $model->music = $cacheDriver->fetch ( 'recenttracks' );
         $model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
         $model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
-        $model->streamInfo = $cacheDriver->fetch ( 'streaminfo' );
+        $model->streaminfo = $cacheDriver->fetch ( 'streaminfo' );
+        $model->lastbroadcast = $cacheDriver->fetch ( 'lastbroadcast' );
         return 'home';
     }
 
@@ -66,24 +66,12 @@ class HomeController {
     }
 
     /**
-     * @Route ("/screen")
-     *
-     * @return Response
-     */
-    public function screen() {
-        $response = new Response ( Http::STATUS_MOVED_PERMANENTLY );
-        $response->setLocation ( '/bigscreen' );
-        return $response;
-    }
-
-    /**
      * @Route ("/bigscreen")
      *
      * @param ViewModel $model
      * @return string
      */
     public function bigscreen(ViewModel $model) {
-        $model->streamInfo = Application::instance ()->getCacheDriver ()->fetch ( 'streaminfo' );
         $model->title = 'Bigscreen';
         return 'bigscreen';
     }
