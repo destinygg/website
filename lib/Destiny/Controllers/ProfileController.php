@@ -32,18 +32,6 @@ use Destiny\Google\GoogleRecaptchaHandler;
  * @Controller
  */
 class ProfileController {
-
-  /**
-   * @Route ("/profile/info")
-   * @Secure ({"USER"})
-   *
-   * @return Response
-   */
-    public function profileInfo() {
-      $response = new Response ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
-      $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-      return $response;
-    }
     
     /**
      * @Route ("/profile")
@@ -78,23 +66,13 @@ class ProfileController {
         $model->error = Session::get ( 'modelError' );
         Session::set ( 'modelError' );
       }
-      
-      $model->title = 'Profile';
-      $model->user = $userService->getUserById ( $userId );
 
       $subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions( $userId );
-      for ( $i=0; $i < count($subscriptions); $i++ ){
-        $subscriptions [$i]['type'] = $subscriptionsService->getSubscriptionType ( $subscriptions [$i]['subscriptionType'] );
-      }
-
       $gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus ( $userId, SubscriptionStatus::ACTIVE );
-      for ( $i=0; $i < count($gifts); $i++ ){
-        $gifts [$i]['type'] = $subscriptionsService->getSubscriptionType ( $gifts [$i]['subscriptionType'] );
-      }
 
+      $model->user = $userService->getUserById ( $userId );
       $model->gifts = $gifts;
       $model->subscriptions = $subscriptions;
-
       $model->address = $address;
       $model->title = 'Account';
       return 'profile';

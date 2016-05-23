@@ -98,7 +98,11 @@ class SubscriptionsService extends Service {
         $stmt->bindValue ( 'activeStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
         $stmt->bindValue ( 'pendingStatus', SubscriptionStatus::PENDING, \PDO::PARAM_STR );
         $stmt->execute ();
-        return $stmt->fetchAll ();
+        $subscriptions = $stmt->fetchAll ();
+        for ( $i=0; $i < count($subscriptions); $i++ ){
+            $subscriptions [$i]['type'] = $this->getSubscriptionType ( $subscriptions [$i]['subscriptionType'] );
+        }
+        return $subscriptions;
     }
 
     /**
@@ -205,7 +209,11 @@ class SubscriptionsService extends Service {
         $stmt->bindValue ( 'gifter', $gifterId, \PDO::PARAM_INT );
         $stmt->bindValue ( 'status', $status, \PDO::PARAM_STR );
         $stmt->execute ();
-        return $stmt->fetchAll ();
+        $gifts = $stmt->fetchAll ();
+        for ( $i=0; $i < count($gifts); $i++ ){
+            $gifts [$i]['type'] = $this->getSubscriptionType ( $gifts [$i]['subscriptionType'] );
+        }
+        return $gifts;
     }
 
     /**
