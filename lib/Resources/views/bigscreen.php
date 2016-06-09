@@ -20,7 +20,7 @@ use Destiny\Common\Config;
 
         <div id="stream-panel">
             <div id="stream-wrap">
-                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://player.twitch.tv/?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless allowfullscreen></iframe>
+                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="//player.twitch.tv/?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless allowfullscreen></iframe>
             </div>
         </div>
 
