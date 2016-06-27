@@ -646,7 +646,11 @@
         },
 
         getInputHistory: function(){
-            return JSON.parse(localStorage['inputhistory'] || '[]');
+            try {
+                return JSON.parse(localStorage['inputhistory'] || '[]');
+            } catch (e) {
+                return [];
+            }
         },
 
         setInputHistory: function(arr){
@@ -768,13 +772,21 @@
             return false;
         },
 
+        getChatOptions: function() {
+            try {
+                return JSON.parse(localStorage['chatoptions'] || '{}');
+            } catch (e) {
+                return {};
+            }
+        },
+
         getChatOption: function(option, defaultvalue) {
-            var options = JSON.parse(localStorage['chatoptions'] || '{}');
+            var options = this.getChatOptions();
             return (options[option] == undefined)? defaultvalue: options[option];
         },
 
         saveChatOption: function(option, value) {
-            var options     = JSON.parse(localStorage['chatoptions'] || '{}');
+            var options     = this.getChatOptions();
             options[option] = value;
             localStorage['chatoptions'] = JSON.stringify(options);
         },

@@ -100,7 +100,9 @@ chat.prototype.loadIgnoreList = function() {
 	if (!localStorage)
 		return;
 	
-	this.ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
+	try {
+		this.ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
+	} catch (e) {}
 	this.ignoreregex = null;
 };
 
