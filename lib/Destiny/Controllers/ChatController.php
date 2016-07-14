@@ -37,6 +37,7 @@ class ChatController {
 
         $response = new Response ( Http::STATUS_OK, $out );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
+        header('Cache-Control: no-cache, max-age=0, must-revalidate, no-store');
         return $response;
     }
 
