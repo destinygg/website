@@ -99,7 +99,6 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'static/web/css/style.min.css': 'static/web/css/style.scss',
-                    'static/web/css/messages.min.css' : 'static/web/css/messages.scss',
                     'static/chat/css/style.min.css': 'static/chat/css/style.min.css'
                 }
             }
@@ -198,7 +197,7 @@ module.exports = function(grunt) {
         'build:assets',
         'build:static'
     ]);
-    
+
     // Default
     grunt.registerTask('default', [
         'build'

@@ -5,6 +5,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
+use Destiny\Common\Session;
 use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
@@ -15,13 +16,23 @@ use Destiny\Commerce\SubscriptionStatus;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="account" class="profile">
+<body id="account" class="no-contain">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/headerband.php') ?>
     <?php include Tpl::file('seg/alerts.php') ?>
     <?php include Tpl::file('profile/menu.php') ?>
+
+    <section class="container">
+      <div class="content-dark clearfix">
+        <div class="ds-block">
+          <h3><?= Tpl::out($model->user['username']) ?></h3>
+          <span>
+            Joined on <?=Tpl::moment(Date::getDateTime($model->user['createdDate']), Date::STRING_DATE_FORMAT, 'Do MMMM, YYYY')?>
+          </span>
+        </div>
+      </div>
+    </section>
     
     <section class="container collapsible">
       <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>

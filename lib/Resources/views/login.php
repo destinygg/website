@@ -10,7 +10,7 @@ use Destiny\Common\Utils\Tpl;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="login">
+<body id="login" class="no-brand">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>

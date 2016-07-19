@@ -1,10 +1,9 @@
 /* override things for the browser source plugin */
 
 @font-face {
-    font-family: 'Open Sans';
-    src: url(../../fonts/OpenSans-ExtraBold.ttf);
+    font-family: "Open Sans";
+    src: url("../../fonts/OpenSans-ExtraBold.ttf");
 }
-
 
 body,
 .chat-theme-dark {

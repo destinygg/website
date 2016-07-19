@@ -12,12 +12,12 @@ use Destiny\Common\User\UserRole;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="subscribe">
+<body id="subscribe" class="no-brand">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
     <?php include Tpl::file('seg/headerband.php') ?>
-    
+
     <section class="container">
     
       <?php if(Session::hasRole(UserRole::USER)): ?>
@@ -196,7 +196,7 @@ use Destiny\Common\User\UserRole;
         <div class="modal-content">
           <div class="modal-body">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <form id="userSearchForm">
+            <form id="userSearchForm" class="form-alt">
             
               <div id="usrFrmGrp" class="form-group">
                 <label>Who do you want to gift?</label>

@@ -1,12 +1,6 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Session;
 ?>
-
-<h2 class="page-title" style="margin-left: 20px;">
-	<span><?= Tpl::out(Session::getCredentials ()->getUsername ()) ?></span>
-</h2>
 
 <section class="container">
     <ol class="breadcrumb" style="margin-bottom:0;">

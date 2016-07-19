@@ -12,7 +12,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="register">
+<body id="register" class="no-brand">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
@@ -36,7 +36,7 @@ use Destiny\Common\Config;
 
         <div class="ds-block">
           <p>Almost there... since not all authentication providers support nick names, you get to choose your own.
-          <br>Your email address is never shown publically and no emails will be sent to you without your permission.
+          <br>Your email address is never shown publicly and no emails will be sent to you without your permission.
           </p>
         </div>
 

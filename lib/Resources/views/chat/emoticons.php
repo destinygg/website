@@ -13,7 +13,7 @@ use Destiny\Common\Utils\Tpl;
 <?php include Tpl::file('seg/google.tracker.php') ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
-<body id="emoticons">
+<body id="emoticons" class="no-brand">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
