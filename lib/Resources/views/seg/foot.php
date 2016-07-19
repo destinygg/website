@@ -5,7 +5,6 @@ use Destiny\Common\Config;
     <div id="footer-inner" class="container">
         <div id="footer-copyright" class="col-sm-5">
             <h3>Destiny.gg <small><sup>&copy;</sup></small></h3>
-            <p><?=Config::$a['meta']['shortdescription']?></p>
             <p>
                 The code for this website is open source and hosted on <a href="/github">Github</a>
                 <br />please feel free to contribute!
@@ -20,8 +19,7 @@ use Destiny\Common\Config;
                 <div id="footer-badges" class="col-sm-7">
                     <h3>Community</h3>
                     <p>
-                        Illustration feature by <a title="Many thanks!" href="http://guilhemsalines.blogspot.com/">@elevencyan</a>
-                        <br />Source code for <a href="https://github.com/destinygg/website">website</a> and <a href="https://github.com/destinygg/chat">chat</a>
+                        Source code for <a href="https://github.com/destinygg/website">website</a> and <a href="https://github.com/destinygg/chat">chat</a>
                         <br />The Destiny sub-reddit <a title="www.reddit.com" href="/reddit">/r/Destiny</a>
                     </p>
                 </div>

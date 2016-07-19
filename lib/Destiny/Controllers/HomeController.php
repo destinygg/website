@@ -38,8 +38,6 @@ class HomeController {
         $model->music = $cacheDriver->fetch ( 'recenttracks' );
         $model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
         $model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
-        $model->streaminfo = $cacheDriver->fetch ( 'streaminfo' );
-        $model->lastbroadcast = $cacheDriver->fetch ( 'lastbroadcast' );
         return 'home';
     }
 
