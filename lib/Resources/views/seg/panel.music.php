@@ -27,8 +27,6 @@ use Destiny\Common\Config;
           </div>
         </div>
       <?php endforeach; ?>
-      <?php else: ?>
-        <p class="loading">Loading tweets ...</p>
       <?php endif;?>
       </div>
     </div>
@@ -61,8 +59,6 @@ use Destiny\Common\Config;
           </div>
         </div>
       <?php endforeach; ?>
-      <?php else: ?>
-        <p class="loading">Loading music ...</p>
       <?php endif; ?>
       </div>
     </div>

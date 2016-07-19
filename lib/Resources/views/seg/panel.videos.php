@@ -24,8 +24,6 @@ use Destiny\Common\Config;
 					</div>
 				</li>
 			<?php endforeach;?>
-			<?php else:?>
-				<li><p class="loading">Loading videos ...</p></li>
 			<?php endif;?>
 			</ul>
 		</div>
@@ -43,10 +41,6 @@ use Destiny\Common\Config;
 					</div>
 				</li>
 			<?php endforeach;?>
-			<?php else:?>
-				<li>
-					<p class="loading">Loading broadcasts ...</p>
-				</li>
 			<?php endif;?>
 			</ul>
 		</div>
