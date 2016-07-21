@@ -43,7 +43,6 @@
 		++chat.menuOpenCount;
 	};
 	
-	
 	cMenu.prototype.hideMenu = function(chat){
 		hideMenuUI(this);
 		this.visible = false;
@@ -51,45 +50,5 @@
 		--chat.menuOpenCount;
 	};
 	
-	
-	cUserTools = function(chat){
-		var self = this;
-		
-		self.chat = chat;
-		self.visible = false;
-		self.label = '';
-		self.user = null;
-		self.username = '';
-		
-		return this;
-	};
-	
-	
-	cUserTools.prototype.hide = function(){
-		if(!this.visible)
-			return;
-		this.chat.lines.find('.focused').removeClass('focused');
-		this.chat.ui.removeClass('focus-user');
-		hideMenuUI(this.ui);
-		this.visible = false;
-		$(this).triggerHandler('hide');
-		return false;
-	};
-	cUserTools.prototype.show = function(label, username, user){
-		if(this.visible && username == this.username)
-			return this.hide();
-		if(this.visible)
-			this.hide();
-
-		this.label = label;
-		this.user = user;
-		this.username = username;
-
-		this.chat.lines.find('div[data-username="'+this.username+'"]').addClass('focused');
-		this.chat.ui.addClass('focus-user');
-		this.visible = true;
-		$(this).triggerHandler('show');
-		return false;
-	};
 	
 })();

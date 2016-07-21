@@ -26,6 +26,7 @@
         output             : null,
         input              : null,
         userMessages       : [],
+        lastFocusedUser    : "",
 
         backlog            : backlog,
         backlogLoading     : false,
@@ -88,7 +89,7 @@
 
             // Chat settings
             this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
-            this.chatsettings.btn = this.ui.find('.chat-settings-btn:first').eq(0);
+            this.chatsettings.btn = this.ui.find('#chat-settings-btn:first').eq(0);
             this.chatsettings.list = this.chatsettings.find('ul:first').eq(0);
             this.chatsettings.visible = false;
 
@@ -218,9 +219,9 @@
             });
 
             this.privatemessagelist = this.ui.find('#chat-private-messages:first').eq(0);
-            this.privatemessagelist.btn = this.ui.find('.chat-users-btn:first').eq(0);
-            this.privatemessagelist.closelink = this.ui.find('.close-link').eq(0);
-            this.privatemessagelist.replylink = this.ui.find('.reply-link').eq(0);
+            this.privatemessagelist.btn = this.ui.find('#chat-users-btn:first').eq(0);
+            this.privatemessagelist.closelink = this.ui.find('#close-privmsg').eq(0);
+            this.privatemessagelist.replylink = this.ui.find('#reply-privmsg').eq(0);
             this.privatemessagelist.userlistlink = this.ui.find('.user-list-link').eq(0);
             this.privatemessagelist.userlistlink.on('click', function(e){
                 e.preventDefault();
@@ -246,7 +247,7 @@
 
             // User list
             this.userslist = this.ui.find('#chat-user-list:first').eq(0);
-            this.userslist.btn = this.ui.find('.chat-users-btn:first').eq(0);
+            this.userslist.btn = this.ui.find('#chat-users-btn:first').eq(0);
             this.userslist.visible = false;
             this.userslist.scrollable = this.userslist.find('.scrollable:first');
             this.userslist.populateUserList = function(){
@@ -319,47 +320,40 @@
             cMenu.addMenu(this, this.chatemotelist);
 
             // The tools for when you click on a user
-            this.cUserTools = new cUserTools(this);
             this.userslist.on('click', '.user', function(){
                 var username = $(this).text().toLowerCase();
-                chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
+                chat.toggleFocus(username);
             });
-            this.lines.on('mousedown', 'div.user-msg a.user', function(){
+            this.lines.on('mousedown', '.user-msg a.user', function(){
                 var username = $(this).closest('.user-msg').data('username');
-                chat.cUserTools.show($(this).text(), username, chat.engine.users[username]);
+                chat.toggleFocus(username);
                 return false;
             });
 
-            this.lines.on('mousedown', 'div.user-msg .chat-user', function(e) {
+            this.lines.on('mousedown', 'div.user-msg .chat-user', function() {
                 var username = this.textContent.toLowerCase();
-                if (chat.cUserTools.visible) {
-                    chat.toggleFocus(username);
-                } else {
-                    chat.cUserTools.show(this.textContent, username, chat.engine.users[username]);
-                    var speaker = $(this).closest('.user-msg').data('username');
-                    chat.toggleFocus(speaker);
-                }
-                e.stopImmediatePropagation();
+                chat.toggleFocus(username);
+                return false;
             });
 
             // Bind to user input submit
-            this.ui.on('submit', 'form#chat-input', function(e){
-                e.preventDefault();
+            this.ui.on('submit', 'form#chat-input', function(){
                 chat.send();
+                return false;
             });
 
             // Close all menus and perform a scroll
-            this.input.on('keydown mousedown', $.proxy(function(e){
+            this.input.on('keydown mousedown', $.proxy(function(){
                 if(this.menuOpenCount > 0)
                     cMenu.closeMenus(this);
+                chat.toggleFocus();
             }, this));
 
             // Close all menus if someone clicks on any messages
-            this.output.on('mousedown', $.proxy(function(e){
-                if(this.cUserTools.visible)
-                    this.cUserTools.hide();
+            this.output.on('mousedown', $.proxy(function(){
                 if(this.menuOpenCount > 0)
                     cMenu.closeMenus(this);
+                chat.toggleFocus();
             }, this));
 
             // Scrollbar plugin
@@ -429,9 +423,8 @@
                         if (mouseDownCoords !== coords)
                             return;
 
-                        focusTimer = setTimeout(function() {
-                            chat.input.focus();
-                        }, 500);
+                        focusTimer = setTimeout(function() { chat.input.focus(); }, 500);
+                        chat.toggleFocus();
                         break;
                     case 'mousedown':
                         mouseDownCoords = coords;
@@ -448,7 +441,16 @@
         },
 
         toggleFocus: function(user) {
-            this.lines.find('div[data-username="' + user + '"]').toggleClass('focused');
+            if(!user || user === '' || this.lastFocusedUser === user){
+                this.lines.find('div.focused').removeClass('focused');
+                this.ui.removeClass('focus-user');
+                this.lastFocusedUser = "";
+            } else if(this.lastFocusedUser != user){
+                this.lines.find('div.focused').removeClass('focused');
+                this.lines.find('div[data-username="' + user + '"]').addClass('focused');
+                this.ui.addClass('focus-user');
+                this.lastFocusedUser = user;
+            }
         },
 
         loadSettings: function() {
@@ -559,10 +561,7 @@
                 if(this.engine.user == null || !this.engine.user.username)
                     return this.push(new ChatErrorMessage(this.engine.errorstrings.needlogin));
 
-                if (str.substring(0, 4) === '/me ')
-                    var message = str.substring(4);
-                else
-                    var message = str;
+                var message = (str.substring(0, 4) === '/me ') ? str.substring(4) : str;
 
                 // If this is an emoticon spam, emit the message but don't add the line immediately
                 if ($.inArray(message, this.emoticons) != -1 && this.engine.previousemote && this.engine.previousemote.message == message)
@@ -578,7 +577,7 @@
                 this.insertInputHistory(str);
                 this.currenthistoryline = -1;
                 this.autoCompletePlugin.markLastComplete();
-            };
+            }
             str = null;
             return this;
         },

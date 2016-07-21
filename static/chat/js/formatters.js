@@ -42,6 +42,7 @@
 		return str.replace(emoteregex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
 	};
 
+	// User mention formatter
 	destiny.fn.MentionedUserFormatter = function(chat) {
 		this.users = chat.engine.users;
 		this.userregex = /((?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
@@ -52,7 +53,7 @@
 		var users = this.users;
 		return str.replace(this.userregex, function(match, prefix, nick) {
 			if (users.propertyIsEnumerable(nick)) {
-				 return prefix + '<span class="chat-user">' + nick + '</span>';
+				return prefix + '<span class="chat-user">' + nick + '</span>';
 			} else {
 				return match;
 			}

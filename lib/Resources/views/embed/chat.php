@@ -44,11 +44,11 @@ use Destiny\Common\Config;
                 </span>
             </div>
             <div id="chat-tools-wrap">
-                <a class="iconbtn chat-settings-btn" title="Settings">
+                <a id="chat-settings-btn" class="iconbtn" title="Settings">
                     <span class="fa fa-cog"></span>
                 </a>
-                <a class="iconbtn chat-users-btn" title="Users">
-                    <span class="chat-pm-count hidden flash" title="You have unread messages!">0</span>
+                <a id="chat-users-btn" class="iconbtn" title="Users">
+                    <span id="chat-pm-count" class="hidden flash" title="You have unread messages!">0</span>
                     <span class="fa fa-user"></span>
                 </a>
             </div>
@@ -199,8 +199,11 @@ use Destiny\Common\Config;
                 </h5>
               </div>
               <div id="chat-pm-message">
-                <p>You have <span class="chat-pm-count">0</span> unread message(s).</p>
-                <p><a href="/profile/messages" target="_blank" class="btn btn-primary btn-sm reply-link"><i class="fa fa-envelope"></i> INBOX</a> or <button class="btn btn-default btn-sm close-link">DISMISS <i class="fa fa-close"></i></button></p>
+                <p>You have unread message(s).</p>
+                <p>
+                    <a id="reply-privmsg" href="/profile/messages" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i> INBOX</a> or
+                    <button id="close-privmsg" class="btn btn-default btn-sm">DISMISS <i class="fa fa-close"></i></button>
+                </p>
                 <p>or view the <a href="#" class="user-list-link">user list</a></p>
               </div>
             </div>
