@@ -44,7 +44,6 @@
         emoticons          : [],
         twitchemotes       : [],
         formatters         : [],
-        hintPopup          : null,
 
         broadcastdisplaytime : 300000,
         broadcastdismiss     : (localStorage['chatbroadcastdismiss'] || null),
@@ -65,9 +64,9 @@
             var chat = this;
 
             // local elements stored in vars to not have to get the elements via query each time
-            this.lines = this.ui.find('.chat-lines:first').eq(0);
-            this.output = this.ui.find('.chat-output:first').eq(0);
-            this.inputwrap = this.ui.find('.chat-input:first').eq(0);
+            this.lines = this.ui.find('#chat-lines:first').eq(0);
+            this.output = this.ui.find('#chat-output:first').eq(0);
+            this.inputwrap = this.ui.find('#chat-input:first').eq(0);
             this.input = this.inputwrap.find('.input:first').eq(0);
             this.inputwrap.removeClass('hidden');
 
@@ -343,17 +342,8 @@
                 e.stopImmediatePropagation();
             });
 
-            // Hints
-            this.hintPopup = new hintPopup(this);
-
-            // Reset event
-            this.chatsettings.find('#resethints').on('click', $.proxy(function(e){
-                e.preventDefault();
-                this.reset(chat);
-            }, this.hintPopup));
-
             // Bind to user input submit
-            this.ui.on('submit', 'form.chat-input', function(e){
+            this.ui.on('submit', 'form#chat-input', function(e){
                 e.preventDefault();
                 chat.send();
             });
@@ -415,10 +405,10 @@
             // End Scrollbar
 
             // Enable toolbar
-            this.ui.find('.chat-tools-wrap button').removeAttr('disabled');
+            this.ui.find('#chat-tools-wrap button').removeAttr('disabled');
 
             // The login click
-            this.ui.find('.chat-login-msg a[href="/login"]').on('click', function(){
+            this.ui.find('#chat-login-msg a[href="/login"]').on('click', function(){
                 try {
                     if(window.self !== window.top){
                         window.parent.location.href = $(this).attr('href') + '?follow=' + encodeURIComponent(window.parent.location.pathname);
@@ -432,7 +422,7 @@
             // when clicking on "nothing" move the focus to the input
             var mouseDownCoords;
             var focusTimer;
-            this.ui.find('.chat-lines').on('click mousedown keydown', function(e) {
+            this.ui.find('#chat-lines').on('click mousedown keydown', function(e) {
                 var coords = e.clientX + '-' + e.clientY;
                 switch(e.type) {
                     case 'click':
@@ -918,6 +908,16 @@
     $.extend(ChatInfoMessage.prototype, ChatMessage.prototype);
     ChatInfoMessage.prototype.html = function(){
         return this.wrap(this.wrapTime() + ' <i class="icon-info"></i> ' + this.wrapMessage());
+    };
+    ChatInfoMessage.prototype.wrapMessage = function(){
+        var elem     = $('<span class="msg"/>').text(this.message),
+            encoded  = elem.html();
+
+        for(var i=0; i<destiny.chat.gui.formatters.length; ++i)
+            encoded = destiny.chat.gui.formatters[i].format(encoded, null, this.message);
+
+        elem.html(encoded);
+        return elem.get(0).outerHTML;
     };
     // END INFO MESSAGE
 

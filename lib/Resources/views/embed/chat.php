@@ -17,160 +17,47 @@ use Destiny\Common\Config;
 </head>
 <body class="embed">
 
-<div id="destinychat" class="chat chat-theme-dark chat-icons">
-    
+<div id="destinychat" class="chat chat-icons <?php if(Session::hasRole(UserRole::USER)): ?>authenticated<?php endif; ?>">
     <!-- chat output -->
-    <div class="chat-output-frame">
-        <div class="chat-output nano">
-          <div class="chat-lines overthrow nano-content"></div>
+    <div id="chat-output-frame">
+        <div id="chat-output" class="nano">
+          <div id="chat-lines" class="overthrow nano-content"></div>
           <div id="chat-scroll-notify">More messages below</div>
         </div>
     </div>
     <!-- end chat output -->
     
     <!-- chat input -->
-    <?php if(Session::hasRole(UserRole::USER)): ?>
-    <form class="chat-input">
+    <form id="chat-input">
         <div class="clearfix">
-          <div class="chat-input-wrap">
-            <div class="chat-input-control">
-              <input type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
-              <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
+            <div id="chat-input-wrap">
+                <div id="chat-input-control">
+                    <input type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
+                    <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
+                </div>
+                <span id="chat-login-msg">
+                  <?php if(!empty($model->follow)): ?>
+                      You must <a href="/login?follow=<?= Tpl::out($model->follow) ?>" target="_parent">sign in</a> to chat
+                  <?php else: ?>
+                      You must <a href="/login" target="_parent">sign in</a> to chat
+                  <?php endif; ?>
+                </span>
             </div>
-          </div>
-          <div class="chat-tools-wrap">
-            <a class="iconbtn chat-settings-btn" title="Settings">
-              <span class="fa fa-cog"></span>
-            </a>
-            <a class="iconbtn chat-users-btn" title="Users">
-              <span class="chat-pm-count hidden flash" title="You have unread messages!">0</span>
-              <span class="fa fa-user"></span>
-            </a>
-          </div>
+            <div id="chat-tools-wrap">
+                <a class="iconbtn chat-settings-btn" title="Settings">
+                    <span class="fa fa-cog"></span>
+                </a>
+                <a class="iconbtn chat-users-btn" title="Users">
+                    <span class="chat-pm-count hidden flash" title="You have unread messages!">0</span>
+                    <span class="fa fa-user"></span>
+                </a>
+            </div>
         </div>
     </form>
-    <?php else: ?>
-    <form class="chat-input">
-        <div class="clearfix">
-          <div class="chat-input-wrap">
-            <span class="chat-login-msg">
-              <?php if(!empty($model->follow)): ?>
-              You must <a href="/login?follow=<?= Tpl::out($model->follow) ?>" target="_parent">sign in</a> to chat
-              <?php else: ?>
-              You must <a href="/login" target="_parent">sign in</a> to chat
-              <?php endif; ?>
-            </span>
-            <input type="hidden" class="input" />
-
-          </div>
-          <div class="chat-tools-wrap">
-            <a class="iconbtn chat-users-btn" title="Users">
-              <span class="fa fa-user"></span>
-            </a>
-          </div>
-        </div>
-    </form>
-    <?php endif; ?>
     <!-- end chat input -->
     
     <!-- top frame -->
     <div id="chat-top-frame">
-      
-        <!-- hints -->
-        <div class="hint-popup">
-            <div class="wrap clearfix">
-              <div class="alert alert-warning">
-                <a title="Hide hint"><span class="fa fa-remove hidehint"></span></a>
-                <a title="Next hint"><span class="fa fa-chevron-right nexthint"></span></a>
-                <strong>Hint:</strong> <span class="hint-message"></span>
-              </div>
-            </div>
-        </div>
-        <!-- end hints -->
-
-        <!-- user tools -->
-        <div class="user-tools">
-            <div class="wrap clearfix">
-              <h5>
-                <button type="button" class="close" aria-hidden="true">&times;</button>
-                <span class="user-tools-user"></span>
-              </h5>
-              <div class="tools">
-              
-                <div class="user-tools-wrap">
-                
-                  <a id="ignoreuser" href="#ignore">
-                    <span class="fa fa-eye-slash"></span> Ignore
-                  </a>
-                  <a id="unignoreuser" href="#unignore">
-                    <span class="fa fa-eye"></span> Unignore
-                  </a>
-            
-                  <?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
-                  <a href="#togglemute">
-                    <span class="fa fa-ban"></span> Mute
-                  </a> 
-                  <a href="#toggleban">
-                    <span class="fa fa-remove"></span> Ban
-                  </a> 
-                  <a href="#clearmessages"><span class="fa fa-fire"></span> Clear messages</a> 
-                  <?php endif; ?>
-            
-                </div>
-            
-                <?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
-                <!-- mute -->
-                <form id="user-mute-form">
-                  <div class="form-group">
-                    <select id="banTimeLength" class="select form-control input-sm">
-                      <option value="0">Length of time</option>
-                      <option value="10">10 minutes</option>
-                      <option value="30">30 minutes</option>
-                      <option value="60">1 hr</option>
-                      <option value="720">12 hrs</option>
-                      <option value="1440">24 hrs</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-xs btn-primary">Confirm</button>
-                    <button id="cancelmute" type="button" class="btn btn-xs">Cancel</button>
-                  </div>
-                </form>
-                <!-- end mute -->
-                
-                <!-- ban -->
-                <form id="user-ban-form">
-                  <input type="hidden" name="ipBan" value="" />
-                  <div class="form-group">
-                    <select id="banTimeLength" class="select form-control input-sm" style="width:150px;" onchange="$('#banReason').focus();">
-                      <option value="0">Length of time</option>
-                      <option value="1">1 minute</option>
-                      <option value="5">5 minutes</option>
-                      <option value="10">10 minutes</option>
-                      <option value="30">30 minutes</option>
-                      <option value="60">1 hr</option>
-                      <option value="720">12 hrs</option>
-                      <option value="1440">24 hrs</option>
-                      <option value="perm">Permanent</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <input type="text" class="input form-control input-sm" id="banReason" placeholder="Reason for ban" />
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-xs btn-primary">Ban user</button>
-                    <button id="ipbanuser" type="button" class="btn btn-xs btn-danger">IP ban user</button>
-                    <button id="cancelban" type="button" class="btn btn-xs">Cancel</button>
-                  </div>
-                </form>
-                <!-- end ban -->
-                
-                <?php endif; ?>
-                
-              </div>
-            </div>
-        </div>
-        <!-- end user tools -->
         
         <!-- broadcast -->
         <div id="chat-broadcasts">

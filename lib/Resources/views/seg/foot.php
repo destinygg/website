@@ -5,10 +5,7 @@ use Destiny\Common\Config;
     <div id="footer-inner" class="container">
         <div id="footer-copyright" class="col-sm-5">
             <h3>Destiny.gg <small><sup>&copy;</sup></small></h3>
-            <p>
-                The code for this website is open source and hosted on <a href="/github">Github</a>
-                <br />please feel free to contribute!
-            </p>
+            <p>Professional streamer.</p>
             <p>
                 www.destiny.gg
                 <br /><a href="mailto:steven.bonnell.ii@gmail.com" title="Email Destiny">steven.bonnell.ii@gmail.com</a>

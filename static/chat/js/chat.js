@@ -32,7 +32,7 @@ function chat(element, user, options) {
 		"UNBAN"  : true,
 		"SUBONLY": true
 	};
-	this.errorstrings       = {
+	this.errorstrings = {
 		"unknown"               : "Unknown error, this usually indicates an internal problem :(",
 		"nopermission"          : "You do not have the required permissions to use that",
 		"protocolerror"         : "Invalid or badly formatted",
@@ -51,10 +51,27 @@ function chat(element, user, options) {
 		"privmsgaccounttooyoung": "Your account is too recent to send private messages",
 		"notfound"              : "The user was not found"
 	};
+	this.hints = {
+		"hint"           : 'Type in /hint for more hints',
+		"slashhelp"      : 'Type in /help for more advanced features, like modifying the scrollback size',
+		"tabcompletion"  : 'Use the tab key to auto-complete usernames and emotes',
+		"hoveremotes"    : 'Hovering your mouse over an emote will show you the emote code',
+		"highlight"      : 'Chat messages containing your username will be highlighted',
+		"notify"         : 'Use /msg <username> to send a private message to someone',
+		"ignoreuser"     : 'Use /ignore <username> to hide messages from pesky chatters',
+		"moreinfo"       : 'See the https://destiny.gg/chat/faq for more information',
+		"emotewiki"      : 'For the list of available emotes type /emotes or https://github.com/destinygg/website/wiki/Emotes',
+		"mutespermanent" : 'Mutes are never persistent, don\'t worry it will pass!'
+	};
+	this.hintindex = [];
+	for(var id in this.hints)
+		this.hintindex.push(id);
+
 	this.user               = new ChatUser(user);
 	this.gui                = new ChatGui(element, this, options);
 	this.previousemote      = null;
 	this.originemote        = null;
+	this.showstarthint      = true;
 	return this;
 };
 chat.prototype.start = function(){
@@ -113,20 +130,11 @@ chat.prototype.parseAndDispatch = function(e) {
 			obj     = JSON.parse(e.data.substring(eventname.length+1));
 	
 	this.l(handler, obj);
-	if (eventname == 'PING') { // handle pinging in-line, cant parse 64bit ints
+	if (eventname == 'PING') // handle pinging in-line, cant parse 64bit ints
 		return this.sock.send('PONG ' + e.data.substring(eventname.length+1));
-	}
-	
-	if (this[handler]) {
-		var message = this[handler](obj);
-		if (message) {
-			
-			if (this.controlevents[ eventname ])
-				this.gui.push(message, 'control');
-			else
-				this.gui.push(message);
-		}
-	}
+
+	if (this[handler])
+		this[handler](obj);
 };
 chat.prototype.dispatchBacklog = function(e) {
 	var handler = 'on' + e.event,
@@ -138,7 +146,7 @@ chat.prototype.dispatchBacklog = function(e) {
 		};
 	
 	if (this[handler])
-		return this[handler](obj);
+		this[handler](obj);
 	
 };
 chat.prototype.emit = function(eventname, data) {
@@ -154,21 +162,24 @@ chat.prototype.onCLOSE = function() {
 	var rand = ((this.connected) ? getRandomInt(501,3000) : getRandomInt(5000,30000));
 	setTimeout($.proxy(this.onRECONNECT, this), rand);
 	this.connected = false;
-	return new ChatStatusMessage("Disconnected... reconnecting in "+ Math.round(rand/1000) +" seconds");
+	this.gui.push(new ChatStatusMessage("Disconnected... reconnecting in "+ Math.round(rand/1000) +" seconds"));
 };
 chat.prototype.onNAMES = function(data) {
-	if (!data.users || data.users.length <= 0)
-		return new ChatStatusMessage("Connected");
-	
-	for (var i = data.users.length - 1; i >= 0; i--) {
-		var u = data.users[i];
-		this.users[u.nick] = new ChatUser(u);
-		if (!this.shouldIgnore(u.nick, ""))
-			this.gui.autoCompletePlugin.addNick(u.nick);
-	};
-	
-	this.gui.trigger('names', data);
-	return new ChatStatusMessage("Connected. Server connections: " + data.connectioncount);
+	if(data.users){
+		for (var i = data.users.length - 1; i >= 0; i--) {
+			var u = data.users[i];
+			this.users[u.nick] = new ChatUser(u);
+			if (!this.shouldIgnore(u.nick, ""))
+				this.gui.autoCompletePlugin.addNick(u.nick);
+		}
+		this.gui.trigger('names', data);
+	}
+	this.gui.push(new ChatStatusMessage("Connected. Server connections: " + data.connectioncount));
+
+	if(this.showstarthint){
+		this.showstarthint = false;
+		this.handleCommand("hint");
+	}
 };
 chat.prototype.onJOIN = function(data) {
 	this.users[data.nick] = new ChatUser(data);
@@ -212,7 +223,7 @@ chat.prototype.onPRIVMSG = function (data) {
 		return;
 
 	this.gui.autoCompletePlugin.updateNick(user.username);
-	return new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp);
+	this.gui.push(new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp));
 };
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
@@ -220,11 +231,8 @@ chat.prototype.onMSG = function(data) {
 		this.user.features = data.features;
 
 	// Emote
-	if (data.data.substring(0, 4) === '/me ')
-		var emoticon = data.data.substring(4);
-	else
-		var emoticon = data.data;
-	
+	var emoticon = (data.data.substring(0, 4) === '/me ') ? data.data.substring(4) : data.data;
+
 	if ($.inArray(emoticon, this.gui.emoticons) != -1 || $.inArray(emoticon, this.gui.twitchemotes) != -1) {
 		if (this.previousemote && this.previousemote.message == emoticon) {
 			if(this.previousemote.emotecount === 1){
@@ -233,7 +241,8 @@ chat.prototype.onMSG = function(data) {
 					this.originemote.ui.remove();
 					this.originemote = null;
 				}
-				return this.previousemote;
+				this.gui.push(this.previousemote);
+				return;
 			}else{
 				this.previousemote.incEmoteCount();
 				return;
@@ -243,9 +252,8 @@ chat.prototype.onMSG = function(data) {
 	} else
 		this.previousemote = null;
 	// End emote
-	
+
 	var messageui = this.gui.resolveMessage(data);
-	
 	if(messageui && this.previousemote)
 		this.originemote = messageui;
 	
@@ -266,12 +274,12 @@ chat.prototype.onMSG = function(data) {
 			this.users[data.nick] = user;
 
 		var usermessage = new ChatUserMessage(data.data, user, data.timestamp);
-		
+
 		if(this.previousemote)
 			this.originemote = usermessage;
 
 		// Returned message gets appended to GUI
-		return usermessage;
+		this.gui.push(usermessage);
 	}
 };
 chat.prototype.onMUTE = function(data) {
@@ -286,15 +294,15 @@ chat.prototype.onMUTE = function(data) {
         $.inArray(destiny.UserFeatures.MODERATOR, this.user.features) == -1 
     )
 		this.gui.removeUserMessages(data.data);
-	
-	return new ChatCommandMessage(suppressednick + " muted by " + data.nick, data.timestamp);
+
+	this.gui.push(new ChatCommandMessage(suppressednick + " muted by " + data.nick, data.timestamp));
 };
 chat.prototype.onUNMUTE = function(data) {
 	var suppressednick = data.data;
 	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
 	
-	return new ChatCommandMessage(suppressednick + " unmuted by " + data.nick, data.timestamp);
+	this.gui.push(new ChatCommandMessage(suppressednick + " unmuted by " + data.nick, data.timestamp));
 };
 chat.prototype.onBAN = function(data) {
 	// data.data is the nick which has been banned, no info about duration
@@ -315,14 +323,14 @@ chat.prototype.onBAN = function(data) {
     )
 		this.gui.removeUserMessages(data.data);
 
-	return new ChatCommandMessage(suppressednick + " banned by " + data.nick, data.timestamp);
+	this.gui.push(new ChatCommandMessage(suppressednick + " banned by " + data.nick, data.timestamp));
 };
 chat.prototype.onUNBAN = function(data) {
 	var suppressednick = data.data;
 	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
-	
-	return new ChatCommandMessage(suppressednick + " unbanned by " + data.nick, data.timestamp);
+
+	this.gui.push(new ChatCommandMessage(suppressednick + " unbanned by " + data.nick, data.timestamp));
 };
 chat.prototype.onERR = function(data) {
 	if (data == "toomanyconnections" || data == "banned")
@@ -331,7 +339,7 @@ chat.prototype.onERR = function(data) {
 	if (data == "banned" && !this.gui.backlogLoading)
 		window.location.href = "/banned";
 
-	return new ChatErrorMessage(this.errorstrings[data]);
+	this.gui.push(new ChatErrorMessage(this.errorstrings[data]));
 };
 chat.prototype.onREFRESH = function() {
 	window.location.href = window.location.href;
@@ -341,32 +349,26 @@ chat.prototype.onRECONNECT = function() {
 };
 chat.prototype.onSUBONLY = function(data) {
 	var submode = data.data == 'on' ? 'enabled': 'disabled';
-	return new ChatCommandMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp);
+	this.gui.push(new ChatCommandMessage("Subscriber only mode "+submode+" by " + data.nick, data.timestamp));
 };
 chat.prototype.onBROADCAST = function(data) {
+	if (this.gui.backlogLoading) return;
 	if (data.data.substring(0, 9) == 'redirect:') {
-		if (this.gui.backlogLoading) return;
-
-		var url     = data.data.substring(9),
-			message = new ChatBroadcastMessage("Redirecting in 5 seconds to " + url, data.timestamp);
-
+		var url = data.data.substring(9);
 		_gaq.push(['_trackEvent', 'outbound', 'chat-redirect', url]);
 		_gaq.push(function() {
 			setTimeout(function() {
 				// try redirecting the parent window too if possible
 				if (window.parent)
 					window.parent.location.href = url;
-
 				window.location.href = url;
 				
 			}, 5000);
 		});
-
+		this.gui.push(new ChatBroadcastMessage("Redirecting in 5 seconds to " + url, data.timestamp));
 	} else {
-		var message = new ChatBroadcastMessage(data.data, data.timestamp);
+		this.gui.push(new ChatBroadcastMessage(data.data, data.timestamp));
 	}
-
-	return message;
 };
 chat.prototype.onPRIVMSGSENT = function(data) {
 	this.gui.push(new ChatInfoMessage("Your message has been sent!"));
@@ -629,6 +631,29 @@ chat.prototype.handleCommand = function(str) {
 		case "broadcast":
 			payload.data = str.substring(command.length+1);
 			this.emit(command.toUpperCase(), payload);
+			break;
+
+		case "hint":
+			var id = "",
+				hint = null,
+				shownhints = JSON.parse(localStorage["hiddenhints"] || '[]'),
+				i = 0;
+			while(++i){
+				if(i >= this.hintindex.length){
+					id = this.hintindex[0];
+					hint = this.hints[id];
+					shownhints = [id];
+					break;
+				}
+				if(shownhints.indexOf(this.hintindex[i]) === -1){
+					id = this.hintindex[i];
+					hint = this.hints[id];
+					shownhints.push(id);
+					break;
+				}
+			}
+			localStorage["hiddenhints"] = JSON.stringify(shownhints);
+			this.gui.push(new ChatInfoMessage(hint));
 			break;
 			
 	};

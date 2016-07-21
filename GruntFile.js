@@ -70,7 +70,6 @@ module.exports = function(grunt) {
                         'static/chat/js/autocomplete.js',
                         'static/chat/js/formatters.js',
                         'static/chat/js/UrlFormatter.js',
-                        'static/chat/js/hints.js',
                         'static/chat/js/menu.js',
                         'static/chat/js/gui.js',
                         'static/chat/js/chat.js'
