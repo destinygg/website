@@ -25,13 +25,6 @@ function chat(element, user, options) {
 	this.debug              = false;
 	this.users              = {};
 	this.ignorelist         = {};
-	this.controlevents      = {
-		"MUTE"   : true,
-		"UNMUTE" : true,
-		"BAN"    : true,
-		"UNBAN"  : true,
-		"SUBONLY": true
-	};
 	this.errorstrings = {
 		"unknown"               : "Unknown error, this usually indicates an internal problem :(",
 		"nopermission"          : "You do not have the required permissions to use that",
@@ -64,8 +57,10 @@ function chat(element, user, options) {
 		"mutespermanent" : 'Mutes are never persistent, don\'t worry it will pass!'
 	};
 	this.hintindex = [];
-	for(var id in this.hints)
-		this.hintindex.push(id);
+	for (var id in this.hints) {
+		if (this.hints.hasOwnProperty(id))
+			this.hintindex.push(id);
+	}
 
 	this.user               = new ChatUser(user);
 	this.gui                = new ChatGui(element, this, options);
@@ -376,10 +371,12 @@ chat.prototype.onPRIVMSGSENT = function(data) {
 
 chat.prototype.handleCommand = function(str) {
 
-	var parts     = str.match(/([^ ]+)/g);
+	var parts     = str.match(/([^ ]+)/g),
 	    command   = parts[0].toLowerCase(),
 	    nickregex = /^[a-zA-Z0-9_]{3,20}$/,
-	    payload   = {};
+	    payload   = {},
+		nicks     = [],
+		nick      = '';
 	
 	if (str.substring(0, 1) === '/') {
 		payload.data = "/" + str;
@@ -425,10 +422,10 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 
-			payload.nick = parts[1]
-			parts.shift(0) // remove command
-			parts.shift(0) // remove nick
-			payload.data = parts.join(' ')
+			payload.nick = parts[1];
+			parts.shift(0); // remove command
+			parts.shift(0); // remove nick
+			payload.data = parts.join(' ');
 
 			this.emit("PRIVMSG", payload);
 			this.gui.autoCompletePlugin.markLastComplete();
@@ -441,7 +438,7 @@ chat.prototype.handleCommand = function(str) {
 			}
 			
 			if (!parts[1]) {
-				var nicks = [];
+				nicks = [];
 				$.each(this.ignorelist, function(key) {
 					nicks.push(key);
 				});
@@ -453,7 +450,7 @@ chat.prototype.handleCommand = function(str) {
 				return
 			}
 			
-			var nick = parts[1].toLowerCase();
+			nick = parts[1].toLowerCase();
 			if (!nickregex.test(nick)) {
 				this.gui.push(new ChatErrorMessage("Invalid nick - /ignore nick"));
 				return;
@@ -477,7 +474,7 @@ chat.prototype.handleCommand = function(str) {
 				this.gui.push(new ChatErrorMessage("Invalid nick - /ignore nick"));
 				return;
 			}
-			var nick = parts[1].toLowerCase();
+			nick = parts[1].toLowerCase();
 			
 			delete(this.ignorelist[nick]);
 			this.gui.push(new ChatStatusMessage(""+nick+" has been removed from your ignore list"));
@@ -585,7 +582,7 @@ chat.prototype.handleCommand = function(str) {
 		case "unhighlight":
 		case "highlight":
 			if (!parts[1]) {
-				var nicks = [];
+				nicks = [];
 				$.each(this.gui.highlightnicks, function(k, v) {
 					nicks.push(k);
 				});
@@ -599,7 +596,7 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			
-			var nick = parts[1].toLowerCase();
+			nick = parts[1].toLowerCase();
 			if (command == "unhighlight") {
 				delete(this.gui.highlightnicks[nick]);
 				this.gui.push(new ChatInfoMessage("No longer highlighting: " + nick));
@@ -656,7 +653,7 @@ chat.prototype.handleCommand = function(str) {
 			this.gui.push(new ChatInfoMessage(hint));
 			break;
 			
-	};
+	}
 };
 chat.prototype.parseTimeInterval = function(str) {
 	var nanoseconds = 0,
@@ -674,7 +671,7 @@ chat.prototype.parseTimeInterval = function(str) {
 		hour: 3600000000000, hours: 3600000000000,
 
 		d: 86400000000000,
-		day: 86400000000000, days: 86400000000000,
+		day: 86400000000000, days: 86400000000000
 	};
 	str.replace(/(\d+(?:\.\d*)?)([a-z]+)?/ig, function($0, number, unit) {
 		if (unit)

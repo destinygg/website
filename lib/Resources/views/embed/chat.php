@@ -58,21 +58,6 @@ use Destiny\Common\Config;
     
     <!-- top frame -->
     <div id="chat-top-frame">
-        
-        <!-- broadcast -->
-        <div id="chat-broadcasts">
-            <!-- template -->
-            <div class="chat-broadcast alert alert-info hidden template">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <p>
-                    <span class="fa fa-exclamation-triangle"></span>
-                    <span class="message">This is a broadcast!</span>
-                </p>
-            </div>
-            <!-- template -->
-        </div>
-        <!-- end broadcast -->
-        
     </div>
     <!-- end top frame -->
     
@@ -151,7 +136,7 @@ use Destiny\Common\Config;
                 </div>
                 <div class="form-group checkbox">
                   <label class="checkbox" title="Show desktop notifications on hightlight">
-                    <input name="notifications" type="checkbox" /> Desktop notification on highlight
+                    <input name="allowNotifications" type="checkbox" /> Desktop notification on highlight
                   </label>
                 </div>
                 <div class="form-group checkbox">

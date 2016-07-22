@@ -10,7 +10,6 @@ body,
   background: transparent !important;
 }
 
-#chat-broadcasts>div,
 #chat-lines time {
   display: none !important;
 }

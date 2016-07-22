@@ -34,7 +34,7 @@
         highlightregex     : {},
         highlightnicks     : {},
 
-        notifications      : true,
+        allowNotifications : true,
 
         lastMessage        : null,
 
@@ -46,9 +46,6 @@
         twitchemotes       : [],
         formatters         : [],
 
-        broadcastdisplaytime : 300000,
-        broadcastdismiss     : (localStorage['chatbroadcastdismiss'] || null),
-        maxbroadcasts        : 1,
         unreadMessageCount   : parseInt(localStorage['unreadMessageCount'] || 0, 10),
 
         trigger: function(name, data){
@@ -141,7 +138,7 @@
                         chat.saveChatOption(name, checked);
                         break;
 
-                    case 'notifications':
+                    case 'allowNotifications':
                         if (!notifications)
                             break;
 
@@ -159,10 +156,10 @@
                         if (permission == 1) // not yet allowed
                             notifications.requestPermission(function(){});
                         else if (permission == 2) {
-                            chat.notifications = false;
+                            chat.allowNotifications = false;
                             break;
                         }
-                        chat.notifications = checked;
+                        chat.allowNotifications = checked;
                         chat.saveChatOption(name, checked);
                         break;
                 }
@@ -456,12 +453,12 @@
         loadSettings: function() {
             var self     = this,
                 defaults = {
-                    showtime      : false,
-                    hideflairicons: false,
-                    highlight     : true,
-                    notifications : false,
-                    maxlines      : this.maxlines,
-                    timestampformat: 'HH:mm'
+                    showtime           : false,
+                    hideflairicons     : false,
+                    highlight          : true,
+                    allowNotifications : false,
+                    maxlines           : this.maxlines,
+                    timestampformat    : 'HH:mm'
             };
 
             var customhighlight = self.getChatOption('customhighlight', []);
@@ -548,7 +545,7 @@
             // Reset and or scroll bottom
             this.scrollPlugin.updateAndScroll(wasScrolledBottom);
             // Handle highlight / and if highlighted, notification
-            if(this.handleHighlight(message) && this.notifications)
+            if(this.handleHighlight(message) && this.allowNotifications)
                 this.showNotification(message);
             return message;
         },
@@ -677,14 +674,14 @@
         setupNotifications: function() {
             window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications || window.Notification;
             if(!notifications)
-                this.chatsettings.find('input[name=notifications]').closest('label').text('Notifications are not supported by your browser');
+                this.chatsettings.find('input[name=allowNotifications]').closest('label').text('Notifications are not supported by your browser');
 
-            if(!notifications || !this.engine.user.username || !this.getChatOption('notifications', false))
-                this.notifications = false;
+            if(!notifications || !this.engine.user.username || !this.getChatOption('allowNotifications', false))
+                this.allowNotifications = false;
         },
 
         showNotification: function(message) {
-            if (!this.notifications)
+            if (!this.allowNotifications)
                 return;
 
             var msg   = message.message,
@@ -707,7 +704,7 @@
 
             } else {
                 // Fallback to standard HTML5 notifications if needed
-                notif =  new notifications(title, {
+                notif =  new Notifications(title, {
                     icon: destiny.cdn+'/chat/img/notifyicon.png',
                     body: msg,
                     tag : message.timestamp.unix(),
