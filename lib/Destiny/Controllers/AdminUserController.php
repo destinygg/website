@@ -55,7 +55,7 @@ class AdminUserController {
 
         $model->user = $user;
         $model->smurfs = $userService->findSameIPUsers( $user ['userId'] );
-        $model->features = $userFeaturesService->getDetailedFeatures ();
+        $model->features = $userFeaturesService->getNonPseudoFeatures ();
         $model->ban = $userService->getUserActiveBan ( $user ['userId'] );
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
         $model->address = $userService->getAddressByUserId ( $user ['userId'] );

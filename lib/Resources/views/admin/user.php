@@ -104,7 +104,6 @@ use Destiny\Commerce\SubscriptionStatus;
             <div class="form-group">
               <label>Features:</label>
               <?php foreach($model->features as $featureName=>$f): ?>
-              <?php if(strcasecmp($featureName, 'subscriber') === 0 || strcasecmp($featureName, 'flair1') === 0 || strcasecmp($featureName, 'flair3') === 0 || strcasecmp($featureName, 'flair8') === 0 ) continue; // remove subscription flairs?>
               <div class="checkbox">
                 <label>
                   <input type="checkbox" name="features[]" value="<?=$f['featureName']?>" <?=(in_array($featureName, $model->user['features']))?'checked="checked"':''?>>

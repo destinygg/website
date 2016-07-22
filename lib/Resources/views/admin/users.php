@@ -25,6 +25,15 @@ use Destiny\Common\Utils\Date;
               <input name="search" type="text" class="form-control" placeholder="Username or email..." value="<?=Tpl::out($model->search)?>" />
               <button type="submit" class="btn btn-primary">Search</button>
             </div>
+            <div class="form-group pull-right">
+              <select name="feature" class="form-control">
+                <option value="" disabled selected>Feature</option>
+                <?php foreach ($model->features as $feature): ?>
+                <option value="<?=Tpl::out($feature['featureName']);?>"><?=Tpl::out($feature['featureLabel']);?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            
           </form>
         </div>
       </div>
@@ -32,7 +41,7 @@ use Destiny\Common\Utils\Date;
 
       <div class="content content-dark clearfix">
 
-        <div id="userlist" data-size="<?=Tpl::out($model->size)?>" data-page="<?=Tpl::out($model->page)?>" class="stream stream-grid" style="width:100%;">
+        <div id="userlist" data-size="<?=Tpl::out($model->size)?>" data-page="<?=Tpl::out($model->page)?>" data-feature="<?=Tpl::out($model->feature)?>" class="stream stream-grid" style="width:100%;">
 
           <div class="ds-block clearfix">
 
