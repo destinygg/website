@@ -44,16 +44,6 @@ body.embed {
   0% { -webkit-transform: rotate(0deg); }
   100%{ -webkit-transform: rotate(-360deg); }
 }
-@-webkit-keyframes whitetxtglow {
-  0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
-  50% { text-shadow: 0 0 4px $color-accent; color: white; }
-  100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
-}
-@-moz-keyframes whitetxtglow {
-  0% { text-shadow: 0 0 0 rgba(0, 136, 204, 0); }
-  50% { text-shadow: 0 0 4px $color-accent; color: white; }
-  100%{ text-shadow: 0 0 4px rgba(0,136,204,0); }
-}
 
 .form-control {
   background-color: #1B1B1B;

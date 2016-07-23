@@ -564,7 +564,7 @@ chat.prototype.handleCommand = function(str) {
 			
 		case "maxlines":
 			if (!parts[1]) {
-				this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
+				this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.getPreference('maxlines')));
 				return;
 			}
 			
@@ -574,20 +574,19 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			
-			this.gui.saveChatOption('maxlines', newmaxlines);
-			this.gui.maxlines = newmaxlines;
-			this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.maxlines));
+			this.gui.setPreference('maxlines', newmaxlines);
+			this.gui.push(new ChatInfoMessage("Current number of lines shown: " + this.gui.getPreference('maxlines')));
 			break;
 			
 		case "unhighlight":
 		case "highlight":
+			var highlightnicks = this.gui.getPreference('highlightnicks');
 			if (!parts[1]) {
 				nicks = [];
-				$.each(this.gui.highlightnicks, function(k, v) {
+				$.each(highlightnicks, function(k) {
 					nicks.push(k);
 				});
-				
-				this.gui.push(new ChatInfoMessage("Currenty highlighted users: " + nicks.join(', ')));
+				this.gui.push(new ChatInfoMessage("Currently highlighted users: " + nicks.join(', ')));
 				return;
 			}
 			
@@ -598,19 +597,19 @@ chat.prototype.handleCommand = function(str) {
 			
 			nick = parts[1].toLowerCase();
 			if (command == "unhighlight") {
-				delete(this.gui.highlightnicks[nick]);
+				delete(highlightnicks[nick]);
 				this.gui.push(new ChatInfoMessage("No longer highlighting: " + nick));
 			} else {
-				this.gui.highlightnicks[nick] = true;
+				highlightnicks[nick] = true;
 				this.gui.push(new ChatInfoMessage("Now highlighting: " + nick));
 			}
 			
-			this.gui.saveChatOption('highlightnicks', this.gui.highlightnicks);
+			this.gui.setPreference('highlightnicks', highlightnicks);
 			break;
 			
 		case "timestampformat":
 			if (!parts[1]) {
-				this.gui.push(new ChatInfoMessage("Current format: " + this.gui.timestampformat + " (the default is 'HH:mm', for more info: http://momentjs.com/docs/#/displaying/format/)"));
+				this.gui.push(new ChatInfoMessage("Current format: " + this.gui.getPreference('timestampformat') + " (the default is 'HH:mm', for more info: http://momentjs.com/docs/#/displaying/format/)"));
 				return;
 			}
 			
@@ -620,9 +619,8 @@ chat.prototype.handleCommand = function(str) {
 				return;
 			}
 			
-			this.gui.timestampformat = format;
-			this.gui.saveChatOption('timestampformat', format);
-			this.gui.push(new ChatInfoMessage("New format: " + this.gui.timestampformat));
+			this.gui.setPreference('timestampformat', format);
+			this.gui.push(new ChatInfoMessage("New format: " + this.gui.getPreference('timestampformat')));
 			break;
 			
 		case "broadcast":

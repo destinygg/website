@@ -29,6 +29,8 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'static/vendor/libs.min.js': [
+                        'static/vendor/polyfill/notification.js',
+                        'static/vendor/polyfill/localstorage.js',
                         'static/vendor/overthrow/overthrow.min.js',
                         'static/vendor/jquery/jquery-1.12.3.min.js',
                         'static/vendor/jquery.cookie/jquery.cookie.js',

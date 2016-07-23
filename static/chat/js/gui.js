@@ -15,9 +15,9 @@
     };
     $.extend(ChatGui.prototype, {
 
-        theme              : 'dark',
         loaded             : false,
-        maxlines           : 500,
+        maxlines           : 500, // legacy - set via php
+
         lineCount          : 0,
         scrollPlugin       : null,
         autoCompletePlugin : null,
@@ -28,25 +28,55 @@
         userMessages       : [],
         lastFocusedUser    : "",
 
-        backlog            : backlog,
+        backlog            : backlog || [],
         backlogLoading     : false,
 
         highlightregex     : {},
-        highlightnicks     : {},
-
-        allowNotifications : true,
-
         lastMessage        : null,
 
         menus              : [],
         menuOpenCount      : 0,
 
-        timestampformat    : null,
         emoticons          : [],
         twitchemotes       : [],
         formatters         : [],
 
         unreadMessageCount   : parseInt(localStorage['unreadMessageCount'] || 0, 10),
+
+        preferences : {
+            'showtime' : {
+                'value'  : false,
+                'default': false
+            },
+            'hideflairicons' : {
+                'value'  : false,
+                'default': false
+            },
+            'timestampformat' : {
+                'value'  : 'HH:mm',
+                'default': 'HH:mm'
+            },
+            'maxlines' : {
+                'value'  : 500,
+                'default': 500
+            },
+            'allowNotifications' : {
+                'value'  : false,
+                'default': false
+            },
+            'highlight': {
+                'value'  : false,
+                'default': false
+            },
+            'customhighlight': {
+                'value'  : [],
+                'default': []
+            },
+            'highlightnicks': {
+                'value'  : {},
+                'default': {}
+            }
+        },
 
         trigger: function(name, data){
             $(this).trigger(name, data);
@@ -78,11 +108,19 @@
             this.currenthistoryline = -1;
             this.storedinputline = null;
 
-            if (window.localStorage)
-                this.setupInputHistory();
+            // Legacy
+            this.preferences.maxlines.value = this.maxlines;
+            this.preferences.maxlines.default = this.maxlines;
+
+            this.loadPreferences();
+            this.applyPreferencesCss();
+            this.loadHighlighters();
+            this.setupInputHistory();
 
             // Auto complete
             this.autoCompletePlugin = new ChatAutoComplete(this.input, this.emoticons.concat(this.twitchemotes));
+            
+            
 
             // Chat settings
             this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
@@ -90,16 +128,16 @@
             this.chatsettings.list = this.chatsettings.find('ul:first').eq(0);
             this.chatsettings.visible = false;
 
-            this.setupNotifications();
-            this.loadSettings();
-            this.loadHighlighters();
-
             this.chatsettings.btn.on('click', function(e){
                 e.preventDefault();
-                if(chat.chatsettings.visible){
+                if(chat.chatsettings.visible)
                     return cMenu.prototype.hideMenu.call(chat.chatsettings, chat);
-                }
                 cMenu.closeMenus(chat);
+                chat.chatsettings.find('input[name=customhighlight]').val( chat.getPreference('customhighlight').join(', ') );
+                chat.chatsettings.find('input[type="checkbox"]').each(function() {
+                    var name  = $(this).attr('name');
+                    $(this).attr('checked', chat.getPreference(name));
+                });
                 return cMenu.prototype.showMenu.call(chat.chatsettings, chat);
             });
             this.chatsettings.on('keypress blur', 'input[name=customhighlight]', function(e) {
@@ -114,7 +152,7 @@
                     if (!data[i])
                         data.splice(i, 1)
                 }
-                chat.saveChatOption('customhighlight', data );
+                chat.setPreference('customhighlight', data );
                 chat.loadHighlighters();
             });
             this.chatsettings.on('change', 'input[type="checkbox"]', function(){
@@ -123,44 +161,32 @@
                 switch(name){
 
                     case 'showtime':
-                        chat.saveChatOption(name, checked);
-                        chat.ui.toggleClass('chat-time', checked);
+                        chat.setPreference(name, checked);
                         chat.scrollPlugin.updateAndScroll(chat.scrollPlugin.isScrolledToBottom());
                         break;
 
                     case 'hideflairicons':
-                        chat.saveChatOption(name, checked);
-                        chat.ui.toggleClass('chat-icons', (!checked));
+                        chat.setPreference(name, checked);
                         chat.scrollPlugin.updateAndScroll(chat.scrollPlugin.isScrolledToBottom());
                         break;
 
                     case 'highlight':
-                        chat.saveChatOption(name, checked);
+                        chat.setPreference(name, checked);
                         break;
 
                     case 'allowNotifications':
-                        if (!notifications)
-                            break;
-
-                        var permission;
-                        if (notifications.checkPermission)
-                            permission = notifications.checkPermission();
-                        else if (notifications.permission) {
-                            switch(notifications.permission) {
-                                case "default": permission = 1; break;
-                                case "denied":  permission = 2; break;
-                                case "granted": permission = 3; break;
-                            }
+                        if(checked){
+                            chat.notificationPermission().then(
+                                function(){
+                                    chat.setPreference(name, true);
+                                },
+                                function(){
+                                    chat.setPreference(name, false);
+                                }
+                            );
+                        } else {
+                            chat.setPreference(name, false);
                         }
-
-                        if (permission == 1) // not yet allowed
-                            notifications.requestPermission(function(){});
-                        else if (permission == 2) {
-                            chat.allowNotifications = false;
-                            break;
-                        }
-                        chat.allowNotifications = checked;
-                        chat.saveChatOption(name, checked);
                         break;
                 }
             });
@@ -450,37 +476,6 @@
             }
         },
 
-        loadSettings: function() {
-            var self     = this,
-                defaults = {
-                    showtime           : false,
-                    hideflairicons     : false,
-                    highlight          : true,
-                    allowNotifications : false,
-                    maxlines           : this.maxlines,
-                    timestampformat    : 'HH:mm'
-            };
-
-            var customhighlight = self.getChatOption('customhighlight', []);
-            this.timestampformat = self.getChatOption('timestampformat', defaults['timestampformat']);
-            this.maxlines = self.getChatOption('maxlines', defaults['maxlines']);
-            this.chatsettings.find('input[name=customhighlight]').val( customhighlight.join(', ') );
-            this.chatsettings.find('input[type="checkbox"]').each(function() {
-                var name  = $(this).attr('name'),
-                    value = self.getChatOption(name, defaults[name]);
-
-                $(this).attr('checked', value);
-                switch(name){
-                    case 'showtime':
-                        self.ui.toggleClass('chat-time', value);
-                        break;
-                    case 'hideflairicons':
-                        self.ui.toggleClass('chat-icons', (!value));
-                        break;
-                }
-            });
-        },
-
         loadBacklog: function() {
             this.backlogLoading = true;
             if(this.backlog.length == 0) {
@@ -524,12 +519,13 @@
         // Add a message
         push: function(message, state){
             // Get the scroll position before adding the new line / removing old lines
-            var wasScrolledBottom = this.scrollPlugin.isScrolledToBottom();
-            var lines = this.lines.children();
+            var wasScrolledBottom = this.scrollPlugin.isScrolledToBottom(),
+                lines = this.lines.children(),
+                maxlines = this.getPreference('maxlines');
             // Rid excess lines if the user is scrolled to the bottom
             var lineCount = lines.length;
-            if(wasScrolledBottom && lineCount >= this.maxlines){
-                var unwantedlines = lines.slice(0, lineCount - this.maxlines);
+            if(wasScrolledBottom && lineCount >= maxlines){
+                var unwantedlines = lines.slice(0, lineCount - maxlines);
                 for (var i = unwantedlines.length - 1; i >= 0; i--) {
                     $(unwantedlines[i]).remove();
                 }
@@ -545,8 +541,7 @@
             // Reset and or scroll bottom
             this.scrollPlugin.updateAndScroll(wasScrolledBottom);
             // Handle highlight / and if highlighted, notification
-            if(this.handleHighlight(message) && this.allowNotifications)
-                this.showNotification(message);
+            this.handleHighlight(message);
             return message;
         },
 
@@ -597,12 +592,12 @@
                     return;
                 }
 
-                var num  = e.keyCode == 38? -1: 1; // if uparrow we subtract otherwise add
+                var num  = e.keyCode == 38? -1: 1; // if up arrow we subtract otherwise add
 
-                // if uparrow and we are not currently showing any lines from the history
+                // if up arrow and we are not currently showing any lines from the history
                 if (chat.currenthistoryline < 0 && e.keyCode == 38) {
                     // set the current line to the end if the history, do not subtract 1
-                    // thats done later
+                    // that's done later
                     chat.currenthistoryline = chat.getInputHistory().length;
                     // store the typed in message so that we can go back to it
                     chat.storedinputline = chat.input.val();
@@ -656,125 +651,123 @@
         },
 
         resolveMessage: function(data){
-            for(var i in this.userMessages){
+            for(var i=0; i<this.userMessages.length; ++i){
                 if(this.userMessages[i].message == data.data){
-
-                    var message = this.userMessages[i];
+                    var message = this.userMessages.splice(i, 1)[0];
                     message.status();
-
-                    this.userMessages[i] = null;
-                    delete(this.userMessages[i]);
-
                     return message;
                 }
             }
             return null;
         },
 
-        setupNotifications: function() {
-            window.notifications = window.webkitNotifications || window.mozNotifications || window.oNotifications || window.msNotifications || window.notifications || window.Notification;
-            if(!notifications)
-                this.chatsettings.find('input[name=allowNotifications]').closest('label').text('Notifications are not supported by your browser');
-
-            if(!notifications || !this.engine.user.username || !this.getChatOption('allowNotifications', false))
-                this.allowNotifications = false;
+        notificationPermission: function(){
+            var deferred =  $.Deferred();
+            switch(Notification.permission) {
+                case "default":
+                    Notification.requestPermission(function(permission){
+                        switch(permission) {
+                            case "granted":
+                                deferred.resolve(permission);
+                                break;
+                            default:
+                                deferred.reject(permission);
+                        }
+                    });
+                    break;
+                case "granted":
+                    deferred.resolve(Notification.permission);
+                    break;
+                case "denied":
+                default:
+                    deferred.reject(Notification.permission);
+                    break;
+            }
+            return deferred.promise();
         },
 
         showNotification: function(message) {
-            if (!this.allowNotifications)
-                return;
-
-            var msg   = message.message,
-                title = (message.user) ? ''+message.user.username+' said ...' : 'Highlight ...',
-                notif = null,
-                self  = this;
-
-            if (msg.length >= 30)
-                msg = msg.substring(0, 30) + '...';
-
-            // only ever show a single notification
-            if (this.currentnotification)
-                this.currentnotification.close();
-
-            if (notifications.createNotification){
-                // Try more widely supported webkit API first
-                notif = notifications.createNotification(destiny.cdn+'/chat/img/notifyicon.png', title, msg);
-                this.currentnotification = notif;
-                notif.show();
-
-            } else {
-                // Fallback to standard HTML5 notifications if needed
-                notif =  new Notifications(title, {
-                    icon: destiny.cdn+'/chat/img/notifyicon.png',
-                    body: msg,
-                    tag : message.timestamp.unix(),
-                    dir : "auto"
+            var self = this;
+            self.notificationPermission().done(function(){
+                var n = new Notification( message.user.username+' said ...', {
+                    body : message.message,
+                    tag  : message.timestamp.unix(),
+                    icon : destiny.cdn+'/chat/img/notifyicon.png',
+                    dir  : "auto"
                 });
-                this.currentnotification = notif;
-            }
-
-            // If a notification was created and shown, close it after 5 seconds
-            setTimeout(function() {
-                notif.close();
-                // only null out our own notification so that we can still cancel
-                // the previous notification
-                if (notif === self.currentnotification)
-                    self.currentnotification = null;
-
-                self = null;
-            }, 5000);
-
+                n.onclick(function(){
+                    // todo open chat at specific line
+                });
+            });
         },
 
         loadHighlighters: function() {
             if (this.engine.user && this.engine.user.username)
                 this.highlightregex.user = new RegExp("\\b@?(?:"+this.engine.user.username+")\\b", "i");
 
-            this.highlightnicks = this.getChatOption('highlightnicks', {});
-
-            var customhighlights = this.getChatOption('customhighlight', []);
-            if (customhighlights.length > 0){
-                for (var i = customhighlights.length - 1; i >= 0; i--)
-                    customhighlights[i] = customhighlights[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-                this.highlightregex.custom = new RegExp("\\b(?:"+customhighlights.join("|")+")\\b", "i");
+            var highlights = this.getPreference('customhighlight');
+            if (highlights.length > 0){
+                for (var i = highlights.length - 1; i >= 0; i--)
+                    highlights[i] = highlights[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+                this.highlightregex.custom = new RegExp("\\b(?:"+highlights.join("|")+")\\b", "i");
             }
         },
 
         handleHighlight: function(message){
-            if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getChatOption('highlight', true))
+            if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getPreference('highlight'))
                 return false;
 
-            var u = message.user.username.toLowerCase();
-            if (this.highlightnicks[u]){
-                message.ui.addClass('highlight');
-                return true;
-            }
+            if($.inArray(destiny.UserFeatures.BOT, message.user.features))
+                return false;
 
-            if ((this.highlightregex.user && this.highlightregex.user.test(message.message)) || (this.highlightregex.custom && this.highlightregex.custom.test(message.message))) {
+            var nicks = this.getPreference('highlightnicks');
+            if ((nicks[message.user.username.toLowerCase()] || nicks[message.user.username]) ||
+                (this.highlightregex.user && this.highlightregex.user.test(message.message)) ||
+                (this.highlightregex.custom && this.highlightregex.custom.test(message.message))){
                 message.ui.addClass('highlight');
-                return true;
-            }
 
+                if(this.getPreference('allowNotifications'))
+                    this.showNotification(message);
+            }
             return false;
         },
 
-        getChatOptions: function() {
+        setPreference: function(key, value){
+            this.preferences[key].value = value;
+            this.applyPreferencesCss();
+            this.savePreferences();
+        },
+
+        getPreference: function(key){
+            return this.preferences[key].value || null;
+        },
+
+        loadPreferences: function() {
             try {
-                return JSON.parse(localStorage['chatoptions'] || '{}');
-            } catch (e) {
-                return {};
+                var preferences = JSON.parse(localStorage['chatoptions'] || '{}');
+                for(var key in preferences) {
+                    if (preferences.hasOwnProperty(key) && this.preferences.hasOwnProperty(key))
+                        this.preferences[key].value = preferences[key];
+                }
+            } catch (ignored) {}
+        },
+
+        savePreferences: function() {
+            try {
+                var preferences = {};
+                for(var key in this.preferences) {
+                    if (this.preferences.hasOwnProperty(key))
+                        preferences[key] = this.preferences[key].value;
+                }
+                localStorage['chatoptions'] = JSON.stringify(preferences);
+            } catch (ignored) {}
+        },
+
+        applyPreferencesCss: function() {
+            for(var key in this.preferences) {
+                if (this.preferences.hasOwnProperty(key) && typeof this.preferences[key].value === 'boolean')
+                    this.ui.toggleClass('pref-' + key, this.preferences[key].value);
             }
-        },
-
-        getChatOption: function(option, defaultvalue) {
-            var options = this.getChatOptions();
-            return (options[option] == undefined)? defaultvalue: options[option];
-        },
-
-        saveChatOption: function(option, value) {
-            var options     = this.getChatOptions();
-            options[option] = value;
-            localStorage['chatoptions'] = JSON.stringify(options);
         },
 
         removeUserMessages: function(username) {
@@ -855,7 +848,7 @@
         this.timestamp = moment.utc(timestamp).local();
         this.state = null;
         this.type = 'chat';
-        this.timestampformat = destiny.chat.gui.timestampformat;
+        this.timestampformat = destiny.chat.gui.getPreference('timestampformat');
         return this;
     };
     ChatMessage.prototype.status = function(state){

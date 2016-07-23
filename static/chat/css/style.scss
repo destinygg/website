@@ -129,7 +129,7 @@
   margin:0 60px 0 0;
 }
 
-#chat-input-control {
+#chat-input-control-wrap {
   padding:3px 35px 0 5px;
   height: 28px;
   margin: 1px;
@@ -165,7 +165,7 @@
     color: $color-chat-text1;
   }
 }
-.chat.authenticated #chat-input-control {
+.chat.authenticated #chat-input-control-wrap {
   display: block;
 }
 
@@ -256,7 +256,7 @@
 }
 
 /* Fonts / font-size */
-#chat-input-control input,
+#chat-input-control-wrap input,
 #chat-lines {
   @extend .chat-font;
   font-size: 13px;
@@ -300,14 +300,12 @@
   text-decoration: underline;
 }
 
-.chat #chat-lines time, 
-.chat .user-msg i {
-  display: none !important; 
+.chat.pref-hideflairicons #chat-lines i[class*='icon'],
+.chat #chat-lines time {
+  display: none !important;
 }
-.chat.chat-time #chat-lines time,
-.chat.chat-icons .user-msg i,
-#chat-lines i[class*='icon-subscriber'] {
-  display: inline-block !important; 
+.chat.pref-showtime #chat-lines time {
+  display: inline !important;
 }
 
 /* Theme - Dark */
@@ -315,9 +313,10 @@
   background: $color-chat-bg;
   border-radius: 0;
 }
-#chat-input-wrap {
-  border: none;
+.chat #chat-lines i[class*='icon'] {
+   display: inline-block;
 }
+
 .chat #chat-lines time {
   color: $color-chat-disabled;
 }
@@ -341,14 +340,37 @@
 .chat #chat-lines > .broadcast-msg {
   background-color: lighten( $color-chat-bg, 5 );
 }
-#chat-input-control {
+
+#chat-input-wrap {
+  border: none;
+}
+
+#chat-input-control-wrap {
   background: #090909;
   border: none;
 }
-#chat-input-control input {
+
+#chat-input-control {
   color: #9e9e9e;
   background: #090909;
   outline: none;
+}
+
+/**
+ * Need to keep these rules separate
+ * Browsers will kill the whole line of css if one rule is invalid
+ **/
+#chat-input-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: $color-chat-text4;
+}
+#chat-input-control::-moz-placeholder { /* Firefox 19+ */
+  color: $color-chat-text4;
+}
+#chat-input-control:-ms-input-placeholder { /* IE 10+ */
+  color: $color-chat-text4;
+}
+#chat-input-control:-moz-placeholder { /* Firefox 18- */
+  color: $color-chat-text4;
 }
 
 .chat #chat-lines > .private-message {
@@ -371,23 +393,6 @@
 }
 .chat #chat-lines > .private-message .message-actions {
   font-size: 90%;
-}
-
-/**
- * Need to keep these rules separate
- * Browsers will kill the whole line of css if one rule is invalid
- **/
-.chat ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-  color: $color-chat-text4;
-}
-.chat ::-moz-placeholder { /* Firefox 19+ */
-  color: $color-chat-text4;
-}
-.chat :-ms-input-placeholder { /* IE 10+ */
-  color: $color-chat-text4;
-}
-.chat :-moz-placeholder { /* Firefox 18- */
-  color: $color-chat-text4;
 }
 
 /**
@@ -422,14 +427,10 @@
 }
 
 .chat-menu {
-  font-size: 12px;
-}
-
-.chat-menu {
   position: absolute;
   right: 20px;
   bottom: -5px;
-  width: 240px;
+  width: 260px;
   z-index: 220;
 }
 .chat-menu.active {
@@ -455,13 +456,8 @@
   top: -31px;
   left:0;
 }
-.chat-menu li,
-.chat-menu label {
-  font-size:12px;
-}
 .chat-menu label {
   font-weight: normal;
-  margin: 0 0 5px 0;
 }
 .chat-menu label:hover {
   color: white;

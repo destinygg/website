@@ -1,6 +1,7 @@
 <?php
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\User\UserRole;
+use Destiny\Common\User\UserFeature;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
 ?>
@@ -25,13 +26,13 @@ use Destiny\Common\Config;
         </div>
     </div>
     <!-- end chat output -->
-    
+
     <!-- chat input -->
     <form id="chat-input">
         <div class="clearfix">
             <div id="chat-input-wrap">
-                <div id="chat-input-control">
-                    <input type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
+                <div id="chat-input-control-wrap">
+                    <input id="chat-input-control" type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
                     <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
                 </div>
                 <span id="chat-login-msg">
@@ -54,26 +55,25 @@ use Destiny\Common\Config;
         </div>
     </form>
     <!-- end chat input -->
-    
+
     <!-- top frame -->
-    <div id="chat-top-frame">
-    </div>
+    <div id="chat-top-frame"></div>
     <!-- end top frame -->
-    
+
     <!-- bot frame -->
     <div id="chat-bottom-frame">
-    
+
         <!-- user list -->
         <div id="chat-user-list" class="chat-menu">
             <div class="list-wrap clearfix">
-            
+
               <div class="toolbar">
                 <h5>
                   Users (~<span></span>)
                   <button type="button" class="close" aria-hidden="true">&times;</button>
                 </h5>
               </div>
-            
+
               <div id="chat-groups" class="scrollable nano">
                 <div class="content nano-content">
                   <h6>Admins</h6>
@@ -95,70 +95,70 @@ use Destiny\Common\Config;
                   <ul class="unstyled bots"></ul>
                 </div>
               </div>
-            
+
             </div>
         </div>
         <!-- end user list -->
-  
+
         <!-- settings -->
         <div id="chat-settings" class="chat-menu">
             <div class="list-wrap clearfix">
-            
+
               <div class="toolbar">
                 <h5>
                   <span>Settings</span>
                   <button type="button" class="close" aria-hidden="true">&times;</button>
                 </h5>
               </div>
-              
+
               <div class="tools">
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Show all user flair icons">
+                <div class="checkbox">
+                  <label title="Show all user flair icons">
                     <input name="hideflairicons" type="checkbox" /> Hide flair icons
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Show the timestamps next to the messages">
+                <div class="checkbox">
+                  <label title="Show the timestamps next to the messages">
                     <input name="showtime" type="checkbox" /> Show time for messages
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Highlight text that you are mentioned in">
+                <div class="checkbox">
+                  <label title="Highlight text that you are mentioned in">
                     <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="text" title="Your custom list of words that will make messages highlight" style="width: 100%;">
+                <div class="form-group">
+                  <label title="Your custom list of words that will make messages highlight" style="width: 100%;">
                     Custom highlight words.
                     <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma (,)" />
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Show desktop notifications on hightlight">
+                <div class="checkbox">
+                  <label title="Show desktop notifications on hightlight">
                     <input name="allowNotifications" type="checkbox" /> Desktop notification on highlight
                   </label>
                 </div>
                 <div class="form-group checkbox">
-                  <hr style="margin:5px 0;">
-                  See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information
+                  <hr />
+                  <small>See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information</small>
                 </div>
               </div>
-              
+
             </div>
         </div>
         <!-- end settings -->
-    
+
         <!-- emote list -->
         <div id="chat-emote-list" class="chat-menu">
             <div class="list-wrap clearfix">
-            
+
               <div class="toolbar">
                 <h5>
                   Emotes
                   <button type="button" class="close" aria-hidden="true">&times;</button>
                 </h5>
               </div>
-            
+
               <div id="chat-emotes" class="scrollable nano">
                 <div class="content nano-content">
                   <div class="emote-group" id="destiny-emotes"></div>
@@ -169,7 +169,7 @@ use Destiny\Common\Config;
                   <hr/>
                 </div>
               </div>
-            
+
             </div>
         </div>
         <!-- emote list -->
@@ -192,11 +192,11 @@ use Destiny\Common\Config;
               </div>
             </div>
         </div>
-    
+
     </div>
     <!-- end bot frame -->
-    
-  
+
+
 </div>
 
 <?php include Tpl::file('seg/commonbottom.php') ?>
