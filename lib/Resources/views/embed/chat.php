@@ -164,7 +164,7 @@ use Destiny\Common\Config;
                   <div class="emote-group" id="destiny-emotes"></div>
                   <hr/>
                   <h6>Twitch Emotes</h6>
-                  <div id="emote-subscribe-note">Subscribe on Twitch to unlock Emotes</div>
+                  <div id="emote-subscribe-note">Twitch subscribers only</div>
                   <div class="emote-group" id="twitch-emotes"></div>
                   <hr/>
                 </div>

@@ -25,11 +25,8 @@ class HomeController {
      * @return string
      */
     public function home(ViewModel $model) {
-        if (Session::hasRole(UserRole::USER)) {
-            $userid = $userId = Session::getCredentials ()->getUserId ();
-            $privateMessageService = PrivateMessageService::instance();
-            $model->unreadMessageCount = $privateMessageService->getUnreadMessageCount($userid);
-        }
+        if (Session::hasRole(UserRole::USER))
+            $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount(Session::getCredentials()->getUserId());
 
         $cacheDriver = Application::instance ()->getCacheDriver ();
         $model->articles = $cacheDriver->fetch ( 'recentblog' );
@@ -71,6 +68,8 @@ class HomeController {
      */
     public function bigscreen(ViewModel $model) {
         $model->title = 'Bigscreen';
+        if (Session::hasRole(UserRole::USER))
+            $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount(Session::getCredentials()->getUserId());
         return 'bigscreen';
     }
 

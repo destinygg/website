@@ -3,7 +3,7 @@ use Destiny\Common\Config;
 ?>
 <div id="footer">
     <div id="footer-inner" class="container">
-        <div id="footer-copyright" class="col-sm-5">
+        <div id="footer-copyright" class="col-sm-3">
             <h3>Destiny.gg <small><sup>&copy;</sup></small></h3>
             <p>Professional streamer.</p>
             <p>
@@ -11,7 +11,7 @@ use Destiny\Common\Config;
                 <br /><a href="mailto:steven.bonnell.ii@gmail.com" title="Email Destiny">steven.bonnell.ii@gmail.com</a>
             </p>
         </div>
-        <div class="col-sm-7">
+        <div class="col-sm-9">
             <div id="footer-links" class="row">
                 <div id="footer-badges" class="col-sm-7">
                     <h3>Community</h3>

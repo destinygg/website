@@ -5,7 +5,6 @@ use Destiny\Common\Service;
 use Destiny\Common\Config;
 use Destiny\Common\MimeType;
 use Destiny\Common\CurlBrowser;
-use Destiny\Common\Utils\Date;
 
 /**
  * @method static TwitchApiService instance()

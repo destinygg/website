@@ -18,9 +18,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Api\ApiAuthenticationService;
-use Destiny\Common\Response;
-use Destiny\Common\MimeType;
-use Destiny\Common\Utils\Http;
+use Destiny\Messages\PrivateMessageService;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -70,6 +68,7 @@ class ProfileController {
       $subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions( $userId );
       $gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus ( $userId, SubscriptionStatus::ACTIVE );
 
+      $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount($userId);
       $model->user = $userService->getUserById ( $userId );
       $model->gifts = $gifts;
       $model->subscriptions = $subscriptions;
