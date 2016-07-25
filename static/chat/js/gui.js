@@ -18,7 +18,6 @@
         loaded             : false,
         maxlines           : 500, // legacy - set via php
 
-        lineCount          : 0,
         scrollPlugin       : null,
         autoCompletePlugin : null,
         ui                 : null,
@@ -28,20 +27,22 @@
         userMessages       : [],
         lastFocusedUser    : "",
 
+        inputhistory       : [],
+        currenthistoryline : -1,
+        storedinputline    : null,
+
         backlog            : backlog || [],
         backlogLoading     : false,
 
         highlightregex     : {},
         lastMessage        : null,
 
-        menus              : [],
-        menuOpenCount      : 0,
-
         emoticons          : [],
         twitchemotes       : [],
         formatters         : [],
 
-        unreadMessageCount   : parseInt(localStorage['unreadMessageCount'] || 0, 10),
+        pmcountnum : 0,
+        pmcount: null,
 
         preferences : {
             'showtime' : {
@@ -92,11 +93,11 @@
             var chat = this;
 
             // local elements stored in vars to not have to get the elements via query each time
-            this.lines = this.ui.find('#chat-lines:first').eq(0);
-            this.output = this.ui.find('#chat-output:first').eq(0);
+            this.pmcount   = this.ui.find('#chat-pm-count:first').eq(0);
+            this.lines     = this.ui.find('#chat-lines:first').eq(0);
+            this.output    = this.ui.find('#chat-output:first').eq(0);
             this.inputwrap = this.ui.find('#chat-input:first').eq(0);
-            this.input = this.inputwrap.find('.input:first').eq(0);
-            this.inputwrap.removeClass('hidden');
+            this.input     = this.inputwrap.find('.input:first').eq(0);
 
             // Message formatters
             this.formatters.push(new destiny.fn.UrlFormatter(this));
@@ -104,43 +105,39 @@
             this.formatters.push(new destiny.fn.MentionedUserFormatter(this));
             this.formatters.push(new destiny.fn.GreenTextFormatter(this));
 
-            // Input history
-            this.currenthistoryline = -1;
-            this.storedinputline = null;
-
             // Legacy
             this.preferences.maxlines.value = this.maxlines;
             this.preferences.maxlines.default = this.maxlines;
 
+            // Scrollbar plugin
+            this.scrollPlugin = this.output.nanoScroller({
+                disableResize: true,
+                preventPageScrolling: true,
+                sliderMinHeight: 40,
+                tabIndex: 1
+            })[0].nanoscroller;
+            this.scrollPlugin.isScrolledToBottom = function(){
+                return (this.contentScrollTop >= this.maxScrollTop - 30);
+            };
+            this.scrollPlugin.updateAndScroll = function(scrollBottom){
+                if(!this.isActive) return;
+                this.reset();
+                if(scrollBottom) this.scrollBottom(0);
+            };
+
+            // Local stored
             this.loadPreferences();
-            this.applyPreferencesCss();
             this.loadHighlighters();
-            this.setupInputHistory();
+            this.loadInputHistory();
 
             // Auto complete
             this.autoCompletePlugin = new ChatAutoComplete(this.input, this.emoticons.concat(this.twitchemotes));
-            
-            
 
             // Chat settings
-            this.chatsettings = this.ui.find('#chat-settings:first').eq(0);
-            this.chatsettings.btn = this.ui.find('#chat-settings-btn:first').eq(0);
-            this.chatsettings.list = this.chatsettings.find('ul:first').eq(0);
-            this.chatsettings.visible = false;
+            var chatSettingsUi = this.ui.find('#chat-settings:first').eq(0),
+                chatSettingsMenu = new ChatMenu(chatSettingsUi, chat);
 
-            this.chatsettings.btn.on('click', function(e){
-                e.preventDefault();
-                if(chat.chatsettings.visible)
-                    return cMenu.prototype.hideMenu.call(chat.chatsettings, chat);
-                cMenu.closeMenus(chat);
-                chat.chatsettings.find('input[name=customhighlight]').val( chat.getPreference('customhighlight').join(', ') );
-                chat.chatsettings.find('input[type="checkbox"]').each(function() {
-                    var name  = $(this).attr('name');
-                    $(this).attr('checked', chat.getPreference(name));
-                });
-                return cMenu.prototype.showMenu.call(chat.chatsettings, chat);
-            });
-            this.chatsettings.on('keypress blur', 'input[name=customhighlight]', function(e) {
+            chatSettingsUi.on('keypress blur', 'input[name=customhighlight]', function(e) {
                 var keycode = e.keyCode ? e.keyCode : e.which;
                 if (keycode && keycode != 13) // not enter
                     return;
@@ -155,7 +152,7 @@
                 chat.setPreference('customhighlight', data );
                 chat.loadHighlighters();
             });
-            this.chatsettings.on('change', 'input[type="checkbox"]', function(){
+            chatSettingsUi.on('change', 'input[type="checkbox"]', function(){
                 var name    = $(this).attr('name'),
                     checked = $(this).is(':checked');
                 switch(name){
@@ -190,115 +187,88 @@
                         break;
                 }
             });
-
-
-            this.chatemotelist = this.ui.find('#chat-emote-list:first').eq(0);
-            this.chatemotelist.btn = this.ui.find('#emoticon-btn').eq(0);
-            this.chatemotelist.scrollable = this.chatemotelist.find('.scrollable:first');
-            this.chatemotelist.content = this.chatemotelist.find('.content:first');
-            this.chatemotelist.visible = false;
-            this.chatemotelist.populated = false;
-            this.chatemotelist.populateEmoteList = function(){
-
-                if(!chat.chatemotelist.populated){
-                    var demotes = chat.chatemotelist.content.find('#destiny-emotes');
-                    var temotes = chat.chatemotelist.content.find('#twitch-emotes');
-
-                    if(chat.engine.user && $.inArray(destiny.UserFeatures.SUBSCRIBERT0, chat.engine.user.features) >= 0){
-                        chat.chatemotelist.content.find('#emote-subscribe-note').hide();
-                    } else {
-                        temotes.addClass('disabled');
-                    }
-
-                    demotes.empty();
-                    for(var i in chat.emoticons){
-                        var e = chat.emoticons[i];
-                        demotes.append('<div class="emote"><span title="'+e+'" class="chat-emote chat-emote-'+e+'">'+e+'</span></div>');
-                    }
-                    temotes.empty();
-                    for(var i in chat.twitchemotes){
-                        var e = chat.twitchemotes[i];
-                        temotes.append('<div class="emote"><span title="'+e+'" class="chat-emote chat-emote-'+e+'">'+e+'</span></div>');
-                    }
-                    chat.chatemotelist.populated = true;
-                }
-            };
-            this.chatemotelist.btn.on('click', function(e){
-                var isVisible = chat.chatemotelist.visible;
-                e.preventDefault();
-                cMenu.closeMenus(chat);
-                if(isVisible)
-                    return;
-                cMenu.closeMenus(chat);
-                chat.chatemotelist.populateEmoteList();
-                return cMenu.prototype.showMenu.call(chat.chatemotelist, chat);
-            });
-            this.chatemotelist.content.on('click', '.emote-group:not(.disabled) .emote', function(e){
-                var emote = $(this).find('.chat-emote');
-                var value = chat.input.val().trim();
-                chat.input.val( value + ((value == "") ? "":" ")  +  $(emote).text() + " ");
-                chat.input.focus();
-                e.preventDefault();
+            chatSettingsMenu.on('show', function(){
+                chatSettingsUi.find('input[name=customhighlight]').val( chat.getPreference('customhighlight').join(', ') );
+                chatSettingsUi.find('input[type="checkbox"]').each(function() {
+                    var name  = $(this).attr('name');
+                    $(this).attr('checked', chat.getPreference(name));
+                });
             });
 
-            this.privatemessagelist = this.ui.find('#chat-private-messages:first').eq(0);
-            this.privatemessagelist.btn = this.ui.find('#chat-users-btn:first').eq(0);
-            this.privatemessagelist.closelink = this.ui.find('#close-privmsg').eq(0);
-            this.privatemessagelist.replylink = this.ui.find('#reply-privmsg').eq(0);
-            this.privatemessagelist.userlistlink = this.ui.find('.user-list-link').eq(0);
-            this.privatemessagelist.userlistlink.on('click', function(e){
-                e.preventDefault();
-                chat.userslist.populateUserList();
-                cMenu.closeMenus(chat);
-                cMenu.prototype.showMenu.call(chat.userslist, chat);
-            });
-            this.privatemessagelist.closelink.on('click', function(e){
-                e.preventDefault();
-                chat.setUnreadMessageCount(0);
-                cMenu.closeMenus(chat);
-            });
-            this.privatemessagelist.replylink.on('click', function(e){
-                chat.setUnreadMessageCount(0);
-                cMenu.closeMenus(chat);
-            });
-            this.privatemessagelist.visible = false;
-            chat.setUnreadMessageCount(this.unreadMessageCount);
-            $(document).on('privmsg-update', function() {
-                chat.unreadMessageCount = parseInt(localStorage['unreadMessageCount'] || 0, 10);
-                chat.setUnreadMessageCount(chat.unreadMessageCount);
+
+            var chatEmotesUi = this.ui.find('#chat-emote-list:first').eq(0),
+                chatEmotesUiMenu = new ChatMenu(chatEmotesUi, chat);
+
+            chatEmotesUiMenu.on('init', function(){
+                var demotes = chatEmotesUi.find('#destiny-emotes'),
+                    temotes = chatEmotesUi.find('#twitch-emotes');
+
+                for(var i=0;i<chat.emoticons.length;i++)
+                    demotes.append('<div class="emote"><span title="'+chat.emoticons[i]+'" class="chat-emote chat-emote-'+chat.emoticons[i]+'">'+chat.emoticons[i]+'</span></div>');
+                for(var x=0;x<chat.twitchemotes.length;x++)
+                    temotes.append('<div class="emote"><span title="'+chat.twitchemotes[x]+'" class="chat-emote chat-emote-'+chat.twitchemotes[x]+'">'+chat.twitchemotes[x]+'</span></div>');
+
+                chatEmotesUi.on('click', '.chat-emote', function(){
+                    var value = chat.input.val().trim();
+                    chat.input.val( value + ((value == "") ? "":" ")  +  $(this).text() + " ");
+                    chat.input.focus();
+                    return false;
+                });
             });
 
-            // User list
-            this.userslist = this.ui.find('#chat-user-list:first').eq(0);
-            this.userslist.btn = this.ui.find('#chat-users-btn:first').eq(0);
-            this.userslist.visible = false;
-            this.userslist.scrollable = this.userslist.find('.scrollable:first');
-            this.userslist.populateUserList = function(){
-                var lists  = chat.userslist.find('ul'),
-                    admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
+
+            var pmPopupUi = this.ui.find('#chat-private-messages:first').eq(0),
+                pmPopupUiMenu = new ChatMenu(pmPopupUi, chat);
+
+            pmPopupUi.find('.user-list-link').on('click', function(){
+                ChatMenu.closeMenus(chat);
+                userListUiMenu.show(pmPopupUiMenu.btn);
+                return false;
+            });
+            pmPopupUi.find('#reply-privmsg').on('click', function(){
+                chat.resetUnreadMessageCount();
+                ChatMenu.closeMenus(chat);
+                return false;
+            });
+            pmPopupUi.find('#close-privmsg').on('click', function(){
+                chat.resetUnreadMessageCount();
+                ChatMenu.closeMenus(chat);
+                return false;
+            });
+
+
+            var userListUi = this.ui.find('#chat-user-list:first').eq(0),
+                userListUiMenu = new ChatMenu(userListUi, chat);
+
+            userListUi.on('click', '.user', function(){
+                chat.toggleUserFocus($(this).text().toLowerCase());
+            });
+
+            userListUiMenu.on('show', function(){
+                // TODO this could be maintained, and not build on each show of the menu
+                var admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
                     elems  = {},
                     usercount = 0;
 
                 for(var username in chat.engine.users){
-                    var u    = chat.engine.users[username],
-                        elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
-
-                    usercount++;
-                    elems[username.toLowerCase()] = elem;
-                    if($.inArray('bot', u.features) >= 0)
-                        bots.push(username.toLowerCase());
-                    else if ($.inArray('admin', u.features) >= 0)
-                        admins.push(username.toLowerCase());
-                    else if($.inArray('vip', u.features) >= 0)
-                        vips.push(username.toLowerCase());
-                    else if($.inArray('subscriber', u.features) >= 0)
-                        subs.push(username.toLowerCase());
-                    else
-                        plebs.push(username.toLowerCase());
-
+                    if(chat.engine.users.hasOwnProperty(username)){
+                        var u = chat.engine.users[username],
+                            elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
+                        usercount++;
+                        elems[username.toLowerCase()] = elem;
+                        if($.inArray('bot', u.features) >= 0)
+                            bots.push(username.toLowerCase());
+                        else if ($.inArray('admin', u.features) >= 0)
+                            admins.push(username.toLowerCase());
+                        else if($.inArray('vip', u.features) >= 0)
+                            vips.push(username.toLowerCase());
+                        else if($.inArray('subscriber', u.features) >= 0)
+                            subs.push(username.toLowerCase());
+                        else
+                            plebs.push(username.toLowerCase());
+                    }
                 }
 
-                chat.userslist.find('h5 span').text(usercount);
                 var appendUsers = function(users, elem) {
                     if (users.length == 0) {
                         elem.prev().hide().prev().hide();
@@ -311,6 +281,8 @@
                     }
                 };
 
+                userListUi.find('h5 span').text(usercount);
+                var lists = userListUi.find('ul');
                 lists.empty();
                 appendUsers(admins, lists.filter('.admins'));
                 appendUsers(vips, lists.filter('.vips'));
@@ -318,44 +290,33 @@
                 appendUsers(bots, lists.filter('.bots'));
                 appendUsers(subs, lists.filter('.subs'));
                 appendUsers(plebs, lists.filter('.plebs'));
-            };
-            this.userslist.btn.on('click', function(e){
-
-                var isVisible = chat.userslist.visible,
-                    isPmVisible = chat.privatemessagelist.visible;
-
-                e.preventDefault();
-                cMenu.closeMenus(chat);
-
-                if(isVisible || isPmVisible)
-                    return;
-
-                if(chat.unreadMessageCount > 0)
-                    return cMenu.prototype.showMenu.call(chat.privatemessagelist, chat);
-
-                chat.userslist.populateUserList();
-                return cMenu.prototype.showMenu.call(chat.userslist, chat);
             });
 
-            cMenu.addMenu(this, this.privatemessagelist);
-            cMenu.addMenu(this, this.chatsettings);
-            cMenu.addMenu(this, this.userslist);
-            cMenu.addMenu(this, this.chatemotelist);
-
-            // The tools for when you click on a user
-            this.userslist.on('click', '.user', function(){
-                var username = $(this).text().toLowerCase();
-                chat.toggleFocus(username);
+            this.ui.find('#chat-users-btn').on('click', function(){
+                if(chat.pmcountnum > 0)
+                    pmPopupUiMenu.toggle(this);
+                else
+                    userListUiMenu.toggle(this);
+                return false;
             });
+            this.ui.find('#chat-settings-btn').on('click', function(){
+                chatSettingsMenu.toggle(this);
+                return false;
+            });
+            this.ui.find('#emoticon-btn').on('click', function(){
+                chatEmotesUiMenu.toggle(this);
+                return false;
+            });
+
             this.lines.on('mousedown', '.user-msg a.user', function(){
                 var username = $(this).closest('.user-msg').data('username');
-                chat.toggleFocus(username);
+                chat.toggleUserFocus(username);
                 return false;
             });
 
             this.lines.on('mousedown', 'div.user-msg .chat-user', function() {
                 var username = this.textContent.toLowerCase();
-                chat.toggleFocus(username);
+                chat.toggleUserFocus(username);
                 return false;
             });
 
@@ -367,62 +328,35 @@
 
             // Close all menus and perform a scroll
             this.input.on('keydown mousedown', $.proxy(function(){
-                if(this.menuOpenCount > 0)
-                    cMenu.closeMenus(this);
-                chat.toggleFocus();
+                ChatMenu.closeMenus(this);
+                chat.toggleUserFocus();
             }, this));
 
             // Close all menus if someone clicks on any messages
             this.output.on('mousedown', $.proxy(function(){
-                if(this.menuOpenCount > 0)
-                    cMenu.closeMenus(this);
-                chat.toggleFocus();
+                ChatMenu.closeMenus(this);
+                chat.toggleUserFocus();
             }, this));
 
-            // Scrollbar plugin
-            this.scrollPlugin = this.output.nanoScroller({
-                disableResize: true,
-                preventPageScrolling: true,
-                sliderMinHeight: 40,
-                tabIndex: 1
-            })[0].nanoscroller;
+            var scrollNotify = chat.ui.find('#chat-scroll-notify');
+            scrollNotify.on('click', function() {
+                chat.scrollPlugin.updateAndScroll(true);
+            });
 
-            this.scrollPlugin.isScrolledToBottom = function getIsScrolledBottom(){
-                return (this.contentScrollTop >= this.maxScrollTop - 30);
+            chat.output.debounce("scrolled", function() {
+                scrollNotify.toggle(!chat.scrollPlugin.isScrolledToBottom());
+            }, 100);
+
+            chat.output.debounce("scrollend", function() {
+                scrollNotify.hide();
+            }, 100);
+
+            var fnUpdateScrollValues = chat.scrollPlugin.updateScrollValues;
+            chat.scrollPlugin.updateScrollValues = function() {
+                fnUpdateScrollValues.call(this, arguments);
+                chat.output.trigger('scrolled');
             };
-
-            this.scrollPlugin.updateAndScroll = function resetAndScrollBottom(scrollbottom){
-                if(!this.isActive)
-                    return;
-                this.reset();
-                if(scrollbottom)
-                    this.scrollBottom(0);
-            };
-
-            +function() {
-                var scrollNotify = chat.ui.find('#chat-scroll-notify');
-                scrollNotify.on('click', function() {
-                    chat.scrollPlugin.updateAndScroll(true);
-                });
-
-                chat.output.debounce("scrolled", function() {
-                    scrollNotify.toggle(!chat.scrollPlugin.isScrolledToBottom());
-                }, 100);
-
-                chat.output.debounce("scrollend", function() {
-                    scrollNotify.hide();
-                }, 100);
-
-                var fnUpdateScrollValues = chat.scrollPlugin.updateScrollValues;
-                chat.scrollPlugin.updateScrollValues = function() {
-                    fnUpdateScrollValues.call(this, arguments);
-                    chat.output.trigger('scrolled');
-                };
-            }();
             // End Scrollbar
-
-            // Enable toolbar
-            this.ui.find('#chat-tools-wrap button').removeAttr('disabled');
 
             // The login click
             this.ui.find('#chat-login-msg a[href="/login"]').on('click', function(){
@@ -439,7 +373,7 @@
             // when clicking on "nothing" move the focus to the input
             var mouseDownCoords;
             var focusTimer;
-            this.ui.find('#chat-lines').on('click mousedown keydown', function(e) {
+            this.lines.on('click mousedown keydown', function(e) {
                 var coords = e.clientX + '-' + e.clientY;
                 switch(e.type) {
                     case 'click':
@@ -460,10 +394,29 @@
                         break;
                 }
             });
+
+            // Private message onclick
+            this.lines.on('click', '.mark-as-read', function(){
+                var messageEl      = $(this).closest('.private-message'),
+                    message        = messageEl.data('message'),
+                    messageIcnSend = message.ui.find('.icon-mail-send'),
+                    messageActions = message.ui.find('.message-actions');
+                $.ajax({
+                    type: 'POST',
+                    url: '/profile/messages/'+ encodeURIComponent(message.messageid) +'/open',
+                    complete: function(){
+                        messageIcnSend.attr('class', 'icon-mail-open-document');
+                        messageActions.remove();
+                        chat.addUnreadMessageCount(-1);
+                    }
+                });
+                return false;
+            });
+
             return this;
         },
 
-        toggleFocus: function(user) {
+        toggleUserFocus: function(user) {
             if(!user || user === '' || this.lastFocusedUser === user){
                 this.lines.find('div.focused').removeClass('focused');
                 this.ui.removeClass('focus-user');
@@ -507,7 +460,7 @@
                 message.ui = $(message.html());
 
             message.ui.data('message', message);
-            message.insert(this.lines);
+            message.ui.appendTo(this.lines);
 
             if(state != undefined)
                 message.status(state);
@@ -598,7 +551,7 @@
                 if (chat.currenthistoryline < 0 && e.keyCode == 38) {
                     // set the current line to the end if the history, do not subtract 1
                     // that's done later
-                    chat.currenthistoryline = chat.getInputHistory().length;
+                    chat.currenthistoryline = chat.inputhistory.length;
                     // store the typed in message so that we can go back to it
                     chat.storedinputline = chat.input.val();
 
@@ -610,10 +563,10 @@
 
                 var index = chat.currenthistoryline + num;
                 // out of bounds
-                if (index >= chat.getInputHistory().length || index < 0) {
+                if (index >= chat.inputhistory.length || index < 0) {
 
                     // down arrow was pressed to get back to the original line, reset
-                    if (index >= chat.getInputHistory().length) {
+                    if (index >= chat.inputhistory.length) {
                         chat.input.val(chat.storedinputline);
                         chat.currenthistoryline = -1;
                     }
@@ -621,33 +574,23 @@
                 }
 
                 chat.currenthistoryline = index;
-                chat.input.val(chat.getInputHistory()[index]);
+                chat.input.val(chat.inputhistory[index]);
 
             });
         },
 
-        getInputHistory: function(){
+        loadInputHistory: function(){
             try {
-                return JSON.parse(localStorage['inputhistory'] || '[]');
-            } catch (e) {
-                return [];
-            }
-        },
-
-        setInputHistory: function(arr){
-            localStorage['inputhistory'] = JSON.stringify(arr);
+                this.inputhistory = JSON.parse(localStorage['inputhistory'] || '[]');
+                this.setupInputHistory();
+            } catch (e) {}
         },
 
         insertInputHistory: function(message){
-            if (!window.localStorage)
-                return;
-
-            var history = this.getInputHistory();
-            history.push(message);
-            if (history.length > 20)
-                history.shift();
-
-            this.setInputHistory(history);
+            this.inputhistory.push(message);
+            if (this.inputhistory.length > 20)
+                this.inputhistory.shift();
+            localStorage['inputhistory'] = JSON.stringify(this.inputhistory);
         },
 
         resolveMessage: function(data){
@@ -749,6 +692,7 @@
                     if (preferences.hasOwnProperty(key) && this.preferences.hasOwnProperty(key))
                         this.preferences[key].value = preferences[key];
                 }
+                this.applyPreferencesCss();
             } catch (ignored) {}
         },
 
@@ -775,51 +719,28 @@
             this.scrollPlugin.reset();
         },
 
-        setUnreadMessageCount: function(count){
-            var self = this;
-            if (count < 0)
-                count = 0;
+        addUnreadMessageCount: function(count){
+            this.pmcountnum = count;
+            this.pmcount.toggleClass('hidden', !this.pmcountnum).text(this.pmcountnum);
+        },
 
-            this.unreadMessageCount = count;
-            localStorage['unreadMessageCount'] = count;
-
-            var countui = this.ui.find('.chat-pm-count');
-            countui.text(this.unreadMessageCount);
-            countui.toggleClass('hidden', !count);
+        resetUnreadMessageCount: function(){
+            this.pmcountnum = 0;
+            this.pmcount.addClass('hidden');
         }
 
     });
 
-    // should be moved somewhere better
-    $(window).on({
-        'resize.chat': function(){
-            destiny.chat.gui.resize();
-        },
-        'focus.chat': function(){
-            destiny.chat.gui.input.focus();
-        },
-        'load.chat': function(){
-            destiny.chat.gui.input.focus();
-            destiny.chat.gui.loaded = true;
-        }
-    });
-
-    //CHAT USER
-    ChatUser = function(args){
-        args = args || {};
+    ChatUser = function cls(args){
+        this.nick     = args.nick;
         this.username = args.nick || '';
-        this.connections = 0;
-        this.features = [];
-        $.extend(this, args);
+        this.features = args.features || [];
         return this;
     };
 
     // UI MESSAGE - ability to send HTML markup to the chat
     ChatUIMessage = function(html){
         return this.init(html);
-    };
-    ChatUIMessage.prototype.insert = function(container){
-        return this.ui.appendTo(container);
     };
     ChatUIMessage.prototype.init = function(html){
         this.message = html;
@@ -840,9 +761,6 @@
     ChatMessage = function(message, timestamp){
         return this.init(message, timestamp);
     };
-    ChatMessage.prototype.insert = function(container){
-        return this.ui.appendTo(container);
-    };
     ChatMessage.prototype.init = function(message, timestamp){
         this.message = message;
         this.timestamp = moment.utc(timestamp).local();
@@ -853,17 +771,18 @@
     };
     ChatMessage.prototype.status = function(state){
         if(this.ui){
-            if(state){
+            if(state)
                 this.ui.addClass(state);
-            }else{
+            else
                 this.ui.removeClass(this.state);
-            }
         }
         this.state = state;
         return this;
     };
     ChatMessage.prototype.wrapTime = function(){
-        return '<time title="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'" datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+this.timestamp.format(this.timestampformat)+'</time>';
+        return '<time title="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'" datetime="'+this.timestamp.format('MMMM Do YYYY, h:mm:ss a')+'">'+
+            this.timestamp.format(this.timestampformat)+
+            '</time>';
     };
     ChatMessage.prototype.wrapMessage = function(){
         return $('<span/>').text(this.message).html();
@@ -971,14 +890,13 @@
         if (this.message.substring(0, 4) === '/me ') {
             this.isSlashMe = true;
             this.message = this.message.substring(4);
-        } else if (this.message.substring(0, 2) === '//'){
+        } else if (this.message.substring(0, 2) === '//')
             this.message = this.message.substring(1);
-        }
     };
     ChatUserMessage.prototype.wrap = function(html, css) {
-        if (this.user && this.user.username) {
+        if (this.user && this.user.username)
             return '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+'" data-username="'+this.user.username.toLowerCase()+'">'+html+'</div>';
-        } else
+        else
             return '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+'">'+html+'</div>';
     };
 
@@ -1062,63 +980,19 @@
         this.type = 'user';
         this.user = user;
         this.messageid = messageid;
-        this.isread = false;
         this.prepareMessage();
         this.isSlashMe = false; // make sure a private message is never reformatted to /me
         return this;
     };
     $.extend(ChatUserPrivateMessage.prototype, ChatUserMessage.prototype);
-    ChatUserPrivateMessage.prototype.insert = function(container){
-        var self = this,
-            username = this.user.username.toLowerCase();
-        this.ui.on('click', '.mark-as-read', function(e){
-            e.preventDefault();
-            // Need to make sure all private messages are marked as read from this user, not just this one
-            var pmlines = destiny.chat.gui.lines.find('.private-message[data-messageid="'+ self.messageid +'"]');
-            pmlines.each(function(){
-                var message = $(this).data('message'),
-                    messageactions = message.ui.find('.message-actions');
-                messageactions.html('<i class="fa fa-circle-o-notch fa-spin"></i>');
-            });
-            $.ajax({
-                type: 'POST',
-                url: '/profile/messages/'+ encodeURIComponent(self.messageid) +'/open',
-                complete: function(){
-                    pmlines.each(function(){
-                        var message = $(this).data('message'),
-                            messageactions = message.ui.find('.message-actions');
-                        message.isread = true;
-                        message.ui.find('.icon-mail-send').attr('class', 'icon-mail-open-document');
-                        messageactions.remove();
-                        destiny.chat.gui.setUnreadMessageCount( destiny.chat.gui.unreadMessageCount - 1 );
-                    });
-                },
-                error: function(){
-                    pmlines.each(function(){
-                        var message = $(this).data('message'),
-                            messageactions = message.ui.find('.message-actions');
-                        message.isread = true;
-                        message.ui.find('.icon-mail-send').attr('class', 'icon-mail-open-document');
-                        messageactions.remove();
-                    });
-                }
-            });
-        })
-        this.ui.on('click', '.hide-pm', function(e){
-            e.preventDefault();
-            self.ui.remove();
-        })
-        destiny.chat.gui.setUnreadMessageCount( destiny.chat.gui.unreadMessageCount + 1 );
-        return this.ui.appendTo(container);
-    };
     ChatUserPrivateMessage.prototype.wrap = function(html, css) {
         return '' +
             '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+' private-message" data-messageid="'+this.messageid+'" data-username="'+this.user.username.toLowerCase()+'">'+
-                html+
-                '<span class="message-actions">'+
-                    '<a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>'+
-                '</span>'+
-                '<i class="speech-arrow"></i>'+
+            html+
+            '<span class="message-actions">'+
+            '<a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>'+
+            '</span>'+
+            '<i class="speech-arrow"></i>'+
             '</div>';
     };
     ChatUserPrivateMessage.prototype.wrapUser = function(user){
@@ -1172,6 +1046,19 @@
     };
     // END EMOTE COUNT
 
-
-
 })(jQuery);
+
+
+// should be moved somewhere better
+$(window).on({
+    'resize.chat': function(){
+        destiny.chat.gui.resize();
+    },
+    'focus.chat': function(){
+        destiny.chat.gui.input.focus();
+    },
+    'load.chat': function(){
+        destiny.chat.gui.input.focus();
+        destiny.chat.gui.loaded = true;
+    }
+});

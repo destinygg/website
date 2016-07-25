@@ -1,54 +1,76 @@
-(function(){
+ChatMenu = (function(){
 
-	cMenu = function(){
-		this.scrollPlugin = null;
-		return this;
-	};
-	
-	var showMenuUI = function(ui){
-		clearTimeout(ui.data('hide-timeout'));
-		ui.addClass('active');
-	};
-	var hideMenuUI = function(ui){
-		ui.removeClass('active');
-	};
-	
-	cMenu.addMenu = function(chat, el){
-		el.on('click', '.close', function(){
-			cMenu.closeMenus(chat);
-			return false;
-		});
-		chat.menus.push(el);
-		return this;
-	};
-	cMenu.closeMenus = function(chat){
-		for(var i=0;i<chat.menus.length; ++i){
-			if(chat.menus[i].visible)
-				this.prototype.hideMenu.call(chat.menus[i], chat);
-		}
-	};
-	cMenu.prototype.showMenu = function(chat){
-		showMenuUI(this);
-		this.visible = true;
-		this.btn.addClass('active');
-		
-		// Can only init the scrollbar when the item is visible
-		if(this.scrollable){
-			if(!this.scrollPlugin)
-				this.scrollPlugin = this.scrollable.nanoScroller({disableResize: true, preventPageScrolling: true})[0].nanoscroller;
-			else
-				this.scrollPlugin.reset();
-		}
-		
-		++chat.menuOpenCount;
-	};
-	
-	cMenu.prototype.hideMenu = function(chat){
-		hideMenuUI(this);
+	/**
+	 * @type {Array<ChatMenu>}
+     */
+	var menus = [];
+
+	/**
+	 * @param ui
+	 * @param chat
+     */
+	function cls(ui, chat) {
+
+		var scrollPlugin = null;
+
+		this.ui      = ui;
+		this.chat    = chat;
+		this.btn     = null;
 		this.visible = false;
-		this.btn.removeClass('active');
-		--chat.menuOpenCount;
+		this.shown   = false;
+
+		this.on = function(name, fn){
+			$(this).on(name, fn);
+		};
+
+		this.show = function(btn){
+			if(this.visible) return;
+			if(!this.shown) $(this).triggerHandler('init');
+
+			this.visible = true;
+			this.shown = true;
+			this.btn = btn;
+
+			$(this.btn).addClass('active');
+			$(this.ui).addClass('active');
+			$(this).triggerHandler('show');
+
+			$(this.ui).find('.scrollable').each(function(){
+				if(!scrollPlugin)
+					scrollPlugin = $(this).nanoScroller({
+						disableResize: true,
+						preventPageScrolling: true
+					})[0].nanoscroller;
+				else
+					scrollPlugin.reset();
+			});
+		};
+
+		this.hide = function(){
+			if(this.visible){
+				this.visible = false;
+				$(this.btn).removeClass('active');
+				$(this.ui).removeClass('active');
+				$(this).triggerHandler('hide');
+			}
+		};
+
+		this.toggle = function(btn){
+            var wasVisible = this.visible;
+            ChatMenu.closeMenus(null);
+			if(!wasVisible)
+				this.show(btn);
+		};
+
+		this.ui.on('click', '.close', this.hide.bind(this));
+		menus.push(this);
+	}
+
+	cls.closeMenus = function(){
+		for(var i=0; i<menus.length; ++i)
+			menus[i].hide();
 	};
-	
-	
+
+	return cls;
+
 })();

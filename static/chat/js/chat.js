@@ -109,9 +109,6 @@ chat.prototype.init = function() {
 	this.emit = $.proxy(this.emit, this);
 };
 chat.prototype.loadIgnoreList = function() {
-	if (!localStorage)
-		return;
-	
 	try {
 		this.ignorelist = JSON.parse(localStorage['chatignorelist'] || '{}');
 	} catch (e) {}
@@ -218,6 +215,7 @@ chat.prototype.onPRIVMSG = function (data) {
 		return;
 
 	this.gui.autoCompletePlugin.updateNick(user.username);
+	this.gui.addUnreadMessageCount(1);
 	this.gui.push(new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp));
 };
 chat.prototype.onMSG = function(data) {
@@ -273,7 +271,6 @@ chat.prototype.onMSG = function(data) {
 		if(this.previousemote)
 			this.originemote = usermessage;
 
-		// Returned message gets appended to GUI
 		this.gui.push(usermessage);
 	}
 };
