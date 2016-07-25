@@ -642,12 +642,12 @@ i.icon-reddit {
 
 #page-wrap {
   min-height: 100%;
-  margin-bottom: -211px; /* dodgy */
+  margin-bottom: -171px; /* dodgy */
 }
 #page-wrap:after {
   content: "";
   display: block;
-  height: 211px;
+  height: 171px;
 }
 
 body.no-contain #page-wrap,
@@ -693,14 +693,12 @@ body.no-contain #footer-inner {
   #footer-copyright h3 {
     font-size: 22px;
   }
-  #footer-badges h3 {
-    font-size: 18px;
-  }
+  #footer-badges h3,
   #footer-thanks h3 {
     font-size: 18px;
   }
-  #footer-links {
-    border-bottom: 1px solid #000;
+  #footer-thanks {
+    text-align: right;
   }
   #footer-copyright,
   #footer-badges,

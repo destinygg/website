@@ -24,7 +24,7 @@ use Destiny\Common\Config;
                     <div style="margin-top: 60px; margin-bottom: 40px;">
                         <a href="http://www.amazon.com/?tag=des000-20"><img alt="amazon.com" src="<?=Config::cdn()?>/web/img/amazon.png" /></a>
                     </div>
-                    <div>
+                    <div style="margin: 30px 0 60px 0;">
                         <a href="http://www.amazon.com/?tag=des000-20">US</a>
                         <span style="padding:0 5px;">&bull;</span>
                         <a href="http://www.amazon.ca/?tag=destiny0f7a-20">Canada</a>
