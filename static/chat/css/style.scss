@@ -147,6 +147,7 @@
     border-radius:0;
     box-shadow: none;
     box-sizing: border-box;
+    outline: none;
   }
   .input:focus {
     box-shadow: none;
@@ -361,16 +362,16 @@
  * Browsers will kill the whole line of css if one rule is invalid
  **/
 #chat-input-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-  color: $color-chat-text4;
+  color: $color-chat-disabled;
 }
 #chat-input-control::-moz-placeholder { /* Firefox 19+ */
-  color: $color-chat-text4;
+  color: $color-chat-disabled;
 }
 #chat-input-control:-ms-input-placeholder { /* IE 10+ */
-  color: $color-chat-text4;
+  color: $color-chat-disabled;
 }
 #chat-input-control:-moz-placeholder { /* Firefox 18- */
-  color: $color-chat-text4;
+  color: $color-chat-disabled;
 }
 
 .chat #chat-lines > .private-message {

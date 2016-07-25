@@ -32,7 +32,7 @@ use Destiny\Common\Config;
         <div class="clearfix">
             <div id="chat-input-wrap">
                 <div id="chat-input-control-wrap">
-                    <input id="chat-input-control" type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
+                    <input id="chat-input-control" type="text" placeholder="Enter a message..." class="input" spellcheck="true" autocomplete="off"/>
                     <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
                 </div>
                 <span id="chat-login-msg">

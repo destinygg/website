@@ -63,6 +63,18 @@ body.embed {
   background-color: #1B1B1B;
   opacity: 1;
 }
+.form-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: $color-chat-disabled;
+}
+.form-control::-moz-placeholder { /* Firefox 19+ */
+  color: $color-chat-disabled;
+}
+.form-control:-ms-input-placeholder { /* IE 10+ */
+  color: $color-chat-disabled;
+}
+.form-control:-moz-placeholder { /* Firefox 18- */
+  color: $color-chat-disabled;
+}
 
 form.form-alt {
   .form-control,.form-control:focus {

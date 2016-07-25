@@ -381,7 +381,7 @@
                             return;
 
                         focusTimer = setTimeout(function() { chat.input.focus(); }, 500);
-                        chat.toggleFocus();
+                        chat.toggleUserFocus();
                         break;
                     case 'mousedown':
                         mouseDownCoords = coords;
@@ -660,7 +660,7 @@
             if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getPreference('highlight'))
                 return false;
 
-            if($.inArray(destiny.UserFeatures.BOT, message.user.features))
+            if($.inArray(destiny.UserFeatures.BOT, message.user.features) >= 0)
                 return false;
 
             var nicks = this.getPreference('highlightnicks');
