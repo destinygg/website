@@ -32,6 +32,7 @@ module.exports = function(grunt) {
                         'static/vendor/polyfill/notification.js',
                         'static/vendor/polyfill/localstorage.js',
                         'static/vendor/overthrow/overthrow.min.js',
+                        'static/vendor/visibility-1.2.3/visibility.min.js',
                         'static/vendor/jquery/jquery-1.12.3.min.js',
                         'static/vendor/jquery.cookie/jquery.cookie.js',
                         'static/vendor/jquery.debounce/jquery.debounce.js',

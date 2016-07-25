@@ -272,7 +272,7 @@ $hb-dark:  #30394A;
   overflow: hidden;
 
   .shadow {
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     position: absolute;
     top: 0;
     left: 0;
@@ -654,12 +654,12 @@ i.icon-reddit {
 
 #page-wrap {
   min-height: 100%;
-  margin-bottom: -171px; /* dodgy */
+  margin-bottom: -156px; /* dodgy */
 }
 #page-wrap:after {
   content: "";
   display: block;
-  height: 171px;
+  height: 156px;
 }
 
 body.no-contain #page-wrap,
@@ -700,7 +700,6 @@ body.no-contain #footer-inner {
   }
   #footer-inner {
     height: 100%;
-    padding-bottom: 15px;
   }
   #footer-copyright h3 {
     font-size: 22px;

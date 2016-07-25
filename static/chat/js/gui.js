@@ -413,6 +413,22 @@
                 return false;
             });
 
+
+
+            // should be moved somewhere better
+            $(window).on({
+                'resize.chat': function(){
+                    chat.resize();
+                },
+                'focus.chat': function(){
+                    chat.input.focus();
+                },
+                'load.chat': function(){
+                    chat.input.focus();
+                    chat.loaded = true;
+                }
+            });
+
             return this;
         },
 
@@ -638,9 +654,10 @@
                     icon : destiny.cdn+'/chat/img/notifyicon.png',
                     dir  : "auto"
                 });
-                n.onclick(function(){
+                setTimeout(n.close.bind(n), 5000);
+                n.onclick = function(){
                     // todo open chat at specific line
-                });
+                };
             });
         },
 
@@ -669,7 +686,7 @@
                 (this.highlightregex.custom && this.highlightregex.custom.test(message.message))){
                 message.ui.addClass('highlight');
 
-                if(this.getPreference('allowNotifications'))
+                if(this.getPreference('allowNotifications') && Visibility.hidden())
                     this.showNotification(message);
             }
             return false;
@@ -1047,18 +1064,3 @@
     // END EMOTE COUNT
 
 })(jQuery);
-
-
-// should be moved somewhere better
-$(window).on({
-    'resize.chat': function(){
-        destiny.chat.gui.resize();
-    },
-    'focus.chat': function(){
-        destiny.chat.gui.input.focus();
-    },
-    'load.chat': function(){
-        destiny.chat.gui.input.focus();
-        destiny.chat.gui.loaded = true;
-    }
-});
