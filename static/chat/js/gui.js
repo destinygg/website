@@ -749,7 +749,8 @@
     });
 
     ChatUser = function cls(args){
-        this.nick     = args.nick;
+        args = args || {};
+        this.nick     = args.nick || '';
         this.username = args.nick || '';
         this.features = args.features || [];
         return this;
