@@ -7,7 +7,6 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
-use Destiny\Common\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Response;
 use Destiny\Common\MimeType;
@@ -30,29 +29,6 @@ class ChatApiController {
      */
     protected function checkPrivateKey($privatekey){
         return (Config::$a['privateKeys']['chat'] === $privatekey);
-    }
-
-    /**
-     * @Route ("/api/messages/unreadcount")
-     *
-     * @return Response
-     */
-    public function unreadCount() {
-
-        $userId = Session::getCredentials ()->getUserId ();
-        $response = array(
-            'success' => false,
-        );
-
-        if ($userId) {
-            $privateMessageService   = PrivateMessageService::instance();
-            $response['success']     = true;
-            $response['unreadcount'] = (int) $privateMessageService->getUnreadMessageCount( $userId );
-        }
-
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
     }
 
     /**

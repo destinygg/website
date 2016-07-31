@@ -31,18 +31,6 @@ $(function(){
             enableMessageForm();
         };
 
-        var isValidMessageForm = function (){
-            var message = $message.val(),
-                recipients = getRecipientLabels();
-            if(recipients.length == 0){
-                return false;
-            }
-            if(message.trim() == '' || message.trim().length > 500){
-                return false;
-            }
-            return true;
-        };
-
         var sendMessage = function (){
 
             var message = $message.val(),
@@ -249,9 +237,11 @@ $(function(){
     var toggleRowClick = function(e){
         var self = $(this),
             userid = self.data('id');
-        e.preventDefault();
-        e.stopPropagation();
-        window.location.href = '/profile/messages/'+ userid;
+        if(userid != undefined){
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = '/profile/messages/'+ userid;
+        }
     };
 
     var pressedTableRow = function(){

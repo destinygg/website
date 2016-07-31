@@ -11,11 +11,10 @@ use Destiny\Common\Utils\Date;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="subscription" class="profile">
+<body id="subscription" class="no-contain">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/headerband.php') ?>
 
     <section class="container">
       <h1 class="page-title">

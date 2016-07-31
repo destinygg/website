@@ -14,11 +14,10 @@ use Destiny\Common\Config;
   .btn-post { min-width: 75px; }
 </style>
 </head>
-<body id="authentication" class="profile">
+<body id="authentication" class="no-contain">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/headerband.php') ?>
     <?php include Tpl::file('seg/alerts.php') ?>
     <?php include Tpl::file('profile/menu.php') ?>
     

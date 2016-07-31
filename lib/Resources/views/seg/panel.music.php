@@ -12,9 +12,9 @@ use Destiny\Common\Config;
         <a href="/twitter">twitter.com</a>
       </h3>
       <div class="entries">
-      <?if(!empty($model->tweets)):?>
-      <?foreach($model->tweets as $tweetIndex=>$tweet):?>
-      <?if($tweetIndex == 3){break;};?>
+      <?php if(!empty($model->tweets)): ?>
+      <?php foreach($model->tweets as $tweetIndex=>$tweet): ?>
+      <?php if($tweetIndex == 3){break;}; ?>
         <div class="media">
           <div class="media-body">
             <div class="media-heading">
@@ -26,10 +26,8 @@ use Destiny\Common\Config;
             <?=Tpl::fromNow(Date::getDateTime($tweet['created_at']))?>
           </div>
         </div>
-      <?endforeach;?>
-      <?else:?>
-        <p class="loading">Loading tweets ...</p>
-      <?endif;?>
+      <?php endforeach; ?>
+      <?php endif;?>
       </div>
     </div>
 
@@ -39,9 +37,9 @@ use Destiny\Common\Config;
         <a href="/lastfm">last.fm</a>
       </h3>
       <div class="entries">
-      <?if(!empty($model->music) && isset($model->music['recenttracks']['track']) && !empty($model->music['recenttracks']['track'])):?>
-      <?foreach($model->music['recenttracks']['track'] as $trackIndex=>$track):?>
-      <?if($trackIndex == 3){break;};?>
+      <?php if(!empty($model->music) && isset($model->music['recenttracks']['track']) && !empty($model->music['recenttracks']['track'])): ?>
+      <?php foreach($model->music['recenttracks']['track'] as $trackIndex=>$track): ?>
+      <?php if($trackIndex == 3){break;}; ?>
         <div class="media">
           <a class="pull-left cover-image" href="<?=$track['url']?>"><img class="media-object" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=$track['image'][1]['#text']?>"></a>
           <div class="media-body">
@@ -50,20 +48,18 @@ use Destiny\Common\Config;
             </div>
             <div class="artist"><?=Tpl::out($track['artist']['#text'])?></div>
             <div class="details">
-              <?if($track['date_str'] != ''):?>
+              <?php if($track['date_str'] != ''):?>
               <span class="pull-right"><?=Tpl::fromNow(Date::getDateTime($track['date_str']))?></span>
-              <?endif;?>
-              <?if($trackIndex==0 && $track['date_str'] == ''):?>
+              <?php endif; ?>
+              <?php if($trackIndex==0 && $track['date_str'] == ''): ?>
               <span class="pull-right"><time>now playing</time></span>
-              <?endif;?>
+              <?php endif; ?>
               <small class="album subtle"><?=Tpl::out($track['album']['#text'])?></small>
             </div>
           </div>
         </div>
-      <?endforeach;?>
-      <?else:?>
-        <p class="loading">Loading music ...</p>
-      <?endif;?>
+      <?php endforeach; ?>
+      <?php endif; ?>
       </div>
     </div>
 

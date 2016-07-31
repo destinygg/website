@@ -16,12 +16,10 @@ use Destiny\Common\Config;
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 
 </head>
-<body id="message" class="profile">
-
+<body id="message" class="no-contain">
     <div id="page-wrap">
 
         <?php include Tpl::file('seg/top.php') ?>
-        <?php include Tpl::file('seg/headerband.php') ?>
         <?php include Tpl::file('seg/alerts.php') ?>
         <?php include Tpl::file('profile/menu.php') ?>
         

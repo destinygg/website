@@ -7,7 +7,6 @@ use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Request;
-use Destiny\Common\Config;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Annotation\Controller;
@@ -105,7 +104,7 @@ class RegistrationController {
             if (!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
                 throw new Exception ('You must solve the recaptcha.');
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-            $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
+            $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
             $authService->validateUsername($username);
             $authService->validateEmail($email);
             if (!empty ($country)) {

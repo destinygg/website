@@ -1,10 +1,7 @@
 <?php
-use Destiny\Common\Application;
-use Destiny\Common\Scheduler;
-
 require __DIR__ . '/../lib/boot.php';
-$app = Application::instance ();
-$scheduler = new Scheduler ();
+$app = Destiny\Common\Application::instance ();
+$scheduler = new Destiny\Common\Scheduler ();
 $scheduler->setLogger ( $app->getLogger () );
 $scheduler->loadSchedule();
 $scheduler->execute();

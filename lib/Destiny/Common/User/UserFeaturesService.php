@@ -16,34 +16,33 @@ class UserFeaturesService extends Service {
     protected $features = null;
 
     /**
-     * @return array<featureName, featureId>
+     * @return array<featureName, []>
+     */
+    public function getNonPseudoFeatures(){
+        $features = $this->getFeatures();
+        $filtered = [];
+        foreach (UserFeature::$NON_PSEUDO_FEATURES as $featureName){
+            if(isset($features[$featureName])){
+                $filtered[$featureName] = $features[$featureName];
+            }
+        }
+        return $filtered;
+    }
+
+    /**
+     * @return array<featureName, []>
      */
     public function getFeatures() {
         if ($this->features == null) {
             $conn = Application::instance ()->getConnection ();
-            $stmt = $conn->prepare ( 'SELECT featureId, featureName FROM dfl_features ORDER BY featureId ASC' );
+            $stmt = $conn->prepare ( 'SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC' );
             $stmt->execute ();
             $this->features = array ();
             while ( $a = $stmt->fetch () ) {
-                $this->features [$a ['featureName']] = $a ['featureId'];
+                $this->features [$a ['featureName']] = $a;
             }
         }
         return $this->features;
-    }
-
-    /**
-     * Return the full list of features
-     * @return array
-     */
-    public function getDetailedFeatures() {
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare ( 'SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC' );
-        $stmt->execute ();
-        $features = array ();
-        while ( $a = $stmt->fetch () ) {
-            $features [$a ['featureName']] = $a;
-        }
-        return $features;
     }
 
     /**
@@ -56,7 +55,7 @@ class UserFeaturesService extends Service {
         if (! isset ( $features [$featureName] )) {
             throw new Exception ( sprintf ( 'Invalid feature name %s', $featureName ) );
         }
-        return $features [$featureName];
+        return $features [$featureName]['featureId'];
     }
 
     /**

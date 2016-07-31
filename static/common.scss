@@ -1,0 +1,77 @@
+/* Dimensions */
+$screen-xs-max:  829px;
+$screen-sm-min:  830px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
+$screen-md-max:  991px;
+$screen-lg-min:  1200px;
+
+$xs-nav-height:  31px;
+$nav-height:     51px;
+$chat-width:     400px;
+
+/* General */
+$color-light:           #FFF7F9;
+$color-dark:            #201F1E;
+$color-accent:          #4A8ECC;
+$color-accent-light:    #4FB1F4;
+$color-accent-alt:      #A66BE5;
+$text-color:            #DEDEDE;
+$text-color1:           #999999;
+$text-color2:           #666666;
+$text-color3:           #333333;
+$text-color-disabled:   #494949;
+
+$color-alert-bg:        #B91010;
+$color-alert-text:      #B91010;
+$color-warn-bg:         #f89406;
+$color-warn-text:       #f89406;
+$color-success-bg:      #4DB524;
+$color-success-text:    #4DB524;
+
+$color-surface-light1:  #FFFFFF;
+$color-surface-light2:  #F5F5F5;
+$color-surface-light3:  #EEEEEE;
+$color-surface-dark1:   #030303;
+$color-surface-dark2:   #111111;
+$color-surface-dark3:   #222222;
+$color-surface-dark4:   #333333;
+
+/* Chat */
+$color-chat-text1:      #DEDEDE;
+$color-chat-text2:      #838383;
+$color-chat-text3:      #838383;
+$color-chat-disabled:   #414141;
+$color-chat-bg:         #080808;
+$color-label-user:      #CACACA;
+$color-label-user-alt:  #FAFAFA;
+$color-label-sub:       #488CE7;
+$color-label-sub-alt:   #6AA7F9;
+$color-label-sub2:      #0060FF;
+$color-label-sub2-alt:  #6AA7F9;
+$color-label-sub3:      #A427D6;
+$color-label-sub3-alt:  #E564F4;
+$color-label-vip:       #4DB524;
+$color-label-vip-alt:   #4DB524;
+$color-label-bot:       #E79015;
+$color-label-bot-alt:   #E79015;
+$color-label-admin:     #B91010;
+$color-label-admin-alt: #FF0000;
+$color-green-text:      #6CA528;
+$color-link:            #02C2FF;
+$color-link-hover:      #0088CC;
+$color-link-visited:    #A66BE5;
+$color-text-broadcast:  #EDEA12;
+$color-underline-nsfl:  #FFF000;
+$color-underline-nsfw:  #FF0000;
+
+.head-font {
+  font-family: "HelveticaNeue-CondensedBold", "ArialNarrow-Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.chat-font {
+  font-family: Helvetica, "Trebuchet MS", Verdana, sans-serif;
+}
+.mono-font {
+  font-family: "Lucida Console", Monaco, monospace;
+}
+.serif-font {
+  font-family: "Trebuchet MS", sans-serif;
+}

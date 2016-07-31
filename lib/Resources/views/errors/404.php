@@ -15,7 +15,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="error-404" class="error">
+<body id="error-404" class="error no-brand">
     <div id="page-wrap">
         <?php include Tpl::file('seg/top.php') ?>
         <?php include Tpl::file('seg/headerband.php') ?>

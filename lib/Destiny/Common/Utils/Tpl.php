@@ -64,19 +64,15 @@ class Tpl {
     }
 
     public static function formatTextForDisplay($text) {
-        $text = self::out($text);
         $linkify = new Linkify();
-        $text = $linkify->process($text, array('attr'=>array('target'=>'_blank')));
-        $text = self::emotify($text);
-        return $text;
+        return self::emotify($linkify->process(self::out($text), array('attr'=>array('target'=>'_blank'))));
     }
 
     public static function emotify($text) {
         $emotes = Config::$a ['chat'] ['customemotes'];
-        $lcemotes = array_map('strtolower', $emotes);
-        $pattern = '/(^|[\s,\.\?!])('. join($emotes, '|') .')(?=$|[\s,\.\?!])/i';
-        $callback = function ($match) use ($emotes, $lcemotes) {
-            return '<i class="chat-emote chat-emote-' . $emotes[array_search(strtolower($match[2]), $lcemotes)] . '"></i>';
+        $pattern = '/(^|[\s,\.\?!])('. join($emotes, '|') .')(?=$|[\s,\.\?!])/';
+        $callback = function ($match) use ($emotes) {
+            return '<i class="chat-emote chat-emote-' . $emotes[array_search($match[2], $emotes)] . '"></i>';
         };
         $chunks = preg_split('/(<.+?>)/is', $text, 0, PREG_SPLIT_DELIM_CAPTURE);
         $openTag = null;

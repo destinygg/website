@@ -1,8 +1,10 @@
 <?php
 namespace Destiny\Commerce;
 
+use DateTime;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
+use Destiny\Common\Utils\Date;
 
 /**
  * @method static StatisticsService instance()
@@ -72,17 +74,18 @@ class StatisticsService extends Service {
         return $stmt->fetchAll ();
     }
 
-    public function getNewTieredSubscribersLastXDays ( $days ) {
+    public function getNewTieredSubscribersLastXDays ( DateTime $fromDate, DateTime $toDate ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-%d\') `date`, s.subscriptionTier
             FROM `dfl_users_subscriptions` s
-            WHERE s.createdDate BETWEEN CURDATE()-INTERVAL :days DAY AND CURDATE() + INTERVAL 1 DAY
+            WHERE s.createdDate BETWEEN :fromDate AND :toDate
             AND s.status IN (\'Expired\',\'Active\',\'Cancelled\')
             GROUP BY DATE(s.createdDate), s.subscriptionTier
             ORDER BY s.createdDate ASC
         ' );
-        $stmt->bindValue ( 'days', $days, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'fromDate', $fromDate->format(Date::FORMAT), \PDO::PARAM_STR );
+        $stmt->bindValue ( 'toDate', $toDate->format(Date::FORMAT), \PDO::PARAM_INT );
         $stmt->execute ();
         return $stmt->fetchAll ();
     }

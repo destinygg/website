@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
@@ -11,7 +11,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="ordererror">
+<body id="ordererror" class="no-brand">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>

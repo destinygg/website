@@ -12,7 +12,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="register">
+<body id="register" class="no-brand">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
@@ -36,7 +36,7 @@ use Destiny\Common\Config;
 
         <div class="ds-block">
           <p>Almost there... since not all authentication providers support nick names, you get to choose your own.
-          <br>Your email address is never shown publically and no emails will be sent to you without your permission.
+          <br>Your email address is never shown publicly and no emails will be sent to you without your permission.
           </p>
         </div>
 
@@ -65,14 +65,14 @@ use Destiny\Common\Config;
                 <option value="">Select your country</option>
                 <?$countries = Country::getCountries();?>
                 <option value="">&nbsp;</option>
-                <option value="US" <?if($model->user['country'] == 'US'):?>
-                  selected="selected" <?endif;?>>United States</option>
-                <option value="GB" <?if($model->user['country'] == 'GB'):?>
-                  selected="selected" <?endif;?>>United Kingdom</option>
+                <option value="US" <?php if($model->user['country'] == 'US'): ?>
+                  selected="selected" <?php endif;?>>United States</option>
+                <option value="GB" <?php if($model->user['country'] == 'GB'): ?>
+                  selected="selected" <?php endif; ?>>United Kingdom</option>
                 <option value="">&nbsp;</option>
-                <?foreach($countries as $country):?>
-                <option value="<?=$country['alpha-2']?>"<?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?endif;?>><?=Tpl::out($country['name'])?></option>
-                <?endforeach;?>
+                <?php foreach($countries as $country): ?>
+                <option value="<?=$country['alpha-2']?>" <?php if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>
+                <?php endforeach; ?>
               </select>
             </div>
             <div class="form-group">

@@ -29,7 +29,7 @@ class PrivateMessageController {
      * @HttpMethod ({"GET"})
      *
      * @param ViewModel $viewModel
-     * @return Response
+     * @return string
      */
     public function inbox(ViewModel $viewModel) {
         $userId = Session::getCredentials ()->getUserId ();
@@ -149,7 +149,7 @@ class PrivateMessageController {
      * @Route ("/profile/messages/openall")
      * @Secure ({"USER"})
      *
-     * @return Response
+     * @return string
      */
     public function openAll() {
         $privateMessageService = PrivateMessageService::instance();
@@ -195,7 +195,7 @@ class PrivateMessageController {
      *
      * @param array $params
      * @param ViewModel $viewModel
-     * @return Response
+     * @return string
      * @throws Exception
      * @throws \Destiny\Common\Utils\FilterParamsException
      */

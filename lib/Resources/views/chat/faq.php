@@ -11,12 +11,12 @@ use Destiny\Common\Utils\Tpl;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="agreement">
+<body id="agreement" class="no-brand">
     <div id="page-wrap">
 
         <?php include Tpl::file('seg/top.php') ?>
         <?php include Tpl::file('seg/headerband.php') ?>
-        
+
         <section class="container">
             <h1 class="title">
             <small class="subtle pull-right" style="font-size:14px; margin-top:20px;">Last update: <?=Date::getDateTime(filemtime(__FILE__))->format(Date::STRING_FORMAT)?></small>

@@ -5,6 +5,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
+use Destiny\Common\Session;
 use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
@@ -15,13 +16,23 @@ use Destiny\Commerce\SubscriptionStatus;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="account" class="profile">
+<body id="account" class="no-contain">
   <div id="page-wrap">
 
     <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/headerband.php') ?>
     <?php include Tpl::file('seg/alerts.php') ?>
     <?php include Tpl::file('profile/menu.php') ?>
+
+    <section class="container">
+      <div class="content-dark clearfix">
+        <div class="ds-block">
+          <h3><?= Tpl::out($model->user['username']) ?></h3>
+          <span>
+            Joined on <?=Tpl::moment(Date::getDateTime($model->user['createdDate']), Date::STRING_DATE_FORMAT, 'Do MMMM, YYYY')?>
+          </span>
+        </div>
+      </div>
+    </section>
     
     <section class="container collapsible">
       <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>
@@ -188,14 +199,14 @@ use Destiny\Commerce\SubscriptionStatus;
                   <option value="">Select your country</option>
                   <?$countries = Country::getCountries();?>
                   <option value="">&nbsp;</option>
-                  <option value="US" <?if($model->user['country'] == 'US'):?>
-                    selected="selected" <?endif;?>>United States</option>
-                  <option value="GB" <?if($model->user['country'] == 'GB'):?>
-                    selected="selected" <?endif;?>>United Kingdom</option>
+                  <option value="US" <?php if($model->user['country'] == 'US'):?>
+                    selected="selected" <?php endif; ?>>United States</option>
+                  <option value="GB" <?php if($model->user['country'] == 'GB'):?>
+                    selected="selected" <?php endif; ?>>United Kingdom</option>
                   <option value="">&nbsp;</option>
-                  <?foreach($countries as $country):?>
-                  <option value="<?=$country['alpha-2']?>" <?if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected"<?endif;?>><?=Tpl::out($country['name'])?></option>
-                  <?endforeach;?>
+                  <?php foreach($countries as $country):?>
+                  <option value="<?=$country['alpha-2']?>" <?php if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected"<?php endif;?>><?=Tpl::out($country['name'])?></option>
+                  <?php endforeach; ?>
                 </select>
               </div>
               
@@ -204,8 +215,8 @@ use Destiny\Commerce\SubscriptionStatus;
                 <br><small>Whether or not you would like the ability to receive gifts (subscriptions) from other people.</small>
                 </label> 
                 <select class="form-control" name="allowGifting" id="allowGifting">
-                  <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?endif;?>>Yes, I accept gifts</option>
-                  <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?endif;?>>No, I do not accept gifts</option>
+                  <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?php endif; ?>>Yes, I accept gifts</option>
+                  <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?php endif; ?>>No, I do not accept gifts</option>
                 </select>
               </div>
 
@@ -268,14 +279,14 @@ use Destiny\Commerce\SubscriptionStatus;
                   <option value="">Select your country</option>
                   <?$countries = Country::getCountries();?>
                   <option value="">&nbsp;</option>
-                  <option value="US" <?if($model->address['country'] == 'US'):?>
-                    selected="selected" <?endif;?>>United States</option>
-                  <option value="GB" <?if($model->address['country'] == 'GB'):?>
-                    selected="selected" <?endif;?>>United Kingdom</option>
+                  <option value="US" <?php if($model->address['country'] == 'US'): ?>
+                    selected="selected" <?php endif; ?>>United States</option>
+                  <option value="GB" <?php if($model->address['country'] == 'GB'): ?>
+                    selected="selected" <?php endif; ?>>United Kingdom</option>
                   <option value="">&nbsp;</option>
-                  <?foreach($countries as $country):?>
-                  <option value="<?=$country['alpha-2']?>" <?if($model->address['country'] != 'US' && $model->address['country'] != 'GB' && $model->address['country'] == $country['alpha-2']):?>selected="selected"<?endif;?>><?=Tpl::out($country['name'])?></option>
-                  <?endforeach;?>
+                  <?php foreach($countries as $country): ?>
+                  <option value="<?=$country['alpha-2']?>" <?php if($model->address['country'] != 'US' && $model->address['country'] != 'GB' && $model->address['country'] == $country['alpha-2']):?>selected="selected"<?php endif;?>><?=Tpl::out($country['name'])?></option>
+                  <?php endforeach; ?>
                 </select>
               </div>
             </div>

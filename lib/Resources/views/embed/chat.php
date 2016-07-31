@@ -17,192 +17,63 @@ use Destiny\Common\Config;
 </head>
 <body class="embed">
 
-<div id="destinychat" class="chat chat-theme-dark chat-icons">
-    
+<div id="destinychat" class="chat chat-icons <?php if(Session::hasRole(UserRole::USER)): ?>authenticated<?php endif; ?>">
     <!-- chat output -->
-    <div class="chat-output-frame">
-        <div class="chat-output nano">
-          <div class="chat-lines overthrow nano-content"></div>
+    <div id="chat-output-frame">
+        <div id="chat-output" class="nano">
+          <div id="chat-lines" class="overthrow nano-content"></div>
           <div id="chat-scroll-notify">More messages below</div>
         </div>
     </div>
     <!-- end chat output -->
-    
+
     <!-- chat input -->
-    <?php if(Session::hasRole(UserRole::USER)): ?>
-    <form class="chat-input">
+    <form id="chat-input">
         <div class="clearfix">
-          <div class="chat-input-wrap">
-            <div class="chat-input-control">
-              <input type="text" placeholder="Enter a message..." class="input" spellcheck="true"/>
-              <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
-            </div>
-          </div>
-          <div class="chat-tools-wrap">
-            <a class="iconbtn chat-settings-btn" title="Settings">
-              <span class="fa fa-cog"></span>
-            </a>
-            <a class="iconbtn chat-users-btn" title="Users">
-              <span class="chat-pm-count hidden flash" title="You have unread messages!">0</span>
-              <span class="fa fa-user"></span>
-            </a>
-          </div>
-        </div>
-    </form>
-    <?php else: ?>
-    <form class="chat-input">
-        <div class="clearfix">
-          <div class="chat-input-wrap">
-            <span class="chat-login-msg">
-              <?php if(!empty($model->follow)): ?>
-              You must <a href="/login?follow=<?= Tpl::out($model->follow) ?>" target="_parent">sign in</a> to chat
-              <?php else: ?>
-              You must <a href="/login" target="_parent">sign in</a> to chat
-              <?php endif; ?>
-            </span>
-            <input type="hidden" class="input" />
-
-          </div>
-          <div class="chat-tools-wrap">
-            <a class="iconbtn chat-users-btn" title="Users">
-              <span class="fa fa-user"></span>
-            </a>
-          </div>
-        </div>
-    </form>
-    <?php endif; ?>
-    <!-- end chat input -->
-    
-    <!-- top frame -->
-    <div id="chat-top-frame">
-      
-        <!-- hints -->
-        <div class="hint-popup">
-            <div class="wrap clearfix">
-              <div class="alert alert-warning">
-                <a title="Hide hint"><span class="fa fa-remove hidehint"></span></a>
-                <a title="Next hint"><span class="fa fa-chevron-right nexthint"></span></a>
-                <strong>Hint:</strong> <span class="hint-message"></span>
-              </div>
-            </div>
-        </div>
-        <!-- end hints -->
-
-        <!-- user tools -->
-        <div class="user-tools">
-            <div class="wrap clearfix">
-              <h5>
-                <button type="button" class="close" aria-hidden="true">&times;</button>
-                <span class="user-tools-user"></span>
-              </h5>
-              <div class="tools">
-              
-                <div class="user-tools-wrap">
-                
-                  <a id="ignoreuser" href="#ignore">
-                    <span class="fa fa-eye-slash"></span> Ignore
-                  </a>
-                  <a id="unignoreuser" href="#unignore">
-                    <span class="fa fa-eye"></span> Unignore
-                  </a>
-            
-                  <?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
-                  <a href="#togglemute">
-                    <span class="fa fa-ban"></span> Mute
-                  </a> 
-                  <a href="#toggleban">
-                    <span class="fa fa-remove"></span> Ban
-                  </a> 
-                  <a href="#clearmessages"><span class="fa fa-fire"></span> Clear messages</a> 
-                  <?php endif; ?>
-            
+            <div id="chat-input-wrap">
+                <div id="chat-input-control-wrap">
+                    <input id="chat-input-control" type="text" placeholder="Enter a message..." class="input" spellcheck="true" autocomplete="off"/>
+                    <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
                 </div>
-            
-                <?php if(Session::hasFeature(UserFeature::MODERATOR) || Session::hasFeature(UserFeature::ADMIN)): ?>
-                <!-- mute -->
-                <form id="user-mute-form">
-                  <div class="form-group">
-                    <select id="banTimeLength" class="select form-control input-sm">
-                      <option value="0">Length of time</option>
-                      <option value="10">10 minutes</option>
-                      <option value="30">30 minutes</option>
-                      <option value="60">1 hr</option>
-                      <option value="720">12 hrs</option>
-                      <option value="1440">24 hrs</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-xs btn-primary">Confirm</button>
-                    <button id="cancelmute" type="button" class="btn btn-xs">Cancel</button>
-                  </div>
-                </form>
-                <!-- end mute -->
-                
-                <!-- ban -->
-                <form id="user-ban-form">
-                  <input type="hidden" name="ipBan" value="" />
-                  <div class="form-group">
-                    <select id="banTimeLength" class="select form-control input-sm" style="width:150px;" onchange="$('#banReason').focus();">
-                      <option value="0">Length of time</option>
-                      <option value="1">1 minute</option>
-                      <option value="5">5 minutes</option>
-                      <option value="10">10 minutes</option>
-                      <option value="30">30 minutes</option>
-                      <option value="60">1 hr</option>
-                      <option value="720">12 hrs</option>
-                      <option value="1440">24 hrs</option>
-                      <option value="perm">Permanent</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <input type="text" class="input form-control input-sm" id="banReason" placeholder="Reason for ban" />
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-xs btn-primary">Ban user</button>
-                    <button id="ipbanuser" type="button" class="btn btn-xs btn-danger">IP ban user</button>
-                    <button id="cancelban" type="button" class="btn btn-xs">Cancel</button>
-                  </div>
-                </form>
-                <!-- end ban -->
-                
-                <?php endif; ?>
-                
-              </div>
+                <span id="chat-login-msg">
+                  <?php if(!empty($model->follow)): ?>
+                      You must <a href="/login?follow=<?= Tpl::out($model->follow) ?>" target="_parent">sign in</a> to chat
+                  <?php else: ?>
+                      You must <a href="/login" target="_parent">sign in</a> to chat
+                  <?php endif; ?>
+                </span>
+            </div>
+            <div id="chat-tools-wrap">
+                <a id="chat-settings-btn" class="iconbtn" title="Settings">
+                    <span class="fa fa-cog"></span>
+                </a>
+                <a id="chat-users-btn" class="iconbtn" title="Users">
+                    <span id="chat-pm-count" class="hidden flash" title="You have unread messages!">0</span>
+                    <span class="fa fa-user"></span>
+                </a>
             </div>
         </div>
-        <!-- end user tools -->
-        
-        <!-- broadcast -->
-        <div id="chat-broadcasts">
-            <!-- template -->
-            <div class="chat-broadcast alert alert-info hidden template">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <p>
-                    <span class="fa fa-exclamation-triangle"></span>
-                    <span class="message">This is a broadcast!</span>
-                </p>
-            </div>
-            <!-- template -->
-        </div>
-        <!-- end broadcast -->
-        
-    </div>
+    </form>
+    <!-- end chat input -->
+
+    <!-- top frame -->
+    <div id="chat-top-frame"></div>
     <!-- end top frame -->
-    
+
     <!-- bot frame -->
     <div id="chat-bottom-frame">
-    
+
         <!-- user list -->
         <div id="chat-user-list" class="chat-menu">
             <div class="list-wrap clearfix">
-            
+
               <div class="toolbar">
                 <h5>
                   Users (~<span></span>)
                   <button type="button" class="close" aria-hidden="true">&times;</button>
                 </h5>
               </div>
-            
+
               <div id="chat-groups" class="scrollable nano">
                 <div class="content nano-content">
                   <h6>Admins</h6>
@@ -224,81 +95,81 @@ use Destiny\Common\Config;
                   <ul class="unstyled bots"></ul>
                 </div>
               </div>
-            
+
             </div>
         </div>
         <!-- end user list -->
-  
+
         <!-- settings -->
         <div id="chat-settings" class="chat-menu">
             <div class="list-wrap clearfix">
-            
+
               <div class="toolbar">
                 <h5>
                   <span>Settings</span>
                   <button type="button" class="close" aria-hidden="true">&times;</button>
                 </h5>
               </div>
-              
+
               <div class="tools">
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Show all user flair icons">
+                <div class="checkbox">
+                  <label title="Show all user flair icons">
                     <input name="hideflairicons" type="checkbox" /> Hide flair icons
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Show the timestamps next to the messages">
+                <div class="checkbox">
+                  <label title="Show the timestamps next to the messages">
                     <input name="showtime" type="checkbox" /> Show time for messages
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Highlight text that you are mentioned in">
+                <div class="checkbox">
+                  <label title="Highlight text that you are mentioned in">
                     <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="text" title="Your custom list of words that will make messages highlight" style="width: 100%;">
+                <div class="form-group">
+                  <label title="Your custom list of words that will make messages highlight" style="width: 100%;">
                     Custom highlight words.
                     <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma (,)" />
                   </label>
                 </div>
-                <div class="form-group checkbox">
-                  <label class="checkbox" title="Show desktop notifications on hightlight">
-                    <input name="notifications" type="checkbox" /> Desktop notification on highlight
+                <div class="checkbox">
+                  <label title="Show desktop notifications on hightlight">
+                    <input name="allowNotifications" type="checkbox" /> Desktop notification on highlight
                   </label>
                 </div>
                 <div class="form-group checkbox">
-                  <hr style="margin:5px 0;">
-                  See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information
+                  <hr />
+                  <small>See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information</small>
                 </div>
               </div>
-              
+
             </div>
         </div>
         <!-- end settings -->
-    
+
         <!-- emote list -->
         <div id="chat-emote-list" class="chat-menu">
             <div class="list-wrap clearfix">
-            
+
               <div class="toolbar">
                 <h5>
                   Emotes
                   <button type="button" class="close" aria-hidden="true">&times;</button>
                 </h5>
               </div>
-            
+
               <div id="chat-emotes" class="scrollable nano">
                 <div class="content nano-content">
                   <div class="emote-group" id="destiny-emotes"></div>
                   <hr/>
                   <h6>Twitch Emotes</h6>
-                  <div id="emote-subscribe-note">Subscribe on Twitch to unlock Emotes</div>
+                  <div id="emote-subscribe-note">Twitch subscribers only</div>
                   <div class="emote-group" id="twitch-emotes"></div>
                   <hr/>
                 </div>
               </div>
-            
+
             </div>
         </div>
         <!-- emote list -->
@@ -312,17 +183,20 @@ use Destiny\Common\Config;
                 </h5>
               </div>
               <div id="chat-pm-message">
-                <p>You have <span class="chat-pm-count">0</span> unread message(s).</p>
-                <p><a href="/profile/messages" target="_blank" class="btn btn-primary btn-sm reply-link"><i class="fa fa-envelope"></i> INBOX</a> or <button class="btn btn-default btn-sm close-link">DISMISS <i class="fa fa-close"></i></button></p>
+                <p>You have unread message(s).</p>
+                <p>
+                    <a id="reply-privmsg" href="/profile/messages" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i> INBOX</a> or
+                    <button id="close-privmsg" class="btn btn-default btn-sm">DISMISS <i class="fa fa-close"></i></button>
+                </p>
                 <p>or view the <a href="#" class="user-list-link">user list</a></p>
               </div>
             </div>
         </div>
-    
+
     </div>
     <!-- end bot frame -->
-    
-  
+
+
 </div>
 
 <?php include Tpl::file('seg/commonbottom.php') ?>

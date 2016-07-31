@@ -1,20 +1,23 @@
 <?php
 namespace Destiny\Google;
 
+use Destiny\Common\Config;
 use Destiny\Common\CurlBrowser;
 use Destiny\Common\MimeType;
 use Destiny\Common\Exception;
+use Destiny\Common\Request;
 
 class GoogleRecaptchaHandler {
 
     /**
-     * @param string $secret The shared key between your site and ReCAPTCHA.
      * @param string $response The user response token provided by the reCAPTCHA to the user and provided to your site on.
-     * @param string $remoteip The user's IP address.
+     * @param Request $request The request
      * @return bool
      * @throws Exception
      */
-    public function resolve($secret, $response, $remoteip){
+    public function resolve($response, Request $request){
+        $secret = Config::$a ['g-recaptcha'] ['secret'];
+        $remoteip = $request->ipAddress();
         $curl = new CurlBrowser (array (
             'timeout' => 25,
             'url' => 'https://www.google.com/recaptcha/api/siteverify?secret='. $secret .'&response='. $response .'&remoteip=' . $remoteip,

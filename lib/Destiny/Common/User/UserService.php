@@ -332,7 +332,7 @@ class UserService extends Service {
    * @return array
    * @throws \Doctrine\DBAL\DBALException
    */
-  public function getUsers($limit, $page = 1) {
+  public function findAll($limit, $page = 1) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
       SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
@@ -354,13 +354,45 @@ class UserService extends Service {
   }
 
   /**
+   * @param string $feature
    * @param int $limit
-   * @param $page
-   * @param string $search
+   * @param int $page
    * @return array
    * @throws \Doctrine\DBAL\DBALException
    */
-  public function searchUsers($limit, $page, $search) {
+  public function findByFeature($feature, $limit, $page){
+    $conn = Application::instance ()->getConnection ();
+    $stmt = $conn->prepare ( '
+      SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
+      FROM dfl_users AS u
+      INNER JOIN dfl_users_features AS uf ON (uf.userId = u.userId)
+      INNER JOIN dfl_features AS f ON (f.featureId = uf.featureId)
+      WHERE f.featureName = :featureName
+      ORDER BY u.userId DESC
+      LIMIT :start,:limit
+    ' );
+    $stmt->bindValue ( 'featureName', $feature, \PDO::PARAM_STR );
+    $stmt->bindValue ( 'start', ($page-1)*$limit, \PDO::PARAM_INT );
+    $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+    $stmt->execute ();
+    $pagination = array ();
+    $pagination ['list'] = $stmt->fetchAll ();
+    $pagination ['total'] = $conn->fetchColumn ( 'SELECT FOUND_ROWS()' );
+    $pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
+    $pagination ['pages'] = 5;
+    $pagination ['page'] = $page;
+    $pagination ['limit'] = $limit;
+    return $pagination;
+  }
+
+  /**
+   * @param string $search
+   * @param int $limit
+   * @param $page
+   * @return array
+   * @throws \Doctrine\DBAL\DBALException
+   */
+  public function findBySearch($search, $limit, $page) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare ( '
       SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate FROM dfl_users AS u
@@ -596,7 +628,7 @@ class UserService extends Service {
    */
   public function getIPByUserId( $userid ) {
     $redis   = Application::instance ()->getRedis ();
-    return $redis->zrange('CHAT:userips-' . $userid, 0, -1);
+    return $redis->zRange('CHAT:userips-' . $userid, 0, -1);
   }
 
   /**

@@ -3,10 +3,13 @@ namespace Destiny\Controllers;
 
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Application;
+use Destiny\Common\MimeType;
+use Destiny\Common\Response;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
+use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Request;
 use Destiny\Common\Config;
@@ -18,9 +21,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Api\ApiAuthenticationService;
-use Destiny\Common\Response;
-use Destiny\Common\MimeType;
-use Destiny\Common\Utils\Http;
+use Destiny\Messages\PrivateMessageService;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -33,16 +34,16 @@ use Destiny\Google\GoogleRecaptchaHandler;
  */
 class ProfileController {
 
-  /**
-   * @Route ("/profile/info")
-   * @Secure ({"USER"})
-   *
-   * @return Response
-   */
+    /**
+     * @Route ("/profile/info")
+     * @Secure ({"USER"})
+     *
+     * @return string
+     */
     public function profileInfo() {
-      $response = new Response ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
-      $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-      return $response;
+        $response = new Response ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
+        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+        return $response;
     }
     
     /**
@@ -78,23 +79,14 @@ class ProfileController {
         $model->error = Session::get ( 'modelError' );
         Session::set ( 'modelError' );
       }
-      
-      $model->title = 'Profile';
-      $model->user = $userService->getUserById ( $userId );
 
       $subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions( $userId );
-      for ( $i=0; $i < count($subscriptions); $i++ ){
-        $subscriptions [$i]['type'] = $subscriptionsService->getSubscriptionType ( $subscriptions [$i]['subscriptionType'] );
-      }
-
       $gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus ( $userId, SubscriptionStatus::ACTIVE );
-      for ( $i=0; $i < count($gifts); $i++ ){
-        $gifts [$i]['type'] = $subscriptionsService->getSubscriptionType ( $gifts [$i]['subscriptionType'] );
-      }
 
+      $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount($userId);
+      $model->user = $userService->getUserById ( $userId );
       $model->gifts = $gifts;
       $model->subscriptions = $subscriptions;
-
       $model->address = $address;
       $model->title = 'Account';
       return 'profile';
@@ -247,7 +239,7 @@ class ProfileController {
         throw new Exception ( 'You must solve the recaptcha.' );
 
       $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-      $googleRecaptchaHandler->resolve(Config::$a ['g-recaptcha'] ['secret'], $params['g-recaptcha-response'], $request->ipAddress());
+      $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
 
       $apiAuthService = ApiAuthenticationService::instance ();
       $userId = Session::getCredentials ()->getUserId ();

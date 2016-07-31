@@ -70,7 +70,7 @@ class SubscriptionExpire implements TaskInterface {
         $conn = Application::instance()->getConnection();
         $stmt = $conn->prepare ( '
           DELETE FROM `dfl_users_subscriptions`
-          WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 24 HOUR)
+          WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 1 HOUR)
         ' );
         $stmt->bindValue ( 'status', SubscriptionStatus::_NEW, \PDO::PARAM_STR );
         $stmt->execute ();

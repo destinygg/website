@@ -15,21 +15,21 @@ use Destiny\Common\Config;
 </head>
 <body class="embed">
 
-<div id="destinychat" class="chat chat-theme-dark chat-icons">
+    <div id="destinychat" class="chat chat-icons">
 
-    <div class="chat-output-frame">
-        <div class="chat-output nano">
-          <div class="chat-lines overthrow nano-content"></div>
+        <div id="chat-output-frame">
+            <div id="chat-output" class="nano">
+              <div id="chat-lines" class="overthrow nano-content"></div>
+            </div>
         </div>
+
     </div>
 
-</div>
+    <?php include Tpl::file('seg/commonbottom.php') ?>
 
-<?php include Tpl::file('seg/commonbottom.php') ?>
-
-<script src="/chat/history"></script>
-<script src="<?=Config::cdnv()?>/chat/js/chat.min.js"></script>
-<script>$('#destinychat').ChatGui(<?=Tpl::jsout($model->user)?>,<?=Tpl::jsout($model->options)?>);</script>
+    <script src="/chat/history"></script>
+    <script src="<?=Config::cdnv()?>/chat/js/chat.min.js"></script>
+    <script>$('#destinychat').ChatGui(<?=Tpl::jsout($model->user)?>,<?=Tpl::jsout($model->options)?>);</script>
 
 </body>
 </html>

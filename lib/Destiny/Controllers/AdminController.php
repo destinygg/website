@@ -3,6 +3,8 @@ namespace Destiny\Controllers;
 
 use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Session;
+use Destiny\Common\User\UserFeaturesService;
+use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -44,45 +46,35 @@ class AdminController {
      * @return string
      */
     public function users(array $params, ViewModel $model) {
-        if (empty ( $params ['page'] )) {
+        if (empty ( $params ['page'] ))
             $params ['page'] = 1;
-        }
-        if (empty ( $params ['size'] )) {
+        if (empty ( $params ['size'] ))
             $params ['size'] = 20;
-        }
-        if (empty ( $params ['search'] )) {
+        if (empty ( $params ['search'] ))
             $params ['search'] = '';
-        }
+        if (empty ( $params ['feature'] ))
+            $params ['feature'] = '';
+
         $model->title = 'Administration';
         $model->user = Session::getCredentials ()->getData ();
 
-        if(empty($params ['search']))
-            $model->users = UserService::instance ()->getUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ) );
+        if (!empty($params ['feature']))
+            $model->users = UserService::instance()->findByFeature($params ['feature'], intval($params ['size']), intval($params ['page']));
+        else if (!empty($params ['search']))
+            $model->users = UserService::instance()->findBySearch($params ['search'], intval($params ['size']), intval($params ['page']));
         else
-            $model->users = UserService::instance ()->searchUsers ( intval ( $params ['size'] ), intval ( $params ['page'] ), $params ['search'] );
+            $model->users = UserService::instance()->findAll(intval($params ['size']), intval($params ['page']));
 
         $model->size = $params ['size'];
         $model->page = $params ['page'];
         $model->search = $params ['search'];
+        $model->feature = $params ['feature'];
+
+        $userFeaturesService = UserFeaturesService::instance ();
+        $model->features = $userFeaturesService->getNonPseudoFeatures ();
+
         $model->title = 'Admin';
         return 'admin/users';
-    }
-
-    /**
-     * @Route ("/admin/user/find")
-     * @Secure ({"ADMIN"})
-     *
-     * @param array $params
-     * @return Response
-     */
-    public function adminUserFind(array $params) {
-        FilterParams::required($params, 's');
-        $userService = UserService::instance ();
-        $users = $userService->searchUsers ( 10, 0, trim($params ['s']) );
-        $response = new Response ( Http::STATUS_OK );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        $response->setBody ( json_encode ( $users ) );
-        return $response;
     }
 
     /**
@@ -200,10 +192,14 @@ class AdminController {
                 }
                 break;
             case 'NEWTIEREDSUBSCRIBERSLASTXDAYS':
-                FilterParams::required($params, 'days');
-                $key = 'NewTieredSubscribersLastXDays '. intval($params['days']);
+                FilterParams::required($params, 'fromDate');
+                FilterParams::required($params, 'toDate');
+                $fromDate = Date::getDateTime($params['fromDate']);
+                $toDate = Date::getDateTime($params['toDate']);
+                $toDate->setTime(23, 59, 59);
+                $key = 'NewTieredSubscribersLastXDays'. $fromDate->format('Ymdhis'). $toDate->format('Ymdhis');
                 if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getNewTieredSubscribersLastXDays( intval($params['days']) );
+                    $data = $statisticsService->getNewTieredSubscribersLastXDays( $fromDate, $toDate );
                     $cacheDriver->save($key, $data, 30);
                 } else {
                     $data = $cacheDriver->fetch($key);

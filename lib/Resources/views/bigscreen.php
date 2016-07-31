@@ -12,7 +12,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
-<body id="bigscreen" class="thin">
+<body id="bigscreen" class="no-contain">
 
     <?php include Tpl::file('seg/top.php') ?>
 
@@ -36,7 +36,7 @@ use Destiny\Common\Config;
                 </div>
             </div>
             <div id="chat-wrap">
-                <iframe id="chat-frame" class="stream-element" style="border:none; width: 100%;" seamless="seamless" src="/embed/chat?follow=/bigscreen"></iframe>
+                <iframe id="chat-frame" class="stream-element" seamless="seamless" src="/embed/chat?follow=/bigscreen"></iframe>
             </div>
         </div>
 

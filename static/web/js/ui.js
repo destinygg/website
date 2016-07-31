@@ -1,10 +1,5 @@
 // Document ready
 $(function(){
-    var unreadElem = $('.pm-count');
-    if (unreadElem && localStorage) {
-        var unreadMessageCount = parseInt(unreadElem.text() || "0", 10);
-        localStorage['unreadMessageCount'] = unreadMessageCount || 0;
-    }
 
     // Generic popup defaults
     var popupDefaults = {
@@ -246,32 +241,6 @@ $(function(){
         $.ajax({
             url: '/ping',
             method: 'get'
-        });
-    }, 10*60*1000);
-})();
-
-//Query the unread message count
-(function(){
-    if (!localStorage)
-        return;
-
-    window.setInterval(function(){
-        $.ajax({
-            url: '/api/messages/unreadcount',
-            method: 'get',
-            cache: false,
-            dataType: 'json',
-            success: function(data) {
-                if (!data || !data.success)
-                    return;
-
-                var count = parseInt(localStorage['unreadMessageCount'] || "0", 10);
-                if (count == data.unreadcount)
-                    return;
-
-                localStorage['unreadMessageCount'] = data.unreadcount;
-                $(document).trigger('privmsg-update');
-            }
         });
     }, 10*60*1000);
 })();

@@ -8,11 +8,9 @@ use Destiny\Common\Config;
             <div class="row">
                 <div class="col-md-7">
                     <div class="ds-block">
-                        <h3>Destiny.gg is available for Android</h3>
-                        <p>
-                            Now with video support! Requires Android 4+<br />
-                            The Destiny app now lets you watch Destiny or other Twitch channels with destiny.gg chat.
-                        </p>
+                        <h3>Destiny.gg for Android</h3>
+                        <p>The Destiny app lets you watch Destiny or other Twitch channels with destiny.gg chat.
+                        <br />Feel free to to contribute to the repositories at <a href="https://github.com/destinygg">github</a>.</p>
                         <div>
                             <a target="_blank" title="Destiny.gg for Android" href="//play.google.com/store/apps/details?id=gg.destiny.app.chat">
                                 <img width="197" height="59" alt="Destiny.gg for Android" src="<?=Config::cdn()?>/web/img/google-play-icon.png" />

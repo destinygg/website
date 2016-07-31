@@ -29,16 +29,19 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'static/vendor/libs.min.js': [
+                        'static/vendor/polyfill/notification.js',
+                        'static/vendor/polyfill/localstorage.js',
                         'static/vendor/overthrow/overthrow.min.js',
-                        'static/vendor/jquery/jquery-1.11.3.min.js',
+                        'static/vendor/visibility-1.2.3/visibility.min.js',
+                        'static/vendor/jquery/jquery-1.12.3.min.js',
                         'static/vendor/jquery.cookie/jquery.cookie.js',
                         'static/vendor/jquery.debounce/jquery.debounce.js',
                         'static/vendor/jquery.mousewheel/jquery.mousewheel.min.js',
                         'static/vendor/jquery.validate/jquery.validate.min.js',
                         'static/vendor/jquery.nanoscroller-0.8.7/jquery.nanoscroller.min.js',
-                        'static/vendor/bootstrap-3.3.5/js/bootstrap.js',
-                        'static/vendor/moment/moment-2.10.3.min.js',
-                        'static/vendor/chart.js/Chart.min.v1.0.2.js'
+                        'static/vendor/bootstrap-3.3.6/js/bootstrap.js',
+                        'static/vendor/moment/moment-2.13.0.min.js',
+                        'static/vendor/chart.js/Chart.min.v2.1.3.js'
                     ]
                 }
             },
@@ -70,7 +73,6 @@ module.exports = function(grunt) {
                         'static/chat/js/autocomplete.js',
                         'static/chat/js/formatters.js',
                         'static/chat/js/UrlFormatter.js',
-                        'static/chat/js/hints.js',
                         'static/chat/js/menu.js',
                         'static/chat/js/gui.js',
                         'static/chat/js/chat.js'
@@ -99,7 +101,6 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'static/web/css/style.min.css': 'static/web/css/style.scss',
-                    'static/web/css/messages.min.css' : 'static/web/css/messages.scss',
                     'static/chat/css/style.min.css': 'static/chat/css/style.min.css'
                 }
             }
@@ -198,7 +199,7 @@ module.exports = function(grunt) {
         'build:assets',
         'build:static'
     ]);
-    
+
     // Default
     grunt.registerTask('default', [
         'build'
