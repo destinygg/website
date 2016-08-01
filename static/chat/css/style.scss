@@ -403,7 +403,7 @@
  **/
 .chat.focus-user #chat-lines > div,
 .chat.focus-user #chat-lines > div {
-  opacity:0.3 !important;
+  opacity:0.3;
 }
 .chat.focus-user #chat-lines > div.user-msg.focused {
   opacity:1 !important;
