@@ -25,7 +25,7 @@
         output             : null,
         input              : null,
         userMessages       : [],
-        lastFocusedUsers   : [],
+        focusedUsers       : [],
 
         inputhistory       : [],
         currenthistoryline : -1,
@@ -41,8 +41,10 @@
         twitchemotes       : [],
         formatters         : [],
 
-        pmcountnum : 0,
-        pmcount: null,
+        pmcountnum         : 0,
+        pmcount            : null,
+
+        stylesheet         : null,
 
         preferences : {
             'showtime' : {
@@ -66,8 +68,8 @@
                 'default': false
             },
             'highlight': {
-                'value'  : false,
-                'default': false
+                'value'  : true,
+                'default': true
             },
             'customhighlight': {
                 'value'  : [],
@@ -93,11 +95,11 @@
             var chat = this;
 
             // local elements stored in vars to not have to get the elements via query each time
-            this.pmcount   = this.ui.find('#chat-pm-count:first').eq(0);
-            this.lines     = this.ui.find('#chat-lines:first').eq(0);
-            this.output    = this.ui.find('#chat-output:first').eq(0);
-            this.inputwrap = this.ui.find('#chat-input:first').eq(0);
-            this.input     = this.inputwrap.find('.input:first').eq(0);
+            this.pmcount    = this.ui.find('#chat-pm-count:first').eq(0);
+            this.lines      = this.ui.find('#chat-lines:first').eq(0);
+            this.output     = this.ui.find('#chat-output:first').eq(0);
+            this.input      = this.ui.find('#chat-input .input:first').eq(0);
+            this.stylesheet = $('#chat-styles')[0]['sheet'];
 
             // Message formatters
             this.formatters.push(new destiny.fn.UrlFormatter(this));
@@ -414,8 +416,6 @@
                 return false;
             });
 
-
-
             // should be moved somewhere better
             $(window).on({
                 'resize.chat': function(){
@@ -433,26 +433,32 @@
             return this;
         },
 
+        toggleUserFocus: function(/* ... users .. */) {
+            if(this.focusedUsers.length <= 0 && arguments.length == 0)
+                return;
+            if(arguments.length == 0 || this.isFocusedUser(arguments)){
+                this.clearStyleSheet();
+                this.focusedUsers = [];
+                this.ui.toggleClass('focus-user', false);
+            } else {
+                this.clearStyleSheet();
+                for(var i=0; i<arguments.length; ++i)
+                    this.stylesheet.addRule('.user-msg[data-username="' + arguments[i] + '"]', 'opacity:1 !important;', i);
+                this.focusedUsers = arguments;
+                this.ui.toggleClass('focus-user', true);
+            }
+        },
+
         isFocusedUser: function(users){
-            for(var x=0; x<users.length; ++x)
-                if($.inArray(users[x], this.lastFocusedUsers) !== -1)
+            for(var i=0; i<users.length; ++i)
+                if(this.focusedUsers.indexOf(users[i]) !== -1)
                     return true;
             return false;
         },
 
-        toggleUserFocus: function() {
-            var hasFocus = this.isFocusedUser(arguments);
-            if(arguments.length == 0 || hasFocus){
-                this.lines.find('.focused').removeClass('focused');
-                this.ui.removeClass('focus-user');
-                this.lastFocusedUsers = [];
-            } else if(!hasFocus) {
-                this.lines.find('.focused').removeClass('focused');
-                for(var i=0; i<arguments.length; ++i)
-                    this.lines.find('div[data-username="' + arguments[i] + '"]').addClass('focused');
-                this.ui.addClass('focus-user');
-                this.lastFocusedUsers = arguments;
-            }
+        clearStyleSheet: function(){
+            for(var i=0; i<this.stylesheet.cssRules.length; ++i)
+                this.stylesheet.removeRule(0);
         },
 
         loadBacklog: function() {
@@ -687,7 +693,7 @@
             if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getPreference('highlight'))
                 return false;
 
-            if($.inArray(destiny.UserFeatures.BOT, message.user.features) >= 0)
+            if(message.user.features.indexOf(destiny.UserFeatures.BOT) !== -1)
                 return false;
 
             var nicks = this.getPreference('highlightnicks');
@@ -746,8 +752,8 @@
             this.scrollPlugin.reset();
         },
 
-        addUnreadMessageCount: function(count){
-            this.pmcountnum = count;
+        addUnreadMessageCount: function(incr){
+            this.pmcountnum += incr;
             this.pmcount.toggleClass('hidden', !this.pmcountnum).text(this.pmcountnum);
         },
 

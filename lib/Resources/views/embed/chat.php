@@ -13,6 +13,7 @@ use Destiny\Common\Config;
 <meta name="referrer" content="no-referrer">
 <?php include Tpl::file('seg/commontop.php') ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
+<style id="chat-styles" type="text/css"></style>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body class="embed">
