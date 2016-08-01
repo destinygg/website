@@ -59,22 +59,6 @@ abstract class Http {
         }
         header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
     }
-        
-    /**
-     * Return FALSE if unmodified | TRUE if modified or we can't tell
-     * 
-     * @param int $mtime
-     * @return boolean
-     */
-    public static function checkIfModifiedSince($mtime) {
-        global $_SERVER;
-        if (isset ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] ) && ! empty ( $_SERVER ['HTTP_IF_MODIFIED_SINCE'] )) {
-            if ($_SERVER ['HTTP_IF_MODIFIED_SINCE'] == gmdate ( 'r', $mtime )) {
-                return false;
-            }
-        }
-        return true;
-    }
     
     /**
      * @return string

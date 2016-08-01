@@ -40,6 +40,7 @@ use Destiny\Common\Session;
                     <li><a href="/profile">Account</a></li>
                     <li><a href="/profile/messages">Messages</a></li>
                     <li><a href="/profile/authentication">Authentication</a></li>
+                    <li><a href="/embed/chat">Chat</a></li>
                     <li class="divider"></li>
                     <li><a href="/logout">Sign Out</a></li>
                 </ul>
@@ -69,6 +70,7 @@ use Destiny\Common\Session;
 
                 <?php if(Session::hasRole(UserRole::USER)): ?>
                 <li class="visible-xs"><a title="Your account" href="/profile">Profile</a></li>
+                <li class="visible-xs"><a title="Chat" href="/embed/chat">Chat</a></li>
                 <li class="divider-vertical visible-xs"></li>
                 <?php endif; ?>
 
