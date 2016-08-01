@@ -25,7 +25,7 @@
         output             : null,
         input              : null,
         userMessages       : [],
-        lastFocusedUser    : "",
+        lastFocusedUsers   : [],
 
         inputhistory       : [],
         currenthistoryline : -1,
@@ -315,8 +315,9 @@
             });
 
             this.lines.on('mousedown', 'div.user-msg .chat-user', function() {
-                var username = this.textContent.toLowerCase();
-                chat.toggleUserFocus(username);
+                var username1 = $(this).closest('.user-msg').data('username');
+                var username2 = this.textContent.toLowerCase();
+                chat.toggleUserFocus(username1, username2);
                 return false;
             });
 
@@ -432,16 +433,25 @@
             return this;
         },
 
-        toggleUserFocus: function(user) {
-            if(!user || user === '' || this.lastFocusedUser === user){
-                this.lines.find('div.focused').removeClass('focused');
+        isFocusedUser: function(users){
+            for(var x=0; x<users.length; ++x)
+                if($.inArray(users[x], this.lastFocusedUsers) !== -1)
+                    return true;
+            return false;
+        },
+
+        toggleUserFocus: function() {
+            var hasFocus = this.isFocusedUser(arguments);
+            if(arguments.length == 0 || hasFocus){
+                this.lines.find('.focused').removeClass('focused');
                 this.ui.removeClass('focus-user');
-                this.lastFocusedUser = "";
-            } else if(this.lastFocusedUser != user){
-                this.lines.find('div.focused').removeClass('focused');
-                this.lines.find('div[data-username="' + user + '"]').addClass('focused');
+                this.lastFocusedUsers = [];
+            } else if(!hasFocus) {
+                this.lines.find('.focused').removeClass('focused');
+                for(var i=0; i<arguments.length; ++i)
+                    this.lines.find('div[data-username="' + arguments[i] + '"]').addClass('focused');
                 this.ui.addClass('focus-user');
-                this.lastFocusedUser = user;
+                this.lastFocusedUsers = arguments;
             }
         },
 
