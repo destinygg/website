@@ -337,9 +337,11 @@
   color: $color-text-broadcast;
 }
 .chat #chat-lines > .own-msg,
-.chat #chat-lines > .highlight,
 .chat #chat-lines > .broadcast-msg {
   background-color: lighten( $color-chat-bg, 5 );
+}
+.chat #chat-lines > .highlight {
+  background-color: $color-chat-mentioned;
 }
 
 #chat-input-wrap {
