@@ -11,6 +11,7 @@ use Destiny\Common\Config;
 <?php include Tpl::file('seg/commontop.php') ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdnv()?>/chat/css/onstream.css" rel="stylesheet" media="screen">
+<style id="chat-styles" type="text/css"></style>
 <?php include Tpl::file('seg/google.tracker.php') ?>
 </head>
 <body class="embed">
