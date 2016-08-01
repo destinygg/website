@@ -433,7 +433,7 @@
             return this;
         },
 
-        toggleUserFocus: function(/* ... users .. */) {
+        toggleUserFocus: function(/** ... users .. **/) {
             if(this.focusedUsers.length <= 0 && arguments.length == 0)
                 return;
             if(arguments.length == 0 || this.isFocusedUser(arguments)){
@@ -442,9 +442,11 @@
                 this.ui.toggleClass('focus-user', false);
             } else {
                 this.clearStyleSheet();
-                for(var i=0; i<arguments.length; ++i)
-                    this.stylesheet.addRule('.user-msg[data-username="' + arguments[i] + '"]', 'opacity:1 !important;', i);
-                this.focusedUsers = arguments;
+                this.focusedUsers = [];
+                for(var i=0; i<arguments.length; ++i){
+                    this.stylesheet.insertRule('.user-msg[data-username="' + arguments[i] + '"]{opacity:1 !important;}', this.stylesheet.cssRules.length);
+                    this.focusedUsers.push(arguments[i]);
+                }
                 this.ui.toggleClass('focus-user', true);
             }
         },
@@ -458,7 +460,7 @@
 
         clearStyleSheet: function(){
             for(var i=0; i<this.stylesheet.cssRules.length; ++i)
-                this.stylesheet.removeRule(0);
+                this.stylesheet.deleteRule(0);
         },
 
         loadBacklog: function() {
