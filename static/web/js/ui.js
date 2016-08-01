@@ -1,6 +1,8 @@
 // Document ready
 $(function(){
 
+    var body = $('body');
+
     // Generic popup defaults
     var popupDefaults = {
         height     :500,
@@ -15,16 +17,14 @@ $(function(){
     };
     
     window.getOptionsString = (function(options){
-        if(!options)
-            options = popupDefaults;
-        else
-            options = $.extend({}, popupDefaults, options);
+        options = (!options) ? popupDefaults : $.extend({}, popupDefaults, options);
         var str = '';
         for(var i in options)
-            str += i + '='+ options[i] +',';
+            if(options.hasOwnProperty(i))
+                str += i + '='+ options[i] +',';
         return str;
     });
-    
+
     $('body#bigscreen').each(function(){
 
         var chatpanel   = $('#chat-panel'),
@@ -34,7 +34,7 @@ $(function(){
 
         chatframe.on('load', function(){
             var chatwindow = this.contentWindow;
-            
+
             if(!chatwindow)
                 return;
 
@@ -69,24 +69,16 @@ $(function(){
             resizebar.css('left', 0);
 
             // Resize the stream / chat frames
-            var resizeFrames = function(nwidth)
-            {
-
-                if(nwidth < minwidth){
+            var resizeFrames = function(nwidth) {
+                if(nwidth < minwidth)
                     nwidth = minwidth;
-                }
-
                 streampanel.css('width', '-moz-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', '-webkit-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', '-o-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', 'calc(100% - '+ nwidth +'px)');
                 chatpanel.css('width', nwidth);
                 resizebar.css('left', 0);
-
-                if(localStorage){
-                    localStorage['bigscreen.chat.width'] = nwidth;
-                }
-
+                localStorage['bigscreen.chat.width'] = nwidth;
             };
 
             resizebar.on('mousedown.chatresize', function(e){
@@ -139,14 +131,13 @@ $(function(){
 
             // Onload, remember the last width the user chose
             var width = parseInt(localStorage['bigscreen.chat.width']);
-            if(width > minwidth && $(window).width() > disableWidth){
+            if(width > minwidth && $(window).width() > disableWidth)
                 resizeFrames(width);
-            }
 
         });
-        
+
     });
-    
+
     // Add collapses
     $(".collapse").not('#collapsemenu').collapse();
     
@@ -182,19 +173,16 @@ $(function(){
         $('a[href="' + location.hash + '"]').tab('show');
 
     // Set the top nav selection
-    $('body').each(function(){
-        $('.navbar a[rel="'+$(this).attr('id')+'"]').closest('li').addClass('active');
-        $('.navbar a[rel="'+$(this).attr('class')+'"]').closest('li').addClass('active');
-    });
-    
+    $('.navbar a[rel="'+body.attr('id')+'"]').closest('li').addClass('active');
+    $('.navbar a[rel="'+body.attr('class')+'"]').closest('li').addClass('active');
+
     // Generic popup links
-    $('body').on('click', 'a.popup', function(e){
-        var a = $(this)
+    body.on('click', 'a.popup', function(e){
+        var a = $(this);
         a.data('popup', window.open(a.attr('href'), '_blank', window.getOptionsString(a.data('options'))) );
-        e.preventDefault();
         return false;
     });
-    
+
     // Lazy load images
     $(this).loadImages();
     $(this).find('[data-toggle="tooltip"]').tooltip();
@@ -245,37 +233,11 @@ $(function(){
     }, 10*60*1000);
 })();
 
-//Remember dismissed permanent alert boxes
-(function() {
-    
-    $.cookie.json = true;
-    $('.alert .close.persist').each(function() {
-        
-        var parent = $(this).parent('.alert'),
-                id     = parent.attr('id');
-        
-        if (!id)
-            return;
-        
-        id = 'alert-dismissed-' + id;
-        
-        $(this).click(function() {
-            $.cookie(id, true, {expires: 365})
-        });
-        
-        if ($.cookie(id))
-            parent.remove();
-        
-    })
-    
-})();
-
 
 // Gifting / user search
 (function(){
 
-    var users        = {}, 
-        usrSearch    = $('#userSearchModal'), 
+    var usrSearch    = $('#userSearchModal'),
         usrInput     = usrSearch.find('input#userSearchInput'),
         usrSelectBtn = usrSearch.find('button#userSearchSelect'),
         usrSearchFrm = usrSearch.find('form#userSearchForm'),
@@ -319,13 +281,10 @@ $(function(){
         checkUser(username, function(response){
             if(response.valid && response.cangift){
                 giftUsername = username;
-
-                if(giftMsgInput.val() == ''){
+                if(giftMsgInput.val() == '')
                     giftMsgInput.focus();
-                }else{
+                else
                     usrSearchFrm.submit();
-                }
-
                 usrSelectBtn.button('reset').attr('disabled', false);
                 hasErrors = false;
             }else if(!response.valid){
@@ -337,11 +296,7 @@ $(function(){
     };
 
     usrInput.on('keydown change', function(){
-        if($(this).val() == ''){
-            usrSelectBtn.attr('disabled', true);
-        }else{
-            usrSelectBtn.attr('disabled', false);
-        };
+        usrSelectBtn.attr('disabled', $(this).val() == '');
         usrSearch.find('label.error').addClass('hidden');
     });
 
@@ -371,7 +326,7 @@ $(function(){
             usrInput.val('');
             giftMsgInput.val('');
             usrSearch.find('label.error').addClass('hidden');
-        };
+        }
     });
 
     $('#cancelGiftSubscription').on('click', function(){
@@ -400,4 +355,59 @@ $(function(){
             $(element).closest('.form-group').removeClass('error');
         }
     });
+});
+
+$(function(){
+
+    $('#stream-status').each(function(){
+        var el = $(this),
+            img = el.find('#stream-status-preview img'),
+            end = el.find('#stream-status-end'),
+            start = el.find('#stream-status-start');
+
+        var status = {
+            live: false,
+            game: null,
+            preview: "",
+            animated_preview: "",
+            status_text: "",
+            started_at: null,
+            ended_at: "",
+            duration: 0,
+            viewers: 0,
+            etag: null
+        };
+
+        var updateStatus = function(status){
+            el.toggleClass('online', status.live).toggleClass('offline', !status.live);
+            end.text(moment(status.ended_at).fromNow());
+            start.text(moment(status.started_at).fromNow());
+            img.data('animated', status.animated_preview).attr('src', status.preview);
+        };
+
+        setInterval(function(){
+            $.ajax({
+                url: '/stream.json',
+                ifModified: true,
+                type: 'GET'
+            })
+            .success(function(data, textStatus, xhr){
+                if(xhr.getResponseHeader('ETag') !== status.etag){
+                    status = $.extend(status, {etag:xhr.getResponseHeader('ETag')}, data);
+                    updateStatus(status);
+                }
+            });
+        }, 25000);
+
+        img.on('mouseover', function(){
+                img.data('src', img.attr('src'));
+                img.attr('src', img.data('animated'));
+                console.log('over');
+            })
+            .on('mouseout', function(){
+                img.attr('src', img.data('src'));
+                console.log('out');
+            });
+    });
+
 });

@@ -12,10 +12,10 @@ use Destiny\Twitch\TwitchApiService;
 class BroadcastsFeed  implements TaskInterface {
 
     public function execute() {
-        $app = Application::instance ();
+        $cache = Application::instance ()->getCacheDriver ();
         $response = TwitchApiService::instance ()->getPastBroadcasts ()->getResponse ();
         if (! empty ( $response ))
-            $app->getCacheDriver ()->save ( 'pastbroadcasts', $response );
+            $cache->save ( 'pastbroadcasts', $response );
     }
 
 }

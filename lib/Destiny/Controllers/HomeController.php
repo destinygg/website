@@ -1,6 +1,8 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Common\MimeType;
+use Destiny\Common\Request;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
@@ -11,6 +13,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Messages\PrivateMessageService;
+use Destiny\Twitch\TwitchApiService;
 
 /**
  * @Controller
@@ -28,14 +31,30 @@ class HomeController {
         if (Session::hasRole(UserRole::USER))
             $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount(Session::getCredentials()->getUserId());
 
-        $cacheDriver = Application::instance ()->getCacheDriver ();
-        $model->articles = $cacheDriver->fetch ( 'recentblog' );
-        $model->summoners = $cacheDriver->fetch ( 'summoners' );
-        $model->tweets = $cacheDriver->fetch ( 'twitter' );
-        $model->music = $cacheDriver->fetch ( 'recenttracks' );
-        $model->playlist = $cacheDriver->fetch ( 'youtubeplaylist' );
-        $model->broadcasts = $cacheDriver->fetch ( 'pastbroadcasts' );
+        $cache = Application::instance ()->getCacheDriver ();
+        $model->articles = $cache->fetch ( 'recentblog' );
+        $model->summoners = $cache->fetch ( 'summoners' );
+        $model->tweets = $cache->fetch ( 'twitter' );
+        $model->music = $cache->fetch ( 'recenttracks' );
+        $model->playlist = $cache->fetch ( 'youtubeplaylist' );
+        $model->broadcasts = $cache->fetch ( 'pastbroadcasts' );
         return 'home';
+    }
+
+    /**
+     * @Route ("/stream.json")
+     * @return Response
+     */
+    public function stream() {
+        $cache = Application::instance()->getCacheDriver();
+        $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : TwitchApiService::$STREAM_INFO;
+        $json = json_encode($streaminfo);
+        $response = new Response (Http::STATUS_OK, json_encode($streaminfo));
+        $response->addHeader(Http::HEADER_CACHE_CONTROL, 'private');
+        $response->addHeader(Http::HEADER_PRAGMA, 'public');
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        $response->addHeader(Http::HEADER_ETAG, md5($json));
+        return $response;
     }
 
     /**

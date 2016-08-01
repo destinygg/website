@@ -164,12 +164,13 @@ form.form-alt {
         clear: left;
       }
     }
+
+    .navbar-nav > li > a {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
   }
 
-  .navbar-nav > li > a {
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
 }
 
 @media (min-width: $screen-lg-min) {
@@ -263,16 +264,16 @@ $hb-dark:  #30394A;
 #header-band {
   padding: 0;
   margin: 0;
-  background: $hb-light;
+  position: relative;
+  overflow: hidden;
   background: -moz-linear-gradient(left,  $hb-light 0%, $hb-light 51%, $hb-dark 51%,$hb-dark 100%);
   background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
   background: linear-gradient(to right,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1 );
-  position: relative;
-  overflow: hidden;
 
   .shadow {
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    box-shadow: inset 0 5px 8px rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: absolute;
     top: 0;
     left: 0;
@@ -280,8 +281,13 @@ $hb-dark:  #30394A;
     bottom: 0;
     pointer-events:none;
   }
-  .container {
+
+  & > .container {
     padding: 0;
+    background: -moz-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
+    background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
+    background: linear-gradient(to right,  $hb-light 0%,$hb-dark 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1 );
   }
 }
 
@@ -291,30 +297,22 @@ $hb-dark:  #30394A;
   }
 }
 
-#overview {
-  background: -moz-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
-  background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
-  background: linear-gradient(to right,  $hb-light 0%,$hb-dark 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1 );
-  display: block;
-  width: 100%;
+#brand {
+  float: left;
+  margin: 30px;
   a, h1 {
     display: block;
+    margin:0;
     text-indent: -999em;
   }
-  h1 {
-    margin:0;
-    padding: 0;
-    background: url("../img/logo-banner.jpg") no-repeat center center;
-    background-size: cover;
-    height: 140px;
-    width: 100%;
-    overflow: hidden;
-  }
   a {
-    width: 300px;
-    margin: 20px auto;
-    height: 100px;
+    margin: 0;
+    padding: 0;
+    background: url("../img/logo-banner.png") no-repeat center center;
+    background-size: contain;
+    height: 77px;
+    width: 250px;
+    overflow: hidden;
   }
 }
 
@@ -368,7 +366,7 @@ $hb-dark:  #30394A;
 
 body #main-nav .brand {
   text-indent: -999em;
-  background: url("../img/logo-full.png") no-repeat center left;
+  background: url("../img/logo-brand.png") no-repeat center left;
   background-size: contain;
   margin: 10px 0;
   width: 105px;
@@ -681,7 +679,7 @@ body.no-contain #footer-inner {
   line-height: 18px;
   position: relative;
   text-shadow: 1px 1px 1px black;
-  background-color: rgba($color-surface-dark1,0.4);
+  background-color: rgba($color-surface-dark1,0.5);
   border-top: 1px solid $color-surface-dark3;
   padding: 0;
   margin-top: 15px;
@@ -1611,4 +1609,65 @@ table#inbox td.from a {
 }
 .icon-message-unread {
   color: $text-color-disabled;
+}
+
+#stream-status {
+  border-radius:5px;
+  background: rgba(0,0,0,0.5);
+  margin: 20px 25px 15px 15px;
+  padding: 15px;
+  text-align: right; 
+  overflow: hidden;
+  float: right;
+
+  #stream-status-info-offline,
+  #stream-status-info-online {
+    display: inline-block;
+    vertical-align: middle;
+
+    h3 {
+      margin: 0 0 5px 0;
+    }
+    p {
+      margin: 0;
+    }
+  }
+
+  .critical {
+    background: $color-alert-bg;
+    padding: 1px 6px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+  }
+
+  #stream-status-preview {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 15px;
+    overflow: hidden;
+    border-radius: 5px;
+    height: 72px;
+    width: 128px;
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+#stream-status.online #stream-status-info-offline {
+  display: none;
+}
+#stream-status.offline #stream-status-info-online {
+  display: none;
+}
+
+@media (max-width: $screen-sm-min) {
+  #stream-status {
+    float: left;
+    margin: 0 25px 20px 25px;
+    text-align: left;
+    clear: both;
+  }
 }
