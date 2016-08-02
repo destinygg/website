@@ -24,9 +24,18 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
                 <h3>Stream online</h3>
                 <p>Started <span id="stream-status-start"><?= Tpl::fromNow(Date::getDateTime($streaminfo['started_at'])) ?></span>.<br />Watch on the <a class="critical" href="/bigscreen">Bigscreen</a></p>
             </div>
-            <a id="stream-status-preview" href="/bigscreen">
-                <img src="<?= Tpl::out($streaminfo['preview']) ?>" data-animated="<?= Tpl::out($streaminfo['animated_preview']) ?>">
-            </a>
+            <div id="stream-status-preview">
+                <a href="/bigscreen">
+                    <img src="<?= Tpl::out($streaminfo['preview']) ?>" data-animated="<?= Tpl::out($streaminfo['animated_preview']) ?>">
+                </a>
+                <div class="dropdown">
+                    <i title="RTBA made me." data-toggle="dropdown" class="dropdown-toggle fa fa-clone fa-flip-horizontal"></i>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a target="_blank" class="popup" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Chat</a></li>
+                        <li><a target="_blank" class="popup" href="//www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Stream</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
     </div>

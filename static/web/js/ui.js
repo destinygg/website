@@ -180,7 +180,8 @@ $(function(){
     body.on('click', 'a.popup', function(e){
         var a = $(this);
         a.data('popup', window.open(a.attr('href'), '_blank', window.getOptionsString(a.data('options'))) );
-        return false;
+        e.preventDefault();
+        return true;
     });
 
     // Lazy load images
