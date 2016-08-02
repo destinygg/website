@@ -593,14 +593,16 @@ chat.prototype.handleCommand = function(str) {
 			}
 			
 			nick = parts[1].toLowerCase();
-			if (command == "unhighlight") {
-				delete(highlightnicks[nick]);
-				this.gui.push(new ChatInfoMessage("No longer highlighting: " + nick));
-			} else {
+			dohighlight = command == "highlight";
+			if (dohighlight) {
 				highlightnicks[nick] = true;
 				this.gui.push(new ChatInfoMessage("Now highlighting: " + nick));
+			} else {
+				delete(highlightnicks[nick]);
+				this.gui.push(new ChatInfoMessage("No longer highlighting: " + nick));
 			}
 			
+			this.gui.renewHighlight(nick, dohighlight);
 			this.gui.setPreference('highlightnicks', highlightnicks);
 			break;
 			
