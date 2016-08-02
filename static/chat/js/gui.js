@@ -138,6 +138,10 @@
             // Chat settings
             var chatSettingsUi = this.ui.find('#chat-settings:first').eq(0),
                 chatSettingsMenu = new ChatMenu(chatSettingsUi, chat);
+            var chatSettingsNotificationText = this.ui.find('#chat-settings-notification-permissions');
+            var updateChatSettingsNotificationText = function(){
+                chatSettingsNotificationText.text("(Permission "+ (Notification.permission === "default" ? "required":Notification.permission) +")");
+            };
 
             chatSettingsUi.on('keypress blur', 'input[name=customhighlight]', function(e) {
                 var keycode = e.keyCode ? e.keyCode : e.which;
@@ -177,9 +181,11 @@
                         if(checked){
                             chat.notificationPermission().then(
                                 function(){
+                                    updateChatSettingsNotificationText();
                                     chat.setPreference(name, true);
                                 },
                                 function(){
+                                    updateChatSettingsNotificationText();
                                     chat.setPreference(name, false);
                                 }
                             );
@@ -193,8 +199,11 @@
                 chatSettingsUi.find('input[name=customhighlight]').val( chat.getPreference('customhighlight').join(', ') );
                 chatSettingsUi.find('input[type="checkbox"]').each(function() {
                     var name  = $(this).attr('name');
-                    $(this).attr('checked', chat.getPreference(name));
+                    $(this).prop('checked', chat.getPreference(name));
                 });
+                if(Notification.permission !== "granted")
+                    chatSettingsUi.find('input[name="allowNotifications"]').prop('checked', false);
+                updateChatSettingsNotificationText();
             });
 
 
@@ -664,8 +673,7 @@
         },
 
         showNotification: function(message) {
-            var self = this;
-            self.notificationPermission().done(function(){
+            if(Notification.permission === "granted"){
                 var n = new Notification( message.user.username+' said ...', {
                     body : message.message,
                     tag  : message.timestamp.unix(),
@@ -676,7 +684,7 @@
                 n.onclick = function(){
                     // todo open chat at specific line
                 };
-            });
+            }
         },
 
         loadHighlighters: function() {
@@ -704,7 +712,7 @@
                 (this.highlightregex.custom && this.highlightregex.custom.test(message.message))){
                 message.ui.addClass('highlight');
 
-                if(this.getPreference('allowNotifications') && Visibility.hidden())
+                if(this.getPreference('allowNotifications') && !this.input.is(":focus"))
                     this.showNotification(message);
             }
             return false;
