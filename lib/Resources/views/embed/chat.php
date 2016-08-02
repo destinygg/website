@@ -136,7 +136,8 @@ use Destiny\Common\Config;
                 </div>
                 <div class="checkbox">
                   <label title="Show desktop notifications on hightlight">
-                    <input name="allowNotifications" type="checkbox" /> Desktop notification on highlight
+                    <input name="allowNotifications" type="checkbox" /> Desktop notifications
+                    <br /><small id="chat-settings-notification-permissions">(Permission unknown)</small>
                   </label>
                 </div>
                 <div class="form-group checkbox">
