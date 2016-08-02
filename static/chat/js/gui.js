@@ -328,7 +328,8 @@
             this.lines.on('mousedown', 'div.user-msg .chat-user', function() {
                 var username1 = $(this).closest('.user-msg').data('username');
                 var username2 = this.textContent.toLowerCase();
-                chat.toggleUserFocus(username1, username2);
+                chat.toggleUserFocus(username1);
+                chat.toggleUserFocus(username2);
                 return false;
             });
 
@@ -341,13 +342,12 @@
             // Close all menus and perform a scroll
             this.input.on('keydown mousedown', $.proxy(function(){
                 ChatMenu.closeMenus(this);
-                chat.toggleUserFocus();
             }, this));
 
             // Close all menus if someone clicks on any messages
             this.output.on('mousedown', $.proxy(function(){
                 ChatMenu.closeMenus(this);
-                chat.toggleUserFocus();
+                chat.clearUserFocus();
             }, this));
 
             var scrollNotify = chat.ui.find('#chat-scroll-notify');
@@ -393,7 +393,6 @@
                             return;
 
                         focusTimer = setTimeout(function() { chat.input.focus(); }, 500);
-                        chat.toggleUserFocus();
                         break;
                     case 'mousedown':
                         mouseDownCoords = coords;
@@ -442,34 +441,24 @@
             return this;
         },
 
-        toggleUserFocus: function(/** ... users .. **/) {
-            if(this.focusedUsers.length <= 0 && arguments.length == 0)
-                return;
-            if(arguments.length == 0 || this.isFocusedUser(arguments)){
-                this.clearStyleSheet();
-                this.focusedUsers = [];
-                this.ui.toggleClass('focus-user', false);
-            } else {
-                this.clearStyleSheet();
-                this.focusedUsers = [];
-                for(var i=0; i<arguments.length; ++i){
-                    this.stylesheet.insertRule('.user-msg[data-username="' + arguments[i] + '"]{opacity:1 !important;}', this.stylesheet.cssRules.length);
-                    this.focusedUsers.push(arguments[i]);
-                }
-                this.ui.toggleClass('focus-user', true);
-            }
-        },
-
-        isFocusedUser: function(users){
-            for(var i=0; i<users.length; ++i)
-                if(this.focusedUsers.indexOf(users[i]) !== -1)
-                    return true;
-            return false;
-        },
-
-        clearStyleSheet: function(){
+        clearUserFocus: function(){
             for(var i=0; i<this.stylesheet.cssRules.length; ++i)
                 this.stylesheet.deleteRule(0);
+            this.focusedUsers = [];
+            this.ui.toggleClass('focus-user', false);
+        },
+
+        toggleUserFocus: function(username) {
+            if(!username) return;
+            var index = this.focusedUsers.indexOf(username);
+            if(index === -1){
+                this.stylesheet.insertRule('.user-msg[data-username="' + username + '"]{opacity:1 !important;}', this.focusedUsers.length);
+                this.focusedUsers.push(username);
+            } else {
+                this.stylesheet.deleteRule(index);
+                this.focusedUsers.splice(index, 1);
+            }
+            this.ui.toggleClass('focus-user', this.focusedUsers.length > 0);
         },
 
         loadBacklog: function() {
