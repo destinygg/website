@@ -362,7 +362,7 @@ $(function(){
 
     $('#stream-status').each(function(){
         var el = $(this),
-            img = el.find('#stream-status-preview img'),
+            a = el.find('#stream-status-preview > a'),
             end = el.find('#stream-status-end'),
             start = el.find('#stream-status-start');
 
@@ -383,7 +383,7 @@ $(function(){
             el.toggleClass('online', status.live).toggleClass('offline', !status.live);
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
-            img.data('animated', status.animated_preview).attr('src', status.preview);
+            a.data('animated', status.animated_preview).css('background-image', status.preview);
         };
 
         setInterval(function(){
@@ -400,14 +400,12 @@ $(function(){
             });
         }, 25000);
 
-        img.on('mouseover', function(){
-                img.data('src', img.attr('src'));
-                img.attr('src', img.data('animated'));
-                console.log('over');
+        a.on('mouseover', function(){
+                a.data('src', a.attr('src'));
+                a.attr('src', a.data('animated'));
             })
             .on('mouseout', function(){
-                img.attr('src', img.data('src'));
-                console.log('out');
+                a.attr('src', a.data('src'));
             });
     });
 
