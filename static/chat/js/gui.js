@@ -701,7 +701,7 @@
                 (this.highlightregex.custom && this.highlightregex.custom.test(message.message))){
                 message.ui.addClass('highlight');
 
-                if(this.getPreference('allowNotifications') && !this.input.is(":focus"))
+                if(this.getPreference('allowNotifications') && !this.input.is(":focus") && !this.backlogLoading)
                     this.showNotification(message);
             }
             return false;
