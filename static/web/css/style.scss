@@ -1647,13 +1647,15 @@ table#inbox td.from a {
     margin-left: 15px;
     height: 72px;
     width: 128px;
-    background: rgba(0,0,0,0.5);
     position: relative;
+    background: rgba(0,0,0,0.5);
 
-    a, img {
+    a {
+      background-size: contain;
       border-radius: 5px 5px 0 5px;
       display: block;
       width: 100%;
+      height:72px;
     }
   }
 
