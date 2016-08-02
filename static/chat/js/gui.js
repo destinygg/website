@@ -688,6 +688,14 @@
             }
         },
 
+        renewHighlight: function(nick, dohighlight){
+            if (dohighlight){
+                this.lines.children('div[data-username="'+nick.toLowerCase()+'"]').addClass("highlight");
+            } else {
+                this.lines.children('div[data-username="'+nick.toLowerCase()+'"]').removeClass("highlight");
+            }
+        },
+
         handleHighlight: function(message){
             if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getPreference('highlight'))
                 return false;
