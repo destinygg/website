@@ -1650,7 +1650,7 @@ table#inbox td.from a {
     position: relative;
     background: rgba(0,0,0,0.5);
 
-    a {
+    & > a {
       background-size: contain;
       border-radius: 5px 5px 0 5px;
       display: block;
