@@ -620,22 +620,24 @@
     background-color: #333;
   }
 }
-
-#chat-lines .emotecount.x5 > span {
+#chat-lines .emotecount i {
+  font-style: normal;
+}
+#chat-lines .emotecount.x5 > i {
   font-size: 12px;
 }
-#chat-lines .emotecount.x10 > span {
+#chat-lines .emotecount.x10 > i {
   font-size: 16px;
 }
-#chat-lines .emotecount.x20 > span {
+#chat-lines .emotecount.x20 > i {
   font-size: 25px;
   vertical-align: middle; 
 }
-#chat-lines .emotecount.x30 > span {
+#chat-lines .emotecount.x30 > i {
   font-size: 35px;
   vertical-align: middle; 
 }
-#chat-lines .emotecount.x50 > span {
+#chat-lines .emotecount.x50 > i {
   font-size: 40px;
   vertical-align: middle; 
 }

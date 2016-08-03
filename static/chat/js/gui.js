@@ -239,7 +239,7 @@
             pmPopupUi.find('#reply-privmsg').on('click', function(){
                 chat.resetUnreadMessageCount();
                 ChatMenu.closeMenus(chat);
-                return false;
+                return true;
             });
             pmPopupUi.find('#close-privmsg').on('click', function(){
                 chat.resetUnreadMessageCount();
@@ -1042,7 +1042,7 @@
     };
     $.extend(ChatEmoteMessage.prototype, ChatMessage.prototype);
     ChatEmoteMessage.prototype.getEmoteCountLabel = function(){
-        return "C-C-C-COMBO: <span>" + this.emotecount + "x</span>";
+        return "<i>" + this.emotecount + "x</i> C-C-C-COMBO";
     };
     ChatEmoteMessage.prototype.html = function(){
         return this.wrap(this.wrapTime() + ' ' + this.wrapMessage() + '<span class="emotecount">'+ this.getEmoteCountLabel() +'<span>');
