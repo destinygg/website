@@ -470,10 +470,9 @@
 
             // parse backlog preliminarily to initialize nicks so the formatter will mark them as such (clickable)
             for (var i = 0, j = this.backlog.length; i < j; i++){
-                obj = JSON.parse(this.backlog[i].substring(this.backlog[i].indexOf(' ')));
-                if(obj.nick){
+                var obj = JSON.parse(this.backlog[i].substring(this.backlog[i].indexOf(' ')));
+                if(obj.nick)
                     this.engine.users[obj.nick] = "";
-                }
             }
 
             for (var i = 0, j = this.backlog.length; i < j; i++)

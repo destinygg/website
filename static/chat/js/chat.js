@@ -593,7 +593,7 @@ chat.prototype.handleCommand = function(str) {
 			}
 			
 			nick = parts[1].toLowerCase();
-			dohighlight = command == "highlight";
+			var dohighlight = command == "highlight";
 			if (dohighlight) {
 				highlightnicks[nick] = true;
 				this.gui.push(new ChatInfoMessage("Now highlighting: " + nick));
