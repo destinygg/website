@@ -56,7 +56,8 @@ class ImageDownload {
                     CURLOPT_HEADER         => false,
                     CURLOPT_USERAGENT      => Config::userAgent(),
                     CURLOPT_CONNECTTIMEOUT => 5,
-                    CURLOPT_TIMEOUT        => 20
+                    CURLOPT_TIMEOUT        => 20,
+                    CURLOPT_SSL_VERIFYPEER => false
                 ]);
                 curl_setopt($ch, CURLOPT_FILE, $fp);
                 if(!curl_exec($ch))
