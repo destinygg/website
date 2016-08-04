@@ -40,4 +40,11 @@ abstract class Config {
         return self::$a ['version'];
     }
 
+    /**
+     * @return string
+     */
+    public static function userAgent() {
+        return "destiny.gg/" . self::version();
+    }
+
 }

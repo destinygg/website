@@ -55,7 +55,7 @@ class RedditAuthHandler {
 
         // Reddit requires a User-Agent
         $info = $client->fetch ( "https://oauth.reddit.com/api/v1/me.json", array(), 'GET', array(
-            'User-Agent' => 'destiny.gg/'.Config::version ()
+            'User-Agent' => Config::userAgent()
         ));
 
         if (empty ( $info ['result'] ) || !is_array ( $info ['result'] ) || isset ( $info ['error'] ))

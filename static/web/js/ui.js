@@ -400,13 +400,14 @@ $(function(){
             });
         }, 25000);
 
+        a.src = a.css('background-image');
+        a.animated =  'url('+ a.data('animated') +')';
         a.on('mouseover', function(){
-                a.data('src', a.attr('src'));
-                a.attr('src', a.data('animated'));
-            })
-            .on('mouseout', function(){
-                a.attr('src', a.data('src'));
-            });
+            a.css('background-image', a.animated);
+        })
+        .on('mouseout', function(){
+            a.css('background-image', a.src);
+        });
     });
 
 });
