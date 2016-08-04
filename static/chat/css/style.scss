@@ -594,7 +594,27 @@
   padding:3px 6px;
   margin: 0 0 0 5px;
   background: #191919;
+  display: inline-block;
+  i {
+    font-style: normal;
+    vertical-align: middle;
+    line-height: 1em;
+  }
 }
+
+.chat-emote.chat-emote-OverRustle:hover {
+  animation: rustle-hover 100ms infinite;
+}
+
+@keyframes rustle {
+  from { left: 0px; }
+  to { left: 2px; }
+}
+@keyframes rustle-hover {
+  from { left: 0px; }
+  to { left: 2px; }
+}
+
 #chat-lines .emotecount {
   animation: emotecount 600ms 1;
   -moz-animation: emotecount 600ms 1;
@@ -620,26 +640,51 @@
     background-color: #333;
   }
 }
-#chat-lines .emotecount i {
-  font-style: normal;
+
+#chat-lines .emotecount.x5 {
+  border-radius: 20px;
+  .count {
+    font-size: 13px;
+  }
+  .x {
+    font-size: 11px;
+  }
 }
-#chat-lines .emotecount.x5 > i {
-  font-size: 12px;
+#chat-lines .emotecount.x10 {
+  border-radius: 20px;
+  .count {
+    font-size: 16px;
+  }
+  .x {
+    font-size: 13px;
+  }
 }
-#chat-lines .emotecount.x10 > i {
-  font-size: 16px;
+#chat-lines .emotecount.x20 {
+  border-radius: 30px;
+  .count {
+    font-size: 25px;
+  }
+  .x {
+    font-size: 18px;
+  }
 }
-#chat-lines .emotecount.x20 > i {
-  font-size: 25px;
-  vertical-align: middle; 
+#chat-lines .emotecount.x30 {
+  border-radius: 40px;
+  .count {
+    font-size: 35px;
+  }
+  .x {
+    font-size: 30px;
+  }
 }
-#chat-lines .emotecount.x30 > i {
-  font-size: 35px;
-  vertical-align: middle; 
-}
-#chat-lines .emotecount.x50 > i {
-  font-size: 40px;
-  vertical-align: middle; 
+#chat-lines .emotecount.x50 {
+  border-radius: 50px;
+  .count {
+    font-size: 40px;
+  }
+  .x {
+    font-size: 30px;
+  }
 }
 
 /**

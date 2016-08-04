@@ -1042,7 +1042,7 @@
     };
     $.extend(ChatEmoteMessage.prototype, ChatMessage.prototype);
     ChatEmoteMessage.prototype.getEmoteCountLabel = function(){
-        return "<i>" + this.emotecount + "x</i> C-C-C-COMBO";
+        return "<i class='count'>" + this.emotecount + "</i><i class='x'>X</i> C-C-C-COMBO";
     };
     ChatEmoteMessage.prototype.html = function(){
         return this.wrap(this.wrapTime() + ' ' + this.wrapMessage() + '<span class="emotecount">'+ this.getEmoteCountLabel() +'<span>');

@@ -98,6 +98,9 @@ return array (
 			'nathanFeels',
 		),
 	),
+    'images' => array(
+        'path'          => _BASEDIR . '/static/img/'
+    ),
 	'redis' => array(
 		'host' 				=> 'localhost',
 		'port' 				=> 6379,

@@ -18,8 +18,7 @@ use Destiny\Common\Config;
 					<div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
 						<a
 							href="//www.youtube.com/watch?v=<?=$vid['snippet']['resourceId']['videoId']?>">
-							<img alt="<?=$title?>" src="<?=Config::cdn()?>/web/img/320x240.gif"
-							data-src="//i.ytimg.com/vi/<?=$vid['snippet']['resourceId']['videoId']?>/default.jpg" />
+							<img alt="<?=$title?>" src="<?=Config::cdn()?>/web/img/320x240.gif" data-src="<?=$vid['image']?>" />
 						</a>
 					</div>
 				</li>

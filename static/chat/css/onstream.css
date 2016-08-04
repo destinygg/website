@@ -24,20 +24,24 @@ body,
 #chat-lines .emotecount {
   font-size: 20px;
 }
-
-#chat-lines .emotecount.x5 > span {
+#chat-lines .emotecount i {
+    font-style: normal;
+    vertical-align: middle;
+    line-height: 1em;
+}
+#chat-lines .emotecount.x5 i {
   font-size: 20px;
 }
-#chat-lines .emotecount.x10 > span {
+#chat-lines .emotecount.x10 i {
   font-size: 24px;
 }
-#chat-lines .emotecount.x20 > span {
+#chat-lines .emotecount.x20 i {
   font-size: 26px;
 }
-#chat-lines .emotecount.x30 > span {
+#chat-lines .emotecount.x30 i {
   font-size: 35px;
 }
-#chat-lines .emotecount.x50 > span {
+#chat-lines .emotecount.x50 i {
   font-size: 40px;
 }
 

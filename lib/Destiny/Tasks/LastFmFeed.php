@@ -3,7 +3,9 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
+use Destiny\Common\Config;
 use Destiny\Common\TaskInterface;
+use Destiny\Common\Utils\ImageDownload;
 use Destiny\LastFm\LastFMApiService;
 
 /**
@@ -12,10 +14,16 @@ use Destiny\LastFm\LastFMApiService;
 class LastFmFeed implements TaskInterface {
 
     public function execute() {
-        $app = Application::instance ();
-        $response = LastFMApiService::instance ()->getLastFMTracks ()->getResponse ();
-        if (! empty ( $response ))
-            $app->getCacheDriver ()->save ( 'recenttracks', $response );
+        $json = LastFMApiService::instance ()->getLastFMTracks ()->getResponse ();
+        if (! empty ( $json )){
+            foreach ( $json ['recenttracks'] ['track'] as $i => $track ) {
+                $path = ImageDownload::download($track['image'][1]['#text'], Config::$a['images']['path']);
+                if (!empty($path))
+                    $json ['recenttracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdn() . '/img/' . $path;
+            }
+            $cache = Application::instance()->getCacheDriver();
+            $cache->save ( 'recenttracks', $json );
+        }
     }
 
 }
