@@ -469,14 +469,17 @@ class SubscriptionController {
         // Broadcast
         $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
         if(!empty($subscription['gifter'])){
-            $gifter = $userService->getUserById( $subscription['gifter'] );
+            $gifter   = $userService->getUserById( $subscription['gifter'] );
+            $userName = $gifter['username'];
             $chatIntegrationService->sendBroadcast ( sprintf ( "%s gifted %s a %s subscription! %s", $gifter['username'], $user['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
         }else{
+            $userName = $user['username'];
             $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $user['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
         }
+
         $subMessage = Session::set('subMessage');
         if(!empty($subMessage))
-            $chatIntegrationService->sendBroadcast ( $subMessage );
+            $chatIntegrationService->sendBroadcast ( sprintf ( "%s: %s", $userName, $subMessage ) );
 
         // Update the user
         $authenticationService->flagUserForUpdate ( $user['userId'] );
