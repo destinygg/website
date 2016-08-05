@@ -8,7 +8,6 @@ return array (
 	// the key is the LOWERCASE domain to blacklist, the value is something non-null
 	'blacklistedDomains' => array(
 	),
-	'cacheAnnotations'		=> true, // If TRUE, stores the annotation definitions in files /tmp/annotations/ (these need to be cleared if changes are made to annotations)
 	'allowImpersonation'	=> false, // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
 	'profile' => array(
 		'nameChangeLimit' 	=> 0
@@ -143,17 +142,6 @@ return array (
 			)
 		)
 	),
-	'regions' => array (
-		'Africa'		=> DateTimeZone::AFRICA,
-		'America'		=> DateTimeZone::AMERICA,
-		'Antarctica'	=> DateTimeZone::ANTARCTICA,
-		'Asia'			=> DateTimeZone::ASIA,
-		'Atlantic'		=> DateTimeZone::ATLANTIC,
-		'Australia'		=> DateTimeZone::AUSTRALIA,
-		'Europe'		=> DateTimeZone::EUROPE,
-		'Indian'		=> DateTimeZone::INDIAN,
-		'Pacific'		=> DateTimeZone::PACIFIC
-	),
 	'cdn' => array (
 		'domain' 		=> ''
 	),
@@ -231,13 +219,10 @@ return array (
 		'user'					=> ''
 	),
 	'twitch' => array (
-		'user'					=> '',
+        'id'                    => 18074328,
+        'user'                  => 'destiny',
 		'client_id'				=> '',
-		'client_secret'			=> '',
-		'broadcasterAuth'		=> false,
-		'broadcaster' => array (
-			'user'				=> ''
-		)
+		'client_secret'			=> ''
 	),
 	'twitter' => array (
 		'user'					=> '',

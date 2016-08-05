@@ -364,7 +364,8 @@ $(function(){
         var el = $(this),
             a = el.find('#stream-status-preview > a'),
             end = el.find('#stream-status-end'),
-            start = el.find('#stream-status-start');
+            start = el.find('#stream-status-start'),
+            host = el.find('#stream-status-host');
 
         var status = {
             live: false,
@@ -376,14 +377,20 @@ $(function(){
             ended_at: "",
             duration: 0,
             viewers: 0,
+            host: {},
             etag: null
         };
 
         var updateStatus = function(status){
-            el.toggleClass('online', status.live).toggleClass('offline', !status.live);
+            var state = (status.host && status.host['target_id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
+            el.removeClass('online offline hosting').addClass(state);
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
             a.data('animated', status.animated_preview).css('background-image', status.preview);
+            if(state == 'hosting'){
+                host.text(status.host['display_name']);
+                host.attr('href', status.host['url']);
+            }
         };
 
         setInterval(function(){
@@ -398,7 +405,7 @@ $(function(){
                     updateStatus(status);
                 }
             });
-        }, 25000);
+        }, 30000);
 
         a.src = a.css('background-image');
         a.animated =  'url('+ a.data('animated') +')';

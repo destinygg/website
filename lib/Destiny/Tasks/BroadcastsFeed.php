@@ -14,7 +14,7 @@ use Destiny\Twitch\TwitchApiService;
 class BroadcastsFeed  implements TaskInterface {
 
     public function execute() {
-        $broadcasts = TwitchApiService::instance ()->getPastBroadcasts ()->getResponse ();
+        $broadcasts = TwitchApiService::instance ()->getPastBroadcasts ();
         if (! empty ( $broadcasts )){
             foreach ($broadcasts['videos'] as $i=>$video){
                 $path = ImageDownload::download($video['preview'], Config::$a['images']['path']);

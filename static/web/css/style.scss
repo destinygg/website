@@ -1621,7 +1621,8 @@ table#inbox td.from a {
   float: right;
 
   #stream-status-info-offline,
-  #stream-status-info-online {
+  #stream-status-info-online,
+  #stream-status-info-host {
     display: inline-block;
     vertical-align: middle;
 
@@ -1674,10 +1675,12 @@ table#inbox td.from a {
   }
 }
 
-#stream-status.online #stream-status-info-offline {
-  display: none;
-}
-#stream-status.offline #stream-status-info-online {
+#stream-status.hosting #stream-status-info-online,
+#stream-status.hosting #stream-status-info-offline,
+#stream-status.online #stream-status-info-offline,
+#stream-status.online #stream-status-info-host,
+#stream-status.offline #stream-status-info-online,
+#stream-status.offline #stream-status-info-host {
   display: none;
 }
 
