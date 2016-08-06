@@ -17,7 +17,7 @@ return array (
 		'minecraft' => '',
 	),
 	'chat' => array(
-		'host'				=> @$_SERVER['SERVER_NAME'],
+		'host'				=> null,
 		'port'				=> 9998,
 		'backlog' 			=> 150,
 		'maxlines' 			=> 150,
@@ -204,9 +204,7 @@ return array (
 	'googleads' => array (
 		'300x250' => array (
 			'google_ad_client'	=> '',
-			'google_ad_slot'	=> '',
-			'google_ad_width'	=> 300,
-			'google_ad_height'	=> 250
+			'google_ad_slot'	=> ''
 		)
 	),
 	'g-recaptcha' => array (
