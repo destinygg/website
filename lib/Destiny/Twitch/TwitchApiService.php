@@ -23,58 +23,106 @@ class TwitchApiService extends Service {
         'ended_at'         => null,
         'duration'         => 0,
         'viewers'          => 0,
-        'hash'             => null
+        'host'             => null
     ];
+
+    public static $HOST_UNCHANGED   = 0;
+    public static $HOST_NOW_HOSTING = 1;
+    public static $HOST_STOPPED     = 2;
+
+    /**
+     * @param array $lasthosting
+     * @param array $hosting
+     * @return int
+     *  0 no change
+     *  1 now hosting
+     *  2 stopped hosting
+     */
+    public static function checkForHostingChange(array $lasthosting, array $hosting){
+        if (!isset($lasthosting['target_id']) && isset($hosting['target_id']))
+            // now hosting
+            $state = self::$HOST_NOW_HOSTING;
+        else if((isset($lasthosting['target_id']) && isset($hosting['target_id'])) && $lasthosting['target_id'] != $hosting['target_id'])
+            // now hosting different
+            $state = self::$HOST_NOW_HOSTING;
+        else if (isset($lasthosting['target_id']) && !isset($hosting['target_id']))
+            // stopped hosting
+            $state = self::$HOST_STOPPED;
+        else
+            // unchanged
+            $state = self::$HOST_UNCHANGED;
+        return $state;
+    }
+
+    /**
+     * What channel {you} are hosting
+     * @param $id int stream id
+     * @return array
+     */
+    public function getChannelHost($id){
+        $json = (new CurlBrowser (array_merge(array(
+            'timeout' => 25,
+            'url' => 'https://tmi.twitch.tv/hosts?include_logins=1&host=' . $id,
+            'contentType' => MimeType::JSON
+        ))))->getResponse();
+        if(empty($json))
+            $json = [];
+        if(isset($json['hosts']))
+            $json = $json['hosts'][0];
+        return $json;
+    }
 
     /**
      * @param int $limit
-     * @return CurlBrowser
+     * @return array
      */
     public function getPastBroadcasts($limit=4) {
-        return new CurlBrowser (array_merge(array(
+        return (new CurlBrowser (array_merge(array(
             'timeout' => 25,
             'url' => 'https://api.twitch.tv/kraken/channels/' . Config::$a ['twitch'] ['user'] . '/videos?broadcasts=true&limit=' . $limit,
             'contentType' => MimeType::JSON
-        )));
-    }
-
-    /**
-     * @return CurlBrowser
-     */
-    public function getStream() {
-        return new CurlBrowser (array_merge(array(
-            'timeout' => 25,
-            'url' => 'https://api.twitch.tv/kraken/streams/' . Config::$a ['twitch'] ['user'],
-            'contentType' => MimeType::JSON
-        )));
-    }
-
-    /**
-     * @return CurlBrowser
-     */
-    public function getChannel() {
-        return new CurlBrowser (array_merge(array(
-            'url' => 'https://api.twitch.tv/kraken/channels/' . Config::$a ['twitch'] ['user'],
-            'contentType' => MimeType::JSON
-        )));
+        ))))->getResponse();
     }
 
     /**
      * @return array
      */
-    public function getStreamInfo() {
+    public function getStream() {
+        return (new CurlBrowser (array_merge(array(
+            'timeout' => 25,
+            'url' => 'https://api.twitch.tv/kraken/streams/' . Config::$a ['twitch'] ['user'],
+            'contentType' => MimeType::JSON
+        ))))->getResponse();
+    }
+
+    /**
+     * @param $name string channel name
+     * @return array
+     */
+    public function getChannel($name) {
+        return (new CurlBrowser (array_merge(array(
+            'url' => 'https://api.twitch.tv/kraken/channels/' . $name,
+            'contentType' => MimeType::JSON
+        ))))->getResponse();
+    }
+
+    /**
+     * @param $name string stream name
+     * @return array
+     */
+    public function getStreamInfo($name) {
         $cache = Application::instance()->getCacheDriver();
         $streaminfo = self::$STREAM_INFO;
 
-        $channel = $this->getChannel ()->getResponse ();
+        $channel = $this->getChannel($name);
         if (!empty ( $channel )){
             $streaminfo['game'] = $channel ['game'];
             $streaminfo['status_text'] = $channel ['status'];
         }
 
         // Stream object is an object when streamer is ONLINE, otherwise null
-        $stream = $this->getStream()->getResponse();
-        $broadcasts = $this->getPastBroadcasts(1)->getResponse ();
+        $stream = $this->getStream();
+        $broadcasts = $this->getPastBroadcasts(1);
         if ((!empty($stream) && isset ($stream ['stream']) && !empty($stream ['stream'])) && !(isset ($stream ['status']) && $stream ['status'] == 503)) {
             $created = Date::getDateTime($stream ['stream']['created_at']);
             $streaminfo['live'] = true;

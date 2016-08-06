@@ -87,8 +87,12 @@ class EmbedController {
         $twemotes = Config::$a ['chat'] ['twitchemotes'];
         natcasesort( $twemotes );
 
+        $host = Config::$a ['chat'] ['host'];
+        if(empty($host))
+            $host = $_SERVER['SERVER_NAME'];
+
         return array (
-            'host' => Config::$a ['chat'] ['host'],
+            'host' => $host,
             'port' => Config::$a ['chat'] ['port'],
             'maxlines' => Config::$a ['chat'] ['maxlines'],
             'emoticons' => array_values( $emotes ),

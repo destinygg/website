@@ -2,7 +2,6 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\MimeType;
-use Destiny\Common\Request;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
@@ -128,7 +127,7 @@ class HomeController {
      * @return string
      */
     public function ting() {
-        return 'redirect: http://ting.7eer.net/c/72409/87559/2020';
+        return 'redirect: https://ting.7eer.net/c/72409/87559/2020';
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Tasks;
 
+use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
@@ -14,17 +15,57 @@ use Destiny\Twitch\TwitchApiService;
 class StreamInfo implements TaskInterface {
 
     public function execute() {
-        $streaminfo = TwitchApiService::instance()->getStreamInfo();
-        if (!empty ($streaminfo)){
+        $cache = Application::instance()->getCacheDriver();
+        $twitchApiService = TwitchApiService::instance();
+
+        // STREAM STATUS
+        $streaminfo = $twitchApiService->getStreamInfo(Config::$a ['twitch']['user']);
+        if (!empty($streaminfo)) {
             $path = ImageDownload::download($streaminfo['preview'], Config::$a['images']['path']);
-            if(!empty($path))
-                $streaminfo['preview'] =  Config::cdn() . '/img/' . $path;
+            if (!empty($path))
+                $streaminfo['preview'] = Config::cdn() . '/img/' . $path;
             $path = ImageDownload::download($streaminfo['animated_preview'], Config::$a['images']['path']);
-            if(!empty($path))
+            if (!empty($path))
                 $streaminfo['animated_preview'] = Config::cdn() . '/img/' . $path;
-            $cache = Application::instance()->getCacheDriver();
-            $cache->save('streamstatus', $streaminfo);
         }
+
+        // STREAM HOSTING
+        $lasthost = $cache->contains('streamhost') ? $cache->fetch('streamhost') : [];
+        $currhost = $twitchApiService->getChannelHost(Config::$a['twitch']['id']);
+        if(!empty($currhost)){
+
+            unset($currhost['host_id']);
+            unset($currhost['host_login']);
+
+            switch (TwitchApiService::checkForHostingChange($lasthost, $currhost)){
+                case TwitchApiService::$HOST_NOW_HOSTING:
+                    $target = $twitchApiService->getChannel($currhost['target_login']);
+                    if (!empty($target) && isset($target['display_name']) && isset($target['url'])) {
+                        $chatIntegrationService = ChatIntegrationService::instance();
+                        $chatIntegrationService->sendBroadcast(sprintf(
+                            '%s is now hosting %s at %s',
+                            Config::$a['meta']['shortName'],
+                            $target['display_name'],
+                            $target['url'])
+                        );
+                    }
+                    $currhost['display_name'] = $target['display_name'];
+                    $currhost['url'] = $target['url'];
+                    $currhost['preview'] = $target['preview'];
+                    $cache->save('streamhost', $currhost);
+                    break;
+                case TwitchApiService::$HOST_STOPPED:
+                    $cache->save('streamhost', $currhost);
+                    break;
+                case TwitchApiService::$HOST_UNCHANGED:
+                    $currhost = $lasthost;
+                    break;
+            }
+        }
+
+        // SAVE THE STATUS AND HOSTING INFO
+        $streaminfo['host'] = $currhost;
+        $cache->save('streamstatus', $streaminfo);
     }
 
 }

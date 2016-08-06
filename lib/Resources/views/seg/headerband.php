@@ -15,7 +15,7 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
             <h1><a href="/"><?=Config::$a['meta']['title']?></a></h1>
         </header>
 
-        <div id="stream-status" class=" <?= ($streaminfo['live']) ? 'online':'offline' ?>">
+        <div id="stream-status" class=" <?= (!empty($streaminfo['host'])) ? 'hosting': (($streaminfo['live']) ? 'online':'offline') ?>">
             <div id="stream-status-info-offline">
                 <h3>Stream offline</h3>
                 <p>Ended <span id="stream-status-end"><?= Tpl::fromNow(Date::getDateTime($streaminfo['ended_at'])) ?></span>.<br />Join the <a href="/bigscreen">chat</a> while you wait.</p>
@@ -23,6 +23,10 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
             <div id="stream-status-info-online">
                 <h3>Stream online</h3>
                 <p>Started <span id="stream-status-start"><?= Tpl::fromNow(Date::getDateTime($streaminfo['started_at'])) ?></span>.<br />Watch on the <a class="critical" href="/bigscreen">Bigscreen</a></p>
+            </div>
+            <div id="stream-status-info-host">
+                <h3>Stream host</h3>
+                <p>Hosting <a id="stream-status-host" href="<?= (!empty($streaminfo['host'])) ? Tpl::out($streaminfo['host']['url']):'' ?>" target="_blank"><?= (!empty($streaminfo['host'])) ? Tpl::out($streaminfo['host']['display_name']):'' ?></a> check it out! <br /> or join the <a href="/bigscreen">chat</a> while you wait.</p>
             </div>
             <div id="stream-status-preview">
                 <a href="/bigscreen" style="background-image: url('<?= Tpl::out($streaminfo['preview']) ?>');" data-animated="<?= Tpl::out($streaminfo['animated_preview']) ?>"></a>

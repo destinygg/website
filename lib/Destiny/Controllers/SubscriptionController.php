@@ -471,11 +471,12 @@ class SubscriptionController {
         if(!empty($subscription['gifter'])){
             $gifter   = $userService->getUserById( $subscription['gifter'] );
             $userName = $gifter['username'];
-            $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! gifted by %s %s", $user['username'], $subscriptionType ['tierLabel'], $gifter['username'], $randomEmote ) );
+            $chatIntegrationService->sendBroadcast ( sprintf ( "%s gifted %s a %s subscription! %s", $gifter['username'], $user['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
         }else{
             $userName = $user['username'];
             $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $user['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
         }
+
         $subMessage = Session::set('subMessage');
         if(!empty($subMessage))
             $chatIntegrationService->sendBroadcast ( sprintf ( "%s: %s", $userName, $subMessage ) );
