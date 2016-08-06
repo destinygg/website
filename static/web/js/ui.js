@@ -405,7 +405,7 @@ $(function(){
                     updateStatus(status);
                 }
             });
-        }, 30000);
+        }, 60000);
 
         a.src = a.css('background-image');
         a.animated =  'url('+ a.data('animated') +')';
