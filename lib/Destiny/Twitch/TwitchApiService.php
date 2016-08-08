@@ -63,6 +63,7 @@ class TwitchApiService extends Service {
         $json = (new CurlBrowser (array_merge(array(
             'timeout' => 25,
             'url' => 'https://tmi.twitch.tv/hosts?include_logins=1&host=' . $id,
+            'headers' => ['Client-ID' => Config::$a['twitch']['client_id']],
             'contentType' => MimeType::JSON
         ))))->getResponse();
         if(empty($json))
@@ -78,8 +79,9 @@ class TwitchApiService extends Service {
      */
     public function getPastBroadcasts($limit=4) {
         return (new CurlBrowser (array_merge(array(
-            'timeout' => 25,
+            'timeout' => 10,
             'url' => 'https://api.twitch.tv/kraken/channels/' . Config::$a ['twitch'] ['user'] . '/videos?broadcasts=true&limit=' . $limit,
+            'headers' => ['Client-ID' => Config::$a['twitch']['client_id']],
             'contentType' => MimeType::JSON
         ))))->getResponse();
     }
@@ -89,8 +91,9 @@ class TwitchApiService extends Service {
      */
     public function getStream() {
         return (new CurlBrowser (array_merge(array(
-            'timeout' => 25,
+            'timeout' => 10,
             'url' => 'https://api.twitch.tv/kraken/streams/' . Config::$a ['twitch'] ['user'],
+            'headers' => ['Client-ID' => Config::$a['twitch']['client_id']],
             'contentType' => MimeType::JSON
         ))))->getResponse();
     }
@@ -101,7 +104,9 @@ class TwitchApiService extends Service {
      */
     public function getChannel($name) {
         return (new CurlBrowser (array_merge(array(
+            'timeout' => 10,
             'url' => 'https://api.twitch.tv/kraken/channels/' . $name,
+            'headers' => ['Client-ID' => Config::$a['twitch']['client_id']],
             'contentType' => MimeType::JSON
         ))))->getResponse();
     }
