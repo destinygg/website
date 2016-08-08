@@ -488,6 +488,13 @@
                 return;
             }
 
+            // parse backlog preliminarily to initialize nicks so the formatter will mark them as such (clickable)
+            for (var i = 0, j = this.backlog.length; i < j; i++){
+                var obj = JSON.parse(this.backlog[i].substring(this.backlog[i].indexOf(' ')));
+                if(obj.nick)
+                    this.engine.users[obj.nick] = "";
+            }
+
             for (var i = 0, j = this.backlog.length; i < j; i++)
                 this.engine.parseAndDispatch({
                     data: this.backlog[i]
@@ -705,6 +712,14 @@
                 for (var i = highlights.length - 1; i >= 0; i--)
                     highlights[i] = highlights[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
                 this.highlightregex.custom = new RegExp("\\b(?:"+highlights.join("|")+")\\b", "i");
+            }
+        },
+
+        renewHighlight: function(nick, dohighlight){
+            if (dohighlight){
+                this.lines.children('div[data-username="'+nick.toLowerCase()+'"]').addClass("highlight");
+            } else {
+                this.lines.children('div[data-username="'+nick.toLowerCase()+'"]').removeClass("highlight");
             }
         },
 
