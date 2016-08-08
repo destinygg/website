@@ -43,7 +43,7 @@ class TwitchAuthHandler{
         $response = $client->getAccessToken ( 'https://api.twitch.tv/kraken/oauth2/token', 'authorization_code', array (
           'redirect_uri' => sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ),
           'code' => $params ['code']
-        ) );
+        ), ['Client-ID' => Config::$a['twitch']['client_id']] );
         
         if (empty ( $response ) || isset ( $response ['error'] ))
            throw new Exception ( 'Invalid access_token response' );
@@ -52,7 +52,7 @@ class TwitchAuthHandler{
             throw new Exception ( 'Failed request for access token' );
         
         $client->setAccessToken ( $response ['result'] ['access_token'] );
-        $response = $client->fetch ( 'https://api.twitch.tv/kraken/user' );
+        $response = $client->fetch ( 'https://api.twitch.tv/kraken/user', [], Client::HTTP_METHOD_GET, ['Client-ID' => Config::$a['twitch']['client_id']] );
         
         if (empty ( $response ['result'] ) || isset ( $response ['error'] ))
            throw new Exception ( 'Invalid user details response' );
