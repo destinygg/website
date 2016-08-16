@@ -49,7 +49,7 @@ use Destiny\Common\Config;
                     <span class="fa fa-cog"></span>
                 </a>
                 <a id="chat-users-btn" class="iconbtn" title="Users">
-                    <span id="chat-pm-count" class="hidden flash" title="You have unread messages!">0</span>
+                    <span id="chat-pm-count" class="<?= ($model->options['pmcountnum'] > 0) ? '':'hidden' ?> flash" title="You have unread messages!"><?= Tpl::out($model->options['pmcountnum']) ?></span>
                     <span class="fa fa-user"></span>
                 </a>
             </div>
@@ -187,8 +187,8 @@ use Destiny\Common\Config;
               <div id="chat-pm-message">
                 <p>You have unread message(s).</p>
                 <p>
-                    <a id="reply-privmsg" href="/profile/messages" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i> INBOX</a> or
-                    <button id="close-privmsg" class="btn btn-default btn-sm">DISMISS <i class="fa fa-close"></i></button>
+                    <a id="inbox-privmsg" href="/profile/messages" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i> Inbox</a> or
+                    <button id="markread-privmsg" class="btn btn-default btn-sm">Mark All Read</button>
                 </p>
                 <p>or view the <a href="#" class="user-list-link">user list</a></p>
               </div>

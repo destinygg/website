@@ -33,7 +33,7 @@ use Destiny\Common\Session;
                         Profile <span class="caret"></span>
                     </span>
                     <?php if($model->unreadMessageCount > 0): ?>
-                        <span class="pm-count flash" title="You have unread messages!"><?php echo $model->unreadMessageCount; ?></span>
+                    <span class="pm-count flash" title="You have unread messages!"><?= $model->unreadMessageCount; ?></span>
                     <?php endif; ?>
                 </a>
                 <ul class="dropdown-menu" role="menu">
@@ -48,7 +48,7 @@ use Destiny\Common\Session;
             <li>
                 <a href="/login" rel="login">
                     <span class="fa fa-sign-in"></span>
-                    <span class="sign-in-link visible-lg-inline">Sign In</span>
+                    <span class="sign-in-link visible-lg-inline visible-xs-inline">Sign In</span>
                 </a>
             </li>
             <?php endif; ?>
@@ -68,8 +68,11 @@ use Destiny\Common\Session;
                 <li class="visible-xs"><a title="Bigscreen" href="/bigscreen">Bigscreen</a></li>
 
                 <?php if(Session::hasRole(UserRole::USER)): ?>
-                <li class="visible-xs"><a title="Your account" href="/profile">Profile</a></li>
-                <li class="divider-vertical visible-xs"></li>
+                    <li class="visible-xs"><a title="Your account" href="/profile">Profile</a></li>
+                    <li class="divider-vertical visible-xs"></li>
+                <?php else: ?>
+                    <li class="visible-xs"><a title="Sign in" href="/login">Sign In</a></li>
+                    <li class="divider-vertical visible-xs"></li>
                 <?php endif; ?>
 
                 <li><a title="Blog @ destiny.gg" href="/blog">Blog</a></li>

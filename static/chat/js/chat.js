@@ -215,7 +215,6 @@ chat.prototype.onPRIVMSG = function (data) {
 		return;
 
 	this.gui.autoCompletePlugin.updateNick(user.username);
-	this.gui.addUnreadMessageCount(1);
 	this.gui.push(new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp));
 };
 chat.prototype.onMSG = function(data) {

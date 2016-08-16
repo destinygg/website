@@ -86,8 +86,6 @@ class HomeController {
      */
     public function bigscreen(ViewModel $model) {
         $model->title = 'Bigscreen';
-        if (Session::hasRole(UserRole::USER))
-            $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount(Session::getCredentials()->getUserId());
         return 'bigscreen';
     }
 

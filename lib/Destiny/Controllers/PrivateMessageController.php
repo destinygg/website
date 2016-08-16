@@ -153,9 +153,11 @@ class PrivateMessageController {
      */
     public function openAll() {
         $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $privateMessageService->markAllMessagesRead( $userId );
-        return 'redirect: /profile/messages';
+        $userId = Session::getCredentials()->getUserId();
+        $privateMessageService->markAllMessagesRead($userId);
+        $response = new Response (Http::STATUS_OK, json_encode(['success' => true]));
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        return $response;
     }
 
     /**
@@ -169,7 +171,7 @@ class PrivateMessageController {
 
         $privateMessageService = PrivateMessageService::instance();
         $userId = Session::getCredentials ()->getUserId ();
-        $response = array('success'=>true);
+        $response = ['success' => true, 'message' => '', 'unread' => 0];
 
         try {
             FilterParams::required($params, 'id');
@@ -183,6 +185,7 @@ class PrivateMessageController {
             $response['message'] = $e->getMessage();
         }
 
+        $response['unread'] = $privateMessageService->getUnreadMessageCount($userId);
         $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         return $response;
