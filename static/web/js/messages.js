@@ -259,6 +259,16 @@ $(function(){
         el.on('mouseup', 'tbody tr', releasedTableRow);
     });
 
+    $('a[href="/profile/messages/openall"]').on('click', function(){
+        $.ajax({
+            url: $(this).attr('href'),
+            success: function(){
+                window.location = window.location
+            }
+        });
+        return false;
+    });
+
 });
 
 // message

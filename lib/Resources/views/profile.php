@@ -151,10 +151,6 @@ use Destiny\Commerce\SubscriptionStatus;
       
       <div class="content content-dark clearfix">
 
-          <div class="ds-block">
-            <small><a href="/logout"><span class="fa fa-sign-out"></span> Sign out</a> of this account.</small>
-          </div>
-
           <form id="profileSaveForm" action="/profile/update" method="post" role="form">
             
             <div class="ds-block">
@@ -234,47 +230,46 @@ use Destiny\Commerce\SubscriptionStatus;
       <h3><span class="fa fa-fw fa-chevron-right expander"></span> Address <small>(optional)</small></h3>
       
       <div class="content content-dark clearfix">
+
+          <div class="ds-block">
+            <small>Fields marked with <span class="icon-required">*</span> are required.</small>
+          </div>
+
           <form id="addressSaveForm" action="/profile/address/update" method="post">
-          
             <div class="ds-block">
-                <p><span class="fa fa-info-circle"></span> All fields are required</p>
-            </div>
-          
-            <div class="ds-block">
-              
               <div class="form-group">
-                <label>Full Name:
+                <label>Full Name <span class="icon-required">*</span>
                 <br><small>The name of the person for this address</small>
                 </label>
                 <input class="form-control" type="text" name="fullName" value="<?=Tpl::out($model->address['fullName'])?>" placeholder="Full Name" />
               </div>
               <div class="form-group">
-                <label>Address Line 1:
+                <label>Address Line 1
                 <br><small>Street address, P.O box, company name, c/o</small>
                 </label>
                 <input class="form-control" type="text" name="line1" value="<?=Tpl::out($model->address['line1'])?>" placeholder="Address Line 1" />
               </div>
               <div class="form-group">
-                <label>Address Line 2:
+                <label>Address Line 2 <span class="icon-required">*</span>
                 <br><small>Apartment, Suite, Building, Unit, Floor etc.</small>
                 </label>
                 <input class="form-control" type="text" name="line2" value="<?=Tpl::out($model->address['line2'])?>" placeholder="Address Line 2" />
               </div>
             
               <div class="form-group">
-                <label>City:</label>
+                <label>City <span class="icon-required">*</span></label>
                 <input class="form-control" type="text" name="city" value="<?=Tpl::out($model->address['city'])?>" placeholder="City" />
               </div>
               <div class="form-group">
-                <label>State/Province/Region:</label>
+                <label>State/Province/Region <span class="icon-required">*</span></label>
                 <input class="form-control" type="text" name="region" value="<?=Tpl::out($model->address['region'])?>" placeholder="Region" />
               </div>
               <div class="form-group">
-                <label>ZIP/Postal Code:</label>
+                <label>ZIP/Postal Code <span class="icon-required">*</span></label>
                 <input class="form-control" type="text" name="zip" value="<?=Tpl::out($model->address['zip'])?>" placeholder="Zip/Postal Code" />
               </div>
               <div class="form-group">
-                <label for="country">Country:</label>
+                <label for="country">Country <span class="icon-required">*</span></label>
                 <select class="form-control" name="country" id="country">
                   <option value="">Select your country</option>
                   <?$countries = Country::getCountries();?>

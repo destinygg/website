@@ -69,7 +69,7 @@ use Destiny\Commerce\SubscriptionStatus;
             </div>
 
             <div class="form-group">
-              <label>Country:</label>
+              <label>Country</label>
               <select name="country" class="form-control">
                 <option value="">Select your country</option>
                 <?$countries = Country::getCountries();?>
@@ -86,7 +86,7 @@ use Destiny\Commerce\SubscriptionStatus;
             </div>
 
             <div class="form-group">
-              <label>Twitch Subscriber:</label>
+              <label>Twitch Subscriber</label>
               <select class="form-control" name="istwitchsubscriber">
                 <option value="1"<?php if($model->user['istwitchsubscriber'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
                 <option value="0"<?php if($model->user['istwitchsubscriber'] == 0):?> selected="selected"<?php endif;?>>No</option>
@@ -94,7 +94,7 @@ use Destiny\Commerce\SubscriptionStatus;
             </div>
 
             <div class="form-group">
-              <label>Accept Gifts:</label>
+              <label>Accept Gifts</label>
               <select class="form-control" name="allowGifting">
                 <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?php endif;?>>Yes, accept gifts</option>
                 <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?php endif;?>>No, do not accept gifts</option>
@@ -102,7 +102,7 @@ use Destiny\Commerce\SubscriptionStatus;
             </div>
 
             <div class="form-group">
-              <label>Features:</label>
+              <label>Features</label>
               <?php foreach($model->features as $featureName=>$f): ?>
               <div class="checkbox">
                 <label>
@@ -114,11 +114,17 @@ use Destiny\Commerce\SubscriptionStatus;
             </div>
 
             <div class="form-group">
-              <label>Website Roles:</label>
+              <label>Website Roles <small>(Not editable)</small></label>
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" name="roles[]" value="<?=UserRole::ADMIN?>" <?=(in_array(UserRole::ADMIN, $model->user['roles']))?'checked="checked"':''?>>
+                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::ADMIN?>" <?=(in_array(UserRole::ADMIN, $model->user['roles']))?'checked="checked"':''?>>
                   Administrator
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::FINANCE?>" <?=(in_array(UserRole::FINANCE, $model->user['roles']))?'checked="checked"':''?>>
+                  Finance
                 </label>
               </div>
             </div>

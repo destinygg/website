@@ -7,6 +7,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\ViewModel;
+use Destiny\Messages\PrivateMessageService;
 
 /**
  * @Controller
@@ -91,12 +92,15 @@ class EmbedController {
         if(empty($host))
             $host = $_SERVER['SERVER_NAME'];
 
+        $unreadMessageCount = (Session::hasRole(UserRole::USER)) ? PrivateMessageService::instance()->getUnreadMessageCount(Session::getCredentials()->getUserId()) : 0;
+
         return array (
             'host' => $host,
             'port' => Config::$a ['chat'] ['port'],
             'maxlines' => Config::$a ['chat'] ['maxlines'],
             'emoticons' => array_values( $emotes ),
             'twitchemotes' => array_values( $twemotes ),
+            'pmcountnum' => $unreadMessageCount
         );
     }
 }

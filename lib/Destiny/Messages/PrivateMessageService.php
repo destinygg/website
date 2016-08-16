@@ -97,14 +97,14 @@ class PrivateMessageService extends Service {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
             SELECT COUNT(*)
-            FROM privatemessages AS pm
+            FROM privatemessages
             WHERE
                 targetuserid = :targetuserid AND
                 isread       = 0
         ");
         $stmt->bindValue("targetuserid", $targetuserid, \PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchColumn();
+        return intval($stmt->fetchColumn());
     }
 
     /**

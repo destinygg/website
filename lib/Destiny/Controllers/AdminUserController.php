@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Controllers;
 
 use Destiny\Common\Application;
@@ -152,10 +151,7 @@ class AdminUserController {
             $user = $userService->getUserById ( $params ['id'] );
             if (! isset ( $params ['features'] ))
                 $params ['features'] = array ();
-            if (! isset ( $params ['roles'] ))
-                $params ['roles'] = array ();
             $userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
-            $userService->setUserRoles ( $user ['userId'], $params ['roles'] );
             $authService->flagUserForUpdate ( $user ['userId'] );
             $conn->commit();
         } catch (\Exception $e){

@@ -17,7 +17,9 @@ abstract class UserFeature {
     const TRUSTED = 'flair4';
     const CONTRIBUTOR = 'flair5';
     const COMPCHALLENGE = 'flair6';
-    const EVENOTABLE = 'flair7';
+    const EVE = 'flair7';
+    const SC2 = 'flair10';
+    const BOT2 = 'flair11';
 
     public static $FEATURES = [
         self::PROTECT,
@@ -30,11 +32,13 @@ abstract class UserFeature {
         self::MODERATOR,
         self::ADMIN,
         self::BOT,
+        self::BOT2,
         self::NOTABLE,
         self::TRUSTED,
         self::CONTRIBUTOR,
         self::COMPCHALLENGE,
-        self::EVENOTABLE
+        self::EVE,
+        self::SC2
     ];
 
     public static $PSEUDO_FEATURES = [
@@ -51,11 +55,13 @@ abstract class UserFeature {
         self::MODERATOR,
         self::ADMIN,
         self::BOT,
+        self::BOT2,
         self::NOTABLE,
         self::TRUSTED,
         self::CONTRIBUTOR,
         self::COMPCHALLENGE,
-        self::EVENOTABLE
+        self::EVE,
+        self::SC2
     ];
 
 }

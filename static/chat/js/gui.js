@@ -231,18 +231,22 @@
             var pmPopupUi = this.ui.find('#chat-private-messages:first').eq(0),
                 pmPopupUiMenu = new ChatMenu(pmPopupUi, chat);
 
-            pmPopupUi.find('.user-list-link').on('click', function(){
+            pmPopupUi.on('click', '.user-list-link', function(){
                 ChatMenu.closeMenus(chat);
                 userListUiMenu.show(pmPopupUiMenu.btn);
                 return false;
             });
-            pmPopupUi.find('#reply-privmsg').on('click', function(){
-                chat.resetUnreadMessageCount();
+            pmPopupUi.on('click', '#inbox-privmsg', function(){
+                chat.setUnreadMessageCount(0);
                 ChatMenu.closeMenus(chat);
                 return true;
             });
-            pmPopupUi.find('#close-privmsg').on('click', function(){
-                chat.resetUnreadMessageCount();
+            pmPopupUi.on('click', '#markread-privmsg', function(){
+                chat.setUnreadMessageCount(0);
+                $.ajax({
+                    type: 'POST',
+                    url: '/profile/messages/openall'
+                });
                 ChatMenu.closeMenus(chat);
                 return false;
             });
@@ -415,10 +419,10 @@
                 $.ajax({
                     type: 'POST',
                     url: '/profile/messages/'+ encodeURIComponent(message.messageid) +'/open',
-                    complete: function(){
+                    complete: function(data){
                         messageIcnSend.attr('class', 'icon-mail-open-document');
                         messageActions.remove();
-                        chat.addUnreadMessageCount(-1);
+                        chat.setUnreadMessageCount(data.unread);
                     }
                 });
                 return false;
@@ -786,14 +790,9 @@
             this.scrollPlugin.reset();
         },
 
-        addUnreadMessageCount: function(incr){
-            this.pmcountnum += incr;
+        setUnreadMessageCount: function(n){
+            this.pmcountnum = Math.max(0, n);
             this.pmcount.toggleClass('hidden', !this.pmcountnum).text(this.pmcountnum);
-        },
-
-        resetUnreadMessageCount: function(){
-            this.pmcountnum = 0;
-            this.pmcount.addClass('hidden');
         }
 
     });
@@ -853,7 +852,7 @@
             '</time>';
     };
     ChatMessage.prototype.wrapMessage = function(){
-        return $('<span/>').text(this.message).html();
+        return $('<span class="msg"/>').text(this.message).get(0).outerHTML;
     };
     ChatMessage.prototype.html = function(){
         return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
@@ -995,6 +994,9 @@
                 case destiny.UserFeatures.BOT :
                     icons += '<i class="icon-bot" title="Bot"/>';
                     break;
+                case destiny.UserFeatures.BOT2 :
+                    icons += '<i class="icon-bot2" title="Bot"/>';
+                    break;
                 case destiny.UserFeatures.NOTABLE :
                     icons += '<i class="icon-notable" title="Notable"/>';
                     break;
@@ -1007,8 +1009,11 @@
                 case destiny.UserFeatures.COMPCHALLENGE :
                     icons += '<i class="icon-compchallenge" title="Composition Challenge Winner"/>';
                     break;
-                case destiny.UserFeatures.EVENOTABLE :
-                    icons += '<i class="icon-evenotable" title="Eve Notable"/>';
+                case destiny.UserFeatures.EVE :
+                    icons += '<i class="icon-eve" title="Eve"/>';
+                    break;
+                case destiny.UserFeatures.SC2 :
+                    icons += '<i class="icon-sc2" title="Starcraft 2"/>';
                     break;
             }
         }

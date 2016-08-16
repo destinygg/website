@@ -533,6 +533,10 @@ i.icon-reddit {
   .entries {
     min-height: 200px;
   }
+  .media-body {
+    display: block;
+    width: auto;
+  }
   .media-body time {
     font-size: 12px;
     color: $text-color2;
@@ -1196,6 +1200,10 @@ form label.error {
   vertical-align: top;
   padding: 0 5px;
   border-radius: 0 0 4px 4px;
+}
+
+span.icon-required {
+  color: $color-alert-text;
 }
 
 

@@ -11,11 +11,13 @@ destiny.UserFeatures = {
     MODERATOR     : 'moderator',
     ADMIN         : 'admin',
     BOT           : 'bot',
+	BOT2          : 'flair11',
     NOTABLE       : 'flair2',
     TRUSTED       : 'flair4',
     CONTRIBUTOR   : 'flair5',
     COMPCHALLENGE : 'flair6',
-    EVENOTABLE    : 'flair7'
+	EVE           : 'flair7',
+	SC2           : 'flair10'
 };
 
 function chat(element, user, options) {
@@ -215,7 +217,6 @@ chat.prototype.onPRIVMSG = function (data) {
 		return;
 
 	this.gui.autoCompletePlugin.updateNick(user.username);
-	this.gui.addUnreadMessageCount(1);
 	this.gui.push(new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp));
 };
 chat.prototype.onMSG = function(data) {
