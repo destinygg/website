@@ -81,9 +81,9 @@ class Application extends Service {
                 $this->handleResponse ( $response );
             }
             if (! $this->hasRouteSecurity ( $route, $creds )) {
-                $response = new Response ( Http::STATUS_UNAUTHORIZED );
-                $model->title = Http::$HEADER_STATUSES [Http::STATUS_UNAUTHORIZED];
-                $response->setBody ( $this->template ( 'errors/' . Http::STATUS_UNAUTHORIZED . '.php', $model ) );
+                $response = new Response ( Http::STATUS_FORBIDDEN );
+                $model->title = Http::$HEADER_STATUSES [Http::STATUS_FORBIDDEN];
+                $response->setBody ( $this->template ( 'errors/' . Http::STATUS_FORBIDDEN . '.php', $model ) );
                 $this->handleResponse ( $response );
             }
         }

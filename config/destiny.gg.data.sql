@@ -4,7 +4,8 @@ INSERT INTO `dfl_users` (userId, username, email, country, createdDate, modified
   (NULL, 'Admin', 'admin@destiny.gg', '', NOW(), NOW(), 'Active', 0, NULL);
 
 INSERT INTO `dfl_roles` (roleId, roleName) VALUES
-  (1, 'ADMIN');
+  (1, 'ADMIN'),
+  (2, 'FINANCE');
 
 INSERT INTO `dfl_users_roles` (userId, roleId) VALUES
   (1, 1);
@@ -22,5 +23,7 @@ INSERT  INTO `dfl_features`(`featureId`,`featureName`,`featureLabel`) VALUES
   (10, 'flair4', 'Trusted'),
   (11, 'flair5', 'Contributor'),
   (12, 'flair6', 'Composition Challenge Winner'),
-  (13, 'flair7', 'Eve Notable'),
-  (14, 'flair8', 'Subscriber Tier 4');
+  (13, 'flair7', 'Eve'),
+  (14, 'flair8', 'Subscriber Tier 4'),
+  (15, 'flair10', 'StarCraft 2'),
+  (16, 'flair11', 'Bot 2');

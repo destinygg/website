@@ -28,6 +28,7 @@ use Destiny\Common\Utils\Date;
             <div class="form-group pull-right">
               <select name="feature" class="form-control">
                 <option value="" disabled selected>Feature</option>
+                <option value=""></option>
                 <?php foreach ($model->features as $feature): ?>
                 <option value="<?=Tpl::out($feature['featureName']);?>"><?=Tpl::out($feature['featureLabel']);?></option>
                 <?php endforeach; ?>

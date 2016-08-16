@@ -4,6 +4,7 @@ namespace Destiny\Controllers;
 use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserFeaturesService;
+use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
@@ -25,15 +26,28 @@ use Destiny\Common\Utils\FilterParams;
 class AdminController {
 
     /**
-     * @Route ("/admin/dashboard")
      * @Route ("/admin")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET","POST"})
      *
      * @return string
      */
-    public function dashboard() {
-        return 'admin/dashboard';
+    public function admin() {
+        if (Session::hasRole(UserRole::FINANCE))
+            return 'redirect: /admin/income';
+        else
+            return 'redirect: /admin/users';
+    }
+
+    /**
+     * @Route ("/admin/income")
+     * @Secure ({"ADMIN","FINANCE"})
+     * @HttpMethod ({"GET","POST"})
+     *
+     * @return string
+     */
+    public function income() {
+        return 'admin/income';
     }
 
     /**
