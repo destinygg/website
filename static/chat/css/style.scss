@@ -50,6 +50,7 @@
     clear: both;
     word-wrap: break-word;
     padding: 3px 20px 3px 5px;
+    vertical-align: middle;
 
     .continue {
       user-select: none;
@@ -59,6 +60,7 @@
       @extend .serif-font;
       font-weight:bold;
       cursor: pointer;
+      vertical-align: middle;
     }
     .msg.emote {
       font-style: italic;
@@ -266,6 +268,7 @@
 #chat-lines {
   time {
     font-size: 11px;
+    vertical-align: middle;
   }
   a {
     border-style: solid;
@@ -289,6 +292,9 @@
   }
   a.nsfl-link {
     border-bottom: 1px dashed $color-underline-nsfl !important;
+  }
+  .msg {
+    vertical-align: middle;
   }
 }
 
@@ -751,6 +757,13 @@
 
 .chat .greentext {
   color: $color-green-text;
+}
+
+.chat a.flair11 {
+  color: $color-label-bot2;
+}
+.chat a.flair11:hover {
+  color: $color-label-user;
 }
 
 @keyframes hop {

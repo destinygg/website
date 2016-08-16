@@ -852,7 +852,7 @@
             '</time>';
     };
     ChatMessage.prototype.wrapMessage = function(){
-        return $('<span/>').text(this.message).html();
+        return $('<span class="msg"/>').text(this.message).get(0).outerHTML;
     };
     ChatMessage.prototype.html = function(){
         return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
@@ -994,6 +994,9 @@
                 case destiny.UserFeatures.BOT :
                     icons += '<i class="icon-bot" title="Bot"/>';
                     break;
+                case destiny.UserFeatures.BOT2 :
+                    icons += '<i class="icon-bot2" title="Bot"/>';
+                    break;
                 case destiny.UserFeatures.NOTABLE :
                     icons += '<i class="icon-notable" title="Notable"/>';
                     break;
@@ -1006,8 +1009,11 @@
                 case destiny.UserFeatures.COMPCHALLENGE :
                     icons += '<i class="icon-compchallenge" title="Composition Challenge Winner"/>';
                     break;
-                case destiny.UserFeatures.EVENOTABLE :
-                    icons += '<i class="icon-evenotable" title="Eve Notable"/>';
+                case destiny.UserFeatures.EVE :
+                    icons += '<i class="icon-eve" title="Eve"/>';
+                    break;
+                case destiny.UserFeatures.SC2 :
+                    icons += '<i class="icon-sc2" title="Starcraft 2"/>';
                     break;
             }
         }
