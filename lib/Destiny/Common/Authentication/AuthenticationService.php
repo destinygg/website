@@ -142,24 +142,21 @@ class AuthenticationService extends Service {
         $credentials->addRoles ( UserService::instance ()->getUserRolesByUserId ( $user ['userId'] ) );
 
         $subscription = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
-        if (! empty ( $subscription ) or $user ['istwitchsubscriber']) {
-            $credentials->addRoles ( UserRole::SUBSCRIBER );
-            $credentials->addFeatures ( UserFeature::SUBSCRIBER );
-
-            if ( $user['istwitchsubscriber'] )
-                $credentials->addFeatures ( UserFeature::SUBSCRIBERT0 );
+        if (!empty ($subscription) or $user ['istwitchsubscriber']) {
+            $credentials->addRoles(UserRole::SUBSCRIBER);
+            $credentials->addFeatures(UserFeature::SUBSCRIBER);
         }
-
-        if (! empty( $subscription )) {
-            if ($subscription ['subscriptionTier'] == 2) {
-                $credentials->addFeatures ( UserFeature::SUBSCRIBERT2 );
-            }
-            if ($subscription ['subscriptionTier'] == 3) {
-                $credentials->addFeatures ( UserFeature::SUBSCRIBERT3 );
-            }
-            if ($subscription ['subscriptionTier'] == 4) {
-                $credentials->addFeatures ( UserFeature::SUBSCRIBERT4 );
-            }
+        if ($user['istwitchsubscriber'])
+            $credentials->addFeatures(UserFeature::SUBSCRIBERT0);
+        if (!empty($subscription)) {
+            if ($subscription ['subscriptionTier'] == 1)
+                $credentials->addFeatures(UserFeature::SUBSCRIBERT1);
+            if ($subscription ['subscriptionTier'] == 2)
+                $credentials->addFeatures(UserFeature::SUBSCRIBERT2);
+            if ($subscription ['subscriptionTier'] == 3)
+                $credentials->addFeatures(UserFeature::SUBSCRIBERT3);
+            if ($subscription ['subscriptionTier'] == 4)
+                $credentials->addFeatures(UserFeature::SUBSCRIBERT4);
         }
         return $credentials;
     }
