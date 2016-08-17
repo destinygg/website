@@ -271,13 +271,14 @@
                             elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
                         usercount++;
                         elems[username.toLowerCase()] = elem;
-                        if($.inArray('bot', u.features) >= 0)
+
+                        if(u.hasFeature(destiny.UserFeatures.BOT))
                             bots.push(username.toLowerCase());
-                        else if ($.inArray('admin', u.features) >= 0)
+                        else if (u.hasFeature(destiny.UserFeatures.ADMIN))
                             admins.push(username.toLowerCase());
-                        else if($.inArray('vip', u.features) >= 0)
+                        else if(u.hasFeature(destiny.UserFeatures.VIP))
                             vips.push(username.toLowerCase());
-                        else if($.inArray('subscriber', u.features) >= 0)
+                        else if(u.hasFeature(destiny.UserFeatures.SUBSCRIBER))
                             subs.push(username.toLowerCase());
                         else
                             plebs.push(username.toLowerCase());
@@ -731,7 +732,7 @@
             if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getPreference('highlight'))
                 return false;
 
-            if(message.user.features.indexOf(destiny.UserFeatures.BOT) !== -1)
+            if(user.hasFeature(destiny.UserFeatures.BOT))
                 return false;
 
             var nicks = this.getPreference('highlightnicks');
@@ -802,6 +803,16 @@
         this.nick     = args.nick || '';
         this.username = args.nick || '';
         this.features = args.features || [];
+        this.hasAnyFeatures = function(){
+            for(var i=0; i<arguments.length; i++){
+                if(this.features.indexOf(arguments[i]) !== -1)
+                    return true;
+            }
+            return false;
+        };
+        this.hasFeature = function(feature){
+            return this.hasAnyFeatures(feature);
+        };
         return this;
     };
 
@@ -970,15 +981,15 @@
     ChatUserMessage.prototype.getFeatureHTML = function(user){
         var icons = '';
 
-        if($.inArray(destiny.UserFeatures.SUBSCRIBERT4, user.features) >= 0)
+        if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT4))
             icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
-        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT3, user.features) >= 0)
+        else if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT3))
             icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
-        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, user.features) >= 0)
+        else if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT2))
             icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
-        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT1, user.features) >= 0)
+        else if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT1))
             icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
-        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT0, user.features) === -1 && $.inArray(destiny.UserFeatures.SUBSCRIBER, user.features) >= 0)
+        else if(!user.hasFeature(destiny.UserFeatures.SUBSCRIBERT0) && user.hasFeature(destiny.UserFeatures.SUBSCRIBER))
             icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
 
         for (var i = 0; i < user.features.length; i++) {

@@ -1,10 +1,10 @@
 destiny = {
-	cdn:		'',
-	token:		'',
-	baseUrl: 	'/',
-	timeout: 	15000,
-	fn: 		{}
+    cdn:        '',
+    token:      '',
+    baseUrl:    '/',
+    timeout:    15000,
+    fn:         {}
 };
 destiny.init = function(args){
-	$.extend(destiny, args);
+    $.extend(destiny, args);
 };
