@@ -377,12 +377,11 @@ $(function(){
             ended_at: "",
             duration: 0,
             viewers: 0,
-            host: {},
-            etag: null
+            host: {}
         };
 
         var updateStatus = function(status){
-            var state = (status.host && status.host['target_id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
+            var state = (status['host'] && status.host['target_id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
             el.removeClass('online offline hosting').addClass(state);
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
@@ -396,14 +395,15 @@ $(function(){
         setInterval(function(){
             $.ajax({
                 url: '/stream.json',
-                ifModified: true,
                 type: 'GET'
             })
-            .success(function(data, textStatus, xhr){
-                if(xhr.getResponseHeader('ETag') !== status.etag){
-                    status = $.extend(status, {etag:xhr.getResponseHeader('ETag')}, data);
-                    updateStatus(status);
-                }
+            .success(function(data){
+                try {
+                    if(data != null && data != undefined){
+                        status = $.extend(status, data);
+                        updateStatus(status);
+                    }
+                } catch(ignored){}
             });
         }, 60000);
 
