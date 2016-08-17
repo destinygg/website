@@ -10,13 +10,13 @@
 
 	destiny.fn.GreenTextFormatter.prototype.format = function(str, user){
 		if(user && str.indexOf("&gt;") === 0){
-			if(
-			    $.inArray(destiny.UserFeatures.SUBSCRIBERT3, user.features) > -1 ||
-			    $.inArray(destiny.UserFeatures.SUBSCRIBERT4, user.features) > -1 ||
-			    $.inArray(destiny.UserFeatures.SUBSCRIBERT2, user.features) > -1 ||
-			    $.inArray(destiny.UserFeatures.ADMIN, user.features) > -1 ||
-			    $.inArray(destiny.UserFeatures.MODERATOR, user.features) > -1
-			)
+			if(user.hasAnyFeatures(
+				destiny.UserFeatures.SUBSCRIBERT3,
+				destiny.UserFeatures.SUBSCRIBERT4,
+				destiny.UserFeatures.SUBSCRIBERT2,
+				destiny.UserFeatures.ADMIN,
+				destiny.UserFeatures.MODERATOR
+			))
 				str = '<span class="greentext">'+str+'</span>';
 		}
 		return str;
@@ -33,8 +33,8 @@
 
 	destiny.fn.EmoteFormatter.prototype.format = function(str, user){
 		var emoteregex = this.emoteregex;
-		if (user && (user.features || []).length > 0) {
-			if ($.inArray(destiny.UserFeatures.SUBSCRIBERT0, user.features) > -1)
+		if (user && user.features.length > 0) {
+			if (user.hasFeature(destiny.UserFeatures.SUBSCRIBERT0))
 				emoteregex = this.twitchemoteregex;
 			else
 				emoteregex = this.gemoteregex;

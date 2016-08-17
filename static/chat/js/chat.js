@@ -223,7 +223,7 @@ chat.prototype.onPRIVMSG = function (data) {
 };
 chat.prototype.onMSG = function(data) {
 	// If we have the same user as the one logged in, update the features
-	if(this.user.username == data.nick && $.isArray(data.features))
+	if(this.user.username == data.nick && Array.isArray(data.features))
 		this.user.features = data.features;
 
 	// Emote
@@ -281,13 +281,13 @@ chat.prototype.onMUTE = function(data) {
 	var suppressednick = data.data;
 	if (this.user.username.toLowerCase() == data.data.toLowerCase())
 		suppressednick = 'You have been';
-    else if (
-        $.inArray(destiny.UserFeatures.SUBSCRIBERT3, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.SUBSCRIBERT4, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.SUBSCRIBERT2, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.ADMIN, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.MODERATOR, this.user.features) == -1 
-    )
+    else if (!this.user.hasAnyFeatures(
+		destiny.UserFeatures.SUBSCRIBERT3,
+		destiny.UserFeatures.SUBSCRIBERT4,
+		destiny.UserFeatures.SUBSCRIBERT2,
+		destiny.UserFeatures.ADMIN,
+		destiny.UserFeatures.MODERATOR
+	))
 		this.gui.removeUserMessages(data.data);
 
 	this.gui.push(new ChatCommandMessage(suppressednick + " muted by " + data.nick, data.timestamp));
@@ -309,13 +309,13 @@ chat.prototype.onBAN = function(data) {
 				window.location.href = "/banned";
 			}, 1500);
 		}
-    } else if(
-        $.inArray(destiny.UserFeatures.SUBSCRIBERT3, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.SUBSCRIBERT4, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.SUBSCRIBERT2, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.ADMIN, this.user.features) == -1 &&
-        $.inArray(destiny.UserFeatures.MODERATOR, this.user.features) == -1 
-    )
+    } else if(!this.user.hasAnyFeatures(
+		destiny.UserFeatures.SUBSCRIBERT3,
+		destiny.UserFeatures.SUBSCRIBERT4,
+		destiny.UserFeatures.SUBSCRIBERT2,
+		destiny.UserFeatures.ADMIN,
+		destiny.UserFeatures.MODERATOR
+	))
 		this.gui.removeUserMessages(data.data);
 
 	this.gui.push(new ChatCommandMessage(suppressednick + " banned by " + data.nick, data.timestamp));
