@@ -970,26 +970,21 @@
     ChatUserMessage.prototype.getFeatureHTML = function(user){
         var icons = '';
 
-        if($.inArray(destiny.UserFeatures.SUBSCRIBERT4, user.features) >= 0){
+        if($.inArray(destiny.UserFeatures.SUBSCRIBERT4, user.features) >= 0)
             icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
-        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT3, user.features) >= 0){
+        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT3, user.features) >= 0)
             icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
-        }else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, user.features) >= 0){
+        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT2, user.features) >= 0)
             icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
-        }else if($.inArray(destiny.UserFeatures.SUBSCRIBER, user.features) >= 0){
+        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT1, user.features) >= 0)
             icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
-        }
+        else if($.inArray(destiny.UserFeatures.SUBSCRIBERT0, user.features) === -1 && $.inArray(destiny.UserFeatures.SUBSCRIBER, user.features) >= 0)
+            icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
 
         for (var i = 0; i < user.features.length; i++) {
             switch(user.features[i]){
                 case destiny.UserFeatures.SUBSCRIBERT0 :
                     icons += '<i class="icon-minitwitch" title="Twitch subscriber"/>';
-                    break;
-                case destiny.UserFeatures.VIP :
-                    icons += '<i class="icon-vip" title="VIP"/>';
-                    break;
-                case destiny.UserFeatures.ADMIN :
-                    icons += '<i class="icon-admin" title="Administrator"/>';
                     break;
                 case destiny.UserFeatures.BOT :
                     icons += '<i class="icon-bot" title="Bot"/>';
@@ -1007,13 +1002,16 @@
                     icons += '<i class="icon-contributor" title="Contributor"/>';
                     break;
                 case destiny.UserFeatures.COMPCHALLENGE :
-                    icons += '<i class="icon-compchallenge" title="Composition Challenge Winner"/>';
+                    icons += '<i class="icon-compchallenge" title="Composition Winner"/>';
                     break;
                 case destiny.UserFeatures.EVE :
                     icons += '<i class="icon-eve" title="Eve"/>';
                     break;
                 case destiny.UserFeatures.SC2 :
                     icons += '<i class="icon-sc2" title="Starcraft 2"/>';
+                    break;
+                case destiny.UserFeatures.BROADCASTER :
+                    icons += '<i class="icon-broadcaster" title="Broadcaster"/>';
                     break;
             }
         }

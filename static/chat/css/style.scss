@@ -704,9 +704,7 @@
   color: $color-label-user-alt;
 }
 
-/**
- * T1,T2
- */
+/* T1,T2 */
 .chat a.subscriber {
   color: $color-label-sub;
 }
@@ -714,9 +712,7 @@
   color: $color-label-sub-alt;
 }
 
-/**
- * T3
- */
+/* T3 */
 .chat a.flair3 {
   color: $color-label-sub2;
 }
@@ -724,9 +720,7 @@
   color: $color-label-sub2-alt;
 }
 
-/**
- * T4
- */
+/* T4 */
 .chat a.flair8 {
   color: $color-label-sub3;
 }
@@ -755,15 +749,22 @@
   color: $color-label-admin-alt;
 }
 
-.chat .greentext {
-  color: $color-green-text;
-}
-
 .chat a.flair11 {
   color: $color-label-bot2;
 }
 .chat a.flair11:hover {
   color: $color-label-user;
+}
+
+.chat a.flair12 {
+  color: $color-broadcaster;
+}
+.chat a.flair12:hover {
+  color: $color-broadcaster-alt;
+}
+
+.chat .greentext {
+  color: $color-green-text;
 }
 
 @keyframes hop {
