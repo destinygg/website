@@ -111,7 +111,7 @@ use Destiny\Common\Config;
               <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
               <button type="submit" class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Pay subscription</button>
               <a href="/subscribe" class="btn btn-link">Cancel</a>
-              <p style="font-size: 12px; margin: 15px 0 0 0; color: #555;">
+              <p class="agreement">
                 <span>By clicking the &quot;Pay subscription&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</span>
               </p>
             </div>
