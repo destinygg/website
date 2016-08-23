@@ -267,8 +267,11 @@
 
                 for(var username in chat.engine.users){
                     if(chat.engine.users.hasOwnProperty(username)){
-                        var u = chat.engine.users[username],
-                            elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
+                        var u = chat.engine.users[username];
+                        if (!u || !u.features)
+                            continue;
+
+                        var elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
                         usercount++;
                         elems[username.toLowerCase()] = elem;
 
@@ -493,17 +496,8 @@
                 return;
             }
 
-            // parse backlog preliminarily to initialize nicks so the formatter will mark them as such (clickable)
-            for (var i = 0, j = this.backlog.length; i < j; i++){
-                var obj = JSON.parse(this.backlog[i].substring(this.backlog[i].indexOf(' ')));
-                if(obj.nick)
-                    this.engine.users[obj.nick] = "";
-            }
-
             for (var i = 0, j = this.backlog.length; i < j; i++)
-                this.engine.parseAndDispatch({
-                    data: this.backlog[i]
-                });
+                this.engine.dispatchBacklog(this.backlog[i]);
 
             this.put(new ChatUIMessage('<hr/>'));
             this.scrollPlugin.updateAndScroll(true);
@@ -732,13 +726,15 @@
             if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getPreference('highlight'))
                 return false;
 
-            if(user.hasFeature(destiny.UserFeatures.BOT))
+            if(message.user.hasFeature(destiny.UserFeatures.BOT))
                 return false;
 
             var nicks = this.getPreference('highlightnicks');
-            if ((nicks[message.user.username.toLowerCase()] || nicks[message.user.username]) ||
+            if (
+                nicks[message.user.username.toLowerCase()] || nicks[message.user.username] ||
                 (this.highlightregex.user && this.highlightregex.user.test(message.message)) ||
-                (this.highlightregex.custom && this.highlightregex.custom.test(message.message))){
+                (this.highlightregex.custom && this.highlightregex.custom.test(message.message))
+               ) {
                 message.ui.addClass('highlight');
 
                 if(this.getPreference('allowNotifications') && !this.input.is(":focus") && !this.backlogLoading)
