@@ -51,13 +51,12 @@ function chat(element, user, options) {
     this.hints = {
         "hint"           : 'Type in /hint for more hints',
         "slashhelp"      : 'Type in /help for more advanced features, like modifying the scrollback size',
-        "tabcompletion"  : 'Use the tab key to auto-complete usernames and emotes',
+        "tabcompletion"  : 'Use the tab key to auto-complete usernames and emotes (for user only completion prepend a @ or press shift)',
         "hoveremotes"    : 'Hovering your mouse over an emote will show you the emote code',
         "highlight"      : 'Chat messages containing your username will be highlighted',
         "notify"         : 'Use /msg <username> to send a private message to someone',
         "ignoreuser"     : 'Use /ignore <username> to hide messages from pesky chatters',
-        "moreinfo"       : 'See the https://destiny.gg/chat/faq for more information',
-        "emotewiki"      : 'For the list of available emotes type /emotes or https://github.com/destinygg/website/wiki/Emotes',
+        "emotewiki"      : 'For the list of available emotes type /emotes or https://destiny.gg/emotes',
         "mutespermanent" : 'Mutes are never persistent, don\'t worry it will pass!'
     };
     this.hintindex = [];
@@ -80,9 +79,9 @@ chat.prototype.start = function(){
     if (!window.WebSocket)
         return this.gui.push(new ChatErrorMessage(this.errorstrings.requiresocket));
 
+    this.dispatchBacklog = $.proxy(this.dispatchBacklog, this);
     this.gui.loadBacklog();
     this.loadIgnoreList();
-    this.dispatchBacklog = $.proxy(this.dispatchBacklog, this);
     this.gui.push(new ChatStatusMessage("Connecting..."));
     this.init();
 };
@@ -132,14 +131,13 @@ chat.prototype.parseAndDispatch = function(e) {
     if (this[handler])
         this[handler](obj);
 };
-chat.prototype.dispatchBacklog = function(e) {
-    var handler = 'on' + e.event,
-        obj     = {
-            nick     : e.username,
-            data     : e.data || e.target,
-            features : e.features,
-            timestamp: moment.utc(e.timestamp).valueOf()
-        };
+chat.prototype.dispatchBacklog = function(line) {
+    var eventname = line.split(' ', 1)[0],
+        handler = 'on' + eventname,
+        obj     = JSON.parse(e.data.substring(eventname.length+1));
+
+    if (!this.users[obj.nick])
+        this.users[obj.nick] = new ChatUser(obj);
 
     if (this[handler])
         this[handler](obj);
@@ -226,7 +224,7 @@ chat.prototype.onMSG = function(data) {
     if(this.user.username == data.nick && Array.isArray(data.features))
         this.user.features = data.features;
 
-    // Emote
+    // Emote (wrong name for an action, oh well)
     var emoticon = (data.data.substring(0, 4) === '/me ') ? data.data.substring(4) : data.data;
 
     if ($.inArray(emoticon, this.gui.emoticons) != -1 || $.inArray(emoticon, this.gui.twitchemotes) != -1) {
