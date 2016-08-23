@@ -134,7 +134,7 @@ chat.prototype.parseAndDispatch = function(e) {
 chat.prototype.dispatchBacklog = function(line) {
     var eventname = line.split(' ', 1)[0],
         handler = 'on' + eventname,
-        obj     = JSON.parse(e.data.substring(eventname.length+1));
+        obj     = JSON.parse(line.substring(eventname.length+1));
 
     if (!this.users[obj.nick])
         this.users[obj.nick] = new ChatUser(obj);
