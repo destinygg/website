@@ -735,7 +735,7 @@
             if (!message.user || !message.user.username || message.user.username == this.engine.user.username || !this.getPreference('highlight'))
                 return false;
 
-            if(user.hasFeature(destiny.UserFeatures.BOT))
+            if(user && user.hasFeature(destiny.UserFeatures.BOT))
                 return false;
 
             var nicks = this.getPreference('highlightnicks');
