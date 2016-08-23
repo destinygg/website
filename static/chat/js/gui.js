@@ -267,8 +267,11 @@
 
                 for(var username in chat.engine.users){
                     if(chat.engine.users.hasOwnProperty(username)){
-                        var u = chat.engine.users[username],
-                            elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
+                        var u = chat.engine.users[username];
+                        if (!u || !u.features)
+                            continue;
+
+                        var elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
                         usercount++;
                         elems[username.toLowerCase()] = elem;
 
