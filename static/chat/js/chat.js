@@ -369,6 +369,11 @@ chat.prototype.onPRIVMSGSENT = function(data) {
 };
 
 chat.prototype.handleCommand = function(str) {
+    // empty command, do not try to parse it
+    if (!str.length) {
+      this.gui.push(new ChatErrorMessage("Empty command"));
+      return;
+    }
 
     var parts     = str.match(/([^ ]+)/g),
         command   = parts[0].toLowerCase(),
