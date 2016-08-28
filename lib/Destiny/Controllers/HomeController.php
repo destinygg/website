@@ -64,7 +64,7 @@ class HomeController {
      */
     public function helpAgreement(ViewModel $model) {
         $model->title = 'User agreement';
-        return 'help/agreement';
+        return 'agreement';
     }
 
     /**

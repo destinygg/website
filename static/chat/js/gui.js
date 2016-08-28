@@ -275,7 +275,7 @@
                         usercount++;
                         elems[username.toLowerCase()] = elem;
 
-                        if(u.hasFeature(destiny.UserFeatures.BOT))
+                        if(u.hasFeature(destiny.UserFeatures.BOT) || u.hasFeature(destiny.UserFeatures.BOT2))
                             bots.push(username.toLowerCase());
                         else if (u.hasFeature(destiny.UserFeatures.ADMIN))
                             admins.push(username.toLowerCase());
@@ -567,7 +567,7 @@
                 var message = (str.substring(0, 4) === '/me ') ? str.substring(4) : str;
 
                 // If this is an emoticon spam, emit the message but don't add the line immediately
-                if ($.inArray(message, this.emoticons) != -1 && this.engine.previousemote && this.engine.previousemote.message == message)
+                if (this.emoticons.indexOf(message) !== -1 && this.engine.previousemote && this.engine.previousemote.message == message)
                     return this.engine.emit('MSG', {data: str});
 
                 if (str.substring(0, 1) === '/')
@@ -737,7 +737,7 @@
                ) {
                 message.ui.addClass('highlight');
 
-                if(this.getPreference('allowNotifications') && !this.input.is(":focus") && !this.backlogLoading)
+                if(this.getPreference('allowNotifications') && !this.hasFocus() && !this.backlogLoading)
                     this.showNotification(message);
             }
             return false;
@@ -790,6 +790,10 @@
         setUnreadMessageCount: function(n){
             this.pmcountnum = Math.max(0, n);
             this.pmcount.toggleClass('hidden', !this.pmcountnum).text(this.pmcountnum);
+        },
+
+        hasFocus: function(){
+            return this.input.is(':focus');
         }
 
     });
@@ -799,17 +803,17 @@
         this.nick     = args.nick || '';
         this.username = args.nick || '';
         this.features = args.features || [];
-        this.hasAnyFeatures = function(){
-            for(var i=0; i<arguments.length; i++){
-                if(this.features.indexOf(arguments[i]) !== -1)
-                    return true;
-            }
-            return false;
-        };
-        this.hasFeature = function(feature){
-            return this.hasAnyFeatures(feature);
-        };
         return this;
+    };
+    ChatUser.prototype.hasAnyFeatures = function(/* ... */){
+        for(var i=0; i<arguments.length; i++){
+            if(this.features.indexOf(arguments[i]) !== -1)
+                return true;
+        }
+        return false;
+    };
+    ChatUser.prototype.hasFeature = function(feature){
+        return this.hasAnyFeatures(feature);
     };
 
     // UI MESSAGE - ability to send HTML markup to the chat

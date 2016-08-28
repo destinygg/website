@@ -21,10 +21,12 @@ class YoutubeApiService extends Service {
      */
     public function getYoutubePlaylist(array $options = array(), array $params = array()) {
         // Get the channel ID's from a specific person
-        // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=StevenBonnell&key={YOUR_API_KEY}
+        // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=Destiny&key={1}
+        // GET https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={0}&key={1}
         $params ['limit'] = (isset ( $params ['limit'] )) ? intval ( $params ['limit'] ) : 4;
+        $url = 'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId='. Config::$a ['youtube'] ['playlistId'] .'&key='. Config::$a ['youtube'] ['apikey'] .'&maxResults=' . intval($params ['limit']);
         return new CurlBrowser ( array_merge ( array (
-            'url' => 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId='. Config::$a ['youtube'] ['playlistId'] .'&key='. Config::$a ['youtube'] ['apikey'] .'&maxResults=' . intval($params ['limit']),
+            'url' => $url,
             'contentType' => MimeType::JSON,
             'onfetch' => function ($json) {
                 if (is_array ( $json ['items'] )) {

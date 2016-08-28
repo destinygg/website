@@ -391,14 +391,6 @@ body.no-brand #main-nav .brand {
   .thumbnail h3 {
     color: $text-color1;
   }
-  h4 {
-    color: $text-color2;
-    line-height: 20px;
-    font-size: 18px;
-    font-weight: normal;
-    text-shadow: none;
-    margin:0 0 10px 0;
-  }
   .thumbnail {
     border: none;
     background-color: $color-surface-dark2;
@@ -574,7 +566,6 @@ i.icon-reddit {
     margin-right: -1px;
   }
 }
-
 
 #stream-lastfm {
 
@@ -1699,4 +1690,10 @@ table#inbox td.from a {
     text-align: left;
     clear: both;
   }
+}
+
+.form-actions .agreement {
+  font-size: 12px;
+  margin: 15px 0 0 0;
+  color: $text-color2;
 }

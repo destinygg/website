@@ -217,6 +217,7 @@ chat.prototype.onPRIVMSG = function (data) {
         return;
 
     this.gui.autoCompletePlugin.updateNick(user.username);
+    this.gui.setUnreadMessageCount(this.gui.pmcountnum+1);
     this.gui.push(new ChatUserPrivateMessage(data.data, user, data.messageid, data.timestamp));
 };
 chat.prototype.onMSG = function(data) {
@@ -227,7 +228,7 @@ chat.prototype.onMSG = function(data) {
     // Emote (wrong name for an action, oh well)
     var emoticon = (data.data.substring(0, 4) === '/me ') ? data.data.substring(4) : data.data;
 
-    if ($.inArray(emoticon, this.gui.emoticons) != -1 || $.inArray(emoticon, this.gui.twitchemotes) != -1) {
+    if (this.gui.emoticons.indexOf(emoticon) !== -1 || this.gui.twitchemotes.indexOf(emoticon) !== -1) {
         if (this.previousemote && this.previousemote.message == emoticon) {
             if(this.previousemote.emotecount === 1){
                 this.previousemote.emotecount = 2;
@@ -421,8 +422,8 @@ chat.prototype.handleCommand = function(str) {
             }
 
             payload.nick = parts[1];
-            parts.shift(0); // remove command
-            parts.shift(0); // remove nick
+            parts.shift(); // remove command
+            parts.shift(); // remove nick
             payload.data = parts.join(' ');
 
             this.emit("PRIVMSG", payload);
