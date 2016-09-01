@@ -53,7 +53,7 @@ use Destiny\Common\Utils\Date;
             <div class="form-group">
               <label class="control-label" for="inputGifter">Gifter</label>
               <div class="controls">
-                <input type="text" class="form-control" name="gifter" id="inputGifter" value="<?=Tpl::out($model->subscription['gifter'])?>" placeholder="Gifter user id">
+                <input type="text" class="form-control" name="gifter" id="inputGifter" value="<?=Tpl::out($model->subscription['gifter'])?>" placeholder="Gifter user id or username">
               </div>
             </div>
 

@@ -252,7 +252,8 @@ class AdminUserController {
         FilterParams::required ( $params, 'createdDate' );
         FilterParams::required ( $params, 'endDate' );
         FilterParams::declared ( $params, 'gifter' );
-        
+
+        $userService = UserService::instance ();
         $subscriptionsService = SubscriptionsService::instance ();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);
 
@@ -265,8 +266,17 @@ class AdminUserController {
         $subscription ['userId'] = $params ['id'];
         $subscription ['subscriptionSource'] = (isset ( $params ['subscriptionSource'] ) && ! empty ( $params ['subscriptionSource'] )) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
 
-        if(!empty($params ['gifter'])){
-            $subscription ['gifter'] = $params ['gifter'];
+        if (!empty($params ['gifter'])) {
+            if (!is_numeric($params ['gifter'])) {
+                $gifter = $userService->getUserByUsername($params['gifter']);
+                if (empty($gifter))
+                    throw new Exception ('Invalid giftee (user not found)');
+                if ($subscription ['userId'] == $gifter['userId'])
+                    throw new Exception ('Invalid giftee (cannot gift yourself)');
+                $subscription ['gifter'] = $gifter['userId'];
+            } else {
+                $subscription ['gifter'] = $params['gifter'];
+            }
         }
         
         if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {
