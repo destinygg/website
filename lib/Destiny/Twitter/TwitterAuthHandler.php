@@ -24,8 +24,6 @@ class TwitterAuthHandler {
         $tmhOAuth = new \tmhOAuth ( array (
                 'consumer_key' => $authConf ['clientId'],
                 'consumer_secret' => $authConf ['clientSecret'],
-                'token' => $authConf ['token'],
-                'secret' => $authConf ['secret'],
                 'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
                 'curl_timeout' => Config::$a ['curl'] ['timeout'],
                 'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 

@@ -6,11 +6,10 @@ return array (
 		'seed' => '***REPLACE***', // used as the seed for hashing like hmac
 	),
 	// the key is the LOWERCASE domain to blacklist, the value is something non-null
-	'blacklistedDomains' => array(
-	),
-	'allowImpersonation'	=> false, // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
+	'blacklistedDomains' => [],
+	'allowImpersonation' => false, // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
 	'profile' => array(
-		'nameChangeLimit' 	=> 0
+		'nameChangeLimit' => 0
 	),
 	'privateKeys' => array(
 		'chat' => '',
@@ -98,9 +97,9 @@ return array (
 			'nathanFeels',
 		),
 	),
-    'images' => array(
-        'path'          => _BASEDIR . '/static/img/'
-    ),
+	'images' => array(
+		'path'          => _BASEDIR . '/static/img/'
+	),
 	'redis' => array(
 		'host' 				=> 'localhost',
 		'port' 				=> 6379,
@@ -132,14 +131,10 @@ return array (
 			'twitter' => array (
 				'clientId'				=> '',
 				'clientSecret'			=> '',
-				'token' 				=> '',
-				'secret'				=> ''
 			),
 			'reddit' => array (
 				'clientId'				=> '',
 				'clientSecret'			=> '',
-				'token' 				=> '',
-				'secret'				=> ''
 			)
 		)
 	),
@@ -218,15 +213,11 @@ return array (
 		'user'					=> ''
 	),
 	'twitch' => array (
-        'id'                    => 18074328,
-        'user'                  => 'destiny',
-		'client_id'				=> '',
-		'client_secret'			=> ''
+		'id'                    => 18074328,
+		'user'                  => 'destiny'
 	),
 	'twitter' => array (
 		'user'					=> '',
-		'consumer_key'			=> '',
-		'consumer_secret'		=> ''
 	),
 	'subscriptionType'				=> 'destiny.gg',
 	'commerce' => array (
