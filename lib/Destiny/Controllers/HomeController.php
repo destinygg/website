@@ -254,4 +254,14 @@ class HomeController {
         return 'redirect: http://blog.destiny.gg';
     }
 
+    /**
+     * @Route ("/loots")
+     * @Route ("/loot")
+     *
+     * @return string
+     */
+    public function loots() {
+        return 'redirect: https://loots.com/destiny';
+    }
+
 }
