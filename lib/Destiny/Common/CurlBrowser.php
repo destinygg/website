@@ -147,7 +147,11 @@ class CurlBrowser {
         }
         $headers = $this->getHeaders ();
         if (! empty ( $headers )) {
-            curl_setopt ( $curl, CURLOPT_HTTPHEADER, $headers );
+            $h = [];
+            foreach ($headers as $k=>$v){
+                $h[] = $k .": " . $v;
+            }
+            curl_setopt ( $curl, CURLOPT_HTTPHEADER, $h );
         }
         $data = curl_exec ( $curl );
         $info = curl_getinfo ( $curl );
