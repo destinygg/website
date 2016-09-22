@@ -45,7 +45,6 @@ return array (
 			'AngelThump',
 			'FrankerZ',
 			'BasedGod',
-			'TooSpicy',
 			'OhKrappa',
 			'SoDoge',
 			'WhoahDude',
