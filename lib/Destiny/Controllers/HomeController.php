@@ -264,4 +264,14 @@ class HomeController {
         return 'redirect: https://loots.com/destiny';
     }
 
+    /**
+     * @Route ("/gmg")
+     * @Route ("/greenmangaming")
+     *
+     * @return string
+     */
+    public function gmg() {
+        return 'redirect: https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979';
+    }
+
 }

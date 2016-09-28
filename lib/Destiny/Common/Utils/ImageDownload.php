@@ -7,6 +7,7 @@ use Destiny\Common\Config;
 class ImageDownload {
 
     private static $ALLOWED_EXT = ["jpg", "jpeg", "png", "gif"];
+    private static $PATH_SEPARATOR = "/";
 
     /**
      * Downloads a remote image. File is named using a hash of the URL.
@@ -19,8 +20,11 @@ class ImageDownload {
      *  Must not include filename, must be an existing path, must include a filename and ext
      * @param $overwrite boolean
      *  If false, will not request a new image if one is found
+     *  If true, filename will be derived from the md5 of the file contents, instead of the URL
+     *   This is to make sure new images are not cached by the http server.
+     *   @TODO Adds complexity where there shouldn't - refactor
      *
-     * @return string a relative path to the file, or an empty string if something went wrong
+     * @return string a RELATIVE path to the file, or an empty string if something went wrong
      */
     public static function download($url, $path, $overwrite = false){
 
@@ -33,17 +37,17 @@ class ImageDownload {
         $name  = md5($url);
         $tmp   = $path . $name . ".tmp";
         $shard = (preg_match("/[a-z0-9]/i", $name, $match)) ? $match[0] : "0";
-        $final = $shard . "/" . $name . "." . $ext;
+        $final = $shard . self::$PATH_SEPARATOR . $name . "." . $ext;
 
-        if(!in_array($ext, self::$ALLOWED_EXT)){
-            $log->error("File type not supported. " . $uri);
-        } else if (empty($ext)) {
-            $log->error("Unknown file type. " . $uri);
+        if(empty($shard)){
+            $log->error("Invalid shard." . $shard);
+        } else if (!file_exists($path . $shard) && !mkdir($path . $shard)) {
+            $log->error("Could not make shard sub-folder. " . $path . $shard);
+        } else if(empty($ext) || !in_array($ext, self::$ALLOWED_EXT)){
+            $log->error("File type not supported or invalid extension." . $uri);
         } else if ($overwrite === false && file_exists($path . $final)) {
             $log->notice("Not downloading image, one already exists.");
             $response = $final;
-        } else if (!file_exists($path . $shard) && !mkdir($path . $shard)) {
-            $log->error("Could not make sub-folder. " . $path . $shard);
         } else {
 
             $fp = null;
@@ -74,6 +78,9 @@ class ImageDownload {
                 } else if (!file_exists($tmp)) {
                     $log->error("Temp file could not be saved. " . $tmp);
                 } else {
+                    // Logic is mentioned on the @overwrite parameter.
+                    if($overwrite === true)
+                        $final = $shard . self::$PATH_SEPARATOR . md5_file($tmp) . "." . $ext;
                     $response = rename($tmp, $path . $final) ? $final : "";
                 }
             } catch (\Exception $e) {
