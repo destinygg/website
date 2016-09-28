@@ -75,26 +75,8 @@ use Destiny\Common\Config;
                 </h5>
               </div>
 
-              <div id="chat-groups" class="scrollable nano">
-                <div class="content nano-content">
-                  <h6>Admins</h6>
-                  <ul class="unstyled admins"></ul>
-                  <hr/>
-                  <h6>VIP</h6>
-                  <ul class="unstyled vips"></ul>
-                  <hr/>
-                  <h6>Moderators</h6>
-                  <ul class="unstyled moderators"></ul>
-                  <hr/>
-                  <h6>Subscribers</h6>
-                  <ul class="unstyled subs"></ul>
-                  <hr/>
-                  <h6>Plebs</h6>
-                  <ul class="unstyled plebs"></ul>
-                  <hr/>
-                  <h6>Bots</h6>
-                  <ul class="unstyled bots"></ul>
-                </div>
+              <div class="scrollable nano">
+                <div id="chat-groups" class="content nano-content"></div>
               </div>
 
             </div>

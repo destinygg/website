@@ -185,7 +185,18 @@ $(function(){
     });
 
     // Lazy load images
-    $(this).loadImages();
+    $(this).find('img[data-src]').each(function () {
+        var img = $(this), url = img.data('src');
+        if (url != '' && url != null) {
+            var clone = img.clone();
+            clone.one('load', function () {
+                img.replaceWith(clone);
+            });
+            clone.removeAttr('src').removeAttr('data-src').attr('src', url);
+        }
+    });
+
+    // Tooltips
     $(this).find('[data-toggle="tooltip"]').tooltip();
 });
 

@@ -255,60 +255,74 @@
             var userListUi = this.ui.find('#chat-user-list:first').eq(0),
                 userListUiMenu = new ChatMenu(userListUi, chat);
 
-            userListUi.on('click', '.user', function(){
-                chat.toggleUserFocus($(this).text().toLowerCase());
-            });
-
+            userListUiMenu.groups = userListUi.find('#chat-groups');
+            userListUiMenu.sortByName = function(a,b){
+                try {
+                    return a.firstChild.getAttribute('data-username').localeCompare(b.firstChild.getAttribute('data-username'));
+                } catch(e){}
+            };
+            userListUiMenu.sortUsers = function(){
+                userListUiMenu.groups.find('[id^=chat-group]').each(function(){
+                    var users = $(this).find('li').get();
+                    users.sort(userListUiMenu.sortByName);
+                    for (var i = 0; i<users.length; i++)
+                        users[i].parentNode.appendChild(users[i]);
+                });
+            };
             userListUiMenu.on('show', function(){
-                // TODO this could be maintained, and not build on each show of the menu
-                var admins = [], vips = [], mods = [], bots = [], subs = [], plebs = [],
-                    elems  = {},
-                    usercount = 0;
+                userListUiMenu.sortUsers();
+            });
+            userListUi.on('click', '.user', function(){
+                chat.toggleUserFocus(this.textContent);
+            });
+            userListUi.each(function(){
+                var header = userListUi.find('h5 span'),
+                    groups = userListUiMenu.groups,
+                    group1 = $('<ul id="chat-group1">').appendTo(groups),
+                    group2 = $('<ul id="chat-group2">').appendTo(groups),
+                    group3 = $('<ul id="chat-group3">').appendTo(groups),
+                    group4 = $('<ul id="chat-group4">').appendTo(groups),
+                    group5 = $('<ul id="chat-group5">').appendTo(groups);
 
-                for(var username in chat.engine.users){
-                    if(chat.engine.users.hasOwnProperty(username)){
-                        var u = chat.engine.users[username];
-                        if (!u || !u.features)
-                            continue;
-
-                        var elem = $('<li><a class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>');
-                        usercount++;
-                        elems[username.toLowerCase()] = elem;
-
-                        if(u.hasFeature(destiny.UserFeatures.BOT) || u.hasFeature(destiny.UserFeatures.BOT2))
-                            bots.push(username.toLowerCase());
-                        else if (u.hasFeature(destiny.UserFeatures.ADMIN))
-                            admins.push(username.toLowerCase());
-                        else if(u.hasFeature(destiny.UserFeatures.VIP))
-                            vips.push(username.toLowerCase());
-                        else if(u.hasFeature(destiny.UserFeatures.SUBSCRIBER))
-                            subs.push(username.toLowerCase());
-                        else
-                            plebs.push(username.toLowerCase());
-                    }
-                }
-
-                var appendUsers = function(users, elem) {
-                    if (users.length == 0) {
-                        elem.prev().hide().prev().hide();
-                        return;
-                    }
-                    elem.prev().show().prev().show();
-                    users.sort();
-                    for (var i = 0; i < users.length; i++) {
-                        elem.append(elems[users[i]]);
-                    }
+                var updateCount = function(){
+                    header.text(Object.keys(chat.engine.users).length);
                 };
-
-                userListUi.find('h5 span').text(usercount);
-                var lists = userListUi.find('ul');
-                lists.empty();
-                appendUsers(admins, lists.filter('.admins'));
-                appendUsers(vips, lists.filter('.vips'));
-                appendUsers(mods, lists.filter('.moderators'));
-                appendUsers(bots, lists.filter('.bots'));
-                appendUsers(subs, lists.filter('.subs'));
-                appendUsers(plebs, lists.filter('.plebs'));
+                var addUser = function(username){
+                    var u = chat.engine.users[username],
+                        elem = '<li><a data-username="'+u.username+'" class="user '+ u.features.join(' ') +'">'+u.username+'</a></li>';
+                    if(u.hasFeature(destiny.UserFeatures.BOT) || u.hasFeature(destiny.UserFeatures.BOT2))
+                        group5.append(elem);
+                    else if (u.hasFeature(destiny.UserFeatures.ADMIN) || u.hasFeature(destiny.UserFeatures.VIP))
+                        group1.append(elem);
+                    else if(u.hasFeature(destiny.UserFeatures.BROADCASTER))
+                        group2.append(elem);
+                    else if(u.hasFeature(destiny.UserFeatures.SUBSCRIBER))
+                        group3.append(elem);
+                    else
+                        group4.append(elem);
+                };
+                var removeUser = function(username){
+                    userListUi.find('a[data-username="'+username+'"]').closest('li').remove();
+                };
+                chat.on('names', function(){
+                    for(var username in chat.engine.users) {
+                        if (chat.engine.users.hasOwnProperty(username))
+                            addUser(username);
+                    }
+                    updateCount();
+                    userListUiMenu.sortUsers();
+                    userListUiMenu.redraw();
+                });
+                chat.on('join', function(e, data){
+                    addUser(data.nick);
+                    updateCount();
+                    userListUiMenu.redraw();
+                });
+                chat.on('quit', function(e, data){
+                    removeUser(data.nick);
+                    updateCount();
+                    userListUiMenu.redraw();
+                });
             });
 
             this.ui.find('#chat-users-btn').on('click', function(){

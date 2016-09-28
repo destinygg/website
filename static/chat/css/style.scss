@@ -504,21 +504,24 @@
   font-weight: bold;
   margin: 0 0 5px 5px;
 }
-#chat-user-list ul li {
-  line-height:18px;
-}
-#chat-user-list hr {
-  margin: 5px 0;
-}
-#chat-user-list ul {
-  margin: 0;
-}
-#chat-user-list .user {
-  cursor: pointer;
-  @extend .serif-font;
-}
-#chat-user-list .scrollable {
-  font-size: 0.9em;
+
+#chat-user-list {
+  ul {
+    margin: 5px 0;
+    border: 0;
+    /*border-top: 1px solid #000;
+    border-bottom: 1px solid #222;*/
+  }
+  ul li {
+    line-height:18px;
+  }
+  .user {
+    cursor: pointer;
+    @extend .serif-font;
+  }
+  .scrollable {
+    font-size: 0.9em;
+  }
 }
 
 .chat-menu .nano > .pane {

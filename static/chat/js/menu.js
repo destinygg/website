@@ -58,8 +58,11 @@ ChatMenu = (function(){
         this.toggle = function(btn){
             var wasVisible = this.visible;
             ChatMenu.closeMenus(null);
-            if(!wasVisible)
-                this.show(btn);
+            if(!wasVisible) this.show(btn);
+        };
+
+        this.redraw = function(){
+            if(scrollPlugin) scrollPlugin.reset();
         };
 
         this.ui.on('click', '.close', this.hide.bind(this));
