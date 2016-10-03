@@ -256,22 +256,22 @@
                 userListUiMenu = new ChatMenu(userListUi, chat);
 
             userListUiMenu.groups = userListUi.find('#chat-groups');
+            userListUiMenu.clearAll = function(){
+                userListUiMenu.groups.find('li').remove();
+            };
             userListUiMenu.sortByName = function(a,b){
                 try {
                     return a.firstChild.getAttribute('data-username').localeCompare(b.firstChild.getAttribute('data-username'));
                 } catch(e){}
             };
             userListUiMenu.sortUsers = function(){
-                userListUiMenu.groups.find('[id^=chat-group]').each(function(){
+                userListUiMenu.groups.children().each(function(){
                     var users = $(this).find('li').get();
                     users.sort(userListUiMenu.sortByName);
                     for (var i = 0; i<users.length; i++)
                         users[i].parentNode.appendChild(users[i]);
                 });
             };
-            userListUiMenu.on('show', function(){
-                userListUiMenu.sortUsers();
-            });
             userListUi.on('click', '.user', function(){
                 chat.toggleUserFocus(this.textContent);
             });
@@ -285,7 +285,15 @@
                     group5 = $('<ul id="chat-group5">').appendTo(groups);
 
                 var updateCount = function(){
-                    header.text(Object.keys(chat.engine.users).length);
+                    var n = Object.keys(chat.engine.users).length;
+                    header.text(n);
+                    return n;
+                };
+                var hasUser = function(username){
+                    return userListUi.find('a[data-username="'+username+'"]').length > 0;
+                };
+                var removeUser = function(username){
+                    return userListUi.find('a[data-username="'+username+'"]').closest('li').remove();
                 };
                 var addUser = function(username){
                     var u = chat.engine.users[username],
@@ -301,26 +309,29 @@
                     else
                         group4.append(elem);
                 };
-                var removeUser = function(username){
-                    userListUi.find('a[data-username="'+username+'"]').closest('li').remove();
-                };
-                chat.on('names', function(){
+                chat.on('join', function(e, data){
+                    if(userListUiMenu.visible && !hasUser(data.nick)){
+                        addUser(data.nick);
+                        updateCount();
+                        userListUiMenu.sortUsers();
+                        userListUiMenu.redraw();
+                    }
+                });
+                chat.on('quit', function(e, data){
+                    if(userListUiMenu.visible && hasUser(data.nick)){
+                        removeUser(data.nick);
+                        updateCount();
+                        userListUiMenu.redraw();
+                    }
+                });
+                userListUiMenu.on('show', function(){
+                    userListUiMenu.clearAll();
+                    updateCount();
                     for(var username in chat.engine.users) {
                         if (chat.engine.users.hasOwnProperty(username))
                             addUser(username);
                     }
-                    updateCount();
                     userListUiMenu.sortUsers();
-                    userListUiMenu.redraw();
-                });
-                chat.on('join', function(e, data){
-                    addUser(data.nick);
-                    updateCount();
-                    userListUiMenu.redraw();
-                });
-                chat.on('quit', function(e, data){
-                    removeUser(data.nick);
-                    updateCount();
                     userListUiMenu.redraw();
                 });
             });
