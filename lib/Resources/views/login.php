@@ -9,6 +9,22 @@ use Destiny\Common\Utils\Tpl;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
+  <style>
+    #loginFormProviders label {
+      cursor: pointer;
+      margin: 0;
+    }
+    #loginFormProviders label,
+    #loginFormProviders i {
+      vertical-align: middle;
+    }
+    #loginFormProviders i {
+      margin-right: 3px;
+    }
+    #loginFormProviders label:hover {
+      color: white;
+    }
+  </style>
 </head>
 <body id="login" class="no-brand">
   <div id="page-wrap">
@@ -19,8 +35,8 @@ use Destiny\Common\Utils\Tpl;
     <section class="container">
     
       <h1 class="title">
-        <span>Login</span>
-        <small>with your preferred login method</small>
+        <span>Sign In</span>
+        <small>...</small>
       </h1>
       
       <?php if(!empty($model->error)): ?>
@@ -32,10 +48,6 @@ use Destiny\Common\Utils\Tpl;
       
       <div class="content content-dark clearfix">
 
-        <div class="ds-block">
-          <p>No private information will ever be shown on the website. This excludes the custom destiny.gg username you specify.</p>
-        </div>
-
         <form id="loginForm" action="/login" method="post">
           <input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
           <div class="ds-block">
@@ -43,52 +55,42 @@ use Destiny\Common\Utils\Tpl;
             <div class="form-group">
               <div class="controls checkbox">
                 <label>
-                  <input type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember my login
+                  <input tabindex="1" autofocus type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember me
                 </label>
                 <span class="help-block">(this should only be used if you are on a private computer)</span>
               </div>
             </div>
             
             <div class="form-group">
-              <h3>Login with ...</h3>
+              <h3>... With</h3>
             </div>
-            
-            <div class="form-group">
-              <div class="radio">
-                <label>
-                  <input type="radio" name="authProvider" value="twitch">
+
+            <div id="loginFormProviders">
+              <div class="form-group">
+                <label tabindex="2">
+                  <input type="radio" name="authProvider" value="twitch" class="hidden">
                   <i class="icon-twitch"></i> Twitch
                 </label>
               </div>
-            </div>
-            <div class="form-group">
-              <div class="radio">
-                <label>
-                  <input type="radio" name="authProvider" value="reddit">
+              <div class="form-group">
+                <label tabindex="3">
+                  <input type="radio" name="authProvider" value="reddit" class="hidden">
                   <i class="icon-reddit"></i> Reddit
                 </label>
               </div>
-            </div>
-            <div class="form-group">
-              <div class="radio">
-                <label>
-                  <input type="radio" name="authProvider" value="google">
+              <div class="form-group">
+                <label tabindex="4">
+                  <input type="radio" name="authProvider" value="google" class="hidden">
                   <i class="icon-google"></i> Google
                 </label>
               </div>
-            </div>
-            <div class="form-group">
-              <div class="radio">
-                <label>
-                  <input type="radio" name="authProvider" value="twitter">
+              <div class="form-group">
+                <label tabindex="5">
+                  <input type="radio" name="authProvider" value="twitter" class="hidden">
                   <i class="icon-twitter"></i> Twitter
                 </label>
               </div>
             </div>
-          </div>
-          
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary btn-lg">Continue</button>
           </div>
           
         </form>
@@ -99,6 +101,6 @@ use Destiny\Common\Utils\Tpl;
   
   <?php include Tpl::file('seg/foot.php') ?>
   <?php include Tpl::file('seg/commonbottom.php') ?>
-  
+
 </body>
 </html>

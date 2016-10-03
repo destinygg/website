@@ -22,7 +22,7 @@ use Destiny\Common\Config;
         <section id="error-container" class="container">
             <a title="Rick and Morty" href="http://www.adultswim.com/videos/rick-and-morty/" target="_blank" id="mortyface"></a>
             <h1>Aw geez, Rick!</h1>
-            <p>You must be logged in to view this page. Go to the <a href="/login">login</a> page</p>
+            <p>You must be authenticated to view this page. Go to the <a href="/login">sign in</a> page</p>
         </section>
     </div>
     <?php include Tpl::file('seg/foot.php') ?>
