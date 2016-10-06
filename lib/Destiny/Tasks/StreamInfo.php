@@ -32,7 +32,7 @@ class StreamInfo implements TaskInterface {
         // STREAM HOSTING
         $lasthost = $cache->contains('streamhost') ? $cache->fetch('streamhost') : [];
         $currhost = $twitchApiService->getChannelHost(Config::$a['twitch']['id']);
-        if(!empty($currhost)){
+        if(!empty($currhost) && is_array($currhost) && isset($currhost['host_id']) && isset($currhost['host_login'])){
 
             unset($currhost['host_id']);
             unset($currhost['host_login']);
@@ -61,10 +61,12 @@ class StreamInfo implements TaskInterface {
                     $currhost = $lasthost;
                     break;
             }
+            // SAVE THE STATUS AND HOSTING INFO
+            $streaminfo['host'] = $currhost;
+        } else {
+            $streaminfo['host'] = null;
         }
 
-        // SAVE THE STATUS AND HOSTING INFO
-        $streaminfo['host'] = $currhost;
         $cache->save('streamstatus', $streaminfo);
     }
 
