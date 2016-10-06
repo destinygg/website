@@ -39,19 +39,39 @@ class TwitchApiService extends Service {
      *  2 stopped hosting
      */
     public static function checkForHostingChange(array $lasthosting, array $hosting){
-        if (!isset($lasthosting['target_id']) && isset($hosting['target_id']))
+        if (!isset($lasthosting['id']) && isset($hosting['id']))
             // now hosting
             $state = self::$HOST_NOW_HOSTING;
-        else if((isset($lasthosting['target_id']) && isset($hosting['target_id'])) && $lasthosting['target_id'] != $hosting['target_id'])
+        else if((isset($lasthosting['id']) && isset($hosting['id'])) && $lasthosting['id'] != $hosting['id'])
             // now hosting different
             $state = self::$HOST_NOW_HOSTING;
-        else if (isset($lasthosting['target_id']) && !isset($hosting['target_id']))
+        else if (isset($lasthosting['id']) && !isset($hosting['id']))
             // stopped hosting
             $state = self::$HOST_STOPPED;
         else
             // unchanged
             $state = self::$HOST_UNCHANGED;
         return $state;
+    }
+
+    /**
+     * What channel {you} are hosting
+     * @param $id
+     * @return array
+     */
+    public function getChannelHostWithInfo($id){
+        $info = [];
+        $host = $this->getChannelHost($id);
+        if(!empty($host) && isset($host['target_login'])){
+            $target = $this->getChannel($host['target_login']);
+            if(!empty($target) && isset($target['display_name']) && isset($target['url'])){
+                $info['id']           = $target['id'];
+                $info['url']          = $target['url'];
+                $info['preview']      = $target['preview'];
+                $info['display_name'] = $target['display_name'];
+            }
+        }
+        return $info;
     }
 
     /**

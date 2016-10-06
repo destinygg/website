@@ -30,43 +30,26 @@ class StreamInfo implements TaskInterface {
         }
 
         // STREAM HOSTING
-        $lasthost = $cache->contains('streamhost') ? $cache->fetch('streamhost') : [];
-        $currhost = $twitchApiService->getChannelHost(Config::$a['twitch']['id']);
-        if(!empty($currhost) && is_array($currhost) && isset($currhost['host_id']) && isset($currhost['host_login'])){
+        $lasthost = $cache->contains('streamhostinfo') ? $cache->fetch('streamhostinfo') : [];
+        $currhost = $twitchApiService->getChannelHostWithInfo(Config::$a['twitch']['id']);
 
-            unset($currhost['host_id']);
-            unset($currhost['host_login']);
-
-            switch (TwitchApiService::checkForHostingChange($lasthost, $currhost)){
-                case TwitchApiService::$HOST_NOW_HOSTING:
-                    $target = $twitchApiService->getChannel($currhost['target_login']);
-                    if (!empty($target) && isset($target['display_name']) && isset($target['url'])) {
-                        $chatIntegrationService = ChatIntegrationService::instance();
-                        $chatIntegrationService->sendBroadcast(sprintf(
-                            '%s is now hosting %s at %s',
-                            Config::$a['meta']['shortName'],
-                            $target['display_name'],
-                            $target['url'])
-                        );
-                    }
-                    $currhost['display_name'] = $target['display_name'];
-                    $currhost['url'] = $target['url'];
-                    $currhost['preview'] = $target['preview'];
-                    $cache->save('streamhost', $currhost);
-                    break;
-                case TwitchApiService::$HOST_STOPPED:
-                    $cache->save('streamhost', $currhost);
-                    break;
-                case TwitchApiService::$HOST_UNCHANGED:
-                    $currhost = $lasthost;
-                    break;
-            }
-            // SAVE THE STATUS AND HOSTING INFO
-            $streaminfo['host'] = $currhost;
-        } else {
-            $streaminfo['host'] = null;
+        switch (TwitchApiService::checkForHostingChange($lasthost, $currhost)){
+            case TwitchApiService::$HOST_NOW_HOSTING:
+                $chatIntegrationService = ChatIntegrationService::instance();
+                $chatIntegrationService->sendBroadcast(sprintf(
+                    '%s is now hosting %s at %s',
+                    Config::$a['meta']['shortName'],
+                    $currhost['display_name'],
+                    $currhost['url'])
+                );
+                break;
+            case TwitchApiService::$HOST_UNCHANGED:
+            case TwitchApiService::$HOST_STOPPED:
+                break;
         }
 
+        $streaminfo['host'] = $currhost;
+        $cache->save('streamhostinfo', $currhost);
         $cache->save('streamstatus', $streaminfo);
     }
 
