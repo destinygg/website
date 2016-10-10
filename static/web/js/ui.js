@@ -138,34 +138,9 @@ $(function(){
 
     });
 
-    // Add collapses
-    $(".collapse").not('#collapsemenu').collapse();
-    
-    // Section collapse
-    $(".collapsible").each(function(){
-        var $c = $(this),
-            $t = $c.find('> h3'),
-            $v = $c.find('> content');
-        $t.on('click', function(){
-            if($c.hasClass('active')){
-                $t.find('>.expander').removeClass('fa-chevron-down').addClass('fa-chevron-right');
-                $v.hide();
-            }else{
-                $t.find('>.expander').removeClass('fa-chevron-right').addClass('fa-chevron-down');
-                $v.show();
-            }
-            $c.toggleClass('active');
-        });
-    });
-    $('.btn-show-all').on('click', function(){
-        $(".collapsible").each(function(){
-            var $c = $(this),
-                $t = $c.find('> h3'),
-                $v = $c.find('> content');
-            $t.find('>.expander').removeClass('fa-chevron-right').addClass('fa-chevron-down');
-            $v.show();
-            $c.addClass('active');
-        });
+    $('.btn-show-all').on('click', function(e){
+        e.preventDefault();
+        $('.collapse').collapse('show');
     });
 
     // Tabs selector - dont know why I need this

@@ -648,12 +648,12 @@ i.icon-reddit {
 
 #page-wrap {
   min-height: 100%;
-  margin-bottom: -156px; /* dodgy */
+  margin-bottom: -145px;
 }
 #page-wrap:after {
   content: "";
   display: block;
-  height: 156px;
+  height: 145px;
 }
 
 body.no-contain #page-wrap,
@@ -679,10 +679,12 @@ body.no-contain #footer-inner {
   border-top: 1px solid $color-surface-dark3;
   padding: 0;
   margin-top: 15px;
+  height: 130px;
 
   h3 {
     color: $text-color2;
-    line-height: 22px;
+    line-height: 18px;
+    font-size: 20px;
     margin-top: 0;
   }
   a {
@@ -695,20 +697,13 @@ body.no-contain #footer-inner {
   #footer-inner {
     height: 100%;
   }
-  #footer-copyright h3 {
-    font-size: 22px;
-  }
-  #footer-badges h3,
-  #footer-thanks h3 {
-    font-size: 18px;
-  }
-  #footer-thanks {
+  #footer-badges {
     text-align: right;
   }
   #footer-copyright,
   #footer-badges,
   #footer-thanks {
-    margin: 30px 0 20px 0;
+    margin: 30px 0 0 0;
   }
 }
 
@@ -931,38 +926,6 @@ table.grid {
 i.td-fill {
   opacity:0.5;
   height:23px;
-}
-/**
- * Collapsible
- */
-.collapsible > h3 {
-  margin-bottom: 0;
-  margin-top: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #222;
-  font-size: 20px;
-  color: $text-color;
-  user-select: none;
-}
-.collapsible > h3 > .expander {
-  font-size: 60%;
-  line-height: 22px;
-  float: left;
-  margin-right: 5px;
-}
-.collapsible > h3:hover {
-  cursor: pointer;
-  color: white;
-}
-.collapsible.active,
-.collapsible.active > h3 {
-  border-bottom: none;
-}
-.collapsible > .content {
-  display: none;
-}
-.collapsible.active > .content {
-  display: block;
 }
 
 .content .stream:first-child table.grid thead td:last-child {
@@ -1386,18 +1349,15 @@ table.messages {
   }
 }
 
-table#inbox td.from {
-  color: #EEE;
+table#inbox .unread .from a {
   font-weight: bold;
 }
-table#read td.from a {
+table#inbox .read .from a {
   color: #999;
 }
-table#read td.from a,
-table#inbox td.from a {
+table#inbox a {
   text-decoration: none;
 }
-
 
 /** MESSAGES **/
 .message-list {
@@ -1696,4 +1656,28 @@ table#inbox td.from a {
   font-size: 12px;
   margin: 15px 0 0 0;
   color: $text-color2;
+}
+
+h3[data-toggle="collapse"] {
+  cursor: pointer;
+  margin-bottom: 0;
+  margin-top: 10px;
+  font-size: 20px;
+  color: $text-color;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  padding-bottom: 10px;
+  &:before {
+    font-family: 'Glyphicons Halflings';
+    content: "\e114";
+    font-size: 13px;
+    margin-right: 5px;
+  }
+  &.collapsed:before {
+    content: "\e080";
+  }
+  &.collapsed {
+    border-bottom: 1px solid #222;
+  }
 }

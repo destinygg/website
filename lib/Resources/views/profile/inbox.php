@@ -11,7 +11,6 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
-<link href="<?=Config::cdnv()?>/web/css/messages.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
 <body id="messages" class="no-contain">
@@ -21,17 +20,17 @@ use Destiny\Common\Config;
         <?php include Tpl::file('seg/alerts.php') ?>
         <?php include Tpl::file('profile/menu.php') ?>
 
-        <section class="container collapsible active">
+        <section class="container">
             <button accesskey="n" class="btn btn-default btn-primary" data-toggle="modal" data-target="#compose">New Message</button>
-            <a class="btn btn-default pull-right" href="/profile/messages/openall">Mark All Read</a>
+            <button class="btn btn-default pull-right" id="mark-all">Mark All Read</button>
         </section>
       
-        <section class="container collapsible active">
-            <h3><span class="fa fa-fw fa-chevron-down expander"></span> Unread</h3>
-            <div class="content">
-                <div class="content-dark clearfix">
+        <section class="container">
+            <h3 data-toggle="collapse" data-target="#inbox-content">Inbox</h3>
+            <div id="inbox-content" class="content collapse in">
+                <div class="content-dark">
 
-                    <?php if(!empty($model->inbox['unread'])): ?>
+                    <?php if(!empty($model->inbox['read']) || !empty($model->inbox['unread'])): ?>
                     <table id="inbox" class="grid messages">
                         <colgroup>
                             <!-- <col class="c1"> -->
@@ -40,8 +39,9 @@ use Destiny\Common\Config;
                             <col class="c4">
                         </colgroup>
                         <tbody>
+
                             <?php foreach($model->inbox['unread'] as $id => $thread): ?>
-                            <tr data-id="<?= $id ?>">
+                            <tr data-id="<?= $id ?>" class="unread">
                                 <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
                                 <td class="from">
                                     <a href="/profile/messages/<?= $id ?>"><?= Tpl::out($thread['othernick']) ?></a>
@@ -51,39 +51,9 @@ use Destiny\Common\Config;
                                 <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp'])); ?></td>
                             </tr>
                             <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                    <?php else: ?>
-                    <table id="inbox" class="grid messages">
-                        <tbody>
-                            <tr>
-                                <td><span class="subtle">You have no unread messages</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <?php endif; ?>
 
-                </div>
-            </div>
-        </section>
-      
-        <section class="container collapsible active">
-            <h3><span class="fa fa-fw fa-chevron-down expander"></span> Everything else</h3>
-
-            <div class="content">
-                <div class="content-dark clearfix">
-
-                    <?php if(!empty($model->inbox['read'])): ?>
-                    <table id="read" class="grid messages">
-                        <colgroup>
-                            <!-- <col class="c1"> -->
-                            <col class="c2">
-                            <col class="c3">
-                            <col class="c4">
-                        </colgroup>
-                        <tbody>
                             <?php foreach($model->inbox['read'] as $id => $thread): ?>
-                            <tr data-id="<?= $id ?>">
+                            <tr data-id="<?= $id ?>" class="read">
                                 <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
                                 <td class="from">
                                     <a href="/profile/messages/<?= $id ?>">
@@ -95,23 +65,25 @@ use Destiny\Common\Config;
                                 <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp'])); ?></td>
                             </tr>
                             <?php endforeach; ?>
+
                         </tbody>
                     </table>
-                    <?php else: ?>
-                    <table id="read" class="grid messages">
+                    <?php endif; ?>
+
+                    <?php if(empty($model->inbox['read']) && empty($model->inbox['unread'])): ?>
+                    <table id="inbox" class="grid messages">
                         <tbody>
-                            <tr>
-                                <td><span class="subtle">You have no read messages</span></td>
-                            </tr>
+                        <tr>
+                            <td><span class="subtle">You have no messages</span></td>
+                        </tr>
                         </tbody>
                     </table>
                     <?php endif; ?>
 
                 </div>
             </div>
-
         </section>
-
+      
     </div>
   
     <?php include Tpl::file('profile/compose.php') ?>

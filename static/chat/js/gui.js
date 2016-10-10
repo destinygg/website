@@ -219,11 +219,11 @@
                 for(var x=0;x<chat.twitchemotes.length;x++)
                     temotes.append('<div class="emote"><span title="'+chat.twitchemotes[x]+'" class="chat-emote chat-emote-'+chat.twitchemotes[x]+'">'+chat.twitchemotes[x]+'</span></div>');
 
-                chatEmotesUi.on('click', '.chat-emote', function(){
+                chatEmotesUi.on('click', '.chat-emote', function(e){
+                    e.preventDefault();
                     var value = chat.input.val().trim();
                     chat.input.val( value + ((value == "") ? "":" ")  +  $(this).text() + " ");
                     chat.input.focus();
-                    return false;
                 });
             });
 
@@ -232,23 +232,23 @@
                 pmPopupUiMenu = new ChatMenu(pmPopupUi, chat);
 
             pmPopupUi.on('click', '.user-list-link', function(){
+                e.preventDefault();
                 ChatMenu.closeMenus(chat);
                 userListUiMenu.show(pmPopupUiMenu.btn);
-                return false;
             });
-            pmPopupUi.on('click', '#inbox-privmsg', function(){
+            pmPopupUi.on('click', '#inbox-privmsg', function(e){
+                e.preventDefault();
                 chat.setUnreadMessageCount(0);
                 ChatMenu.closeMenus(chat);
-                return true;
             });
-            pmPopupUi.on('click', '#markread-privmsg', function(){
+            pmPopupUi.on('click', '#markread-privmsg', function(e){
+                e.preventDefault();
                 chat.setUnreadMessageCount(0);
+                ChatMenu.closeMenus(chat);
                 $.ajax({
                     type: 'POST',
                     url: '/profile/messages/openall'
                 });
-                ChatMenu.closeMenus(chat);
-                return false;
             });
 
 
@@ -336,40 +336,40 @@
                 });
             });
 
-            this.ui.find('#chat-users-btn').on('click', function(){
+            this.ui.find('#chat-users-btn').on('click', function(e){
+                e.preventDefault();
                 if(chat.pmcountnum > 0)
                     pmPopupUiMenu.toggle(this);
                 else
                     userListUiMenu.toggle(this);
-                return false;
             });
-            this.ui.find('#chat-settings-btn').on('click', function(){
+            this.ui.find('#chat-settings-btn').on('click', function(e){
+                e.preventDefault();
                 chatSettingsMenu.toggle(this);
-                return false;
             });
-            this.ui.find('#emoticon-btn').on('click', function(){
+            this.ui.find('#emoticon-btn').on('click', function(e){
+                e.preventDefault();
                 chatEmotesUiMenu.toggle(this);
-                return false;
             });
 
-            this.lines.on('mousedown', '.user-msg a.user', function(){
+            this.lines.on('mousedown', '.user-msg a.user', function(e){
+                e.preventDefault();
                 var username = $(this).closest('.user-msg').data('username');
                 chat.toggleUserFocus(username);
-                return false;
             });
 
             this.lines.on('mousedown', '.user-msg .chat-user', function() {
+                e.preventDefault();
                 var username1 = $(this).closest('.user-msg').data('username');
                 var username2 = this.textContent.toLowerCase();
                 chat.addUserFocus(username1);
                 chat.toggleUserFocus(username2);
-                return false;
             });
 
             // Bind to user input submit
             this.ui.on('submit', 'form#chat-input', function(){
+                e.preventDefault();
                 chat.send();
-                return false;
             });
 
             // Close all menus and perform a scroll
@@ -404,14 +404,14 @@
             // End Scrollbar
 
             // The login click
-            this.ui.find('#chat-login-msg a[href="/login"]').on('click', function(){
+            this.ui.find('#chat-login-msg a[href="/login"]').on('click', function(e){
+                e.preventDefault();
                 try {
                     if(window.self !== window.top){
                         window.parent.location.href = $(this).attr('href') + '?follow=' + encodeURIComponent(window.parent.location.pathname);
                     }else{
                         window.location.href = $(this).attr('href') + '?follow=' + encodeURIComponent(window.location.pathname);
                     }
-                    return false;
                 } catch (e) {}
             });
 
@@ -440,7 +440,8 @@
             });
 
             // Private message onclick
-            this.lines.on('click', '.mark-as-read', function(){
+            this.lines.on('click', '.mark-as-read', function(e){
+                e.preventDefault();
                 var messageEl      = $(this).closest('.private-message'),
                     message        = messageEl.data('message'),
                     messageIcnSend = message.ui.find('.icon-mail-send'),
@@ -454,7 +455,6 @@
                         chat.setUnreadMessageCount(data.unread);
                     }
                 });
-                return false;
             });
 
             // should be moved somewhere better

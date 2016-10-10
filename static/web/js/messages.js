@@ -95,7 +95,7 @@ $(function(){
 
         var addRecipientLabel = function(recipient, style){
             var id = recipient.toLowerCase(),
-            	style = ['recipient', style];
+                style = ['recipient', style];
             if(!$recipientscont.find('.recipient[data-recipient="'+ id +'"]').get(0)){
                 $recipientscont.append(
                  '<span class="'+ style.join(' ') +'" data-recipient="'+ id +'">\
@@ -209,8 +209,7 @@ $(function(){
 // INBOX
 $(function(){
 
-    var inboxtable = $('table#inbox'),
-        readtable = $('table#read');
+    var inboxtable = $('table#inbox');
 
     var activateSelector = function(){
         $(this).find('i').attr('class', 'fa fa-dot-circle-o');
@@ -252,21 +251,22 @@ $(function(){
         $(this).removeClass('pressed');
     };
 
-    $.each([inboxtable, readtable], function(i, el){
-        el.on('click', 'tbody tr', toggleRowClick);
-        el.on('click', 'tbody td.selector', toggleRowSelector);
-        el.on('mousedown', 'tbody tr', pressedTableRow);
-        el.on('mouseup', 'tbody tr', releasedTableRow);
+    inboxtable.each(function(i, el){
+        $(el)
+            .on('click', 'tbody tr', toggleRowClick)
+            .on('click', 'tbody td.selector', toggleRowSelector)
+            .on('mousedown', 'tbody tr', pressedTableRow)
+            .on('mouseup', 'tbody tr', releasedTableRow);
     });
 
-    $('a[href="/profile/messages/openall"]').on('click', function(){
+    $('#mark-all').on('click', function(e){
+        e.preventDefault();
         $.ajax({
-            url: $(this).attr('href'),
+            url: '/profile/messages/openall',
             success: function(){
-                window.location = window.location
+                window.location.reload();
             }
         });
-        return false;
     });
 
 });

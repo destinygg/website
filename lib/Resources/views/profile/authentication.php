@@ -21,10 +21,9 @@ use Destiny\Common\Config;
     <?php include Tpl::file('seg/alerts.php') ?>
     <?php include Tpl::file('profile/menu.php') ?>
     
-    <section class="container collapsible active">
-      <h3><span class="fa fa-fw fa-chevron-down expander"></span> Providers</h3>
-
-      <div class="content content-dark clearfix">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#authentication-content">Providers</h3>
+      <div id="authentication-content" class="content content-dark collapse clearfix">
         <div class="ds-block">
           <p>Authentication providers are what we use to know who you are! you can login with any of the services below.</p>
         </div>
@@ -59,14 +58,13 @@ use Destiny\Common\Config;
       </div>
     </section>
     
-    <section class="container collapsible active">
-      <h3><span class="fa fa-fw fa-chevron-down expander"></span> Login keys</h3>
-    
-      <div class="content content-dark clearfix">
+    <section class="container active">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#login-key-content">Login keys</h3>
+      <div id="login-key-content" class="content content-dark clearfix collapse">
         <div class="ds-block">
           <p>Login keys allow you to authenticate with the destiny.gg chat without the need for a username or password.</p>
         </div>
-        <form id="authtoken-form"action="/profile/authtoken/create" method="post">
+        <form id="authtoken-form" action="/profile/authtoken/create" method="post">
           <table class="grid" style="width:100%">
             <thead>
               <tr>

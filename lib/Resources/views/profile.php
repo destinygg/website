@@ -34,22 +34,19 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
     
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscription</h3>
-
-      <?php if($model->user['istwitchsubscriber'] == 1): ?>
-      <div class="content">
-        <div class="content-dark clearfix" style="margin-bottom:10px;">
-          <div class="ds-block">
-             <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>
+      <div id="subscription-content" class="content collapse">
+        <?php if($model->user['istwitchsubscriber'] == 1): ?>
+          <div class="content">
+            <div class="content-dark clearfix" style="margin-bottom:10px;">
+              <div class="ds-block">
+                <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <?php endif; ?>
-
-      <?php if(!empty($model->subscriptions)): ?>
-      <div class="content">
-
+        <?php endif; ?>
+        <?php if(!empty($model->subscriptions)): ?>
         <?php foreach($model->subscriptions as $subscription): ?>
         <div class="content-dark clearfix" style="margin-bottom:10px;">
           <div class="ds-block">
@@ -103,21 +100,18 @@ use Destiny\Commerce\SubscriptionStatus;
           </div>
         </div>
         <?php endforeach; ?>
-
+        <?php else: ?>
+          <div class="content content-dark clearfix">
+            <div class="ds-block">No destiny.gg subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
+          </div>
+        <?php endif; ?>
       </div>
-
-      <?php else: ?>
-      <div class="content content-dark clearfix">
-        <div class="ds-block">No destiny.gg subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
-      </div>
-      <?php endif; ?>
-      
     </section>
     
     <?php if(!empty($model->gifts)): ?>
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Gifts</h3>
-      <div class="content">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#gift-content">Gifts</h3>
+      <div id="gift-content" class="content collapse">
 
         <?php foreach ($model->gifts as $gift): ?>
         <div class="content-dark clearfix">
@@ -146,10 +140,10 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
     <?php endif; ?>
     
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Account</h3>
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#account-content">Account</h3>
       
-      <div class="content content-dark clearfix">
+      <div id="account-content" class="content content-dark clearfix collapse">
 
           <form id="profileSaveForm" action="/profile/update" method="post" role="form">
             
@@ -226,10 +220,10 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
     
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Address <small>(optional)</small></h3>
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#address-content">Address <small>(optional)</small></h3>
       
-      <div class="content content-dark clearfix">
+      <div id="address-content" class="content content-dark clearfix collapse">
 
           <div class="ds-block">
             <small>Fields marked with <span class="icon-required">*</span> are required.</small>

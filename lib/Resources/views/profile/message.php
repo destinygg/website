@@ -11,10 +11,7 @@ use Destiny\Common\Config;
 <meta charset="utf-8">
 <?php include Tpl::file('seg/commontop.php') ?>
 <?php include Tpl::file('seg/google.tracker.php') ?>
-
-<link href="<?=Config::cdnv()?>/web/css/messages.min.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
-
 </head>
 <body id="message" class="no-contain">
     <div id="page-wrap">

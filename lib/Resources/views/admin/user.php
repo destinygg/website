@@ -27,13 +27,13 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
     <?php endif; ?>
 
-    <section class="container collapsible">
-      <h3>
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#details-content">
         <div class="pull-right"><button class="btn btn-link btn-show-all" style="outline: none;">Show all</button></div>
-        <span class="fa fa-fw fa-chevron-right expander"></span> Details
+        Details
         <small>(<?=Tpl::out($model->user['username'])?>)</small>
       </h3>
-      <div class="content content-dark clearfix">
+      <div id="details-content" class="content content-dark clearfix collapse">
 
         <form action="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" method="post">
           <input type="hidden" name="id" value="<?=Tpl::out($model->user['userId'])?>" />
@@ -139,9 +139,9 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
 
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Address</h3>
-      <div class="content content-dark clearfix">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#address-content">Address</h3>
+      <div id="address-content" class="content content-dark clearfix collapse">
 
         <?php if(!empty($model->address)): ?>
         <div class="vcard ds-block">
@@ -173,9 +173,9 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
 
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Subscriptions</h3>
-      <div class="content content-dark clearfix">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscriptions</h3>
+      <div id="subscription-content" class="content content-dark clearfix collapse">
         <div class="ds-block">
           <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/add" class="btn btn-primary">New subscription</a>
         </div>
@@ -225,9 +225,9 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
 
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Gifts</h3>
-      <div class="content content-dark clearfix">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#gift-content">Gifts</h3>
+      <div id="gift-content" class="content content-dark clearfix collapse">
         <?php if(!empty($model->gifts)): ?>
           <table class="grid">
             <thead>
@@ -274,9 +274,9 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
 
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Smurfs</h3>
-      <div class="content content-dark clearfix">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#smurf-content">Smurfs</h3>
+      <div id="smurf-content" class="content content-dark collapse clearfix">
         <div class="ds-block">
           Smurfs are alternative accounts of the user based on the fact that the
           user is using the same IP address on every one of them.<br/>
@@ -312,9 +312,9 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
 
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> IPs</h3>
-      <div class="content content-dark clearfix">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#ip-content">IPs</h3>
+      <div id="ip-content" class="content content-dark clearfix collapse">
         <div class="ds-block">
           <p>The last seen 3 IP addresses of the user (as seen by the chat)</p>
         </div>
@@ -341,9 +341,9 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
 
-    <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Ban / Mute</h3>
-      <div class="content content-dark clearfix">
+    <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Ban / Mute</h3>
+      <div id="ban-content" class="content content-dark clearfix collapse">
 
         <?php if(empty($model->ban)): ?>
 
@@ -388,8 +388,8 @@ use Destiny\Commerce\SubscriptionStatus;
     <?php if(!empty($model->authSessions)): ?>
     <form id="admin-form-auth-sessions" method="post">
     <section class="container collapsible">
-      <h3><span class="fa fa-fw fa-chevron-right expander"></span> Authentication</h3>
-      <div class="content content-dark clearfix">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#authentication-content">Authentication</h3>
+      <div id="authentication-content" class="content content-dark clearfix collapse">
         <table class="grid">
           <thead>
             <tr>
