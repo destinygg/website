@@ -286,7 +286,8 @@ class ChatApiController {
                     );
                 }
             }
-            $response = new Response ( Http::STATUS_NO_CONTENT );
+            $response = new Response ( Http::STATUS_OK, json_encode ( ['id' => $authid] ) );
+            $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 
         } catch (Exception $e) {
             $response['success'] = false;
