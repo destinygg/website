@@ -1,14 +1,10 @@
-<?php
-use Destiny\Common\Config;
-?>
 <div id="footer">
     <div id="footer-inner" class="container">
-        <div id="footer-copyright" class="col-sm-3">
+        <div id="footer-copyright" class="col-sm-8">
             <h3>Destiny.gg <small><sup>&copy;</sup></small></h3>
-            <p>Professional streamer.</p>
-            <p>
-                www.destiny.gg
+            <p> www.destiny.gg
                 <br /><a href="mailto:steven.bonnell.ii@gmail.com" title="Email Destiny">steven.bonnell.ii@gmail.com</a>
+                <br /><a href="https://www.twitch.tv/destiny" title="Destiny @ Twitch.tv">twitch.tv/destiny</a>
             </p>
         </div>
         <div id="footer-badges" class="col-sm-4">
@@ -18,12 +14,6 @@ use Destiny\Common\Config;
                 <br />The Destiny sub-reddit <a title="www.reddit.com" href="/reddit">/r/Destiny</a>
                 <br />All payments on this website use <a title="Paypal" target="_blank" rel="nofollow" href="http://www.paypal.com/">Paypal</a>
             </p>
-        </div>
-        <div id="footer-thanks" class="col-sm-5">
-            <h3>Get the App</h3>
-            <a target="_blank" title="Destiny.gg for Android" href="https://play.google.com/store/apps/details?id=gg.destiny.app.chat">
-                <img width="197" height="59" src="<?=Config::cdn()?>/web/img/google-play-icon.png" />
-            </a>
         </div>
     </div>
 </div>

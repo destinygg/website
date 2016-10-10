@@ -3,6 +3,12 @@ namespace Destiny\Common;
 
 class Request {
 
+    const HEADER_CONTENT_TYPE      = 'Content-Type';
+    const HEADER_AUTH_TOKEN        = 'AuthToken';
+    const HEADER_IF_MODIFIED_SINCE = 'If-Modified-Since';
+    const HEADER_IF_NONE_MATCH     = 'If-None-Match';
+    const HEADER_REQUESTED_WITH    = 'Requested-With';
+
     /**
      * @var string
      */
@@ -56,14 +62,16 @@ class Request {
             else
                 $this->ipAddress = $_SERVER ['REMOTE_ADDR'];
 
-            if (isset ($_SERVER ['HTTP_IF_NONE_MATCH']))
-                $this->headers['If-None-Match'] = $_SERVER ['HTTP_IF_NONE_MATCH'];
-            if (isset ($_SERVER ['HTTP_IF_MODIFIED_SINCE']))
-                $this->headers['If-Modified-Since'] = $_SERVER ['HTTP_IF_MODIFIED_SINCE'];
-            if (isset ($_SERVER ['HTTP_X_REQUESTED-WITH']))
-                $this->headers['If-Modified-Since'] = $_SERVER ['HTTP_IF_MODIFIED_SINCE'];
-            if (isset ($_SERVER ['HTTP_X_AUTH_TOKEN']))
-                $this->headers['AuthToken'] = $_SERVER ['HTTP_X_AUTH_TOKEN'];
+            if (isset ($_SERVER['HTTP_IF_NONE_MATCH']))
+                $this->headers[self::HEADER_IF_NONE_MATCH] = $_SERVER['HTTP_IF_NONE_MATCH'];
+            if (isset ($_SERVER['HTTP_IF_MODIFIED_SINCE']))
+                $this->headers[self::HEADER_IF_MODIFIED_SINCE] = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
+            if (isset ($_SERVER['HTTP_X_REQUESTED_WITH']))
+                $this->headers[self::HEADER_REQUESTED_WITH] = $_SERVER['HTTP_X_REQUESTED_WITH'];
+            if (isset ($_SERVER['HTTP_X_AUTH_TOKEN']))
+                $this->headers[self::HEADER_AUTH_TOKEN] = $_SERVER['HTTP_X_AUTH_TOKEN'];
+            if (isset($_SERVER['HTTP_CONTENT_TYPE']))
+                $this->headers[self::HEADER_CONTENT_TYPE] = $_SERVER['HTTP_CONTENT_TYPE'];
         }
     }
     
@@ -93,6 +101,10 @@ class Request {
 
     public function headers() {
         return $this->headers;
+    }
+
+    public function header($name) {
+        return isset($this->headers[$name]) ? $this->headers[$name] : null;
     }
 
 }

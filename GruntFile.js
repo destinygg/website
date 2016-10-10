@@ -1,3 +1,5 @@
+/* global module, grunt */
+
 module.exports = function(grunt) {
     grunt.initConfig({
 
@@ -160,48 +162,33 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadTasks('tasks');
 
-    // Build javascript
-    grunt.registerTask('build:js', [
-        'uglify:libs',
-        'uglify:messages',
-        'uglify:web',
-        'uglify:chat'
+    // Build 3rd party libs
+    grunt.registerTask('build:libs', [
+        'uglify:libs'
     ]);
 
-    // Build css
-    grunt.registerTask('build:css', [
+    // Build javascript, css
+    grunt.registerTask('build:static', [
+        'uglify:messages',
+        'uglify:web',
+        'uglify:chat',
         'concat:build',
         'sass:build'
     ]);
 
-    // Build images, fonts etc
+    // Build images, fonts
     grunt.registerTask('build:assets', [
         'glue:emoticons',
         'glue:icons',
         'copy:gluedimages'
     ]);
 
-    // Build javascript
-    grunt.registerTask('build:static', [
-        'build:js',
-        'build:css'
-    ]);
-
-    // Build task to retrieve all external data
-    grunt.registerTask('build:fetch', [
-        'tldFetcher:fetch'
-    ]);
-
-    // Build all resources
-    grunt.registerTask('build', [
-        'clean',
-        'build:fetch',
-        'build:assets',
-        'build:static'
-    ]);
-
     // Default
     grunt.registerTask('default', [
-        'build'
+        'clean',
+        'tldFetcher:fetch',
+        'build:assets',
+        'build:libs',
+        'build:static'
     ]);
 };
