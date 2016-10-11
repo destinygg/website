@@ -231,7 +231,7 @@
             var pmPopupUi = this.ui.find('#chat-private-messages:first').eq(0),
                 pmPopupUiMenu = new ChatMenu(pmPopupUi, chat);
 
-            pmPopupUi.on('click', '.user-list-link', function(){
+            pmPopupUi.on('click', '.user-list-link', function(e){
                 e.preventDefault();
                 ChatMenu.closeMenus(chat);
                 userListUiMenu.show(pmPopupUiMenu.btn);
@@ -358,7 +358,7 @@
                 chat.toggleUserFocus(username);
             });
 
-            this.lines.on('mousedown', '.user-msg .chat-user', function() {
+            this.lines.on('mousedown', '.user-msg .chat-user', function(e) {
                 e.preventDefault();
                 var username1 = $(this).closest('.user-msg').data('username');
                 var username2 = this.textContent.toLowerCase();
@@ -367,7 +367,7 @@
             });
 
             // Bind to user input submit
-            this.ui.on('submit', 'form#chat-input', function(){
+            this.ui.on('submit', 'form#chat-input', function(e){
                 e.preventDefault();
                 chat.send();
             });
