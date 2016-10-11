@@ -185,9 +185,8 @@ use Destiny\Common\Config;
 
 <?php include Tpl::file('seg/commonbottom.php') ?>
 
-<script src="/chat/history"></script>
 <script src="<?=Config::cdnv()?>/chat/js/chat.min.js"></script>
-<script>$('#destinychat').ChatGui(<?=Tpl::jsout($model->user)?>,<?=Tpl::jsout($model->options)?>);</script>
+<script src="/chat/init"></script>
 
 </body>
 </html>

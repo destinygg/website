@@ -5,9 +5,14 @@
     src: url("../../fonts/OpenSans-ExtraBold.ttf");
 }
 
-body,
-.chat {
+body {
   background: transparent !important;
+}
+
+#destinychat {
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  text-shadow: 1px 1px 0 black;
 }
 
 #chat-lines time {
@@ -53,13 +58,9 @@ body,
 .chat #chat-lines > .own-msg,
 .chat #chat-lines > .highlight .msg,
 .chat #chat-lines > .broadcast-msg .msg {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 800;
+  font-family: 'Lucida Sans Unicode', sans-serif;
   text-decoration: none;
   font-size: 20px;
-  text-shadow: -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 1px 1px 3px #000;
-  -webkit-text-stroke: 1px black;
-  letter-spacing: 0.03em;
 }
 .chat #chat-lines>.command-msg,
 .chat #chat-lines>.error-msg,
@@ -78,7 +79,8 @@ body,
 
 #chat-input,
 .chat #chat-lines i[class^="icon-"],
-.chat .ui-msg {
+.chat .ui-msg,
+time {
   display: none !important;
 }
 
@@ -107,4 +109,8 @@ body,
 #chat-lines > div .continue,
 .nano .nano-slider {
   visibility: hidden;
+}
+
+.chat a.user {
+  color: white;
 }

@@ -309,10 +309,10 @@
 
 .chat.pref-hideflairicons #chat-lines i[class*='icon'],
 .chat #chat-lines time {
-  display: none !important;
+  display: none;
 }
 .chat.pref-showtime #chat-lines time {
-  display: inline !important;
+  display: inline;
 }
 
 /* Theme - Dark */

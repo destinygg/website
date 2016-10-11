@@ -22,9 +22,9 @@ destiny.UserFeatures = {
     SC2           : 'flair10'
 };
 
-function chat(element, user, options) {
+function chat(args) {
     var protocol = location.protocol === 'https:'? 'wss://': 'ws://';
-    this.server             = protocol + options.host + '/ws';
+    this.server             = protocol + args.options.host + '/ws';
     this.connected          = false;
     this.debug              = false;
     this.users              = {};
@@ -65,8 +65,8 @@ function chat(element, user, options) {
             this.hintindex.push(id);
     }
 
-    this.user               = new ChatUser(user);
-    this.gui                = new ChatGui(element, this, options);
+    this.user               = new ChatUser(args.user);
+    this.gui                = new ChatGui(this, args.options);
     this.previousemote      = null;
     this.originemote        = null;
     this.showstarthint      = true;
@@ -84,6 +84,7 @@ chat.prototype.start = function(){
     this.loadIgnoreList();
     this.gui.push(new ChatStatusMessage("Connecting..."));
     this.init();
+    return this;
 };
 chat.prototype.l = function() {
     if (!this.debug)
@@ -168,6 +169,7 @@ chat.prototype.onNAMES = function(data) {
         }
         this.gui.trigger('names', data);
     }
+
     this.gui.push(new ChatStatusMessage("Connected. Server connections: " + data.connectioncount));
 
     if(this.showstarthint){
