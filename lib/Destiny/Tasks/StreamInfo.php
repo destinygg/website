@@ -33,19 +33,14 @@ class StreamInfo implements TaskInterface {
         $lasthost = $cache->contains('streamhostinfo') ? $cache->fetch('streamhostinfo') : [];
         $currhost = $twitchApiService->getChannelHostWithInfo(Config::$a['twitch']['id']);
 
-        switch (TwitchApiService::checkForHostingChange($lasthost, $currhost)){
-            case TwitchApiService::$HOST_NOW_HOSTING:
-                $chatIntegrationService = ChatIntegrationService::instance();
-                $chatIntegrationService->sendBroadcast(sprintf(
-                    '%s is now hosting %s at %s',
-                    Config::$a['meta']['shortName'],
-                    $currhost['display_name'],
-                    $currhost['url'])
-                );
-                break;
-            case TwitchApiService::$HOST_UNCHANGED:
-            case TwitchApiService::$HOST_STOPPED:
-                break;
+        if(TwitchApiService::checkForHostingChange($lasthost, $currhost) == TwitchApiService::$HOST_NOW_HOSTING){
+            $chatIntegrationService = ChatIntegrationService::instance();
+            $chatIntegrationService->sendBroadcast(sprintf(
+                '%s is now hosting %s at %s',
+                Config::$a['meta']['shortName'],
+                $currhost['display_name'],
+                $currhost['url'])
+            );
         }
 
         $streaminfo['host'] = $currhost;

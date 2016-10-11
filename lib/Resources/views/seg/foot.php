@@ -1,13 +1,13 @@
 <div id="footer">
     <div id="footer-inner" class="container">
-        <div id="footer-copyright" class="col-sm-8">
+        <div id="footer-copyright" class="col-sm-8 col-xs-6">
             <h3>Destiny.gg <small><sup>&copy;</sup></small></h3>
             <p> www.destiny.gg
                 <br /><a href="mailto:steven.bonnell.ii@gmail.com" title="Email Destiny">steven.bonnell.ii@gmail.com</a>
                 <br /><a href="https://www.twitch.tv/destiny" title="Destiny @ Twitch.tv">twitch.tv/destiny</a>
             </p>
         </div>
-        <div id="footer-badges" class="col-sm-4">
+        <div id="footer-badges" class="col-sm-4 col-xs-6">
             <h3>Community</h3>
             <p>
                 Source code for <a href="https://github.com/destinygg/website">website</a> and <a href="https://github.com/destinygg/chat">chat</a>

@@ -65,9 +65,8 @@ class TwitchApiService extends Service {
         if(!empty($host) && isset($host['target_login'])){
             $target = $this->getChannel($host['target_login']);
             if(!empty($target) && isset($target['display_name']) && isset($target['url'])){
-                $info['id']           = $target['id'];
+                $info['id']           = $target['_id'];
                 $info['url']          = $target['url'];
-                $info['preview']      = $target['preview'];
                 $info['display_name'] = $target['display_name'];
             }
         }

@@ -632,17 +632,22 @@ i.icon-reddit {
   justify-content: space-around;
 }
 
-@media (max-width: 654px) {
+@media (max-width: $screen-xxs) {
   #dc-donate .dc-donate-blk {
     float:none;
     width: 100%;
-    margin: 10px 0;
+    margin: 30px 0;
   }
   #dc-donate {
     margin-top: 0;
+    text-align: center;
   }
-  #dc-donate-wrap {
-    display: block;
+  #dc-donate-wrap,
+  a {
+    display: inline-block;
+  }
+  #dc-donate .dc-donate-blk {
+    text-align: center !important;
   }
 }
 
@@ -701,9 +706,21 @@ body.no-contain #footer-inner {
     text-align: right;
   }
   #footer-copyright,
-  #footer-badges,
-  #footer-thanks {
+  #footer-badges {
     margin: 30px 0 0 0;
+  }
+}
+
+@media (max-width: $screen-xxs) {
+  #footer {
+    height: auto;
+    #footer-badges {
+      text-align: left;
+    }
+    #footer-copyright,
+    #footer-badges {
+      width:100%;
+    }
   }
 }
 
