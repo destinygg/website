@@ -158,7 +158,8 @@ use Destiny\Common\Config;
         </div>
         <!-- emote list -->
 
-        <div id="chat-private-messages" class="chat-menu">
+        <!-- pm notifications -->
+        <div id="chat-pm-notification" class="chat-menu">
             <div class="list-wrap clearfix">
               <div class="toolbar">
                 <h5>
@@ -176,6 +177,7 @@ use Destiny\Common\Config;
               </div>
             </div>
         </div>
+        <!-- pm notifications -->
 
     </div>
     <!-- end bot frame -->

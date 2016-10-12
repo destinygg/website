@@ -222,7 +222,7 @@
             });
 
 
-            var pmPopupUi = this.ui.find('#chat-private-messages:first').eq(0),
+            var pmPopupUi = this.ui.find('#chat-pm-notification:first').eq(0),
                 pmPopupUiMenu = new ChatMenu(pmPopupUi, chat);
 
             pmPopupUi.on('click', '.user-list-link', function(e){
