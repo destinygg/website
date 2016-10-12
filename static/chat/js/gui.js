@@ -230,11 +230,6 @@
                 userListUiMenu.show(pmPopupUiMenu.btn);
                 return false;
             });
-            pmPopupUi.on('click', '#inbox-privmsg', function(e){
-                chat.setUnreadMessageCount(0);
-                ChatMenu.closeMenus(chat);
-                return false;
-            });
             pmPopupUi.on('click', '#markread-privmsg', function(e){
                 chat.setUnreadMessageCount(0);
                 ChatMenu.closeMenus(chat);
@@ -243,6 +238,10 @@
                     url: '/profile/messages/openall'
                 });
                 return false;
+            });
+            pmPopupUi.on('click', '#inbox-privmsg', function(e){
+                chat.setUnreadMessageCount(0);
+                ChatMenu.closeMenus(chat);
             });
 
 
