@@ -11,12 +11,12 @@
   font-style: normal;
 }
 
-body {
+body,
+.chat {
   background: transparent !important;
 }
 
 #destinychat {
-  background: rgba(0,0,0,0.35);
   border-radius: 8px;
   text-shadow: 1px 1px 1px black;
 }
@@ -94,7 +94,9 @@ time {
   margin: 0;
 }
 
-
+.chat a.user {
+  color: #dfdfdf;
+}
 .chat .flair1 {
   color: white;
 }
@@ -120,10 +122,6 @@ time {
 #chat-lines > div .continue,
 .nano .nano-slider {
   visibility: hidden;
-}
-
-.chat a.user {
-  color: white;
 }
 
 .chat #chat-output-frame {
