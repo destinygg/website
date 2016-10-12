@@ -18,7 +18,8 @@ body,
 
 #destinychat {
   border-radius: 8px;
-  text-shadow: 1px 1px 1px black;
+  text-shadow: -1px -1px 0 rgba(0,0,0,0.75), 1px -1px 1px rgba(0,0,0,0.75), -1px 1px 0 rgba(0,0,0,0.75), 1px 1px 1px rgba(0,0,0,0.75);
+  letter-spacing: 0.03em;
 }
 
 #chat-lines time {
@@ -94,7 +95,7 @@ time {
   margin: 0;
 }
 
-.chat a.user {
+.chat .user {
   color: #dfdfdf;
 }
 .chat .flair1 {
