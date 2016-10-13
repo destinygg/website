@@ -39,7 +39,7 @@ class ImageDownload {
         $shard = (preg_match("/[a-z0-9]/i", $name, $match)) ? $match[0] : "0";
         $final = $shard . self::$PATH_SEPARATOR . $name . "." . $ext;
 
-        if(empty($shard)){
+        if(strlen($shard) <= 0){
             $log->error("Invalid shard." . $shard);
         } else if (!file_exists($path . $shard) && !mkdir($path . $shard)) {
             $log->error("Could not make shard sub-folder. " . $path . $shard);

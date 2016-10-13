@@ -18,8 +18,6 @@ class TwitterApiService extends Service {
         $tmhOAuth = new \tmhOAuth ([
             'consumer_key' => $twitterOAuthConf ['clientId'],
             'consumer_secret' => $twitterOAuthConf ['clientSecret'],
-            'token' => $twitterOAuthConf ['token'],
-            'secret' => $twitterOAuthConf ['secret'],
             'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'],
             'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
             'curl_timeout' => Config::$a ['curl'] ['timeout']

@@ -9,7 +9,7 @@ use Destiny\Common\Request;
 
 ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
 
-require __DIR__ . '/../lib/boot.php';
+require __DIR__ . '/../lib/boot.app.php';
 $app = Application::instance ();
 
 // Setup user session

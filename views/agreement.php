@@ -21,7 +21,7 @@ use Destiny\Common\Utils\Tpl;
         <section class="container">
             <h1 class="title">
                 <small class="subtle pull-right" style="font-size:14px; margin-top:20px;">Last update: <?=Date::getDateTime(filemtime(__FILE__))->format(Date::STRING_FORMAT)?></small>
-                <h1>Disclaimer</h1>
+                <span>Disclaimer</span>
             </h1>
             <div class="content content-dark clearfix">
                 <div class="ds-block">
