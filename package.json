@@ -37,9 +37,7 @@
     "gulp-rename": "~1.2.2",
     "gulp-sourcemaps": "~1.7.3",
     "gulp-util": "~3.0.7",
-    "gulp-sass": "~2.3.2",
-    "gulp-typescript": "~3.0.2",
-    "typescript": "~2.0.3"
+    "gulp-sass": "~2.3.2"
   },
   "engines": {
     "node":"~5.0.2",

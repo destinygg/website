@@ -150,9 +150,6 @@ return array (
 		'path' 			=> _BASEDIR . '/lib/Resources/views/',
 		'error.path' 	=> _BASEDIR . '/',
 	),
-	'geodata' => array (
-		'json'			=> _BASEDIR . '/lib/Resources/geo-ISO_3166-1-2.json'
-	),
 	'log' => array (
 		'path' 			=> _BASEDIR . '/log/'
 	),

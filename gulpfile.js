@@ -10,30 +10,14 @@ var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     gutil = require('gulp-util'),
     sass = require('gulp-sass'),
-    ts = require('gulp-typescript'),
     exec = require('child_process').exec;
 
 require('require-dir')('./tasks');
 
-var compileTypeScriptWeb = function (cb) {
-    pump([
-        gulp.src('static/web/js/*.ts'),
-        ts(),
-        gulp.dest('static/web/js')
-    ], cb);
-};
-var compileTypeScriptChat = function (cb) {
-    pump([
-        gulp.src('static/chat/js/*.ts'),
-        ts(),
-        gulp.dest('static/chat/js')
-    ], cb);
-};
-
 var compileScriptsMessages = function (cb) {
     del('static/web/js/messages.min.js*');
     pump([
-        gulp.src('static/web/js/messages.js'),
+        gulp.src('scripts/web/js/messages.js'),
         sourcemaps.init(),
         uglify({preserveComments: 'license'}),
         rename({suffix: '.min'}),
@@ -46,8 +30,8 @@ var compileScriptsWeb = function (cb) {
     del('static/web/js/destiny.min.js*');
     pump([
         gulp.src([
-            'static/web/js/destiny.js',
-            'static/web/js/ui.js'
+            'scripts/web/js/destiny.js',
+            'scripts/web/js/ui.js'
         ]),
         sourcemaps.init(),
         concat('destiny.min.js'),
@@ -61,12 +45,13 @@ var compileScriptsChat = function (cb) {
     del('static/chat/js/chat.min.js*');
     pump([
         gulp.src([
-            'static/chat/js/autocomplete.js',
-            'static/chat/js/formatters.js',
-            'static/chat/js/UrlFormatter.js',
-            'static/chat/js/menu.js',
-            'static/chat/js/gui.js',
-            'static/chat/js/chat.js'
+            'scripts/chat/js/utils.js',
+            'scripts/chat/js/autocomplete.js',
+            'scripts/chat/js/formatters.js',
+            'scripts/chat/js/url.formatter.js',
+            'scripts/chat/js/menu.js',
+            'scripts/chat/js/gui.js',
+            'scripts/chat/js/chat.js'
         ]),
         sourcemaps.init(),
         concat('chat.min.js'),
@@ -136,14 +121,27 @@ var compileStylesChat = function (cb) {
     pump([
         gulp.src([
             'static/vendor/jquery.nanoscroller-0.8.7/nanoscroller.css',
-            'static/chat/css/style.scss',
+            'scripts/chat/css/style.scss',
             'scripts/emotes/emoticons.css',
             'scripts/icons/icons.css'
         ]),
         concat('style.min.css'),
         sass({
             outputStyle: 'compressed',
-            includePaths : ['static']
+            includePaths : ['scripts']
+        }),
+        gulp.dest('static/chat/css')
+    ], cb);
+};
+
+var compileStylesOnStreamChat = function (cb) {
+    del('static/chat/css/onstream.min.css');
+    pump([
+        gulp.src('scripts/chat/css/onstream.scss'),
+        concat('onstream.min.css'),
+        sass({
+            outputStyle: 'compressed',
+            includePaths : ['scripts']
         }),
         gulp.dest('static/chat/css')
     ], cb);
@@ -152,27 +150,28 @@ var compileStylesChat = function (cb) {
 var compileStyleWeb = function (cb) {
     del('static/web/css/style.min.css');
     pump([
-        gulp.src(['static/web/css/style.scss']),
+        gulp.src(['scripts/web/css/style.scss']),
         concat('style.min.css'),
         sass({
             outputStyle: 'compressed',
-            includePaths : ['static']
+            includePaths : ['scripts']
         }),
         gulp.dest('static/web/css')
     ], cb);
 };
 
-gulp.task('scripts:ts:web', compileTypeScriptWeb);
-gulp.task('scripts:ts:chat', compileTypeScriptChat);
-gulp.task('scripts:ts', ['scripts:ts:web', 'scripts:ts:chat']);
-gulp.task('scripts:messages', compileScriptsMessages);
-gulp.task('scripts:destiny', ['scripts:ts'], compileScriptsWeb);
-gulp.task('scripts:chat', ['scripts:ts'], compileScriptsChat);
-gulp.task('scripts:chat:fetch', ['scripts:ts','tld:fetch'], compileScriptsChat);
-gulp.task('scripts:libs', compileScriptsLibs);
+//gulp.task('scripts:ts:web', compileTypeScriptWeb);
+//gulp.task('scripts:ts:chat', compileTypeScriptChat);
+
 gulp.task('glue:emoticons', glueEmoticons);
 gulp.task('glue:icons', glueIcons);
-gulp.task('sass:chat', compileStylesChat);
+gulp.task('scripts:messages', compileScriptsMessages);
+gulp.task('scripts:web', compileScriptsWeb);
+gulp.task('scripts:chat:nofetch', compileScriptsChat);
+gulp.task('scripts:chat:fetch', ['tld:fetch'], compileScriptsChat);
+gulp.task('scripts:chat:onscreen', compileStylesOnStreamChat);
+gulp.task('scripts:libs', compileScriptsLibs);
+gulp.task('sass:chat:noglue', compileStylesChat);
 gulp.task('sass:chat:glue', ['glue:emoticons', 'glue:icons'], compileStylesChat);
 gulp.task('sass:web', compileStyleWeb);
 
@@ -186,14 +185,16 @@ gulp.task('default', [
     'scripts:libs',
     'scripts:messages',
     'scripts:chat:fetch',
-    'scripts:destiny'
+    'scripts:chat:onscreen',
+    'scripts:web'
 ]);
 
 // convenience, used in watch etc.
 gulp.task('static', [
-    'sass:chat',
+    'sass:chat:noglue',
     'sass:web',
     'scripts:messages',
-    'scripts:chat',
-    'scripts:destiny'
+    'scripts:chat:nofetch',
+    'scripts:chat:onscreen',
+    'scripts:web'
 ]);

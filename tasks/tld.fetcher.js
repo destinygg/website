@@ -8,8 +8,8 @@ var http = require('http'),
 gulp.task('tld:fetch', function (cb) {
     //gutil.log("TLD Fetch " + TLD_FETCH_URL);
 
-    var templateFile = 'scripts/chat/UrlFormatter.tpl.js',
-        targetFile = 'static/chat/js/UrlFormatter.js';
+    var templateFile = 'scripts/chat/js/url.formatter.tpl.js',
+        targetFile = 'scripts/chat/js/url.formatter.js';
 
     // Asynchronously fetch TLDs, if valid then replace
     http.get(TLD_FETCH_URL, function(res) {
