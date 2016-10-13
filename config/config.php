@@ -147,7 +147,7 @@ return array (
 		'httponly'		=> true,
 	),
 	'tpl' => array (
-		'path' 			=> _BASEDIR . '/lib/Resources/views/',
+		'path' 			=> _BASEDIR . '/views/',
 		'error.path' 	=> _BASEDIR . '/',
 	),
 	'log' => array (
