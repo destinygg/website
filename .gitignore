@@ -6,6 +6,7 @@ config/config.local.php
 /.buildpath
 /vagrant
 /.sass-cache
+/.tscache
 
 /config/cert_key.pem
 /config/sdk_config.ini

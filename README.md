@@ -12,7 +12,7 @@ See [LICENSE.md](LICENSE.md)
 
 [nodejs](http://nodejs.org/) Dependency manager
 
-[grunt](http://gruntjs.com/) Project builder
+[gulp](http://gulpjs.com/) Project builder
 
 [composer](http://getcomposer.org/) PHP dependency manager
 
@@ -37,7 +37,10 @@ Install the node dependencies
 
 ```shell
 npm install
+npm install gulp
 ```
+
+Then download and install [glue](http://glue.readthedocs.org/).
 
 Install the PHP dependencies
 
@@ -45,10 +48,10 @@ Install the PHP dependencies
 composer install
 ```
 
-Build the project
+You can now build the project.
 
 ```shell
-grunt build
+gulp
 ```
 
 ## The cron job
@@ -61,18 +64,3 @@ If you are running the website locally, you can call this file manually, or setu
 The table "[prefix_]scheduled_tasks" will show when specific tasks have been run.
 
 If you don't run this, you will get empty UI and limited functionality in the site.
-
-
-## Grunt Tasks
-
-Build the project
-
-```shell
-grunt
-```
-
-Glue - create the project sprites
-
-```shell
-grunt glue
-```
