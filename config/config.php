@@ -148,7 +148,6 @@ return array (
 	),
 	'tpl' => array (
 		'path' 			=> _BASEDIR . '/views/',
-		'error.path' 	=> _BASEDIR . '/',
 	),
 	'log' => array (
 		'path' 			=> _BASEDIR . '/log/'

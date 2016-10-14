@@ -7,7 +7,7 @@ use Destiny\Common\User\UserRole;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -40,7 +40,7 @@ use Destiny\Common\User\UserRole;
         </div>
         <div class="subfeature-options clearfix">
           <div class="subfeature-t1">
-            <?php $sub = $model->subscriptions['1-MONTH-SUB4']?>
+            <?php $sub = $this->subscriptions['1-MONTH-SUB4']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />
@@ -55,7 +55,7 @@ use Destiny\Common\User\UserRole;
             </form>
           </div>
           <div class="subfeature-t2">
-            <?php $sub = $model->subscriptions['3-MONTH-SUB4']?>
+            <?php $sub = $this->subscriptions['3-MONTH-SUB4']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />
@@ -79,7 +79,7 @@ use Destiny\Common\User\UserRole;
         </div>
         <div class="subfeature-options clearfix">
           <div class="subfeature-t1">
-            <?php $sub = $model->subscriptions['1-MONTH-SUB3']?>
+            <?php $sub = $this->subscriptions['1-MONTH-SUB3']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />
@@ -94,7 +94,7 @@ use Destiny\Common\User\UserRole;
             </form>
           </div>
           <div class="subfeature-t2">
-            <?php $sub = $model->subscriptions['3-MONTH-SUB3']?>
+            <?php $sub = $this->subscriptions['3-MONTH-SUB3']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />
@@ -118,7 +118,7 @@ use Destiny\Common\User\UserRole;
         </div>
         <div class="subfeature-options clearfix">
           <div class="subfeature-t1">
-            <?php $sub = $model->subscriptions['1-MONTH-SUB2']?>
+            <?php $sub = $this->subscriptions['1-MONTH-SUB2']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />
@@ -133,7 +133,7 @@ use Destiny\Common\User\UserRole;
             </form>
           </div>
           <div class="subfeature-t2">
-            <?php $sub = $model->subscriptions['3-MONTH-SUB2']?>
+            <?php $sub = $this->subscriptions['3-MONTH-SUB2']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />
@@ -157,7 +157,7 @@ use Destiny\Common\User\UserRole;
         </div>
         <div class="subfeature-options clearfix">
           <div class="subfeature-t1">
-            <?php $sub = $model->subscriptions['1-MONTH-SUB']?>
+            <?php $sub = $this->subscriptions['1-MONTH-SUB']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />
@@ -172,7 +172,7 @@ use Destiny\Common\User\UserRole;
             </form>
           </div>
           <div class="subfeature-t2">
-            <?php $sub = $model->subscriptions['3-MONTH-SUB']?>
+            <?php $sub = $this->subscriptions['3-MONTH-SUB']?>
             <form action="/subscription/confirm" method="post">
               <input type="hidden" name="subscription" value="<?=$sub['id']?>" />
               <input type="hidden" name="gift" value="" />

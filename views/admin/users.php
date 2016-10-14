@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Date;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 </head>
@@ -22,14 +22,14 @@ use Destiny\Common\Utils\Date;
         <div class="ds-block clearfix">
           <form id="userSearchForm" class="form-inline" role="form">
             <div class="form-group">
-              <input name="search" type="text" class="form-control" placeholder="Username or email..." value="<?=Tpl::out($model->search)?>" />
+              <input name="search" type="text" class="form-control" placeholder="Username or email..." value="<?=Tpl::out($this->search)?>" />
               <button type="submit" class="btn btn-primary">Search</button>
             </div>
             <div class="form-group pull-right">
               <select name="feature" class="form-control">
                 <option value="" disabled selected>Feature</option>
                 <option value=""></option>
-                <?php foreach ($model->features as $feature): ?>
+                <?php foreach ($this->features as $feature): ?>
                 <option value="<?=Tpl::out($feature['featureName']);?>"><?=Tpl::out($feature['featureLabel']);?></option>
                 <?php endforeach; ?>
               </select>
@@ -42,18 +42,18 @@ use Destiny\Common\Utils\Date;
 
       <div class="content content-dark clearfix">
 
-        <div id="userlist" data-size="<?=Tpl::out($model->size)?>" data-page="<?=Tpl::out($model->page)?>" data-feature="<?=Tpl::out($model->feature)?>" class="stream stream-grid" style="width:100%;">
+        <div id="userlist" data-size="<?=Tpl::out($this->size)?>" data-page="<?=Tpl::out($this->page)?>" data-feature="<?=Tpl::out($this->feature)?>" class="stream stream-grid" style="width:100%;">
 
           <div class="ds-block clearfix">
 
-            <?php if($model->users['totalpages'] > 1): ?>
+            <?php if($this->users['totalpages'] > 1): ?>
             <form class="form-inline pull-left" role="form">
               <ul class="pagination" style="margin: 0 15px 0 0;">
                 <li><a data-page="1" href="?page=0">Start</a></li>
-                <?php for($i = max(1, $model->users['page'] - 2); $i <= min($model->users['page'] + 2, $model->users['totalpages']); $i++): ?>
-                <li <?=($model->users['page'] == $i) ? 'class="active"':''?>><a data-page="<?=$i?>" href="?page=<?=$i?>"><?=$i?></a></li>
+                <?php for($i = max(1, $this->users['page'] - 2); $i <= min($this->users['page'] + 2, $this->users['totalpages']); $i++): ?>
+                <li <?=($this->users['page'] == $i) ? 'class="active"':''?>><a data-page="<?=$i?>" href="?page=<?=$i?>"><?=$i?></a></li>
                 <?php endfor; ?>
-                <li><a data-page="<?=$model->users['totalpages']?>" href="?page=<?=$model->users['totalpages']?>">End</a></li>
+                <li><a data-page="<?=$this->users['totalpages']?>" href="?page=<?=$this->users['totalpages']?>">End</a></li>
               </ul>
             </form>
             <?php endif; ?>
@@ -79,12 +79,12 @@ use Destiny\Common\Utils\Date;
           <table class="grid">
             <thead>
               <tr>
-                <td>User <small>(<?=$model->users['total']?>)</small></td>
+                <td>User <small>(<?=$this->users['total']?>)</small></td>
                 <td>Created on</td>
               </tr>
             </thead>
             <tbody>
-            <?php foreach($model->users['list'] as $user): ?>
+            <?php foreach($this->users['list'] as $user): ?>
             <tr>
               <td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a> (<?=Tpl::out($user['email'])?>)</td>
               <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT)?></td>
@@ -101,7 +101,7 @@ use Destiny\Common\Utils\Date;
 
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
-  <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
+  <script src="<?=Config::cdnv()?>/web/js/admin.min.js"></script>
   
 </body>
 </html>

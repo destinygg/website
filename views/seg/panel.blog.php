@@ -1,7 +1,7 @@
 <?php
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
-if (! empty ( $model->articles )) :
+if (! empty ( $this->articles )) :
 ?>
 <section class="container">
 	<div class="content content-dark content-split clearfix row-no-padding">
@@ -12,7 +12,7 @@ if (! empty ( $model->articles )) :
 			</h3>
 			<div class="entries">
 				<?php for ($i=0; $i<3; ++$i):?>
-				<?php $article = $model->articles[$i] ?>
+				<?php $article = $this->articles[$i] ?>
 				<div class="media">
 					<div class="media-body">
 						<div class="media-heading">
@@ -37,7 +37,7 @@ if (! empty ( $model->articles )) :
 			<h3 class="title">&nbsp;</h3>
 			<div class="entries">
 				<?php for ($i=3; $i<6; ++$i):?>
-				<?php $article = $model->articles[$i] ?>
+				<?php $article = $this->articles[$i] ?>
 				<div class="media">
 					<div class="media-body">
 						<div class="media-heading">

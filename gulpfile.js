@@ -85,6 +85,30 @@ var compileScriptsLibs = function (cb) {
     ], cb);
 };
 
+var compileScriptsAdmin = function (cb) {
+    del('static/web/js/admin.min.js*');
+    pump([
+        gulp.src(['scripts/web/js/admin.js']),
+        sourcemaps.init(),
+        concat('admin.min.js'),
+        uglify({preserveComments: 'license'}),
+        sourcemaps.write(),
+        gulp.dest('static/web/js')
+    ], cb);
+};
+
+var compileScriptsAdminIncome = function (cb) {
+    del('static/web/js/admin.income.min.js*');
+    pump([
+        gulp.src(['scripts/web/js/admin.income.js']),
+        sourcemaps.init(),
+        concat('admin.income.min.js'),
+        uglify({preserveComments: 'license'}),
+        sourcemaps.write(),
+        gulp.dest('static/web/js')
+    ], cb);
+};
+
 var glueEmoticons = function (cb) {
     del('scripts/emotes/emotes.css');
     exec(['glue', 'scripts/emotes/emoticons', '--sprite-namespace= --namespace=chat-emote.chat-emote --css=scripts/emotes --css-template=scripts/emotes/emoticons.jinja --img=scripts/emotes --url=../img/ --crop --pseudo-class-separator=_'].join(' '), function(err, stdout, stderr) {
@@ -160,12 +184,11 @@ var compileStyleWeb = function (cb) {
     ], cb);
 };
 
-//gulp.task('scripts:ts:web', compileTypeScriptWeb);
-//gulp.task('scripts:ts:chat', compileTypeScriptChat);
-
 gulp.task('glue:emoticons', glueEmoticons);
 gulp.task('glue:icons', glueIcons);
 gulp.task('scripts:messages', compileScriptsMessages);
+gulp.task('scripts:admin', compileScriptsAdmin);
+gulp.task('scripts:admin:income', compileScriptsAdminIncome);
 gulp.task('scripts:web', compileScriptsWeb);
 gulp.task('scripts:chat:nofetch', compileScriptsChat);
 gulp.task('scripts:chat:fetch', ['tld:fetch'], compileScriptsChat);
@@ -186,6 +209,8 @@ gulp.task('default', [
     'scripts:messages',
     'scripts:chat:fetch',
     'scripts:chat:onscreen',
+    'scripts:admin',
+    'scripts:admin:income',
     'scripts:web'
 ]);
 
@@ -196,5 +221,7 @@ gulp.task('static', [
     'scripts:messages',
     'scripts:chat:nofetch',
     'scripts:chat:onscreen',
+    'scripts:admin',
+    'scripts:admin:income',
     'scripts:web'
 ]);

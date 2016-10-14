@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Tpl;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/opengraph.php' ?>
 <?php include 'seg/commontop.php' ?>

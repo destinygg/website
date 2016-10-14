@@ -5,7 +5,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>

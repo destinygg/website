@@ -1,14 +1,13 @@
 <?php
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\User\UserRole;
-use Destiny\Common\User\UserFeature;
 use Destiny\Common\Session;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <meta name="referrer" content="no-referrer">
 <?php include 'seg/commontop.php' ?>
@@ -37,8 +36,8 @@ use Destiny\Common\Config;
                     <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
                 </div>
                 <span id="chat-login-msg">
-                  <?php if(!empty($model->follow)): ?>
-                      You must <a href="/login?follow=<?= Tpl::out($model->follow) ?>" target="_parent">sign in</a> to chat
+                  <?php if(!empty($this->follow)): ?>
+                      You must <a href="/login?follow=<?= Tpl::out($this->follow) ?>" target="_parent">sign in</a> to chat
                   <?php else: ?>
                       You must <a href="/login" target="_parent">sign in</a> to chat
                   <?php endif; ?>
@@ -49,7 +48,7 @@ use Destiny\Common\Config;
                     <span class="fa fa-cog"></span>
                 </a>
                 <a id="chat-users-btn" class="iconbtn" title="Users">
-                    <span id="chat-pm-count" class="<?= ($model->options['pmcountnum'] > 0) ? '':'hidden' ?> flash" title="You have unread messages!"><?= Tpl::out($model->options['pmcountnum']) ?></span>
+                    <span id="chat-pm-count" class="<?= ($this->options['pmcountnum'] > 0) ? '':'hidden' ?> flash" title="You have unread messages!"><?= Tpl::out($this->options['pmcountnum']) ?></span>
                     <span class="fa fa-user"></span>
                 </a>
             </div>

@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -42,8 +42,8 @@ use Destiny\Common\Config;
                    <?=ucwords($profileType)?>
                 </td>
                 <td>
-                  <?php if(in_array($profileType, $model->authProfileTypes)): ?>
-                    <?php $model->requireConnections = true; ?>
+                  <?php if(in_array($profileType, $this->authProfileTypes)): ?>
+                    <?php $this->requireConnections = true; ?>
                     <span class="subtle"><span class="fa fa-check"></span> Connected</span>
                   <?php else: ?>
                     <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
@@ -74,8 +74,8 @@ use Destiny\Common\Config;
               </tr>
             </thead>
             <tbody>
-              <?php if(!empty($model->authTokens)): ?>
-              <?php foreach($model->authTokens as $authToken): ?>
+              <?php if(!empty($this->authTokens)): ?>
+              <?php foreach($this->authTokens as $authToken): ?>
               <tr>
                 <td><a href="/profile/authtoken/<?=$authToken['authToken']?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a></td>
                 <td><span><?=$authToken['authToken']?></span></td>

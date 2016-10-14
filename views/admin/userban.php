@@ -5,7 +5,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 </head>
@@ -15,14 +15,14 @@ use Destiny\Common\Config;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-      <h3>Ban / Mute <small>(<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit"><?=Tpl::out($model->user['username'])?></a>)</small></h3>
+      <h3>Ban / Mute <small>(<a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>)</small></h3>
       <div class="content content-dark clearfix">
 
         <?php
-        if(!empty($model->ban['id'])):
-          $href='/admin/user/'. Tpl::out($model->user['userId']) .'/ban/'. Tpl::out($model->ban['id']) .'/update';
+        if(!empty($this->ban['id'])):
+          $href='/admin/user/'. Tpl::out($this->user['userId']) .'/ban/'. Tpl::out($this->ban['id']) .'/update';
         else:
-          $href='/admin/user/'. Tpl::out($model->user['userId']) .'/ban';
+          $href='/admin/user/'. Tpl::out($this->user['userId']) .'/ban';
         endif;
         ?>
 
@@ -32,21 +32,21 @@ use Destiny\Common\Config;
             <div class="form-group">
               <label class="control-label" for="inputUsername">Banned user</label>
               <div class="controls">
-                <input type="text" class="form-control uneditable-input" readonly="readonly" value="<?=Tpl::out($model->user['username'])?>">
+                <input type="text" class="form-control uneditable-input" readonly="readonly" value="<?=Tpl::out($this->user['username'])?>">
               </div>
             </div>
 
             <div class="form-group">
               <label class="control-label" for="inputUsername">Reason</label>
               <div class="controls">
-                <input type="text" class="form-control" name="reason" id="inputReason" value="<?=Tpl::out($model->ban['reason'])?>" placeholder="Reason">
+                <input type="text" class="form-control" name="reason" id="inputReason" value="<?=Tpl::out($this->ban['reason'])?>" placeholder="Reason">
               </div>
             </div>
 
             <div class="form-group">
               <label class="control-label" for="inputStarttimestamp">Start</label>
               <div class="controls">
-                <input type="text" class="form-control" name="starttimestamp" id="inputStarttimestamp" value="<?=Tpl::out($model->ban['starttimestamp'])?>" placeholder="Y-m-d H:i:s">
+                <input type="text" class="form-control" name="starttimestamp" id="inputStarttimestamp" value="<?=Tpl::out($this->ban['starttimestamp'])?>" placeholder="Y-m-d H:i:s">
                 <span class="help-block">time specificed in UCT</span>
               </div>
             </div>
@@ -54,7 +54,7 @@ use Destiny\Common\Config;
             <div class="form-group">
               <label class="control-label" for="inputEndtimestamp">End</label>
               <div class="controls">
-                <input type="text" class="form-control" name="endtimestamp" id="inputEndtimestamp" value="<?=Tpl::out($model->ban['endtimestamp'])?>" placeholder="Y-m-d H:i:s">
+                <input type="text" class="form-control" name="endtimestamp" id="inputEndtimestamp" value="<?=Tpl::out($this->ban['endtimestamp'])?>" placeholder="Y-m-d H:i:s">
                 <span class="help-block">time specificed in UCT</span>
               </div>
             </div>
@@ -62,7 +62,7 @@ use Destiny\Common\Config;
 
           <div class="form-actions">
             <button type="submit" class="btn btn-primary btn-lg">Save</button>
-            <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" class="btn btn-link">Back</a>
+            <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" class="btn btn-link">Back</a>
           </div>
 
         </form>
@@ -74,7 +74,7 @@ use Destiny\Common\Config;
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
   
-  <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
+  <script src="<?=Config::cdnv()?>/web/js/admin.min.js"></script>
   
 </body>
 </html>

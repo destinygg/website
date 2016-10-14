@@ -7,7 +7,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -30,7 +30,7 @@ use Destiny\Common\Config;
             <div id="inbox-content" class="content collapse in">
                 <div class="content-dark">
 
-                    <?php if(!empty($model->inbox['read']) || !empty($model->inbox['unread'])): ?>
+                    <?php if(!empty($this->inbox['read']) || !empty($this->inbox['unread'])): ?>
                     <table id="inbox" class="grid messages">
                         <colgroup>
                             <!-- <col class="c1"> -->
@@ -40,7 +40,7 @@ use Destiny\Common\Config;
                         </colgroup>
                         <tbody>
 
-                            <?php foreach($model->inbox['unread'] as $id => $thread): ?>
+                            <?php foreach($this->inbox['unread'] as $id => $thread): ?>
                             <tr data-id="<?= $id ?>" class="unread">
                                 <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
                                 <td class="from">
@@ -52,7 +52,7 @@ use Destiny\Common\Config;
                             </tr>
                             <?php endforeach; ?>
 
-                            <?php foreach($model->inbox['read'] as $id => $thread): ?>
+                            <?php foreach($this->inbox['read'] as $id => $thread): ?>
                             <tr data-id="<?= $id ?>" class="read">
                                 <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
                                 <td class="from">
@@ -70,7 +70,7 @@ use Destiny\Common\Config;
                     </table>
                     <?php endif; ?>
 
-                    <?php if(empty($model->inbox['read']) && empty($model->inbox['unread'])): ?>
+                    <?php if(empty($this->inbox['read']) && empty($this->inbox['unread'])): ?>
                     <table id="inbox" class="grid messages">
                         <tbody>
                         <tr>

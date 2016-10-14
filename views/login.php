@@ -5,7 +5,7 @@ use Destiny\Common\Utils\Tpl;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -39,23 +39,23 @@ use Destiny\Common\Utils\Tpl;
         <small>...</small>
       </h1>
       
-      <?php if(!empty($model->error)): ?>
+      <?php if(!empty($this->error)): ?>
       <div class="alert alert-danger">
         <strong>Error!</strong>
-        <?=Tpl::out($model->error->getMessage())?>
+        <?=Tpl::out($this->error->getMessage())?>
       </div>
       <?php endif; ?>
       
       <div class="content content-dark clearfix">
 
         <form id="loginForm" action="/login" method="post">
-          <input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
+          <input type="hidden" name="follow" value="<?=Tpl::out($this->follow)?>" />
           <div class="ds-block">
 
             <div class="form-group">
               <div class="controls checkbox">
                 <label>
-                  <input tabindex="1" autofocus type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember me
+                  <input tabindex="1" autofocus type="checkbox" name="rememberme" <?=($this->rememberme) ? 'checked':''?>> Remember me
                 </label>
                 <span class="help-block">(this should only be used if you are on a private computer)</span>
               </div>

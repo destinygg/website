@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Date;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -26,7 +26,7 @@ use Destiny\Common\Utils\Date;
     <section class="container">
       <div class="content content-dark clearfix">
 
-        <?php if($model->subscriptionCancelled): ?>
+        <?php if($this->subscriptionCancelled): ?>
         <div class="ds-block">
           <div class="form-group">
             <p>
@@ -39,8 +39,8 @@ use Destiny\Common\Utils\Date;
               <dt>Status:</dt>
 
               <dd>
-                <span class="label label-<?=($model->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($model->subscription['status'])?></span>
-                <?php if($model->subscription['recurring']):?>
+                <span class="label label-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
+                <?php if($this->subscription['recurring']):?>
                 <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
                 <?php else: ?>
                 <span class="label label-default" title="This subscription is not automatically renewed">Not recurring</span>
@@ -48,15 +48,15 @@ use Destiny\Common\Utils\Date;
               </dd>
 
               <dt>Time remaining:</dt>
-              <dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
+              <dd><?=Date::getRemainingTime(Date::getDateTime($this->subscription['endDate']))?></dd>
               <dt>Created date:</dt>
-              <dd><?=Tpl::moment(Date::getDateTime($model->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
+              <dd><?=Tpl::moment(Date::getDateTime($this->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
               <dt>End date:</dt>
-              <dd><?=Tpl::moment(Date::getDateTime($model->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
+              <dd><?=Tpl::moment(Date::getDateTime($this->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
 
-              <?php if(!empty($model->giftee)): ?>
+              <?php if(!empty($this->giftee)): ?>
               <dt>Gifted to:</dt>
-              <dd><?=Tpl::out( $model->giftee['username'] )?></dd>
+              <dd><?=Tpl::out( $this->giftee['username'] )?></dd>
               <?php endif; ?>
 
             </dl>
@@ -67,34 +67,34 @@ use Destiny\Common\Utils\Date;
         </div>
         <?php endif; ?>
 
-        <?php if(!$model->subscriptionCancelled): ?>
+        <?php if(!$this->subscriptionCancelled): ?>
         <form action="/subscription/cancel" method="post" autocomplete="off">
 
-          <input type="hidden" name="subscriptionId" value="<?=Tpl::out($model->subscription['subscriptionId'])?>" />
+          <input type="hidden" name="subscriptionId" value="<?=Tpl::out($this->subscription['subscriptionId'])?>" />
 
           <div class="ds-block">
             <div class="form-group">
               <dl class="dl-horizontal">
                 <dt>Status:</dt>
                 <dd>
-                  <span class="label label-<?=($model->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($model->subscription['status'])?></span>
-                  <?php if($model->subscription['recurring']):?>
+                  <span class="label label-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
+                  <?php if($this->subscription['recurring']):?>
                   <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
                   <?php endif; ?>
                 </dd>
 
                 <dt>Source:</dt>
-                <dd><?=Tpl::out($model->subscription['subscriptionSource'])?></dd>
+                <dd><?=Tpl::out($this->subscription['subscriptionSource'])?></dd>
                 <dt>Created date:</dt>
-                <dd><?=Tpl::moment(Date::getDateTime($model->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
+                <dd><?=Tpl::moment(Date::getDateTime($this->subscription['createdDate']), Date::STRING_FORMAT_YEAR)?></dd>
                 <dt>End date:</dt>
-                <dd><?=Tpl::moment(Date::getDateTime($model->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
+                <dd><?=Tpl::moment(Date::getDateTime($this->subscription['endDate']), Date::STRING_FORMAT_YEAR)?></dd>
                 <dt>Time remaining:</dt>
-                <dd><?=Date::getRemainingTime(Date::getDateTime($model->subscription['endDate']))?></dd>
+                <dd><?=Date::getRemainingTime(Date::getDateTime($this->subscription['endDate']))?></dd>
 
-                <?php if(!empty($model->giftee)): ?>
+                <?php if(!empty($this->giftee)): ?>
                 <dt>Gifted to:</dt>
-                <dd><?=Tpl::out( $model->giftee['username'] )?></dd>
+                <dd><?=Tpl::out( $this->giftee['username'] )?></dd>
                 <?php endif; ?>
 
               </dl>
@@ -106,10 +106,10 @@ use Destiny\Common\Utils\Date;
           </div>
 
           <div class="form-actions">
-            <?php if($model->subscription['status'] == 'Active'): ?>
+            <?php if($this->subscription['status'] == 'Active'): ?>
             <button type="button" id="cancelSubscriptionBtn" class="btn btn-danger">Cancel Subscription</button>
             <?php endif; ?>
-            <?php if($model->subscription['recurring'] == '1'): ?>
+            <?php if($this->subscription['recurring'] == '1'): ?>
             <button type="button" id="stopRecurringBtn" class="btn btn-warning">Stop Recurring Payments</button>
             <?php endif; ?>
             <a class="btn btn-link" href="/profile">Back to profile</a>

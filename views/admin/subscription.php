@@ -7,7 +7,7 @@ use Destiny\Common\Utils\Date;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 </head>
@@ -16,23 +16,23 @@ use Destiny\Common\Utils\Date;
     <?php include 'seg/top.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
-    <?php if(!empty($model->success)): ?>
+    <?php if(!empty($this->success)): ?>
     <section class="container">
       <div class="alert alert-info" style="margin-bottom:0;">
         <strong>Success!</strong>
-        <?=Tpl::out($model->success)?>
+        <?=Tpl::out($this->success)?>
       </div>
     </section>
     <?php endif; ?>
 
     <section class="container">
-      <h3>Subscription <small>(<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit"><?=Tpl::out($model->user['username'])?></a>)</small></h3>
+      <h3>Subscription <small>(<a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>)</small></h3>
       <div class="content content-dark clearfix">
 
         <?php
-        $url = '/admin/user/'. urlencode($model->user['userId']) .'/subscription/save';
-        if(!empty($model->subscription) && !empty($model->subscription['subscriptionId'])){
-          $url = '/admin/user/'. urlencode($model->user['userId']) .'/subscription/'. urlencode($model->subscription['subscriptionId']) . '/save';
+        $url = '/admin/user/'. urlencode($this->user['userId']) .'/subscription/save';
+        if(!empty($this->subscription) && !empty($this->subscription['subscriptionId'])){
+          $url = '/admin/user/'. urlencode($this->user['userId']) .'/subscription/'. urlencode($this->subscription['subscriptionId']) . '/save';
         }
         ?>
 
@@ -44,8 +44,8 @@ use Destiny\Common\Utils\Date;
               <select name="subscriptionType" class="form-control">
                 <option value="">Select a subscription type</option>
                 <option value="">&nbsp;</option>
-                <?php foreach($model->subscriptions as $sub): ?>
-                  <option value="<?=Tpl::out($sub['id'])?>" <?=(strcasecmp($model->subscription['subscriptionType'], $sub['id']) === 0) ? 'selected="selected"':''?>><?=Tpl::out($sub['itemLabel'])?></option>
+                <?php foreach($this->subscriptions as $sub): ?>
+                  <option value="<?=Tpl::out($sub['id'])?>" <?=(strcasecmp($this->subscription['subscriptionType'], $sub['id']) === 0) ? 'selected="selected"':''?>><?=Tpl::out($sub['itemLabel'])?></option>
                 <?php endforeach; ?>
               </select>
             </div>
@@ -53,24 +53,24 @@ use Destiny\Common\Utils\Date;
             <div class="form-group">
               <label class="control-label" for="inputGifter">Gifter</label>
               <div class="controls">
-                <input type="text" class="form-control" name="gifter" id="inputGifter" value="<?=Tpl::out($model->subscription['gifter'])?>" placeholder="Gifter user id or username">
+                <input type="text" class="form-control" name="gifter" id="inputGifter" value="<?=Tpl::out($this->subscription['gifter'])?>" placeholder="Gifter user id or username">
               </div>
             </div>
 
             <div class="form-group">
               <label>Status:</label>
               <select name="status" class="form-control">
-                <option value="<?=SubscriptionStatus::ACTIVE?>" <?=(strcasecmp($model->subscription['status'], SubscriptionStatus::ACTIVE) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::ACTIVE?></option>
-                <option value="<?=SubscriptionStatus::CANCELLED?>" <?=(strcasecmp($model->subscription['status'], SubscriptionStatus::CANCELLED) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::CANCELLED?></option>
-                <option value="<?=SubscriptionStatus::EXPIRED?>" <?=(strcasecmp($model->subscription['status'], SubscriptionStatus::EXPIRED) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::EXPIRED?></option>
-                <option value="<?=SubscriptionStatus::PENDING?>" <?=(strcasecmp($model->subscription['status'], SubscriptionStatus::PENDING) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::PENDING?></option>
+                <option value="<?=SubscriptionStatus::ACTIVE?>" <?=(strcasecmp($this->subscription['status'], SubscriptionStatus::ACTIVE) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::ACTIVE?></option>
+                <option value="<?=SubscriptionStatus::CANCELLED?>" <?=(strcasecmp($this->subscription['status'], SubscriptionStatus::CANCELLED) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::CANCELLED?></option>
+                <option value="<?=SubscriptionStatus::EXPIRED?>" <?=(strcasecmp($this->subscription['status'], SubscriptionStatus::EXPIRED) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::EXPIRED?></option>
+                <option value="<?=SubscriptionStatus::PENDING?>" <?=(strcasecmp($this->subscription['status'], SubscriptionStatus::PENDING) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::PENDING?></option>
               </select>
             </div>
 
             <div class="form-group">
               <label class="control-label" for="inputStarttimestamp">Start</label>
               <div class="controls">
-                <input type="text" class="form-control" name="createdDate" id="inputStarttimestamp" value="<?=Tpl::out($model->subscription['createdDate'])?>" placeholder="Y-m-d H:i:s">
+                <input type="text" class="form-control" name="createdDate" id="inputStarttimestamp" value="<?=Tpl::out($this->subscription['createdDate'])?>" placeholder="Y-m-d H:i:s">
                 <span class="help-block">time specificed in UCT</span>
               </div>
             </div>
@@ -78,27 +78,27 @@ use Destiny\Common\Utils\Date;
             <div class="form-group">
               <label class="control-label" for="inputEndtimestamp">End</label>
               <div class="controls">
-                <input type="text" class="form-control" name="endDate" id="inputEndtimestamp" value="<?=Tpl::out($model->subscription['endDate'])?>" placeholder="Y-m-d H:i:s">
+                <input type="text" class="form-control" name="endDate" id="inputEndtimestamp" value="<?=Tpl::out($this->subscription['endDate'])?>" placeholder="Y-m-d H:i:s">
                 <span class="help-block">time specificed in UCT</span>
               </div>
             </div>
 
             <div class="form-group">
               <label>Recurring:</label>
-              <strong><?=($model->subscription['recurring'] == '1') ? 'Yes':'No'?></strong>
+              <strong><?=($this->subscription['recurring'] == '1') ? 'Yes':'No'?></strong>
             </div>
           </div>
 
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">Save</button>
-            <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" class="btn">Cancel</a>
+            <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" class="btn">Cancel</a>
           </div>
 
         </form>
       </div>
     </section>
 
-    <?php if(!empty($model->subscription['paymentProfileId'])): ?>
+    <?php if(!empty($this->subscription['paymentProfileId'])): ?>
     <section class="container">
       <h3>Payment Status</h3>
       <div class="content content-dark clearfix">
@@ -113,10 +113,10 @@ use Destiny\Common\Utils\Date;
           </thead>
           <tbody>
           <tr>
-            <td><?=Tpl::out($model->subscription['paymentStatus'])?></td>
-            <td><?=Tpl::out($model->subscription['paymentProfileId'])?></td>
-            <td><?=Tpl::moment(Date::getDateTime($model->subscription['billingStartDate']), Date::STRING_FORMAT_YEAR)?></td>
-            <td><?=Tpl::moment(Date::getDateTime($model->subscription['billingNextDate']), Date::STRING_FORMAT_YEAR)?></td>
+            <td><?=Tpl::out($this->subscription['paymentStatus'])?></td>
+            <td><?=Tpl::out($this->subscription['paymentProfileId'])?></td>
+            <td><?=Tpl::moment(Date::getDateTime($this->subscription['billingStartDate']), Date::STRING_FORMAT_YEAR)?></td>
+            <td><?=Tpl::moment(Date::getDateTime($this->subscription['billingNextDate']), Date::STRING_FORMAT_YEAR)?></td>
           </tr>
           </tbody>
         </table>
@@ -124,7 +124,7 @@ use Destiny\Common\Utils\Date;
     </section>
     <?php endif; ?>
 
-    <?php if(!empty($model->payments)): ?>
+    <?php if(!empty($this->payments)): ?>
     <section class="container">
       <h3>Payments</h3>
       <div class="content content-dark clearfix">
@@ -142,7 +142,7 @@ use Destiny\Common\Utils\Date;
             </tr>
           </thead>
           <tbody>
-          <?php foreach($model->payments as $payment): ?>
+          <?php foreach($this->payments as $payment): ?>
             <tr>
               <td><?=Tpl::out($payment['paymentId'])?></td>
               <td><?=Tpl::out($payment['amount'])?> <?=Tpl::out($payment['currency'])?></td>
@@ -165,7 +165,7 @@ use Destiny\Common\Utils\Date;
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
   
-  <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
+  <script src="<?=Config::cdnv()?>/web/js/admin.min.js"></script>
   
 </body>
 </html>

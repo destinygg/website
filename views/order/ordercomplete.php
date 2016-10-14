@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -39,7 +39,7 @@ use Destiny\Common\Config;
         <form action="/" method="GET">
         
           <div class="ds-block">
-            <p>Your order was successful, The order reference is <span class="label label-default">#<?=$model->subscription['subscriptionId']?></span>
+            <p>Your order was successful, The order reference is <span class="label label-default">#<?=$this->subscription['subscriptionId']?></span>
             <br />Please email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for any queries or issues.
             <br /><br />Thank you for your support!</p>
           </div>
@@ -47,15 +47,15 @@ use Destiny\Common\Config;
           <div class="subscription-tier ds-block">
 
             <div class="subscription" style="width: auto;">
-              <h3><?=$model->subscriptionType['tierLabel']?></h3>
-              <p><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</p>
+              <h3><?=$this->subscriptionType['tierLabel']?></h3>
+              <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
               
-              <?php if($model->subscription['recurring'] == 1): ?>
+              <?php if($this->subscription['recurring'] == 1): ?>
               <p>Subscription is automatically renewed</p>
               <?php endif; ?>
 
-              <?php if(!empty($model->giftee)): ?>
-              <p><span class="fa fa-gift"></span> You have gifted this to <span class="label label-danger"><?=Tpl::out($model->giftee['username'])?></span></p>
+              <?php if(!empty($this->giftee)): ?>
+              <p><span class="fa fa-gift"></span> You have gifted this to <span class="label label-danger"><?=Tpl::out($this->giftee['username'])?></span></p>
               <?php endif; ?>
 
             </div>

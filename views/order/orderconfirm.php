@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -25,11 +25,11 @@ use Destiny\Common\Config;
 
       <div class="content content-dark clearfix">
 
-        <?php if(!empty($model->warning)): ?>
+        <?php if(!empty($this->warning)): ?>
         <div style="margin: 15px 15px 0 15px;">
           <div class="alert alert-warning" style="margin: 0;">
             <strong><span class="fa fa-warning"></span> Warning!</strong>
-            <?=Tpl::out($model->warning->getMessage())?>
+            <?=Tpl::out($this->warning->getMessage())?>
           </div>
         </div>
         <?php endif; ?>
@@ -48,10 +48,10 @@ use Destiny\Common\Config;
         <div style="width: 100%;" class="clearfix stream">
           <form class="onceoff" action="/subscription/create" method="post">
 
-            <input type="hidden" name="subscription" value="<?= $model->subscriptionType['id'] ?>">
-            <input type="hidden" name="gift" value="<?= $model->gift ?>">
+            <input type="hidden" name="subscription" value="<?= $this->subscriptionType['id'] ?>">
+            <input type="hidden" name="gift" value="<?= $this->gift ?>">
 
-            <?php if(!empty($model->currentSubscription)): ?>
+            <?php if(!empty($this->currentSubscription)): ?>
 
             <div class="ds-block clearfix">
 
@@ -59,8 +59,8 @@ use Destiny\Common\Config;
                 <div class="subscription-tier clearfix">
                   <div class="subscription" style="width: auto;">
                     <div><span class="label label-warning">FROM</span></div>
-                    <h2><?=$model->currentSubscriptionType['tierLabel']?></h2>
-                    <div><span class="sub-amount">$<?=$model->currentSubscriptionType['amount']?></span> (<?=$model->currentSubscriptionType['billingFrequency']?> <?=strtolower($model->currentSubscriptionType['billingPeriod'])?>)</div>
+                    <h2><?=$this->currentSubscriptionType['tierLabel']?></h2>
+                    <div><span class="sub-amount">$<?=$this->currentSubscriptionType['amount']?></span> (<?=$this->currentSubscriptionType['billingFrequency']?> <?=strtolower($this->currentSubscriptionType['billingPeriod'])?>)</div>
                   </div>
                 </div>
               </div>
@@ -69,8 +69,8 @@ use Destiny\Common\Config;
                 <div class="subscription-tier clearfix">
                   <div class="subscription" style="width: auto;">
                     <div><span class="label label-success">TO</span></div>
-                    <h2><?=$model->subscriptionType['tierLabel']?></h2>
-                    <div><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</div>
+                    <h2><?=$this->subscriptionType['tierLabel']?></h2>
+                    <div><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</div>
                   </div>
                 </div>
               </div>
@@ -81,13 +81,13 @@ use Destiny\Common\Config;
 
             <div class="subscription-tier ds-block">
               <div class="subscription">
-                <h2><?=$model->subscriptionType['tierLabel']?></h2>
+                <h2><?=$this->subscriptionType['tierLabel']?></h2>
 
-                <?php if(!empty($model->gift)): ?>
-                <p><span class="fa fa-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($model->gift)?></span></p>
+                <?php if(!empty($this->gift)): ?>
+                <p><span class="fa fa-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($this->gift)?></span></p>
                 <?php endif; ?>
 
-                <p><span class="sub-amount">$<?=$model->subscriptionType['amount']?></span> (<?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>)</p>
+                <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
               </div>
             </div>
 
@@ -102,7 +102,7 @@ use Destiny\Common\Config;
               <div class="checkbox">
                 <label for="renew">
                   <div><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></div>
-                  <small>Automatically bill every <?=$model->subscriptionType['billingFrequency']?> <?=strtolower($model->subscriptionType['billingPeriod'])?>(s)</small>
+                  <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
                 </label>
               </div>
             </div>

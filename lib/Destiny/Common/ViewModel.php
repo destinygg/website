@@ -8,12 +8,30 @@ class ViewModel extends \stdClass {
      */
     protected $vars = array ();
 
+    /**
+     * ViewModel constructor.
+     * @param array|null $params
+     */
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
             foreach ( $params as $name => $value ) {
                 $this->vars [$name] = $value;
             }
         }
+    }
+
+    /**
+     * @param $filename
+     * @return string
+     */
+    public function getContent($filename){
+        $filename = Config::$a['tpl']['path'] . $filename;
+        ob_start ();
+        /** @noinspection PhpIncludeInspection */
+        require $filename;
+        $contents = ob_get_contents ();
+        ob_end_clean ();
+        return $contents;
     }
 
     /**

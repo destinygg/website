@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -40,17 +40,17 @@ use Destiny\Common\Config;
 
           <p>An error has occurred during the subscription process.
 
-          <?php if(!empty($model->subscription)): ?>
-          <br />Your reference is #<?=Tpl::out($model->subscription['subscriptionId'])?>
+          <?php if(!empty($this->subscription)): ?>
+          <br />Your reference is #<?=Tpl::out($this->subscription['subscriptionId'])?>
           <?php endif; ?>
 
           <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries.
           </p>
 
-          <?php if(!empty($model->error)): ?>
+          <?php if(!empty($this->error)): ?>
           <div class="alert alert-danger">
             <strong>Error!</strong>
-            <?=Tpl::out($model->error->getMessage())?>
+            <?=Tpl::out($this->error->getMessage())?>
           </div>
           <?php endif; ?>
 

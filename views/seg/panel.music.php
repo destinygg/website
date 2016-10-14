@@ -12,8 +12,8 @@ use Destiny\Common\Config;
         <a href="/twitter">twitter.com</a>
       </h3>
       <div class="entries">
-      <?php if(!empty($model->tweets)): ?>
-      <?php foreach($model->tweets as $tweetIndex=>$tweet): ?>
+      <?php if(!empty($this->tweets)): ?>
+      <?php foreach($this->tweets as $tweetIndex=>$tweet): ?>
       <?php if($tweetIndex == 3){break;}; ?>
         <div class="media">
           <div class="media-body">
@@ -37,8 +37,8 @@ use Destiny\Common\Config;
         <a href="/lastfm">last.fm</a>
       </h3>
       <div class="entries">
-      <?php if(!empty($model->music) && isset($model->music['recenttracks']['track']) && !empty($model->music['recenttracks']['track'])): ?>
-      <?php foreach($model->music['recenttracks']['track'] as $trackIndex=>$track): ?>
+      <?php if(!empty($this->music) && isset($this->music['recenttracks']['track']) && !empty($this->music['recenttracks']['track'])): ?>
+      <?php foreach($this->music['recenttracks']['track'] as $trackIndex=>$track): ?>
       <?php if($trackIndex == 3){break;}; ?>
         <div class="media">
           <a class="pull-left cover-image" href="<?=$track['url']?>"><img class="media-object" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=$track['image'][1]['#text']?>"></a>

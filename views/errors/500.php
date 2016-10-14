@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <meta name="description" content="<?=Config::$a['meta']['description']?>">
 <meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
@@ -23,7 +23,7 @@ use Destiny\Common\Config;
             <a title="Rick and Morty" href="http://www.adultswim.com/videos/rick-and-morty/" target="_blank" id="mortyface"></a>
             <h1>Aw geez, Rick!</h1>
             <p>An error has occured.</p>
-            <p><code><?= $model->error->getMessage(); ?></code></p>
+            <p><code><?= $this->error->getMessage(); ?></code></p>
         </section>
     </div>
     <?php include 'seg/foot.php' ?>

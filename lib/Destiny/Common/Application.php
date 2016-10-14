@@ -214,25 +214,14 @@ class Application extends Service {
     }
 
     /**
-     * Include a template and return a template file
+     * Include a template and return the contents
      *
      * @param string $filename
      * @param ViewModel $model
      * @return string
-     * @throws Exception
      */
     protected function template($filename, /** @noinspection PhpUnusedParameterInspection */ ViewModel $model) {
-        $filename = Config::$a['tpl']['path'] . $filename;
-        if (! is_file ( $filename )) {
-            throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $filename, PATHINFO_FILENAME ) ) );
-        }
-        $this->logger->debug ( 'Template: ' . $filename );
-        ob_start ();
-        /** @noinspection PhpIncludeInspection */
-        include $filename;
-        $contents = ob_get_contents ();
-        ob_end_clean ();
-        return $contents;
+        return $model->getContent($filename);
     }
 
     public function getConnection() {

@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Tpl;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/opengraph.php' ?>
 <?php include 'seg/commontop.php' ?>
@@ -23,7 +23,7 @@ use Destiny\Common\Utils\Tpl;
       <h1 class="title">Emoticons</h1>
       <div class="content content-dark">
         <div class="emoticons clearfix">
-          <?php foreach( $model->emoticons as $trigger ): ?>
+          <?php foreach( $this->emoticons as $trigger ): ?>
           <div class="emote">
             <div>
               <div class="chat-emote chat-emote-<?=$trigger?>" title="<?=$trigger?>"></div>
@@ -39,7 +39,7 @@ use Destiny\Common\Utils\Tpl;
       <h1 class="title">Twitch Emotes (usable if you are a Twitch sub)</h1>
       <div class="content content-dark">
         <div class="emoticons clearfix">
-          <?php foreach( $model->twitchemotes as $trigger ): ?>
+          <?php foreach( $this->twitchemotes as $trigger ): ?>
           <div class="emote">
             <div>
               <div class="chat-emote chat-emote-<?=$trigger?>" title="<?=$trigger?>"></div>

@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 </head>
@@ -53,7 +53,7 @@ use Destiny\Common\Config;
     <?php endif; ?>
     <?php } ?>
 
-    <?php if(empty($model->subscribersT4) && empty($model->subscribersT3) && empty($model->subscribersT2) && empty($model->subscribersT1)): ?>
+    <?php if(empty($this->subscribersT4) && empty($this->subscribersT3) && empty($this->subscribersT2) && empty($this->subscribersT1)): ?>
     <section class="container">
       <h3>Subscribers</h3>
       <div class="content content-dark clearfix">
@@ -64,17 +64,17 @@ use Destiny\Common\Config;
     </section>
     <?php endif; ?>
 
-    <?php buildSubscribersTier($model->subscribersT4, 4) ?>
-    <?php buildSubscribersTier($model->subscribersT3, 3) ?>
-    <?php buildSubscribersTier($model->subscribersT2, 2) ?>
-    <?php buildSubscribersTier($model->subscribersT1, 1) ?>
+    <?php buildSubscribersTier($this->subscribersT4, 4) ?>
+    <?php buildSubscribersTier($this->subscribersT3, 3) ?>
+    <?php buildSubscribersTier($this->subscribersT2, 2) ?>
+    <?php buildSubscribersTier($this->subscribersT1, 1) ?>
 
   </div>
 
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
   
-  <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
+  <script src="<?=Config::cdnv()?>/web/js/admin.min.js"></script>
   
 </body>
 </html>

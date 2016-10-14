@@ -11,8 +11,8 @@ use Destiny\Common\Config;
 				<span>Videos</span> <a href="/youtube" class="youtube-title">youtube.com</a>
 			</h3>
 			<ul class="thumbnails">
-			<?php if(isset($model->playlist['items']) && !empty($model->playlist['items'])): ?>
-			<?php foreach($model->playlist['items'] as $vid ): ?>
+			<?php if(isset($this->playlist['items']) && !empty($this->playlist['items'])): ?>
+			<?php foreach($this->playlist['items'] as $vid ): ?>
 				<?php $title = Tpl::out($vid['snippet']['title'])?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
@@ -31,8 +31,8 @@ use Destiny\Common\Config;
 				<span>Broadcasts</span> <a href="/twitch" class="twitch-title">twitch.tv</a>
 			</h3>
 			<ul class="thumbnails">
-			<?php if(isset($model->broadcasts) && !empty($model->broadcasts['videos'])):?>
-			<?php foreach( $model->broadcasts['videos'] as $broadcast ):?>
+			<?php if(isset($this->broadcasts) && !empty($this->broadcasts['videos'])):?>
+			<?php foreach( $this->broadcasts['videos'] as $broadcast ):?>
 				<?php $time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$time?>">

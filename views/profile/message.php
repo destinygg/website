@@ -7,7 +7,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -22,12 +22,12 @@ use Destiny\Common\Config;
         
         <section class="container message-list active">
 
-            <h4 class="message-list-title">Messages between you and <?= Tpl::out($model->targetuser['username']) ?></h4>
+            <h4 class="message-list-title">Messages between you and <?= Tpl::out($this->targetuser['username']) ?></h4>
 
-            <?php for($i=count($model->messages)-1; $i>=0; $i--): ?>
+            <?php for($i=count($this->messages)-1; $i>=0; $i--): ?>
             <?php
-                $msg = $model->messages[$i];
-                $isme = (stristr($msg['from'], $model->username) !== false);
+                $msg = $this->messages[$i];
+                $isme = (stristr($msg['from'], $this->username) !== false);
                 $styles = array();
                 $styles[] = 'message-active';
                 $styles[] = ($isme) ? 'message-me' : 'message-notme';
@@ -62,7 +62,7 @@ use Destiny\Common\Config;
             <div class="message-reply content content-dark clearfix" style="">
                 <div class="clearfix">
                     <span class="pull-left">
-                        <a accesskey="r" id="reply-toggle" href="#reply" data-replyto="<?= Tpl::out($model->targetuser['username']) ?>" data-toggle="modal" data-target="#compose"><i class="fa fa-reply-all"></i> Reply</a>
+                        <a accesskey="r" id="reply-toggle" href="#" data-replyto="<?= Tpl::out($this->targetuser['username']) ?>" data-toggle="modal" data-target="#compose"><i class="fa fa-reply-all"></i> Reply</a>
                         to this message or go to <a accesskey="m" href="/profile/messages">inbox</a>.
                     </span>
                 </div>

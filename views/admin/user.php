@@ -9,7 +9,7 @@ use Destiny\Commerce\SubscriptionStatus;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 </head>
@@ -18,31 +18,31 @@ use Destiny\Commerce\SubscriptionStatus;
     <?php include 'seg/top.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
-    <?php if(!empty($model->success)): ?>
+    <?php if(!empty($this->success)): ?>
     <section class="container">
       <div class="alert alert-info" style="margin-bottom:0;">
         <strong>Success!</strong>
-        <?=Tpl::out($model->success)?>
+        <?=Tpl::out($this->success)?>
       </div>
     </section>
     <?php endif; ?>
 
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#details-content">
-        <div class="pull-right"><button class="btn btn-link btn-show-all" style="outline: none;">Show all</button></div>
+        <span class="pull-right"><button class="btn btn-link btn-show-all" style="outline: none;">Show all</button></span>
         Details
-        <small>(<?=Tpl::out($model->user['username'])?>)</small>
+        <small>(<?=Tpl::out($this->user['username'])?>)</small>
       </h3>
       <div id="details-content" class="content content-dark clearfix collapse">
 
-        <form action="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit" method="post">
-          <input type="hidden" name="id" value="<?=Tpl::out($model->user['userId'])?>" />
+        <form action="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" method="post">
+          <input type="hidden" name="id" value="<?=Tpl::out($this->user['userId'])?>" />
 
           <div class="ds-block">
             <div class="form-group">
               <label class="control-label" for="inputUsername">Username / Nickname</label>
               <div class="controls">
-                <input type="text" class="form-control" name="username" id="inputUsername" value="<?=Tpl::out($model->user['username'])?>" placeholder="Username">
+                <input type="text" class="form-control" name="username" id="inputUsername" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username">
                 <span class="help-block">Normally the requirements are that the nick should not begin with a letter that an emote begins with, plus it can contain only A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters. Admins do not have such restrictions.</span>
               </div>
             </div>
@@ -50,21 +50,21 @@ use Destiny\Commerce\SubscriptionStatus;
             <div class="form-group">
               <label class="control-label" for="inputEmail">Email</label>
               <div class="controls">
-                <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($model->user['email'])?>" placeholder="Email">
+                <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->user['email'])?>" placeholder="Email">
               </div>
             </div>
 
             <div class="form-group">
               <label class="control-label" for="inputEmail">Minecraft name</label>
               <div class="controls">
-                <input type="text" class="form-control" name="minecraftname" id="inputMinecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name">
+                <input type="text" class="form-control" name="minecraftname" id="inputMinecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name">
               </div>
             </div>
 
             <div class="form-group">
               <label class="control-label" for="inputEmail">Minecraft UUID</label>
               <div class="controls">
-                <input type="text" class="form-control" name="minecraftuuid" id="inputMinecraftuuid" value="<?=Tpl::out($model->user['minecraftuuid'])?>" placeholder="Minecraft UUID">
+                <input type="text" class="form-control" name="minecraftuuid" id="inputMinecraftuuid" value="<?=Tpl::out($this->user['minecraftuuid'])?>" placeholder="Minecraft UUID">
               </div>
             </div>
 
@@ -74,13 +74,13 @@ use Destiny\Commerce\SubscriptionStatus;
                 <option value="">Select your country</option>
                 <?$countries = Country::getCountries();?>
                 <option value="">&nbsp;</option>
-                <option value="US" <?php if($model->user['country'] == 'US'): ?>
+                <option value="US" <?php if($this->user['country'] == 'US'): ?>
                   selected="selected" <?php endif;?>>United States</option>
-                <option value="GB" <?php if($model->user['country'] == 'GB'): ?>
+                <option value="GB" <?php if($this->user['country'] == 'GB'): ?>
                   selected="selected" <?php endif;?>>United Kingdom</option>
                 <option value="">&nbsp;</option>
                 <?php foreach($countries as $country): ?>
-                <option value="<?=$country['alpha-2']?>" <?php if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>
+                <option value="<?=$country['alpha-2']?>" <?php if($this->user['country'] != 'US' && $this->user['country'] != 'GB' && $this->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>
                 <?php endforeach; ?>
               </select>
             </div>
@@ -88,25 +88,25 @@ use Destiny\Commerce\SubscriptionStatus;
             <div class="form-group">
               <label>Twitch Subscriber</label>
               <select class="form-control" name="istwitchsubscriber">
-                <option value="1"<?php if($model->user['istwitchsubscriber'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
-                <option value="0"<?php if($model->user['istwitchsubscriber'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                <option value="1"<?php if($this->user['istwitchsubscriber'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                <option value="0"<?php if($this->user['istwitchsubscriber'] == 0):?> selected="selected"<?php endif;?>>No</option>
               </select>
             </div>
 
             <div class="form-group">
               <label>Accept Gifts</label>
               <select class="form-control" name="allowGifting">
-                <option value="1"<?php if($model->user['allowGifting'] == 1):?> selected="selected"<?php endif;?>>Yes, accept gifts</option>
-                <option value="0"<?php if($model->user['allowGifting'] == 0):?> selected="selected"<?php endif;?>>No, do not accept gifts</option>
+                <option value="1"<?php if($this->user['allowGifting'] == 1):?> selected="selected"<?php endif;?>>Yes, accept gifts</option>
+                <option value="0"<?php if($this->user['allowGifting'] == 0):?> selected="selected"<?php endif;?>>No, do not accept gifts</option>
               </select>
             </div>
 
             <div class="form-group">
               <label>Features</label>
-              <?php foreach($model->features as $featureName=>$f): ?>
+              <?php foreach($this->features as $featureName=>$f): ?>
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" name="features[]" value="<?=$f['featureName']?>" <?=(in_array($featureName, $model->user['features']))?'checked="checked"':''?>>
+                  <input type="checkbox" name="features[]" value="<?=$f['featureName']?>" <?=(in_array($featureName, $this->user['features']))?'checked="checked"':''?>>
                   <?=$f['featureLabel']?>
                 </label>
               </div>
@@ -117,13 +117,13 @@ use Destiny\Commerce\SubscriptionStatus;
               <label>Website Roles <small>(Not editable)</small></label>
               <div class="checkbox">
                 <label>
-                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::ADMIN?>" <?=(in_array(UserRole::ADMIN, $model->user['roles']))?'checked="checked"':''?>>
+                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::ADMIN?>" <?=(in_array(UserRole::ADMIN, $this->user['roles']))?'checked="checked"':''?>>
                   Administrator
                 </label>
               </div>
               <div class="checkbox">
                 <label>
-                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::FINANCE?>" <?=(in_array(UserRole::FINANCE, $model->user['roles']))?'checked="checked"':''?>>
+                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::FINANCE?>" <?=(in_array(UserRole::FINANCE, $this->user['roles']))?'checked="checked"':''?>>
                   Finance
                 </label>
               </div>
@@ -143,20 +143,20 @@ use Destiny\Commerce\SubscriptionStatus;
       <h3 class="collapsed" data-toggle="collapse" data-target="#address-content">Address</h3>
       <div id="address-content" class="content content-dark clearfix collapse">
 
-        <?php if(!empty($model->address)): ?>
+        <?php if(!empty($this->address)): ?>
         <div class="vcard ds-block">
-          <div class="fn"><?=Tpl::out($model->address['fullName'])?></div>
+          <div class="fn"><?=Tpl::out($this->address['fullName'])?></div>
           <br />
           <div class="adr">
             <div class="street-address">
-              <?=Tpl::out($model->address['line1'])?>, <?=Tpl::out($model->address['line2'])?>
+              <?=Tpl::out($this->address['line1'])?>, <?=Tpl::out($this->address['line2'])?>
             </div>
             <div>
-              <span class="city"><?=Tpl::out($model->address['city'])?></span>,
-              <span class="region"><?=Tpl::out($model->address['region'])?></span>,
-              <span class="postal-code"><?=Tpl::out($model->address['zip'])?></span>
+              <span class="city"><?=Tpl::out($this->address['city'])?></span>,
+              <span class="region"><?=Tpl::out($this->address['region'])?></span>,
+              <span class="postal-code"><?=Tpl::out($this->address['zip'])?></span>
               <?php
-              $country = Country::getCountryByCode ( $model->address['country'] );
+              $country = Country::getCountryByCode ( $this->address['country'] );
               if(!empty($country)):
               ?>
               <br />
@@ -177,9 +177,9 @@ use Destiny\Commerce\SubscriptionStatus;
       <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscriptions</h3>
       <div id="subscription-content" class="content content-dark clearfix collapse">
         <div class="ds-block">
-          <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/add" class="btn btn-primary">New subscription</a>
+          <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/subscription/add" class="btn btn-primary">New subscription</a>
         </div>
-        <?php if(!empty($model->subscriptions)): ?>
+        <?php if(!empty($this->subscriptions)): ?>
         <table class="grid">
           <thead>
             <tr>
@@ -191,10 +191,10 @@ use Destiny\Commerce\SubscriptionStatus;
             </tr>
           </thead>
           <tbody>
-          <?php foreach($model->subscriptions as $subinfo): ?>
+          <?php foreach($this->subscriptions as $subinfo): ?>
             <tr>
               <td>
-                <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">Tier <?=Tpl::out($subinfo['subscriptionTier'])?></a>
+                <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">Tier <?=Tpl::out($subinfo['subscriptionTier'])?></a>
                 <?php if($subinfo['recurring'] == '1'): ?>
                 <span class="subtle">(Recurring)</span>
                 <?php endif; ?>
@@ -208,7 +208,7 @@ use Destiny\Commerce\SubscriptionStatus;
               </td>
               <td>
                 <?php if(!empty($subinfo['gifter'])): ?>
-                <a href="/admin/user/<?=$subinfo['gifter']?>/edit"><?=Tpl::out($model->gifters[$subinfo['gifter']]['username'])?></a>
+                <a href="/admin/user/<?=$subinfo['gifter']?>/edit"><?=Tpl::out($this->gifters[$subinfo['gifter']]['username'])?></a>
                 <?php endif; ?>
               </td>
               <td><?=Tpl::moment(Date::getDateTime($subinfo['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
@@ -228,7 +228,7 @@ use Destiny\Commerce\SubscriptionStatus;
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#gift-content">Gifts</h3>
       <div id="gift-content" class="content content-dark clearfix collapse">
-        <?php if(!empty($model->gifts)): ?>
+        <?php if(!empty($this->gifts)): ?>
           <table class="grid">
             <thead>
             <tr>
@@ -240,10 +240,10 @@ use Destiny\Commerce\SubscriptionStatus;
             </tr>
             </thead>
             <tbody>
-            <?php foreach($model->gifts as $subinfo): ?>
+            <?php foreach($this->gifts as $subinfo): ?>
               <tr>
                 <td>
-                  <a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">TIER <?=Tpl::out($subinfo['subscriptionTier'])?></a>
+                  <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">TIER <?=Tpl::out($subinfo['subscriptionTier'])?></a>
                   <?php if($subinfo['recurring'] == '1'): ?>
                     <span class="subtle">(Recurring)</span>
                   <?php endif; ?>
@@ -257,7 +257,7 @@ use Destiny\Commerce\SubscriptionStatus;
                 </td>
                 <td>
                   <?php if(!empty($subinfo['userId'])): ?>
-                    <a href="/admin/user/<?=$subinfo['userId']?>/edit"><?=Tpl::out($model->recipients[$subinfo['userId']]['username'])?></a>
+                    <a href="/admin/user/<?=$subinfo['userId']?>/edit"><?=Tpl::out($this->recipients[$subinfo['userId']]['username'])?></a>
                   <?php endif; ?>
                 </td>
                 <td><?=Tpl::moment(Date::getDateTime($subinfo['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
@@ -285,7 +285,7 @@ use Destiny\Commerce\SubscriptionStatus;
           other user who has at least one in common.<br/>
           This is <b>not</b> a sure thing.
         </div>
-        <?php if(!empty($model->smurfs)): ?>
+        <?php if(!empty($this->smurfs)): ?>
         <table class="grid">
           <thead>
             <tr>
@@ -295,7 +295,7 @@ use Destiny\Commerce\SubscriptionStatus;
             </tr>
           </thead>
           <tbody>
-          <?php foreach($model->smurfs as $user): ?>
+          <?php foreach($this->smurfs as $user): ?>
             <tr>
               <td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a></td>
               <td><?=Tpl::out($user['email'])?></td>
@@ -318,7 +318,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <div class="ds-block">
           <p>The last seen 3 IP addresses of the user (as seen by the chat)</p>
         </div>
-        <?php if(!empty($model->user['ips'])): ?>
+        <?php if(!empty($this->user['ips'])): ?>
         <table class="grid">
           <thead>
             <tr>
@@ -326,7 +326,7 @@ use Destiny\Commerce\SubscriptionStatus;
             </tr>
           </thead>
           <tbody>
-          <?php foreach($model->user['ips'] as $ip): ?>
+          <?php foreach($this->user['ips'] as $ip): ?>
             <tr>
               <td><a target="_blank" href="http://www.iplocation.net/?query=<?=rawurlencode($ip)?>"><?=Tpl::out($ip)?></a></td>
             </tr>
@@ -345,47 +345,47 @@ use Destiny\Commerce\SubscriptionStatus;
       <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Ban / Mute</h3>
       <div id="ban-content" class="content content-dark clearfix collapse">
 
-        <?php if(empty($model->ban)): ?>
+        <?php if(empty($this->ban)): ?>
 
         <div class="ds-block">
           <p>No active bans found</p>
         </div>
 
         <div class="form-actions">
-          <a href="/admin/user/<?=$model->user['userId']?>/ban" class="btn btn-danger">Ban user</a>
+          <a href="/admin/user/<?=$this->user['userId']?>/ban" class="btn btn-danger">Ban user</a>
         </div>
 
         <?php else: ?>
         <div class="ds-block">
           <p>
-            <?php if(!empty($model->ban['ipaddress'])): ?>
-            Ip: <a target="_blank" href="http://freegeoip.net/json/<?=$model->ban['ipaddress']?>"><?=$model->ban['ipaddress']?></a>
+            <?php if(!empty($this->ban['ipaddress'])): ?>
+            Ip: <a target="_blank" href="http://freegeoip.net/json/<?=$this->ban['ipaddress']?>"><?=$this->ban['ipaddress']?></a>
             <?php else: ?>
             Ip: Not set
             <?php endif; ?>
           </p>
           <p>
-            <?=Tpl::moment(Date::getDateTime($model->ban['starttimestamp']), Date::STRING_FORMAT)?>
-            <?php if(!empty($model->ban['endtimestamp'])): ?>
-            - <?=Tpl::moment(Date::getDateTime($model->ban['endtimestamp']), Date::STRING_FORMAT)?>
+            <?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT)?>
+            <?php if(!empty($this->ban['endtimestamp'])): ?>
+            - <?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?>
             <?php endif; ?>
           </p>
           <blockquote>
-            <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($model->ban['reason'])?></p>
-            <small class="subtle"><?=Tpl::out((!empty($model->ban['username'])) ? $model->ban['username']:'System')?></small>
+            <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($this->ban['reason'])?></p>
+            <small class="subtle"><?=Tpl::out((!empty($this->ban['username'])) ? $this->ban['username']:'System')?></small>
           </blockquote>
         </div>
 
         <div class="form-actions">
-          <a href="/admin/user/<?=$model->user['userId']?>/ban/<?=$model->ban['id']?>/edit" class="btn btn-primary">Edit ban</a>
-          <a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$model->user['userId']?>/ban/remove" class="btn btn-danger">Remove ban</a>
+          <a href="/admin/user/<?=$this->user['userId']?>/ban/<?=$this->ban['id']?>/edit" class="btn btn-primary">Edit ban</a>
+          <a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$this->user['userId']?>/ban/remove" class="btn btn-danger">Remove ban</a>
         </div>
 
         <?php endif; ?>
       </div>
     </section>
 
-    <?php if(!empty($model->authSessions)): ?>
+    <?php if(!empty($this->authSessions)): ?>
     <form id="admin-form-auth-sessions" method="post">
     <section class="container collapsible">
       <h3 class="collapsed" data-toggle="collapse" data-target="#authentication-content">Authentication</h3>
@@ -401,9 +401,9 @@ use Destiny\Commerce\SubscriptionStatus;
             </tr>
           </thead>
           <tbody>
-          <?php foreach($model->authSessions as $auth): ?>
+          <?php foreach($this->authSessions as $auth): ?>
             <tr>
-              <td><a href="/admin/user/<?=$model->user['userId']?>/auth/<?= $auth['authProvider'] ?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a></td>
+              <td><a href="/admin/user/<?=$this->user['userId']?>/auth/<?= $auth['authProvider'] ?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a></td>
               <td><?= $auth['authProvider'] ?></td>
               <td><?= (!empty($auth['authDetail'])) ? Tpl::out($auth['authDetail']):Tpl::out($auth['authId']) ?></td>
               <td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
@@ -422,7 +422,7 @@ use Destiny\Commerce\SubscriptionStatus;
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
   
-  <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
+  <script src="<?=Config::cdnv()?>/web/js/admin.min.js"></script>
   <script>
   $('.btn-post').on('click', function(){
     var a = $(this), form = $(this).closest('form');

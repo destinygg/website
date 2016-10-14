@@ -15,29 +15,29 @@ use Destiny\Common\Utils\Date;
   
   <section id="ban-info">
   
-    <h1 class="bantype-<?=$model->banType?>">
-      <?php if(empty($model->ban)): ?>
+    <h1 class="bantype-<?=$this->banType?>">
+      <?php if(empty($this->ban)): ?>
       No active ban found
       <?php else: ?>
       You have been banned!
       <?php endif; ?>
-      <?php if($model->banType != 'none'): ?>
-      <br /><small><?=ucwords($model->banType)?> ban</small>
+      <?php if($this->banType != 'none'): ?>
+      <br /><small><?=ucwords($this->banType)?> ban</small>
       <?php endif; ?>
     </h1>
     
-    <?php if(!empty($model->ban)): ?>
+    <?php if(!empty($this->ban)): ?>
     <dl>
       <dt>Banned user</dt>
-      <dd><?=Tpl::out($model->user['username'])?></dd>
+      <dd><?=Tpl::out($this->user['username'])?></dd>
       <dt>Time of ban</dt>
-      <dd><?=Tpl::moment(Date::getDateTime($model->ban['starttimestamp']), Date::STRING_FORMAT)?></dd>
-      <?php if($model->ban['endtimestamp']): ?>
+      <dd><?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT)?></dd>
+      <?php if($this->ban['endtimestamp']): ?>
       <dt>Ending on</dt>
-      <dd><?=Tpl::moment(Date::getDateTime($model->ban['endtimestamp']), Date::STRING_FORMAT)?></dd>
+      <dd><?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?></dd>
       <?php endif; ?>
       <dt>Ban reason</dt>
-      <dd><?=Tpl::out($model->ban['reason'])?></dd>
+      <dd><?=Tpl::out($this->ban['reason'])?></dd>
     </dl>
     
     <?php endif;?>

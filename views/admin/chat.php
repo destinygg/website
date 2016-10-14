@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Date;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 </head>
@@ -15,20 +15,20 @@ use Destiny\Common\Utils\Date;
       <?php include 'seg/top.php' ?>
       <?php include 'seg/admin.nav.php' ?>
                     
-      <?php if(!empty($model->error)): ?>
+      <?php if(!empty($this->error)): ?>
       <section class="container">
         <div class="alert alert-danger" style="margin:0;">
           <strong>Error!</strong>
-          <?=Tpl::out($model->error)?>
+          <?=Tpl::out($this->error)?>
         </div>
       </section>
       <?php endif; ?>
         
-      <?php if(!empty($model->success)): ?>
+      <?php if(!empty($this->success)): ?>
       <section class="container">
         <div class="alert alert-info" style="margin-bottom:0;">
           <strong>Success!</strong>
-          <?=Tpl::out($model->success)?>
+          <?=Tpl::out($this->success)?>
         </div>
       </section>
       <?php endif; ?>
@@ -59,7 +59,7 @@ use Destiny\Common\Utils\Date;
                     <label>IP Address:
                     <br /><small>Search for users by an IP address</small>
                     </label>
-                    <input name="ip" type="text" class="form-control" value="<?=Tpl::out($model->searchIp)?>" placeholder="192.168.0.1" />
+                    <input name="ip" type="text" class="form-control" value="<?=Tpl::out($this->searchIp)?>" placeholder="192.168.0.1" />
                   </div>
                   <button type="submit" class="btn btn-primary">Search</button>
                 </div>
@@ -67,10 +67,10 @@ use Destiny\Common\Utils\Date;
             </div>
         </section>
             
-        <?php if(!empty($model->searchIp)): ?>
+        <?php if(!empty($this->searchIp)): ?>
         <section class="container">
             <div class="content content-dark clearfix">
-            <?php if(!empty($model->usersByIp)): ?>
+            <?php if(!empty($this->usersByIp)): ?>
             <table class="grid">
                 <thead>
                     <tr>
@@ -80,7 +80,7 @@ use Destiny\Common\Utils\Date;
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach($model->usersByIp as $user): ?>
+                <?php foreach($this->usersByIp as $user): ?>
                     <tr>
                         <td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a></td>
                         <td><?=Tpl::out($user['email'])?></td>
@@ -91,7 +91,7 @@ use Destiny\Common\Utils\Date;
             </table>
             <?php else: ?>
             <div class="ds-block">
-                <p>No users with the IP "<?=Tpl::out($model->searchIp)?>"</p>
+                <p>No users with the IP "<?=Tpl::out($this->searchIp)?>"</p>
             </div>
             <?php endif; ?>
             </div>
@@ -101,7 +101,7 @@ use Destiny\Common\Utils\Date;
 
     <?php include 'seg/foot.php' ?>
 	<?php include 'seg/commonbottom.php' ?>
-	<script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
+	<script src="<?=Config::cdnv()?>/web/js/admin.min.js"></script>
 	
 </body>
 </html>

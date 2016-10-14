@@ -32,8 +32,8 @@ use Destiny\Common\Session;
                     <span class="visible-lg-inline">
                         Profile <span class="caret"></span>
                     </span>
-                    <?php if($model->unreadMessageCount > 0): ?>
-                    <span class="pm-count flash" title="You have unread messages!"><?= $model->unreadMessageCount; ?></span>
+                    <?php if($this->unreadMessageCount > 0): ?>
+                    <span class="pm-count flash" title="You have unread messages!"><?= $this->unreadMessageCount; ?></span>
                     <?php endif; ?>
                 </a>
                 <ul class="dropdown-menu" role="menu">

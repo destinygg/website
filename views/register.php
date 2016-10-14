@@ -7,7 +7,7 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($model->title)?></title>
+<title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
 <?php include 'seg/google.tracker.php' ?>
@@ -22,13 +22,13 @@ use Destiny\Common\Config;
     
       <h1 class="title">
         <span>Confirm</span> 
-        <small>your <i class="icon-<?=Tpl::out($model->authProvider)?>"></i> <?=Tpl::out(strtolower($model->authProvider))?> details</small>
+        <small>your <i class="icon-<?=Tpl::out($this->authProvider)?>"></i> <?=Tpl::out(strtolower($this->authProvider))?> details</small>
       </h1>
       
-      <?php if(!empty($model->error)): ?>
+      <?php if(!empty($this->error)): ?>
       <div class="alert alert-danger">
         <strong>Error!</strong>
-        <?=Tpl::out($model->error->getMessage())?>
+        <?=Tpl::out($this->error->getMessage())?>
       </div>
       <?php endif; ?>
       
@@ -41,21 +41,21 @@ use Destiny\Common\Config;
         </div>
 
         <form action="/register" method="post">
-          <input type="hidden" name="code" value="<?=Tpl::out($model->code)?>" />
-          <input type="hidden" name="follow" value="<?=Tpl::out($model->follow)?>" />
+          <input type="hidden" name="code" value="<?=Tpl::out($this->code)?>" />
+          <input type="hidden" name="follow" value="<?=Tpl::out($this->follow)?>" />
 
           <div class="ds-block">
             <div class="form-group">
               <label class="control-label" for="inputUsername">Username / Nickname</label>
               <div class="controls">
-                <input type="text" class="form-control" name="username" id="inputUsername" value="<?=Tpl::out($model->username)?>" placeholder="Username">
+                <input type="text" class="form-control" name="username" id="inputUsername" value="<?=Tpl::out($this->username)?>" placeholder="Username">
                 <span class="help-block">A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters</span>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label" for="inputEmail">Email</label>
               <div class="controls">
-                <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($model->email)?>" placeholder="Email">
+                <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->email)?>" placeholder="Email">
                 <span class="help-block">Be it valid or not, it will be safe with us.</span>
               </div>
             </div>
@@ -65,20 +65,20 @@ use Destiny\Common\Config;
                 <option value="">Select your country</option>
                 <?$countries = Country::getCountries();?>
                 <option value="">&nbsp;</option>
-                <option value="US" <?php if($model->user['country'] == 'US'): ?>
+                <option value="US" <?php if($this->user['country'] == 'US'): ?>
                   selected="selected" <?php endif;?>>United States</option>
-                <option value="GB" <?php if($model->user['country'] == 'GB'): ?>
+                <option value="GB" <?php if($this->user['country'] == 'GB'): ?>
                   selected="selected" <?php endif; ?>>United Kingdom</option>
                 <option value="">&nbsp;</option>
                 <?php foreach($countries as $country): ?>
-                <option value="<?=$country['alpha-2']?>" <?php if($model->user['country'] != 'US' && $model->user['country'] != 'GB' && $model->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>
+                <option value="<?=$country['alpha-2']?>" <?php if($this->user['country'] != 'US' && $this->user['country'] != 'GB' && $this->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>
                 <?php endforeach; ?>
               </select>
             </div>
             <div class="form-group">
               <div class="controls checkbox">
                 <label>
-                  <input type="checkbox" name="rememberme" <?=($model->rememberme) ? 'checked':''?>> Remember me
+                  <input type="checkbox" name="rememberme" <?=($this->rememberme) ? 'checked':''?>> Remember me
                 </label>
                 <span class="help-block">(this should only be used if you are on a private computer)</span>
               </div>
