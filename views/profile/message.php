@@ -9,16 +9,16 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
 <body id="message" class="no-contain">
     <div id="page-wrap">
 
-        <?php include Tpl::file('seg/top.php') ?>
-        <?php include Tpl::file('seg/alerts.php') ?>
-        <?php include Tpl::file('profile/menu.php') ?>
+        <?php include 'seg/top.php' ?>
+        <?php include 'seg/alerts.php' ?>
+        <?php include 'menu.php' ?>
         
         <section class="container message-list active">
 
@@ -72,9 +72,9 @@ use Destiny\Common\Config;
 
     </div>
 
-    <?php include Tpl::file('profile/compose.php') ?>
-    <?php include Tpl::file('seg/foot.php') ?>
-    <?php include Tpl::file('seg/commonbottom.php') ?>
+    <?php include 'compose.php' ?>
+    <?php include 'seg/foot.php' ?>
+    <?php include 'seg/commonbottom.php' ?>
 
     <script src="<?=Config::cdnv()?>/web/js/messages.min.js"></script>
 

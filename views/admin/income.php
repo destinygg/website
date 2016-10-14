@@ -8,13 +8,13 @@ use Destiny\Common\Utils\Date;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/commontop.php') ?>
+<?php include 'seg/commontop.php' ?>
 </head>
 <body id="admin" class="no-contain">
     <div id="page-wrap">
 
-        <?php include Tpl::file('seg/top.php') ?>
-        <?php include Tpl::file('seg/admin.nav.php') ?>
+        <?php include 'seg/top.php' ?>
+        <?php include 'seg/admin.nav.php' ?>
 
         <section class="container">
             <div class="row">
@@ -59,8 +59,8 @@ use Destiny\Common\Utils\Date;
 
     </div>
     
-    <?php include Tpl::file('seg/foot.php') ?>
-    <?php include Tpl::file('seg/commonbottom.php') ?>
+    <?php include 'seg/foot.php' ?>
+    <?php include 'seg/commonbottom.php' ?>
     <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
 
 <script>

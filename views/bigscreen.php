@@ -8,13 +8,13 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/opengraph.php') ?>
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/opengraph.php' ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 </head>
 <body id="bigscreen" class="no-contain">
 
-    <?php include Tpl::file('seg/top.php') ?>
+    <?php include 'seg/top.php' ?>
 
     <div id="page-content" class="container clearfix">
 
@@ -42,7 +42,7 @@ use Destiny\Common\Config;
 
     </div>
 
-    <?php include Tpl::file('seg/commonbottom.php') ?>
+    <?php include 'seg/commonbottom.php' ?>
 
 </body>
 </html>

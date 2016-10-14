@@ -7,12 +7,12 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/commontop.php') ?>
+<?php include 'seg/commontop.php' ?>
 </head>
 <body id="admin" class="no-contain">
   <div id="page-wrap">
-    <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/admin.nav.php') ?>
+    <?php include 'seg/top.php' ?>
+    <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
       <h3>Ban / Mute <small>(<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit"><?=Tpl::out($model->user['username'])?></a>)</small></h3>
@@ -71,8 +71,8 @@ use Destiny\Common\Config;
 
   </div>
 
-  <?php include Tpl::file('seg/foot.php') ?>
-  <?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include 'seg/foot.php' ?>
+  <?php include 'seg/commonbottom.php' ?>
   
   <script src="<?=Config::cdnv()?>/web/js/admin.js"></script>
   

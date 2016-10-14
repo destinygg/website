@@ -8,16 +8,16 @@ use Destiny\Common\Utils\Tpl;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/opengraph.php') ?>
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/opengraph.php' ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 </head>
 <body id="emoticons" class="no-brand">
   <div id="page-wrap">
 
-    <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/headerband.php') ?>
+    <?php include 'seg/top.php' ?>
+    <?php include 'seg/headerband.php' ?>
 
     <section class="container">
       <h1 class="title">Emoticons</h1>
@@ -53,8 +53,8 @@ use Destiny\Common\Utils\Tpl;
 
   </div>
 
-  <?php include Tpl::file('seg/foot.php') ?>
-  <?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include 'seg/foot.php' ?>
+  <?php include 'seg/commonbottom.php' ?>
   
 </body>
 </html>

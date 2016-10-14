@@ -222,7 +222,7 @@ class Application extends Service {
      * @throws Exception
      */
     protected function template($filename, /** @noinspection PhpUnusedParameterInspection */ ViewModel $model) {
-        $filename = Tpl::file ( $filename );
+        $filename = Config::$a['tpl']['path'] . $filename;
         if (! is_file ( $filename )) {
             throw new Exception ( sprintf ( 'Template not found "%s"', pathinfo ( $filename, PATHINFO_FILENAME ) ) );
         }

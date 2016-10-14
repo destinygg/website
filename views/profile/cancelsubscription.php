@@ -8,13 +8,13 @@ use Destiny\Common\Utils\Date;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 </head>
 <body id="subscription" class="no-contain">
   <div id="page-wrap">
 
-    <?php include Tpl::file('seg/top.php') ?>
+    <?php include 'seg/top.php' ?>
 
     <section class="container">
       <h1 class="page-title">
@@ -121,8 +121,8 @@ use Destiny\Common\Utils\Date;
     </section>
   </div>
 
-  <?php include Tpl::file('seg/foot.php') ?>
-  <?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include 'seg/foot.php' ?>
+  <?php include 'seg/commonbottom.php' ?>
 
   <script src="//www.google.com/recaptcha/api.js"></script>
   <script>

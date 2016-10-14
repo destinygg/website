@@ -8,8 +8,8 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 <style>
   .btn-post { min-width: 75px; }
 </style>
@@ -17,9 +17,9 @@ use Destiny\Common\Config;
 <body id="authentication" class="no-contain">
   <div id="page-wrap">
 
-    <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/alerts.php') ?>
-    <?php include Tpl::file('profile/menu.php') ?>
+    <?php include 'seg/top.php' ?>
+    <?php include 'seg/alerts.php' ?>
+    <?php include 'menu.php' ?>
     
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#authentication-content">Providers</h3>
@@ -106,8 +106,8 @@ use Destiny\Common\Config;
     </section>
   </div>
   
-  <?php include Tpl::file('seg/foot.php') ?>
-  <?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include 'seg/foot.php' ?>
+  <?php include 'seg/commonbottom.php' ?>
 
   <script src="//www.google.com/recaptcha/api.js"></script>
   <script>

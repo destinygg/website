@@ -11,20 +11,20 @@ use Destiny\Common\Config;
 <meta name="description" content="<?=Config::$a['meta']['description']?>">
 <meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
 <meta name="author" content="<?=Config::$a['meta']['author']?>">
-<?php include Tpl::file('seg/opengraph.php') ?>
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/opengraph.php' ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 </head>
 <body id="home" class="no-brand">
     <div id="page-wrap">
-        <?php include Tpl::file('seg/top.php') ?>
-        <?php include Tpl::file('seg/headerband.php') ?>
-        <?php include Tpl::file('seg/panel.videos.php') ?>
-        <?php include Tpl::file('seg/panel.music.php') ?>
-        <?php include Tpl::file('seg/panel.blog.php') ?>
-        <?php include Tpl::file('seg/panel.ads.php') ?>
+        <?php include 'seg/top.php' ?>
+        <?php include 'seg/headerband.php' ?>
+        <?php include 'seg/panel.videos.php' ?>
+        <?php include 'seg/panel.music.php' ?>
+        <?php include 'seg/panel.blog.php' ?>
+        <?php include 'seg/panel.ads.php' ?>
     </div>
-    <?php include Tpl::file('seg/foot.php') ?>
-    <?php include Tpl::file('seg/commonbottom.php') ?>
+    <?php include 'seg/foot.php' ?>
+    <?php include 'seg/commonbottom.php' ?>
 </body>
 </html>

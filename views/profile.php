@@ -13,15 +13,15 @@ use Destiny\Commerce\SubscriptionStatus;
 <head>
 <title><?=Tpl::title($model->title)?></title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 </head>
 <body id="account" class="no-contain">
   <div id="page-wrap">
 
-    <?php include Tpl::file('seg/top.php') ?>
-    <?php include Tpl::file('seg/alerts.php') ?>
-    <?php include Tpl::file('profile/menu.php') ?>
+    <?php include 'seg/top.php' ?>
+    <?php include 'seg/alerts.php' ?>
+    <?php include 'profile/menu.php' ?>
 
     <section class="container">
       <div class="content-dark clearfix">
@@ -290,8 +290,8 @@ use Destiny\Commerce\SubscriptionStatus;
     
   </div>
 
-  <?php include Tpl::file('seg/foot.php') ?>
-  <?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include 'seg/foot.php' ?>
+  <?php include 'seg/commonbottom.php' ?>
   
 </body>
 </html>

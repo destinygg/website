@@ -8,8 +8,8 @@ use Destiny\Common\Utils\Date;
 <head>
 <title>Ban Information</title>
 <meta charset="utf-8">
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 </head>
 <body id="banned">
   
@@ -57,6 +57,6 @@ use Destiny\Common\Utils\Date;
     
   </section>
   
-  <?php include Tpl::file('seg/commonbottom.php') ?>
+  <?php include 'seg/commonbottom.php' ?>
 </body>
 </html>

@@ -11,10 +11,10 @@ use Destiny\Common\Config;
 <title><?=Tpl::title($model->title)?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <meta name="referrer" content="no-referrer">
-<?php include Tpl::file('seg/commontop.php') ?>
+<?php include 'seg/commontop.php' ?>
 <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
 <style id="chat-styles" type="text/css"></style>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/google.tracker.php' ?>
 </head>
 <body class="embed">
 
@@ -185,7 +185,7 @@ use Destiny\Common\Config;
 
 </div>
 
-<?php include Tpl::file('seg/commonbottom.php') ?>
+<?php include 'seg/commonbottom.php' ?>
 
 <script src="<?=Config::cdnv()?>/chat/js/chat.min.js"></script>
 <script src="/chat/init"></script>

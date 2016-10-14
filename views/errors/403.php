@@ -11,21 +11,21 @@ use Destiny\Common\Config;
 <meta name="description" content="<?=Config::$a['meta']['description']?>">
 <meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
 <meta name="author" content="<?=Config::$a['meta']['author']?>">
-<?php include Tpl::file('seg/opengraph.php') ?>
-<?php include Tpl::file('seg/commontop.php') ?>
-<?php include Tpl::file('seg/google.tracker.php') ?>
+<?php include 'seg/opengraph.php' ?>
+<?php include 'seg/commontop.php' ?>
+<?php include 'seg/google.tracker.php' ?>
 </head>
 <body id="error-403" class="error no-brand">
     <div id="page-wrap">
-        <?php include Tpl::file('seg/top.php') ?>
-        <?php include Tpl::file('seg/headerband.php') ?>
+        <?php include 'seg/top.php' ?>
+        <?php include 'seg/headerband.php' ?>
         <section id="error-container" class="container">
             <a title="Rick and Morty" href="http://www.adultswim.com/videos/rick-and-morty/" target="_blank" id="mortyface"></a>
             <h1>Aw geez, Rick!</h1>
             <p>This request has been forbidden.</p>
         </section>
     </div>
-    <?php include Tpl::file('seg/foot.php') ?>
-    <?php include Tpl::file('seg/commonbottom.php') ?>
+    <?php include 'seg/foot.php' ?>
+    <?php include 'seg/commonbottom.php' ?>
 </body>
 </html>
