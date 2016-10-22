@@ -44,7 +44,7 @@ use Destiny\Common\Utils\Date;
                 <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
                 <?php else: ?>
                 <span class="label label-default" title="This subscription is not automatically renewed">Not recurring</span>
-                <?php endif; ?>
+                <?php endif ?>
               </dd>
 
               <dt>Time remaining:</dt>
@@ -57,7 +57,7 @@ use Destiny\Common\Utils\Date;
               <?php if(!empty($this->giftee)): ?>
               <dt>Gifted to:</dt>
               <dd><?=Tpl::out( $this->giftee['username'] )?></dd>
-              <?php endif; ?>
+              <?php endif ?>
 
             </dl>
           </div>
@@ -65,7 +65,7 @@ use Destiny\Common\Utils\Date;
         <div class="form-actions">
           <a class="btn btn-link" href="/profile">Back to profile</a>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
 
         <?php if(!$this->subscriptionCancelled): ?>
         <form action="/subscription/cancel" method="post" autocomplete="off">
@@ -80,7 +80,7 @@ use Destiny\Common\Utils\Date;
                   <span class="label label-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
                   <?php if($this->subscription['recurring']):?>
                   <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
-                  <?php endif; ?>
+                  <?php endif ?>
                 </dd>
 
                 <dt>Source:</dt>
@@ -95,7 +95,7 @@ use Destiny\Common\Utils\Date;
                 <?php if(!empty($this->giftee)): ?>
                 <dt>Gifted to:</dt>
                 <dd><?=Tpl::out( $this->giftee['username'] )?></dd>
-                <?php endif; ?>
+                <?php endif ?>
 
               </dl>
             </div>
@@ -108,14 +108,14 @@ use Destiny\Common\Utils\Date;
           <div class="form-actions">
             <?php if($this->subscription['status'] == 'Active'): ?>
             <button type="button" id="cancelSubscriptionBtn" class="btn btn-danger">Cancel Subscription</button>
-            <?php endif; ?>
+            <?php endif ?>
             <?php if($this->subscription['recurring'] == '1'): ?>
             <button type="button" id="stopRecurringBtn" class="btn btn-warning">Stop Recurring Payments</button>
-            <?php endif; ?>
+            <?php endif ?>
             <a class="btn btn-link" href="/profile">Back to profile</a>
           </div>
         </form>
-        <?php endif; ?>
+        <?php endif ?>
 
       </div>
     </section>

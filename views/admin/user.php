@@ -25,7 +25,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <?=Tpl::out($this->success)?>
       </div>
     </section>
-    <?php endif; ?>
+    <?php endif ?>
 
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#details-content">
@@ -161,7 +161,7 @@ use Destiny\Commerce\SubscriptionStatus;
               ?>
               <br />
               <abbr class="country"><?=Tpl::out($country['name'])?> <small>(<?=Tpl::out($country['alpha-2'])?>)</small></abbr>
-              <?php endif; ?>
+              <?php endif ?>
             </div>
           </div>
         </div>
@@ -169,7 +169,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <div class="ds-block">
           <p>No address available</p>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
       </div>
     </section>
 
@@ -197,19 +197,19 @@ use Destiny\Commerce\SubscriptionStatus;
                 <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">Tier <?=Tpl::out($subinfo['subscriptionTier'])?></a>
                 <?php if($subinfo['recurring'] == '1'): ?>
                 <span class="subtle">(Recurring)</span>
-                <?php endif; ?>
+                <?php endif ?>
               </td>
               <td>
                 <?php if(strcasecmp($subinfo['status'], SubscriptionStatus::ACTIVE) === 0): ?>
                 <span class="badge badge-success"><?=Tpl::out($subinfo['status'])?></span>
                 <?php else: ?>
                 <span class="subtle"><?=Tpl::out($subinfo['status'])?></span>
-                <?php endif; ?>
+                <?php endif ?>
               </td>
               <td>
                 <?php if(!empty($subinfo['gifter'])): ?>
                 <a href="/admin/user/<?=$subinfo['gifter']?>/edit"><?=Tpl::out($this->gifters[$subinfo['gifter']]['username'])?></a>
-                <?php endif; ?>
+                <?php endif ?>
               </td>
               <td><?=Tpl::moment(Date::getDateTime($subinfo['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
               <td><?=Tpl::moment(Date::getDateTime($subinfo['endDate']), Date::STRING_FORMAT_YEAR)?></td>
@@ -221,7 +221,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <div class="ds-block">
           <p>No active subscriptions</p>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
       </div>
     </section>
 
@@ -246,19 +246,19 @@ use Destiny\Commerce\SubscriptionStatus;
                   <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">TIER <?=Tpl::out($subinfo['subscriptionTier'])?></a>
                   <?php if($subinfo['recurring'] == '1'): ?>
                     <span class="subtle">(Recurring)</span>
-                  <?php endif; ?>
+                  <?php endif ?>
                 </td>
                 <td>
                   <?php if(strcasecmp($subinfo['status'], SubscriptionStatus::ACTIVE) === 0): ?>
                     <span class="badge badge-success"><?=Tpl::out($subinfo['status'])?></span>
                   <?php else: ?>
                     <span class="subtle"><?=Tpl::out($subinfo['status'])?></span>
-                  <?php endif; ?>
+                  <?php endif ?>
                 </td>
                 <td>
                   <?php if(!empty($subinfo['userId'])): ?>
                     <a href="/admin/user/<?=$subinfo['userId']?>/edit"><?=Tpl::out($this->recipients[$subinfo['userId']]['username'])?></a>
-                  <?php endif; ?>
+                  <?php endif ?>
                 </td>
                 <td><?=Tpl::moment(Date::getDateTime($subinfo['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
                 <td><?=Tpl::moment(Date::getDateTime($subinfo['endDate']), Date::STRING_FORMAT_YEAR)?></td>
@@ -270,7 +270,7 @@ use Destiny\Commerce\SubscriptionStatus;
           <div class="ds-block">
             <p>No active subscription gifts</p>
           </div>
-        <?php endif; ?>
+        <?php endif ?>
       </div>
     </section>
 
@@ -308,7 +308,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <div class="ds-block">
           <p>No smurfs found</p>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
       </div>
     </section>
 
@@ -337,7 +337,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <div class="ds-block">
           <p>No IPs found</p>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
       </div>
     </section>
 
@@ -362,13 +362,13 @@ use Destiny\Commerce\SubscriptionStatus;
             Ip: <a target="_blank" href="http://freegeoip.net/json/<?=$this->ban['ipaddress']?>"><?=$this->ban['ipaddress']?></a>
             <?php else: ?>
             Ip: Not set
-            <?php endif; ?>
+            <?php endif ?>
           </p>
           <p>
             <?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT)?>
             <?php if(!empty($this->ban['endtimestamp'])): ?>
             - <?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?>
-            <?php endif; ?>
+            <?php endif ?>
           </p>
           <blockquote>
             <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($this->ban['reason'])?></p>
@@ -381,7 +381,7 @@ use Destiny\Commerce\SubscriptionStatus;
           <a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$this->user['userId']?>/ban/remove" class="btn btn-danger">Remove ban</a>
         </div>
 
-        <?php endif; ?>
+        <?php endif ?>
       </div>
     </section>
 
@@ -415,7 +415,7 @@ use Destiny\Commerce\SubscriptionStatus;
       </div>
     </section>
     </form>
-    <?php endif; ?>
+    <?php endif ?>
 
   </div>
 

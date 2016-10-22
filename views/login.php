@@ -44,7 +44,7 @@ use Destiny\Common\Utils\Tpl;
         <strong>Error!</strong>
         <?=Tpl::out($this->error->getMessage())?>
       </div>
-      <?php endif; ?>
+      <?php endif ?>
       
       <div class="content content-dark clearfix">
 

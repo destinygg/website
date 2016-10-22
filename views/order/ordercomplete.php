@@ -52,11 +52,11 @@ use Destiny\Common\Config;
               
               <?php if($this->subscription['recurring'] == 1): ?>
               <p>Subscription is automatically renewed</p>
-              <?php endif; ?>
+              <?php endif ?>
 
               <?php if(!empty($this->giftee)): ?>
               <p><span class="fa fa-gift"></span> You have gifted this to <span class="label label-danger"><?=Tpl::out($this->giftee['username'])?></span></p>
-              <?php endif; ?>
+              <?php endif ?>
 
             </div>
 

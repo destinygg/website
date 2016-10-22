@@ -27,7 +27,7 @@ use Destiny\Common\User\UserRole;
                                 <li><a href="#">T1 Subscribers</a></li>
                             </ul>
                         </div>
-                        <?php endif; ?>
+                        <?php endif ?>
                         <input tabindex="1" id="compose-recipients" type="text" placeholder="Enter a recipient ..." autocomplete="false" autocorrect="off" spellcheck="false" />
                     </div>
                     <div class="recipient-container"></div>

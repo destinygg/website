@@ -55,7 +55,7 @@ use Destiny\Common\Config;
           <p>Good job for not being an asshole!</p>
         </div>
       </div>
-      <?php endif; ?>
+      <?php endif ?>
     </section>
   </div>
   

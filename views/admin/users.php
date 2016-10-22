@@ -49,14 +49,14 @@ use Destiny\Common\Utils\Date;
             <?php if($this->users['totalpages'] > 1): ?>
             <form class="form-inline pull-left" role="form">
               <ul class="pagination" style="margin: 0 15px 0 0;">
-                <li><a data-page="1" href="?page=0">Start</a></li>
+                <li><a data-page="1" href="?page=0">First</a></li>
                 <?php for($i = max(1, $this->users['page'] - 2); $i <= min($this->users['page'] + 2, $this->users['totalpages']); $i++): ?>
                 <li <?=($this->users['page'] == $i) ? 'class="active"':''?>><a data-page="<?=$i?>" href="?page=<?=$i?>"><?=$i?></a></li>
                 <?php endfor; ?>
-                <li><a data-page="<?=$this->users['totalpages']?>" href="?page=<?=$this->users['totalpages']?>">End</a></li>
+                <li><a data-page="<?=$this->users['totalpages']?>" href="?page=<?=$this->users['totalpages']?>">Last</a></li>
               </ul>
             </form>
-            <?php endif; ?>
+            <?php endif ?>
 
             <form class="form-inline pull-right" role="form">
               <div class="form-group">

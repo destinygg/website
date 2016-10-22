@@ -50,16 +50,16 @@ use Destiny\Common\Config;
             <div class="details">
               <?php if($track['date_str'] != ''):?>
               <span class="pull-right"><?=Tpl::fromNow(Date::getDateTime($track['date_str']))?></span>
-              <?php endif; ?>
+              <?php endif ?>
               <?php if($trackIndex==0 && $track['date_str'] == ''): ?>
               <span class="pull-right"><time>now playing</time></span>
-              <?php endif; ?>
+              <?php endif ?>
               <small class="album subtle"><?=Tpl::out($track['album']['#text'])?></small>
             </div>
           </div>
         </div>
       <?php endforeach; ?>
-      <?php endif; ?>
+      <?php endif ?>
       </div>
     </div>
 

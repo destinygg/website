@@ -39,7 +39,7 @@ use Destiny\Common\Config;
               <a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a>
               <?php if(!empty($sub['gifter'])): ?>
                 &nbsp; (<a title="Gifted by" href="/admin/user/<?=$sub['gifter']?>/edit"><span class="fa fa-gift" title="Gift"></span> <?=Tpl::out($sub['gifterUsername'])?></a>)
-              <?php endif; ?>
+              <?php endif ?>
             </td>
             <td><?=($sub['recurring'] == 1) ? 'Yes':'No'?></td>
             <td><?=Tpl::moment(Date::getDateTime($sub['createdDate']), Date::STRING_FORMAT)?></td>
@@ -50,7 +50,7 @@ use Destiny\Common\Config;
         </table>
       </div>
     </section>
-    <?php endif; ?>
+    <?php endif ?>
     <?php } ?>
 
     <?php if(empty($this->subscribersT4) && empty($this->subscribersT3) && empty($this->subscribersT2) && empty($this->subscribersT1)): ?>
@@ -62,7 +62,7 @@ use Destiny\Common\Config;
         </div>
       </div>
     </section>
-    <?php endif; ?>
+    <?php endif ?>
 
     <?php buildSubscribersTier($this->subscribersT4, 4) ?>
     <?php buildSubscribersTier($this->subscribersT3, 3) ?>

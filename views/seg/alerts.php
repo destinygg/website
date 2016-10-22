@@ -10,7 +10,7 @@ use Destiny\Common\Utils\Tpl;
         <?=Tpl::out($this->error)?>
     </div>
 </section>
-<?php endif; ?>
+<?php endif ?>
 
 <?php if(!empty($this->success)): ?>
 <section class="container">
@@ -19,4 +19,4 @@ use Destiny\Common\Utils\Tpl;
 	    <?=Tpl::out($this->success)?>
     </div>
 </section>
-<?php endif; ?>
+<?php endif ?>

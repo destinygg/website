@@ -32,7 +32,7 @@ use Destiny\Common\Config;
             <?=Tpl::out($this->warning->getMessage())?>
           </div>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
 
         <div class="ui-step-legend-wrap clearfix">
           <div class="ui-step-legend clearfix">
@@ -85,13 +85,13 @@ use Destiny\Common\Config;
 
                 <?php if(!empty($this->gift)): ?>
                 <p><span class="fa fa-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($this->gift)?></span></p>
-                <?php endif; ?>
+                <?php endif ?>
 
                 <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
               </div>
             </div>
 
-            <?php endif; ?>
+            <?php endif ?>
             <div id="extraMessage" class="ds-block">
               <div>Send a message with your subscription (optional):</div>
               <textarea name="sub-message" autocomplete="off" maxlength="250" rows="5" class="form-control" placeholder=""></textarea>

@@ -44,7 +44,7 @@ use Destiny\Commerce\SubscriptionStatus;
               </div>
             </div>
           </div>
-        <?php endif; ?>
+        <?php endif ?>
         <?php if(!empty($this->subscriptions)): ?>
         <?php foreach($this->subscriptions as $subscription): ?>
         <div class="content-dark clearfix" style="margin-bottom:10px;">
@@ -55,7 +55,7 @@ use Destiny\Commerce\SubscriptionStatus;
               <p>
                 <span class="sub-amount">$<?=$subscription['type']['amount']?></span>
                 (<?=$subscription['type']['billingFrequency']?> <?=strtolower($subscription['type']['billingPeriod'])?>
-                <?php if($subscription['recurring'] == 1): ?><strong>Recurring</strong><?php endif; ?>)
+                <?php if($subscription['recurring'] == 1): ?><strong>Recurring</strong><?php endif ?>)
               </p>
 
               <dl>
@@ -74,22 +74,22 @@ use Destiny\Commerce\SubscriptionStatus;
                     <dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
                   <?php else: ?>
                     <dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
-                  <?php endif; ?>
+                  <?php endif ?>
                 </dl>
-              <?php endif; ?>
+              <?php endif ?>
 
               <?php if(strcasecmp($subscription['status'], SubscriptionStatus::PENDING)===0): ?>
                 <dl>
                   <dt>This subscription is currently</dt>
                   <dd><span class="label label-warning"><?=Tpl::out(strtoupper($subscription['status']))?></span></dd>
                 </dl>
-              <?php endif; ?>
+              <?php endif ?>
 
               <?php if(!empty($subscription['gifterUsername'])): ?>
                 <p>
                   <span class="fa fa-gift"></span> This subscription was gifted by <span class="label label-success"><?=Tpl::out($subscription['gifterUsername'])?></span>
                 </p>
-              <?php endif; ?>
+              <?php endif ?>
 
               <div style="margin-top:20px;">
                 <a class="btn btn-primary btn-sm" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Cancel subscription</a>
@@ -103,7 +103,7 @@ use Destiny\Commerce\SubscriptionStatus;
           <div class="content content-dark clearfix">
             <div class="ds-block">No destiny.gg subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
           </div>
-        <?php endif; ?>
+        <?php endif ?>
       </div>
     </section>
     
@@ -120,7 +120,7 @@ use Destiny\Commerce\SubscriptionStatus;
               <h3><?= Tpl::out( $gift['type']['tierLabel'] ) ?> <small>Gifted to <span class="label label-primary"><?= $gift['username'] ?></span></small></h3>
               <p>
                 <span class="sub-amount">$<?=$gift['type']['amount']?></span> 
-                <span>(<?=$gift['type']['billingFrequency']?> <?=strtolower($gift['type']['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif; ?>)</span>
+                <span>(<?=$gift['type']['billingFrequency']?> <?=strtolower($gift['type']['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif ?>)</span>
                 <small>started on <?=Tpl::moment(Date::getDateTime($gift['createdDate']), Date::FORMAT)?></small>
               </p>
 
@@ -128,7 +128,7 @@ use Destiny\Commerce\SubscriptionStatus;
               <div style="margin-top:20px;">
                 <a class="btn btn-sm btn-danger cancel-gift" href="/subscription/gift/<?= $gift['subscriptionId'] ?>/cancel">Cancel</a>
               </div>
-              <?php endif; ?>
+              <?php endif ?>
               
             </div>
           </div>
@@ -137,7 +137,7 @@ use Destiny\Commerce\SubscriptionStatus;
 
       </div>
     </section>
-    <?php endif; ?>
+    <?php endif ?>
     
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#account-content">Account</h3>
@@ -155,7 +155,7 @@ use Destiny\Commerce\SubscriptionStatus;
                 <input class="form-control" type="text" name="username" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username" />
                 <span class="help-block">A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters</span>
               </div>
-              <?php endif; ?>
+              <?php endif ?>
               
               <?php if($this->user['nameChangedCount'] >= Config::$a['profile']['nameChangeLimit']): ?>
               <div class="form-group">
@@ -164,7 +164,7 @@ use Destiny\Commerce\SubscriptionStatus;
                 </label> 
                 <input class="form-control" type="text" disabled="disabled" name="username" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username" />
               </div>
-              <?php endif; ?>
+              <?php endif ?>
               
               <div class="form-group">
                 <label>Email:
@@ -189,9 +189,9 @@ use Destiny\Commerce\SubscriptionStatus;
                   <?$countries = Country::getCountries();?>
                   <option value="">&nbsp;</option>
                   <option value="US" <?php if($this->user['country'] == 'US'):?>
-                    selected="selected" <?php endif; ?>>United States</option>
+                    selected="selected" <?php endif ?>>United States</option>
                   <option value="GB" <?php if($this->user['country'] == 'GB'):?>
-                    selected="selected" <?php endif; ?>>United Kingdom</option>
+                    selected="selected" <?php endif ?>>United Kingdom</option>
                   <option value="">&nbsp;</option>
                   <?php foreach($countries as $country):?>
                   <option value="<?=$country['alpha-2']?>" <?php if($this->user['country'] != 'US' && $this->user['country'] != 'GB' && $this->user['country'] == $country['alpha-2']):?>selected="selected"<?php endif;?>><?=Tpl::out($country['name'])?></option>
@@ -204,8 +204,8 @@ use Destiny\Commerce\SubscriptionStatus;
                 <br><small>Whether or not you would like the ability to receive gifts (subscriptions) from other people.</small>
                 </label> 
                 <select class="form-control" name="allowGifting" id="allowGifting">
-                  <option value="1"<?php if($this->user['allowGifting'] == 1):?> selected="selected"<?php endif; ?>>Yes, I accept gifts</option>
-                  <option value="0"<?php if($this->user['allowGifting'] == 0):?> selected="selected"<?php endif; ?>>No, I do not accept gifts</option>
+                  <option value="1"<?php if($this->user['allowGifting'] == 1):?> selected="selected"<?php endif ?>>Yes, I accept gifts</option>
+                  <option value="0"<?php if($this->user['allowGifting'] == 0):?> selected="selected"<?php endif ?>>No, I do not accept gifts</option>
                 </select>
               </div>
 
@@ -268,9 +268,9 @@ use Destiny\Commerce\SubscriptionStatus;
                   <?$countries = Country::getCountries();?>
                   <option value="">&nbsp;</option>
                   <option value="US" <?php if($this->address['country'] == 'US'): ?>
-                    selected="selected" <?php endif; ?>>United States</option>
+                    selected="selected" <?php endif ?>>United States</option>
                   <option value="GB" <?php if($this->address['country'] == 'GB'): ?>
-                    selected="selected" <?php endif; ?>>United Kingdom</option>
+                    selected="selected" <?php endif ?>>United Kingdom</option>
                   <option value="">&nbsp;</option>
                   <?php foreach($countries as $country): ?>
                   <option value="<?=$country['alpha-2']?>" <?php if($this->address['country'] != 'US' && $this->address['country'] != 'GB' && $this->address['country'] == $country['alpha-2']):?>selected="selected"<?php endif;?>><?=Tpl::out($country['name'])?></option>

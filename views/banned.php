@@ -20,10 +20,10 @@ use Destiny\Common\Utils\Date;
       No active ban found
       <?php else: ?>
       You have been banned!
-      <?php endif; ?>
+      <?php endif ?>
       <?php if($this->banType != 'none'): ?>
       <br /><small><?=ucwords($this->banType)?> ban</small>
-      <?php endif; ?>
+      <?php endif ?>
     </h1>
     
     <?php if(!empty($this->ban)): ?>
@@ -35,7 +35,7 @@ use Destiny\Common\Utils\Date;
       <?php if($this->ban['endtimestamp']): ?>
       <dt>Ending on</dt>
       <dd><?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?></dd>
-      <?php endif; ?>
+      <?php endif ?>
       <dt>Ban reason</dt>
       <dd><?=Tpl::out($this->ban['reason'])?></dd>
     </dl>

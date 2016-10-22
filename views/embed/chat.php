@@ -17,7 +17,7 @@ use Destiny\Common\Config;
 </head>
 <body class="embed">
 
-<div id="destinychat" class="chat chat-icons <?php if(Session::hasRole(UserRole::USER)): ?>authenticated<?php endif; ?>">
+<div id="destinychat" class="chat chat-icons <?php if(Session::hasRole(UserRole::USER)): ?>authenticated<?php endif ?>">
     <!-- chat output -->
     <div id="chat-output-frame">
         <div id="chat-output" class="nano">
@@ -40,7 +40,7 @@ use Destiny\Common\Config;
                       You must <a href="/login?follow=<?= Tpl::out($this->follow) ?>" target="_parent">sign in</a> to chat
                   <?php else: ?>
                       You must <a href="/login" target="_parent">sign in</a> to chat
-                  <?php endif; ?>
+                  <?php endif ?>
                 </span>
             </div>
             <div id="chat-tools-wrap">

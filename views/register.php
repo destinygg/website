@@ -30,7 +30,7 @@ use Destiny\Common\Config;
         <strong>Error!</strong>
         <?=Tpl::out($this->error->getMessage())?>
       </div>
-      <?php endif; ?>
+      <?php endif ?>
       
       <div class="content content-dark clearfix">
 
@@ -68,7 +68,7 @@ use Destiny\Common\Config;
                 <option value="US" <?php if($this->user['country'] == 'US'): ?>
                   selected="selected" <?php endif;?>>United States</option>
                 <option value="GB" <?php if($this->user['country'] == 'GB'): ?>
-                  selected="selected" <?php endif; ?>>United Kingdom</option>
+                  selected="selected" <?php endif ?>>United Kingdom</option>
                 <option value="">&nbsp;</option>
                 <?php foreach($countries as $country): ?>
                 <option value="<?=$country['alpha-2']?>" <?php if($this->user['country'] != 'US' && $this->user['country'] != 'GB' && $this->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>

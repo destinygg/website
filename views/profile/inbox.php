@@ -68,7 +68,7 @@ use Destiny\Common\Config;
 
                         </tbody>
                     </table>
-                    <?php endif; ?>
+                    <?php endif ?>
 
                     <?php if(empty($this->inbox['read']) && empty($this->inbox['unread'])): ?>
                     <table id="inbox" class="grid messages">
@@ -78,7 +78,7 @@ use Destiny\Common\Config;
                         </tr>
                         </tbody>
                     </table>
-                    <?php endif; ?>
+                    <?php endif ?>
 
                 </div>
             </div>

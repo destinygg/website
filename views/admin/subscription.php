@@ -23,7 +23,7 @@ use Destiny\Common\Utils\Date;
         <?=Tpl::out($this->success)?>
       </div>
     </section>
-    <?php endif; ?>
+    <?php endif ?>
 
     <section class="container">
       <h3>Subscription <small>(<a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>)</small></h3>
@@ -122,7 +122,7 @@ use Destiny\Common\Utils\Date;
         </table>
       </div>
     </section>
-    <?php endif; ?>
+    <?php endif ?>
 
     <?php if(!empty($this->payments)): ?>
     <section class="container">
@@ -158,7 +158,7 @@ use Destiny\Common\Utils\Date;
         </table>
       </div>
     </section>
-    <?php endif; ?>
+    <?php endif ?>
 
   </div>
 

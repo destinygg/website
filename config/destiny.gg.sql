@@ -34,10 +34,10 @@ CREATE TABLE `dfl_features` (
 
 CREATE TABLE `dfl_orders_ipn` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
-  `ipnTrackId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ipnTransactionType` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ipnTransactionId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ipnData` text COLLATE utf8_unicode_ci,
+  `ipnTrackId` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ipnTransactionType` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ipnTransactionId` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ipnData` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -46,12 +46,12 @@ CREATE TABLE `dfl_orders_payments` (
   `paymentId` int(14) NOT NULL AUTO_INCREMENT,
   `subscriptionId` int(14) DEFAULT NULL,
   `amount` float DEFAULT NULL,
-  `currency` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `transactionId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `transactionType` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `paymentType` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `payerId` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `paymentStatus` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `currency` varchar(4) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `transactionId` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `transactionType` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `paymentType` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `payerId` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `paymentStatus` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `paymentDate` datetime DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   PRIMARY KEY (`paymentId`)
@@ -59,26 +59,26 @@ CREATE TABLE `dfl_orders_payments` (
 
 CREATE TABLE `dfl_roles` (
   `roleId` int(14) NOT NULL,
-  `roleName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `roleName` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`roleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_scheduled_tasks` (
-  `action` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `lastExecuted` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `action` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `lastExecuted` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `frequency` int(14) DEFAULT NULL,
-  `period` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `period` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `executeCount` int(14) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users` (
   `userId` int(14) NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `country` varchar(4) COLLATE utf8_unicode_ci DEFAULT '',
+  `username` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `country` varchar(4) COLLATE utf8mb4_general_ci DEFAULT '',
   `createdDate` datetime NOT NULL,
   `modifiedDate` datetime DEFAULT NULL,
-  `userStatus` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `userStatus` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `nameChangedCount` tinyint(4) DEFAULT '0',
   `nameChangedDate` datetime DEFAULT NULL,
   `allowGifting` tinyint(4) DEFAULT '1',
@@ -88,10 +88,10 @@ CREATE TABLE `dfl_users` (
 
 CREATE TABLE `dfl_users_auth` (
   `userId` int(14) DEFAULT NULL,
-  `authProvider` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `authCode` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `authId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `authDetail` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `authProvider` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `authCode` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `authId` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `authDetail` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   `modifiedDate` datetime DEFAULT NULL,
   KEY `authProvider` (`authProvider`,`authId`),
@@ -124,18 +124,18 @@ CREATE TABLE `dfl_users_roles` (
 
 CREATE TABLE `dfl_users_subscriptions` (
   `subscriptionId` INT(14) NOT NULL AUTO_INCREMENT,
-  `subscriptionSource` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `subscriptionType` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `subscriptionSource` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `subscriptionType` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `subscriptionTier` TINYINT(4) DEFAULT NULL,
   `userId` INT(14) DEFAULT NULL,
   `createdDate` DATETIME DEFAULT NULL,
   `endDate` DATETIME DEFAULT NULL,
-  `status` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `recurring` TINYINT(4) DEFAULT NULL,
-  `paymentProfileId` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `paymentProfileId` VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `billingStartDate` DATETIME DEFAULT NULL,
   `billingNextDate` DATETIME DEFAULT NULL,
-  `paymentStatus` VARCHAR(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `paymentStatus` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `gifter` int(14) DEFAULT NULL,
   PRIMARY KEY (`subscriptionId`),
   KEY `userId` (`userId`),
@@ -145,13 +145,13 @@ CREATE TABLE `dfl_users_subscriptions` (
 CREATE TABLE `users_address` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
   `userId` int(14) NOT NULL,
-  `fullName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `line1` text COLLATE utf8_unicode_ci,
-  `line2` text COLLATE utf8_unicode_ci,
-  `city` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `region` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `zip` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `country` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fullName` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `line1` text COLLATE utf8mb4_general_ci,
+  `line2` text COLLATE utf8mb4_general_ci,
+  `city` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `region` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `zip` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `country` varchar(4) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   `modifiedDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),

@@ -22,7 +22,7 @@ use Destiny\Common\Utils\Date;
           <?=Tpl::out($this->error)?>
         </div>
       </section>
-      <?php endif; ?>
+      <?php endif ?>
         
       <?php if(!empty($this->success)): ?>
       <section class="container">
@@ -31,7 +31,7 @@ use Destiny\Common\Utils\Date;
           <?=Tpl::out($this->success)?>
         </div>
       </section>
-      <?php endif; ?>
+      <?php endif ?>
         
       <section class="container">
         <h3>Broadcast</h3>
@@ -93,10 +93,10 @@ use Destiny\Common\Utils\Date;
             <div class="ds-block">
                 <p>No users with the IP "<?=Tpl::out($this->searchIp)?>"</p>
             </div>
-            <?php endif; ?>
+            <?php endif ?>
             </div>
         </section>
-        <?php endif; ?>
+        <?php endif ?>
     </div>
 
     <?php include 'seg/foot.php' ?>

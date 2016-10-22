@@ -43,7 +43,7 @@ use Destiny\Common\Config;
                             <div class="icon-message-read pull-left glyphicon glyphicon-ok-circle" title="Your message has been marked as read"></div>
                         <?php elseif ($isme and !$msg['isread']): ?>
                             <div class="icon-message-unread pull-left glyphicon glyphicon-question-sign" title="Your message has not yet been read"></div>
-                        <?php endif; ?>
+                        <?php endif ?>
                         <div class="message-date pull-right"><?= Tpl::calendar(Date::getDateTime($msg['timestamp'])); ?></div>
                     </div>
                     <div class="message-txt"><?= Tpl::formatTextForDisplay($msg['message']) ?></div>

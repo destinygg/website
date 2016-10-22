@@ -34,7 +34,7 @@ use Destiny\Common\Session;
                     </span>
                     <?php if($this->unreadMessageCount > 0): ?>
                     <span class="pm-count flash" title="You have unread messages!"><?= $this->unreadMessageCount; ?></span>
-                    <?php endif; ?>
+                    <?php endif ?>
                 </a>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="/profile">Account</a></li>
@@ -44,14 +44,14 @@ use Destiny\Common\Session;
                     <li><a href="/logout">Sign Out</a></li>
                 </ul>
             </li>
-            <?php else:?>
+            <?php else: ?>
             <li>
                 <a href="/login" rel="login">
                     <span class="fa fa-sign-in"></span>
                     <span class="sign-in-link visible-lg-inline visible-xs-inline">Sign In</span>
                 </a>
             </li>
-            <?php endif; ?>
+            <?php endif ?>
 
         </ul>
 
@@ -73,7 +73,7 @@ use Destiny\Common\Session;
                 <?php else: ?>
                     <li class="visible-xs"><a title="Sign in" href="/login">Sign In</a></li>
                     <li class="divider-vertical visible-xs"></li>
-                <?php endif; ?>
+                <?php endif ?>
 
                 <li><a title="Blog @ destiny.gg" href="/blog">Blog</a></li>
                 <li><a title="twitter.com" href="/twitter">Twitter</a></li>
@@ -86,7 +86,7 @@ use Destiny\Common\Session;
                 <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe</span></a></li>
                 <?php else: ?>
                 <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
-                <?php endif; ?>
+                <?php endif ?>
 
                 <li><a href="/donate" title="Donate">Donate</a></li>
 

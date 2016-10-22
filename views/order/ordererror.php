@@ -42,7 +42,7 @@ use Destiny\Common\Config;
 
           <?php if(!empty($this->subscription)): ?>
           <br />Your reference is #<?=Tpl::out($this->subscription['subscriptionId'])?>
-          <?php endif; ?>
+          <?php endif ?>
 
           <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries.
           </p>
@@ -52,7 +52,7 @@ use Destiny\Common\Config;
             <strong>Error!</strong>
             <?=Tpl::out($this->error->getMessage())?>
           </div>
-          <?php endif; ?>
+          <?php endif ?>
 
         </div>
 

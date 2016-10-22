@@ -31,7 +31,7 @@ use Destiny\Common\User\UserRole;
           <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#userSearchModal">Change <span class="fa fa-gift"></span></button>
           <button class="btn btn-default" id="cancelGiftSubscription">Abort!</button>
       </div>
-      <?php endif; ?>
+      <?php endif ?>
 
       <div class="subfeature">
         <div class="subfeature-desc">

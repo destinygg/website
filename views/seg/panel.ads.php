@@ -29,7 +29,7 @@ use Destiny\Common\Utils\Tpl;
                 <script src="https://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
             </div>
         </div>
-        <?php endif; ?>
+        <?php endif ?>
 
     </div>
 </section>

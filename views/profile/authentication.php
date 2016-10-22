@@ -47,7 +47,7 @@ use Destiny\Common\Config;
                     <span class="subtle"><span class="fa fa-check"></span> Connected</span>
                   <?php else: ?>
                     <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
-                  <?php endif; ?>
+                  <?php endif ?>
                 </td>
               </tr>
               <?php endforeach; ?>
@@ -86,7 +86,7 @@ use Destiny\Common\Config;
               <tr>
                 <td colspan="3"><span class="subtle">You have no authentication keys</span></td>
               </tr>
-              <?php endif; ?>
+              <?php endif ?>
             </tbody>
           </table>
 

@@ -24,7 +24,7 @@ if (! empty ( $this->articles )) :
 								Posted in 
 								<?= join(", ", $article['categories']); ?>
 							</small> 
-							<?php endif; ?>
+							<?php endif ?>
 						</div>
 						<?=Tpl::moment(Date::getDateTime($article['date']),Date::FORMAT)?>
 					</div>
@@ -49,7 +49,7 @@ if (! empty ( $this->articles )) :
 								Posted in 
 								<?= join(", ", $article['categories']); ?>
 							</small> 
-							<?php endif; ?>
+							<?php endif ?>
 						</div>
 						<?=Tpl::moment(Date::getDateTime($article['date']),Date::FORMAT)?>
 					</div>
