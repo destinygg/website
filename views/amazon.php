@@ -8,9 +8,8 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
-<?php include 'seg/opengraph.php' ?>
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="amazon" class="no-brand">
     <div id="page-wrap">
@@ -22,7 +21,7 @@ use Destiny\Common\Config;
             <div class="row">
                 <div style="text-align: center;">
                     <div style="margin-top: 60px; margin-bottom: 40px;">
-                        <a href="http://www.amazon.com/?tag=des000-20"><img alt="amazon.com" src="<?=Config::cdn()?>/web/img/amazon.png" /></a>
+                        <a title="Amazon" class="amazon-logo" href="http://www.amazon.com/?tag=des000-20"></a>
                     </div>
                     <div style="margin: 30px 0 60px 0;">
                         <a href="http://www.amazon.com/?tag=des000-20">US</a>
@@ -43,5 +42,6 @@ use Destiny\Common\Config;
 
     <?php include 'seg/foot.php' ?>
     <?php include 'seg/commonbottom.php' ?>
+    <script src="<?=Config::cdnv()?>/web.js"></script>
 </body>
 </html>

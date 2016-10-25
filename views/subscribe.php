@@ -3,6 +3,7 @@ namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -10,7 +11,7 @@ use Destiny\Common\User\UserRole;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="subscribe" class="no-brand">
   <div id="page-wrap">
@@ -216,6 +217,7 @@ use Destiny\Common\User\UserRole;
   
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
+  <script src="<?=Config::cdnv()?>/web.js"></script>
   
 </body>
 </html>

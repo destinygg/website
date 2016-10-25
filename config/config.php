@@ -97,7 +97,8 @@ return array (
 		),
 	),
 	'images' => array(
-		'path'          => _BASEDIR . '/static/img/'
+		'path'          => _BASEDIR . '/static/cache/',
+		'uri'           => '/cache',
 	),
 	'redis' => array(
 		'host' 				=> 'localhost',
@@ -172,7 +173,8 @@ return array (
 		'description'		=> 'Steven (Destiny) Bonnell II is a professional streamer, primarily playing games, but will often venture off into other topics, including but not limited to: philosophy, youtube videos, music and all sorts of wonderful pseudo-intellectualism.',
 		'keywords'			=> 'Steven Bonnell,Destiny,Destiny.gg,StarCraft,StarCraft2,Counter Strike,CS:GO,League of Legends,Hearth Stone,streamer,stream,game,pc,build a box',
 		'video'				=> 'http://www-cdn.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny',
-		'videoSecureUrl'	=> 'https://secure.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny'
+		'videoSecureUrl'	=> 'https://secure.jtvnw.net/widgets/live_facebook_embed_player.swf?channel=destiny',
+		'image'				=> 'https://static-cdn.jtvnw.net/jtv_user_pictures/destiny-profile_image-951fd53950bc2f8b-300x300.png'
 	),
 	'paypal' => array (
 		'support_email'		=> 'support@destiny.gg',

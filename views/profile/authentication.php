@@ -9,7 +9,7 @@ use Destiny\Common\Config;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 <style>
   .btn-post { min-width: 75px; }
 </style>
@@ -108,6 +108,7 @@ use Destiny\Common\Config;
   
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
+  <script src="<?=Config::cdnv()?>/web.js"></script>
 
   <script src="//www.google.com/recaptcha/api.js"></script>
   <script>

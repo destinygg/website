@@ -11,9 +11,8 @@ use Destiny\Common\Config;
 <meta name="description" content="<?=Config::$a['meta']['description']?>">
 <meta name="keywords" content="<?=Config::$a['meta']['keywords']?>">
 <meta name="author" content="<?=Config::$a['meta']['author']?>">
-<?php include 'seg/opengraph.php' ?>
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="error-500" class="error no-brand">
     <div id="page-wrap">
@@ -28,5 +27,6 @@ use Destiny\Common\Config;
     </div>
     <?php include 'seg/foot.php' ?>
     <?php include 'seg/commonbottom.php' ?>
+    <script src="<?=Config::cdnv()?>/web.js"></script>
 </body>
 </html>

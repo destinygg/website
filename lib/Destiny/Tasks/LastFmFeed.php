@@ -19,7 +19,7 @@ class LastFmFeed implements TaskInterface {
             foreach ( $json ['recenttracks'] ['track'] as $i => $track ) {
                 $path = ImageDownload::download($track['image'][1]['#text'], Config::$a['images']['path']);
                 if (!empty($path))
-                    $json ['recenttracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdn() . '/img/' . $path;
+                    $json ['recenttracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdni() . '/' . $path;
             }
             $cache = Application::instance()->getCacheDriver();
             $cache->save ( 'recenttracks', $json );

@@ -8,11 +8,12 @@ use Destiny\Common\Config;
 <title><?=Tpl::title($this->title)?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body class="embed">
     <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="http://www.twitch.tv/<?=Config::$a['twitch']['user']?>/embed" scrolling="no" seamless></iframe>
     <?php include 'seg/commonbottom.php' ?>
+    <script src="<?=Config::cdnv()?>/web.js"></script>
     <script>
     $(window).on('beforeunload', function(e){
         var confirmationMessage = "( ͡° ͜ʖ ͡°)";

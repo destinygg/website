@@ -19,7 +19,7 @@ class YoutubeFeed implements TaskInterface {
             foreach ($json ['items'] as $i => $item) {
                 $path = ImageDownload::download($json ['items'][$i]['snippet']['thumbnails']['high']['url'], Config::$a['images']['path']);
                 if (!empty($path))
-                    $json ['items'][$i]['snippet']['thumbnails']['high']['url'] = Config::cdn() . '/img/' . $path;
+                    $json ['items'][$i]['snippet']['thumbnails']['high']['url'] = Config::cdni() . '/' . $path;
             }
             $cache = Application::instance()->getCacheDriver();
             $cache->save('youtubeplaylist', $json);

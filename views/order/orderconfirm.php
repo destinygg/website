@@ -9,7 +9,7 @@ use Destiny\Common\Config;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="orderconfirm" class="no-brand">
   <div id="page-wrap">
@@ -108,7 +108,7 @@ use Destiny\Common\Config;
             </div>
 
             <div class="form-actions">
-              <img class="pull-right" title="Powered by Paypal" src="<?=Config::cdn()?>/web/img/Paypal.logosml.png" />
+              <a class="pull-right powered-paypal" title="Powered by Paypal" href="https://www.paypal.com" target="_blank">Paypal</a>
               <button type="submit" class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Pay subscription</button>
               <a href="/subscribe" class="btn btn-link">Cancel</a>
               <p class="agreement">
@@ -123,6 +123,7 @@ use Destiny\Common\Config;
   </div>
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
+  <script src="<?=Config::cdnv()?>/web.js"></script>
   
   <script>
   $(function(){

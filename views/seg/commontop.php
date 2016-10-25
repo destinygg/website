@@ -1,9 +1,19 @@
 <?php
 use Destiny\Common\Config;
+use Destiny\Common\Utils\Http;
 ?>
+<meta property="og:site_name" content="<?=Config::$a ['meta'] ['shortName']?>" />
+<meta property="og:title" content="<?=Config::$a ['meta'] ['title']?>" />
+<meta property="og:description" content="<?=Config::$a['meta']['description']?>" />
+<meta property="og:image" content="<?=Config::$a['meta']['image']?>" />
+<meta property="og:url" content="<?=Http::getBaseUrl()?>" />
+<meta property="og:type" content="video.other" />
+<meta property="og:video" content="<?=Config::$a['meta']['video']?>" />
+<meta property="og:video:secure_url" content="<?=Config::$a['meta']['videoSecureUrl']?>" />
+<meta property="og:video:type" content=application/x-shockwave-flash"" />
+<meta property="og:video:height" content="260" />
+<meta property="og:video:width" content="340" />
 <meta name="google-play-app" content="app-id=gg.destiny.app.chat">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="shortcut icon" href="<?=Config::cdn()?>/favicon.ico?v2">
-<link href="<?=Config::cdn()?>/vendor/bootstrap-3.3.6/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdn()?>/vendor/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdnv()?>/web/css/style.min.css" rel="stylesheet" media="screen">
+<link rel="shortcut icon" href="/favicon.ico?v3">
+<link href="<?=Config::cdnv()?>/common.css" rel="stylesheet" media="screen">

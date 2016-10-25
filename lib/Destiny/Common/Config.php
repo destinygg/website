@@ -34,6 +34,14 @@ abstract class Config {
     }
 
     /**
+     * @param string $protocol
+     * @return string
+     */
+    public static function cdni($protocol = '//'){
+        return self::cdn($protocol) . self::$a['images']['uri'];
+    }
+
+    /**
      * @return string
      */
     public static function version() {

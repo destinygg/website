@@ -8,9 +8,8 @@ use Destiny\Common\Config;
 <head>
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
-<?php include 'seg/opengraph.php' ?>
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="bigscreen" class="no-contain">
 
@@ -43,6 +42,7 @@ use Destiny\Common\Config;
     </div>
 
     <?php include 'seg/commonbottom.php' ?>
+    <script src="<?=Config::cdnv()?>/web.js"></script>
 
 </body>
 </html>

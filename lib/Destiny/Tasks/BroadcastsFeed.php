@@ -19,7 +19,7 @@ class BroadcastsFeed  implements TaskInterface {
             foreach ($broadcasts['videos'] as $i=>$video){
                 $path = ImageDownload::download($video['preview'], Config::$a['images']['path']);
                 if(!empty($path))
-                    $broadcasts['videos'][$i]['preview'] = Config::cdn() . '/img/' . $path;
+                    $broadcasts['videos'][$i]['preview'] = Config::cdni() . '/' . $path;
             }
             $cache = Application::instance ()->getCacheDriver ();
             $cache->save ( 'pastbroadcasts', $broadcasts );

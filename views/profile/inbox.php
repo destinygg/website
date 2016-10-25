@@ -10,8 +10,7 @@ use Destiny\Common\Config;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
-<link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="messages" class="no-contain">
     <div id="page-wrap">
@@ -89,8 +88,7 @@ use Destiny\Common\Config;
     <?php include 'compose.php' ?>
     <?php include 'seg/foot.php' ?>
     <?php include 'seg/commonbottom.php' ?>
+    <script src="<?=Config::cdnv()?>/web.js"></script>
 
-    <script src="<?=Config::cdnv()?>/web/js/messages.min.js"></script>
-  
 </body>
 </html>

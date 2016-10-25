@@ -1,5 +1,6 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 ?>
@@ -8,9 +9,8 @@ use Destiny\Common\Utils\Tpl;
 <head>
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
-<?php include 'seg/opengraph.php' ?>
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="agreement" class="no-brand">
     <div id="page-wrap">
@@ -56,5 +56,6 @@ use Destiny\Common\Utils\Tpl;
 
     <?php include 'seg/foot.php' ?>
     <?php include 'seg/commonbottom.php' ?>
+    <script src="<?=Config::cdnv()?>/web.js"></script>
 </body>
 </html>

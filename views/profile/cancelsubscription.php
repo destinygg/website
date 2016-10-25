@@ -9,7 +9,7 @@ use Destiny\Common\Utils\Date;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="subscription" class="no-contain">
   <div id="page-wrap">
@@ -123,6 +123,7 @@ use Destiny\Common\Utils\Date;
 
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
+  <script src="<?=Config::cdnv()?>/web.js"></script>
 
   <script src="//www.google.com/recaptcha/api.js"></script>
   <script>

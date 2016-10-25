@@ -23,10 +23,10 @@ class StreamInfo implements TaskInterface {
         if (!empty($streaminfo)) {
             $path = ImageDownload::download($streaminfo['preview'], Config::$a['images']['path'], true);
             if (!empty($path))
-                $streaminfo['preview'] = Config::cdn() . '/img/' . $path;
+                $streaminfo['preview'] = Config::cdni() . '/' . $path;
             $path = ImageDownload::download($streaminfo['animated_preview'], Config::$a['images']['path'], true);
             if (!empty($path))
-                $streaminfo['animated_preview'] = Config::cdn() . '/img/' . $path;
+                $streaminfo['animated_preview'] = Config::cdni() . '/' . $path;
         }
 
         // STREAM HOSTING

@@ -12,7 +12,7 @@ See [LICENSE.md](LICENSE.md)
 
 [nodejs](http://nodejs.org/) Dependency manager
 
-[gulp](http://gulpjs.com/) Project builder
+[webpack](https://webpack.github.io/) Project builder
 
 [composer](http://getcomposer.org/) PHP dependency manager
 
@@ -33,34 +33,55 @@ Create and load the database using `destiny.gg.sql`
 
 ### Dependencies
 
-Install the node dependencies
+Then download and install [glue](http://glue.readthedocs.org/) and [composer](http://getcomposer.org/).
+
+#### Install the node dependencies
 
 ```shell
+npm install webpack -g
 npm install
-npm install gulp
-```
-
-Then download and install [glue](http://glue.readthedocs.org/).
-
-Install the PHP dependencies
-
-```shell
 composer install
 ```
 
-You can now build the project.
+#### You can now build the project.
 
 ```shell
-gulp
+npm run build
+```
+or
+```shell
+webpack -p
 ```
 
-## The cron job
+#### Building while developing
 
-All api requests and heavy tasks are done on a single cron task (currently running every 60 seconds on the live server)
-This is controlled by the Scheduler, by running "Tasks".
+```shell
+webpack -w
+```
+or
+```shell
+webpack
+```
 
-If you are running the website locally, you can call this file manually, or setup a cron. `/cron/index.php`
+#### Additional scripts
 
-The table "[prefix_]scheduled_tasks" will show when specific tasks have been run.
+Compiles single images from multiple and outputs a css file. Does this for `./assets/emotes` and `./assets/icons`
+```shell
+npm run glue
+```
 
-If you don't run this, you will get empty UI and limited functionality in the site.
+Pulls the latest list of TLD and outputs a json file `./assets/tld.json`
+```shell
+npm run tld
+```
+
+
+## Cron job
+
+The retrieval of 3rd party data (e.g. twitter feed) is run through a php script that is polled at a set interval.
+
+If you are running the website locally, you can call this file manually, or setup a cron. `./cron/index.php`
+
+```shell
+php -f ./cron/index.php
+```

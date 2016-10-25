@@ -2,6 +2,7 @@
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -9,7 +10,7 @@ use Destiny\Common\Utils\Date;
 <title>Ban Information</title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="banned">
   
@@ -58,5 +59,6 @@ use Destiny\Common\Utils\Date;
   </section>
   
   <?php include 'seg/commonbottom.php' ?>
+  <script src="<?=Config::cdnv()?>/web.js"></script>
 </body>
 </html>

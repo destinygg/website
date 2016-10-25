@@ -12,6 +12,7 @@ use Destiny\Commerce\SubscriptionStatus;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
+<link href="<?=Config::cdnv()?>/admin.css" rel="stylesheet" media="screen">
 </head>
 <body id="admin" class="no-contain">
   <div id="page-wrap">
@@ -421,8 +422,7 @@ use Destiny\Commerce\SubscriptionStatus;
 
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
-  
-  <script src="<?=Config::cdnv()?>/web/js/admin.min.js"></script>
+  <script src="<?=Config::cdnv()?>/admin.js"></script>
   <script>
   $('.btn-post').on('click', function(){
     var a = $(this), form = $(this).closest('form');

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
@@ -8,23 +9,7 @@ use Destiny\Common\Utils\Tpl;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
-<?php include 'seg/google.tracker.php' ?>
-  <style>
-    #loginFormProviders label {
-      cursor: pointer;
-      margin: 0;
-    }
-    #loginFormProviders label,
-    #loginFormProviders i {
-      vertical-align: middle;
-    }
-    #loginFormProviders i {
-      margin-right: 3px;
-    }
-    #loginFormProviders label:hover {
-      color: white;
-    }
-  </style>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="login" class="no-brand">
   <div id="page-wrap">
@@ -101,6 +86,7 @@ use Destiny\Common\Utils\Tpl;
   
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
+  <script src="<?=Config::cdnv()?>/web.js"></script>
 
 </body>
 </html>

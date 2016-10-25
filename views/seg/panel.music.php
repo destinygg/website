@@ -1,7 +1,6 @@
 <?php
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
 ?>
 <section class="container">
   <div class="content content-dark clearfix row-no-padding">
@@ -41,7 +40,7 @@ use Destiny\Common\Config;
       <?php foreach($this->music['recenttracks']['track'] as $trackIndex=>$track): ?>
       <?php if($trackIndex == 3){break;}; ?>
         <div class="media">
-          <a class="pull-left cover-image" href="<?=$track['url']?>"><img class="media-object" src="<?=Config::cdn()?>/web/img/64x64.gif" data-src="<?=$track['image'][1]['#text']?>"></a>
+          <a class="pull-left cover-image" href="<?=$track['url']?>"><img class="media-object img_64x64" data-src="<?=$track['image'][1]['#text']?>"></a>
           <div class="media-body">
             <div class="media-heading trackname">
               <a href="<?=$track['url']?>"><?=Tpl::out($track['name'])?></a>

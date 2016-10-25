@@ -2,7 +2,6 @@
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
 ?>
 <section class="container">
 	<div class="content content-dark content-split clearfix row-no-padding">
@@ -16,9 +15,8 @@ use Destiny\Common\Config;
 				<?php $title = Tpl::out($vid['snippet']['title'])?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
-						<a
-							href="//www.youtube.com/watch?v=<?=$vid['id']['videoId']?>">
-							<img alt="<?=$title?>" src="<?=Config::cdn()?>/web/img/320x240.gif" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
+						<a href="//www.youtube.com/watch?v=<?=$vid['id']['videoId']?>">
+							<img class="img_320x240" alt="<?=$title?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
 						</a>
 					</div>
 				</li>
@@ -36,7 +34,9 @@ use Destiny\Common\Config;
 				<?php $time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
 				<li>
 					<div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$time?>">
-						<a href="<?=$broadcast['url']?>"> <img alt="<?=$time?>" src="<?=Config::cdn()?>/web/img/320x240.gif" data-src="<?=$broadcast['preview']?>" /></a>
+						<a href="<?=$broadcast['url']?>">
+							<img class="img_320x240" alt="<?=$time?>" data-src="<?=$broadcast['preview']?>" />
+						</a>
 					</div>
 				</li>
 			<?php endforeach;?>
