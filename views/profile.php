@@ -228,19 +228,19 @@ use Destiny\Commerce\SubscriptionStatus;
             <small>Fields marked with <span class="icon-required">*</span> are required.</small>
           </div>
 
-          <form id="addressSaveForm" action="/profile/address/update" method="post">
+          <form id="addressSaveForm" action="/profile/address/update" method="post" class="validate">
             <div class="ds-block">
               <div class="form-group">
                 <label>Full Name <span class="icon-required">*</span>
                 <br><small>The name of the person for this address</small>
                 </label>
-                <input class="form-control" type="text" name="fullName" value="<?=Tpl::out($this->address['fullName'])?>" placeholder="Full Name" />
+                <input class="form-control" type="text" name="fullName" value="<?=Tpl::out($this->address['fullName'])?>" placeholder="Full Name" required />
               </div>
               <div class="form-group">
                 <label>Address Line 1
                 <br><small>Street address, P.O box, company name, c/o</small>
                 </label>
-                <input class="form-control" type="text" name="line1" value="<?=Tpl::out($this->address['line1'])?>" placeholder="Address Line 1" />
+                <input class="form-control" type="text" name="line1" value="<?=Tpl::out($this->address['line1'])?>" placeholder="Address Line 1" required />
               </div>
               <div class="form-group">
                 <label>Address Line 2 <span class="icon-required">*</span>
@@ -251,19 +251,19 @@ use Destiny\Commerce\SubscriptionStatus;
             
               <div class="form-group">
                 <label>City <span class="icon-required">*</span></label>
-                <input class="form-control" type="text" name="city" value="<?=Tpl::out($this->address['city'])?>" placeholder="City" />
+                <input class="form-control" type="text" name="city" value="<?=Tpl::out($this->address['city'])?>" placeholder="City" required />
               </div>
               <div class="form-group">
                 <label>State/Province/Region <span class="icon-required">*</span></label>
-                <input class="form-control" type="text" name="region" value="<?=Tpl::out($this->address['region'])?>" placeholder="Region" />
+                <input class="form-control" type="text" name="region" value="<?=Tpl::out($this->address['region'])?>" placeholder="Region" required />
               </div>
               <div class="form-group">
                 <label>ZIP/Postal Code <span class="icon-required">*</span></label>
-                <input class="form-control" type="text" name="zip" value="<?=Tpl::out($this->address['zip'])?>" placeholder="Zip/Postal Code" />
+                <input class="form-control" type="text" name="zip" value="<?=Tpl::out($this->address['zip'])?>" placeholder="Zip/Postal Code" required />
               </div>
               <div class="form-group">
                 <label for="country">Country <span class="icon-required">*</span></label>
-                <select class="form-control" name="country" id="country">
+                <select class="form-control" name="country" id="country" required>
                   <option value="">Select your country</option>
                   <?$countries = Country::getCountries();?>
                   <option value="">&nbsp;</option>

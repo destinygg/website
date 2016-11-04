@@ -1,6 +1,8 @@
-(function($){
+/* global $, destiny */
 
-    var ChatAutoComplete = function(input, emoticons) {
+class ChatAutoComplete {
+
+    constructor(input, emoticons){
         var self = this;
 
         if (!input || input.length == 0 || !input[0].setSelectionRange)
@@ -13,13 +15,12 @@
         this.searchResults = [];
         this.searchIndex   = -1;
         this.searchWord    = null;
-        this.input         = $(input);
-        this.expireUsers   = $.proxy(this.expireUsers, this);
+        this.input         = input;
 
         for (var i = emoticons.length - 1; i >= 0; i--)
             this.addEmote(emoticons[i]);
 
-        setInterval(this.expireUsers, 100000); // 1 minute
+        setInterval(this.expireUsers.bind(this), 100000); // 1 minute
         this.input.on({
             mousedown: function() {
                 self.resetSearch();
@@ -40,16 +41,15 @@
                 return true;
             }
         });
+    }
 
-        return this;
-    };
-    ChatAutoComplete.prototype.getBucketId = function(str) {
-        if (str.length == 0)
-            return "";
+    getBucketId(id){
+        if (id.length == 0)
+            return '';
+        return id[0].toLowerCase();
+    }
 
-        return str[0].toLowerCase();
-    };
-    ChatAutoComplete.prototype.addToBucket = function(data, weight, isemote, promoteTimestamp) {
+    addToBucket(data, weight, isemote, promoteTimestamp){
         if (!this.input)
             return;
 
@@ -67,18 +67,17 @@
             };
 
         return this.buckets[id][data];
-    };
-    ChatAutoComplete.prototype.addEmote = function(emote){
+    }
+
+    addEmote(emote){
         this.addToBucket(emote, 1, true, 0);
+    }
 
-        return this;
-    };
-    ChatAutoComplete.prototype.addNick = function(nick) {
+    addNick(nick){
         this.addToBucket(nick, 1, false, 0);
+    }
 
-        return this;
-    };
-    ChatAutoComplete.prototype.updateNick = function(nick) {
+    updateNick(nick){
         if (!this.input)
             return;
 
@@ -86,9 +85,9 @@
         var data = this.addToBucket(nick, weight, false, 0);
 
         data.weight = weight;
-        return this;
-    };
-    ChatAutoComplete.prototype.promoteNick = function(nick) {
+    }
+
+    promoteNick(nick){
         var promoteTimestamp = Date.now();
         var data = this.addToBucket(nick, 1, false, promoteTimestamp);
 
@@ -96,10 +95,9 @@
             return this;
 
         data.promoted = promoteTimestamp;
-        return this;
-    };
+    }
 
-    ChatAutoComplete.prototype.getSearchWord = function(str, offset) {
+    getSearchWord(str, offset){
         var pre          = str.substring(0, offset),
             post         = str.substring(offset),
             startCaret   = pre.lastIndexOf(" ") + 1,
@@ -113,7 +111,7 @@
             post = post.substring(0, endCaret);
 
         // Ignore the first char as part of the search and flag as a user only search
-        if(pre.lastIndexOf("@") === 0){
+        if(pre.lastIndexOf('@') === 0){
             startCaret++;
             pre = pre.substring(1);
             isUserSearch = true;
@@ -124,8 +122,9 @@
             startCaret: startCaret,
             isUserSearch: isUserSearch
         };
-    };
-    ChatAutoComplete.prototype.sortResults = function(a, b) {
+    }
+
+    sortResults(a, b){
         if(!a || !b)
             return 0;
 
@@ -149,14 +148,15 @@
             return 0;
 
         return a > b? 1: -1;
-    };
-    ChatAutoComplete.prototype.searchBuckets = function(str, limit, usernamesOnly) {
+    }
+
+    searchBuckets(str, limit, usernamesOnly){
         // escape the text being inserted into the regexp
         str = str.trim().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
         var res  = [],
-            f    = new RegExp("^"+str, "i"),
+            f    = new RegExp('^'+str, "i"),
             data = this.buckets[this.getBucketId(str)] || {};
-        
+
         for (var nick in data) {
             if (!data.hasOwnProperty(nick) || (usernamesOnly && data[nick].isemote))
                 continue;
@@ -167,8 +167,9 @@
 
         res.sort(this.sortResults);
         return res.slice(0, limit);
-    };
-    ChatAutoComplete.prototype.expireUsers = function() {
+    }
+
+    expireUsers(){
         // every 10 minutes reset the promoted users so that emotes can be
         // ordered before the user again
         var tenminutesago = Date.now() - 600000;
@@ -188,8 +189,9 @@
                     data.weight = 1;
             }
         }
-    };
-    ChatAutoComplete.prototype.markLastComplete = function() {
+    }
+
+    markLastComplete(){
         if(!this.lastComplete)
             return;
 
@@ -212,23 +214,26 @@
 
         this.promoteNick(this.lastComplete);
         this.lastComplete = null;
-    };
-    ChatAutoComplete.prototype.resetSearch = function() {
+    }
+
+    resetSearch(){
         this.origVal       = null;
         this.searchResults = [];
         this.searchIndex   = -1;
         this.searchWord    = null;
-    };
-    ChatAutoComplete.prototype.searchSelectWord = function(forceUserSearch) {
+    }
+
+    searchSelectWord(forceUserSearch){
         var searchWord = this.getSearchWord(this.input.val(), this.input[0].selectionStart);
         if (searchWord.word.length >= this.minWordLength){
             this.searchWord    = searchWord;
             var isUserSearch   = forceUserSearch? true: this.searchWord.isUserSearch;
             this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, isUserSearch);
-            this.origVal       = this.input.val();
+            this.origVal       = this.input.val().toString();
         }
-    };
-    ChatAutoComplete.prototype.showAutoComplete = function() {
+    }
+
+    showAutoComplete(){
         if (this.searchIndex >= this.searchResults.length - 1)
             this.searchIndex = 0;
         else
@@ -251,9 +256,8 @@
 
         // Move the caret to the end of the replacement string + 1 for the space
         this.input[0].setSelectionRange(pre.length + result.data.length + 1, pre.length + result.data.length + 1);
-        return true;
-    };
+    }
 
-    window.ChatAutoComplete = ChatAutoComplete;
+}
 
-})(jQuery);
+export default ChatAutoComplete;

@@ -114,11 +114,11 @@ class ChatController {
      */
     private function buildChatInitResponse(array $options){
         $user = $this->getChatUser();
-        $out = 'destiny.chat = new chat(' . json_encode ([
+        $out = 'window.destiny.chat = new Chat(' . json_encode ([
                 'user'    => $user,
                 'options' => $options
             ]) . ');' . PHP_EOL;
-        $out.= 'destiny.chat.start();' . PHP_EOL;
+        $out.= 'window.destiny.chat.start();' . PHP_EOL;
         $response = new Response ( Http::STATUS_OK, $out );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
         $response->addHeader ( Http::HEADER_CACHE_CONTROL, 'no-cache, max-age=0, must-revalidate, no-store' );

@@ -19,3 +19,5 @@ config/config.local.php
 *.swp
 
 /.idea
+/typings
+/typings.json

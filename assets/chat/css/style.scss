@@ -1,6 +1,6 @@
 @import "../../common";
-@import "../../emotes/emoticons.css";
-@import "../../icons/icons.css";
+@import "../../emotes/emoticons";
+@import "../../icons/icons";
 
 a {
   color: $color-accent;
@@ -296,7 +296,7 @@ hr {
     font-size: 11px;
     vertical-align: middle;
   }
-  a {
+  a[href] {
     border-style: solid;
     border-color: transparent;
     border-width: 1px 0 1px 0;
@@ -374,6 +374,28 @@ hr {
 }
 .chat #chat-lines > .highlight {
   background-color: $color-chat-mentioned;
+}
+
+.chat .status-msg .msg:before,
+.chat .command-msg .msg:before,
+.chat .info-msg .msg:before,
+.chat .error-msg .msg:before {
+  content: "";
+  display: inline-block;
+  vertical-align: text-top;
+  margin-right: 4px;
+}
+.chat .status-msg .msg:before {
+  @extend .icon-status;
+}
+.chat .command-msg .msg:before {
+  @extend .icon-command;
+}
+.chat .info-msg .msg:before {
+  @extend .icon-info;
+}
+.chat .error-msg .msg:before {
+  @extend .icon-error;
 }
 
 #chat-input-wrap {
@@ -643,11 +665,11 @@ hr {
 }
 
 @keyframes rustle {
-  from { left: 0px; }
+  from { left: 0; }
   to { left: 2px; }
 }
 @keyframes rustle-hover {
-  from { left: 0px; }
+  from { left: 0; }
   to { left: 2px; }
 }
 

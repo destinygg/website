@@ -1,79 +1,70 @@
-ChatMenu = (function(){
+/* global $, destiny */
 
-    /**
-     * @type {Array<ChatMenu>}
-     */
-    var menus = [];
+class ChatMenu {
 
-    /**
-     * @param ui
-     * @param chat
-     */
-    function cls(ui, chat) {
-
-        var scrollPlugin = null;
-
+    constructor(ui, chat){
         this.ui      = ui;
         this.chat    = chat;
         this.btn     = null;
         this.visible = false;
         this.shown   = false;
-
-        this.on = function(name, fn){
-            $(this).on(name, fn);
-        };
-
-        this.show = function(btn){
-            if(this.visible) return;
-            if(!this.shown) $(this).triggerHandler('init');
-
-            this.visible = true;
-            this.shown = true;
-            this.btn = btn;
-
-            $(this.btn).addClass('active');
-            $(this.ui).addClass('active');
-            $(this).triggerHandler('show');
-
-            $(this.ui).find('.scrollable').each(function(){
-                if(!scrollPlugin)
-                    scrollPlugin = $(this).nanoScroller({
-                        disableResize: true,
-                        preventPageScrolling: true
-                    })[0].nanoscroller;
-                else
-                    scrollPlugin.reset();
-            });
-        };
-
-        this.hide = function(){
-            if(this.visible){
-                this.visible = false;
-                $(this.btn).removeClass('active');
-                $(this.ui).removeClass('active');
-                $(this).triggerHandler('hide');
-            }
-        };
-
-        this.toggle = function(btn){
-            var wasVisible = this.visible;
-            ChatMenu.closeMenus(null);
-            if(!wasVisible) this.show(btn);
-        };
-
-        this.redraw = function(){
-            if(scrollPlugin) scrollPlugin.reset();
-        };
-
+        this.scrollPlugin = null;
         this.ui.on('click', '.close', this.hide.bind(this));
-        menus.push(this);
+        this.chat.menus.push(this);
     }
 
-    cls.closeMenus = function(){
-        for(var i=0; i<menus.length; ++i)
-            menus[i].hide();
-    };
+    on(name, fn){
+        $(this).on(name, fn);
+    }
 
-    return cls;
+    show(btn){
+        if(this.visible) return;
+        if(!this.shown) $(this).triggerHandler('init');
 
-})();
+        this.visible = true;
+        this.shown = true;
+        this.btn = btn;
+
+        $(this.btn).addClass('active');
+        $(this.ui).addClass('active');
+        $(this).triggerHandler('show');
+
+        $(this.ui).find('.scrollable').each(function(){
+            if(!this.scrollPlugin)
+                this.scrollPlugin = $(this).nanoScroller({
+                    disableResize: true,
+                    preventPageScrolling: true
+                })[0].nanoscroller;
+            else
+                this.scrollPlugin.reset();
+        });
+    }
+
+    hide(){
+        if(this.visible){
+            this.visible = false;
+            $(this.btn).removeClass('active');
+            $(this.ui).removeClass('active');
+            $(this).triggerHandler('hide');
+        }
+    }
+
+    toggle(btn){
+        const wasVisible = this.visible;
+        ChatMenu.closeMenus(this.chat);
+        if(!wasVisible) this.show(btn);
+    }
+
+    redraw(){
+        if(this.scrollPlugin && this.scrollPlugin.isActive)
+            this.scrollPlugin.reset();
+    }
+
+    static closeMenus(chat){
+        for(var i=0; i<chat.menus.length; ++i)
+            chat.menus[i].hide();
+    }
+
+}
+
+export default ChatMenu;

@@ -125,7 +125,7 @@ use Destiny\Common\Utils\Date;
   <?php include 'seg/commonbottom.php' ?>
   <script src="<?=Config::cdnv()?>/web.js"></script>
 
-  <script src="//www.google.com/recaptcha/api.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js"></script>
   <script>
     (function(){
       $('button#cancelSubscriptionBtn').on('click', function(){

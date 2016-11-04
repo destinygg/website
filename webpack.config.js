@@ -1,7 +1,7 @@
-let webpack = require('webpack');
-let path = require('path');
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
-let CleanWebpackPlugin = require('clean-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -16,6 +16,7 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache']}),
+        new webpack.optimize.UglifyJsPlugin({compress : {warnings : false}}),
         new webpack.ProvidePlugin({'$': 'jquery', 'jQuery': 'jquery', 'window.jQuery': 'jquery'}),
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurenceOrderPlugin(),
@@ -35,6 +36,11 @@ module.exports = {
                 loader: 'json'
             },
             {
+                test: /\.js$/,
+                exclude: /(node_modules)/,
+                loader: 'babel?presets[]=es2015'
+            },
+            {
                 test: /\.(scss|css)$/,
                 loader: ExtractTextPlugin.extract('style', 'css!sass')
             },
@@ -45,13 +51,9 @@ module.exports = {
             {
                 test   : /\.(png|jpg|gif)$/,
                 loader : 'file-loader?name=img/[hash].[ext]'
-            },
-            {
-                test: /\.tsx?$/,
-                loader: 'ts-loader'
             }
         ]
     },
     context: __dirname,
-    devtool: null
+    devtool: null//'source-map'
 };

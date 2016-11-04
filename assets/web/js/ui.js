@@ -316,19 +316,7 @@ $(function(){
         return false;
     });
 
-})();
-
-$(function(){
-    $('form#addressSaveForm').validate({
-        rules: {
-            fullName : { required: true },
-            line1    : { required: true },
-            line2    : { required: false },
-            city     : { required: true },
-            region   : { required: true },
-            zip      : { required: true },
-            country  : { required: true }
-        },
+    $('form.validate').validate({
         highlight: function(element) {
             $(element).closest('.form-group').addClass('error');
         },
@@ -336,7 +324,7 @@ $(function(){
             $(element).closest('.form-group').removeClass('error');
         }
     });
-});
+})();
 
 $(function(){
 
