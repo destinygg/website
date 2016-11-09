@@ -94,6 +94,8 @@ return array (
 			'nathanRustle',
 			'nathanTowel',
 			'nathanWat',
+			'nathanThinking',
+			'nathanRuse',
 			'nathanYee',
 			'nathanWeeb',
 		),
