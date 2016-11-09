@@ -87,6 +87,7 @@ return array (
 		),
 		'twitchemotes' => array(
 			'nathanD',
+			'nathanDank',
 			'nathanF',
 			'nathanNotears',
 			'nathanPepe',
@@ -94,6 +95,7 @@ return array (
 			'nathanTowel',
 			'nathanWat',
 			'nathanYee',
+			'nathanWeeb',
 		),
 	),
 	'images' => array(
