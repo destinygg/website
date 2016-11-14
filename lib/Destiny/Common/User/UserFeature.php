@@ -13,7 +13,7 @@ abstract class UserFeature {
     const VIP = 'vip';
     const MODERATOR = 'moderator';
     const ADMIN = 'admin';
-    CONST BROADCASTER = 'flair12';
+    const BROADCASTER = 'flair12';
     const BOT = 'bot';
     const BOT2 = 'flair11';
     const NOTABLE = 'flair2';
@@ -22,6 +22,28 @@ abstract class UserFeature {
     const COMPCHALLENGE = 'flair6';
     const EVE = 'flair7';
     const SC2 = 'flair10';
+
+    public static $FEATURE_MAP = [
+        'PROTECTED'     => self::PROTECT,
+        'SUBSCRIBER'    => self::SUBSCRIBER,
+        'SUBSCRIBERT0'  => self::SUBSCRIBERT0,
+        'SUBSCRIBERT1'  => self::SUBSCRIBERT1,
+        'SUBSCRIBERT2'  => self::SUBSCRIBERT2,
+        'SUBSCRIBERT3'  => self::SUBSCRIBERT3,
+        'SUBSCRIBERT4'  => self::SUBSCRIBERT4,
+        'VIP'           => self::VIP,
+        'MODERATOR'     => self::MODERATOR,
+        'ADMIN'         => self::ADMIN,
+        'BROADCASTER'   => self::BROADCASTER,
+        'BOT'           => self::BOT,
+        'BOT2'          => self::BOT2,
+        'NOTABLE'       => self::NOTABLE,
+        'TRUSTED'       => self::TRUSTED,
+        'CONTRIBUTOR'   => self::CONTRIBUTOR,
+        'COMPCHALLENGE' => self::COMPCHALLENGE,
+        'EVE'           => self::EVE,
+        'SC2'           => self::SC2
+    ];
 
     public static $FEATURES = [
         self::PROTECT,

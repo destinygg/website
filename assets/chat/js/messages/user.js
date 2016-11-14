@@ -1,12 +1,15 @@
 /* global $, destiny */
 
 import ChatMessage from './message.js';
+import UserFeatures from '../features.js';
 
 class ChatUserMessage extends ChatMessage {
 
     constructor(message, user, timestamp) {
         super(message, timestamp, 'user');
         this.user = user;
+        this.highlighted = false;
+        this.prepareMessage();
     }
 
     prepareMessage(){
@@ -19,77 +22,70 @@ class ChatUserMessage extends ChatMessage {
         }
     }
 
-    wrap(html, css){
-        if (this.user && this.user.username){
-            return '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+'" data-username="'+this.user.username.toLowerCase()+'">'+html+'</div>';
-        } else {
-            return '<div class="'+this.type+'-msg'+((css) ? ' '+css:'')+'">'+html+'</div>';
-        }
-    }
-
     wrapUser(user){
-        return ((this.isSlashMe) ? '': ChatUserMessage.getFeatureHTML(user)) +' <a class="user '+ user.features.join(' ') +'">' +user.username+'</a>';
+        const features = (user.features.length > 0) ? `<span class="features">${ChatUserMessage.getFeatureHTML(user)}</span>` : '';
+        return `${features} <a class="user ${user.features.join(' ')}">${user.username}</a>`;
     }
 
     html(){
-        let ui = null;
-        const lastMessage = destiny.chat.gui.lastMessage;
-        if(lastMessage && lastMessage.user && this.user && lastMessage.user.username == this.user.username){
-            if(this.isSlashMe)
-                ui = this.wrap(this.wrapTime() + ' *' + this.wrapUser(this.user) + ' ' + this.wrapMessage());
-            else
-                ui = this.wrap(this.wrapTime() + ' <span class="continue">&gt;</span> ' + this.wrapMessage(), 'continue');
-        } else {
-            ui = this.wrap(this.wrapTime() + ' ' + ((!this.isSlashMe) ? '' : '*') + this.wrapUser(this.user) + ((!this.isSlashMe) ? ': ' : ' ') + this.wrapMessage());
-        }
-        $(ui).toggleClass('own-msg', this.user && destiny.chat.user && destiny.chat.user.username == this.user.username);
-        $(ui).toggleClass('emote', this.isSlashMe);
-        return ui;
+        const classes = [], attr = {};
+        if (this.user && this.user.username)
+            attr['data-username'] = this.user.username.toLowerCase();
+        if(this.chat.user && this.chat.user.username == this.user.username)
+            classes.push('msg-own');
+        if(this.isSlashMe)
+            classes.push('msg-emote');
+        if(this.highlighted)
+            classes.push('msg-highlight');
+        if(this.chat.lastMessage && this.chat.lastMessage.user && this.user && this.chat.lastMessage.user.username == this.user.username)
+            classes.push('msg-continue');
+        return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + ' ' + this.wrapMessage(), classes, attr);
     }
 
     static getFeatureHTML(user){
         let icons = '';
-        if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT4))
+
+        if(user.hasFeature(UserFeatures.SUBSCRIBERT4))
             icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
-        else if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT3))
+        else if(user.hasFeature(UserFeatures.SUBSCRIBERT3))
             icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
-        else if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT2))
+        else if(user.hasFeature(UserFeatures.SUBSCRIBERT2))
             icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
-        else if(user.hasFeature(destiny.UserFeatures.SUBSCRIBERT1))
+        else if(user.hasFeature(UserFeatures.SUBSCRIBERT1))
             icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
-        else if(!user.hasFeature(destiny.UserFeatures.SUBSCRIBERT0) && user.hasFeature(destiny.UserFeatures.SUBSCRIBER))
+        else if(!user.hasFeature(UserFeatures.SUBSCRIBERT0) && user.hasFeature(UserFeatures.SUBSCRIBER))
             icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
 
-        for (var i = 0; i < user.features.length; i++) {
-            switch(user.features[i]){
-                case destiny.UserFeatures.SUBSCRIBERT0 :
+        for(const feature of user.features){
+            switch(feature){
+                case UserFeatures.SUBSCRIBERT0 :
                     icons += '<i class="icon-minitwitch" title="Twitch subscriber"/>';
                     break;
-                case destiny.UserFeatures.BOT :
+                case UserFeatures.BOT :
                     icons += '<i class="icon-bot" title="Bot"/>';
                     break;
-                case destiny.UserFeatures.BOT2 :
+                case UserFeatures.BOT2 :
                     icons += '<i class="icon-bot2" title="Bot"/>';
                     break;
-                case destiny.UserFeatures.NOTABLE :
+                case UserFeatures.NOTABLE :
                     icons += '<i class="icon-notable" title="Notable"/>';
                     break;
-                case destiny.UserFeatures.TRUSTED :
+                case UserFeatures.TRUSTED :
                     icons += '<i class="icon-trusted" title="Trusted"/>';
                     break;
-                case destiny.UserFeatures.CONTRIBUTOR :
+                case UserFeatures.CONTRIBUTOR :
                     icons += '<i class="icon-contributor" title="Contributor"/>';
                     break;
-                case destiny.UserFeatures.COMPCHALLENGE :
+                case UserFeatures.COMPCHALLENGE :
                     icons += '<i class="icon-compchallenge" title="Composition Winner"/>';
                     break;
-                case destiny.UserFeatures.EVE :
+                case UserFeatures.EVE :
                     icons += '<i class="icon-eve" title="Eve"/>';
                     break;
-                case destiny.UserFeatures.SC2 :
+                case UserFeatures.SC2 :
                     icons += '<i class="icon-sc2" title="Starcraft 2"/>';
                     break;
-                case destiny.UserFeatures.BROADCASTER :
+                case UserFeatures.BROADCASTER :
                     icons += '<i class="icon-broadcaster" title="Broadcaster"/>';
                     break;
             }

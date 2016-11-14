@@ -5,7 +5,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     entry: {
-        common: ['jquery','moment','font-awesome/scss/font-awesome.scss'],
+        common: ['core-js/es6','jquery','moment','font-awesome/scss/font-awesome.scss'],
         web: './assets/web.js',
         chat: './assets/chat.js',
         admin: './assets/admin.js'
@@ -16,7 +16,6 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache']}),
-        new webpack.optimize.UglifyJsPlugin({compress : {warnings : false}}),
         new webpack.ProvidePlugin({'$': 'jquery', 'jQuery': 'jquery', 'window.jQuery': 'jquery'}),
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurenceOrderPlugin(),
@@ -46,11 +45,11 @@ module.exports = {
             },
             {
                 test   : /(-webfont|glyphicons-halflings-regular)\.(eot|svg|ttf|woff2?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader : 'file-loader?name=fonts/[hash].[ext]'
+                loader : 'file-loader?name=fonts/[name].[ext]'
             },
             {
                 test   : /\.(png|jpg|gif)$/,
-                loader : 'file-loader?name=img/[hash].[ext]'
+                loader : 'file-loader?name=img/[name].[ext]'
             }
         ]
     },

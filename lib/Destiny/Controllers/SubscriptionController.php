@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Exception;
 use Destiny\Common\Request;
 use Destiny\Common\ViewModel;
@@ -467,7 +468,7 @@ class SubscriptionController {
         }
 
         // Broadcast
-        $randomEmote = Config::$a['chat']['customemotes'][ array_rand ( Config::$a['chat']['customemotes'] ) ];
+        $randomEmote = ChatEmotes::random('destiny');
         if(!empty($subscription['gifter'])){
             $gifter   = $userService->getUserById( $subscription['gifter'] );
             $userName = $gifter['username'];

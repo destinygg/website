@@ -1,16 +1,15 @@
 /* global $ */
 
-var moment = require('moment');
-require('jquery-validation');
+import moment from 'moment';
 
 
 // Document ready
 $(function(){
 
-    var body = $('body');
+    const body = $('body');
 
     // Generic popup defaults
-    var popupDefaults = {
+    const popupDefaults = {
         height     :500,
         width      :420,
         scrollbars :0,
@@ -21,25 +20,21 @@ $(function(){
         resizable  :0,
         dependent  :0
     };
-    
     window.getOptionsString = (function(options){
         options = (!options) ? popupDefaults : $.extend({}, popupDefaults, options);
-        var str = '';
-        for(var i in options)
-            if(options.hasOwnProperty(i))
-                str += i + '='+ options[i] +',';
-        return str;
+        let str = '';
+        return Object.keys(options).forEach(k => str += `${k}=${options[k]},`);
     });
 
     $('body#bigscreen').each(function(){
 
-        var chatpanel   = $('#chat-panel'),
+        const chatpanel   = $('#chat-panel'),
             streampanel = $('#stream-panel'),
             chatframe   = $('iframe#chat-frame'),
             overlay     = $('<div class="overlay" />');
 
         chatframe.on('load', function(){
-            var chatwindow = this.contentWindow;
+            const chatwindow = this.contentWindow;
 
             if(!chatwindow)
                 return;
@@ -68,14 +63,14 @@ $(function(){
         // Bigscreen resize
         $('#chat-panel-resize-bar').each(function(){
 
-            var resizebar    = $(this),
-                minwidth     = 320,
-                disableWidth = 768;
+            const resizebar    = $(this),
+                  minwidth     = 320,
+                  disableWidth = 768;
 
             resizebar.css('left', 0);
 
             // Resize the stream / chat frames
-            var resizeFrames = function(nwidth) {
+            const resizeFrames = function(nwidth) {
                 if(nwidth < minwidth)
                     nwidth = minwidth;
                 streampanel.css('width', '-moz-calc(100% - '+ nwidth +'px)');
@@ -84,7 +79,7 @@ $(function(){
                 streampanel.css('width', 'calc(100% - '+ nwidth +'px)');
                 chatpanel.css('width', nwidth);
                 resizebar.css('left', 0);
-                localStorage['bigscreen.chat.width'] = nwidth;
+                localStorage.setItem('bigscreen.chat.width', nwidth);
             };
 
             resizebar.on('mousedown.chatresize', function(e){
@@ -97,7 +92,7 @@ $(function(){
                 overlay.appendTo('body');
 
                 // x,y of the drag bar
-                var offsetX = e.clientX,
+                let offsetX = e.clientX,
                     sx      = resizebar.position().left;
 
                 $(document).on('mouseup.chatresize', function(e){
@@ -136,7 +131,7 @@ $(function(){
             });
 
             // Onload, remember the last width the user chose
-            var width = parseInt(localStorage['bigscreen.chat.width']);
+            const width = parseInt(localStorage.getItem('bigscreen.chat.width'));
             if(width > minwidth && $(window).width() > disableWidth)
                 resizeFrames(width);
 
@@ -159,9 +154,9 @@ $(function(){
 
     // lazy loading images
     $(document).find('img[data-src]').each(function () {
-        var img = $(this), url = img.data('src');
+        const img = $(this), url = img.data('src');
         if (url !== '' && url !== null) {
-            var clone = img.clone();
+            const clone = img.clone();
             clone.one('load', function () {
                 img.replaceWith(clone);
             });
@@ -171,7 +166,7 @@ $(function(){
 
     // Generic popup links
     body.on('click', 'a.popup', function(e){
-        var a = $(this);
+        const a = $(this);
         a.data('popup', window.open(a.attr('href'), '_blank', window.getOptionsString(a.data('options'))) );
         e.preventDefault();
         return true;
@@ -184,12 +179,14 @@ $(function(){
 // Change time on selected elements
 (function(){
 
-    var applyMomentToElement = function(e){
+    const applyMomentToElement = function(e){
 
-        var ui = $(e),
-            datetime = ui.data('datetime') || ui.attr('datetime') || ui.text(),
-            format = ui.data('format') || 'MMMM Do, h:mm:ss a';
+        const ui = $(e),
+          format = ui.data('format') || 'MMMM Do, h:mm:ss a';
+        let datetime = ui.data('datetime') || ui.attr('datetime') || ui.text();
 
+        if(datetime === true)
+            datetime = ui.attr('title');
         if(ui.data('moment-fromnow')){
             ui.addClass('moment-update');
             ui.html(moment(datetime).fromNow());
@@ -218,7 +215,7 @@ $(function(){
 // Gifting / user search
 (function(){
 
-    var usrSearch    = $('#userSearchModal'),
+    let usrSearch    = $('#userSearchModal'),
         usrInput     = usrSearch.find('input#userSearchInput'),
         usrSelectBtn = usrSearch.find('button#userSearchSelect'),
         usrSearchFrm = usrSearch.find('form#userSearchForm'),
@@ -226,7 +223,7 @@ $(function(){
         hasErrors    = false,
         giftUsername = '';
 
-    var checkUser = function(username, success){
+    const checkUser = function(username, success){
         $.ajax({
             url: '/gift/check',
             data: {s: username},
@@ -239,14 +236,14 @@ $(function(){
             }
         });
     };
-    
-    var showLookupError = function(message){
+
+    const showLookupError = function(message){
         hasErrors = true;
         usrSelectBtn.button('reset').attr('disabled', true);
         usrSearch.find('label.error').text(message).removeClass('hidden');
     };
 
-    var cancelUserSelect = function(){
+    const cancelUserSelect = function(){
         usrSearch.modal('hide');
         usrInput.val('');
         giftMsgInput.val('');
@@ -257,7 +254,7 @@ $(function(){
         $('input[name="gift-message"]').val('');
     };
 
-    var selectUser = function(username){
+    const selectUser = function(username){
         usrSelectBtn.button('loading');
         checkUser(username, function(response){
             if(response.valid && response.cangift){
@@ -329,13 +326,13 @@ $(function(){
 $(function(){
 
     $('#stream-status').each(function(){
-        var el = $(this),
+        const el = $(this),
             a = el.find('#stream-status-preview > a'),
             end = el.find('#stream-status-end'),
             start = el.find('#stream-status-start'),
             host = el.find('#stream-status-host');
 
-        var status = {
+        let status = {
             live: false,
             game: null,
             preview: "",
@@ -348,8 +345,8 @@ $(function(){
             host: {}
         };
 
-        var updateStatus = function(status){
-            var state = (status['host'] && status.host['target_id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
+        const updateStatus = function(status){
+            let state = (status['host'] && status.host['target_id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
             el.removeClass('online offline hosting').addClass(state);
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
@@ -382,27 +379,6 @@ $(function(){
         })
         .on('mouseout', function(){
             a.css('background-image', a.src);
-        });
-    });
-
-});
-
-
-$(function(){
-
-    $('#loginForm').each(function(){
-        var form = $(this);
-        form.on('click', '#loginFormProviders label', function(){
-            $(this).find('[type="radio"]').prop('checked', true);
-            form.trigger('submit');
-            return false;
-        });
-        form.on('keyup', '#loginFormProviders label', function(e){
-            if (e.keyCode == 13){
-                $(this).find('[type="radio"]').prop('checked', true);
-                form.trigger('submit');
-                return false;
-            }
         });
     });
 

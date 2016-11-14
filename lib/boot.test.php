@@ -18,11 +18,12 @@ Config::load ( array_replace_recursive (
 ) );
 set_include_path(get_include_path() . PATH_SEPARATOR . Config::$a['tpl']['path']);
 
-$log = new Logger('name');
-$log->pushHandler(new StreamHandler('php://stdout', Logger::WARNING));
-
 $app = Application::instance();
-$app->setLogger( $log );
 $app->setLoader ( $loader );
+
+$log = new Logger('web');
+$log->pushHandler(new StreamHandler('php://stdout', Logger::WARNING));
+$app->setLogger( $log );
+
 $app->setConnection ( DriverManager::getConnection ( Config::$a ['db'] ) );
 $app->setCacheDriver ( new Doctrine\Common\Cache\ArrayCache() );

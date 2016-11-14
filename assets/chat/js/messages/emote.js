@@ -4,11 +4,10 @@ import ChatMessage from './message.js';
 
 class ChatEmoteMessage extends ChatMessage {
 
-    constructor(emote, timestamp){
+    constructor(emote, timestamp, count=1){
         super(emote, timestamp, 'emote');
-        this.emotecount = 1;
+        this.emotecount   = count;
         this.emotecountui = null;
-        return this;
     }
 
     getEmoteCountLabel(){
@@ -16,13 +15,13 @@ class ChatEmoteMessage extends ChatMessage {
     }
 
     html(){
-        return this.wrap(this.wrapTime() + ' ' + this.wrapMessage() + '<span class="emotecount">'+ this.getEmoteCountLabel() +'<span>');
+        return this.wrap(`${this.wrapTime()} ${this.wrapMessage()} <span class="emotecount">${this.getEmoteCountLabel()}<span>`);
     }
 
     incEmoteCount(){
         ++this.emotecount;
 
-        var stepClass = '';
+        let stepClass = '';
         if(this.emotecount >= 50)
             stepClass = ' x50';
         else if(this.emotecount >= 30)

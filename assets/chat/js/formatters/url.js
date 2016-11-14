@@ -4,7 +4,7 @@
   https://github.com/danielberndt/babel-plugin-utf-8-regex/blob/master/src/transformer.js
 */
 
-import ChatFormatter from '../formatter.js';
+import ChatFormatter from './formatter.js';
 
 class UrlFormatter extends ChatFormatter {
 

@@ -16,7 +16,8 @@ use Destiny\Common\Config;
 </head>
 <body class="embed">
 
-<div id="destinychat" class="chat chat-icons <?php if(Session::hasRole(UserRole::USER)): ?>authenticated<?php endif ?>">
+<div id="chat" class="chat chat-icons <?php if(Session::hasRole(UserRole::USER)): ?>authenticated<?php endif ?>">
+
     <!-- chat output -->
     <div id="chat-output-frame">
         <div id="chat-output" class="nano">
@@ -31,7 +32,7 @@ use Destiny\Common\Config;
         <div class="clearfix">
             <div id="chat-input-wrap">
                 <div id="chat-input-control-wrap">
-                    <input id="chat-input-control" type="text" placeholder="Enter a message..." class="input" spellcheck="true" autocomplete="off"/>
+                    <input id="chat-input-control" type="text" placeholder="Enter a message..." class="input" spellcheck="true" autocomplete="off" autofocus/>
                     <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
                 </div>
                 <span id="chat-login-msg">
@@ -148,7 +149,6 @@ use Destiny\Common\Config;
                   <h6>Twitch Emotes</h6>
                   <div id="emote-subscribe-note">Twitch subscribers only</div>
                   <div class="emote-group" id="twitch-emotes"></div>
-                  <hr/>
                 </div>
               </div>
 
@@ -171,7 +171,7 @@ use Destiny\Common\Config;
                     <a id="inbox-privmsg" href="/profile/messages" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i> Inbox</a> or
                     <button id="markread-privmsg" class="btn btn-default btn-sm">Mark All Read</button>
                 </p>
-                <p>or view the <a href="#" class="user-list-link">user list</a></p>
+                <p>or view the <a href="#" id="user-list-link">user list</a></p>
               </div>
             </div>
         </div>
@@ -185,6 +185,7 @@ use Destiny\Common\Config;
 
 <?php include 'seg/commonbottom.php' ?>
 <script src="<?=Config::cdnv()?>/chat.js"></script>
+<script src="/chat/history"></script>
 <script src="/chat/init"></script>
 
 </body>

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatEmotes;
 use Destiny\Common\MimeType;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
@@ -96,12 +97,12 @@ class HomeController {
      * @return string
      */
     public function emoticons(ViewModel $model) {
-        $emotes = Config::$a['chat'] ['customemotes'];
-        natcasesort( $emotes );
+        $emotes = ChatEmotes::get('destiny');
+        //natcasesort( $emotes );
         $model->emoticons = $emotes;
 
-        $twemotes = Config::$a['chat'] ['twitchemotes'];
-        natcasesort( $twemotes );
+        $twemotes = ChatEmotes::get('twitch');
+        //natcasesort( $twemotes );
         $model->twitchemotes = $twemotes;
 
         $model->title = 'Emoticons';

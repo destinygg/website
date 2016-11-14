@@ -18,11 +18,11 @@
     animation: rustle-hover 100ms infinite;
 }
 @keyframes rustle {
-    from { left: 0px; }
+    from { left: 0; }
     to { left: 2px; }
 }
 @keyframes rustle-hover {
-    from { left: 0px; }
+    from { left: 0; }
     to { left: 2px; }
 }
 
@@ -331,14 +331,12 @@
     transform: scale(0.75);
     opacity: 0.75;
     -webkit-filter: hue-rotate(-15deg) saturate(125%);
-    filter: hue-rotate(-5deg) saturate(125%);;
-
+    filter: hue-rotate(-5deg) saturate(125%);
   }
   60%{
     transform: scale(1.25);
     -webkit-filter: hue-rotate(-25deg) saturate(150%);
-    filter: hue-rotate(-25deg) saturate(150%);;
-
+    filter: hue-rotate(-25deg) saturate(150%);
     opacity: 0.75;
   }
   70%{
@@ -357,7 +355,7 @@
 
 .chat-emote-Hhhehhehe {
   animation: Hhhehhehe-anim 500ms 1;
-  transform-origin: 0% 75%;
+  transform-origin: 0 75%;
 }
 
 .chat-emote-Hhhehhehe:hover {

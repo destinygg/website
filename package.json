@@ -37,6 +37,7 @@
     "bootstrap": "~3.3.7",
     "chart.js": "~2.3.0",
     "clean-webpack-plugin": "~0.1.13",
+    "core-js": "^2.4.1",
     "css-loader": "~0.25.0",
     "debounce": "~1.0.0",
     "del": "~2.2.2",

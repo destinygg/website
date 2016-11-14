@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Common\Authentication;
 
+use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Config;
 use Destiny\Common\Application;
 use Destiny\Common\Crypto;
@@ -36,7 +37,7 @@ class AuthenticationService extends Service {
         // nick-to-emote similarity heuristics, not perfect sadly ;(
         $normalizeduname = strtolower( $username );
         $front = substr( $normalizeduname, 0, 2 );
-        foreach( Config::$a ['chat'] ['customemotes'] as $emote ) {
+        foreach( ChatEmotes::get('destiny') as $emote ) {
             $normalizedemote = strtolower( $emote );
             if ( strpos( $normalizeduname, $normalizedemote ) === 0 )
                 throw new Exception ( 'Username too similar to an emote, try changing the first characters' );

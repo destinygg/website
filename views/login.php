@@ -87,6 +87,23 @@ use Destiny\Common\Config;
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/commonbottom.php' ?>
   <script src="<?=Config::cdnv()?>/web.js"></script>
+  <script>
+    $('#loginForm').each(function(){
+      var form = $(this);
+      form.on('click', '#loginFormProviders label', function(){
+        $(this).find('[type="radio"]').prop('checked', true);
+        form.trigger('submit');
+        return false;
+      });
+      form.on('keyup', '#loginFormProviders label', function(e){
+        if (e.keyCode == 13){
+          $(this).find('[type="radio"]').prop('checked', true);
+          form.trigger('submit');
+          return false;
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>

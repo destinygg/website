@@ -1,12 +1,10 @@
 /* global $, destiny */
 
+import Chat from './chat.js';
+
 class ChatAutoComplete {
 
-    constructor(input, emoticons){
-        var self = this;
-
-        if (!input || input.length == 0 || !input[0].setSelectionRange)
-            return this;
+    constructor(chat){
 
         this.minWordLength = 1;
         this.maxResults    = 10;
@@ -15,30 +13,27 @@ class ChatAutoComplete {
         this.searchResults = [];
         this.searchIndex   = -1;
         this.searchWord    = null;
-        this.input         = input;
+        this.input         = chat.input;
 
-        for (var i = emoticons.length - 1; i >= 0; i--)
-            this.addEmote(emoticons[i]);
+        //HTMLInputElement.prototype.setSelectionRange
+        if (!this.input[0].setSelectionRange)
+            return this;
 
-        setInterval(this.expireUsers.bind(this), 100000); // 1 minute
-        this.input.on({
-            mousedown: function() {
-                self.resetSearch();
-            },
-            keydown: function(e) {
-                if (e.keyCode == 9) { // if TAB
-                    var forceUserSearch = e.shiftKey;
-                    if (self.searchResults.length <= 0) {
-                        self.resetSearch();
-                        self.searchSelectWord(forceUserSearch);
-                    }
-                    self.showAutoComplete();
-                    return false;
+        setInterval(this.expireUsers.bind(this), 60000); // 1 minute
+
+        this.input.on('mousedown', this.resetSearch.bind(this));
+        this.input.on('keydown', e => {
+            if (e.which === 9) { // if TAB
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.searchResults.length <= 0) {
+                    this.resetSearch();
+                    this.searchSelectWord(e.shiftKey);
                 }
-
+                this.showAutoComplete();
+            } else {
                 // Cancel the search and continue the keydown
-                self.resetSearch();
-                return true;
+                this.resetSearch();
             }
         });
     }
@@ -50,10 +45,7 @@ class ChatAutoComplete {
     }
 
     addToBucket(data, weight, isemote, promoteTimestamp){
-        if (!this.input)
-            return;
-
-        var id = this.getBucketId(data);
+        let id = this.getBucketId(data);
 
         if(!this.buckets[id])
             this.buckets[id] = {};
@@ -69,6 +61,19 @@ class ChatAutoComplete {
         return this.buckets[id][data];
     }
 
+    toggleNick(data, val){
+        return val ? this.removeNick(data) : this.updateNick(data);
+    }
+
+    removeNick(data){
+        let id = this.getBucketId(data);
+        if(this.buckets[id] && this.buckets[id][data]){
+            delete this.buckets[id][data];
+            return true;
+        }
+        return false;
+    }
+
     addEmote(emote){
         this.addToBucket(emote, 1, true, 0);
     }
@@ -78,18 +83,14 @@ class ChatAutoComplete {
     }
 
     updateNick(nick){
-        if (!this.input)
-            return;
-
-        var weight = Date.now();
-        var data = this.addToBucket(nick, weight, false, 0);
-
+        const weight = Date.now();
+        const data = this.addToBucket(nick, weight, false, 0);
         data.weight = weight;
     }
 
     promoteNick(nick){
-        var promoteTimestamp = Date.now();
-        var data = this.addToBucket(nick, 1, false, promoteTimestamp);
+        const promoteTimestamp = Date.now();
+        const data = this.addToBucket(nick, 1, false, promoteTimestamp);
 
         if (data.isemote)
             return this;
@@ -98,10 +99,10 @@ class ChatAutoComplete {
     }
 
     getSearchWord(str, offset){
-        var pre          = str.substring(0, offset),
+        let pre          = str.substring(0, offset),
             post         = str.substring(offset),
-            startCaret   = pre.lastIndexOf(" ") + 1,
-            endCaret     = post.indexOf(" "),
+            startCaret   = pre.lastIndexOf(' ') + 1,
+            endCaret     = post.indexOf(' '),
             isUserSearch = false;
 
         if (startCaret > 0)
@@ -151,13 +152,12 @@ class ChatAutoComplete {
     }
 
     searchBuckets(str, limit, usernamesOnly){
-        // escape the text being inserted into the regexp
-        str = str.trim().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-        var res  = [],
-            f    = new RegExp('^'+str, "i"),
+        str = Chat.makeSafeForRegex(str);
+        let res  = [],
+            f    = new RegExp('^'+str, 'i'),
             data = this.buckets[this.getBucketId(str)] || {};
 
-        for (var nick in data) {
+        for (let nick in data) {
             if (!data.hasOwnProperty(nick) || (usernamesOnly && data[nick].isemote))
                 continue;
 
@@ -172,16 +172,16 @@ class ChatAutoComplete {
     expireUsers(){
         // every 10 minutes reset the promoted users so that emotes can be
         // ordered before the user again
-        var tenminutesago = Date.now() - 600000;
-        for (var i in this.buckets) {
+        let tenminutesago = Date.now() - 600000;
+        for (let i in this.buckets) {
             if (!this.buckets.hasOwnProperty(i))
                 continue;
 
-            for(var j in this.buckets[i]) {
+            for(let j in this.buckets[i]) {
                 if (!this.buckets[i].hasOwnProperty(j))
                     continue;
 
-                var data = this.buckets[i][j];
+                let data = this.buckets[i][j];
                 if (!data.isemote && data.promoted <= tenminutesago)
                     data.promoted = 0;
 
@@ -195,7 +195,7 @@ class ChatAutoComplete {
         if(!this.lastComplete)
             return;
 
-        var data = this.buckets[this.getBucketId(this.lastComplete)] || {};
+        let data = this.buckets[this.getBucketId(this.lastComplete)] || {};
 
         // should never happen, but just in case
         if (!data[this.lastComplete])
@@ -203,7 +203,7 @@ class ChatAutoComplete {
 
         if (data[this.lastComplete].isemote) {
             // reset the promotion of users near the emote
-            for(var j in data) {
+            for(let j in data) {
                 if (!data.hasOwnProperty(j))
                     continue;
 
@@ -224,33 +224,29 @@ class ChatAutoComplete {
     }
 
     searchSelectWord(forceUserSearch){
-        var searchWord = this.getSearchWord(this.input.val(), this.input[0].selectionStart);
+        let searchWord = this.getSearchWord(this.input.val(), this.input[0].selectionStart);
         if (searchWord.word.length >= this.minWordLength){
             this.searchWord    = searchWord;
-            var isUserSearch   = forceUserSearch? true: this.searchWord.isUserSearch;
+            let isUserSearch   = forceUserSearch? true: this.searchWord.isUserSearch;
             this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, isUserSearch);
             this.origVal       = this.input.val().toString();
         }
     }
 
     showAutoComplete(){
-        if (this.searchIndex >= this.searchResults.length - 1)
-            this.searchIndex = 0;
-        else
-            this.searchIndex = this.searchIndex + 1;
-
-        var result = this.searchResults[this.searchIndex];
+        this.searchIndex = this.searchIndex >= this.searchResults.length - 1 ? 0 : this.searchIndex + 1;
+        let result = this.searchResults[this.searchIndex];
         if (!result || result.data == this.searchWord.word)
             return;
 
         this.lastComplete = result.data;
-        var pre  = this.origVal.substr(0, this.searchWord.startCaret),
+        let pre  = this.origVal.substr(0, this.searchWord.startCaret),
             post = this.origVal.substr(this.searchWord.startCaret + this.searchWord.word.length);
 
         // always add a space after our completion if there isn't one since people
         // would add one anyway
-        if (post[0] != " " || post.length == 0)
-            post = " " + post;
+        if (post[0] != ' ' || post.length == 0)
+            post = ' ' + post;
 
         this.input.focus().val(pre + result.data + post);
 

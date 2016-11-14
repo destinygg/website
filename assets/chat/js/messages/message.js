@@ -1,15 +1,18 @@
 /* global $, destiny */
 
 import moment from 'moment';
+import ChatUIMessage from './ui.js';
 
-class ChatMessage {
+class ChatMessage extends ChatUIMessage {
 
-    constructor(message, timestamp = null, type = 'chat'){
-        this.ui = null;
-        this.message = message;
-        this.state = null;
+    constructor(message, timestamp=null, type='chat'){
+        super(message);
         this.type = type;
         this.timestamp = (timestamp) ? moment.utc(timestamp).local() : moment();
+    }
+
+    static uiMessage(message){
+        return new ChatUIMessage(message);
     }
 
     static statusMessage(message, timestamp = null){
@@ -32,37 +35,20 @@ class ChatMessage {
         return new ChatMessage(message, timestamp, 'command');
     }
 
-    status(state){
-        if(this.ui){
-            if(state)
-                this.ui.addClass(state);
-            else
-                this.ui.removeClass(this.state);
-        }
-        this.state = state;
-    }
-
     wrapTime(){
         const datetime = this.timestamp.format('MMMM Do YYYY, h:mm:ss a');
-        const label = this.timestamp.format(destiny.chat.gui.getPreference('timestampformat'));
-        return `<time title="${datetime}" datetime="${datetime}">${label}</time>`;
+        const label = this.timestamp.format(this.chat.settings.get('timestampformat'));
+        return `<time class="time" title="${datetime}">${label}</time>`;
     }
 
     wrapMessage(){
-        const el = $('<span class="msg" />');
-        let message = el.text(this.message)[0].innerHTML;
-        for(const formatter of destiny.chat.gui.formatters){
-            message = formatter.format(message, this.user, this.message);
-        }
-        return el.html(message).get(0).outerHTML;
+        let message = this.message;
+        this.chat.formatters.forEach(formatter => message = formatter.format(message, this.user));
+        return `<span class="text">${message}</span>`;
     }
 
     html(){
         return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
-    }
-
-    wrap(content){
-        return `<div class="${this.type}-msg">${content}</div>`;
     }
 }
 

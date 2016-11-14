@@ -1,11 +1,9 @@
 class ChatUser {
 
     constructor(args){
-        if(args){
-            this.nick     = args.nick || '';
-            this.username = args.nick || '';
-            this.features = args.features || [];
-        }
+        this.nick     = args.nick || '';
+        this.username = args.nick || '';
+        this.features = args.features || [];
     }
 
     hasAnyFeatures(...args){

@@ -6,7 +6,7 @@ require('font-awesome/scss/font-awesome.scss');
 require('./fonts/roboto.scss');
 require('./web/css/style.scss');
 
-window.destiny = require('./web/js/destiny.js')['default'];
+require('imports?this=>window!jquery-validation');
 require('imports?this=>window!./web/js/ui.js');
 require('imports?this=>window!./web/js/admin.js');
 require('imports?this=>window!./web/js/admin.income.js');

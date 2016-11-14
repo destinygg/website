@@ -1,0 +1,170 @@
+/* glue: 0.11.1 hash: 345a3612ae */
+
+/* start destiny.gg */
+.icon-subscriber,
+.icon-subscribert2,
+.icon-subscribert3,
+.icon-subscribert4 {
+    -webkit-transform: rotate(0deg);
+    -webkit-transition: rotate 0.2s ease-in-out;
+    -moz-transition: rotate 0.2s ease-in-out;
+    -o-transition: rotate 0.2s ease-in-out;
+    transition: rotate 0.2s ease-in-out;  
+}
+.icon-subscriber:hover,
+.icon-subscribert2:hover,
+.icon-subscribert3:hover,
+.icon-subscribert4:hover {
+    -moz-animation: spin 3s infinite linear;
+    -webkit-animation: spin 3s infinite linear;
+}
+/* end destiny.gg */
+
+.icon-trusted,.icon-subscribert4,.icon-subscribert3,.icon-subscribert2,.icon-subscriber,.icon-status,.icon-sc2,.icon-notable,.icon-moderator,.icon-minitwitch,.icon-mail,.icon-mail-send,.icon-mail-receive,.icon-mail-open-document,.icon-info,.icon-eve,.icon-error,.icon-contributor,.icon-compchallenge,.icon-command,.icon-broadcaster,.icon-bot:hover,.icon-bot2,.icon-bot{
+    background-image:url('../img/icons.png');
+    background-repeat:no-repeat;
+}
+
+.icon-trusted{
+    background-position:0 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-subscribert4{
+    background-position:-16px 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-subscribert3{
+    background-position:0 -16px;
+    width:16px;
+    height:16px;
+}
+
+.icon-subscribert2{
+    background-position:-16px -16px;
+    width:16px;
+    height:16px;
+}
+
+.icon-subscriber{
+    background-position:-32px 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-status{
+    background-position:-32px -16px;
+    width:16px;
+    height:16px;
+}
+
+.icon-sc2{
+    background-position:0 -32px;
+    width:16px;
+    height:16px;
+}
+
+.icon-notable{
+    background-position:-16px -32px;
+    width:16px;
+    height:16px;
+}
+
+.icon-moderator{
+    background-position:-32px -32px;
+    width:16px;
+    height:16px;
+}
+
+.icon-minitwitch{
+    background-position:-48px 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-mail{
+    background-position:-48px -16px;
+    width:16px;
+    height:16px;
+}
+
+.icon-mail-send{
+    background-position:-48px -32px;
+    width:16px;
+    height:16px;
+}
+
+.icon-mail-receive{
+    background-position:0 -48px;
+    width:16px;
+    height:16px;
+}
+
+.icon-mail-open-document{
+    background-position:-16px -48px;
+    width:16px;
+    height:16px;
+}
+
+.icon-info{
+    background-position:-32px -48px;
+    width:16px;
+    height:16px;
+}
+
+.icon-eve{
+    background-position:-48px -48px;
+    width:16px;
+    height:16px;
+}
+
+.icon-error{
+    background-position:-64px 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-contributor{
+    background-position:-64px -16px;
+    width:16px;
+    height:16px;
+}
+
+.icon-compchallenge{
+    background-position:-64px -32px;
+    width:16px;
+    height:16px;
+}
+
+.icon-command{
+    background-position:-64px -48px;
+    width:16px;
+    height:16px;
+}
+
+.icon-broadcaster{
+    background-position:0 -64px;
+    width:16px;
+    height:16px;
+}
+
+.icon-bot:hover{
+    background-position:-16px -64px;
+    width:16px;
+    height:16px;
+}
+
+.icon-bot2{
+    background-position:-32px -64px;
+    width:16px;
+    height:16px;
+}
+
+.icon-bot{
+    background-position:-48px -64px;
+    width:16px;
+    height:16px;
+}

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Common\Utils;
 
+use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Config;
 use Misd\Linkify\Linkify;
 
@@ -65,7 +66,7 @@ class Tpl {
     }
 
     public static function emotify($text) {
-        $emotes = Config::$a ['chat'] ['customemotes'];
+        $emotes = ChatEmotes::get('destiny');
         $pattern = '/(^|[\s,\.\?!])('. join($emotes, '|') .')(?=$|[\s,\.\?!])/';
         $callback = function ($match) use ($emotes) {
             return '<i class="chat-emote chat-emote-' . $emotes[array_search($match[2], $emotes)] . '"></i>';
