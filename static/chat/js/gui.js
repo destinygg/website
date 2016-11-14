@@ -464,6 +464,7 @@
                 }
             });
 
+            chat.setUnreadMessageCount(this.pmcountnum);
             return this;
         },
 
