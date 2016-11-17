@@ -181,4 +181,109 @@ class ChatIntegrationService extends Service {
         $redis = Application::instance ()->getRedis ();
         return $redis->lRange('CHAT:chatlog', 0, -1);
     }
+
+    /**
+     * Fetches top chat combos from the database by default.
+     * However if "true" is passed as an param it will fetch the most recent
+     * chat combos instead.
+     *
+     * @param bool $recent
+     * @return mixed
+     */
+    public function getChatCombos($recent = false) {
+        $conn = Application::instance ()->getConnection ();
+        $order = ($recent == true) ? 'timestamp' : 'combo';
+        $stmt = $conn->prepare("
+            SELECT
+                emote,
+                combo,
+                memers,
+                timestamp
+            FROM
+                chat_combos
+            ORDER BY $order DESC
+            LIMIT 10
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Fetches top chat combos for the specified user.
+     *
+     * @param $username
+     * @return mixed
+     */
+    public function getMyChatCombos($username) {
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            SELECT
+                emote,
+                combo,
+                memers,
+                timestamp
+            FROM
+                chat_combos
+            WHERE
+                memers LIKE '%$username%'
+            ORDER BY combo DESC
+            LIMIT 10
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Counts the number of rows in the chat_combos table
+     *
+     * @return mixed
+     */
+    public function countChatCombos() {
+        $conn  = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            SELECT COUNT(*)
+            FROM chat_combos
+        ");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * Removes all chat combos except 10 highest combos
+     *
+     * @return mixed
+     */
+    public function deleteChatCombos() {
+        $conn  = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            DELETE FROM chat_combos
+            WHERE id NOT IN
+            (
+                SELECT * FROM
+                (
+                    SELECT id
+                    FROM chat_combos
+                    ORDER BY combo DESC
+                    LIMIT 10
+                ) s
+            )
+        ");
+        return $stmt->execute();
+    }
+
+    /**
+     * Removes all of the chat combos
+     *
+     * @return mixed
+     */
+    public function purgeChatCombos() {
+        $conn  = Application::instance ()->getConnection ();
+        $redis = Application::instance ()->getRedis ();
+
+        $stmt = $conn->prepare("
+            TRUNCATE TABLE chat_combos
+        ");
+        return $stmt->execute();
+    }
+
 }

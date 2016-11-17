@@ -27,6 +27,8 @@ class ChatAdminController {
      * @return string
      */
     public function adminChat(ViewModel $model) {
+        $chatIntegrationService = ChatIntegrationService::instance ();
+        $model->totalCombos = $chatIntegrationService->countChatCombos();
         $model->title = 'Chat';
         if (Session::get ( 'modelSuccess' )) {
             $model->success = Session::get ( 'modelSuccess' );
@@ -77,6 +79,42 @@ class ChatAdminController {
         $model->searchIp = $params ['ip'];
         
         return 'admin/chat';
+    }
+
+    /**
+     * @Route ("/admin/chat/removecombos")
+     * @Secure ({"ADMIN"})
+     *
+     * @return string
+     */
+    public function adminChatRemoveCombos(){
+        $chatIntegrationService = ChatIntegrationService::instance ();
+
+        if ($chatIntegrationService->deleteChatCombos()) {
+            Session::set('modelSuccess', 'All chat combos except 10 highest ones have been removed.');
+        } else {
+            Session::set('modelError', 'Something went wrong, check web.log for more info!');
+        }
+
+        return 'redirect: /admin/chat';
+    }
+
+    /**
+     * @Route ("/admin/chat/removeallcombos")
+     * @Secure ({"ADMIN"})
+     *
+     * @return string
+     */
+    public function adminChatRemoveAllCombos(){
+        $chatIntegrationService = ChatIntegrationService::instance ();
+
+        if ($chatIntegrationService->purgeChatCombos()) {
+            Session::set('modelSuccess', 'Every single chat combo has been removed.');
+        } else {
+            Session::set('modelError', 'Something went wrong, check web.log for more info!');
+        }
+
+        return 'redirect: /admin/chat';
     }
 
 }
