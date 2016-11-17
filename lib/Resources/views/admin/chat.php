@@ -97,6 +97,24 @@ use Destiny\Common\Utils\Date;
             </div>
         </section>
         <?php endif; ?>
+
+        <section class="container">
+            <h3>Hall of Fame</h3>
+            <div class="content content-dark clearfix">
+                <div class="ds-block">
+                    <?php if(!empty($model->totalCombos)): ?>
+                        <label>Number of stored chat combos in the database: <?=Tpl::out($model->totalCombos)?></label>
+                        <p>This will remove all chat combos except 10 highest ones.</p>
+                        <a href="/admin/chat/removecombos" onclick="return confirm('Are you sure?');" class="btn btn-warning">Remove</a>
+                        <br><br>
+                        <p>This will remove every single chat combo.</p>
+                        <a href="/admin/chat/removeallcombos" onclick="return confirm('Are you sure?');" class="btn btn-danger">Remove All</a>
+                    <?php else: ?>
+                        <label>We couldn't find any chat combos in the database.</label>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
     </div>
 
     <?php include Tpl::file('seg/foot.php') ?>

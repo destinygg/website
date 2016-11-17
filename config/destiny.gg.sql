@@ -169,3 +169,12 @@ CREATE TABLE `privatemessages` (
   KEY `targetuserid` (`targetuserid`),
   KEY `userid` (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `chat_combos` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `emote` VARCHAR(32) NOT NULL,
+  `combo` INT(10) UNSIGNED NOT NULL,
+  `memers` TEXT NOT NULL,
+  `timestamp` datetime NOT NULL,
+  PRIMARY KEY (`id`), INDEX (`combo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -4,6 +4,7 @@ namespace Destiny\Controllers;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\ViewModel;
+use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
@@ -27,6 +28,26 @@ class ChatController {
     public function faq(ViewModel $model) {
         $model->title = 'Frequently Asked Questions';
         return 'chat/faq';
+    }
+
+    /**
+     * @Route ("/chat/halloffame")
+     *
+     * @param ViewModel $model
+     * @return string
+     */
+    public function halloffame(ViewModel $model) {
+        $chatIntegrationService = ChatIntegrationService::instance();
+        $combos = Application::instance()->getCacheDriver()->fetch('chatcombos');
+
+        $username = $this->getChatUser()['nick'];
+        if (!empty($username)) {
+            $model->myCombos = $chatIntegrationService->getMyChatCombos($username);
+        }
+        $model->title = 'Hall of Fame';
+        $model->topCombos = $combos['top'];
+        $model->recentCombos = $combos['recent'];
+        return 'chat/halloffame';
     }
 
     /**
