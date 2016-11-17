@@ -13,6 +13,9 @@ use Destiny\Common\Utils\Date;
     <?php include Tpl::file('seg/commontop.php') ?>
     <?php include Tpl::file('seg/google.tracker.php') ?>
     <link href="<?=Config::cdnv()?>/chat/css/style.min.css" rel="stylesheet" media="screen">
+    <style>
+        .combo-margin {margin-top: 2px; margin-bottom: 2px;}
+    </style>
 </head>
 <body id="emoticons" class="no-brand">
 <div id="page-wrap">
@@ -48,7 +51,7 @@ use Destiny\Common\Utils\Date;
                             <a class="label label-default" data-memers="<?=$trigger['memers']?>">Memers</a>
                         </td>
                         <td>
-                            <div id="chat-lines" style="margin-top: 2px; margin-bottom: 2px;">
+                            <div id="chat-lines" class="combo-margin">
                                 <div class="emotecount <?=calcStepClass($trigger['combo'])?>"><i class="count"><?=Tpl::out($trigger['combo'])?></i><i class="x">X</i> C-C-C-COMBO</div>
                                 <div style="display: inline-block" class="chat-emote chat-emote-<?=$trigger['emote']?>" data-placement="right" data-toggle="tooltip" title="<?=$trigger['emote']?>"></div>
                             </div>
@@ -67,7 +70,7 @@ use Destiny\Common\Utils\Date;
                             <a class="label label-default" data-memers="<?=$trigger['memers']?>">Memers</a>
                         </td>
                         <td>
-                            <div id="chat-lines" style="margin-top: 2px; margin-bottom: 2px;">
+                            <div id="chat-lines" class="combo-margin">
                                 <div class="emotecount <?=calcStepClass($trigger['combo'])?>"><i class="count"><?=Tpl::out($trigger['combo'])?></i><i class="x">X</i> C-C-C-COMBO</div>
                                 <div style="display: inline-block" class="chat-emote chat-emote-<?=$trigger['emote']?>" data-placement="right" data-toggle="tooltip" title="<?=$trigger['emote']?>"></div>
                             </div>
@@ -87,7 +90,7 @@ use Destiny\Common\Utils\Date;
                                 <a class="label label-default" data-memers="<?=$trigger['memers']?>">Memers</a>
                             </td>
                             <td>
-                                <div id="chat-lines" style="margin-top: 2px; margin-bottom: 2px;">
+                                <div id="chat-lines" class="combo-margin">
                                     <div class="emotecount <?=calcStepClass($trigger['combo'])?>"><i class="count"><?=Tpl::out($trigger['combo'])?></i><i class="x">X</i> C-C-C-COMBO</div>
                                     <div style="display: inline-block" class="chat-emote chat-emote-<?=$trigger['emote']?>" data-placement="right" data-toggle="tooltip" title="<?=$trigger['emote']?>"></div>
                                 </div>
