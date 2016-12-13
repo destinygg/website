@@ -27,7 +27,7 @@ import HtmlTextFormatter from './formatters/html.js';
 import UserFeatures from './features.js';
 import Logger from './log.js';
 
-const emotes = require('../../json/emotes.json');
+const emotes = require('../../emotes.json');
 const location = window.location;
 
 class Chat {

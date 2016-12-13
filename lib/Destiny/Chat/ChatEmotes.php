@@ -18,7 +18,7 @@ class ChatEmotes {
             $key = 'emotes_' . str_replace('.', '', Config::$a['version']);
             $emotes = $cacheDriver->fetch($key);
             if (empty ($emotes)) {
-                $emotes = json_decode(file_get_contents(_BASEDIR . '/config/emotes.json'), true);
+                $emotes = json_decode(file_get_contents(_BASEDIR . '/assets/emotes.json'), true);
                 $cacheDriver->save($key, $emotes, 86400);
             }
             if (is_array($emotes)) {
