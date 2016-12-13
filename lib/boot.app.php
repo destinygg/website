@@ -22,7 +22,7 @@ $loader = require _BASEDIR . '/vendor/autoload.php';
 Config::load ( array_replace_recursive ( 
     require _BASEDIR . '/config/config.php', 
     require _BASEDIR . '/config/config.local.php', 
-    json_decode ( file_get_contents ( _BASEDIR . '/composer.json' ), true ) 
+    json_decode ( file_get_contents ( _BASEDIR . '/package.json' ), true )
 ) );
 set_include_path(get_include_path() . PATH_SEPARATOR . Config::$a['tpl']['path']);
 
