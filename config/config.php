@@ -127,6 +127,7 @@ return array (
 		'key'                   => '',
 		'secret'                => '',
 	),
+	'google-verification'		=> '',
 	'calendar' 					=>  '',
 	'lastfm' => array (
 		'apikey'				=> '',
