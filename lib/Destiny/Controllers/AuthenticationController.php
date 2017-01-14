@@ -105,18 +105,13 @@ class AuthenticationController {
         if (!empty( $ban ))
           return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
 
-        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
         $userRow = $user->getUserById( $userid );
         if (empty ( $userRow ))
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
-        if (empty ( $sub )) {
-            if ( $userRow['istwitchsubscriber'] )
-                $sub = array(
-                    'endDate' => date('Y-m-d H:i:s', strtotime('+1 hour') ),
-                );
-            else
-                return new Response ( Http::STATUS_FORBIDDEN, 'subscriptionNotFound' );
+        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
+        if (empty ($sub) || intval($sub ['subscriptionTier']) < 2) {
+            return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
         }
 
         try {
