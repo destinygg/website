@@ -61,7 +61,7 @@ class AuthenticationController {
 
         $user = $userService->getUserById( $userId );
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
-        if (empty ($sub) || intval($sub ['subscriptionTier']) < 2 || (intval($sub ['subscriptionTier']) == 1 && !$user['istwitchsubscriber'])) {
+        if (empty ($sub) || (intval($sub ['subscriptionTier']) == 1 && !$user['istwitchsubscriber']) || intval($sub ['subscriptionTier']) < 2) {
             return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
         }
 
@@ -105,7 +105,7 @@ class AuthenticationController {
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
-        if (empty ($sub) || intval($sub ['subscriptionTier']) < 2 || (intval($sub ['subscriptionTier']) == 1 && !$userRow['istwitchsubscriber'])) {
+        if (empty ($sub) || (intval($sub ['subscriptionTier']) == 1 && !$user['istwitchsubscriber']) || intval($sub ['subscriptionTier']) < 2) {
             return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
         }
 
