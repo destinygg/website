@@ -118,7 +118,7 @@ class AuthenticationController {
         $end = null;
         $sub = SubscriptionsService::instance()->getUserActiveSubscription($userid);
         $features = UserFeaturesService::instance()->getUserFeatures($userid);
-        if (in_array(UserFeature::MINECRAFTVIP, $features) || (!empty ($sub) && ((intval($sub ['subscriptionTier']) >= 1 && $userService['istwitchsubscriber']) || intval($sub ['subscriptionTier']) >= 2))) {
+        if (in_array(UserFeature::MINECRAFTVIP, $features) || (!empty ($sub) && ((intval($sub ['subscriptionTier']) >= 1 && $user['istwitchsubscriber']) || intval($sub ['subscriptionTier']) >= 2))) {
             if (empty($sub)) {
                 $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
             }
