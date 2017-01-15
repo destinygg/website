@@ -22,6 +22,7 @@ abstract class UserFeature {
     const COMPCHALLENGE = 'flair6';
     const EVE = 'flair7';
     const SC2 = 'flair10';
+    const MINECRAFTVIP = 'flair14';
 
     public static $FEATURES = [
         self::PROTECT,
@@ -42,7 +43,8 @@ abstract class UserFeature {
         self::CONTRIBUTOR,
         self::COMPCHALLENGE,
         self::EVE,
-        self::SC2
+        self::SC2,
+        self::MINECRAFTVIP
     ];
 
     public static $PSEUDO_FEATURES = [
@@ -67,7 +69,8 @@ abstract class UserFeature {
         self::CONTRIBUTOR,
         self::COMPCHALLENGE,
         self::EVE,
-        self::SC2
+        self::SC2,
+        self::MINECRAFTVIP
     ];
 
 }

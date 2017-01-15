@@ -5,7 +5,10 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Session;
+use Destiny\Common\User\UserFeature;
+use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserRole;
+use Destiny\Common\Utils\Date;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Common\ViewModel;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -50,18 +53,26 @@ class AuthenticationController {
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
             return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
-        $userService = UserService::instance ();
-        $userId = $userService->getUserIdFromMinecraftUUID ( $params ['uuid'] );
-        if ( !$userId )
+        $userService = UserService::instance();
+        $userid = $userService->getUserIdFromMinecraftUUID($params ['uuid']);
+        if (!$userid)
+            return new Response (Http::STATUS_NOT_FOUND, 'userNotFound');
+
+        $ban = $userService->getUserActiveBan($userid, @$params ['ipaddress']);
+        if (!empty($ban))
+            return new Response (Http::STATUS_FORBIDDEN, 'userBanned');
+
+        $user = $userService->getUserById($userid);
+        if (empty ( $user ))
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
-        $ban = $userService->getUserActiveBan( $userId, @$params ['ipaddress'] );
-        if (!empty( $ban ))
-          return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
-
-        $user = $userService->getUserById( $userId );
-        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
-        if (empty ($sub) || (intval($sub ['subscriptionTier']) == 1 && !$user['istwitchsubscriber']) || intval($sub ['subscriptionTier']) < 2) {
+        $sub = SubscriptionsService::instance()->getUserActiveSubscription($userid);
+        $features = UserFeaturesService::instance()->getUserFeatures($userid);
+        if (in_array(UserFeature::MINECRAFTVIP, $features) || (!empty ($sub) && ((intval($sub ['subscriptionTier']) >= 1 && $user['istwitchsubscriber']) || intval($sub ['subscriptionTier']) >= 2))) {
+            if (empty($sub)) {
+                $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
+            }
+        } else {
             return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
         }
 
@@ -91,28 +102,34 @@ class AuthenticationController {
         if (empty ( $params ['name'] ) || mb_strlen ( $params ['name'] ) > 16 )
             return new Response ( Http::STATUS_BAD_REQUEST, 'name' );
 
-        $user   = UserService::instance ();
-        $userid = $user->getUserIdFromMinecraftName( $params ['name'] );
+        $userService = UserService::instance ();
+        $userid = $userService->getUserIdFromMinecraftName( $params ['name'] );
         if (! $userid)
             return new Response ( Http::STATUS_NOT_FOUND, 'nameNotFound' );
 
-        $ban = $user->getUserActiveBan( $userid, @$params ['ipaddress'] );
+        $ban = $userService->getUserActiveBan( $userid, @$params ['ipaddress'] );
         if (!empty( $ban ))
           return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
 
-        $userRow = $user->getUserById( $userid );
-        if (empty ( $userRow ))
+        $user = $userService->getUserById($userid);
+        if (empty ( $user ))
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
-        $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
-        if (empty ($sub) || (intval($sub ['subscriptionTier']) == 1 && !$user['istwitchsubscriber']) || intval($sub ['subscriptionTier']) < 2) {
+        $end = null;
+        $sub = SubscriptionsService::instance()->getUserActiveSubscription($userid);
+        $features = UserFeaturesService::instance()->getUserFeatures($userid);
+        if (in_array(UserFeature::MINECRAFTVIP, $features) || (!empty ($sub) && ((intval($sub ['subscriptionTier']) >= 1 && $userService['istwitchsubscriber']) || intval($sub ['subscriptionTier']) >= 2))) {
+            if (empty($sub)) {
+                $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
+            }
+        } else {
             return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
         }
 
         try {
-            $success = $user->setMinecraftUUID( $userid, $params['uuid'] );
+            $success = $userService->setMinecraftUUID( $userid, $params['uuid'] );
             if (!$success) {
-              $existingUserId = $user->getUserIdFromMinecraftUUID ( $params ['uuid'] );
+              $existingUserId = $userService->getUserIdFromMinecraftUUID ( $params ['uuid'] );
 
               // only fail if the already set uuid is not the same
               if ( !$existingUserId or $existingUserId != $userid )
@@ -124,7 +141,7 @@ class AuthenticationController {
         }
 
         $response = [
-            'nick' => $userRow['username'],
+            'nick' => $user['username'],
             'end'  => strtotime( $sub['endDate'] ) * 1000,
         ];
 
