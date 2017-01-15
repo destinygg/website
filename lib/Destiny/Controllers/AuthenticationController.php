@@ -50,27 +50,22 @@ class AuthenticationController {
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) )
             return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
-        $user = UserService::instance ();
-        $userId = $user->getUserIdFromMinecraftUUID ( $params ['uuid'] );
+        $userService = UserService::instance ();
+        $userId = $userService->getUserIdFromMinecraftUUID ( $params ['uuid'] );
         if ( !$userId )
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
-        $ban = $user->getUserActiveBan( $userId, @$params ['ipaddress'] );
+        $ban = $userService->getUserActiveBan( $userId, @$params ['ipaddress'] );
         if (!empty( $ban ))
           return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
 
+        $user = $userService->getUserById( $userId );
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userId );
-        if (!empty ($sub) && intval($sub ['subscriptionTier']) >= 2) {
-            $subEnd = strtotime($sub['endDate']);
-        } else {
+        if (empty ($sub) || intval($sub ['subscriptionTier']) < 2 || (intval($sub ['subscriptionTier']) == 1 && !$user['istwitchsubscriber'])) {
             return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
         }
 
-        $response = array(
-            'end'  => $subEnd * 1000,
-        );
-
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
+        $response = new Response ( Http::STATUS_OK, json_encode (['end'  => strtotime($sub['endDate']) * 1000]) );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
         return $response;
     }
@@ -110,7 +105,7 @@ class AuthenticationController {
             return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
 
         $sub = SubscriptionsService::instance ()->getUserActiveSubscription( $userid );
-        if (empty ($sub) || intval($sub ['subscriptionTier']) < 2) {
+        if (empty ($sub) || intval($sub ['subscriptionTier']) < 2 || (intval($sub ['subscriptionTier']) == 1 && !$userRow['istwitchsubscriber'])) {
             return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
         }
 
@@ -128,10 +123,10 @@ class AuthenticationController {
             return new Response ( Http::STATUS_BAD_REQUEST, 'duplicateUUID' );
         }
 
-        $response = array(
+        $response = [
             'nick' => $userRow['username'],
             'end'  => strtotime( $sub['endDate'] ) * 1000,
-        );
+        ];
 
         $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
         $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
