@@ -906,29 +906,14 @@ class UserService extends Service {
     return (bool) $stmt->rowCount();
   }
 
-  public function getUserIdFromMinecraftUUID( $uuid ) {
+  public function getUserIdByField($field, $value) {
     $conn = Application::instance ()->getConnection ();
     $stmt = $conn->prepare("
-      SELECT userId
-      FROM dfl_users
-      WHERE minecraftuuid = :uuid
-      LIMIT 1
+        SELECT userId FROM dfl_users
+        WHERE ". $field ." = :value
+        LIMIT 1
     ");
-    $stmt->bindValue('uuid', $uuid, \PDO::PARAM_STR);
-    $stmt->execute();
-
-    return $stmt->fetchColumn();
-  }
-
-  public function getUserIdFromMinecraftName( $name ) {
-    $conn = Application::instance ()->getConnection ();
-    $stmt = $conn->prepare("
-      SELECT userId
-      FROM dfl_users
-      WHERE minecraftname = :name
-      LIMIT 1
-    ");
-    $stmt->bindValue('name', $name, \PDO::PARAM_STR);
+    $stmt->bindValue('value', $value, \PDO::PARAM_STR);
     $stmt->execute();
 
     return $stmt->fetchColumn();

@@ -119,7 +119,6 @@ class ProfileController {
       $email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
       $country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
       $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
-      $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
 
       try {
         $authenticationService->validateUsername ( $username, $user );
@@ -141,7 +140,6 @@ class ProfileController {
           'username' => $username,
           'country' => $country,
           'email' => $email,
-          'minecraftname' => $minecraftname,
           'allowGifting' => $allowGifting
       );
       
@@ -156,30 +154,8 @@ class ProfileController {
           $userData ['nameChangedCount'] = $nameChangeCount + 1;
         }
       }
-      
-      try {
-        // Update user
-        $userService->updateUser ( $user ['userId'], $userData );
-      } catch ( \Doctrine\DBAL\DBALException $e ) {
-        // get PDO exception, extract info
-        $info = $e->getPrevious()->errorInfo;
 
-        // a unique key constraint failure
-        if ( $info[0] === "23000" ) {
-
-          // extract key name
-          if ( !preg_match("/^Duplicate entry '.+' for key '(.+)'$/iu", $info[2], $match ) )
-            throw $e; // WELL FUCK I GUESS ITS NOT MYSQL
-
-          $key        = $match[1];
-          $keyToField = array(
-            'minecraftname' => '"Minecraft name"',
-          );
-
-          throw new Exception ( 'Duplicate value for ' . $keyToField[ $key ] );
-        }
-
-      }
+      $userService->updateUser ( $user ['userId'], $userData );
       $authenticationService->flagUserForUpdate ( $user ['userId'] );
       
       Session::set ( 'modelSuccess', 'Your profile has been updated' );
@@ -382,5 +358,68 @@ class ProfileController {
       Session::set ( 'modelSuccess', 'Your address has been updated' );
       return 'redirect: /profile';
     }
+
+    /**
+     * Minecraft update
+     *
+     * @Route ("/profile/minecraft/update")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     */
+    public function updateMinecraft(array $params){
+        $userService = UserService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
+        FilterParams::declared ( $params, 'minecraftname' );
+        $data = ['minecraftname' => $params['minecraftname']];
+
+        if(trim($data['minecraftname']) == ''){
+            $data['minecraftname'] = null;
+        }
+
+        $uId = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
+        if($data['minecraftname'] == null || !$uId || intval($uId) === intval($userId)){
+            $userService->updateUser ( $userId, $data );
+            Session::set ( 'modelSuccess', 'Minecraft info has been updated' );
+        } else {
+            Session::set ( 'modelError', 'Minecraft name already in use' );
+        }
+
+        return 'redirect: /profile';
+    }
+
+    /**
+     * Discord update
+     *
+     * @Route ("/profile/discord/update")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     */
+    public function updateDiscord(array $params){
+        $userService = UserService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
+        FilterParams::declared ( $params, 'discordname' );
+        $data = ['discordname' => $params['discordname']];
+
+        if(trim($data['discordname']) == ''){
+            $data['discordname'] = null;
+        }
+
+        $uId = $userService->getUserIdByField('discordname', $params['discordname']);
+        if($data['discordname'] == null || !$uId || intval($uId) === intval($userId)){
+            $userService->updateUser ( $userId, $data );
+            Session::set ( 'modelSuccess', 'Discord info has been updated' );
+        } else {
+            Session::set ( 'modelError', 'Discord name already in use' );
+        }
+
+        return 'redirect: /profile';
+    }
+
 
 }

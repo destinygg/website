@@ -14,6 +14,7 @@ return array (
 	'privateKeys' => array(
 		'chat' => '',
 		'minecraft' => '',
+		'api' => '',
 	),
 	'chat' => array(
 		'host'				=> null,

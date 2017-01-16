@@ -4,11 +4,14 @@ namespace Destiny\Controllers;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\FilterParams;
+use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Common\ViewModel;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -28,11 +31,67 @@ use Destiny\Common\MimeType;
  */
 class AuthenticationController {
 
-    protected function checkPrivateKey($params){
+    protected function checkPrivateKey(array $params, $type) {
         if (empty ( $params['privatekey'] ) )
             return false;
 
-        return (Config::$a['privateKeys']['minecraft'] === $params['privatekey']);
+        return Config::$a['privateKeys'][$type] === $params['privatekey'];
+    }
+
+    /**
+     * @Route ("/auth/info")
+     * @HttpMethod ({"GET"})
+     *
+     * @param array $params
+     * @return string
+     */
+    public function profileInfo(array $params) {
+
+        if(! $this->checkPrivateKey($params, 'api')) {
+            return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
+        }
+
+        try {
+            $userService = UserService::instance();
+            $type = isset($params['type']) && !empty($params['type']) ? $params['type'] : 'userid';
+            switch (strtolower($type)) {
+                case 'discordname':
+                    FilterParams::required($params, 'discordname');
+                    $userid = $userService->getUserIdByField('discordname', $params['discordname']);
+                    break;
+                case 'minecraftname':
+                    FilterParams::required($params, 'minecraftname');
+                    $userid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
+                    break;
+                case 'username':
+                    FilterParams::required($params, 'username');
+                    $userid = $userService->getUserIdByField('username', $params['username']);
+                    break;
+                default:
+                case 'userid':
+                    FilterParams::required($params, 'userid');
+                    $userid = $userService->getUserIdByField('userId', $params['userid']);
+                    break;
+            }
+        } catch (FilterParamsException $e) {
+            return new Response ( Http::STATUS_BAD_REQUEST, "fielderror" );
+        } catch (Exception $e) {
+            return new Response ( Http::STATUS_ERROR, "server" );
+        }
+
+        if(!empty($userid)) {
+            $user = $userService->getUserById($userid);
+            if(!empty($user)){
+                $authService = AuthenticationService::instance();
+                $creds = $authService->getUserCredentials($user, 'request');
+                $response = new Response ( Http::STATUS_OK, json_encode ( $creds->getData () ) );
+                $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
+                return $response;
+            }
+        }
+
+        $response = new Response ( Http::STATUS_ERROR, "usernotfound" );
+        return $response;
     }
 
     /**
@@ -44,7 +103,7 @@ class AuthenticationController {
      * @throws Exception
      */
     public function authMinecraftGET(array $params) {
-        if(! $this->checkPrivateKey($params))
+        if(! $this->checkPrivateKey($params, 'minecraft'))
             return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
@@ -54,7 +113,7 @@ class AuthenticationController {
             return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
 
         $userService = UserService::instance();
-        $userid = $userService->getUserIdFromMinecraftUUID($params ['uuid']);
+        $userid = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
         if (!$userid)
             return new Response (Http::STATUS_NOT_FOUND, 'userNotFound');
 
@@ -90,7 +149,7 @@ class AuthenticationController {
      * @throws Exception
      */
     public function authMinecraftPOST(array $params) {
-        if(! $this->checkPrivateKey($params))
+        if(! $this->checkPrivateKey($params, 'minecraft'))
             return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 )
@@ -103,7 +162,7 @@ class AuthenticationController {
             return new Response ( Http::STATUS_BAD_REQUEST, 'name' );
 
         $userService = UserService::instance ();
-        $userid = $userService->getUserIdFromMinecraftName( $params ['name'] );
+        $userid = $userService->getUserIdByField('minecraftname', $params ['name']);
         if (! $userid)
             return new Response ( Http::STATUS_NOT_FOUND, 'nameNotFound' );
 
@@ -129,7 +188,7 @@ class AuthenticationController {
         try {
             $success = $userService->setMinecraftUUID( $userid, $params['uuid'] );
             if (!$success) {
-              $existingUserId = $userService->getUserIdFromMinecraftUUID ( $params ['uuid'] );
+              $existingUserId = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
 
               // only fail if the already set uuid is not the same
               if ( !$existingUserId or $existingUserId != $userid )
