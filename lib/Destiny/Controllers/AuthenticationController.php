@@ -51,27 +51,23 @@ class AuthenticationController {
             return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
         }
 
+        $userid = null;
         try {
             $userService = UserService::instance();
-            $type = isset($params['type']) && !empty($params['type']) ? $params['type'] : 'userid';
-            switch (strtolower($type)) {
-                case 'discordname':
-                    FilterParams::required($params, 'discordname');
-                    $userid = $userService->getUserIdByField('discordname', $params['discordname']);
-                    break;
-                case 'minecraftname':
-                    FilterParams::required($params, 'minecraftname');
-                    $userid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
-                    break;
-                case 'username':
-                    FilterParams::required($params, 'username');
-                    $userid = $userService->getUserIdByField('username', $params['username']);
-                    break;
-                default:
-                case 'userid':
-                    FilterParams::required($params, 'userid');
-                    $userid = $userService->getUserIdByField('userId', $params['userid']);
-                    break;
+            if (isset($params['userid'])) {
+                FilterParams::required($params, 'userid');
+                $userid = $userService->getUserIdByField('userId', $params['userid']);
+            } else if (isset($params['discordname'])) {
+                FilterParams::required($params, 'discordname');
+                $userid = $userService->getUserIdByField('discordname', $params['discordname']);
+            } else if (isset($params['minecraftname'])) {
+                FilterParams::required($params, 'minecraftname');
+                $userid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
+            } else if (isset($params['username'])) {
+                FilterParams::required($params, 'username');
+                $userid = $userService->getUserIdByField('username', $params['username']);
+            } else {
+                return new Response (Http::STATUS_BAD_REQUEST, "fielderror");
             }
         } catch (FilterParamsException $e) {
             return new Response ( Http::STATUS_BAD_REQUEST, "fielderror" );
