@@ -116,6 +116,8 @@ class AdminUserController {
         $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
         $minecraftuuid = (isset ( $params ['minecraftuuid'] ) && ! empty ( $params ['minecraftuuid'] )) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
         $istwitchsubscriber = (isset ( $params ['istwitchsubscriber'] )) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
+        $discordname = (isset ( $params ['discordname'] ) && ! empty ( $params ['discordname'] )) ? $params ['discordname'] : $user ['discordname'];
+        $discorduuid = (isset ( $params ['discorduuid'] ) && ! empty ( $params ['discorduuid'] )) ? $params ['discorduuid'] : $user ['discorduuid'];
 
         if(mb_strlen($minecraftname) > 16)
             mb_substr($minecraftname, 0, 16);
@@ -139,7 +141,9 @@ class AdminUserController {
             'minecraftname' => $minecraftname,
             'minecraftuuid' => $minecraftuuid,
             'allowGifting' => $allowGifting,
-            'istwitchsubscriber' => $istwitchsubscriber
+            'istwitchsubscriber' => $istwitchsubscriber,
+            'discordname' => $discordname,
+            'discorduuid' => $discorduuid
         );
 
         $log = Application::instance()->getLogger();

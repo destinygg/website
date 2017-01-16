@@ -86,7 +86,7 @@ CREATE TABLE `dfl_users` (
   `minecraftuuid` varchar(36) CHARACTER SET ascii DEFAULT NULL,
   `minecraftname` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,,
   `discorduuid` varchar(36) CHARACTER SET ascii DEFAULT NULL,
-  `discordname` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `discordname` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`userId`),
   UNIQUE KEY `minecraftuuid` (`minecraftuuid`),
   UNIQUE KEY `minecraftname` (`minecraftname`),
