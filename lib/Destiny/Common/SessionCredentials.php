@@ -44,6 +44,11 @@ class SessionCredentials {
     protected $features = array ();
 
     /**
+     * @var array
+     */
+    protected $subscription;
+
+    /**
      * @param array $params
     */
     public function __construct(array $params = null) {
@@ -96,7 +101,8 @@ class SessionCredentials {
             'country' => $this->getCountry (),
             'roles' => $this->getRoles (),
             'authProvider' => $this->getAuthProvider (),
-            'features' => $this->getFeatures ()
+            'features' => $this->getFeatures (),
+            'subscription' => $this->getSubscription()
         );
     }
 
@@ -266,6 +272,20 @@ class SessionCredentials {
                 break;
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getSubscription() {
+        return $this->subscription;
+    }
+
+    /**
+     * @param array $subscription
+     */
+    public function setSubscription($subscription) {
+        $this->subscription = $subscription;
     }
 
 }
