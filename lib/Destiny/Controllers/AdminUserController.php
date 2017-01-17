@@ -108,22 +108,36 @@ class AdminUserController {
         if (empty ( $user )) {
             throw new Exception ( 'User was not found' );
         }
+
+        $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : $user ['username'];
+        $email = (isset ($params ['email']) && !empty ($params ['email'])) ? $params ['email'] : $user ['email'];
+        $country = (isset ($params ['country']) && !empty ($params ['country'])) ? $params ['country'] : $user ['country'];
+        $allowGifting = (isset ($params ['allowGifting'])) ? $params ['allowGifting'] : $user ['allowGifting'];
+        $minecraftname = (isset ($params ['minecraftname'])) ? $params ['minecraftname'] : $user ['minecraftname'];
+        $minecraftuuid = (isset ($params ['minecraftuuid'])) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
+        $istwitchsubscriber = (isset ($params ['istwitchsubscriber'])) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
+        $discordname = (isset ($params ['discordname'])) ? $params ['discordname'] : $user ['discordname'];
+        $discorduuid = (isset ($params ['discorduuid'])) ? $params ['discorduuid'] : $user ['discorduuid'];
+
+        if (empty($minecraftname))
+            $minecraftname = null;
+        else if (mb_strlen($minecraftname) > 16)
+            $minecraftname = mb_substr($minecraftname, 0, 16);
+
+        if (empty($minecraftuuid))
+            $minecraftuuid = null;
+        else if (mb_strlen($minecraftuuid) > 36)
+            $minecraftuuid = mb_substr($minecraftuuid, 0, 36);
+
+        if (empty($discordname))
+            $discordname = null;
+        else if (mb_strlen($discordname) > 36)
+            $discordname = mb_substr($discordname, 0, 36);
         
-        $username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : $user ['username'];
-        $email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
-        $country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
-        $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
-        $minecraftname = (isset ( $params ['minecraftname'] ) && ! empty ( $params ['minecraftname'] )) ? $params ['minecraftname'] : $user ['minecraftname'];
-        $minecraftuuid = (isset ( $params ['minecraftuuid'] ) && ! empty ( $params ['minecraftuuid'] )) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
-        $istwitchsubscriber = (isset ( $params ['istwitchsubscriber'] )) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
-        $discordname = (isset ( $params ['discordname'] ) && ! empty ( $params ['discordname'] )) ? $params ['discordname'] : $user ['discordname'];
-        $discorduuid = (isset ( $params ['discorduuid'] ) && ! empty ( $params ['discorduuid'] )) ? $params ['discorduuid'] : $user ['discorduuid'];
-
-        if(mb_strlen($minecraftname) > 16)
-            mb_substr($minecraftname, 0, 16);
-
-        if(mb_strlen($minecraftuuid) > 36)
-            mb_substr($minecraftuuid, 0, 36);
+        if (empty($discorduuid))
+            $discorduuid = null;
+        else if (mb_strlen($discorduuid) > 36)
+            $discorduuid = mb_substr($discorduuid, 0, 36);
 
         $authService->validateEmail ( $email, $user );
         if (! empty ( $country )) {
