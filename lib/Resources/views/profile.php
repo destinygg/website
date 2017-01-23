@@ -307,7 +307,7 @@ use Destiny\Commerce\SubscriptionStatus;
                   <div class="ds-block">
                       <div class="form-group">
                           <label>Discord username:
-                              <br><small>For the discord server details, ask in chat.</small>
+                              <br><small>For the discord server details, ask in chat. Remember to add your username and id. e.g. Jimmy#999</small>
                           </label>
                           <input class="form-control" type="text" name="discordname" value="<?=Tpl::out($model->user['discordname'])?>" placeholder="Discord username and id. e.g. Jimmy#999" />
                       </div>
