@@ -174,13 +174,6 @@ use Destiny\Commerce\SubscriptionStatus;
               </div>
               
               <div class="form-group">
-                <label>Minecraft name:
-                <br><small>For the minecraft server details, ask in chat.</small>
-                </label>
-                <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name" />
-              </div>
-              
-              <div class="form-group">
                 <label for="country">Nationality:
                 <br><small>The country you indentify with</small>
                 </label> 
@@ -286,7 +279,45 @@ use Destiny\Commerce\SubscriptionStatus;
           </form>
         </div>
     </section>
-    
+
+      <section class="container">
+          <h3 class="collapsed" data-toggle="collapse" data-target="#minecraft-content">Minecraft</h3>
+          <div id="minecraft-content" class="content content-dark clearfix collapse">
+              <form id="minecraftSaveForm" action="/profile/minecraft/update" method="post" role="form">
+                  <div class="ds-block">
+                      <div class="form-group">
+                          <label>Minecraft name:
+                              <br><small>For the minecraft server details, ask in chat.</small>
+                          </label>
+                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name" />
+                      </div>
+                  </div>
+                  <div class="form-actions block-foot">
+                      <button class="btn btn-primary" type="submit">Save details</button>
+                  </div>
+              </form>
+          </div>
+      </section>
+
+      <section class="container">
+          <h3 class="collapsed" data-toggle="collapse" data-target="#discord-content">Discord</h3>
+          <div id="discord-content" class="content content-dark clearfix collapse">
+              <form id="discordSaveForm" action="/profile/discord/update" method="post" role="form">
+                  <div class="ds-block">
+                      <div class="form-group">
+                          <label>Discord username:
+                              <br><small>For the discord server details, ask in chat.</small>
+                          </label>
+                          <input class="form-control" type="text" name="discordname" value="<?=Tpl::out($model->user['discordname'])?>" placeholder="Discord username" />
+                      </div>
+                  </div>
+                  <div class="form-actions block-foot">
+                      <button class="btn btn-primary" type="submit">Save details</button>
+                  </div>
+              </form>
+          </div>
+      </section>
+
   </div>
 
   <?php include 'seg/foot.php' ?>

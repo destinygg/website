@@ -81,10 +81,18 @@ CREATE TABLE `dfl_users` (
   `userStatus` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `nameChangedCount` tinyint(4) DEFAULT '0',
   `nameChangedDate` datetime DEFAULT NULL,
-  `allowGifting` tinyint(4) DEFAULT '1',
-  `istwitchsubscriber` INT NOT NULL DEFAULT  '0',
-  PRIMARY KEY (`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `allowGifting` tinyint(1) DEFAULT '1',
+  `istwitchsubscriber` int(11) NOT NULL DEFAULT '0',
+  `minecraftuuid` varchar(36) CHARACTER SET ascii DEFAULT NULL,
+  `minecraftname` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,,
+  `discorduuid` varchar(36) CHARACTER SET ascii DEFAULT NULL,
+  `discordname` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`userId`),
+  UNIQUE KEY `minecraftuuid` (`minecraftuuid`),
+  UNIQUE KEY `minecraftname` (`minecraftname`),
+  UNIQUE KEY `discorduuid` (`discorduuid`),
+  UNIQUE KEY `discordname` (`discordname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `dfl_users_auth` (
   `userId` int(14) DEFAULT NULL,
