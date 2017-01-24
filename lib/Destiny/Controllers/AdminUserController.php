@@ -109,13 +109,14 @@ class AdminUserController {
             throw new Exception ( 'User was not found' );
         }
 
+        $redirect = 'redirect: /admin/user/'.$user ['userId'].'/edit';
         $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : $user ['username'];
         $email = (isset ($params ['email']) && !empty ($params ['email'])) ? $params ['email'] : $user ['email'];
         $country = (isset ($params ['country']) && !empty ($params ['country'])) ? $params ['country'] : $user ['country'];
         $allowGifting = (isset ($params ['allowGifting'])) ? $params ['allowGifting'] : $user ['allowGifting'];
+        $istwitchsubscriber = (isset ($params ['istwitchsubscriber'])) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
         $minecraftname = (isset ($params ['minecraftname'])) ? $params ['minecraftname'] : $user ['minecraftname'];
         $minecraftuuid = (isset ($params ['minecraftuuid'])) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
-        $istwitchsubscriber = (isset ($params ['istwitchsubscriber'])) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
         $discordname = (isset ($params ['discordname'])) ? $params ['discordname'] : $user ['discordname'];
         $discorduuid = (isset ($params ['discorduuid'])) ? $params ['discorduuid'] : $user ['discorduuid'];
 
@@ -140,6 +141,7 @@ class AdminUserController {
             $discorduuid = mb_substr($discorduuid, 0, 36);
 
         $authService->validateEmail ( $email, $user );
+
         if (! empty ( $country )) {
             $countryArr = Country::getCountryByCode ( $country );
             if (empty ( $countryArr )) {
@@ -147,7 +149,19 @@ class AdminUserController {
             }
             $country = $countryArr ['alpha-2'];
         }
-        
+
+        $dUid = $userService->getUserIdByField('discordname', $params['discordname']);
+        if($discordname != null || intval($dUid) !== intval($user ['userId'])) {
+            Session::set ( 'modelError', 'Minecraft name already in use' );
+            return $redirect;
+        }
+
+        $mUid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
+        if($minecraftname != null && intval($mUid) !== intval($user ['userId'])) {
+            Session::set ( 'modelError', 'Discord name already in use' );
+            return $redirect;
+        }
+
         $userData = array (
             'username' => $username,
             'country' => $country,
@@ -179,7 +193,7 @@ class AdminUserController {
         }
 
         Session::set ( 'modelSuccess', 'User profile updated' );
-        return 'redirect: /admin/user/'.$user ['userId'].'/edit';
+        return $redirect;
     }
     
     /**

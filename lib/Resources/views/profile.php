@@ -288,9 +288,9 @@ use Destiny\Commerce\SubscriptionStatus;
                   <div class="ds-block">
                       <div class="form-group">
                           <label>Minecraft name:
-                              <br><small>For the minecraft server details, ask in chat.</small>
+                              <br><small>For the minecraft server details, ask in chat. (Max 16 characters)</small>
                           </label>
-                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name" />
+                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name" maxlength="16" />
                       </div>
                   </div>
                   <div class="form-actions block-foot">
