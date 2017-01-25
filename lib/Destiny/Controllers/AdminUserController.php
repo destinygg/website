@@ -37,7 +37,6 @@ class AdminUserController {
      */
     public function adminUserEdit(array $params, ViewModel $model) {
         FilterParams::required($params, 'id');
-        
         $user = UserService::instance ()->getUserById ( $params ['id'] );
         if (empty ( $user )) {
             throw new Exception ( 'User was not found' );
@@ -76,10 +75,15 @@ class AdminUserController {
         $model->gifters = $gifters;
         $model->recipients = $recipients;
 
-        if (Session::get ( 'modelSuccess' )) {
+        if (Session::has ( 'modelSuccess' )) {
             $model->success = Session::get ( 'modelSuccess' );
             Session::set ( 'modelSuccess' );
         }
+        if (Session::has ( 'modelError' )) {
+            $model->error = Session::get ( 'modelError' );
+            Session::set ( 'modelError' );
+        }
+
         $model->title = 'User';
         return 'admin/user';
     }
@@ -151,14 +155,14 @@ class AdminUserController {
         }
 
         $dUid = $userService->getUserIdByField('discordname', $params['discordname']);
-        if($discordname != null || intval($dUid) !== intval($user ['userId'])) {
-            Session::set ( 'modelError', 'Minecraft name already in use' );
+        if($discordname != null && intval($dUid) !== intval($user ['userId'])) {
+            Session::set ( 'modelError', 'Discord name already in use #' . $dUid );
             return $redirect;
         }
 
         $mUid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
         if($minecraftname != null && intval($mUid) !== intval($user ['userId'])) {
-            Session::set ( 'modelError', 'Discord name already in use' );
+            Session::set ( 'modelError', 'Minecraft name already in use #' . $mUid );
             return $redirect;
         }
 
@@ -254,7 +258,7 @@ class AdminUserController {
             $payments = $ordersService->getPaymentsBySubscriptionId ( $subscription ['subscriptionId'] );
         }
         
-        if (Session::get ( 'modelSuccess' )) {
+        if (Session::has ( 'modelSuccess' )) {
             $model->success = Session::get ( 'modelSuccess' );
             Session::set ( 'modelSuccess' );
         }

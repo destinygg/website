@@ -15,15 +15,7 @@ use Destiny\Common\Utils\Date;
   <div id="page-wrap">
     <?php include Tpl::file('seg/top.php') ?>
     <?php include Tpl::file('seg/admin.nav.php') ?>
-
-    <?php if(!empty($model->success)): ?>
-    <section class="container">
-      <div class="alert alert-info" style="margin-bottom:0;">
-        <strong>Success!</strong>
-        <?=Tpl::out($model->success)?>
-      </div>
-    </section>
-    <?php endif; ?>
+    <?php include Tpl::file('seg/alerts.php') ?>
 
     <section class="container">
       <h3>Subscription <small>(<a href="/admin/user/<?=Tpl::out($model->user['userId'])?>/edit"><?=Tpl::out($model->user['username'])?></a>)</small></h3>

@@ -71,11 +71,11 @@ class ProfileController {
         $address ['country'] = '';
       }
       
-      if (Session::get ( 'modelSuccess' )) {
+      if (Session::has ( 'modelSuccess' )) {
         $model->success = Session::get ( 'modelSuccess' );
         Session::set ( 'modelSuccess' );
       }
-      if (Session::get ( 'modelError' )) {
+      if (Session::has ( 'modelError' )) {
         $model->error = Session::get ( 'modelError' );
         Session::set ( 'modelError' );
       }
@@ -186,11 +186,11 @@ class ProfileController {
       }
       $model->authProfileTypes = $authProfileTypes;
       
-      if (Session::get ( 'modelSuccess' )) {
+      if (Session::has ( 'modelSuccess' )) {
         $model->success = Session::get ( 'modelSuccess' );
         Session::set ( 'modelSuccess' );
       }
-      if (Session::get ( 'modelError' )) {
+      if (Session::has ( 'modelError' )) {
         $model->error = Session::get ( 'modelError' );
         Session::set ( 'modelError' );
       }

@@ -17,19 +17,11 @@ use Destiny\Commerce\SubscriptionStatus;
   <div id="page-wrap">
     <?php include Tpl::file('seg/top.php') ?>
     <?php include Tpl::file('seg/admin.nav.php') ?>
-
-    <?php if(!empty($model->success)): ?>
-    <section class="container">
-      <div class="alert alert-info" style="margin-bottom:0;">
-        <strong>Success!</strong>
-        <?=Tpl::out($model->success)?>
-      </div>
-    </section>
-    <?php endif; ?>
+    <?php include Tpl::file('seg/alerts.php') ?>
 
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#details-content">
-        <div class="pull-right"><button class="btn btn-link btn-show-all" style="outline: none;">Show all</button></div>
+        <span class="pull-right"><button class="btn btn-link btn-show-all" style="outline: none;">Show all</button></span>
         Details
         <small>(<?=Tpl::out($model->user['username'])?>)</small>
       </h3>

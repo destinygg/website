@@ -91,6 +91,14 @@ abstract class Session {
     }
 
     /**
+     * @param string $name
+     * @return boolean
+     */
+    public static function has($name) {
+        return self::instance ()->has ( $name );
+    }
+
+    /**
      * Check if the credential's has a specific role
      *
      * @param string $roleId
