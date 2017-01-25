@@ -72,14 +72,14 @@ use Destiny\Commerce\SubscriptionStatus;
               <div class="form-group">
                   <label class="control-label" for="inputEmail">Discord name</label>
                   <div class="controls">
-                      <input type="text" class="form-control" name="discordname" id="inputDiscordname" value="<?=Tpl::out($model->user['discordname'])?>" placeholder="Discord name">
+                      <input type="text" class="form-control" name="discordname" id="inputDiscordname" value="<?=Tpl::out($this->user['discordname'])?>" placeholder="Discord name">
                   </div>
               </div>
 
               <div class="form-group">
                   <label class="control-label" for="inputEmail">Discord UUID</label>
                   <div class="controls">
-                      <input type="text" class="form-control" name="discorduuid" id="inputDiscorduuid" value="<?=Tpl::out($model->user['discorduuid'])?>" placeholder="Discord UUID">
+                      <input type="text" class="form-control" name="discorduuid" id="inputDiscorduuid" value="<?=Tpl::out($this->user['discorduuid'])?>" placeholder="Discord UUID">
                   </div>
               </div>
 
