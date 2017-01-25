@@ -155,14 +155,14 @@ class AdminUserController {
         }
 
         $dUid = $userService->getUserIdByField('discordname', $params['discordname']);
-        if($discordname != null && intval($dUid) !== intval($user ['userId'])) {
+        if($discordname != null && !empty($dUid) &&intval($dUid) !== intval($user ['userId'])) {
             Session::set ( 'modelError', 'Discord name already in use #' . $dUid );
             return $redirect;
         }
 
         $mUid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
-        if($minecraftname != null && intval($mUid) !== intval($user ['userId'])) {
-            Session::set ( 'modelError', 'Minecraft name already in use #' . $mUid );
+        if($minecraftname != null && !empty($mUid) && intval($mUid) !== intval($user ['userId'])) {
+            Session::set ( 'modelError', 'Minecraft name already in use #' );
             return $redirect;
         }
 

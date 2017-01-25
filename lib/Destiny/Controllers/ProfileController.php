@@ -384,7 +384,7 @@ class ProfileController {
         }
 
         $uId = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
-        if($data['minecraftname'] == null || !$uId || intval($uId) === intval($userId)){
+        if($data['minecraftname'] == null || empty($uId) || intval($uId) === intval($userId)){
             $userService->updateUser ( $userId, $data );
             Session::set ( 'modelSuccess', 'Minecraft name has been updated' );
         } else {
@@ -419,7 +419,7 @@ class ProfileController {
         }
 
         $uId = $userService->getUserIdByField('discordname', $params['discordname']);
-        if($data['discordname'] == null || !$uId || intval($uId) === intval($userId)){
+        if($data['discordname'] == null || empty($uId) || intval($uId) === intval($userId)){
             $userService->updateUser ( $userId, $data );
             Session::set ( 'modelSuccess', 'Discord info has been updated' );
         } else {
