@@ -370,7 +370,7 @@ class Chat {
 
     onMUTE(data){
         let suppressednick = data.data;
-        if (this.user.username.toLowerCase() == data.data.toLowerCase())
+        if (this.user.username.toLowerCase() === data.data.toLowerCase())
             suppressednick = 'You have been';
         else if (!this.user.hasAnyFeatures(
                 UserFeatures.SUBSCRIBERT3,
@@ -386,7 +386,7 @@ class Chat {
 
     onUNMUTE(data){
         let suppressednick = data.data;
-        if (this.user.username.toLowerCase() == data.data.toLowerCase())
+        if (this.user.username.toLowerCase() === data.data.toLowerCase())
             suppressednick = 'You have been';
 
         this.push(ChatMessage.commandMessage(`${suppressednick} unmuted by ${data.nick}`, data.timestamp));
@@ -395,7 +395,7 @@ class Chat {
     onBAN(data){
         // data.data is the nick which has been banned, no info about duration
         let suppressednick = data.data;
-        if (this.user.username.toLowerCase() == suppressednick.toLowerCase()) {
+        if (this.user.username.toLowerCase() === suppressednick.toLowerCase()) {
             suppressednick = 'You have been';
             this.ui.addClass('banned');
         } else if(!this.user.hasAnyFeatures(
@@ -411,7 +411,7 @@ class Chat {
 
     onUNBAN(data){
         let suppressednick = data.data;
-        if (this.user.username.toLowerCase() == data.data.toLowerCase()){
+        if (this.user.username.toLowerCase() === data.data.toLowerCase()){
             suppressednick = 'You have been';
             this.ui.removeClass('banned');
         }
@@ -419,19 +419,19 @@ class Chat {
     }
 
     onERR(data){
-        this.reconnect = (data != 'toomanyconnections' && data != 'banned');
+        this.reconnect = (data !== 'toomanyconnections' && data !== 'banned');
         const errorString = (this.errorstrings.has(data)) ? this.errorstrings.get(data) : data;
         this.push(ChatMessage.errorMessage(errorString));
     }
 
     onSUBONLY(data){
-        const submode = data.data == 'on' ? 'enabled': 'disabled';
+        const submode = data.data === 'on' ? 'enabled': 'disabled';
         this.push(ChatMessage.commandMessage(`Subscriber only mode ${submode} by ${data.nick}`, data.timestamp));
     }
 
     onBROADCAST(data){
         if (this.backlogLoading) return;
-        if (data.data.substring(0, 9) == 'redirect:') {
+        if (data.data.substring(0, 9) === 'redirect:') {
             let url = data.data.substring(9);
             setTimeout(() => {
                 // try redirecting the parent window too if possible
@@ -464,7 +464,7 @@ class Chat {
         const normalizedstr = str.toLowerCase();
         if(normalizedstr !== '' && normalizedstr !== '/me' && normalizedstr !== '/me '){
 
-            if (this.user == null || !this.user.username)
+            if (this.user === null || !this.user.username)
                 return this.push(ChatMessage.errorMessage(this.errorstrings.get('needlogin')));
 
             if (/^\/[^\/|me]/i.test(str)){
@@ -478,7 +478,7 @@ class Chat {
                 const text = (normalizedstr.substring(0, 4).toLowerCase() === '/me ' ? str.substring(4) : str).trim(),
                   emoticon = this.emoticons.has(text) || this.twitchemotes.has(text) ? text : null;
 
-                if (emoticon && this.lastMessage && this.lastMessage.message == emoticon){
+                if (emoticon && this.lastMessage && this.lastMessage.message === emoticon){
 
                     // Emoticon combo
                     // If this is an emoticon spam, emit the message but don't add the line immediately
@@ -540,7 +540,7 @@ class Chat {
     cmdWHISPER(parts){
         if (!parts[0] || !this.nickregex.test(parts[0].toLowerCase()))
             this.push(ChatMessage.errorMessage('Invalid nick - /msg nick message'));
-        else if(parts[0].toLowerCase() == this.user.username.toLowerCase())
+        else if(parts[0].toLowerCase() === this.user.username.toLowerCase())
             this.push(ChatMessage.errorMessage('Cannot send a message to yourself'));
         else
             this.source.send('PRIVMSG', {
@@ -552,7 +552,7 @@ class Chat {
     cmdIGNORE(parts){
         const username = parts[0] || null;
         if (!username) {
-            if (this.ignoring.size == 0) {
+            if (this.ignoring.size <= 0) {
                 this.push(ChatMessage.infoMessage('Your ignore list is empty'));
             } else {
                 this.push(ChatMessage.infoMessage(`Ignoring the following people: ${Array.from(this.ignoring.values()).join(', ')}`));
@@ -603,8 +603,8 @@ class Chat {
                 nick   : parts[0],
                 reason : parts.slice(2, parts.length).join(' ')
             };
-            if(command == 'IPBAN' || /^perm/i.test(parts[1]))
-                payload.ispermanent = (command == 'IPBAN' || /^perm/i.test(parts[1]));
+            if(command === 'IPBAN' || /^perm/i.test(parts[1]))
+                payload.ispermanent = (command === 'IPBAN' || /^perm/i.test(parts[1]));
             else
                 payload.duration = Chat.parseTimeInterval(parts[1]);
             this.source.send('BAN', payload);
@@ -622,7 +622,7 @@ class Chat {
     }
 
     cmdSUBONLY(parts, command){
-        if (parts[0] != 'on' && parts[0] != 'off') {
+        if (parts[0] !== 'on' && parts[0] !== 'off') {
             this.push(ChatMessage.errorMessage(`Invalid argument - /${command} on/off`));
         } else {
             this.source.send(command.toUpperCase(), {data: parts[0]});
@@ -654,17 +654,21 @@ class Chat {
             this.push(ChatMessage.errorMessage(`Invalid nick - /${command} nick`));
         } else {
             const nick = parts[0].toLowerCase();
-            const dohighlight = command === 'HIGHLIGHT';
-            if (dohighlight) {
-                highlights[nick] = true;
-                this.push(ChatMessage.infoMessage(`Now highlighting ${nick}`));
-            } else {
-                delete(highlights[nick]);
-                this.push(ChatMessage.infoMessage(`No longer highlighting ${nick}`));
+            switch(command) {
+                case 'UNHIGHLIGHT':
+                    if(highlights[nick]) delete(highlights[nick]);
+                    this.push(ChatMessage.infoMessage(`No longer highlighting ${nick}`));
+                    break;
+                default:
+                case 'HIGHLIGHT':
+                    if(!highlights[nick]) highlights[nick] = true;
+                    this.push(ChatMessage.infoMessage(`Now highlighting ${nick}`));
+                    break;
             }
-            this.renewHighlight(nick, dohighlight);
             this.settings.set('highlightnicks', highlights);
             ChatStore.write('chat.settings', this.settings);
+            this.highlighter.loadHighlighters();
+            this.highlighter.redraw();
             this.updateSettingsCss();
         }
     }
@@ -710,7 +714,7 @@ class Chat {
 
         if(!this.backlogLoading){
             // Pin the chat scroll
-            this.log.debug(`Update scroll ` + pin);
+            this.log.debug(`Update scroll Pinned: ${pin} contentScrollTop: ${this.scrollPlugin.scroller.contentScrollTop} maxScrollTop: ${this.scrollPlugin.scroller.maxScrollTop}`);
             this.scrollPlugin.updateAndPin(pin);
 
             // Show desktop notification
@@ -725,7 +729,7 @@ class Chat {
 
     resolveMessage(data){
         for(const message of this.unresolved){
-            if(this.user.username == data.nick && message.message === data.data)
+            if(this.user.username === data.nick && message.message === data.data)
                 return this.unresolved.splice(0, 1)[0].resolve(this);
         }
         return null;
@@ -774,7 +778,7 @@ class Chat {
 
     // simple array check for features
     static isArraysEqual(a, b){
-        return (!a || !b) ? (a.length != b.length || a.sort().toString() !== b.sort().toString()) : false;
+        return (!a || !b) ? (a.length !== b.length || a.sort().toString() !== b.sort().toString()) : false;
     }
 
     static showNotification(message){

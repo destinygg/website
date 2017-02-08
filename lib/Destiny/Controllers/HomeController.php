@@ -13,6 +13,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Messages\PrivateMessageService;
+use Destiny\Reddit\RedditFeedService;
 use Destiny\Twitch\TwitchApiService;
 
 /**
@@ -32,10 +33,12 @@ class HomeController {
             $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount(Session::getCredentials()->getUserId());
 
         $cache = Application::instance ()->getCacheDriver ();
+        $model->posts = $cache->fetch ( 'recentposts' );
         $model->articles = $cache->fetch ( 'recentblog' );
         $model->summoners = $cache->fetch ( 'summoners' );
         $model->tweets = $cache->fetch ( 'twitter' );
-        $model->music = $cache->fetch ( 'recenttracks' );
+        $model->recenttracks = $cache->fetch ( 'recenttracks' );
+        $model->toptracks = $cache->fetch ( 'toptracks' );
         $model->playlist = $cache->fetch ( 'youtubeplaylist' );
         $model->broadcasts = $cache->fetch ( 'pastbroadcasts' );
         return 'home';
@@ -88,25 +91,6 @@ class HomeController {
     public function bigscreen(ViewModel $model) {
         $model->title = 'Bigscreen';
         return 'bigscreen';
-    }
-
-    /**
-     * @Route ("/emotes")
-     *
-     * @param ViewModel $model
-     * @return string
-     */
-    public function emoticons(ViewModel $model) {
-        $emotes = ChatEmotes::get('destiny');
-        //natcasesort( $emotes );
-        $model->emoticons = $emotes;
-
-        $twemotes = ChatEmotes::get('twitch');
-        //natcasesort( $twemotes );
-        $model->twitchemotes = $twemotes;
-
-        $model->title = 'Emoticons';
-        return 'chat/emoticons';
     }
 
     /**

@@ -44,7 +44,7 @@ use Destiny\Common\Config;
                 <td>
                   <?php if(in_array($profileType, $this->authProfileTypes)): ?>
                     <?php $this->requireConnections = true; ?>
-                    <span class="subtle"><span class="fa fa-check"></span> Connected</span>
+                    <span class="fa fa-check"></span> Connected
                   <?php else: ?>
                     <a href="/profile/connect/<?=$profileType?>" class="btn btn-primary btn-xs btn-post">Connect</a>
                   <?php endif ?>
@@ -84,7 +84,7 @@ use Destiny\Common\Config;
               <?php endforeach; ?>
               <?php else: ?>
               <tr>
-                <td colspan="3"><span class="subtle">You have no authentication keys</span></td>
+                <td colspan="3">You have no authentication keys</td>
               </tr>
               <?php endif ?>
             </tbody>

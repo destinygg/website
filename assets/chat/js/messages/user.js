@@ -31,13 +31,13 @@ class ChatUserMessage extends ChatMessage {
         const classes = [], attr = {};
         if (this.user && this.user.username)
             attr['data-username'] = this.user.username.toLowerCase();
-        if(this.chat.user && this.chat.user.username == this.user.username)
+        if(this.chat.user && this.chat.user.username === this.user.username)
             classes.push('msg-own');
         if(this.isSlashMe)
             classes.push('msg-emote');
         if(this.highlighted)
             classes.push('msg-highlight');
-        if(this.chat.lastMessage && this.chat.lastMessage.user && this.user && this.chat.lastMessage.user.username == this.user.username)
+        if(this.chat.lastMessage && this.chat.lastMessage.user && this.user && this.chat.lastMessage.user.username === this.user.username)
             classes.push('msg-continue');
         return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + ' ' + this.wrapMessage(), classes, attr);
     }

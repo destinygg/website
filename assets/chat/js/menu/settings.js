@@ -11,10 +11,11 @@ class ChatSettingsMenu extends ChatMenu {
         this.customHighlightEl = this.ui.find('input[name=customhighlight]');
         this.allowNotificationsEl = this.ui.find('input[name="allowNotifications"]');
         this.customHighlightEl.on('keypress blur', e => {
-            if (e.which && e.which != 13) return; // not enter
+            if (e.which && e.which !== 13) return; // not enter
             let data = $(e.target).val().toString().split(',').map(s => s.trim());
             this.chat.settings.set('customhighlight', [...new Set(data)]);
             this.chat.highlighter.loadHighlighters();
+            this.chat.highlighter.redraw();
         });
         this.ui.on('change', 'input[type="checkbox"]', e => {
             let name    = $(e.target).attr('name'),

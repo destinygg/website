@@ -33,7 +33,7 @@ class ChatEmoteMessage extends ChatMessage {
         else if(this.emotecount >= 5)
             stepClass = ' x5';
 
-        if(this.emotecountui == null)
+        if(!this.emotecountui)
             this.emotecountui = this.ui.find('.emotecount');
 
         this.emotecountui.detach().attr('class', 'emotecount' + stepClass).html(this.getEmoteCountLabel()).appendTo(this.ui);

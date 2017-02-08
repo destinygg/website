@@ -27,7 +27,7 @@ class TwitterApiService extends Service {
             'url' => $tmhOAuth->url ( '1.1/statuses/user_timeline.json' ),
             'params' => [
                 'screen_name' => Config::$a ['twitter'] ['user'],
-                'count' => 3,
+                'count' => 4,
                 'trim_user' => true
             ]
         ]);

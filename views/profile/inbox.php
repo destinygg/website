@@ -73,7 +73,7 @@ use Destiny\Common\Config;
                     <table id="inbox" class="grid messages">
                         <tbody>
                         <tr>
-                            <td><span class="subtle">You have no messages</span></td>
+                            <td>You have no messages</td>
                         </tr>
                         </tbody>
                     </table>

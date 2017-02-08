@@ -39,7 +39,7 @@ class ChatAutoComplete {
     }
 
     getBucketId(id){
-        if (id.length == 0)
+        if (id.length === 0)
             return '';
         return id[0].toLowerCase();
     }
@@ -130,22 +130,22 @@ class ChatAutoComplete {
             return 0;
 
         // order promoted things first
-        if (a.promoted != b.promoted)
+        if (a.promoted !== b.promoted)
             return a.promoted > b.promoted? -1: 1;
 
         // order emotes second
-        if (a.isemote != b.isemote)
+        if (a.isemote !== b.isemote)
             return a.isemote && !b.isemote? -1: 1;
 
         // order according to recency third
-        if (a.weight != b.weight)
+        if (a.weight !== b.weight)
             return a.weight > b.weight? -1: 1;
 
         // order lexically fourth
         a = a.data.toLowerCase();
         b = b.data.toLowerCase();
 
-        if (a == b)
+        if (a === b)
             return 0;
 
         return a > b? 1: -1;
@@ -236,7 +236,7 @@ class ChatAutoComplete {
     showAutoComplete(){
         this.searchIndex = this.searchIndex >= this.searchResults.length - 1 ? 0 : this.searchIndex + 1;
         let result = this.searchResults[this.searchIndex];
-        if (!result || result.data == this.searchWord.word)
+        if (!result || result.data === this.searchWord.word)
             return;
 
         this.lastComplete = result.data;
@@ -245,7 +245,7 @@ class ChatAutoComplete {
 
         // always add a space after our completion if there isn't one since people
         // would add one anyway
-        if (post[0] != ' ' || post.length == 0)
+        if (post[0] !== ' ' || post.length === 0)
             post = ' ' + post;
 
         this.input.focus().val(pre + result.data + post);

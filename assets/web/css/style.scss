@@ -147,10 +147,10 @@ form.form-alt {
 
     .navbar-collapse {
       &.collapse {
-        display: none;
+        display: none !important;
       }
       &.in {
-        display: block;
+        display: block !important;
       }
       & > ul > li {
         float: left;
@@ -202,18 +202,6 @@ blockquote {
 }
 .ds-block-reduced {
   margin:10px 20px;
-}
-
-span.subtle {
-  opacity: 0.25;
-}
-
-small.subtle {
-  opacity: 0.4;
-}
-
-i.subtle {
-  opacity: 0.4;
 }
 
 input[disabled] {
@@ -522,9 +510,22 @@ i.icon-reddit {
     display: block;
     width: auto;
   }
-  .media-body time {
+  .media-body time,
+  .media-body small {
     font-size: 12px;
     color: $text-color2;
+  }
+
+  .media-heading {
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    max-height: $font-size-base*$line-height-base*2; /* Fallback for non-webkit */
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -560,54 +561,17 @@ i.icon-reddit {
   }
 }
 
-#stream-lastfm {
-
-  .media-heading {
-    color: $text-color;
-    font-weight: normal;
-  }
-
-  .media-heading,
-  .album,
-  .artist {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .media-heading,
-  .artist {
-    height: 20px;
-  }
-
-  .album {
-    height: 15px;
-    display: block;
-    max-width: 270px;
-    line-height: 15px;
-  }
-
-  .cover-image {
-    width: 74px;
-    height: 64px;
-  }
-
-  .trackname,
-  .artist {
-    margin-bottom: 2px;
-  }
-}
-
-#stream-twitter .media-heading {
-  font-size: 85%;
+#stream-lastfm .cover-image {
+  width: 74px;
+  height: 64px;
 }
 
 #gmg-block > a {
-  background: url("../img/ad.gmg.png");
-  background-size: contain;
-  width: 320px;
-  height: 250px;
   display: block;
+}
+
+#gmg-ad-unused { /* bad way of ensuring this asset is copied to ./static */
+  background: url("../img/ad.gmg.png");
 }
 
 #dc-donate-xs {
@@ -1737,4 +1701,11 @@ img.img_64x64 {
 }
 #loginFormProviders label:hover {
   color: white;
+}
+
+.no-wrap-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
 }

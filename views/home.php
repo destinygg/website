@@ -18,9 +18,9 @@ use Destiny\Common\Config;
     <div id="page-wrap">
         <?php include 'seg/top.php' ?>
         <?php include 'seg/headerband.php' ?>
+        <?php include 'seg/panel.reddit.php' ?>
         <?php include 'seg/panel.videos.php' ?>
         <?php include 'seg/panel.music.php' ?>
-        <?php include 'seg/panel.blog.php' ?>
         <?php include 'seg/panel.ads.php' ?>
     </div>
     <?php include 'seg/foot.php' ?>

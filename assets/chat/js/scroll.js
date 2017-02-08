@@ -17,7 +17,7 @@ class ChatScrollPlugin {
     }
 
     updateAndPin(pin){
-        this.scroller.reset();
+        this.reset();
         if(pin) this.scroller.scrollBottom(0);
     }
 

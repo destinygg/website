@@ -19,10 +19,7 @@ use Destiny\Common\Utils\Tpl;
         <?php include 'seg/headerband.php' ?>
         
         <section class="container">
-            <h1 class="title">
-                <small class="subtle pull-right" style="font-size:14px; margin-top:20px;">Last update: <?=Date::getDateTime(filemtime(__FILE__))->format(Date::STRING_FORMAT)?></small>
-                <span>Disclaimer</span>
-            </h1>
+            <h1 class="title">Disclaimer</h1>
             <div class="content content-dark clearfix">
                 <div class="ds-block">
                     <h4>Cookies</h4>
@@ -50,7 +47,8 @@ use Destiny\Common\Utils\Tpl;
                     <p>We may or may not respond to questions and or bug reports regarding this website, within whatever time frame we can afford.</p>
                 </div>
             </div>
-            <br /><br />
+            <br />
+            <p>Last update: <?=Date::getDateTime(filemtime(__FILE__))->format(Date::STRING_FORMAT)?></p>
         </section>
     </div>
 

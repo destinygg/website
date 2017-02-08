@@ -44,8 +44,8 @@ class ChatSource extends EventEmitter {
     }
 
     send(eventname, data){
-        const payload = (typeof data == 'string') ? data : JSON.stringify(data);
-        //this.sock.send(`${eventname} ${payload}`);
+        const payload = (typeof data === 'string') ? data : JSON.stringify(data);
+        this.sock.send(`${eventname} ${payload}`);
     }
 
 }

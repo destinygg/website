@@ -160,7 +160,7 @@ class TwitchApiService extends Service {
         } else if(!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])){
             $video = $broadcasts['videos'][0];
             $streaminfo['preview'] = $video['preview'];
-            $streaminfo['animated_preview'] = $video['animated_preview'];
+            $streaminfo['animated_preview'] = isset($video['animated_preview']) ? $video['animated_preview'] : $streaminfo['preview'];
             $recorded_at = Date::getDateTime($video['recorded_at']);
             $streaminfo['ended_at'] = $cache->contains('lasttimeonline') ? $cache->fetch('lasttimeonline') : $recorded_at->format(Date::FORMAT);
         }

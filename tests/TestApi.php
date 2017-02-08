@@ -33,7 +33,7 @@ class GuzzleTest extends PHPUnit_Framework_TestCase {
 
     public function testLastFM() {
         $apiService = LastFMApiService::instance();
-        $json = $apiService->getLastFMTracks()->getResponse();
+        $json = $apiService->getLastPlayedTracks()->getResponse();
         //print json_encode($json, JSON_PRETTY_PRINT);
         $this->assertTrue($json != null && isset($json["recenttracks"]));
     }

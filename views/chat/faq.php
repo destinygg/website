@@ -9,6 +9,7 @@ use Destiny\Common\Config;
 <title><?=Tpl::title($this->title)?></title>
 <meta charset="utf-8">
 <?php include 'seg/commontop.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="agreement" class="no-brand">
     <div id="page-wrap">
@@ -17,10 +18,7 @@ use Destiny\Common\Config;
         <?php include 'seg/headerband.php' ?>
 
         <section class="container">
-            <h1 class="title">
-            <small class="subtle pull-right" style="font-size:14px; margin-top:20px;">Last update: <?=Date::getDateTime(filemtime(__FILE__))->format(Date::STRING_FORMAT)?></small>
-            <span>Frequently Asked Questions</span>
-            </h1>
+            <h1 class="title">Frequently Asked Questions</h1>
             <hr size="1">
             
             <h3 id="refreshes">Why does the chat keep refreshing?</h3>
@@ -141,6 +139,8 @@ use Destiny\Common\Config;
                 Now implemented and slick as fuck, don't forget to thank Ceneza!<br/>
                 Also auto-completes emoticons! Try it: hhh+Tab
             </p>
+            <br />
+            <p>Last update: <?=Date::getDateTime(filemtime(__FILE__))->format(Date::STRING_FORMAT)?></p>
         </section>
 
     </div>

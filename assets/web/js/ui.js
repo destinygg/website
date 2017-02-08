@@ -351,7 +351,7 @@ $(function(){
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
             a.data('animated', status.animated_preview).css('background-image', status.preview);
-            if(state == 'hosting'){
+            if(state === 'hosting'){
                 host.text(status.host['display_name']);
                 host.attr('href', status.host['url']);
             }
@@ -360,15 +360,14 @@ $(function(){
         setInterval(function(){
             $.ajax({
                 url: '/stream.json',
-                type: 'GET'
-            })
-            .success(function(data){
-                try {
-                    if(data != null && data != undefined){
-                        status = $.extend(status, data);
-                        updateStatus(status);
-                    }
-                } catch(ignored){}
+                type: 'GET',
+                success: function(data) {
+                    try {
+                        if(data !== null && data !== undefined){
+                            updateStatus($.extend(status, data));
+                        }
+                    } catch(ignored){}
+                }
             });
         }, 60000);
 

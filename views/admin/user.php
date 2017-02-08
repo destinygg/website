@@ -210,15 +210,13 @@ use Destiny\Commerce\SubscriptionStatus;
             <tr>
               <td>
                 <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">Tier <?=Tpl::out($subinfo['subscriptionTier'])?></a>
-                <?php if($subinfo['recurring'] == '1'): ?>
-                <span class="subtle">(Recurring)</span>
-                <?php endif ?>
+                <?php if($subinfo['recurring'] == '1'): ?>(Recurring)<?php endif ?>
               </td>
               <td>
                 <?php if(strcasecmp($subinfo['status'], SubscriptionStatus::ACTIVE) === 0): ?>
                 <span class="badge badge-success"><?=Tpl::out($subinfo['status'])?></span>
                 <?php else: ?>
-                <span class="subtle"><?=Tpl::out($subinfo['status'])?></span>
+                <span><?=Tpl::out($subinfo['status'])?></span>
                 <?php endif ?>
               </td>
               <td>
@@ -259,15 +257,13 @@ use Destiny\Commerce\SubscriptionStatus;
               <tr>
                 <td>
                   <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/subscription/<?=Tpl::out($subinfo['subscriptionId'])?>/edit">TIER <?=Tpl::out($subinfo['subscriptionTier'])?></a>
-                  <?php if($subinfo['recurring'] == '1'): ?>
-                    <span class="subtle">(Recurring)</span>
-                  <?php endif ?>
+                  <?php if($subinfo['recurring'] == '1'): ?>(Recurring)<?php endif ?>
                 </td>
                 <td>
                   <?php if(strcasecmp($subinfo['status'], SubscriptionStatus::ACTIVE) === 0): ?>
                     <span class="badge badge-success"><?=Tpl::out($subinfo['status'])?></span>
                   <?php else: ?>
-                    <span class="subtle"><?=Tpl::out($subinfo['status'])?></span>
+                    <span><?=Tpl::out($subinfo['status'])?></span>
                   <?php endif ?>
                 </td>
                 <td>
@@ -387,7 +383,7 @@ use Destiny\Commerce\SubscriptionStatus;
           </p>
           <blockquote>
             <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($this->ban['reason'])?></p>
-            <small class="subtle"><?=Tpl::out((!empty($this->ban['username'])) ? $this->ban['username']:'System')?></small>
+            <small><?=Tpl::out((!empty($this->ban['username'])) ? $this->ban['username']:'System')?></small>
           </blockquote>
         </div>
 
