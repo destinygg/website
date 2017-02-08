@@ -64,7 +64,7 @@ use Destiny\Commerce\SubscriptionStatus;
                 <dd><?=Date::getRemainingTime(Date::getDateTime($subscription['endDate']))?></dd>
               </dl>
 
-              <?php if(strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE)===0): ?>
+              <?php if(strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE)===0 && $subscription['recurring'] == 1): ?>
                 <?php
                 $billingNextDate = Date::getDateTime($subscription['billingNextDate']);
                 $billingStartDate = Date::getDateTime($subscription['billingStartDate']);
