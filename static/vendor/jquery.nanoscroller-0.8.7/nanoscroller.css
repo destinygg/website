@@ -6,6 +6,7 @@
   overflow : hidden;
 }
 .nano > .nano-content {
+  overflow-anchor : none;
   position      : absolute;
   overflow      : scroll;
   overflow-x    : hidden;
