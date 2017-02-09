@@ -51,6 +51,8 @@
     "nanoscroller": "~0.8.7",
     "sass-loader": "~4.0.2",
     "style-loader": "~0.13.1",
+    "ts-loader": "^2.0.0",
+    "typescript": "^2.1.6",
     "webpack": "~1.13.2",
     "webpack-dev-server": "^1.16.2"
   },

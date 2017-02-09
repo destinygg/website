@@ -89,7 +89,6 @@ class Chat {
             ['highlight', 'Chat messages containing your username will be highlighted'],
             ['notify', 'Use /msg <username> to send a private message to someone'],
             ['ignoreuser', 'Use /ignore <username> to hide messages from pesky chatters'],
-            ['emotewiki', 'For the list of available emotes type /emotes or https://destiny.gg/emotes'],
             ['mutespermanent', 'Mutes are never persistent, don\'t worry it will pass!']
         ]);
     }
