@@ -270,7 +270,7 @@ class ChatApiController {
             $data = json_decode( file_get_contents('php://input'), true );
             $userService = UserService::instance();
             $authid = $userService->getTwitchIDFromNick( $data['nick'] );
-            if ( $authid ) {
+            if ( $authid !== false ) {
                 $users = $userService->updateTwitchSubscriptions( array( $authid => 1 ) );
 
                 $chatIntegrationService = ChatIntegrationService::instance();
@@ -286,7 +286,7 @@ class ChatApiController {
                     );
                 }
             }
-            $response = new Response ( Http::STATUS_OK, json_encode ( ['id' => $authid] ) );
+            $response = new Response ( Http::STATUS_OK, json_encode ( ['id' => $authid === false ? '':$authid] ) );
             $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
 
         } catch (Exception $e) {
