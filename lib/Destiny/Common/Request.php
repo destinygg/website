@@ -74,6 +74,10 @@ class Request {
                 $this->headers[self::HEADER_CONTENT_TYPE] = $_SERVER['HTTP_CONTENT_TYPE'];
         }
     }
+
+    public function getBody(){
+        return file_get_contents('php://input');
+    }
     
     public function path(){
         return parse_url ( $this->uri, PHP_URL_PATH );
