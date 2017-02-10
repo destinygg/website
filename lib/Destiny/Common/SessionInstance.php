@@ -168,6 +168,16 @@ class SessionInstance {
     }
 
     /**
+     * Return TRUE if property exists else FALSE
+     *
+     * @param string $name
+     * @return boolean
+     */
+    public function has($name) {
+        return isset ( $_SESSION [$name] );
+    }
+
+    /**
      * Returns true if the session has been stared, false otherwise
      *
      * @return boolean

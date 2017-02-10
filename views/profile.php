@@ -63,7 +63,7 @@ use Destiny\Commerce\SubscriptionStatus;
                 <dd><?=Date::getRemainingTime(Date::getDateTime($subscription['endDate']))?></dd>
               </dl>
 
-              <?php if(strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE)===0): ?>
+              <?php if(strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE)===0 && $subscription['recurring'] == 1): ?>
                 <?php
                 $billingNextDate = Date::getDateTime($subscription['billingNextDate']);
                 $billingStartDate = Date::getDateTime($subscription['billingStartDate']);
@@ -287,9 +287,9 @@ use Destiny\Commerce\SubscriptionStatus;
                   <div class="ds-block">
                       <div class="form-group">
                           <label>Minecraft name:
-                              <br><small>For the minecraft server details, ask in chat.</small>
+                              <br><small>For the minecraft server details, ask in chat. (Max 16 characters)</small>
                           </label>
-                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name" />
+                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name" maxlength="16" />
                       </div>
                   </div>
                   <div class="form-actions block-foot">
@@ -306,9 +306,9 @@ use Destiny\Commerce\SubscriptionStatus;
                   <div class="ds-block">
                       <div class="form-group">
                           <label>Discord username:
-                              <br><small>For the discord server details, ask in chat.</small>
+                              <br><small>For the discord server details, ask in chat. Remember to add your username and id. e.g. Jimmy#999</small>
                           </label>
-                          <input class="form-control" type="text" name="discordname" value="<?=Tpl::out($model->user['discordname'])?>" placeholder="Discord username" />
+                          <input class="form-control" type="text" name="discordname" value="<?=Tpl::out($model->user['discordname'])?>" placeholder="Discord username and id. e.g. Jimmy#999" />
                       </div>
                   </div>
                   <div class="form-actions block-foot">

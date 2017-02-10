@@ -15,26 +15,10 @@ use Destiny\Common\Utils\Date;
     <div id="page-wrap">
       <?php include 'seg/top.php' ?>
       <?php include 'seg/admin.nav.php' ?>
-                    
-      <?php if(!empty($this->error)): ?>
-      <section class="container">
-        <div class="alert alert-danger" style="margin:0;">
-          <strong>Error!</strong>
-          <?=Tpl::out($this->error)?>
-        </div>
-      </section>
-      <?php endif ?>
-        
-      <?php if(!empty($this->success)): ?>
-      <section class="container">
-        <div class="alert alert-info" style="margin-bottom:0;">
-          <strong>Success!</strong>
-          <?=Tpl::out($this->success)?>
-        </div>
-      </section>
-      <?php endif ?>
+      <?php include Tpl::file('seg/alerts.php') ?>
         
       <section class="container">
+
         <h3>Broadcast</h3>
         <div class="content content-dark clearfix">
           <form class="form" action="/admin/chat/broadcast" role="form">

@@ -763,10 +763,14 @@ class UserService extends Service {
   }
 
   /**
-   * Expects an array with twitch users _id as keys and a 0 or 1 as value
-   * to indicate whether the user is a subscriber or not
    * Returns an array of active subscribers (for announcing) with the
    * key being the authid and the value being an array of user info(userid, username)
+   *
+   * Expects the following $data structure:
+   *  [{"123":1},{"456":0}]
+   *
+   *  Where the key is the twitch user id (auth.authDetail) and the value is whether
+   *  the user is a subscriber or not
    *
    * @param array $data
    * @return array
@@ -879,6 +883,8 @@ class UserService extends Service {
         dfl_users_auth AS ua
       WHERE
         u.userId             = ua.userId AND
+        ua.authProvider      = 'twitch' AND
+        ua.authDetail        IS NOT NULL AND
         u.istwitchsubscriber = 1
     ");
     $stmt->execute();

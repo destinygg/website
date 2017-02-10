@@ -28,11 +28,11 @@ class ChatAdminController {
      */
     public function adminChat(ViewModel $model) {
         $model->title = 'Chat';
-        if (Session::get ( 'modelSuccess' )) {
+        if (Session::has ( 'modelSuccess' )) {
             $model->success = Session::get ( 'modelSuccess' );
             Session::set ( 'modelSuccess' );
         }
-        if (Session::get ( 'modelError' )) {
+        if (Session::has ( 'modelError' )) {
             $model->error = Session::get ( 'modelError' );
             Session::set ( 'modelError' );
         }

@@ -71,11 +71,11 @@ class ProfileController {
         $address ['country'] = '';
       }
       
-      if (Session::get ( 'modelSuccess' )) {
+      if (Session::has ( 'modelSuccess' )) {
         $model->success = Session::get ( 'modelSuccess' );
         Session::set ( 'modelSuccess' );
       }
-      if (Session::get ( 'modelError' )) {
+      if (Session::has ( 'modelError' )) {
         $model->error = Session::get ( 'modelError' );
         Session::set ( 'modelError' );
       }
@@ -186,11 +186,11 @@ class ProfileController {
       }
       $model->authProfileTypes = $authProfileTypes;
       
-      if (Session::get ( 'modelSuccess' )) {
+      if (Session::has ( 'modelSuccess' )) {
         $model->success = Session::get ( 'modelSuccess' );
         Session::set ( 'modelSuccess' );
       }
-      if (Session::get ( 'modelError' )) {
+      if (Session::has ( 'modelError' )) {
         $model->error = Session::get ( 'modelError' );
         Session::set ( 'modelError' );
       }
@@ -375,14 +375,18 @@ class ProfileController {
         FilterParams::declared ( $params, 'minecraftname' );
         $data = ['minecraftname' => $params['minecraftname']];
 
-        if(trim($data['minecraftname']) == ''){
+        if(trim($data['minecraftname']) == '')
             $data['minecraftname'] = null;
+
+        if (mb_strlen($data['minecraftname']) > 16) {
+            Session::set ( 'modelError', 'Minecraft name too long.' );
+            return 'redirect: /profile';
         }
 
         $uId = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
-        if($data['minecraftname'] == null || !$uId || intval($uId) === intval($userId)){
+        if($data['minecraftname'] == null || empty($uId) || intval($uId) === intval($userId)){
             $userService->updateUser ( $userId, $data );
-            Session::set ( 'modelSuccess', 'Minecraft info has been updated' );
+            Session::set ( 'modelSuccess', 'Minecraft name has been updated' );
         } else {
             Session::set ( 'modelError', 'Minecraft name already in use' );
         }
@@ -406,12 +410,16 @@ class ProfileController {
         FilterParams::declared ( $params, 'discordname' );
         $data = ['discordname' => $params['discordname']];
 
-        if(trim($data['discordname']) == ''){
+        if(trim($data['discordname']) == '')
             $data['discordname'] = null;
+
+        if (mb_strlen($data['discordname']) > 36) {
+            Session::set ( 'modelError', 'Discord username too long.' );
+            return 'redirect: /profile';
         }
 
         $uId = $userService->getUserIdByField('discordname', $params['discordname']);
-        if($data['discordname'] == null || !$uId || intval($uId) === intval($userId)){
+        if($data['discordname'] == null || empty($uId) || intval($uId) === intval($userId)){
             $userService->updateUser ( $userId, $data );
             Session::set ( 'modelSuccess', 'Discord info has been updated' );
         } else {

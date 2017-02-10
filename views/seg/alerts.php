@@ -5,7 +5,7 @@ use Destiny\Common\Utils\Tpl;
 
 <?php if(!empty($this->error)): ?>
 <section class="container">
-    <div class="alert alert-danger" style="margin:0;">
+    <div class="alert alert-danger" style="margin-bottom: 0;">
         <strong>Error!</strong>
         <?=Tpl::out($this->error)?>
     </div>
@@ -15,8 +15,8 @@ use Destiny\Common\Utils\Tpl;
 <?php if(!empty($this->success)): ?>
 <section class="container">
     <div class="alert alert-info" style="margin:0;">
-	    <strong>Success!</strong>
-	    <?=Tpl::out($this->success)?>
+        <strong>Success!</strong>
+        <?=Tpl::out($this->success)?>
     </div>
 </section>
 <?php endif ?>

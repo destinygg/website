@@ -16,16 +16,10 @@ use Destiny\Common\Utils\Date;
   <div id="page-wrap">
     <?php include 'seg/top.php' ?>
     <?php include 'seg/admin.nav.php' ?>
+    <?php include 'seg/alerts.php' ?>
 
-    <?php if(!empty($this->success)): ?>
+    <?php if(!empty($model->success)): ?>
     <section class="container">
-      <div class="alert alert-info" style="margin-bottom:0;">
-        <strong>Success!</strong>
-        <?=Tpl::out($this->success)?>
-      </div>
-    </section>
-    <?php endif ?>
-
     <section class="container">
       <h3>Subscription <small>(<a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>)</small></h3>
       <div class="content content-dark clearfix">
