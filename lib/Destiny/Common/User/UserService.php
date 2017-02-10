@@ -879,6 +879,7 @@ class UserService extends Service {
         dfl_users_auth AS ua
       WHERE
         u.userId             = ua.userId AND
+        ua.authProvider      = 'twitch' AND
         u.istwitchsubscriber = 1
     ");
     $stmt->execute();
