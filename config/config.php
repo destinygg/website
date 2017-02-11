@@ -85,6 +85,7 @@ return array (
 			'BASEDWATM8',
 			'BERN',
 			'HmmStiny',
+			'PepoThink',
 		),
 		'twitchemotes' => array(
 			'nathanD',
