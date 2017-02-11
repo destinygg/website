@@ -18,8 +18,6 @@ use Destiny\Common\Utils\Date;
     <?php include 'seg/admin.nav.php' ?>
     <?php include 'seg/alerts.php' ?>
 
-    <?php if(!empty($model->success)): ?>
-    <section class="container">
     <section class="container">
       <h3>Subscription <small>(<a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>)</small></h3>
       <div class="content content-dark clearfix">

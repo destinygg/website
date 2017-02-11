@@ -289,7 +289,7 @@ use Destiny\Commerce\SubscriptionStatus;
                           <label>Minecraft name:
                               <br><small>For the minecraft server details, ask in chat. (Max 16 characters)</small>
                           </label>
-                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($model->user['minecraftname'])?>" placeholder="Minecraft name" maxlength="16" />
+                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name" maxlength="16" />
                       </div>
                   </div>
                   <div class="form-actions block-foot">
@@ -308,7 +308,7 @@ use Destiny\Commerce\SubscriptionStatus;
                           <label>Discord username:
                               <br><small>For the discord server details, ask in chat. Remember to add your username and id. e.g. Jimmy#999</small>
                           </label>
-                          <input class="form-control" type="text" name="discordname" value="<?=Tpl::out($model->user['discordname'])?>" placeholder="Discord username and id. e.g. Jimmy#999" />
+                          <input class="form-control" type="text" name="discordname" value="<?=Tpl::out($this->user['discordname'])?>" placeholder="Discord username and id. e.g. Jimmy#999" />
                       </div>
                   </div>
                   <div class="form-actions block-foot">

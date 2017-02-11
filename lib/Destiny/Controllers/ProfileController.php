@@ -83,6 +83,7 @@ class ProfileController {
       $subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions( $userId );
       $gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus ( $userId, SubscriptionStatus::ACTIVE );
 
+      $model->ban = $userService->getUserActiveBan ( $userId );
       $model->unreadMessageCount = PrivateMessageService::instance()->getUnreadMessageCount($userId);
       $model->user = $userService->getUserById ( $userId );
       $model->gifts = $gifts;

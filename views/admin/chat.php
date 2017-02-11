@@ -15,10 +15,9 @@ use Destiny\Common\Utils\Date;
     <div id="page-wrap">
       <?php include 'seg/top.php' ?>
       <?php include 'seg/admin.nav.php' ?>
-      <?php include Tpl::file('seg/alerts.php') ?>
+      <?php include 'seg/alerts.php' ?>
         
       <section class="container">
-
         <h3>Broadcast</h3>
         <div class="content content-dark clearfix">
           <form class="form" action="/admin/chat/broadcast" role="form">

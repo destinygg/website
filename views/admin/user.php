@@ -18,9 +18,8 @@ use Destiny\Commerce\SubscriptionStatus;
   <div id="page-wrap">
     <?php include 'seg/top.php' ?>
     <?php include 'seg/admin.nav.php' ?>
-    <?php include Tpl::file('seg/alerts.php') ?>
+    <?php include 'seg/alerts.php' ?>
 
-    <?php if(!empty($model->success)): ?>
     <section class="container">
 
       <h3 class="collapsed" data-toggle="collapse" data-target="#details-content">
