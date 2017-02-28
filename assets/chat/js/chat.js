@@ -212,7 +212,7 @@ class Chat {
         this.ui.on('submit', e => {
             e.preventDefault();
             e.stopPropagation();
-            this.control.emit('SEND', this.input.val().toString());
+            this.control.emit('SEND', this.input.val().toString().trim());
             this.input.val('').focus();
         });
 
