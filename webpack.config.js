@@ -8,7 +8,8 @@ module.exports = {
         common: ['core-js/es6','jquery','moment','font-awesome/scss/font-awesome.scss'],
         web: './assets/web.js',
         chat: './assets/chat.js',
-        admin: './assets/admin.js'
+        admin: './assets/admin.js',
+        messages: './assets/messages.js'
     },
     output: {
         path: __dirname + '/static',

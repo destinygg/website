@@ -355,7 +355,7 @@ class Chat {
     onMSG(data){
         const text    = (data.data.substring(0, 4) === '/me ' ? data.data.substring(4) : data.data).trim();
         const isemote = this.emoticons.has(text) || this.twitchemotes.has(text);
-        if(isemote && this.lastMessage.message === text){
+        if(isemote && this.lastMessage !== null && this.lastMessage.message === text){
             if(this.lastMessage instanceof ChatEmoteMessage) {
                 this.lastMessage.incEmoteCount();
             } else {

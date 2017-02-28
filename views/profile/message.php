@@ -36,7 +36,7 @@ use Destiny\Common\Config;
                 <div class="message-content clearfix">
                     <div class="message-header clearfix">
                         <div class="message-from pull-left">
-                            <span alt="<?= Tpl::out($msg['from']) ?>"><?= (!$isme) ? Tpl::out($msg['from']) : 'Me' ?></span>
+                            <span title="<?= Tpl::out($msg['from']) ?>"><?= (!$isme) ? Tpl::out($msg['from']) : 'Me' ?></span>
                         </div>
                         <?php if ($isme and $msg['isread']): ?>
                             <div class="icon-message-read pull-left glyphicon glyphicon-ok-circle" title="Your message has been marked as read"></div>
@@ -49,7 +49,7 @@ use Destiny\Common\Config;
                 </div>
                 <div class="message-summary clearfix">
                     <span class="message-from">
-                        <span alt="<?= Tpl::out($msg['from']) ?>"><?= (!$isme) ? Tpl::out($msg['from']) : 'Me' ?></span>
+                        <span title="<?= Tpl::out($msg['from']) ?>"><?= (!$isme) ? Tpl::out($msg['from']) : 'Me' ?></span>
                     </span>
                     <span class="message-snippet"><?= Tpl::formatTextForDisplay($msg['message']) ?></span>
                     <span class="message-date"><?= Tpl::calendar(Date::getDateTime($msg['timestamp'])); ?></span>
@@ -75,8 +75,7 @@ use Destiny\Common\Config;
     <?php include 'seg/foot.php' ?>
     <?php include 'seg/commonbottom.php' ?>
     <script src="<?=Config::cdnv()?>/web.js"></script>
-
-    <script src="<?=Config::cdnv()?>/web/js/messages.min.js"></script>
+    <script src="<?=Config::cdnv()?>/messages.js"></script>
 
 </body>
 </html>
