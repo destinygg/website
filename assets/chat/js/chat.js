@@ -100,9 +100,9 @@ class Chat {
     init(args){
         Object.assign(this, args['options']);
 
-        this.settings = new Map([...this.settings, ...args['settings'], ...(ChatStore.read('chat.settings') || [])]);
-        this.ignoring = new Set([...ChatStore.read('chat.ignoring') || []]);
-        this.shownhints = new Set([...ChatStore.read('chat.shownhints') || []]);
+        this.settings     = new Map([...this.settings, ...args['settings'], ...(ChatStore.read('chat.settings') || [])]);
+        this.ignoring     = new Set([...ChatStore.read('chat.ignoring') || []]);
+        this.shownhints   = new Set([...ChatStore.read('chat.shownhints') || []]);
 
         this.log          = Logger.make(this);
         this.user         = this.addUser(args.user || {});
@@ -353,14 +353,14 @@ class Chat {
     }
 
     onMSG(data){
-        const emoticon   = (data.data.substring(0, 4) === '/me ' ? data.data.substring(4) : data.data).trim();
-        const isemoticon = this.emoticons.has(emoticon) || this.twitchemotes.has(emoticon);
-        if(isemoticon && this.lastMessage.message === emoticon){
+        const text    = (data.data.substring(0, 4) === '/me ' ? data.data.substring(4) : data.data).trim();
+        const isemote = this.emoticons.has(text) || this.twitchemotes.has(text);
+        if(isemote && this.lastMessage.message === text){
             if(this.lastMessage instanceof ChatEmoteMessage) {
                 this.lastMessage.incEmoteCount();
             } else {
                 this.lastMessage.ui.remove();
-                this.push(new ChatEmoteMessage(emoticon, data.timestamp, 2));
+                this.push(new ChatEmoteMessage(text, data.timestamp, 2));
             }
         } else if(!this.resolveMessage(data)){
             this.push(new ChatUserMessage(data.data, this.users.get(data.nick), data.timestamp));
@@ -450,7 +450,7 @@ class Chat {
         this.push(ChatMessage.infoMessage('Your message has been sent!'));
     }
 
-    onPRIVMSG(data){
+    onPRIVMSG(data) {
         const user = this.users.get(data.nick);
         if (user && !this.shouldIgnoreUser(user.username)){
             this.setUnreadMessageCount(this.pmcountnum+1);
@@ -459,7 +459,7 @@ class Chat {
     }
 
 
-    cmdSEND(str){
+    cmdSEND(str) {
         const normalizedstr = str.toLowerCase();
         if(normalizedstr !== '' && normalizedstr !== '/me' && normalizedstr !== '/me '){
 
@@ -470,17 +470,18 @@ class Chat {
 
                 // Command message
                 const command = str.split(' ', 1)[0];
-                this.sendCommand(command.substring(1).toUpperCase(), str.substring(command.length+1));
+                this.sendCommand(
+                    command.substring(1).toUpperCase(), // remove the leading /
+                    str.substring(command.length+1)     // the rest of the string
+                );
 
             } else {
 
-                const text = (normalizedstr.substring(0, 4).toLowerCase() === '/me ' ? str.substring(4) : str).trim(),
-                  emoticon = this.emoticons.has(text) || this.twitchemotes.has(text) ? text : null;
-
-                if (emoticon && this.lastMessage && this.lastMessage.message === emoticon){
+                const text = (normalizedstr.substring(0, 4) === '/me ' ? str.substring(4) : str).trim();
+                if (this.isEmote(text)){
 
                     // Emoticon combo
-                    // If this is an emoticon spam, emit the message but don't add the line immediately
+                    // If this is an isemote spam, emit the message but don't add the line immediately
                     this.source.send('MSG', {data: str});
 
                 } else {
@@ -822,6 +823,10 @@ class Chat {
             nanoseconds += +number;
         });
         return nanoseconds;
+    }
+
+    isEmote(text) {
+        return this.emoticons.has(text) || this.twitchemotes.has(text);
     }
 
 }
