@@ -147,7 +147,7 @@ class AuthenticationController {
 
         $sub = SubscriptionsService::instance()->getUserActiveSubscription($userid);
         $features = UserFeaturesService::instance()->getUserFeatures($userid);
-        if (in_array(UserFeature::MINECRAFTVIP, $features) || (!empty ($sub) && (intval($sub ['subscriptionTier']) >= 1 || boolval($sub ['istwitchsubscriber'])))) {
+        if (in_array(UserFeature::MINECRAFTVIP, $features) || boolval($user ['istwitchsubscriber']) || (!empty ($sub) && intval($sub ['subscriptionTier']) >= 1)) {
             if (empty($sub)) {
                 $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
             }
@@ -222,7 +222,7 @@ class AuthenticationController {
          * If user has MINECRAFTVIP feature
          * or if the user is a twitch subscriber and has a subscription with a tier 1 or higher
          */
-        if (in_array(UserFeature::MINECRAFTVIP, $features) || (!empty ($sub) && (intval($sub ['subscriptionTier']) >= 1 || boolval($sub ['istwitchsubscriber'])))) {
+        if (in_array(UserFeature::MINECRAFTVIP, $features) || boolval($user ['istwitchsubscriber']) || (!empty ($sub) && intval($sub ['subscriptionTier']) >= 1)) {
             if (empty($sub)) {
                 $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
             }
