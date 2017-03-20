@@ -5,6 +5,7 @@ use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
+use Destiny\Common\Exception;
 use Destiny\Common\TaskInterface;
 use Destiny\Common\Utils\ImageDownload;
 use Destiny\Twitch\TwitchApiService;
@@ -17,6 +18,7 @@ class StreamInfo implements TaskInterface {
     public function execute() {
         $cache = Application::instance()->getCacheDriver();
         $twitchApiService = TwitchApiService::instance();
+        $chatIntegration = ChatIntegrationService::instance();
 
         // STREAM STATUS
         $streaminfo = $twitchApiService->getStreamInfo(Config::$a ['twitch']['user']);
@@ -32,14 +34,21 @@ class StreamInfo implements TaskInterface {
         // STREAM HOSTING
         $lasthost = $cache->contains('streamhostinfo') ? $cache->fetch('streamhostinfo') : [];
         $currhost = $twitchApiService->getChannelHostWithInfo(Config::$a['twitch']['id']);
-
         if(TwitchApiService::checkForHostingChange($lasthost, $currhost) == TwitchApiService::$HOST_NOW_HOSTING){
-            $chatIntegrationService = ChatIntegrationService::instance();
-            $chatIntegrationService->sendBroadcast(sprintf(
+            $chatIntegration->sendBroadcast(sprintf(
                 '%s is now hosting %s at %s',
                 Config::$a['meta']['shortName'],
                 $currhost['display_name'],
                 $currhost['url'])
+            );
+        }
+
+        // STEAM GO-LIVE ANNOUNCEMENT
+        $waslive = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
+        if($waslive !== null && $streaminfo !== null && (isset($waslive['live']) && $waslive['live'] == false && $streaminfo['live'] == true)){
+            $chatIntegration->sendBroadcast(sprintf(
+                '%s is now live!',
+                Config::$a['meta']['shortName'])
             );
         }
 
