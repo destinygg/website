@@ -1,4 +1,4 @@
-webpackJsonp([3],{
+webpackJsonp([2],{
 
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
@@ -12,6 +12,7 @@ webpackJsonp([3],{
 	__webpack_require__(71);
 	__webpack_require__(69);
 	__webpack_require__(126);
+	__webpack_require__(496);
 
 	window.setInterval(function () {
 	    return $.ajax({ url: '/ping', method: 'get' });
@@ -19,27 +20,8 @@ webpackJsonp([3],{
 
 	window.destiny = { loglevel: 0 };
 	window.destiny.chat = function () {
-
-	    function getUser() {
-	        return new Promise(function (resolve) {
-	            $.getJSON({ url: '/profile/info', timeout: 5000 }).done(resolve).fail(function () {
-	                return resolve(null);
-	            });
-	        });
-	    }
-
-	    function getHistory() {
-	        return new Promise(function (resolve) {
-	            $.getJSON({ url: '/chat/history', timeout: 5000 }).done(resolve).fail(function () {
-	                return resolve(null);
-	            });
-	        });
-	    }
-
 	    var chat = new (__webpack_require__(41)['default'])();
-	    $.when(getUser(), getHistory()).then(function (user, history) {
-	        return chat.init(user, history);
-	    });
+	    chat.init(null, null);
 	    return chat;
 	}();
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
@@ -5952,6 +5934,9 @@ webpackJsonp([3],{
 	//# sourceMappingURL=jquery.nanoscroller.js.map
 
 
-/***/ }
+/***/ },
+
+/***/ 496:
+69
 
 });

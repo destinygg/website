@@ -9,7 +9,7 @@ use Destiny\Common\Config;
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <meta name="referrer" content="no-referrer">
 <?php include 'seg/commontop.php' ?>
-<link href="<?=Config::cdnv()?>/chat.css" rel="stylesheet" media="screen">
+<link href="<?=Config::cdnv()?>/streamchat.css" rel="stylesheet" media="screen">
 <style id="chat-styles" type="text/css"></style>
 </head>
 <body class="embed onstream">
@@ -25,8 +25,7 @@ use Destiny\Common\Config;
     </div>
 
     <?php include 'seg/commonbottom.php' ?>
-    <script src="<?=Config::cdnv()?>/chat.js"></script>
-    <script src="/chat/onstream/init"></script>
+    <script src="<?=Config::cdnv()?>/streamchat.js"></script>
 
 </body>
 </html>

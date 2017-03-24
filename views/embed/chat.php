@@ -180,13 +180,10 @@ use Destiny\Common\Config;
     </div>
     <!-- end bot frame -->
 
-
 </div>
 
 <?php include 'seg/commonbottom.php' ?>
 <script src="<?=Config::cdnv()?>/chat.js"></script>
-<script src="/chat/history"></script>
-<script src="/chat/init"></script>
 
 </body>
 </html>

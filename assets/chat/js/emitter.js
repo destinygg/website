@@ -11,7 +11,7 @@ class EventEmitter {
     }
 
     emit(name, ...args) {
-        let listeners = this.listeners.get(name);
+        const listeners = this.listeners.get(name);
         if (listeners && listeners.length) {
             listeners.forEach(listener => listener(...args));
             return true;

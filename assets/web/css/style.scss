@@ -433,16 +433,16 @@ i.icon-reddit {
   display: inline-block;
 }
 i.icon-twitch {
-  background-image: url("../img/ico/twitch_16.png");
+  background-image: url("../img/ico/twitch-16.png");
 }
 i.icon-twitter {
-  background-image: url("../img/ico/twitter_16.png");
+  background-image: url("../img/ico/twitter-16.png");
 }
 i.icon-google {
-  background-image: url("../img/ico/google_16.png");
+  background-image: url("../img/ico/google-16.png");
 }
 i.icon-reddit {
-  background-image: url("../img/ico/reddit_16.png");
+  background-image: url("../img/ico/reddit-16.png");
 }
 
 .stream {
@@ -516,16 +516,22 @@ i.icon-reddit {
     color: $text-color2;
   }
 
+  .artist {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+  }
   .media-heading {
     display: block; /* Fallback for non-webkit */
     display: -webkit-box;
     max-height: $font-size-base*$line-height-base*2; /* Fallback for non-webkit */
-    font-size: $font-size-base;
-    line-height: $line-height-base;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: $font-size-base;
+    line-height: $line-height-base;
   }
 }
 
@@ -571,7 +577,7 @@ i.icon-reddit {
 }
 
 #gmg-ad-unused { /* bad way of ensuring this asset is copied to ./static */
-  background: url("../img/ad.gmg.png");
+  background: url("../img/ad-gmg.png");
 }
 
 #dc-donate-xs {
@@ -919,7 +925,7 @@ i.td-fill {
 }
 
 .icon-bigscreen {
-  background: url("../img/ico/tv_32.png") no-repeat top left !important;
+  background: url("../img/ico/tv-32.png") no-repeat top left !important;
   width: 30px !important;
   height: 19px !important;
   display: inline-block;
@@ -1632,7 +1638,7 @@ img.img_64x64 {
 }
 
 .powered-paypal {
-  background: url("../img/Paypal.logosml.png");
+  background: url("../img/paypal-logo.png");
   background-size: contain;
   text-indent: -999em;
   display: inline-block;

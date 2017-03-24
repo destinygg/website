@@ -1,10 +1,424 @@
-webpackJsonp([3],{0:function(t,e,i){"use strict";i(63),i(58),i(76),i(62),i(105),i(107),i(106)},58:function(t,e,i){(function(t){/*!
-	 * Bootstrap v3.3.7 (http://getbootstrap.com)
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under the MIT license
-	 */
-if("undefined"==typeof t)throw new Error("Bootstrap's JavaScript requires jQuery");+function(t){"use strict";var e=t.fn.jquery.split(" ")[0].split(".");if(e[0]<2&&e[1]<9||1==e[0]&&9==e[1]&&e[2]<1||e[0]>3)throw new Error("Bootstrap's JavaScript requires jQuery version 1.9.1 or higher, but lower than version 4")}(t),+function(t){"use strict";function e(){var t=document.createElement("bootstrap"),e={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"oTransitionEnd otransitionend",transition:"transitionend"};for(var i in e)if(void 0!==t.style[i])return{end:e[i]};return!1}t.fn.emulateTransitionEnd=function(e){var i=!1,n=this;t(this).one("bsTransitionEnd",function(){i=!0});var s=function(){i||t(n).trigger(t.support.transition.end)};return setTimeout(s,e),this},t(function(){t.support.transition=e(),t.support.transition&&(t.event.special.bsTransitionEnd={bindType:t.support.transition.end,delegateType:t.support.transition.end,handle:function(e){if(t(e.target).is(this))return e.handleObj.handler.apply(this,arguments)}})})}(t),+function(t){"use strict";function e(e){return this.each(function(){var i=t(this),s=i.data("bs.alert");s||i.data("bs.alert",s=new n(this)),"string"==typeof e&&s[e].call(i)})}var i='[data-dismiss="alert"]',n=function(e){t(e).on("click",i,this.close)};n.VERSION="3.3.7",n.TRANSITION_DURATION=150,n.prototype.close=function(e){function i(){a.detach().trigger("closed.bs.alert").remove()}var s=t(this),o=s.attr("data-target");o||(o=s.attr("href"),o=o&&o.replace(/.*(?=#[^\s]*$)/,""));var a=t("#"===o?[]:o);e&&e.preventDefault(),a.length||(a=s.closest(".alert")),a.trigger(e=t.Event("close.bs.alert")),e.isDefaultPrevented()||(a.removeClass("in"),t.support.transition&&a.hasClass("fade")?a.one("bsTransitionEnd",i).emulateTransitionEnd(n.TRANSITION_DURATION):i())};var s=t.fn.alert;t.fn.alert=e,t.fn.alert.Constructor=n,t.fn.alert.noConflict=function(){return t.fn.alert=s,this},t(document).on("click.bs.alert.data-api",i,n.prototype.close)}(t),+function(t){"use strict";function e(e){return this.each(function(){var n=t(this),s=n.data("bs.button"),o="object"==typeof e&&e;s||n.data("bs.button",s=new i(this,o)),"toggle"==e?s.toggle():e&&s.setState(e)})}var i=function(e,n){this.$element=t(e),this.options=t.extend({},i.DEFAULTS,n),this.isLoading=!1};i.VERSION="3.3.7",i.DEFAULTS={loadingText:"loading..."},i.prototype.setState=function(e){var i="disabled",n=this.$element,s=n.is("input")?"val":"html",o=n.data();e+="Text",null==o.resetText&&n.data("resetText",n[s]()),setTimeout(t.proxy(function(){n[s](null==o[e]?this.options[e]:o[e]),"loadingText"==e?(this.isLoading=!0,n.addClass(i).attr(i,i).prop(i,!0)):this.isLoading&&(this.isLoading=!1,n.removeClass(i).removeAttr(i).prop(i,!1))},this),0)},i.prototype.toggle=function(){var t=!0,e=this.$element.closest('[data-toggle="buttons"]');if(e.length){var i=this.$element.find("input");"radio"==i.prop("type")?(i.prop("checked")&&(t=!1),e.find(".active").removeClass("active"),this.$element.addClass("active")):"checkbox"==i.prop("type")&&(i.prop("checked")!==this.$element.hasClass("active")&&(t=!1),this.$element.toggleClass("active")),i.prop("checked",this.$element.hasClass("active")),t&&i.trigger("change")}else this.$element.attr("aria-pressed",!this.$element.hasClass("active")),this.$element.toggleClass("active")};var n=t.fn.button;t.fn.button=e,t.fn.button.Constructor=i,t.fn.button.noConflict=function(){return t.fn.button=n,this},t(document).on("click.bs.button.data-api",'[data-toggle^="button"]',function(i){var n=t(i.target).closest(".btn");e.call(n,"toggle"),t(i.target).is('input[type="radio"], input[type="checkbox"]')||(i.preventDefault(),n.is("input,button")?n.trigger("focus"):n.find("input:visible,button:visible").first().trigger("focus"))}).on("focus.bs.button.data-api blur.bs.button.data-api",'[data-toggle^="button"]',function(e){t(e.target).closest(".btn").toggleClass("focus",/^focus(in)?$/.test(e.type))})}(t),+function(t){"use strict";function e(e){return this.each(function(){var n=t(this),s=n.data("bs.carousel"),o=t.extend({},i.DEFAULTS,n.data(),"object"==typeof e&&e),a="string"==typeof e?e:o.slide;s||n.data("bs.carousel",s=new i(this,o)),"number"==typeof e?s.to(e):a?s[a]():o.interval&&s.pause().cycle()})}var i=function(e,i){this.$element=t(e),this.$indicators=this.$element.find(".carousel-indicators"),this.options=i,this.paused=null,this.sliding=null,this.interval=null,this.$active=null,this.$items=null,this.options.keyboard&&this.$element.on("keydown.bs.carousel",t.proxy(this.keydown,this)),"hover"==this.options.pause&&!("ontouchstart"in document.documentElement)&&this.$element.on("mouseenter.bs.carousel",t.proxy(this.pause,this)).on("mouseleave.bs.carousel",t.proxy(this.cycle,this))};i.VERSION="3.3.7",i.TRANSITION_DURATION=600,i.DEFAULTS={interval:5e3,pause:"hover",wrap:!0,keyboard:!0},i.prototype.keydown=function(t){if(!/input|textarea/i.test(t.target.tagName)){switch(t.which){case 37:this.prev();break;case 39:this.next();break;default:return}t.preventDefault()}},i.prototype.cycle=function(e){return e||(this.paused=!1),this.interval&&clearInterval(this.interval),this.options.interval&&!this.paused&&(this.interval=setInterval(t.proxy(this.next,this),this.options.interval)),this},i.prototype.getItemIndex=function(t){return this.$items=t.parent().children(".item"),this.$items.index(t||this.$active)},i.prototype.getItemForDirection=function(t,e){var i=this.getItemIndex(e),n="prev"==t&&0===i||"next"==t&&i==this.$items.length-1;if(n&&!this.options.wrap)return e;var s="prev"==t?-1:1,o=(i+s)%this.$items.length;return this.$items.eq(o)},i.prototype.to=function(t){var e=this,i=this.getItemIndex(this.$active=this.$element.find(".item.active"));if(!(t>this.$items.length-1||t<0))return this.sliding?this.$element.one("slid.bs.carousel",function(){e.to(t)}):i==t?this.pause().cycle():this.slide(t>i?"next":"prev",this.$items.eq(t))},i.prototype.pause=function(e){return e||(this.paused=!0),this.$element.find(".next, .prev").length&&t.support.transition&&(this.$element.trigger(t.support.transition.end),this.cycle(!0)),this.interval=clearInterval(this.interval),this},i.prototype.next=function(){if(!this.sliding)return this.slide("next")},i.prototype.prev=function(){if(!this.sliding)return this.slide("prev")},i.prototype.slide=function(e,n){var s=this.$element.find(".item.active"),o=n||this.getItemForDirection(e,s),a=this.interval,r="next"==e?"left":"right",l=this;if(o.hasClass("active"))return this.sliding=!1;var h=o[0],d=t.Event("slide.bs.carousel",{relatedTarget:h,direction:r});if(this.$element.trigger(d),!d.isDefaultPrevented()){if(this.sliding=!0,a&&this.pause(),this.$indicators.length){this.$indicators.find(".active").removeClass("active");var c=t(this.$indicators.children()[this.getItemIndex(o)]);c&&c.addClass("active")}var u=t.Event("slid.bs.carousel",{relatedTarget:h,direction:r});return t.support.transition&&this.$element.hasClass("slide")?(o.addClass(e),o[0].offsetWidth,s.addClass(r),o.addClass(r),s.one("bsTransitionEnd",function(){o.removeClass([e,r].join(" ")).addClass("active"),s.removeClass(["active",r].join(" ")),l.sliding=!1,setTimeout(function(){l.$element.trigger(u)},0)}).emulateTransitionEnd(i.TRANSITION_DURATION)):(s.removeClass("active"),o.addClass("active"),this.sliding=!1,this.$element.trigger(u)),a&&this.cycle(),this}};var n=t.fn.carousel;t.fn.carousel=e,t.fn.carousel.Constructor=i,t.fn.carousel.noConflict=function(){return t.fn.carousel=n,this};var s=function(i){var n,s=t(this),o=t(s.attr("data-target")||(n=s.attr("href"))&&n.replace(/.*(?=#[^\s]+$)/,""));if(o.hasClass("carousel")){var a=t.extend({},o.data(),s.data()),r=s.attr("data-slide-to");r&&(a.interval=!1),e.call(o,a),r&&o.data("bs.carousel").to(r),i.preventDefault()}};t(document).on("click.bs.carousel.data-api","[data-slide]",s).on("click.bs.carousel.data-api","[data-slide-to]",s),t(window).on("load",function(){t('[data-ride="carousel"]').each(function(){var i=t(this);e.call(i,i.data())})})}(t),+function(t){"use strict";function e(e){var i,n=e.attr("data-target")||(i=e.attr("href"))&&i.replace(/.*(?=#[^\s]+$)/,"");return t(n)}function i(e){return this.each(function(){var i=t(this),s=i.data("bs.collapse"),o=t.extend({},n.DEFAULTS,i.data(),"object"==typeof e&&e);!s&&o.toggle&&/show|hide/.test(e)&&(o.toggle=!1),s||i.data("bs.collapse",s=new n(this,o)),"string"==typeof e&&s[e]()})}var n=function(e,i){this.$element=t(e),this.options=t.extend({},n.DEFAULTS,i),this.$trigger=t('[data-toggle="collapse"][href="#'+e.id+'"],[data-toggle="collapse"][data-target="#'+e.id+'"]'),this.transitioning=null,this.options.parent?this.$parent=this.getParent():this.addAriaAndCollapsedClass(this.$element,this.$trigger),this.options.toggle&&this.toggle()};n.VERSION="3.3.7",n.TRANSITION_DURATION=350,n.DEFAULTS={toggle:!0},n.prototype.dimension=function(){var t=this.$element.hasClass("width");return t?"width":"height"},n.prototype.show=function(){if(!this.transitioning&&!this.$element.hasClass("in")){var e,s=this.$parent&&this.$parent.children(".panel").children(".in, .collapsing");if(!(s&&s.length&&(e=s.data("bs.collapse"),e&&e.transitioning))){var o=t.Event("show.bs.collapse");if(this.$element.trigger(o),!o.isDefaultPrevented()){s&&s.length&&(i.call(s,"hide"),e||s.data("bs.collapse",null));var a=this.dimension();this.$element.removeClass("collapse").addClass("collapsing")[a](0).attr("aria-expanded",!0),this.$trigger.removeClass("collapsed").attr("aria-expanded",!0),this.transitioning=1;var r=function(){this.$element.removeClass("collapsing").addClass("collapse in")[a](""),this.transitioning=0,this.$element.trigger("shown.bs.collapse")};if(!t.support.transition)return r.call(this);var l=t.camelCase(["scroll",a].join("-"));this.$element.one("bsTransitionEnd",t.proxy(r,this)).emulateTransitionEnd(n.TRANSITION_DURATION)[a](this.$element[0][l])}}}},n.prototype.hide=function(){if(!this.transitioning&&this.$element.hasClass("in")){var e=t.Event("hide.bs.collapse");if(this.$element.trigger(e),!e.isDefaultPrevented()){var i=this.dimension();this.$element[i](this.$element[i]())[0].offsetHeight,this.$element.addClass("collapsing").removeClass("collapse in").attr("aria-expanded",!1),this.$trigger.addClass("collapsed").attr("aria-expanded",!1),this.transitioning=1;var s=function(){this.transitioning=0,this.$element.removeClass("collapsing").addClass("collapse").trigger("hidden.bs.collapse")};return t.support.transition?void this.$element[i](0).one("bsTransitionEnd",t.proxy(s,this)).emulateTransitionEnd(n.TRANSITION_DURATION):s.call(this)}}},n.prototype.toggle=function(){this[this.$element.hasClass("in")?"hide":"show"]()},n.prototype.getParent=function(){return t(this.options.parent).find('[data-toggle="collapse"][data-parent="'+this.options.parent+'"]').each(t.proxy(function(i,n){var s=t(n);this.addAriaAndCollapsedClass(e(s),s)},this)).end()},n.prototype.addAriaAndCollapsedClass=function(t,e){var i=t.hasClass("in");t.attr("aria-expanded",i),e.toggleClass("collapsed",!i).attr("aria-expanded",i)};var s=t.fn.collapse;t.fn.collapse=i,t.fn.collapse.Constructor=n,t.fn.collapse.noConflict=function(){return t.fn.collapse=s,this},t(document).on("click.bs.collapse.data-api",'[data-toggle="collapse"]',function(n){var s=t(this);s.attr("data-target")||n.preventDefault();var o=e(s),a=o.data("bs.collapse"),r=a?"toggle":s.data();i.call(o,r)})}(t),+function(t){"use strict";function e(e){var i=e.attr("data-target");i||(i=e.attr("href"),i=i&&/#[A-Za-z]/.test(i)&&i.replace(/.*(?=#[^\s]*$)/,""));var n=i&&t(i);return n&&n.length?n:e.parent()}function i(i){i&&3===i.which||(t(s).remove(),t(o).each(function(){var n=t(this),s=e(n),o={relatedTarget:this};s.hasClass("open")&&(i&&"click"==i.type&&/input|textarea/i.test(i.target.tagName)&&t.contains(s[0],i.target)||(s.trigger(i=t.Event("hide.bs.dropdown",o)),i.isDefaultPrevented()||(n.attr("aria-expanded","false"),s.removeClass("open").trigger(t.Event("hidden.bs.dropdown",o)))))}))}function n(e){return this.each(function(){var i=t(this),n=i.data("bs.dropdown");n||i.data("bs.dropdown",n=new a(this)),"string"==typeof e&&n[e].call(i)})}var s=".dropdown-backdrop",o='[data-toggle="dropdown"]',a=function(e){t(e).on("click.bs.dropdown",this.toggle)};a.VERSION="3.3.7",a.prototype.toggle=function(n){var s=t(this);if(!s.is(".disabled, :disabled")){var o=e(s),a=o.hasClass("open");if(i(),!a){"ontouchstart"in document.documentElement&&!o.closest(".navbar-nav").length&&t(document.createElement("div")).addClass("dropdown-backdrop").insertAfter(t(this)).on("click",i);var r={relatedTarget:this};if(o.trigger(n=t.Event("show.bs.dropdown",r)),n.isDefaultPrevented())return;s.trigger("focus").attr("aria-expanded","true"),o.toggleClass("open").trigger(t.Event("shown.bs.dropdown",r))}return!1}},a.prototype.keydown=function(i){if(/(38|40|27|32)/.test(i.which)&&!/input|textarea/i.test(i.target.tagName)){var n=t(this);if(i.preventDefault(),i.stopPropagation(),!n.is(".disabled, :disabled")){var s=e(n),a=s.hasClass("open");if(!a&&27!=i.which||a&&27==i.which)return 27==i.which&&s.find(o).trigger("focus"),n.trigger("click");var r=" li:not(.disabled):visible a",l=s.find(".dropdown-menu"+r);if(l.length){var h=l.index(i.target);38==i.which&&h>0&&h--,40==i.which&&h<l.length-1&&h++,~h||(h=0),l.eq(h).trigger("focus")}}}};var r=t.fn.dropdown;t.fn.dropdown=n,t.fn.dropdown.Constructor=a,t.fn.dropdown.noConflict=function(){return t.fn.dropdown=r,this},t(document).on("click.bs.dropdown.data-api",i).on("click.bs.dropdown.data-api",".dropdown form",function(t){t.stopPropagation()}).on("click.bs.dropdown.data-api",o,a.prototype.toggle).on("keydown.bs.dropdown.data-api",o,a.prototype.keydown).on("keydown.bs.dropdown.data-api",".dropdown-menu",a.prototype.keydown)}(t),+function(t){"use strict";function e(e,n){return this.each(function(){var s=t(this),o=s.data("bs.modal"),a=t.extend({},i.DEFAULTS,s.data(),"object"==typeof e&&e);o||s.data("bs.modal",o=new i(this,a)),"string"==typeof e?o[e](n):a.show&&o.show(n)})}var i=function(e,i){this.options=i,this.$body=t(document.body),this.$element=t(e),this.$dialog=this.$element.find(".modal-dialog"),this.$backdrop=null,this.isShown=null,this.originalBodyPad=null,this.scrollbarWidth=0,this.ignoreBackdropClick=!1,this.options.remote&&this.$element.find(".modal-content").load(this.options.remote,t.proxy(function(){this.$element.trigger("loaded.bs.modal")},this))};i.VERSION="3.3.7",i.TRANSITION_DURATION=300,i.BACKDROP_TRANSITION_DURATION=150,i.DEFAULTS={backdrop:!0,keyboard:!0,show:!0},i.prototype.toggle=function(t){return this.isShown?this.hide():this.show(t)},i.prototype.show=function(e){var n=this,s=t.Event("show.bs.modal",{relatedTarget:e});this.$element.trigger(s),this.isShown||s.isDefaultPrevented()||(this.isShown=!0,this.checkScrollbar(),this.setScrollbar(),this.$body.addClass("modal-open"),this.escape(),this.resize(),this.$element.on("click.dismiss.bs.modal",'[data-dismiss="modal"]',t.proxy(this.hide,this)),this.$dialog.on("mousedown.dismiss.bs.modal",function(){n.$element.one("mouseup.dismiss.bs.modal",function(e){t(e.target).is(n.$element)&&(n.ignoreBackdropClick=!0)})}),this.backdrop(function(){var s=t.support.transition&&n.$element.hasClass("fade");n.$element.parent().length||n.$element.appendTo(n.$body),n.$element.show().scrollTop(0),n.adjustDialog(),s&&n.$element[0].offsetWidth,n.$element.addClass("in"),n.enforceFocus();var o=t.Event("shown.bs.modal",{relatedTarget:e});s?n.$dialog.one("bsTransitionEnd",function(){n.$element.trigger("focus").trigger(o)}).emulateTransitionEnd(i.TRANSITION_DURATION):n.$element.trigger("focus").trigger(o)}))},i.prototype.hide=function(e){e&&e.preventDefault(),e=t.Event("hide.bs.modal"),this.$element.trigger(e),this.isShown&&!e.isDefaultPrevented()&&(this.isShown=!1,this.escape(),this.resize(),t(document).off("focusin.bs.modal"),this.$element.removeClass("in").off("click.dismiss.bs.modal").off("mouseup.dismiss.bs.modal"),this.$dialog.off("mousedown.dismiss.bs.modal"),t.support.transition&&this.$element.hasClass("fade")?this.$element.one("bsTransitionEnd",t.proxy(this.hideModal,this)).emulateTransitionEnd(i.TRANSITION_DURATION):this.hideModal())},i.prototype.enforceFocus=function(){t(document).off("focusin.bs.modal").on("focusin.bs.modal",t.proxy(function(t){document===t.target||this.$element[0]===t.target||this.$element.has(t.target).length||this.$element.trigger("focus")},this))},i.prototype.escape=function(){this.isShown&&this.options.keyboard?this.$element.on("keydown.dismiss.bs.modal",t.proxy(function(t){27==t.which&&this.hide()},this)):this.isShown||this.$element.off("keydown.dismiss.bs.modal")},i.prototype.resize=function(){this.isShown?t(window).on("resize.bs.modal",t.proxy(this.handleUpdate,this)):t(window).off("resize.bs.modal")},i.prototype.hideModal=function(){var t=this;this.$element.hide(),this.backdrop(function(){t.$body.removeClass("modal-open"),t.resetAdjustments(),t.resetScrollbar(),t.$element.trigger("hidden.bs.modal")})},i.prototype.removeBackdrop=function(){this.$backdrop&&this.$backdrop.remove(),this.$backdrop=null},i.prototype.backdrop=function(e){var n=this,s=this.$element.hasClass("fade")?"fade":"";if(this.isShown&&this.options.backdrop){var o=t.support.transition&&s;if(this.$backdrop=t(document.createElement("div")).addClass("modal-backdrop "+s).appendTo(this.$body),this.$element.on("click.dismiss.bs.modal",t.proxy(function(t){return this.ignoreBackdropClick?void(this.ignoreBackdropClick=!1):void(t.target===t.currentTarget&&("static"==this.options.backdrop?this.$element[0].focus():this.hide()))},this)),o&&this.$backdrop[0].offsetWidth,this.$backdrop.addClass("in"),!e)return;o?this.$backdrop.one("bsTransitionEnd",e).emulateTransitionEnd(i.BACKDROP_TRANSITION_DURATION):e()}else if(!this.isShown&&this.$backdrop){this.$backdrop.removeClass("in");var a=function(){n.removeBackdrop(),e&&e()};t.support.transition&&this.$element.hasClass("fade")?this.$backdrop.one("bsTransitionEnd",a).emulateTransitionEnd(i.BACKDROP_TRANSITION_DURATION):a()}else e&&e()},i.prototype.handleUpdate=function(){this.adjustDialog()},i.prototype.adjustDialog=function(){var t=this.$element[0].scrollHeight>document.documentElement.clientHeight;this.$element.css({paddingLeft:!this.bodyIsOverflowing&&t?this.scrollbarWidth:"",paddingRight:this.bodyIsOverflowing&&!t?this.scrollbarWidth:""})},i.prototype.resetAdjustments=function(){this.$element.css({paddingLeft:"",paddingRight:""})},i.prototype.checkScrollbar=function(){var t=window.innerWidth;if(!t){var e=document.documentElement.getBoundingClientRect();t=e.right-Math.abs(e.left)}this.bodyIsOverflowing=document.body.clientWidth<t,this.scrollbarWidth=this.measureScrollbar()},i.prototype.setScrollbar=function(){var t=parseInt(this.$body.css("padding-right")||0,10);this.originalBodyPad=document.body.style.paddingRight||"",this.bodyIsOverflowing&&this.$body.css("padding-right",t+this.scrollbarWidth)},i.prototype.resetScrollbar=function(){this.$body.css("padding-right",this.originalBodyPad)},i.prototype.measureScrollbar=function(){var t=document.createElement("div");t.className="modal-scrollbar-measure",this.$body.append(t);var e=t.offsetWidth-t.clientWidth;return this.$body[0].removeChild(t),e};var n=t.fn.modal;t.fn.modal=e,t.fn.modal.Constructor=i,t.fn.modal.noConflict=function(){return t.fn.modal=n,this},t(document).on("click.bs.modal.data-api",'[data-toggle="modal"]',function(i){var n=t(this),s=n.attr("href"),o=t(n.attr("data-target")||s&&s.replace(/.*(?=#[^\s]+$)/,"")),a=o.data("bs.modal")?"toggle":t.extend({remote:!/#/.test(s)&&s},o.data(),n.data());n.is("a")&&i.preventDefault(),o.one("show.bs.modal",function(t){t.isDefaultPrevented()||o.one("hidden.bs.modal",function(){n.is(":visible")&&n.trigger("focus")})}),e.call(o,a,this)})}(t),+function(t){"use strict";function e(e){return this.each(function(){var n=t(this),s=n.data("bs.tooltip"),o="object"==typeof e&&e;!s&&/destroy|hide/.test(e)||(s||n.data("bs.tooltip",s=new i(this,o)),"string"==typeof e&&s[e]())})}var i=function(t,e){this.type=null,this.options=null,this.enabled=null,this.timeout=null,this.hoverState=null,this.$element=null,this.inState=null,this.init("tooltip",t,e)};i.VERSION="3.3.7",i.TRANSITION_DURATION=150,i.DEFAULTS={animation:!0,placement:"top",selector:!1,template:'<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',trigger:"hover focus",title:"",delay:0,html:!1,container:!1,viewport:{selector:"body",padding:0}},i.prototype.init=function(e,i,n){if(this.enabled=!0,this.type=e,this.$element=t(i),this.options=this.getOptions(n),this.$viewport=this.options.viewport&&t(t.isFunction(this.options.viewport)?this.options.viewport.call(this,this.$element):this.options.viewport.selector||this.options.viewport),this.inState={click:!1,hover:!1,focus:!1},this.$element[0]instanceof document.constructor&&!this.options.selector)throw new Error("`selector` option must be specified when initializing "+this.type+" on the window.document object!");for(var s=this.options.trigger.split(" "),o=s.length;o--;){var a=s[o];if("click"==a)this.$element.on("click."+this.type,this.options.selector,t.proxy(this.toggle,this));else if("manual"!=a){var r="hover"==a?"mouseenter":"focusin",l="hover"==a?"mouseleave":"focusout";this.$element.on(r+"."+this.type,this.options.selector,t.proxy(this.enter,this)),this.$element.on(l+"."+this.type,this.options.selector,t.proxy(this.leave,this))}}this.options.selector?this._options=t.extend({},this.options,{trigger:"manual",selector:""}):this.fixTitle()},i.prototype.getDefaults=function(){return i.DEFAULTS},i.prototype.getOptions=function(e){return e=t.extend({},this.getDefaults(),this.$element.data(),e),e.delay&&"number"==typeof e.delay&&(e.delay={show:e.delay,hide:e.delay}),e},i.prototype.getDelegateOptions=function(){var e={},i=this.getDefaults();return this._options&&t.each(this._options,function(t,n){i[t]!=n&&(e[t]=n)}),e},i.prototype.enter=function(e){var i=e instanceof this.constructor?e:t(e.currentTarget).data("bs."+this.type);return i||(i=new this.constructor(e.currentTarget,this.getDelegateOptions()),t(e.currentTarget).data("bs."+this.type,i)),e instanceof t.Event&&(i.inState["focusin"==e.type?"focus":"hover"]=!0),i.tip().hasClass("in")||"in"==i.hoverState?void(i.hoverState="in"):(clearTimeout(i.timeout),i.hoverState="in",i.options.delay&&i.options.delay.show?void(i.timeout=setTimeout(function(){"in"==i.hoverState&&i.show()},i.options.delay.show)):i.show())},i.prototype.isInStateTrue=function(){for(var t in this.inState)if(this.inState[t])return!0;return!1},i.prototype.leave=function(e){var i=e instanceof this.constructor?e:t(e.currentTarget).data("bs."+this.type);if(i||(i=new this.constructor(e.currentTarget,this.getDelegateOptions()),t(e.currentTarget).data("bs."+this.type,i)),e instanceof t.Event&&(i.inState["focusout"==e.type?"focus":"hover"]=!1),!i.isInStateTrue())return clearTimeout(i.timeout),i.hoverState="out",i.options.delay&&i.options.delay.hide?void(i.timeout=setTimeout(function(){"out"==i.hoverState&&i.hide()},i.options.delay.hide)):i.hide()},i.prototype.show=function(){var e=t.Event("show.bs."+this.type);if(this.hasContent()&&this.enabled){this.$element.trigger(e);var n=t.contains(this.$element[0].ownerDocument.documentElement,this.$element[0]);if(e.isDefaultPrevented()||!n)return;var s=this,o=this.tip(),a=this.getUID(this.type);this.setContent(),o.attr("id",a),this.$element.attr("aria-describedby",a),this.options.animation&&o.addClass("fade");var r="function"==typeof this.options.placement?this.options.placement.call(this,o[0],this.$element[0]):this.options.placement,l=/\s?auto?\s?/i,h=l.test(r);h&&(r=r.replace(l,"")||"top"),o.detach().css({top:0,left:0,display:"block"}).addClass(r).data("bs."+this.type,this),this.options.container?o.appendTo(this.options.container):o.insertAfter(this.$element),this.$element.trigger("inserted.bs."+this.type);var d=this.getPosition(),c=o[0].offsetWidth,u=o[0].offsetHeight;if(h){var f=r,p=this.getPosition(this.$viewport);r="bottom"==r&&d.bottom+u>p.bottom?"top":"top"==r&&d.top-u<p.top?"bottom":"right"==r&&d.right+c>p.width?"left":"left"==r&&d.left-c<p.left?"right":r,o.removeClass(f).addClass(r)}var m=this.getCalculatedOffset(r,d,c,u);this.applyPlacement(m,r);var g=function(){var t=s.hoverState;s.$element.trigger("shown.bs."+s.type),s.hoverState=null,"out"==t&&s.leave(s)};t.support.transition&&this.$tip.hasClass("fade")?o.one("bsTransitionEnd",g).emulateTransitionEnd(i.TRANSITION_DURATION):g()}},i.prototype.applyPlacement=function(e,i){var n=this.tip(),s=n[0].offsetWidth,o=n[0].offsetHeight,a=parseInt(n.css("margin-top"),10),r=parseInt(n.css("margin-left"),10);isNaN(a)&&(a=0),isNaN(r)&&(r=0),e.top+=a,e.left+=r,t.offset.setOffset(n[0],t.extend({using:function(t){n.css({top:Math.round(t.top),left:Math.round(t.left)})}},e),0),n.addClass("in");var l=n[0].offsetWidth,h=n[0].offsetHeight;"top"==i&&h!=o&&(e.top=e.top+o-h);var d=this.getViewportAdjustedDelta(i,e,l,h);d.left?e.left+=d.left:e.top+=d.top;var c=/top|bottom/.test(i),u=c?2*d.left-s+l:2*d.top-o+h,f=c?"offsetWidth":"offsetHeight";n.offset(e),this.replaceArrow(u,n[0][f],c)},i.prototype.replaceArrow=function(t,e,i){this.arrow().css(i?"left":"top",50*(1-t/e)+"%").css(i?"top":"left","")},i.prototype.setContent=function(){var t=this.tip(),e=this.getTitle();t.find(".tooltip-inner")[this.options.html?"html":"text"](e),t.removeClass("fade in top bottom left right")},i.prototype.hide=function(e){function n(){"in"!=s.hoverState&&o.detach(),s.$element&&s.$element.removeAttr("aria-describedby").trigger("hidden.bs."+s.type),e&&e()}var s=this,o=t(this.$tip),a=t.Event("hide.bs."+this.type);if(this.$element.trigger(a),!a.isDefaultPrevented())return o.removeClass("in"),t.support.transition&&o.hasClass("fade")?o.one("bsTransitionEnd",n).emulateTransitionEnd(i.TRANSITION_DURATION):n(),this.hoverState=null,this},i.prototype.fixTitle=function(){var t=this.$element;(t.attr("title")||"string"!=typeof t.attr("data-original-title"))&&t.attr("data-original-title",t.attr("title")||"").attr("title","")},i.prototype.hasContent=function(){return this.getTitle()},i.prototype.getPosition=function(e){e=e||this.$element;var i=e[0],n="BODY"==i.tagName,s=i.getBoundingClientRect();null==s.width&&(s=t.extend({},s,{width:s.right-s.left,height:s.bottom-s.top}));var o=window.SVGElement&&i instanceof window.SVGElement,a=n?{top:0,left:0}:o?null:e.offset(),r={scroll:n?document.documentElement.scrollTop||document.body.scrollTop:e.scrollTop()},l=n?{width:t(window).width(),height:t(window).height()}:null;return t.extend({},s,r,l,a)},i.prototype.getCalculatedOffset=function(t,e,i,n){return"bottom"==t?{top:e.top+e.height,left:e.left+e.width/2-i/2}:"top"==t?{top:e.top-n,left:e.left+e.width/2-i/2}:"left"==t?{top:e.top+e.height/2-n/2,left:e.left-i}:{top:e.top+e.height/2-n/2,left:e.left+e.width}},i.prototype.getViewportAdjustedDelta=function(t,e,i,n){var s={top:0,left:0};if(!this.$viewport)return s;var o=this.options.viewport&&this.options.viewport.padding||0,a=this.getPosition(this.$viewport);if(/right|left/.test(t)){var r=e.top-o-a.scroll,l=e.top+o-a.scroll+n;r<a.top?s.top=a.top-r:l>a.top+a.height&&(s.top=a.top+a.height-l)}else{var h=e.left-o,d=e.left+o+i;h<a.left?s.left=a.left-h:d>a.right&&(s.left=a.left+a.width-d)}return s},i.prototype.getTitle=function(){var t,e=this.$element,i=this.options;return t=e.attr("data-original-title")||("function"==typeof i.title?i.title.call(e[0]):i.title)},i.prototype.getUID=function(t){do t+=~~(1e6*Math.random());while(document.getElementById(t));return t},i.prototype.tip=function(){if(!this.$tip&&(this.$tip=t(this.options.template),1!=this.$tip.length))throw new Error(this.type+" `template` option must consist of exactly 1 top-level element!");return this.$tip},i.prototype.arrow=function(){return this.$arrow=this.$arrow||this.tip().find(".tooltip-arrow")},i.prototype.enable=function(){this.enabled=!0},i.prototype.disable=function(){this.enabled=!1},i.prototype.toggleEnabled=function(){this.enabled=!this.enabled},i.prototype.toggle=function(e){var i=this;e&&(i=t(e.currentTarget).data("bs."+this.type),i||(i=new this.constructor(e.currentTarget,this.getDelegateOptions()),t(e.currentTarget).data("bs."+this.type,i))),e?(i.inState.click=!i.inState.click,i.isInStateTrue()?i.enter(i):i.leave(i)):i.tip().hasClass("in")?i.leave(i):i.enter(i)},i.prototype.destroy=function(){var t=this;clearTimeout(this.timeout),this.hide(function(){t.$element.off("."+t.type).removeData("bs."+t.type),t.$tip&&t.$tip.detach(),t.$tip=null,t.$arrow=null,t.$viewport=null,t.$element=null})};var n=t.fn.tooltip;t.fn.tooltip=e,t.fn.tooltip.Constructor=i,t.fn.tooltip.noConflict=function(){return t.fn.tooltip=n,this}}(t),+function(t){"use strict";function e(e){return this.each(function(){var n=t(this),s=n.data("bs.popover"),o="object"==typeof e&&e;!s&&/destroy|hide/.test(e)||(s||n.data("bs.popover",s=new i(this,o)),"string"==typeof e&&s[e]())})}var i=function(t,e){this.init("popover",t,e)};if(!t.fn.tooltip)throw new Error("Popover requires tooltip.js");i.VERSION="3.3.7",i.DEFAULTS=t.extend({},t.fn.tooltip.Constructor.DEFAULTS,{placement:"right",trigger:"click",content:"",template:'<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'}),i.prototype=t.extend({},t.fn.tooltip.Constructor.prototype),i.prototype.constructor=i,i.prototype.getDefaults=function(){return i.DEFAULTS},i.prototype.setContent=function(){var t=this.tip(),e=this.getTitle(),i=this.getContent();t.find(".popover-title")[this.options.html?"html":"text"](e),t.find(".popover-content").children().detach().end()[this.options.html?"string"==typeof i?"html":"append":"text"](i),t.removeClass("fade top bottom left right in"),t.find(".popover-title").html()||t.find(".popover-title").hide()},i.prototype.hasContent=function(){return this.getTitle()||this.getContent()},i.prototype.getContent=function(){var t=this.$element,e=this.options;return t.attr("data-content")||("function"==typeof e.content?e.content.call(t[0]):e.content)},i.prototype.arrow=function(){return this.$arrow=this.$arrow||this.tip().find(".arrow")};var n=t.fn.popover;t.fn.popover=e,t.fn.popover.Constructor=i,t.fn.popover.noConflict=function(){return t.fn.popover=n,this}}(t),+function(t){"use strict";function e(i,n){this.$body=t(document.body),this.$scrollElement=t(t(i).is(document.body)?window:i),this.options=t.extend({},e.DEFAULTS,n),this.selector=(this.options.target||"")+" .nav li > a",this.offsets=[],this.targets=[],this.activeTarget=null,this.scrollHeight=0,this.$scrollElement.on("scroll.bs.scrollspy",t.proxy(this.process,this)),this.refresh(),this.process()}function i(i){return this.each(function(){var n=t(this),s=n.data("bs.scrollspy"),o="object"==typeof i&&i;s||n.data("bs.scrollspy",s=new e(this,o)),"string"==typeof i&&s[i]()})}e.VERSION="3.3.7",e.DEFAULTS={offset:10},e.prototype.getScrollHeight=function(){return this.$scrollElement[0].scrollHeight||Math.max(this.$body[0].scrollHeight,document.documentElement.scrollHeight)},e.prototype.refresh=function(){var e=this,i="offset",n=0;this.offsets=[],this.targets=[],this.scrollHeight=this.getScrollHeight(),t.isWindow(this.$scrollElement[0])||(i="position",n=this.$scrollElement.scrollTop()),this.$body.find(this.selector).map(function(){var e=t(this),s=e.data("target")||e.attr("href"),o=/^#./.test(s)&&t(s);return o&&o.length&&o.is(":visible")&&[[o[i]().top+n,s]]||null}).sort(function(t,e){return t[0]-e[0]}).each(function(){e.offsets.push(this[0]),e.targets.push(this[1])})},e.prototype.process=function(){var t,e=this.$scrollElement.scrollTop()+this.options.offset,i=this.getScrollHeight(),n=this.options.offset+i-this.$scrollElement.height(),s=this.offsets,o=this.targets,a=this.activeTarget;if(this.scrollHeight!=i&&this.refresh(),e>=n)return a!=(t=o[o.length-1])&&this.activate(t);if(a&&e<s[0])return this.activeTarget=null,this.clear();for(t=s.length;t--;)a!=o[t]&&e>=s[t]&&(void 0===s[t+1]||e<s[t+1])&&this.activate(o[t])},e.prototype.activate=function(e){this.activeTarget=e,this.clear();
-var i=this.selector+'[data-target="'+e+'"],'+this.selector+'[href="'+e+'"]',n=t(i).parents("li").addClass("active");n.parent(".dropdown-menu").length&&(n=n.closest("li.dropdown").addClass("active")),n.trigger("activate.bs.scrollspy")},e.prototype.clear=function(){t(this.selector).parentsUntil(this.options.target,".active").removeClass("active")};var n=t.fn.scrollspy;t.fn.scrollspy=i,t.fn.scrollspy.Constructor=e,t.fn.scrollspy.noConflict=function(){return t.fn.scrollspy=n,this},t(window).on("load.bs.scrollspy.data-api",function(){t('[data-spy="scroll"]').each(function(){var e=t(this);i.call(e,e.data())})})}(t),+function(t){"use strict";function e(e){return this.each(function(){var n=t(this),s=n.data("bs.tab");s||n.data("bs.tab",s=new i(this)),"string"==typeof e&&s[e]()})}var i=function(e){this.element=t(e)};i.VERSION="3.3.7",i.TRANSITION_DURATION=150,i.prototype.show=function(){var e=this.element,i=e.closest("ul:not(.dropdown-menu)"),n=e.data("target");if(n||(n=e.attr("href"),n=n&&n.replace(/.*(?=#[^\s]*$)/,"")),!e.parent("li").hasClass("active")){var s=i.find(".active:last a"),o=t.Event("hide.bs.tab",{relatedTarget:e[0]}),a=t.Event("show.bs.tab",{relatedTarget:s[0]});if(s.trigger(o),e.trigger(a),!a.isDefaultPrevented()&&!o.isDefaultPrevented()){var r=t(n);this.activate(e.closest("li"),i),this.activate(r,r.parent(),function(){s.trigger({type:"hidden.bs.tab",relatedTarget:e[0]}),e.trigger({type:"shown.bs.tab",relatedTarget:s[0]})})}}},i.prototype.activate=function(e,n,s){function o(){a.removeClass("active").find("> .dropdown-menu > .active").removeClass("active").end().find('[data-toggle="tab"]').attr("aria-expanded",!1),e.addClass("active").find('[data-toggle="tab"]').attr("aria-expanded",!0),r?(e[0].offsetWidth,e.addClass("in")):e.removeClass("fade"),e.parent(".dropdown-menu").length&&e.closest("li.dropdown").addClass("active").end().find('[data-toggle="tab"]').attr("aria-expanded",!0),s&&s()}var a=n.find("> .active"),r=s&&t.support.transition&&(a.length&&a.hasClass("fade")||!!n.find("> .fade").length);a.length&&r?a.one("bsTransitionEnd",o).emulateTransitionEnd(i.TRANSITION_DURATION):o(),a.removeClass("in")};var n=t.fn.tab;t.fn.tab=e,t.fn.tab.Constructor=i,t.fn.tab.noConflict=function(){return t.fn.tab=n,this};var s=function(i){i.preventDefault(),e.call(t(this),"show")};t(document).on("click.bs.tab.data-api",'[data-toggle="tab"]',s).on("click.bs.tab.data-api",'[data-toggle="pill"]',s)}(t),+function(t){"use strict";function e(e){return this.each(function(){var n=t(this),s=n.data("bs.affix"),o="object"==typeof e&&e;s||n.data("bs.affix",s=new i(this,o)),"string"==typeof e&&s[e]()})}var i=function(e,n){this.options=t.extend({},i.DEFAULTS,n),this.$target=t(this.options.target).on("scroll.bs.affix.data-api",t.proxy(this.checkPosition,this)).on("click.bs.affix.data-api",t.proxy(this.checkPositionWithEventLoop,this)),this.$element=t(e),this.affixed=null,this.unpin=null,this.pinnedOffset=null,this.checkPosition()};i.VERSION="3.3.7",i.RESET="affix affix-top affix-bottom",i.DEFAULTS={offset:0,target:window},i.prototype.getState=function(t,e,i,n){var s=this.$target.scrollTop(),o=this.$element.offset(),a=this.$target.height();if(null!=i&&"top"==this.affixed)return s<i&&"top";if("bottom"==this.affixed)return null!=i?!(s+this.unpin<=o.top)&&"bottom":!(s+a<=t-n)&&"bottom";var r=null==this.affixed,l=r?s:o.top,h=r?a:e;return null!=i&&s<=i?"top":null!=n&&l+h>=t-n&&"bottom"},i.prototype.getPinnedOffset=function(){if(this.pinnedOffset)return this.pinnedOffset;this.$element.removeClass(i.RESET).addClass("affix");var t=this.$target.scrollTop(),e=this.$element.offset();return this.pinnedOffset=e.top-t},i.prototype.checkPositionWithEventLoop=function(){setTimeout(t.proxy(this.checkPosition,this),1)},i.prototype.checkPosition=function(){if(this.$element.is(":visible")){var e=this.$element.height(),n=this.options.offset,s=n.top,o=n.bottom,a=Math.max(t(document).height(),t(document.body).height());"object"!=typeof n&&(o=s=n),"function"==typeof s&&(s=n.top(this.$element)),"function"==typeof o&&(o=n.bottom(this.$element));var r=this.getState(a,e,s,o);if(this.affixed!=r){null!=this.unpin&&this.$element.css("top","");var l="affix"+(r?"-"+r:""),h=t.Event(l+".bs.affix");if(this.$element.trigger(h),h.isDefaultPrevented())return;this.affixed=r,this.unpin="bottom"==r?this.getPinnedOffset():null,this.$element.removeClass(i.RESET).addClass(l).trigger(l.replace("affix","affixed")+".bs.affix")}"bottom"==r&&this.$element.offset({top:a-e-o})}};var n=t.fn.affix;t.fn.affix=e,t.fn.affix.Constructor=i,t.fn.affix.noConflict=function(){return t.fn.affix=n,this},t(window).on("load",function(){t('[data-spy="affix"]').each(function(){var i=t(this),n=i.data();n.offset=n.offset||{},null!=n.offsetBottom&&(n.offset.bottom=n.offsetBottom),null!=n.offsetTop&&(n.offset.top=n.offsetTop),e.call(i,n)})})}(t)}).call(e,i(6))},62:76,63:76,105:76,106:function(t,e,i){(function(t){(function(){"use strict";function e(t){return t&&t.__esModule?t:{"default":t}}var n=i(1),s=e(n);t(function(){var e=t("body"),i={height:500,width:420,scrollbars:0,toolbar:0,location:0,status:"no",menubar:0,resizable:0,dependent:0};window.getOptionsString=function(e){e=e?t.extend({},i,e):i;var n="";return Object.keys(e).forEach(function(t){return n+=t+"="+e[t]+","})},t("body#bigscreen").each(function(){var e=t("#chat-panel"),i=t("#stream-panel"),n=t("iframe#chat-frame"),s=t('<div class="overlay" />');n.on("load",function(){var n=this.contentWindow;n&&t("#chat-panel-tools").each(function(){t(this).on("click","#popout",function(){return window.open("/embed/chat","_blank",window.getOptionsString()),t("body").addClass("nochat"),e.remove(),i.removeAttr("style"),!1}),t(this).on("click","#refresh",function(){return n.location.reload(),!1}),t(this).on("click","#close",function(){return t("body").addClass("nochat"),e.remove(),i.removeAttr("style"),!1})})}),t("#chat-panel-resize-bar").each(function(){var n=t(this),o=320,a=768;n.css("left",0);var r=function(t){t<o&&(t=o),i.css("width","-moz-calc(100% - "+t+"px)"),i.css("width","-webkit-calc(100% - "+t+"px)"),i.css("width","-o-calc(100% - "+t+"px)"),i.css("width","calc(100% - "+t+"px)"),e.css("width",t),n.css("left",0),localStorage.setItem("bigscreen.chat.width",t)};n.on("mousedown.chatresize",function(i){i.preventDefault(),n.addClass("active"),s.appendTo("body");var o=i.clientX,a=n.position().left;t(document).on("mouseup.chatresize",function(i){i.preventDefault(),n.removeClass("active"),s.remove(),n.css("left",a+(i.clientX-o)),t(document).unbind("mousemove.chatresize"),t(document).unbind("mouseup.chatresize"),r(e.offset().left+e.outerWidth()-n.offset().left)}),t(document).on("mousemove.chatresize",function(t){t.preventDefault(),n.css("left",a+(t.clientX-o))})}),t(window).on("resize.chatresize",function(){t(window).width()<=a&&(i.removeAttr("style"),e.removeAttr("style"))});var l=parseInt(localStorage.getItem("bigscreen.chat.width"));l>o&&t(window).width()>a&&r(l)})}),t(".btn-show-all").on("click",function(e){e.preventDefault(),t(".collapse").collapse("show")}),""!==location.hash&&t('a[href="'+location.hash+'"]').tab("show"),t('.navbar a[rel="'+e.attr("id")+'"]').closest("li").addClass("active"),t('.navbar a[rel="'+e.attr("class")+'"]').closest("li").addClass("active"),t(document).find("img[data-src]").each(function(){var e=t(this),i=e.data("src");""!==i&&null!==i&&!function(){var t=e.clone();t.one("load",function(){e.replaceWith(t)}),t.removeClass("img_320x240 img_64x64").removeAttr("data-src").attr("src",i)}()}),e.on("click","a.popup",function(e){var i=t(this);return i.data("popup",window.open(i.attr("href"),"_blank",window.getOptionsString(i.data("options")))),e.preventDefault(),!0}),t(this).find('[data-toggle="tooltip"]').tooltip()}),function(){var e=function(e){var i=t(e),n=i.data("format")||"MMMM Do, h:mm:ss a",o=i.data("datetime")||i.attr("datetime")||i.text();o===!0&&(o=i.attr("title")),i.data("moment-fromnow")?(i.addClass("moment-update"),i.html((0,s["default"])(o).fromNow())):i.data("moment-calendar")?(i.addClass("moment-update"),i.html((0,s["default"])(o).calendar())):i.html((0,s["default"])(o).format(n)),i.data("datetime",o).addClass("moment-set")};window.setInterval(function(){t("time.moment-update").each(function(){e(this)})},3e4),t('time[data-moment="true"]:not(.moment-set)').each(function(){e(this)})}(),function(){var e=t("#userSearchModal"),i=e.find("input#userSearchInput"),n=e.find("button#userSearchSelect"),s=e.find("form#userSearchForm"),o=e.find("textarea#giftmessage"),a=!1,r="",l=function(e,i){t.ajax({url:"/gift/check",data:{s:e},type:"GET",success:function(t){i.call(this,t)},error:function(){h("Error looking up user. Try again")}})},h=function(t){a=!0,n.button("reset").attr("disabled",!0),e.find("label.error").text(t).removeClass("hidden")},d=function(){e.modal("hide"),i.val(""),o.val(""),t("#subscriptionGiftUsername").text(""),t("#giftSubscriptionConfirm").addClass("hidden"),t("#giftSubscriptionSelect").removeClass("hidden"),t('input[name="gift"]').val(""),t('input[name="gift-message"]').val("")},c=function(t){n.button("loading"),l(t,function(e){e.valid&&e.cangift?(r=t,""==o.val()?o.focus():s.submit(),n.button("reset").attr("disabled",!1),a=!1):e.valid?e.cangift||h("This user is not eligible for a gift."):h("This user was not found. Try again.")})};i.on("keydown change",function(){n.attr("disabled",""==t(this).val()),e.find("label.error").addClass("hidden")}),s.on("submit",function(){return e.find("label.error").addClass("hidden"),r!=i.val()?c(i.val()):(t("#subscriptionGiftUsername").text(i.val()),t("#giftSubscriptionConfirm").removeClass("hidden"),t("#giftSubscriptionSelect").addClass("hidden"),t('input[name="gift"]').val(i.val()),t('input[name="gift-message"]').val(o.val()),e.modal("hide")),!1}),e.on("shown.bs.modal",function(t){i.focus()}),e.on("hidden.bs.modal",function(t){a&&(a=!1,r="",i.val(""),o.val(""),e.find("label.error").addClass("hidden"))}),t("#cancelGiftSubscription").on("click",function(){return e.find("label.error").addClass("hidden"),d(),!1}),t("form.validate").validate({highlight:function(e){t(e).closest(".form-group").addClass("error")},unhighlight:function(e){t(e).closest(".form-group").removeClass("error")}})}(),t(function(){t("#stream-status").each(function(){var e=t(this),i=e.find("#stream-status-preview > a"),n=e.find("#stream-status-end"),o=e.find("#stream-status-start"),a=e.find("#stream-status-host"),r={live:!1,game:null,preview:"",animated_preview:"",status_text:"",started_at:null,ended_at:"",duration:0,viewers:0,host:{}},l=function(t){var r=t.host&&void 0!==t.host.target_id?"hosting":t.live?"online":"offline";e.removeClass("online offline hosting").addClass(r),n.text((0,s["default"])(t.ended_at).fromNow()),o.text((0,s["default"])(t.started_at).fromNow()),i.data("animated",t.animated_preview).css("background-image",t.preview),"hosting"===r&&(a.text(t.host.display_name),a.attr("href",t.host.url))};setInterval(function(){t.ajax({url:"/stream.json",type:"GET",success:function(e){try{null!==e&&void 0!==e&&l(t.extend(r,e))}catch(i){}}})},6e4),i.src=i.css("background-image"),i.animated="url("+i.data("animated")+")",i.on("mouseover",function(){i.css("background-image",i.animated)}).on("mouseout",function(){i.css("background-image",i.src)})})})}).call(window)}).call(e,i(6))},107:function(t,e,i){var n,s,o;(function(){/*!
+webpackJsonp([4],{
+
+/***/ 0:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/* global $ */
+
+	__webpack_require__(70);
+	__webpack_require__(65);
+	__webpack_require__(71);
+	__webpack_require__(69);
+	__webpack_require__(127);
+
+	__webpack_require__(129);
+	__webpack_require__(128);
+
+/***/ },
+
+/***/ 127:
+69,
+
+/***/ 128:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {/*** IMPORTS FROM imports-loader ***/
+	(function() {
+
+	'use strict';
+
+	var _moment = __webpack_require__(1);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// Document ready
+	$(function () {
+
+	    var body = $('body');
+
+	    // Generic popup defaults
+	    var popupDefaults = {
+	        height: 500,
+	        width: 420,
+	        scrollbars: 0,
+	        toolbar: 0,
+	        location: 0,
+	        status: 'no',
+	        menubar: 0,
+	        resizable: 0,
+	        dependent: 0
+	    };
+	    window.getOptionsString = function (options) {
+	        options = !options ? popupDefaults : $.extend({}, popupDefaults, options);
+	        var str = '';
+	        return Object.keys(options).forEach(function (k) {
+	            return str += k + '=' + options[k] + ',';
+	        });
+	    };
+
+	    $('body#bigscreen').each(function () {
+
+	        var chatpanel = $('#chat-panel'),
+	            streampanel = $('#stream-panel'),
+	            chatframe = $('iframe#chat-frame'),
+	            overlay = $('<div class="overlay" />');
+
+	        chatframe.on('load', function () {
+	            var chatwindow = this.contentWindow;
+
+	            if (!chatwindow) return;
+
+	            $('#chat-panel-tools').each(function () {
+	                $(this).on('click', '#popout', function () {
+	                    window.open('/embed/chat', '_blank', window.getOptionsString());
+	                    $('body').addClass('nochat');
+	                    chatpanel.remove();
+	                    streampanel.removeAttr('style');
+	                    return false;
+	                });
+	                $(this).on('click', '#refresh', function () {
+	                    chatwindow.location.reload();
+	                    return false;
+	                });
+	                $(this).on('click', '#close', function () {
+	                    $('body').addClass('nochat');
+	                    chatpanel.remove();
+	                    streampanel.removeAttr('style');
+	                    return false;
+	                });
+	            });
+	        });
+
+	        // Bigscreen resize
+	        $('#chat-panel-resize-bar').each(function () {
+
+	            var resizebar = $(this),
+	                minwidth = 320,
+	                disableWidth = 768;
+
+	            resizebar.css('left', 0);
+
+	            // Resize the stream / chat frames
+	            var resizeFrames = function resizeFrames(nwidth) {
+	                if (nwidth < minwidth) nwidth = minwidth;
+	                streampanel.css('width', '-moz-calc(100% - ' + nwidth + 'px)');
+	                streampanel.css('width', '-webkit-calc(100% - ' + nwidth + 'px)');
+	                streampanel.css('width', '-o-calc(100% - ' + nwidth + 'px)');
+	                streampanel.css('width', 'calc(100% - ' + nwidth + 'px)');
+	                chatpanel.css('width', nwidth);
+	                resizebar.css('left', 0);
+	                localStorage.setItem('bigscreen.chat.width', nwidth);
+	            };
+
+	            resizebar.on('mousedown.chatresize', function (e) {
+	                e.preventDefault();
+
+	                // resizebar css
+	                resizebar.addClass('active');
+
+	                // disable background
+	                overlay.appendTo('body');
+
+	                // x,y of the drag bar
+	                var offsetX = e.clientX,
+	                    sx = resizebar.position().left;
+
+	                $(document).on('mouseup.chatresize', function (e) {
+	                    e.preventDefault();
+
+	                    // resizebar css
+	                    resizebar.removeClass('active');
+
+	                    // enable background
+	                    overlay.remove();
+
+	                    // position resize bar
+	                    resizebar.css('left', sx + (e.clientX - offsetX));
+
+	                    // no longer need to listen for events until next mouse down
+	                    $(document).unbind('mousemove.chatresize');
+	                    $(document).unbind('mouseup.chatresize');
+
+	                    // Resize the frames
+	                    resizeFrames(chatpanel.offset().left + chatpanel.outerWidth() - resizebar.offset().left);
+	                });
+
+	                $(document).on('mousemove.chatresize', function (e) {
+	                    e.preventDefault();
+	                    resizebar.css('left', sx + (e.clientX - offsetX));
+	                });
+	            });
+
+	            // If the window is reduced to a size below the disableWidth, disable the custom resizing
+	            $(window).on('resize.chatresize', function () {
+	                if ($(window).width() <= disableWidth) {
+	                    streampanel.removeAttr('style');
+	                    chatpanel.removeAttr('style');
+	                }
+	            });
+
+	            // Onload, remember the last width the user chose
+	            var width = parseInt(localStorage.getItem('bigscreen.chat.width'));
+	            if (width > minwidth && $(window).width() > disableWidth) resizeFrames(width);
+	        });
+	    });
+
+	    $('.btn-show-all').on('click', function (e) {
+	        e.preventDefault();
+	        $('.collapse').collapse('show');
+	    });
+
+	    // Tabs selector - dont know why I need this
+	    if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
+
+	    // Set the top nav selection
+	    $('.navbar a[rel="' + body.attr('id') + '"]').closest('li').addClass('active');
+	    $('.navbar a[rel="' + body.attr('class') + '"]').closest('li').addClass('active');
+
+	    // lazy loading images
+	    $(document).find('img[data-src]').each(function () {
+	        var img = $(this),
+	            url = img.data('src');
+	        if (url !== '' && url !== null) {
+	            (function () {
+	                var clone = img.clone();
+	                clone.one('load', function () {
+	                    img.replaceWith(clone);
+	                });
+	                clone.removeClass('img_320x240 img_64x64').removeAttr('data-src').attr('src', url);
+	            })();
+	        }
+	    });
+
+	    // Generic popup links
+	    body.on('click', 'a.popup', function (e) {
+	        var a = $(this);
+	        a.data('popup', window.open(a.attr('href'), '_blank', window.getOptionsString(a.data('options'))));
+	        e.preventDefault();
+	        return true;
+	    });
+
+	    // Tooltips
+	    $(this).find('[data-toggle="tooltip"]').tooltip();
+	});
+
+	// Change time on selected elements
+	/* global $ */
+
+	(function () {
+
+	    var applyMomentToElement = function applyMomentToElement(e) {
+
+	        var ui = $(e),
+	            format = ui.data('format') || 'MMMM Do, h:mm:ss a';
+	        var datetime = ui.data('datetime') || ui.attr('datetime') || ui.text();
+
+	        if (datetime === true) datetime = ui.attr('title');
+	        if (ui.data('moment-fromnow')) {
+	            ui.addClass('moment-update');
+	            ui.html((0, _moment2.default)(datetime).fromNow());
+	        } else if (ui.data('moment-calendar')) {
+	            ui.addClass('moment-update');
+	            ui.html((0, _moment2.default)(datetime).calendar());
+	        } else {
+	            ui.html((0, _moment2.default)(datetime).format(format));
+	        }
+
+	        ui.data('datetime', datetime).addClass('moment-set');
+	    };
+
+	    window.setInterval(function () {
+	        $('time.moment-update').each(function () {
+	            applyMomentToElement(this);
+	        });
+	    }, 30000);
+
+	    $('time[data-moment="true"]:not(.moment-set)').each(function () {
+	        applyMomentToElement(this);
+	    });
+	})();
+
+	// Gifting / user search
+	(function () {
+
+	    var usrSearch = $('#userSearchModal'),
+	        usrInput = usrSearch.find('input#userSearchInput'),
+	        usrSelectBtn = usrSearch.find('button#userSearchSelect'),
+	        usrSearchFrm = usrSearch.find('form#userSearchForm'),
+	        giftMsgInput = usrSearch.find('textarea#giftmessage'),
+	        hasErrors = false,
+	        giftUsername = '';
+
+	    var checkUser = function checkUser(username, _success) {
+	        $.ajax({
+	            url: '/gift/check',
+	            data: { s: username },
+	            type: 'GET',
+	            success: function success(data) {
+	                _success.call(this, data);
+	            },
+	            error: function error() {
+	                showLookupError('Error looking up user. Try again');
+	            }
+	        });
+	    };
+
+	    var showLookupError = function showLookupError(message) {
+	        hasErrors = true;
+	        usrSelectBtn.button('reset').attr('disabled', true);
+	        usrSearch.find('label.error').text(message).removeClass('hidden');
+	    };
+
+	    var cancelUserSelect = function cancelUserSelect() {
+	        usrSearch.modal('hide');
+	        usrInput.val('');
+	        giftMsgInput.val('');
+	        $('#subscriptionGiftUsername').text('');
+	        $('#giftSubscriptionConfirm').addClass('hidden');
+	        $('#giftSubscriptionSelect').removeClass('hidden');
+	        $('input[name="gift"]').val('');
+	        $('input[name="gift-message"]').val('');
+	    };
+
+	    var selectUser = function selectUser(username) {
+	        usrSelectBtn.button('loading');
+	        checkUser(username, function (response) {
+	            if (response.valid && response.cangift) {
+	                giftUsername = username;
+	                if (giftMsgInput.val() == '') giftMsgInput.focus();else usrSearchFrm.submit();
+	                usrSelectBtn.button('reset').attr('disabled', false);
+	                hasErrors = false;
+	            } else if (!response.valid) {
+	                showLookupError('This user was not found. Try again.');
+	            } else if (!response.cangift) {
+	                showLookupError('This user is not eligible for a gift.');
+	            }
+	        });
+	    };
+
+	    usrInput.on('keydown change', function () {
+	        usrSelectBtn.attr('disabled', $(this).val() == '');
+	        usrSearch.find('label.error').addClass('hidden');
+	    });
+
+	    usrSearchFrm.on('submit', function () {
+	        usrSearch.find('label.error').addClass('hidden');
+	        if (giftUsername != usrInput.val()) {
+	            selectUser(usrInput.val());
+	        } else {
+	            $('#subscriptionGiftUsername').text(usrInput.val());
+	            $('#giftSubscriptionConfirm').removeClass('hidden');
+	            $('#giftSubscriptionSelect').addClass('hidden');
+	            $('input[name="gift"]').val(usrInput.val());
+	            $('input[name="gift-message"]').val(giftMsgInput.val());
+	            usrSearch.modal('hide');
+	        }
+	        return false;
+	    });
+
+	    usrSearch.on('shown.bs.modal', function (e) {
+	        usrInput.focus();
+	    });
+
+	    usrSearch.on('hidden.bs.modal', function (e) {
+	        if (hasErrors) {
+	            hasErrors = false;
+	            giftUsername = '';
+	            usrInput.val('');
+	            giftMsgInput.val('');
+	            usrSearch.find('label.error').addClass('hidden');
+	        }
+	    });
+
+	    $('#cancelGiftSubscription').on('click', function () {
+	        usrSearch.find('label.error').addClass('hidden');
+	        cancelUserSelect();
+	        return false;
+	    });
+
+	    $('form.validate').validate({
+	        highlight: function highlight(element) {
+	            $(element).closest('.form-group').addClass('error');
+	        },
+	        unhighlight: function unhighlight(element) {
+	            $(element).closest('.form-group').removeClass('error');
+	        }
+	    });
+	})();
+
+	$(function () {
+
+	    $('#stream-status').each(function () {
+	        var el = $(this),
+	            a = el.find('#stream-status-preview > a'),
+	            end = el.find('#stream-status-end'),
+	            start = el.find('#stream-status-start'),
+	            host = el.find('#stream-status-host');
+
+	        var status = {
+	            live: false,
+	            game: null,
+	            preview: "",
+	            animated_preview: "",
+	            status_text: "",
+	            started_at: null,
+	            ended_at: "",
+	            duration: 0,
+	            viewers: 0,
+	            host: {}
+	        };
+
+	        var updateStatus = function updateStatus(status) {
+	            var state = status['host'] && status.host['target_id'] !== undefined ? 'hosting' : status.live ? 'online' : 'offline';
+	            el.removeClass('online offline hosting').addClass(state);
+	            end.text((0, _moment2.default)(status.ended_at).fromNow());
+	            start.text((0, _moment2.default)(status.started_at).fromNow());
+	            a.data('animated', status.animated_preview).css('background-image', status.preview);
+	            if (state === 'hosting') {
+	                host.text(status.host['display_name']);
+	                host.attr('href', status.host['url']);
+	            }
+	        };
+
+	        setInterval(function () {
+	            $.ajax({
+	                url: '/stream.json',
+	                type: 'GET',
+	                success: function success(data) {
+	                    try {
+	                        if (data !== null && data !== undefined) {
+	                            updateStatus($.extend(status, data));
+	                        }
+	                    } catch (ignored) {}
+	                }
+	            });
+	        }, 60000);
+
+	        a.src = a.css('background-image');
+	        a.animated = 'url(' + a.data('animated') + ')';
+	        a.on('mouseover', function () {
+	            a.css('background-image', a.animated);
+	        }).on('mouseout', function () {
+	            a.css('background-image', a.src);
+	        });
+	    });
+	});
+	}.call(window));
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ },
+
+/***/ 129:
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*** IMPORTS FROM imports-loader ***/
+	(function() {
+
+	/*!
 	 * jQuery Validation Plugin v1.15.0
 	 *
 	 * http://jqueryvalidation.org/
@@ -12,4 +426,1532 @@ var i=this.selector+'[data-target="'+e+'"],'+this.selector+'[href="'+e+'"]',n=t(
 	 * Copyright (c) 2016 Jörn Zaefferer
 	 * Released under the MIT license
 	 */
-!function(a){s=[i(6)],n=a,o="function"==typeof n?n.apply(e,s):n,!(void 0!==o&&(t.exports=o))}(function(t){t.extend(t.fn,{validate:function(e){if(!this.length)return void(e&&e.debug&&window.console&&console.warn("Nothing selected, can't validate, returning nothing."));var i=t.data(this[0],"validator");return i?i:(this.attr("novalidate","novalidate"),i=new t.validator(e,this[0]),t.data(this[0],"validator",i),i.settings.onsubmit&&(this.on("click.validate",":submit",function(e){i.settings.submitHandler&&(i.submitButton=e.target),t(this).hasClass("cancel")&&(i.cancelSubmit=!0),void 0!==t(this).attr("formnovalidate")&&(i.cancelSubmit=!0)}),this.on("submit.validate",function(e){function n(){var n,s;return!i.settings.submitHandler||(i.submitButton&&(n=t("<input type='hidden'/>").attr("name",i.submitButton.name).val(t(i.submitButton).val()).appendTo(i.currentForm)),s=i.settings.submitHandler.call(i,i.currentForm,e),i.submitButton&&n.remove(),void 0!==s&&s)}return i.settings.debug&&e.preventDefault(),i.cancelSubmit?(i.cancelSubmit=!1,n()):i.form()?i.pendingRequest?(i.formSubmitted=!0,!1):n():(i.focusInvalid(),!1)})),i)},valid:function(){var e,i,n;return t(this[0]).is("form")?e=this.validate().form():(n=[],e=!0,i=t(this[0].form).validate(),this.each(function(){e=i.element(this)&&e,e||(n=n.concat(i.errorList))}),i.errorList=n),e},rules:function(e,i){if(this.length){var n,s,o,a,r,l,h=this[0];if(e)switch(n=t.data(h.form,"validator").settings,s=n.rules,o=t.validator.staticRules(h),e){case"add":t.extend(o,t.validator.normalizeRule(i)),delete o.messages,s[h.name]=o,i.messages&&(n.messages[h.name]=t.extend(n.messages[h.name],i.messages));break;case"remove":return i?(l={},t.each(i.split(/\s/),function(e,i){l[i]=o[i],delete o[i],"required"===i&&t(h).removeAttr("aria-required")}),l):(delete s[h.name],o)}return a=t.validator.normalizeRules(t.extend({},t.validator.classRules(h),t.validator.attributeRules(h),t.validator.dataRules(h),t.validator.staticRules(h)),h),a.required&&(r=a.required,delete a.required,a=t.extend({required:r},a),t(h).attr("aria-required","true")),a.remote&&(r=a.remote,delete a.remote,a=t.extend(a,{remote:r})),a}}}),t.extend(t.expr[":"],{blank:function(e){return!t.trim(""+t(e).val())},filled:function(e){var i=t(e).val();return null!==i&&!!t.trim(""+i)},unchecked:function(e){return!t(e).prop("checked")}}),t.validator=function(e,i){this.settings=t.extend(!0,{},t.validator.defaults,e),this.currentForm=i,this.init()},t.validator.format=function(e,i){return 1===arguments.length?function(){var i=t.makeArray(arguments);return i.unshift(e),t.validator.format.apply(this,i)}:void 0===i?e:(arguments.length>2&&i.constructor!==Array&&(i=t.makeArray(arguments).slice(1)),i.constructor!==Array&&(i=[i]),t.each(i,function(t,i){e=e.replace(new RegExp("\\{"+t+"\\}","g"),function(){return i})}),e)},t.extend(t.validator,{defaults:{messages:{},groups:{},rules:{},errorClass:"error",pendingClass:"pending",validClass:"valid",errorElement:"label",focusCleanup:!1,focusInvalid:!0,errorContainer:t([]),errorLabelContainer:t([]),onsubmit:!0,ignore:":hidden",ignoreTitle:!1,onfocusin:function(t){this.lastActive=t,this.settings.focusCleanup&&(this.settings.unhighlight&&this.settings.unhighlight.call(this,t,this.settings.errorClass,this.settings.validClass),this.hideThese(this.errorsFor(t)))},onfocusout:function(t){this.checkable(t)||!(t.name in this.submitted)&&this.optional(t)||this.element(t)},onkeyup:function(e,i){var n=[16,17,18,20,35,36,37,38,39,40,45,144,225];9===i.which&&""===this.elementValue(e)||t.inArray(i.keyCode,n)!==-1||(e.name in this.submitted||e.name in this.invalid)&&this.element(e)},onclick:function(t){t.name in this.submitted?this.element(t):t.parentNode.name in this.submitted&&this.element(t.parentNode)},highlight:function(e,i,n){"radio"===e.type?this.findByName(e.name).addClass(i).removeClass(n):t(e).addClass(i).removeClass(n)},unhighlight:function(e,i,n){"radio"===e.type?this.findByName(e.name).removeClass(i).addClass(n):t(e).removeClass(i).addClass(n)}},setDefaults:function(e){t.extend(t.validator.defaults,e)},messages:{required:"This field is required.",remote:"Please fix this field.",email:"Please enter a valid email address.",url:"Please enter a valid URL.",date:"Please enter a valid date.",dateISO:"Please enter a valid date ( ISO ).",number:"Please enter a valid number.",digits:"Please enter only digits.",equalTo:"Please enter the same value again.",maxlength:t.validator.format("Please enter no more than {0} characters."),minlength:t.validator.format("Please enter at least {0} characters."),rangelength:t.validator.format("Please enter a value between {0} and {1} characters long."),range:t.validator.format("Please enter a value between {0} and {1}."),max:t.validator.format("Please enter a value less than or equal to {0}."),min:t.validator.format("Please enter a value greater than or equal to {0}."),step:t.validator.format("Please enter a multiple of {0}.")},autoCreateRanges:!1,prototype:{init:function(){function e(e){var i=t.data(this.form,"validator"),n="on"+e.type.replace(/^validate/,""),s=i.settings;s[n]&&!t(this).is(s.ignore)&&s[n].call(i,this,e)}this.labelContainer=t(this.settings.errorLabelContainer),this.errorContext=this.labelContainer.length&&this.labelContainer||t(this.currentForm),this.containers=t(this.settings.errorContainer).add(this.settings.errorLabelContainer),this.submitted={},this.valueCache={},this.pendingRequest=0,this.pending={},this.invalid={},this.reset();var i,n=this.groups={};t.each(this.settings.groups,function(e,i){"string"==typeof i&&(i=i.split(/\s/)),t.each(i,function(t,i){n[i]=e})}),i=this.settings.rules,t.each(i,function(e,n){i[e]=t.validator.normalizeRule(n)}),t(this.currentForm).on("focusin.validate focusout.validate keyup.validate",":text, [type='password'], [type='file'], select, textarea, [type='number'], [type='search'], [type='tel'], [type='url'], [type='email'], [type='datetime'], [type='date'], [type='month'], [type='week'], [type='time'], [type='datetime-local'], [type='range'], [type='color'], [type='radio'], [type='checkbox'], [contenteditable]",e).on("click.validate","select, option, [type='radio'], [type='checkbox']",e),this.settings.invalidHandler&&t(this.currentForm).on("invalid-form.validate",this.settings.invalidHandler),t(this.currentForm).find("[required], [data-rule-required], .required").attr("aria-required","true")},form:function(){return this.checkForm(),t.extend(this.submitted,this.errorMap),this.invalid=t.extend({},this.errorMap),this.valid()||t(this.currentForm).triggerHandler("invalid-form",[this]),this.showErrors(),this.valid()},checkForm:function(){this.prepareForm();for(var t=0,e=this.currentElements=this.elements();e[t];t++)this.check(e[t]);return this.valid()},element:function(e){var i,n,s=this.clean(e),o=this.validationTargetFor(s),a=this,r=!0;return void 0===o?delete this.invalid[s.name]:(this.prepareElement(o),this.currentElements=t(o),n=this.groups[o.name],n&&t.each(this.groups,function(t,e){e===n&&t!==o.name&&(s=a.validationTargetFor(a.clean(a.findByName(t))),s&&s.name in a.invalid&&(a.currentElements.push(s),r=r&&a.check(s)))}),i=this.check(o)!==!1,r=r&&i,i?this.invalid[o.name]=!1:this.invalid[o.name]=!0,this.numberOfInvalids()||(this.toHide=this.toHide.add(this.containers)),this.showErrors(),t(e).attr("aria-invalid",!i)),r},showErrors:function(e){if(e){var i=this;t.extend(this.errorMap,e),this.errorList=t.map(this.errorMap,function(t,e){return{message:t,element:i.findByName(e)[0]}}),this.successList=t.grep(this.successList,function(t){return!(t.name in e)})}this.settings.showErrors?this.settings.showErrors.call(this,this.errorMap,this.errorList):this.defaultShowErrors()},resetForm:function(){t.fn.resetForm&&t(this.currentForm).resetForm(),this.invalid={},this.submitted={},this.prepareForm(),this.hideErrors();var e=this.elements().removeData("previousValue").removeAttr("aria-invalid");this.resetElements(e)},resetElements:function(t){var e;if(this.settings.unhighlight)for(e=0;t[e];e++)this.settings.unhighlight.call(this,t[e],this.settings.errorClass,""),this.findByName(t[e].name).removeClass(this.settings.validClass);else t.removeClass(this.settings.errorClass).removeClass(this.settings.validClass)},numberOfInvalids:function(){return this.objectLength(this.invalid)},objectLength:function(t){var e,i=0;for(e in t)t[e]&&i++;return i},hideErrors:function(){this.hideThese(this.toHide)},hideThese:function(t){t.not(this.containers).text(""),this.addWrapper(t).hide()},valid:function(){return 0===this.size()},size:function(){return this.errorList.length},focusInvalid:function(){if(this.settings.focusInvalid)try{t(this.findLastActive()||this.errorList.length&&this.errorList[0].element||[]).filter(":visible").focus().trigger("focusin")}catch(e){}},findLastActive:function(){var e=this.lastActive;return e&&1===t.grep(this.errorList,function(t){return t.element.name===e.name}).length&&e},elements:function(){var e=this,i={};return t(this.currentForm).find("input, select, textarea, [contenteditable]").not(":submit, :reset, :image, :disabled").not(this.settings.ignore).filter(function(){var n=this.name||t(this).attr("name");return!n&&e.settings.debug&&window.console&&console.error("%o has no name assigned",this),this.hasAttribute("contenteditable")&&(this.form=t(this).closest("form")[0]),!(n in i||!e.objectLength(t(this).rules()))&&(i[n]=!0,!0)})},clean:function(e){return t(e)[0]},errors:function(){var e=this.settings.errorClass.split(" ").join(".");return t(this.settings.errorElement+"."+e,this.errorContext)},resetInternals:function(){this.successList=[],this.errorList=[],this.errorMap={},this.toShow=t([]),this.toHide=t([])},reset:function(){this.resetInternals(),this.currentElements=t([])},prepareForm:function(){this.reset(),this.toHide=this.errors().add(this.containers)},prepareElement:function(t){this.reset(),this.toHide=this.errorsFor(t)},elementValue:function(e){var i,n,s=t(e),o=e.type;return"radio"===o||"checkbox"===o?this.findByName(e.name).filter(":checked").val():"number"===o&&"undefined"!=typeof e.validity?e.validity.badInput?"NaN":s.val():(i=e.hasAttribute("contenteditable")?s.text():s.val(),"file"===o?"C:\\fakepath\\"===i.substr(0,12)?i.substr(12):(n=i.lastIndexOf("/"),n>=0?i.substr(n+1):(n=i.lastIndexOf("\\"),n>=0?i.substr(n+1):i)):"string"==typeof i?i.replace(/\r/g,""):i)},check:function(e){e=this.validationTargetFor(this.clean(e));var i,n,s,o=t(e).rules(),a=t.map(o,function(t,e){return e}).length,r=!1,l=this.elementValue(e);if("function"==typeof o.normalizer){if(l=o.normalizer.call(e,l),"string"!=typeof l)throw new TypeError("The normalizer should return a string value.");delete o.normalizer}for(n in o){s={method:n,parameters:o[n]};try{if(i=t.validator.methods[n].call(this,l,e,s.parameters),"dependency-mismatch"===i&&1===a){r=!0;continue}if(r=!1,"pending"===i)return void(this.toHide=this.toHide.not(this.errorsFor(e)));if(!i)return this.formatAndAdd(e,s),!1}catch(h){throw this.settings.debug&&window.console&&console.log("Exception occurred when checking element "+e.id+", check the '"+s.method+"' method.",h),h instanceof TypeError&&(h.message+=".  Exception occurred when checking element "+e.id+", check the '"+s.method+"' method."),h}}if(!r)return this.objectLength(o)&&this.successList.push(e),!0},customDataMessage:function(e,i){return t(e).data("msg"+i.charAt(0).toUpperCase()+i.substring(1).toLowerCase())||t(e).data("msg")},customMessage:function(t,e){var i=this.settings.messages[t];return i&&(i.constructor===String?i:i[e])},findDefined:function(){for(var t=0;t<arguments.length;t++)if(void 0!==arguments[t])return arguments[t]},defaultMessage:function(e,i){var n=this.findDefined(this.customMessage(e.name,i.method),this.customDataMessage(e,i.method),!this.settings.ignoreTitle&&e.title||void 0,t.validator.messages[i.method],"<strong>Warning: No message defined for "+e.name+"</strong>"),s=/\$?\{(\d+)\}/g;return"function"==typeof n?n=n.call(this,i.parameters,e):s.test(n)&&(n=t.validator.format(n.replace(s,"{$1}"),i.parameters)),n},formatAndAdd:function(t,e){var i=this.defaultMessage(t,e);this.errorList.push({message:i,element:t,method:e.method}),this.errorMap[t.name]=i,this.submitted[t.name]=i},addWrapper:function(t){return this.settings.wrapper&&(t=t.add(t.parent(this.settings.wrapper))),t},defaultShowErrors:function(){var t,e,i;for(t=0;this.errorList[t];t++)i=this.errorList[t],this.settings.highlight&&this.settings.highlight.call(this,i.element,this.settings.errorClass,this.settings.validClass),this.showLabel(i.element,i.message);if(this.errorList.length&&(this.toShow=this.toShow.add(this.containers)),this.settings.success)for(t=0;this.successList[t];t++)this.showLabel(this.successList[t]);if(this.settings.unhighlight)for(t=0,e=this.validElements();e[t];t++)this.settings.unhighlight.call(this,e[t],this.settings.errorClass,this.settings.validClass);this.toHide=this.toHide.not(this.toShow),this.hideErrors(),this.addWrapper(this.toShow).show()},validElements:function(){return this.currentElements.not(this.invalidElements())},invalidElements:function(){return t(this.errorList).map(function(){return this.element})},showLabel:function(e,i){var n,s,o,a,r=this.errorsFor(e),l=this.idOrName(e),h=t(e).attr("aria-describedby");r.length?(r.removeClass(this.settings.validClass).addClass(this.settings.errorClass),r.html(i)):(r=t("<"+this.settings.errorElement+">").attr("id",l+"-error").addClass(this.settings.errorClass).html(i||""),n=r,this.settings.wrapper&&(n=r.hide().show().wrap("<"+this.settings.wrapper+"/>").parent()),this.labelContainer.length?this.labelContainer.append(n):this.settings.errorPlacement?this.settings.errorPlacement(n,t(e)):n.insertAfter(e),r.is("label")?r.attr("for",l):0===r.parents("label[for='"+this.escapeCssMeta(l)+"']").length&&(o=r.attr("id"),h?h.match(new RegExp("\\b"+this.escapeCssMeta(o)+"\\b"))||(h+=" "+o):h=o,t(e).attr("aria-describedby",h),s=this.groups[e.name],s&&(a=this,t.each(a.groups,function(e,i){i===s&&t("[name='"+a.escapeCssMeta(e)+"']",a.currentForm).attr("aria-describedby",r.attr("id"))})))),!i&&this.settings.success&&(r.text(""),"string"==typeof this.settings.success?r.addClass(this.settings.success):this.settings.success(r,e)),this.toShow=this.toShow.add(r)},errorsFor:function(e){var i=this.escapeCssMeta(this.idOrName(e)),n=t(e).attr("aria-describedby"),s="label[for='"+i+"'], label[for='"+i+"'] *";return n&&(s=s+", #"+this.escapeCssMeta(n).replace(/\s+/g,", #")),this.errors().filter(s)},escapeCssMeta:function(t){return t.replace(/([\\!"#$%&'()*+,.\/:;<=>?@\[\]^`{|}~])/g,"\\$1")},idOrName:function(t){return this.groups[t.name]||(this.checkable(t)?t.name:t.id||t.name)},validationTargetFor:function(e){return this.checkable(e)&&(e=this.findByName(e.name)),t(e).not(this.settings.ignore)[0]},checkable:function(t){return/radio|checkbox/i.test(t.type)},findByName:function(e){return t(this.currentForm).find("[name='"+this.escapeCssMeta(e)+"']")},getLength:function(e,i){switch(i.nodeName.toLowerCase()){case"select":return t("option:selected",i).length;case"input":if(this.checkable(i))return this.findByName(i.name).filter(":checked").length}return e.length},depend:function(t,e){return!this.dependTypes[typeof t]||this.dependTypes[typeof t](t,e)},dependTypes:{"boolean":function(t){return t},string:function(e,i){return!!t(e,i.form).length},"function":function(t,e){return t(e)}},optional:function(e){var i=this.elementValue(e);return!t.validator.methods.required.call(this,i,e)&&"dependency-mismatch"},startRequest:function(e){this.pending[e.name]||(this.pendingRequest++,t(e).addClass(this.settings.pendingClass),this.pending[e.name]=!0)},stopRequest:function(e,i){this.pendingRequest--,this.pendingRequest<0&&(this.pendingRequest=0),delete this.pending[e.name],t(e).removeClass(this.settings.pendingClass),i&&0===this.pendingRequest&&this.formSubmitted&&this.form()?(t(this.currentForm).submit(),this.formSubmitted=!1):!i&&0===this.pendingRequest&&this.formSubmitted&&(t(this.currentForm).triggerHandler("invalid-form",[this]),this.formSubmitted=!1)},previousValue:function(e,i){return t.data(e,"previousValue")||t.data(e,"previousValue",{old:null,valid:!0,message:this.defaultMessage(e,{method:i})})},destroy:function(){this.resetForm(),t(this.currentForm).off(".validate").removeData("validator").find(".validate-equalTo-blur").off(".validate-equalTo").removeClass("validate-equalTo-blur")}},classRuleSettings:{required:{required:!0},email:{email:!0},url:{url:!0},date:{date:!0},dateISO:{dateISO:!0},number:{number:!0},digits:{digits:!0},creditcard:{creditcard:!0}},addClassRules:function(e,i){e.constructor===String?this.classRuleSettings[e]=i:t.extend(this.classRuleSettings,e)},classRules:function(e){var i={},n=t(e).attr("class");return n&&t.each(n.split(" "),function(){this in t.validator.classRuleSettings&&t.extend(i,t.validator.classRuleSettings[this])}),i},normalizeAttributeRule:function(t,e,i,n){/min|max|step/.test(i)&&(null===e||/number|range|text/.test(e))&&(n=Number(n),isNaN(n)&&(n=void 0)),n||0===n?t[i]=n:e===i&&"range"!==e&&(t[i]=!0)},attributeRules:function(e){var i,n,s={},o=t(e),a=e.getAttribute("type");for(i in t.validator.methods)"required"===i?(n=e.getAttribute(i),""===n&&(n=!0),n=!!n):n=o.attr(i),this.normalizeAttributeRule(s,a,i,n);return s.maxlength&&/-1|2147483647|524288/.test(s.maxlength)&&delete s.maxlength,s},dataRules:function(e){var i,n,s={},o=t(e),a=e.getAttribute("type");for(i in t.validator.methods)n=o.data("rule"+i.charAt(0).toUpperCase()+i.substring(1).toLowerCase()),this.normalizeAttributeRule(s,a,i,n);return s},staticRules:function(e){var i={},n=t.data(e.form,"validator");return n.settings.rules&&(i=t.validator.normalizeRule(n.settings.rules[e.name])||{}),i},normalizeRules:function(e,i){return t.each(e,function(n,s){if(s===!1)return void delete e[n];if(s.param||s.depends){var o=!0;switch(typeof s.depends){case"string":o=!!t(s.depends,i.form).length;break;case"function":o=s.depends.call(i,i)}o?e[n]=void 0===s.param||s.param:(t.data(i.form,"validator").resetElements(t(i)),delete e[n])}}),t.each(e,function(n,s){e[n]=t.isFunction(s)&&"normalizer"!==n?s(i):s}),t.each(["minlength","maxlength"],function(){e[this]&&(e[this]=Number(e[this]))}),t.each(["rangelength","range"],function(){var i;e[this]&&(t.isArray(e[this])?e[this]=[Number(e[this][0]),Number(e[this][1])]:"string"==typeof e[this]&&(i=e[this].replace(/[\[\]]/g,"").split(/[\s,]+/),e[this]=[Number(i[0]),Number(i[1])]))}),t.validator.autoCreateRanges&&(null!=e.min&&null!=e.max&&(e.range=[e.min,e.max],delete e.min,delete e.max),null!=e.minlength&&null!=e.maxlength&&(e.rangelength=[e.minlength,e.maxlength],delete e.minlength,delete e.maxlength)),e},normalizeRule:function(e){if("string"==typeof e){var i={};t.each(e.split(/\s/),function(){i[this]=!0}),e=i}return e},addMethod:function(e,i,n){t.validator.methods[e]=i,t.validator.messages[e]=void 0!==n?n:t.validator.messages[e],i.length<3&&t.validator.addClassRules(e,t.validator.normalizeRule(e))},methods:{required:function(e,i,n){if(!this.depend(n,i))return"dependency-mismatch";if("select"===i.nodeName.toLowerCase()){var s=t(i).val();return s&&s.length>0}return this.checkable(i)?this.getLength(e,i)>0:e.length>0},email:function(t,e){return this.optional(e)||/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(t)},url:function(t,e){return this.optional(e)||/^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})).?)(?::\d{2,5})?(?:[\/?#]\S*)?$/i.test(t)},date:function(t,e){return this.optional(e)||!/Invalid|NaN/.test(new Date(t).toString())},dateISO:function(t,e){return this.optional(e)||/^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])$/.test(t)},number:function(t,e){return this.optional(e)||/^(?:-?\d+|-?\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/.test(t)},digits:function(t,e){return this.optional(e)||/^\d+$/.test(t)},minlength:function(e,i,n){var s=t.isArray(e)?e.length:this.getLength(e,i);return this.optional(i)||s>=n},maxlength:function(e,i,n){var s=t.isArray(e)?e.length:this.getLength(e,i);return this.optional(i)||s<=n},rangelength:function(e,i,n){var s=t.isArray(e)?e.length:this.getLength(e,i);return this.optional(i)||s>=n[0]&&s<=n[1]},min:function(t,e,i){return this.optional(e)||t>=i},max:function(t,e,i){return this.optional(e)||t<=i},range:function(t,e,i){return this.optional(e)||t>=i[0]&&t<=i[1]},step:function(e,i,n){var s=t(i).attr("type"),o="Step attribute on input type "+s+" is not supported.",a=["text","number","range"],r=new RegExp("\\b"+s+"\\b"),l=s&&!r.test(a.join());if(l)throw new Error(o);return this.optional(i)||e%n===0},equalTo:function(e,i,n){var s=t(n);return this.settings.onfocusout&&s.not(".validate-equalTo-blur").length&&s.addClass("validate-equalTo-blur").on("blur.validate-equalTo",function(){t(i).valid()}),e===s.val()},remote:function(e,i,n,s){if(this.optional(i))return"dependency-mismatch";s="string"==typeof s&&s||"remote";var o,a,r,l=this.previousValue(i,s);return this.settings.messages[i.name]||(this.settings.messages[i.name]={}),l.originalMessage=l.originalMessage||this.settings.messages[i.name][s],this.settings.messages[i.name][s]=l.message,n="string"==typeof n&&{url:n}||n,r=t.param(t.extend({data:e},n.data)),l.old===r?l.valid:(l.old=r,o=this,this.startRequest(i),a={},a[i.name]=e,t.ajax(t.extend(!0,{mode:"abort",port:"validate"+i.name,dataType:"json",data:a,context:o.currentForm,success:function(t){var n,a,r,h=t===!0||"true"===t;o.settings.messages[i.name][s]=l.originalMessage,h?(r=o.formSubmitted,o.resetInternals(),o.toHide=o.errorsFor(i),o.formSubmitted=r,o.successList.push(i),o.invalid[i.name]=!1,o.showErrors()):(n={},a=t||o.defaultMessage(i,{method:s,parameters:e}),n[i.name]=l.message=a,o.invalid[i.name]=!0,o.showErrors(n)),l.valid=h,o.stopRequest(i,h)}},n)),"pending")}}});var e,i={};t.ajaxPrefilter?t.ajaxPrefilter(function(t,e,n){var s=t.port;"abort"===t.mode&&(i[s]&&i[s].abort(),i[s]=n)}):(e=t.ajax,t.ajax=function(n){var s=("mode"in n?n:t.ajaxSettings).mode,o=("port"in n?n:t.ajaxSettings).port;return"abort"===s?(i[o]&&i[o].abort(),i[o]=e.apply(this,arguments),i[o]):e.apply(this,arguments)})})}).call(window)}});
+	(function( factory ) {
+		if ( true ) {
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else if (typeof module === "object" && module.exports) {
+			module.exports = factory( require( "jquery" ) );
+		} else {
+			factory( jQuery );
+		}
+	}(function( $ ) {
+
+	$.extend( $.fn, {
+
+		// http://jqueryvalidation.org/validate/
+		validate: function( options ) {
+
+			// If nothing is selected, return nothing; can't chain anyway
+			if ( !this.length ) {
+				if ( options && options.debug && window.console ) {
+					console.warn( "Nothing selected, can't validate, returning nothing." );
+				}
+				return;
+			}
+
+			// Check if a validator for this form was already created
+			var validator = $.data( this[ 0 ], "validator" );
+			if ( validator ) {
+				return validator;
+			}
+
+			// Add novalidate tag if HTML5.
+			this.attr( "novalidate", "novalidate" );
+
+			validator = new $.validator( options, this[ 0 ] );
+			$.data( this[ 0 ], "validator", validator );
+
+			if ( validator.settings.onsubmit ) {
+
+				this.on( "click.validate", ":submit", function( event ) {
+					if ( validator.settings.submitHandler ) {
+						validator.submitButton = event.target;
+					}
+
+					// Allow suppressing validation by adding a cancel class to the submit button
+					if ( $( this ).hasClass( "cancel" ) ) {
+						validator.cancelSubmit = true;
+					}
+
+					// Allow suppressing validation by adding the html5 formnovalidate attribute to the submit button
+					if ( $( this ).attr( "formnovalidate" ) !== undefined ) {
+						validator.cancelSubmit = true;
+					}
+				} );
+
+				// Validate the form on submit
+				this.on( "submit.validate", function( event ) {
+					if ( validator.settings.debug ) {
+
+						// Prevent form submit to be able to see console output
+						event.preventDefault();
+					}
+					function handle() {
+						var hidden, result;
+						if ( validator.settings.submitHandler ) {
+							if ( validator.submitButton ) {
+
+								// Insert a hidden input as a replacement for the missing submit button
+								hidden = $( "<input type='hidden'/>" )
+									.attr( "name", validator.submitButton.name )
+									.val( $( validator.submitButton ).val() )
+									.appendTo( validator.currentForm );
+							}
+							result = validator.settings.submitHandler.call( validator, validator.currentForm, event );
+							if ( validator.submitButton ) {
+
+								// And clean up afterwards; thanks to no-block-scope, hidden can be referenced
+								hidden.remove();
+							}
+							if ( result !== undefined ) {
+								return result;
+							}
+							return false;
+						}
+						return true;
+					}
+
+					// Prevent submit for invalid forms or custom submit handlers
+					if ( validator.cancelSubmit ) {
+						validator.cancelSubmit = false;
+						return handle();
+					}
+					if ( validator.form() ) {
+						if ( validator.pendingRequest ) {
+							validator.formSubmitted = true;
+							return false;
+						}
+						return handle();
+					} else {
+						validator.focusInvalid();
+						return false;
+					}
+				} );
+			}
+
+			return validator;
+		},
+
+		// http://jqueryvalidation.org/valid/
+		valid: function() {
+			var valid, validator, errorList;
+
+			if ( $( this[ 0 ] ).is( "form" ) ) {
+				valid = this.validate().form();
+			} else {
+				errorList = [];
+				valid = true;
+				validator = $( this[ 0 ].form ).validate();
+				this.each( function() {
+					valid = validator.element( this ) && valid;
+					if ( !valid ) {
+						errorList = errorList.concat( validator.errorList );
+					}
+				} );
+				validator.errorList = errorList;
+			}
+			return valid;
+		},
+
+		// http://jqueryvalidation.org/rules/
+		rules: function( command, argument ) {
+
+			// If nothing is selected, return nothing; can't chain anyway
+			if ( !this.length ) {
+				return;
+			}
+
+			var element = this[ 0 ],
+				settings, staticRules, existingRules, data, param, filtered;
+
+			if ( command ) {
+				settings = $.data( element.form, "validator" ).settings;
+				staticRules = settings.rules;
+				existingRules = $.validator.staticRules( element );
+				switch ( command ) {
+				case "add":
+					$.extend( existingRules, $.validator.normalizeRule( argument ) );
+
+					// Remove messages from rules, but allow them to be set separately
+					delete existingRules.messages;
+					staticRules[ element.name ] = existingRules;
+					if ( argument.messages ) {
+						settings.messages[ element.name ] = $.extend( settings.messages[ element.name ], argument.messages );
+					}
+					break;
+				case "remove":
+					if ( !argument ) {
+						delete staticRules[ element.name ];
+						return existingRules;
+					}
+					filtered = {};
+					$.each( argument.split( /\s/ ), function( index, method ) {
+						filtered[ method ] = existingRules[ method ];
+						delete existingRules[ method ];
+						if ( method === "required" ) {
+							$( element ).removeAttr( "aria-required" );
+						}
+					} );
+					return filtered;
+				}
+			}
+
+			data = $.validator.normalizeRules(
+			$.extend(
+				{},
+				$.validator.classRules( element ),
+				$.validator.attributeRules( element ),
+				$.validator.dataRules( element ),
+				$.validator.staticRules( element )
+			), element );
+
+			// Make sure required is at front
+			if ( data.required ) {
+				param = data.required;
+				delete data.required;
+				data = $.extend( { required: param }, data );
+				$( element ).attr( "aria-required", "true" );
+			}
+
+			// Make sure remote is at back
+			if ( data.remote ) {
+				param = data.remote;
+				delete data.remote;
+				data = $.extend( data, { remote: param } );
+			}
+
+			return data;
+		}
+	} );
+
+	// Custom selectors
+	$.extend( $.expr[ ":" ], {
+
+		// http://jqueryvalidation.org/blank-selector/
+		blank: function( a ) {
+			return !$.trim( "" + $( a ).val() );
+		},
+
+		// http://jqueryvalidation.org/filled-selector/
+		filled: function( a ) {
+			var val = $( a ).val();
+			return val !== null && !!$.trim( "" + val );
+		},
+
+		// http://jqueryvalidation.org/unchecked-selector/
+		unchecked: function( a ) {
+			return !$( a ).prop( "checked" );
+		}
+	} );
+
+	// Constructor for validator
+	$.validator = function( options, form ) {
+		this.settings = $.extend( true, {}, $.validator.defaults, options );
+		this.currentForm = form;
+		this.init();
+	};
+
+	// http://jqueryvalidation.org/jQuery.validator.format/
+	$.validator.format = function( source, params ) {
+		if ( arguments.length === 1 ) {
+			return function() {
+				var args = $.makeArray( arguments );
+				args.unshift( source );
+				return $.validator.format.apply( this, args );
+			};
+		}
+		if ( params === undefined ) {
+			return source;
+		}
+		if ( arguments.length > 2 && params.constructor !== Array  ) {
+			params = $.makeArray( arguments ).slice( 1 );
+		}
+		if ( params.constructor !== Array ) {
+			params = [ params ];
+		}
+		$.each( params, function( i, n ) {
+			source = source.replace( new RegExp( "\\{" + i + "\\}", "g" ), function() {
+				return n;
+			} );
+		} );
+		return source;
+	};
+
+	$.extend( $.validator, {
+
+		defaults: {
+			messages: {},
+			groups: {},
+			rules: {},
+			errorClass: "error",
+			pendingClass: "pending",
+			validClass: "valid",
+			errorElement: "label",
+			focusCleanup: false,
+			focusInvalid: true,
+			errorContainer: $( [] ),
+			errorLabelContainer: $( [] ),
+			onsubmit: true,
+			ignore: ":hidden",
+			ignoreTitle: false,
+			onfocusin: function( element ) {
+				this.lastActive = element;
+
+				// Hide error label and remove error class on focus if enabled
+				if ( this.settings.focusCleanup ) {
+					if ( this.settings.unhighlight ) {
+						this.settings.unhighlight.call( this, element, this.settings.errorClass, this.settings.validClass );
+					}
+					this.hideThese( this.errorsFor( element ) );
+				}
+			},
+			onfocusout: function( element ) {
+				if ( !this.checkable( element ) && ( element.name in this.submitted || !this.optional( element ) ) ) {
+					this.element( element );
+				}
+			},
+			onkeyup: function( element, event ) {
+
+				// Avoid revalidate the field when pressing one of the following keys
+				// Shift       => 16
+				// Ctrl        => 17
+				// Alt         => 18
+				// Caps lock   => 20
+				// End         => 35
+				// Home        => 36
+				// Left arrow  => 37
+				// Up arrow    => 38
+				// Right arrow => 39
+				// Down arrow  => 40
+				// Insert      => 45
+				// Num lock    => 144
+				// AltGr key   => 225
+				var excludedKeys = [
+					16, 17, 18, 20, 35, 36, 37,
+					38, 39, 40, 45, 144, 225
+				];
+
+				if ( event.which === 9 && this.elementValue( element ) === "" || $.inArray( event.keyCode, excludedKeys ) !== -1 ) {
+					return;
+				} else if ( element.name in this.submitted || element.name in this.invalid ) {
+					this.element( element );
+				}
+			},
+			onclick: function( element ) {
+
+				// Click on selects, radiobuttons and checkboxes
+				if ( element.name in this.submitted ) {
+					this.element( element );
+
+				// Or option elements, check parent select in that case
+				} else if ( element.parentNode.name in this.submitted ) {
+					this.element( element.parentNode );
+				}
+			},
+			highlight: function( element, errorClass, validClass ) {
+				if ( element.type === "radio" ) {
+					this.findByName( element.name ).addClass( errorClass ).removeClass( validClass );
+				} else {
+					$( element ).addClass( errorClass ).removeClass( validClass );
+				}
+			},
+			unhighlight: function( element, errorClass, validClass ) {
+				if ( element.type === "radio" ) {
+					this.findByName( element.name ).removeClass( errorClass ).addClass( validClass );
+				} else {
+					$( element ).removeClass( errorClass ).addClass( validClass );
+				}
+			}
+		},
+
+		// http://jqueryvalidation.org/jQuery.validator.setDefaults/
+		setDefaults: function( settings ) {
+			$.extend( $.validator.defaults, settings );
+		},
+
+		messages: {
+			required: "This field is required.",
+			remote: "Please fix this field.",
+			email: "Please enter a valid email address.",
+			url: "Please enter a valid URL.",
+			date: "Please enter a valid date.",
+			dateISO: "Please enter a valid date ( ISO ).",
+			number: "Please enter a valid number.",
+			digits: "Please enter only digits.",
+			equalTo: "Please enter the same value again.",
+			maxlength: $.validator.format( "Please enter no more than {0} characters." ),
+			minlength: $.validator.format( "Please enter at least {0} characters." ),
+			rangelength: $.validator.format( "Please enter a value between {0} and {1} characters long." ),
+			range: $.validator.format( "Please enter a value between {0} and {1}." ),
+			max: $.validator.format( "Please enter a value less than or equal to {0}." ),
+			min: $.validator.format( "Please enter a value greater than or equal to {0}." ),
+			step: $.validator.format( "Please enter a multiple of {0}." )
+		},
+
+		autoCreateRanges: false,
+
+		prototype: {
+
+			init: function() {
+				this.labelContainer = $( this.settings.errorLabelContainer );
+				this.errorContext = this.labelContainer.length && this.labelContainer || $( this.currentForm );
+				this.containers = $( this.settings.errorContainer ).add( this.settings.errorLabelContainer );
+				this.submitted = {};
+				this.valueCache = {};
+				this.pendingRequest = 0;
+				this.pending = {};
+				this.invalid = {};
+				this.reset();
+
+				var groups = ( this.groups = {} ),
+					rules;
+				$.each( this.settings.groups, function( key, value ) {
+					if ( typeof value === "string" ) {
+						value = value.split( /\s/ );
+					}
+					$.each( value, function( index, name ) {
+						groups[ name ] = key;
+					} );
+				} );
+				rules = this.settings.rules;
+				$.each( rules, function( key, value ) {
+					rules[ key ] = $.validator.normalizeRule( value );
+				} );
+
+				function delegate( event ) {
+					var validator = $.data( this.form, "validator" ),
+						eventType = "on" + event.type.replace( /^validate/, "" ),
+						settings = validator.settings;
+					if ( settings[ eventType ] && !$( this ).is( settings.ignore ) ) {
+						settings[ eventType ].call( validator, this, event );
+					}
+				}
+
+				$( this.currentForm )
+					.on( "focusin.validate focusout.validate keyup.validate",
+						":text, [type='password'], [type='file'], select, textarea, [type='number'], [type='search'], " +
+						"[type='tel'], [type='url'], [type='email'], [type='datetime'], [type='date'], [type='month'], " +
+						"[type='week'], [type='time'], [type='datetime-local'], [type='range'], [type='color'], " +
+						"[type='radio'], [type='checkbox'], [contenteditable]", delegate )
+
+					// Support: Chrome, oldIE
+					// "select" is provided as event.target when clicking a option
+					.on( "click.validate", "select, option, [type='radio'], [type='checkbox']", delegate );
+
+				if ( this.settings.invalidHandler ) {
+					$( this.currentForm ).on( "invalid-form.validate", this.settings.invalidHandler );
+				}
+
+				// Add aria-required to any Static/Data/Class required fields before first validation
+				// Screen readers require this attribute to be present before the initial submission http://www.w3.org/TR/WCAG-TECHS/ARIA2.html
+				$( this.currentForm ).find( "[required], [data-rule-required], .required" ).attr( "aria-required", "true" );
+			},
+
+			// http://jqueryvalidation.org/Validator.form/
+			form: function() {
+				this.checkForm();
+				$.extend( this.submitted, this.errorMap );
+				this.invalid = $.extend( {}, this.errorMap );
+				if ( !this.valid() ) {
+					$( this.currentForm ).triggerHandler( "invalid-form", [ this ] );
+				}
+				this.showErrors();
+				return this.valid();
+			},
+
+			checkForm: function() {
+				this.prepareForm();
+				for ( var i = 0, elements = ( this.currentElements = this.elements() ); elements[ i ]; i++ ) {
+					this.check( elements[ i ] );
+				}
+				return this.valid();
+			},
+
+			// http://jqueryvalidation.org/Validator.element/
+			element: function( element ) {
+				var cleanElement = this.clean( element ),
+					checkElement = this.validationTargetFor( cleanElement ),
+					v = this,
+					result = true,
+					rs, group;
+
+				if ( checkElement === undefined ) {
+					delete this.invalid[ cleanElement.name ];
+				} else {
+					this.prepareElement( checkElement );
+					this.currentElements = $( checkElement );
+
+					// If this element is grouped, then validate all group elements already
+					// containing a value
+					group = this.groups[ checkElement.name ];
+					if ( group ) {
+						$.each( this.groups, function( name, testgroup ) {
+							if ( testgroup === group && name !== checkElement.name ) {
+								cleanElement = v.validationTargetFor( v.clean( v.findByName( name ) ) );
+								if ( cleanElement && cleanElement.name in v.invalid ) {
+									v.currentElements.push( cleanElement );
+									result = result && v.check( cleanElement );
+								}
+							}
+						} );
+					}
+
+					rs = this.check( checkElement ) !== false;
+					result = result && rs;
+					if ( rs ) {
+						this.invalid[ checkElement.name ] = false;
+					} else {
+						this.invalid[ checkElement.name ] = true;
+					}
+
+					if ( !this.numberOfInvalids() ) {
+
+						// Hide error containers on last error
+						this.toHide = this.toHide.add( this.containers );
+					}
+					this.showErrors();
+
+					// Add aria-invalid status for screen readers
+					$( element ).attr( "aria-invalid", !rs );
+				}
+
+				return result;
+			},
+
+			// http://jqueryvalidation.org/Validator.showErrors/
+			showErrors: function( errors ) {
+				if ( errors ) {
+					var validator = this;
+
+					// Add items to error list and map
+					$.extend( this.errorMap, errors );
+					this.errorList = $.map( this.errorMap, function( message, name ) {
+						return {
+							message: message,
+							element: validator.findByName( name )[ 0 ]
+						};
+					} );
+
+					// Remove items from success list
+					this.successList = $.grep( this.successList, function( element ) {
+						return !( element.name in errors );
+					} );
+				}
+				if ( this.settings.showErrors ) {
+					this.settings.showErrors.call( this, this.errorMap, this.errorList );
+				} else {
+					this.defaultShowErrors();
+				}
+			},
+
+			// http://jqueryvalidation.org/Validator.resetForm/
+			resetForm: function() {
+				if ( $.fn.resetForm ) {
+					$( this.currentForm ).resetForm();
+				}
+				this.invalid = {};
+				this.submitted = {};
+				this.prepareForm();
+				this.hideErrors();
+				var elements = this.elements()
+					.removeData( "previousValue" )
+					.removeAttr( "aria-invalid" );
+
+				this.resetElements( elements );
+			},
+
+			resetElements: function( elements ) {
+				var i;
+
+				if ( this.settings.unhighlight ) {
+					for ( i = 0; elements[ i ]; i++ ) {
+						this.settings.unhighlight.call( this, elements[ i ],
+							this.settings.errorClass, "" );
+						this.findByName( elements[ i ].name ).removeClass( this.settings.validClass );
+					}
+				} else {
+					elements
+						.removeClass( this.settings.errorClass )
+						.removeClass( this.settings.validClass );
+				}
+			},
+
+			numberOfInvalids: function() {
+				return this.objectLength( this.invalid );
+			},
+
+			objectLength: function( obj ) {
+				/* jshint unused: false */
+				var count = 0,
+					i;
+				for ( i in obj ) {
+					if ( obj[ i ] ) {
+						count++;
+					}
+				}
+				return count;
+			},
+
+			hideErrors: function() {
+				this.hideThese( this.toHide );
+			},
+
+			hideThese: function( errors ) {
+				errors.not( this.containers ).text( "" );
+				this.addWrapper( errors ).hide();
+			},
+
+			valid: function() {
+				return this.size() === 0;
+			},
+
+			size: function() {
+				return this.errorList.length;
+			},
+
+			focusInvalid: function() {
+				if ( this.settings.focusInvalid ) {
+					try {
+						$( this.findLastActive() || this.errorList.length && this.errorList[ 0 ].element || [] )
+						.filter( ":visible" )
+						.focus()
+
+						// Manually trigger focusin event; without it, focusin handler isn't called, findLastActive won't have anything to find
+						.trigger( "focusin" );
+					} catch ( e ) {
+
+						// Ignore IE throwing errors when focusing hidden elements
+					}
+				}
+			},
+
+			findLastActive: function() {
+				var lastActive = this.lastActive;
+				return lastActive && $.grep( this.errorList, function( n ) {
+					return n.element.name === lastActive.name;
+				} ).length === 1 && lastActive;
+			},
+
+			elements: function() {
+				var validator = this,
+					rulesCache = {};
+
+				// Select all valid inputs inside the form (no submit or reset buttons)
+				return $( this.currentForm )
+				.find( "input, select, textarea, [contenteditable]" )
+				.not( ":submit, :reset, :image, :disabled" )
+				.not( this.settings.ignore )
+				.filter( function() {
+					var name = this.name || $( this ).attr( "name" ); // For contenteditable
+					if ( !name && validator.settings.debug && window.console ) {
+						console.error( "%o has no name assigned", this );
+					}
+
+					// Set form expando on contenteditable
+					if ( this.hasAttribute( "contenteditable" ) ) {
+						this.form = $( this ).closest( "form" )[ 0 ];
+					}
+
+					// Select only the first element for each name, and only those with rules specified
+					if ( name in rulesCache || !validator.objectLength( $( this ).rules() ) ) {
+						return false;
+					}
+
+					rulesCache[ name ] = true;
+					return true;
+				} );
+			},
+
+			clean: function( selector ) {
+				return $( selector )[ 0 ];
+			},
+
+			errors: function() {
+				var errorClass = this.settings.errorClass.split( " " ).join( "." );
+				return $( this.settings.errorElement + "." + errorClass, this.errorContext );
+			},
+
+			resetInternals: function() {
+				this.successList = [];
+				this.errorList = [];
+				this.errorMap = {};
+				this.toShow = $( [] );
+				this.toHide = $( [] );
+			},
+
+			reset: function() {
+				this.resetInternals();
+				this.currentElements = $( [] );
+			},
+
+			prepareForm: function() {
+				this.reset();
+				this.toHide = this.errors().add( this.containers );
+			},
+
+			prepareElement: function( element ) {
+				this.reset();
+				this.toHide = this.errorsFor( element );
+			},
+
+			elementValue: function( element ) {
+				var $element = $( element ),
+					type = element.type,
+					val, idx;
+
+				if ( type === "radio" || type === "checkbox" ) {
+					return this.findByName( element.name ).filter( ":checked" ).val();
+				} else if ( type === "number" && typeof element.validity !== "undefined" ) {
+					return element.validity.badInput ? "NaN" : $element.val();
+				}
+
+				if ( element.hasAttribute( "contenteditable" ) ) {
+					val = $element.text();
+				} else {
+					val = $element.val();
+				}
+
+				if ( type === "file" ) {
+
+					// Modern browser (chrome & safari)
+					if ( val.substr( 0, 12 ) === "C:\\fakepath\\" ) {
+						return val.substr( 12 );
+					}
+
+					// Legacy browsers
+					// Unix-based path
+					idx = val.lastIndexOf( "/" );
+					if ( idx >= 0 ) {
+						return val.substr( idx + 1 );
+					}
+
+					// Windows-based path
+					idx = val.lastIndexOf( "\\" );
+					if ( idx >= 0 ) {
+						return val.substr( idx + 1 );
+					}
+
+					// Just the file name
+					return val;
+				}
+
+				if ( typeof val === "string" ) {
+					return val.replace( /\r/g, "" );
+				}
+				return val;
+			},
+
+			check: function( element ) {
+				element = this.validationTargetFor( this.clean( element ) );
+
+				var rules = $( element ).rules(),
+					rulesCount = $.map( rules, function( n, i ) {
+						return i;
+					} ).length,
+					dependencyMismatch = false,
+					val = this.elementValue( element ),
+					result, method, rule;
+
+				// If a normalizer is defined for this element, then
+				// call it to retreive the changed value instead
+				// of using the real one.
+				// Note that `this` in the normalizer is `element`.
+				if ( typeof rules.normalizer === "function" ) {
+					val = rules.normalizer.call( element, val );
+
+					if ( typeof val !== "string" ) {
+						throw new TypeError( "The normalizer should return a string value." );
+					}
+
+					// Delete the normalizer from rules to avoid treating
+					// it as a pre-defined method.
+					delete rules.normalizer;
+				}
+
+				for ( method in rules ) {
+					rule = { method: method, parameters: rules[ method ] };
+					try {
+						result = $.validator.methods[ method ].call( this, val, element, rule.parameters );
+
+						// If a method indicates that the field is optional and therefore valid,
+						// don't mark it as valid when there are no other rules
+						if ( result === "dependency-mismatch" && rulesCount === 1 ) {
+							dependencyMismatch = true;
+							continue;
+						}
+						dependencyMismatch = false;
+
+						if ( result === "pending" ) {
+							this.toHide = this.toHide.not( this.errorsFor( element ) );
+							return;
+						}
+
+						if ( !result ) {
+							this.formatAndAdd( element, rule );
+							return false;
+						}
+					} catch ( e ) {
+						if ( this.settings.debug && window.console ) {
+							console.log( "Exception occurred when checking element " + element.id + ", check the '" + rule.method + "' method.", e );
+						}
+						if ( e instanceof TypeError ) {
+							e.message += ".  Exception occurred when checking element " + element.id + ", check the '" + rule.method + "' method.";
+						}
+
+						throw e;
+					}
+				}
+				if ( dependencyMismatch ) {
+					return;
+				}
+				if ( this.objectLength( rules ) ) {
+					this.successList.push( element );
+				}
+				return true;
+			},
+
+			// Return the custom message for the given element and validation method
+			// specified in the element's HTML5 data attribute
+			// return the generic message if present and no method specific message is present
+			customDataMessage: function( element, method ) {
+				return $( element ).data( "msg" + method.charAt( 0 ).toUpperCase() +
+					method.substring( 1 ).toLowerCase() ) || $( element ).data( "msg" );
+			},
+
+			// Return the custom message for the given element name and validation method
+			customMessage: function( name, method ) {
+				var m = this.settings.messages[ name ];
+				return m && ( m.constructor === String ? m : m[ method ] );
+			},
+
+			// Return the first defined argument, allowing empty strings
+			findDefined: function() {
+				for ( var i = 0; i < arguments.length; i++ ) {
+					if ( arguments[ i ] !== undefined ) {
+						return arguments[ i ];
+					}
+				}
+				return undefined;
+			},
+
+			defaultMessage: function( element, rule ) {
+				var message = this.findDefined(
+						this.customMessage( element.name, rule.method ),
+						this.customDataMessage( element, rule.method ),
+
+						// 'title' is never undefined, so handle empty string as undefined
+						!this.settings.ignoreTitle && element.title || undefined,
+						$.validator.messages[ rule.method ],
+						"<strong>Warning: No message defined for " + element.name + "</strong>"
+					),
+					theregex = /\$?\{(\d+)\}/g;
+				if ( typeof message === "function" ) {
+					message = message.call( this, rule.parameters, element );
+				} else if ( theregex.test( message ) ) {
+					message = $.validator.format( message.replace( theregex, "{$1}" ), rule.parameters );
+				}
+
+				return message;
+			},
+
+			formatAndAdd: function( element, rule ) {
+				var message = this.defaultMessage( element, rule );
+
+				this.errorList.push( {
+					message: message,
+					element: element,
+					method: rule.method
+				} );
+
+				this.errorMap[ element.name ] = message;
+				this.submitted[ element.name ] = message;
+			},
+
+			addWrapper: function( toToggle ) {
+				if ( this.settings.wrapper ) {
+					toToggle = toToggle.add( toToggle.parent( this.settings.wrapper ) );
+				}
+				return toToggle;
+			},
+
+			defaultShowErrors: function() {
+				var i, elements, error;
+				for ( i = 0; this.errorList[ i ]; i++ ) {
+					error = this.errorList[ i ];
+					if ( this.settings.highlight ) {
+						this.settings.highlight.call( this, error.element, this.settings.errorClass, this.settings.validClass );
+					}
+					this.showLabel( error.element, error.message );
+				}
+				if ( this.errorList.length ) {
+					this.toShow = this.toShow.add( this.containers );
+				}
+				if ( this.settings.success ) {
+					for ( i = 0; this.successList[ i ]; i++ ) {
+						this.showLabel( this.successList[ i ] );
+					}
+				}
+				if ( this.settings.unhighlight ) {
+					for ( i = 0, elements = this.validElements(); elements[ i ]; i++ ) {
+						this.settings.unhighlight.call( this, elements[ i ], this.settings.errorClass, this.settings.validClass );
+					}
+				}
+				this.toHide = this.toHide.not( this.toShow );
+				this.hideErrors();
+				this.addWrapper( this.toShow ).show();
+			},
+
+			validElements: function() {
+				return this.currentElements.not( this.invalidElements() );
+			},
+
+			invalidElements: function() {
+				return $( this.errorList ).map( function() {
+					return this.element;
+				} );
+			},
+
+			showLabel: function( element, message ) {
+				var place, group, errorID, v,
+					error = this.errorsFor( element ),
+					elementID = this.idOrName( element ),
+					describedBy = $( element ).attr( "aria-describedby" );
+
+				if ( error.length ) {
+
+					// Refresh error/success class
+					error.removeClass( this.settings.validClass ).addClass( this.settings.errorClass );
+
+					// Replace message on existing label
+					error.html( message );
+				} else {
+
+					// Create error element
+					error = $( "<" + this.settings.errorElement + ">" )
+						.attr( "id", elementID + "-error" )
+						.addClass( this.settings.errorClass )
+						.html( message || "" );
+
+					// Maintain reference to the element to be placed into the DOM
+					place = error;
+					if ( this.settings.wrapper ) {
+
+						// Make sure the element is visible, even in IE
+						// actually showing the wrapped element is handled elsewhere
+						place = error.hide().show().wrap( "<" + this.settings.wrapper + "/>" ).parent();
+					}
+					if ( this.labelContainer.length ) {
+						this.labelContainer.append( place );
+					} else if ( this.settings.errorPlacement ) {
+						this.settings.errorPlacement( place, $( element ) );
+					} else {
+						place.insertAfter( element );
+					}
+
+					// Link error back to the element
+					if ( error.is( "label" ) ) {
+
+						// If the error is a label, then associate using 'for'
+						error.attr( "for", elementID );
+
+						// If the element is not a child of an associated label, then it's necessary
+						// to explicitly apply aria-describedby
+					} else if ( error.parents( "label[for='" + this.escapeCssMeta( elementID ) + "']" ).length === 0 ) {
+						errorID = error.attr( "id" );
+
+						// Respect existing non-error aria-describedby
+						if ( !describedBy ) {
+							describedBy = errorID;
+						} else if ( !describedBy.match( new RegExp( "\\b" + this.escapeCssMeta( errorID ) + "\\b" ) ) ) {
+
+							// Add to end of list if not already present
+							describedBy += " " + errorID;
+						}
+						$( element ).attr( "aria-describedby", describedBy );
+
+						// If this element is grouped, then assign to all elements in the same group
+						group = this.groups[ element.name ];
+						if ( group ) {
+							v = this;
+							$.each( v.groups, function( name, testgroup ) {
+								if ( testgroup === group ) {
+									$( "[name='" + v.escapeCssMeta( name ) + "']", v.currentForm )
+										.attr( "aria-describedby", error.attr( "id" ) );
+								}
+							} );
+						}
+					}
+				}
+				if ( !message && this.settings.success ) {
+					error.text( "" );
+					if ( typeof this.settings.success === "string" ) {
+						error.addClass( this.settings.success );
+					} else {
+						this.settings.success( error, element );
+					}
+				}
+				this.toShow = this.toShow.add( error );
+			},
+
+			errorsFor: function( element ) {
+				var name = this.escapeCssMeta( this.idOrName( element ) ),
+					describer = $( element ).attr( "aria-describedby" ),
+					selector = "label[for='" + name + "'], label[for='" + name + "'] *";
+
+				// 'aria-describedby' should directly reference the error element
+				if ( describer ) {
+					selector = selector + ", #" + this.escapeCssMeta( describer )
+						.replace( /\s+/g, ", #" );
+				}
+
+				return this
+					.errors()
+					.filter( selector );
+			},
+
+			// See https://api.jquery.com/category/selectors/, for CSS
+			// meta-characters that should be escaped in order to be used with JQuery
+			// as a literal part of a name/id or any selector.
+			escapeCssMeta: function( string ) {
+				return string.replace( /([\\!"#$%&'()*+,./:;<=>?@\[\]^`{|}~])/g, "\\$1" );
+			},
+
+			idOrName: function( element ) {
+				return this.groups[ element.name ] || ( this.checkable( element ) ? element.name : element.id || element.name );
+			},
+
+			validationTargetFor: function( element ) {
+
+				// If radio/checkbox, validate first element in group instead
+				if ( this.checkable( element ) ) {
+					element = this.findByName( element.name );
+				}
+
+				// Always apply ignore filter
+				return $( element ).not( this.settings.ignore )[ 0 ];
+			},
+
+			checkable: function( element ) {
+				return ( /radio|checkbox/i ).test( element.type );
+			},
+
+			findByName: function( name ) {
+				return $( this.currentForm ).find( "[name='" + this.escapeCssMeta( name ) + "']" );
+			},
+
+			getLength: function( value, element ) {
+				switch ( element.nodeName.toLowerCase() ) {
+				case "select":
+					return $( "option:selected", element ).length;
+				case "input":
+					if ( this.checkable( element ) ) {
+						return this.findByName( element.name ).filter( ":checked" ).length;
+					}
+				}
+				return value.length;
+			},
+
+			depend: function( param, element ) {
+				return this.dependTypes[ typeof param ] ? this.dependTypes[ typeof param ]( param, element ) : true;
+			},
+
+			dependTypes: {
+				"boolean": function( param ) {
+					return param;
+				},
+				"string": function( param, element ) {
+					return !!$( param, element.form ).length;
+				},
+				"function": function( param, element ) {
+					return param( element );
+				}
+			},
+
+			optional: function( element ) {
+				var val = this.elementValue( element );
+				return !$.validator.methods.required.call( this, val, element ) && "dependency-mismatch";
+			},
+
+			startRequest: function( element ) {
+				if ( !this.pending[ element.name ] ) {
+					this.pendingRequest++;
+					$( element ).addClass( this.settings.pendingClass );
+					this.pending[ element.name ] = true;
+				}
+			},
+
+			stopRequest: function( element, valid ) {
+				this.pendingRequest--;
+
+				// Sometimes synchronization fails, make sure pendingRequest is never < 0
+				if ( this.pendingRequest < 0 ) {
+					this.pendingRequest = 0;
+				}
+				delete this.pending[ element.name ];
+				$( element ).removeClass( this.settings.pendingClass );
+				if ( valid && this.pendingRequest === 0 && this.formSubmitted && this.form() ) {
+					$( this.currentForm ).submit();
+					this.formSubmitted = false;
+				} else if ( !valid && this.pendingRequest === 0 && this.formSubmitted ) {
+					$( this.currentForm ).triggerHandler( "invalid-form", [ this ] );
+					this.formSubmitted = false;
+				}
+			},
+
+			previousValue: function( element, method ) {
+				return $.data( element, "previousValue" ) || $.data( element, "previousValue", {
+					old: null,
+					valid: true,
+					message: this.defaultMessage( element, { method: method } )
+				} );
+			},
+
+			// Cleans up all forms and elements, removes validator-specific events
+			destroy: function() {
+				this.resetForm();
+
+				$( this.currentForm )
+					.off( ".validate" )
+					.removeData( "validator" )
+					.find( ".validate-equalTo-blur" )
+						.off( ".validate-equalTo" )
+						.removeClass( "validate-equalTo-blur" );
+			}
+
+		},
+
+		classRuleSettings: {
+			required: { required: true },
+			email: { email: true },
+			url: { url: true },
+			date: { date: true },
+			dateISO: { dateISO: true },
+			number: { number: true },
+			digits: { digits: true },
+			creditcard: { creditcard: true }
+		},
+
+		addClassRules: function( className, rules ) {
+			if ( className.constructor === String ) {
+				this.classRuleSettings[ className ] = rules;
+			} else {
+				$.extend( this.classRuleSettings, className );
+			}
+		},
+
+		classRules: function( element ) {
+			var rules = {},
+				classes = $( element ).attr( "class" );
+
+			if ( classes ) {
+				$.each( classes.split( " " ), function() {
+					if ( this in $.validator.classRuleSettings ) {
+						$.extend( rules, $.validator.classRuleSettings[ this ] );
+					}
+				} );
+			}
+			return rules;
+		},
+
+		normalizeAttributeRule: function( rules, type, method, value ) {
+
+			// Convert the value to a number for number inputs, and for text for backwards compability
+			// allows type="date" and others to be compared as strings
+			if ( /min|max|step/.test( method ) && ( type === null || /number|range|text/.test( type ) ) ) {
+				value = Number( value );
+
+				// Support Opera Mini, which returns NaN for undefined minlength
+				if ( isNaN( value ) ) {
+					value = undefined;
+				}
+			}
+
+			if ( value || value === 0 ) {
+				rules[ method ] = value;
+			} else if ( type === method && type !== "range" ) {
+
+				// Exception: the jquery validate 'range' method
+				// does not test for the html5 'range' type
+				rules[ method ] = true;
+			}
+		},
+
+		attributeRules: function( element ) {
+			var rules = {},
+				$element = $( element ),
+				type = element.getAttribute( "type" ),
+				method, value;
+
+			for ( method in $.validator.methods ) {
+
+				// Support for <input required> in both html5 and older browsers
+				if ( method === "required" ) {
+					value = element.getAttribute( method );
+
+					// Some browsers return an empty string for the required attribute
+					// and non-HTML5 browsers might have required="" markup
+					if ( value === "" ) {
+						value = true;
+					}
+
+					// Force non-HTML5 browsers to return bool
+					value = !!value;
+				} else {
+					value = $element.attr( method );
+				}
+
+				this.normalizeAttributeRule( rules, type, method, value );
+			}
+
+			// 'maxlength' may be returned as -1, 2147483647 ( IE ) and 524288 ( safari ) for text inputs
+			if ( rules.maxlength && /-1|2147483647|524288/.test( rules.maxlength ) ) {
+				delete rules.maxlength;
+			}
+
+			return rules;
+		},
+
+		dataRules: function( element ) {
+			var rules = {},
+				$element = $( element ),
+				type = element.getAttribute( "type" ),
+				method, value;
+
+			for ( method in $.validator.methods ) {
+				value = $element.data( "rule" + method.charAt( 0 ).toUpperCase() + method.substring( 1 ).toLowerCase() );
+				this.normalizeAttributeRule( rules, type, method, value );
+			}
+			return rules;
+		},
+
+		staticRules: function( element ) {
+			var rules = {},
+				validator = $.data( element.form, "validator" );
+
+			if ( validator.settings.rules ) {
+				rules = $.validator.normalizeRule( validator.settings.rules[ element.name ] ) || {};
+			}
+			return rules;
+		},
+
+		normalizeRules: function( rules, element ) {
+
+			// Handle dependency check
+			$.each( rules, function( prop, val ) {
+
+				// Ignore rule when param is explicitly false, eg. required:false
+				if ( val === false ) {
+					delete rules[ prop ];
+					return;
+				}
+				if ( val.param || val.depends ) {
+					var keepRule = true;
+					switch ( typeof val.depends ) {
+					case "string":
+						keepRule = !!$( val.depends, element.form ).length;
+						break;
+					case "function":
+						keepRule = val.depends.call( element, element );
+						break;
+					}
+					if ( keepRule ) {
+						rules[ prop ] = val.param !== undefined ? val.param : true;
+					} else {
+						$.data( element.form, "validator" ).resetElements( $( element ) );
+						delete rules[ prop ];
+					}
+				}
+			} );
+
+			// Evaluate parameters
+			$.each( rules, function( rule, parameter ) {
+				rules[ rule ] = $.isFunction( parameter ) && rule !== "normalizer" ? parameter( element ) : parameter;
+			} );
+
+			// Clean number parameters
+			$.each( [ "minlength", "maxlength" ], function() {
+				if ( rules[ this ] ) {
+					rules[ this ] = Number( rules[ this ] );
+				}
+			} );
+			$.each( [ "rangelength", "range" ], function() {
+				var parts;
+				if ( rules[ this ] ) {
+					if ( $.isArray( rules[ this ] ) ) {
+						rules[ this ] = [ Number( rules[ this ][ 0 ] ), Number( rules[ this ][ 1 ] ) ];
+					} else if ( typeof rules[ this ] === "string" ) {
+						parts = rules[ this ].replace( /[\[\]]/g, "" ).split( /[\s,]+/ );
+						rules[ this ] = [ Number( parts[ 0 ] ), Number( parts[ 1 ] ) ];
+					}
+				}
+			} );
+
+			if ( $.validator.autoCreateRanges ) {
+
+				// Auto-create ranges
+				if ( rules.min != null && rules.max != null ) {
+					rules.range = [ rules.min, rules.max ];
+					delete rules.min;
+					delete rules.max;
+				}
+				if ( rules.minlength != null && rules.maxlength != null ) {
+					rules.rangelength = [ rules.minlength, rules.maxlength ];
+					delete rules.minlength;
+					delete rules.maxlength;
+				}
+			}
+
+			return rules;
+		},
+
+		// Converts a simple string to a {string: true} rule, e.g., "required" to {required:true}
+		normalizeRule: function( data ) {
+			if ( typeof data === "string" ) {
+				var transformed = {};
+				$.each( data.split( /\s/ ), function() {
+					transformed[ this ] = true;
+				} );
+				data = transformed;
+			}
+			return data;
+		},
+
+		// http://jqueryvalidation.org/jQuery.validator.addMethod/
+		addMethod: function( name, method, message ) {
+			$.validator.methods[ name ] = method;
+			$.validator.messages[ name ] = message !== undefined ? message : $.validator.messages[ name ];
+			if ( method.length < 3 ) {
+				$.validator.addClassRules( name, $.validator.normalizeRule( name ) );
+			}
+		},
+
+		// http://jqueryvalidation.org/jQuery.validator.methods/
+		methods: {
+
+			// http://jqueryvalidation.org/required-method/
+			required: function( value, element, param ) {
+
+				// Check if dependency is met
+				if ( !this.depend( param, element ) ) {
+					return "dependency-mismatch";
+				}
+				if ( element.nodeName.toLowerCase() === "select" ) {
+
+					// Could be an array for select-multiple or a string, both are fine this way
+					var val = $( element ).val();
+					return val && val.length > 0;
+				}
+				if ( this.checkable( element ) ) {
+					return this.getLength( value, element ) > 0;
+				}
+				return value.length > 0;
+			},
+
+			// http://jqueryvalidation.org/email-method/
+			email: function( value, element ) {
+
+				// From https://html.spec.whatwg.org/multipage/forms.html#valid-e-mail-address
+				// Retrieved 2014-01-14
+				// If you have a problem with this implementation, report a bug against the above spec
+				// Or use custom methods to implement your own email validation
+				return this.optional( element ) || /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test( value );
+			},
+
+			// http://jqueryvalidation.org/url-method/
+			url: function( value, element ) {
+
+				// Copyright (c) 2010-2013 Diego Perini, MIT licensed
+				// https://gist.github.com/dperini/729294
+				// see also https://mathiasbynens.be/demo/url-regex
+				// modified to allow protocol-relative URLs
+				return this.optional( element ) || /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})).?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test( value );
+			},
+
+			// http://jqueryvalidation.org/date-method/
+			date: function( value, element ) {
+				return this.optional( element ) || !/Invalid|NaN/.test( new Date( value ).toString() );
+			},
+
+			// http://jqueryvalidation.org/dateISO-method/
+			dateISO: function( value, element ) {
+				return this.optional( element ) || /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])$/.test( value );
+			},
+
+			// http://jqueryvalidation.org/number-method/
+			number: function( value, element ) {
+				return this.optional( element ) || /^(?:-?\d+|-?\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/.test( value );
+			},
+
+			// http://jqueryvalidation.org/digits-method/
+			digits: function( value, element ) {
+				return this.optional( element ) || /^\d+$/.test( value );
+			},
+
+			// http://jqueryvalidation.org/minlength-method/
+			minlength: function( value, element, param ) {
+				var length = $.isArray( value ) ? value.length : this.getLength( value, element );
+				return this.optional( element ) || length >= param;
+			},
+
+			// http://jqueryvalidation.org/maxlength-method/
+			maxlength: function( value, element, param ) {
+				var length = $.isArray( value ) ? value.length : this.getLength( value, element );
+				return this.optional( element ) || length <= param;
+			},
+
+			// http://jqueryvalidation.org/rangelength-method/
+			rangelength: function( value, element, param ) {
+				var length = $.isArray( value ) ? value.length : this.getLength( value, element );
+				return this.optional( element ) || ( length >= param[ 0 ] && length <= param[ 1 ] );
+			},
+
+			// http://jqueryvalidation.org/min-method/
+			min: function( value, element, param ) {
+				return this.optional( element ) || value >= param;
+			},
+
+			// http://jqueryvalidation.org/max-method/
+			max: function( value, element, param ) {
+				return this.optional( element ) || value <= param;
+			},
+
+			// http://jqueryvalidation.org/range-method/
+			range: function( value, element, param ) {
+				return this.optional( element ) || ( value >= param[ 0 ] && value <= param[ 1 ] );
+			},
+
+			// http://jqueryvalidation.org/step-method/
+			step: function( value, element, param ) {
+				var type = $( element ).attr( "type" ),
+					errorMessage = "Step attribute on input type " + type + " is not supported.",
+					supportedTypes = [ "text", "number", "range" ],
+					re = new RegExp( "\\b" + type + "\\b" ),
+					notSupported = type && !re.test( supportedTypes.join() );
+
+				// Works only for text, number and range input types
+				// TODO find a way to support input types date, datetime, datetime-local, month, time and week
+				if ( notSupported ) {
+					throw new Error( errorMessage );
+				}
+				return this.optional( element ) || ( value % param === 0 );
+			},
+
+			// http://jqueryvalidation.org/equalTo-method/
+			equalTo: function( value, element, param ) {
+
+				// Bind to the blur event of the target in order to revalidate whenever the target field is updated
+				var target = $( param );
+				if ( this.settings.onfocusout && target.not( ".validate-equalTo-blur" ).length ) {
+					target.addClass( "validate-equalTo-blur" ).on( "blur.validate-equalTo", function() {
+						$( element ).valid();
+					} );
+				}
+				return value === target.val();
+			},
+
+			// http://jqueryvalidation.org/remote-method/
+			remote: function( value, element, param, method ) {
+				if ( this.optional( element ) ) {
+					return "dependency-mismatch";
+				}
+
+				method = typeof method === "string" && method || "remote";
+
+				var previous = this.previousValue( element, method ),
+					validator, data, optionDataString;
+
+				if ( !this.settings.messages[ element.name ] ) {
+					this.settings.messages[ element.name ] = {};
+				}
+				previous.originalMessage = previous.originalMessage || this.settings.messages[ element.name ][ method ];
+				this.settings.messages[ element.name ][ method ] = previous.message;
+
+				param = typeof param === "string" && { url: param } || param;
+				optionDataString = $.param( $.extend( { data: value }, param.data ) );
+				if ( previous.old === optionDataString ) {
+					return previous.valid;
+				}
+
+				previous.old = optionDataString;
+				validator = this;
+				this.startRequest( element );
+				data = {};
+				data[ element.name ] = value;
+				$.ajax( $.extend( true, {
+					mode: "abort",
+					port: "validate" + element.name,
+					dataType: "json",
+					data: data,
+					context: validator.currentForm,
+					success: function( response ) {
+						var valid = response === true || response === "true",
+							errors, message, submitted;
+
+						validator.settings.messages[ element.name ][ method ] = previous.originalMessage;
+						if ( valid ) {
+							submitted = validator.formSubmitted;
+							validator.resetInternals();
+							validator.toHide = validator.errorsFor( element );
+							validator.formSubmitted = submitted;
+							validator.successList.push( element );
+							validator.invalid[ element.name ] = false;
+							validator.showErrors();
+						} else {
+							errors = {};
+							message = response || validator.defaultMessage( element, { method: method, parameters: value } );
+							errors[ element.name ] = previous.message = message;
+							validator.invalid[ element.name ] = true;
+							validator.showErrors( errors );
+						}
+						previous.valid = valid;
+						validator.stopRequest( element, valid );
+					}
+				}, param ) );
+				return "pending";
+			}
+		}
+
+	} );
+
+	// Ajax mode: abort
+	// usage: $.ajax({ mode: "abort"[, port: "uniqueport"]});
+	// if mode:"abort" is used, the previous request on that port (port can be undefined) is aborted via XMLHttpRequest.abort()
+
+	var pendingRequests = {},
+		ajax;
+
+	// Use a prefilter if available (1.5+)
+	if ( $.ajaxPrefilter ) {
+		$.ajaxPrefilter( function( settings, _, xhr ) {
+			var port = settings.port;
+			if ( settings.mode === "abort" ) {
+				if ( pendingRequests[ port ] ) {
+					pendingRequests[ port ].abort();
+				}
+				pendingRequests[ port ] = xhr;
+			}
+		} );
+	} else {
+
+		// Proxy ajax
+		ajax = $.ajax;
+		$.ajax = function( settings ) {
+			var mode = ( "mode" in settings ? settings : $.ajaxSettings ).mode,
+				port = ( "port" in settings ? settings : $.ajaxSettings ).port;
+			if ( mode === "abort" ) {
+				if ( pendingRequests[ port ] ) {
+					pendingRequests[ port ].abort();
+				}
+				pendingRequests[ port ] = ajax.apply( this, arguments );
+				return pendingRequests[ port ];
+			}
+			return ajax.apply( this, arguments );
+		};
+	}
+
+	}));
+	}.call(window));
+
+/***/ }
+
+});

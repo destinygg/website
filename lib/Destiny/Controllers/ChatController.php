@@ -52,17 +52,6 @@ class ChatController {
     public function chatInit() {
         $options = $this->getChatOptionParams ();
         $options['user'] = $this->getChatUser();
-        $options['settings'][] = ['maxlines', 250];
-        return $this->buildChatInitResponse($options);
-    }
-
-    /**
-     * @Route ("/chat/onstream/init")
-     */
-    public function onStreamChatInit() {
-        $options = $this->getChatOptionParams ();
-        $options['user'] = $this->getChatUser();
-        $options['settings'][] = ['maxlines', 150];
         return $this->buildChatInitResponse($options);
     }
 
@@ -72,8 +61,8 @@ class ChatController {
     public function getBacklog(){
         $chatIntegrationService = ChatIntegrationService::instance();
         $backlog = $chatIntegrationService->getChatLog();
-        $response = new Response (Http::STATUS_OK, 'destiny.chat.addBacklog(' . json_encode($backlog) . ')');
-        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT);
+        $response = new Response (Http::STATUS_OK, json_encode($backlog));
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'no-cache, max-age=0, must-revalidate, no-store');
         return $response;
     }

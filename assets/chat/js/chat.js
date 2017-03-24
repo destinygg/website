@@ -33,14 +33,14 @@ const location = window.location;
 class Chat {
 
     constructor(){
+        this.log                = Logger.make(this);
         this.uri                = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
         this.reconnect          = true;
         this.connected          = false;
         this.showstarthint      = true;
-        this.maxlines           = 500;
+        this.maxlines           = 250;
         this.users              = new Map();
         this.unresolved         = [];
-        this.backlog            = [];
         this.backlogLoading     = false;
         this.pmcountnum         = 0;
         this.nickregex          = /^[a-zA-Z0-9_]{3,20}$/;
@@ -49,14 +49,13 @@ class Chat {
         this.twitchemotes       = new Set(emotes['twitch']);
         this.shownhints         = new Set();
         this.formatters         = [];
-        this.backlog            = [];
         this.ignoreregex        = null;
         this.ignoring           = new Set();
         this.settings           = new Map([
             ['showtime', false],
             ['hideflairicons', false],
             ['timestampformat', 'HH:mm'],
-            ['maxlines', 500],
+            ['maxlines', this.maxlines],
             ['allowNotifications', false],
             ['highlight', true],
             ['customhighlight', []],
@@ -91,23 +90,6 @@ class Chat {
             ['ignoreuser', 'Use /ignore <username> to hide messages from pesky chatters'],
             ['mutespermanent', 'Mutes are never persistent, don\'t worry it will pass!']
         ]);
-    }
-
-    //noinspection JSUnusedGlobalSymbols
-    /**
-     * @param args Object {user: {}, options: {}, settings: {}}
-     */
-    init(args){
-        Object.assign(this, args['options']);
-
-        this.settings     = new Map([...this.settings, ...args['settings'], ...(ChatStore.read('chat.settings') || [])]);
-        this.ignoring     = new Set([...ChatStore.read('chat.ignoring') || []]);
-        this.shownhints   = new Set([...ChatStore.read('chat.shownhints') || []]);
-
-        this.log          = Logger.make(this);
-        this.user         = this.addUser(args.user || {});
-        this.source       = new ChatSource(this, this.uri);
-        this.control      = new EventEmitter(this);
 
         this.ui           = $('#chat');
         this.css          = $('#chat-styles')[0]['sheet'];
@@ -116,6 +98,16 @@ class Chat {
         this.input        = $('#chat-input-control');
         this.scrollnotify = $('#chat-scroll-notify');
         this.pmcount      = $('#chat-pm-count');
+
+        this.source       = new ChatSource(this, this.uri);
+        this.control      = new EventEmitter(this);
+    }
+
+    init(user, history){
+        this.user         = this.addUser(user || {});
+        this.settings     = new Map([...this.settings, ...(ChatStore.read('chat.settings') || [])]);
+        this.ignoring     = new Set([...ChatStore.read('chat.ignoring') || []]);
+        this.shownhints   = new Set([...ChatStore.read('chat.shownhints') || []]);
 
         // Socket events
         this.source.on('PING',             data => this.source.send('PONG', data));
@@ -279,8 +271,8 @@ class Chat {
 
         // Load backlog
         this.backlogLoading = true;
-        this.backlog.forEach(line => this.source.parseAndDispatch({data: line}));
-        if(this.backlog.length > 0)
+        history.forEach(line => this.source.parseAndDispatch({data: line}));
+        if(history.length > 0)
             this.push(ChatMessage.uiMessage('<hr/>'));
         this.scrollPlugin.updateAndPin(true);
         this.backlogLoading = false;
@@ -288,11 +280,6 @@ class Chat {
         // Connect
         this.push(ChatMessage.statusMessage('Connecting...'));
         this.source.connect();
-    }
-
-    //noinspection JSUnusedGlobalSymbols
-    addBacklog(data){
-        this.backlog.push(...data);
     }
 
     sendCommand(command, payload=null){
