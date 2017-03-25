@@ -884,7 +884,7 @@ class UserService extends Service {
       WHERE
         u.userId             = ua.userId AND
         ua.authProvider      = 'twitch' AND
-        ua.authDetail        IS NOT NULL AND
+        ua.authId            IS NOT NULL AND
         u.istwitchsubscriber = 1
     ");
     $stmt->execute();
