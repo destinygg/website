@@ -346,7 +346,7 @@ $(function(){
         };
 
         const updateStatus = function(status){
-            let state = (status['host'] && status.host['target_id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
+            let state = (status['host'] && status.host['id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
             el.removeClass('online offline hosting').addClass(state);
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
