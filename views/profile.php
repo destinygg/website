@@ -230,13 +230,13 @@ use Destiny\Commerce\SubscriptionStatus;
                 <input class="form-control" type="text" name="fullName" value="<?=Tpl::out($this->address['fullName'])?>" placeholder="Full Name" required />
               </div>
               <div class="form-group">
-                <label>Address Line 1
+                <label>Address Line 1 <span class="icon-required">*</span>
                 <br><small>Street address, P.O box, company name, c/o</small>
                 </label>
                 <input class="form-control" type="text" name="line1" value="<?=Tpl::out($this->address['line1'])?>" placeholder="Address Line 1" required />
               </div>
               <div class="form-group">
-                <label>Address Line 2 <span class="icon-required">*</span>
+                <label>Address Line 2
                 <br><small>Apartment, Suite, Building, Unit, Floor etc.</small>
                 </label>
                 <input class="form-control" type="text" name="line2" value="<?=Tpl::out($this->address['line2'])?>" placeholder="Address Line 2" />

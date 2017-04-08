@@ -27,46 +27,53 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache']}),
         new webpack.ProvidePlugin({'$': 'jquery', 'jQuery': 'jquery', 'window.jQuery': 'jquery'}),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.optimize.CommonsChunkPlugin('common', 'common.js'),
-        new ExtractTextPlugin('[name].css')
+        new webpack.optimize.CommonsChunkPlugin({name:'common', filename:'common.js'}),
+        new ExtractTextPlugin({filename: '[name].css'})
     ],
-    resolve: {
-        alias: {
-            jquery: 'jquery/src/jquery'
-        },
-        extensions: ['', '.ts', '.tsx', '.js']
-    },
     module: {
-        loaders: [
+        rules: [
             {
                 test    : /\.(ts|tsx)$/,
                 loader  : 'ts-loader'
             },
             {
                 test    : /\.json$/,
-                loader  : 'json'
+                loader  : 'json-loader'
             },
             {
                 test    : /\.js$/,
                 exclude : /(node_modules)/,
-                loader  : 'babel?presets[]=es2015'
+                loader  : 'babel-loader',
+                options : {presets: ['es2015']}
             },
             {
                 test    : /\.(scss|css)$/,
-                loader  : ExtractTextPlugin.extract('style', 'css!sass')
+                loader  : ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        {loader: 'css-loader'},
+                        {loader: 'sass-loader'},
+                    ]
+                })
             },
             {
                 test    : /(-webfont|glyphicons-halflings-regular)\.(eot|svg|ttf|woff2?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader  : 'file-loader?name=fonts/[name].[ext]'
+                loader  : 'file-loader',
+                options : {name: 'fonts/[name].[ext]'}
             },
             {
                 test    : /\.(png|jpg|gif)$/,
-                loader  : 'file-loader?name=img/[name].[ext]'
+                loader  : 'file-loader',
+                options : {name: 'img/[name].[ext]'}
             }
         ]
     },
+    resolve: {
+        alias: {
+            jquery: 'jquery/src/jquery'
+        },
+        extensions: ['.ts','.tsx','.js']
+    },
     context: __dirname,
-    devtool: null//'source-map'
+    devtool: false
 };

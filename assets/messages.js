@@ -1,3 +1,3 @@
 /* global $ */
 
-require('imports?this=>window!./web/js/messages.js');
+require('imports-loader?this=>window!./web/js/messages.js');
