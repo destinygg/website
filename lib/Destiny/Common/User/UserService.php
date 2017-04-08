@@ -772,6 +772,8 @@ class UserService extends Service {
    *  Where the key is the twitch user id (auth.authDetail) and the value is whether
    *  the user is a subscriber or not
    *
+   *  Returns a user list containing only users that have their twitch sub changed.
+   *
    * @param array $data
    * @return array
    * @throws \Doctrine\DBAL\DBALException
@@ -795,16 +797,13 @@ class UserService extends Service {
     // we get the users connected to the twitch authids so that later we can
     // update the users in batches efficiently and return the subs with
     // the required information to the caller
-    // we default to a 1 for the istwitchsubscriber field because that is
-    // assumed to be the most common case, and we will need to do less work
-    // to later update the info for the nonsubs
     $idToUser = array();
     $infosql  = "
       SELECT
         u.username,
         u.userId,
-        ua.authId,
-        '1' AS istwitchsubscriber
+        u.istwitchsubscriber,
+        ua.authId
       FROM
         dfl_users_auth AS ua,
         dfl_users AS u
@@ -815,10 +814,8 @@ class UserService extends Service {
     ";
 
     // do it in moderate batches
-    $chunks = array_chunk($ids, $batchsize);
-    foreach($chunks as $chunk) {
-      $sql  = sprintf( $infosql, implode("', '", $chunk ) );
-      $stmt = $conn->prepare($sql);
+    foreach(array_chunk($ids, $batchsize) as $chunk) {
+      $stmt = $conn->prepare(sprintf( $infosql, implode("', '", $chunk ) ));
       $stmt->execute();
 
       while($row = $stmt->fetch())
@@ -829,45 +826,35 @@ class UserService extends Service {
     if ( empty( $idToUser ) )
       return array();
 
-    $subs    = array();
-    $nonsubs = array();
+    $changed = $subs = $nonsubs = [];
     foreach( $idToUser as $authid => $user ) {
-      if ( $data[ $authid ] )
-        $subs[] = $user['userId'];
-      else
-        $nonsubs[] = $user['userId'];
+        if($data[$authid] <> $user['istwitchsubscriber']){
+            if ($data[$authid] == 1) {
+                $subs[] = $user['userId'];
+            } else if($data[$authid] == 0) {
+                $nonsubs[] = $user['userId'];
+            }
+            $user['istwitchsubscriber'] = $data[$authid];
+            $changed[ $user['authId'] ] = $user;
+        }
     }
 
     $subsql = "
       UPDATE dfl_users AS u
-      SET u.istwitchsubscriber = %s
+      SET u.istwitchsubscriber = '%s'
       WHERE u.userId IN('%s')
     ";
 
     // update the subs first
-    $chunks = array_chunk($subs, $batchsize);
-    foreach($chunks as $chunk) {
-      $sql  = sprintf( $subsql, '1', implode("', '", $chunk ) );
-      $stmt = $conn->prepare($sql);
-      $stmt->execute();
+    foreach(array_chunk($subs, $batchsize) as $chunk) {
+        $conn->exec(sprintf( $subsql, '1', implode("', '", $chunk ) ));
     }
-
     // update nonsubs
-    $chunks = array_chunk($nonsubs, $batchsize);
-    foreach($chunks as $chunk) {
-      $sql  = sprintf( $subsql, '0', implode("', '", $chunk ) );
-      $stmt = $conn->prepare($sql);
-      $stmt->execute();
-    }
-    unset($subs, $nonsubs, $chunks);
-
-    // update the return data
-    foreach( $data as $authid => $subscriber) {
-      if (!$subscriber)
-        $idToUser[ $authid ]['istwitchsubscriber'] = '0';
+    foreach(array_chunk($nonsubs, $batchsize) as $chunk) {
+        $conn->exec(sprintf( $subsql, '0', implode("', '", $chunk ) ));
     }
 
-    return $idToUser;
+    return $changed;
   }
 
   /**
