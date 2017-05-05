@@ -188,7 +188,7 @@ class HomeController {
      * @return string
      */
     public function facebook() {
-        return 'redirect: https://www.facebook.com/Steven.Bonnell.II';
+        return 'redirect: https://www.facebook.com/OmniDestiny';
     }
 
     /**
