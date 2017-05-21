@@ -403,7 +403,7 @@ chat.prototype.handleCommand = function(str) {
             break;
 
         case "help":
-            this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /msg /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
+            this.gui.push(new ChatInfoMessage("Available commands: /emotes /me /msg /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat /focus"));
             break;
 
         case "me":
@@ -613,6 +613,14 @@ chat.prototype.handleCommand = function(str) {
 
             this.gui.renewHighlight(nick, dohighlight);
             this.gui.setPreference('highlightnicks', highlightnicks);
+            break;
+
+        case "focus":
+            if (!parts[1]) {
+                this.gui.push(new ChatErrorMessage("Invalid argument - /focus is expecting a regular expression"));
+                return;
+            }
+            this.gui.focusUsers(parts[1]);
             break;
 
         case "timestampformat":

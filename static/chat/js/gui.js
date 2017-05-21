@@ -508,6 +508,16 @@
                 this.removeUserFocus(username, index);
         },
 
+        focusUsers: function(expression) {
+            var pattern = new RegExp(expression, "i");
+            var messages = this.userMessages;
+            for (var i = messages.length - 1; i >= 0; i--) {
+                if (messages[i].user && pattern.test(messages[i].message)){
+                    this.addUserFocus(messages[i].user.username.toLowerCase());
+                }
+            }
+        },
+
         loadBacklog: function() {
             this.backlogLoading = true;
             if(this.backlog.length == 0) {
