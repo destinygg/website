@@ -1,11 +1,8 @@
 /* global $ */
 
-import Logger from './log.js';
-
 class ChatUserFocus {
 
     constructor(chat, css){
-        this.log     = Logger.make(this);
         this.chat    = chat;
         this.css     = css;
         this.focused = [];
@@ -25,21 +22,18 @@ class ChatUserFocus {
     }
 
     addCssRule(username){
-        this.log.debug('Add focus user', username);
         this.css.insertRule(`.msg-user[data-username="${username}"]{opacity:1 !important;}`, this.focused.length); // max 4294967295
         this.focused.push(username);
         this.redraw();
     }
 
     removeCssRule(index){
-        this.log.debug('Remove focus user', index);
         this.css.deleteRule(index);
         this.focused.splice(index, 1);
         this.redraw();
     }
 
     clearFocus(){
-        this.log.debug('Clearing focus', this.focused.length);
         this.focused.forEach(i => this.css.deleteRule(0));
         this.focused = [];
         this.redraw();

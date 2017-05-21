@@ -1,6 +1,6 @@
 class ChatUser {
 
-    constructor(args){
+    constructor(args={}){
         this.nick     = args.nick || '';
         this.username = args.nick || '';
         this.features = args.features || [];
@@ -19,4 +19,4 @@ class ChatUser {
     }
 }
 
-module.exports = ChatUser;
+export default ChatUser;

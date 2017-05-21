@@ -1,29 +1,25 @@
 /* global window */
 
 import EventEmitter from './emitter.js';
-import Logger from './log.js';
-
 const webSocket = window['WebSocket'] || window['MozWebSocket'];
 
 class ChatSource extends EventEmitter {
 
-    constructor(chat, server) {
+    constructor() {
         super();
-        this.log    = Logger.make(this);
-        this.sock   = null;
-        this.server = server;
-        this.chat   = chat;
+        this.sock = null;
     }
 
-    connect(){
+    connect(url){
         try {
-            this.sock           = new webSocket(this.server);
-            this.sock.onopen    = e => this.emit('OPEN', e);
-            this.sock.onclose   = e => this.emit('CLOSE', e);
-            this.sock.onerror   = e => this.emit('ERR', 'socketerror');
+            this.emit('CONNECTING');
+            this.sock = new webSocket(url);
+            this.sock.onopen = e => this.emit('OPEN', e);
+            this.sock.onclose = e => this.emit('CLOSE', e);
+            this.sock.onerror = e => this.emit('ERR', 'socketerror');
             this.sock.onmessage = e => this.parseAndDispatch(e);
         } catch (e) {
-            this.log.error(e);
+            console.error(e);
             return this.emit('ERR', 'unknown');
         }
     }
@@ -38,8 +34,7 @@ class ChatSource extends EventEmitter {
         } catch(ignored){
             data = payload;
         }
-        this.log.log(eventname, data);
-        this.emit('DISPATCH', data); // Event is used to hook into all dispatched events
+        this.emit('DISPATCH', {data: data, event: eventname}); // Event is used to hook into all dispatched events
         this.emit(eventname, data);
     }
 

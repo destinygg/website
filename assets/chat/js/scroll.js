@@ -4,7 +4,7 @@ require('nanoscroller');
 
 class ChatScrollPlugin {
 
-    constructor(el, options){
+    constructor(el, options={sliderMinHeight: 40, tabIndex: 1}){
         this.scroller = $(el).nanoScroller(Object.assign({
             disableResize: true,
             preventPageScrolling: true

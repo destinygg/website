@@ -1,12 +1,10 @@
 /* global Math */
 
 import ChatStore from './store.js';
-import Logger from './log.js';
 
 class ChatInputHistory {
 
     constructor(chat){
-        this.log        = Logger.make(this);
         this.input      = $(chat.input);
         this.history    = ChatStore.read('chat.history') || [];
         this.index      = -1;
@@ -22,7 +20,7 @@ class ChatInputHistory {
 
     show(direction){
         const dir = direction === -1 ? 'UP':'DOWN';
-        this.log.debug(`Show ${dir}(${direction}) index ${this.index} total ${this.history.length}`);
+        //console.debug(`Show ${dir}(${direction}) index ${this.index} total ${this.history.length}`);
         // if we are not currently showing any lines from the history
         if (this.index < 0) {
             // if up arrow

@@ -1,7 +1,7 @@
 /* global */
 
 import Chat from './chat.js';
-import ChatUserMessage from './messages/user.js';
+import {MessageTypes} from './messages.js';
 import UserFeatures from './features.js';
 
 class ChatHighlighter {
@@ -24,7 +24,7 @@ class ChatHighlighter {
     }
 
     mustHighlight(message){
-        if (!this.chat.user || !(message instanceof ChatUserMessage) || !this.chat.settings.get('highlight') || message.user.hasFeature(UserFeatures.BOT) || message.user.username === this.chat.user.username)
+        if (!this.chat.user || message.type !== MessageTypes.user || !this.chat.settings.get('highlight') || message.user.hasFeature(UserFeatures.BOT) || message.user.username === this.chat.user.username)
             return false;
         return Boolean(
             this.highlightnicks.find(nick => message.user.username.toLowerCase() === nick.toLowerCase()) ||
