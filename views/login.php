@@ -51,30 +51,39 @@ use Destiny\Common\Config;
             </div>
 
             <div id="loginFormProviders">
+              <?php if(in_array('twitch', Config::$a['authProfiles'])): ?>
               <div class="form-group">
                 <label tabindex="2">
                   <input type="radio" name="authProvider" value="twitch" class="hidden">
                   <i class="icon-twitch"></i> Twitch
                 </label>
               </div>
+              <?php endif; ?>
+              <?php if(in_array('reddit', Config::$a['authProfiles'])): ?>
               <div class="form-group">
                 <label tabindex="3">
                   <input type="radio" name="authProvider" value="reddit" class="hidden">
                   <i class="icon-reddit"></i> Reddit
                 </label>
               </div>
+              <?php endif; ?>
+              <?php if(in_array('google', Config::$a['authProfiles'])): ?>
               <div class="form-group">
                 <label tabindex="4">
                   <input type="radio" name="authProvider" value="google" class="hidden">
                   <i class="icon-google"></i> Google
                 </label>
               </div>
+              <?php endif; ?>
+              <?php if(in_array('twitch', Config::$a['authProfiles'])): ?>
               <div class="form-group">
                 <label tabindex="5">
                   <input type="radio" name="authProvider" value="twitter" class="hidden">
                   <i class="icon-twitter"></i> Twitter
                 </label>
               </div>
+              <?php endif; ?>
+
             </div>
           </div>
           
@@ -96,7 +105,7 @@ use Destiny\Common\Config;
         return false;
       });
       form.on('keyup', '#loginFormProviders label', function(e){
-        if (e.keyCode == 13){
+        if (e.keyCode === 13){
           $(this).find('[type="radio"]').prop('checked', true);
           form.trigger('submit');
           return false;

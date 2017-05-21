@@ -101,7 +101,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <?php endforeach; ?>
         <?php else: ?>
           <div class="content content-dark clearfix">
-            <div class="ds-block">No destiny.gg subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
+            <div class="ds-block">No subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
           </div>
         <?php endif ?>
       </div>

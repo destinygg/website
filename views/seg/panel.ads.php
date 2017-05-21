@@ -13,7 +13,7 @@ use Destiny\Common\Utils\Tpl;
         </div>
 
         <div id="gmg-block" class="dc-donate-blk">
-           <a href="https://www.destiny.gg/gmg" target="_blank">
+           <a href="/gmg" target="_blank">
                <img src="<?=Config::cdnv()?>/img/ad-gmg.png" />
            </a>
         </div>

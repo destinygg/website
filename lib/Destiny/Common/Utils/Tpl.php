@@ -32,15 +32,6 @@ class Tpl {
         return $str;
     }
 
-    public static function currency($currencyCode, $amount) {
-        $amount = ($amount == null || ! is_numeric ( $amount )) ? '0.00' : number_format ( $amount, 2 );
-        if (isset ( Config::$a ['commerce'] ['currencies'] [$currencyCode] )) {
-            $symbol = Config::$a ['commerce'] ['currencies'] [$currencyCode] ['symbol'];
-            return $symbol . $amount . ' ' . $currencyCode;
-        }
-        return $currencyCode . ' ' . $amount;
-    }
-
     public static function mask($str, $padStr = '*', $show = 6, $pad = 10) {
         if (strlen ( $str ) >= $show) {
             $str = substr ( $str, 0, $show );

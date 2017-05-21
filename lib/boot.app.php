@@ -1,6 +1,7 @@
 <?php
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Destiny\Common\Config;
+use Destiny\Common\Routing\Route;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\Common\Cache\RedisCache;
 use Monolog\Logger;
@@ -48,6 +49,14 @@ $cache->setRedis ( $app->getRedis () );
 $cache->setNamespace( Config::$a['cache']['namespace'] );
 $app->setCacheDriver ( $cache );
 
-$app->setRouter ( new Router () );
+$router = new Router();
+$app->setRouter ($router);
 $app->setAnnotationReader ( new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $cache, $debug = false) );
-ControllerAnnotationLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Controllers/' ), $app->getAnnotationReader (), $app->getRouter() );
+ControllerAnnotationLoader::loadClasses ( new DirectoryClassIterator ( _BASEDIR . '/lib/', 'Destiny/Controllers/' ), $app->getAnnotationReader (), $router );
+
+foreach (Config::$a['links'] as $path => $url) {
+    $router->addRoute(new Route([
+        'path' => $path,
+        'url'  => $url
+    ]));
+}

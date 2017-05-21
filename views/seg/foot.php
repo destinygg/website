@@ -4,7 +4,7 @@
             <h3>Destiny.gg <small><sup>&copy;</sup></small></h3>
             <p> www.destiny.gg
                 <br /><a href="mailto:steven.bonnell.ii@gmail.com" title="Email Destiny">steven.bonnell.ii@gmail.com</a>
-                <br /><a href="https://www.twitch.tv/destiny" title="Destiny @ Twitch.tv">twitch.tv/destiny</a>
+                <br /><a href="/twitch" title="Destiny @ Twitch.tv">twitch.tv/destiny</a>
             </p>
         </div>
         <div id="footer-badges" class="col-sm-4 col-xs-6">

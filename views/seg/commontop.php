@@ -13,7 +13,7 @@ use Destiny\Common\Utils\Http;
 <meta property="og:video:type" content=application/x-shockwave-flash"" />
 <meta property="og:video:height" content="260" />
 <meta property="og:video:width" content="340" />
-<meta name="google-play-app" content="app-id=gg.destiny.app.chat">
+<meta name="google-play-app" content="app-id=<?=Config::$a['android']['app']?>">
 <meta name="google-site-verification" content="<?=Config::$a['google-verification']?>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="shortcut icon" href="/favicon.ico?v3">

@@ -8,7 +8,7 @@ use Destiny\Common\Utils\Date;
 
       <div class="media-block col-sm-6 stream">
           <h3 class="title">
-              <span>Blog</span> <a href="http://blog.destiny.gg">destiny.gg</a>
+              <span>Blog</span> <a href="/blog">destiny.gg</a>
           </h3>
           <div class="entries">
               <?php for ($i=0; $i<3; ++$i):?>

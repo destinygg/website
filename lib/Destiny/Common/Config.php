@@ -52,7 +52,7 @@ abstract class Config {
      * @return string
      */
     public static function userAgent() {
-        return "destiny.gg/" . self::version();
+        return self::$a['meta']['shortName'] . "/" . self::version();
     }
 
 }

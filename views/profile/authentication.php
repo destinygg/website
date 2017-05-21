@@ -62,7 +62,7 @@ use Destiny\Common\Config;
       <h3 class="collapsed" data-toggle="collapse" data-target="#login-key-content">Login keys</h3>
       <div id="login-key-content" class="content content-dark clearfix collapse">
         <div class="ds-block">
-          <p>Login keys allow you to authenticate with the destiny.gg chat without the need for a username or password.</p>
+          <p>Login keys allow you to authenticate without the need for a username or password.</p>
         </div>
         <form id="authtoken-form" action="/profile/authtoken/create" method="post">
           <table class="grid" style="width:100%">

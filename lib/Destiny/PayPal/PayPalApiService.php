@@ -169,7 +169,7 @@ class PayPalApiService extends Service {
         $setECReqDetails->PaymentDetails [0] = $paymentDetails;
         
         // Paypal UI settings
-        $setECReqDetails->BrandName = Config::$a ['commerce'] ['receiver'] ['brandName'];
+        $setECReqDetails->BrandName = Config::$a['meta']['title'];
         
         // Execute checkout
         $setECReqType = new SetExpressCheckoutRequestType ();

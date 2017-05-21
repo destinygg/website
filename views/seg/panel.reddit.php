@@ -30,7 +30,7 @@ use Destiny\Common\Utils\Date;
 
         <div class="media-block col-sm-6 stream">
             <h3 class="title">
-                <span>Reddit</span> <a href="https://reddit.com/r/destiny">/r/destiny</a>
+                <span>Reddit</span> <a href="/reddit">/r/destiny</a>
             </h3>
             <div class="entries">
                 <?php foreach($this->posts as $i=>$a): ?>
