@@ -60,109 +60,117 @@ class Application extends Service {
      */
     public function executeRequest(Request $request) {
         $route = $this->router->findRoute ( $request );
-        $conn = $this->getConnection ();
         $model = new ViewModel ();
 
-        if ( $route == null ) {
+        if ($route == null) {
             $model->title = Http::$HEADER_STATUSES [Http::STATUS_NOT_FOUND];
-            $response = new Response ( Http::STATUS_NOT_FOUND );
-            $response->setBody ( $this->template ( 'errors/' . Http::STATUS_NOT_FOUND . '.php', $model ) );
-            $this->handleResponse ( $response );
+            $this->handleResponse(new Response (
+                Http::STATUS_NOT_FOUND,
+                $this->template('errors/' . Http::STATUS_NOT_FOUND . '.php', $model)
+            ));
         }
 
-        if( $route->isSecure () ){
-            $creds = Session::getCredentials ();
-            if($creds->isValid() && strcasecmp ( $creds->getUserStatus(), 'Active' ) !== 0){
-                $response = new Response ( Http::STATUS_ERROR );
-                $model->error = new Exception ( sprintf ( 'User status not active. Status: %s', $creds->getUserStatus() ) );
+        if ($route->isSecure()) {
+            $creds = Session::getCredentials();
+            if ($creds->isValid() && strcasecmp($creds->getUserStatus(), 'Active') !== 0) {
+                $model->error = new Exception (sprintf('User status not active. Status: %s', $creds->getUserStatus()));
                 $model->code = Http::STATUS_ERROR;
                 $model->title = 'Inactive user';
-                $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
-                $this->handleResponse ( $response );
+                $this->handleResponse(new Response (
+                    Http::STATUS_ERROR,
+                    $this->template('errors/' . Http::STATUS_ERROR . '.php', $model)
+                ));
             }
-            if (! $this->hasRouteSecurity ( $route, $creds )) {
-                $response = new Response ( Http::STATUS_FORBIDDEN );
+            if (!$this->hasRouteSecurity($route, $creds)) {
                 $model->title = Http::$HEADER_STATUSES [Http::STATUS_FORBIDDEN];
-                $response->setBody ( $this->template ( 'errors/' . Http::STATUS_FORBIDDEN . '.php', $model ) );
-                $this->handleResponse ( $response );
+                $this->handleResponse(new Response (
+                    Http::STATUS_FORBIDDEN,
+                    $this->template('errors/' . Http::STATUS_FORBIDDEN . '.php', $model)
+                ));
             }
         }
 
-        try {
-
-            $className = $route->getClass ();
-            $classMethod = $route->getClassMethod ();
-            $classReflection = new \ReflectionClass ( $className );
-            $classInstance = $classReflection->newInstance();
-
-            // Order the controller arguments and invoke the controller
-            $args = array();
-            $methodReflection = $classReflection->getMethod( $classMethod );
-            $methodParams = $methodReflection->getParameters();
-            foreach ($methodParams as $methodParam) {
-                $paramType = $methodParam->getClass();
-                if($methodParam->isArray()){
-                    // the $params passed into the Controller classes. A merge of the _GET, _POST and variables generated from the route path (e.g. /dog/{id}/cat)
-                    $args[] = array_merge (
-                        $request->get(),
-                        $request->post(),
-                        $this->router->getRoutePathParams ( $route, $request->path() )
-                    );
-                } else if($paramType->isInstance($model)) {
-                    $args[] = &$model;
-                } else if($paramType->isInstance($request)) {
-                    $args[] = &$request;
-                }
+        $url = $route->getUrl();
+        if (!empty($url)) {
+            $response = new Response (Http::STATUS_OK);
+            $response->setLocation($url);
+        } else {
+            try {
+                $response = $this->executeController($route, $request, $model);
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+                $model->error = new Exception ($e->getMessage());
+                $model->code = Http::STATUS_ERROR;
+                $model->title = 'Error';
+                $response = new Response (
+                    Http::STATUS_ERROR,
+                    $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model )
+                );
+            } catch (\Exception $e) {
+                $this->logger->critical($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+                $model->error = new Exception ('Maximum over-rustle has been achieved');
+                $model->code = Http::STATUS_ERROR;
+                $model->title = 'Error';
+                $response = new Response (
+                    Http::STATUS_ERROR,
+                    $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model )
+                );
             }
-
-            // Execute the controller
-            $response = $methodReflection->invokeArgs ($classInstance, $args);
-
-            if (empty ( $response ))
-                throw new Exception ( 'Invalid action response' );
-            
-            // Redirect response
-            if (is_string ( $response ) && substr ( $response, 0, 10 ) === 'redirect: ') {
-                $redirect = substr ( $response, 10 );
-                $response = new Response ( Http::STATUS_OK );
-                $response->setLocation ( $redirect );
-            }
-            
-            // Template response
-            if (is_string ( $response )) {
-                $tpl = $response . '.php';
-                $response = new Response ( Http::STATUS_OK );
-                $response->setBody ( $this->template ( $tpl, $model ) );
-            }
-            
-            if (! $response instanceof Response) {
-                throw new Exception ( 'Invalid response' );
-            }
-            
-        } catch ( Exception $e ) {
-            
-            $this->logger->error ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
-            if ($conn->isTransactionActive())
-                $conn->rollBack ();
-            $response = new Response ( Http::STATUS_ERROR );
-            $model->error = new Exception ( $e->getMessage () );
-            $model->code = Http::STATUS_ERROR;
-            $model->title = 'Error';
-            $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
-                
-        } catch ( \Exception $e ) {
-
-            $this->logger->critical ( $e->getMessage () . PHP_EOL . $e->getTraceAsString() );
-            if ($conn->isTransactionActive())
-                $conn->rollBack ();
-            $response = new Response ( Http::STATUS_ERROR );
-            $model->error = new Exception ( 'Maximum over-rustle has been achieved' );
-            $model->code = Http::STATUS_ERROR;
-            $model->title = 'Error';
-            $response->setBody ( $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model ) );
         }
-        
+
         $this->handleResponse ( $response );
+    }
+
+    private function executeController(Route $route, Request $request, ViewModel $model) {
+        $className = $route->getClass();
+        $classMethod = $route->getClassMethod();
+        $classReflection = new \ReflectionClass ($className);
+        $classInstance = $classReflection->newInstance();
+
+        // Order the controller arguments and invoke the controller
+        $args = array();
+        $methodReflection = $classReflection->getMethod($classMethod);
+        $methodParams = $methodReflection->getParameters();
+        foreach ($methodParams as $methodParam) {
+            $paramType = $methodParam->getClass();
+            if ($methodParam->isArray()) {
+                // the $params passed into the Controller classes. A merge of the _GET, _POST and variables generated from the route path (e.g. /dog/{id}/cat)
+                $args[] = array_merge(
+                    $request->get(),
+                    $request->post(),
+                    $this->router->getRoutePathParams($route, $request->path())
+                );
+            } else if ($paramType->isInstance($model)) {
+                $args[] = &$model;
+            } else if ($paramType->isInstance($request)) {
+                $args[] = &$request;
+            }
+        }
+
+        // Execute the controller
+        $response = $methodReflection->invokeArgs($classInstance, $args);
+
+        if (empty ($response))
+            throw new Exception ('Invalid action response');
+
+        // Redirect response
+        if (is_string($response) && substr($response, 0, 10) === 'redirect: ') {
+            $redirect = substr($response, 10);
+            $response = new Response (Http::STATUS_OK);
+            $response->setLocation($redirect);
+        }
+
+        // Template response
+        if (is_string($response)) {
+            $tpl = $response . '.php';
+            $response = new Response (Http::STATUS_OK, $this->template($tpl, $model));
+        }
+
+        if (!$response instanceof Response) {
+            throw new Exception ('Invalid response');
+        }
+
+        return $response;
     }
 
     /**

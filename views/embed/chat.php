@@ -48,7 +48,7 @@ use Destiny\Common\Config;
                     <span class="fa fa-cog"></span>
                 </a>
                 <a id="chat-users-btn" class="iconbtn" title="Users">
-                    <span id="chat-pm-count" class="<?= ($this->options['pmcountnum'] > 0) ? '':'hidden' ?> flash" title="You have unread messages!"><?= Tpl::out($this->options['pmcountnum']) ?></span>
+                    <span id="chat-pm-count" class="hidden flash" title="You have unread messages!">0</span>
                     <span class="fa fa-user"></span>
                 </a>
             </div>

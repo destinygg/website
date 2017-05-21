@@ -32,30 +32,6 @@ class ChatController {
     }
 
     /**
-     * @Route ("/chat/emotes.json")
-     */
-    public function emotes() {
-        // just return every single one
-        $emotes = array_merge(
-            ChatEmotes::get('destiny'),
-            ChatEmotes::get('twitch')
-        );
-
-        $response = new Response ( Http::STATUS_OK, json_encode ( $emotes ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
-    }
-
-    /**
-     * @Route ("/chat/init")
-     */
-    public function chatInit() {
-        $options = $this->getChatOptionParams ();
-        $options['user'] = $this->getChatUser();
-        return $this->buildChatInitResponse($options);
-    }
-
-    /**
      * @Route ("/chat/history")
      */
     public function getBacklog(){
@@ -68,41 +44,18 @@ class ChatController {
     }
 
     /**
-     * Get the chat params from the get request
-     * Make sure they are all valid
+     * Chat expects a slightly different signature that what we have in the session
      *
-     * @return array
+     * @Route ("/chat/me")
      */
-    private function getChatOptionParams() {
-        $unreadMessageCount = (Session::hasRole(UserRole::USER)) ? PrivateMessageService::instance()->getUnreadMessageCount(Session::getCredentials()->getUserId()) : 0;
-        return ['options' => [
-                    'uri' => Config::$a['chat']['uri'],
-                    'pmcountnum' => $unreadMessageCount
-                ]];
-    }
-
-    /**
-     * @return array|null
-     */
-    private function getChatUser(){
-        if (Session::hasRole(UserRole::USER)) {
-            $creds = Session::getCredentials ();
-            return [
-                'nick' => $creds->getUsername(),
-                'features' => $creds->getFeatures(),
-            ];
-        }
-        return null;
-    }
-
-    /**
-     * @param array $options
-     * @return Response
-     */
-    private function buildChatInitResponse(array $options){
-        $response = new Response ( Http::STATUS_OK, 'destiny.chat.init(' . json_encode($options) . ')' );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JAVASCRIPT );
-        $response->addHeader ( Http::HEADER_CACHE_CONTROL, 'no-cache, max-age=0, must-revalidate, no-store' );
+    public function getUser(){
+        $cred = Session::getCredentials ();
+        $user = [
+            'nick'     => $cred->getUsername(),
+            'features' => $cred->getFeatures()
+        ];
+        $response = new Response (Http::STATUS_OK, json_encode($user));
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
         return $response;
     }
 

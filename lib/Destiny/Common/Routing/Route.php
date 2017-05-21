@@ -35,6 +35,11 @@ class Route {
      */
     public $feature;
 
+    /**
+     * @var string
+     */
+    public $url;
+
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
             Options::setOptions ( $this, $params );
@@ -48,7 +53,8 @@ class Route {
             'classMethod',
             'httpMethod',
             'secure',
-            'feature'
+            'feature',
+            'url'
         );
     }
 
@@ -102,6 +108,14 @@ class Route {
 
     public function setFeature($feature) {
         $this->feature = $feature;
+    }
+
+    public function getUrl() {
+        return $this->url;
+    }
+
+    public function setUrl($url) {
+        $this->url = $url;
     }
 
 }
