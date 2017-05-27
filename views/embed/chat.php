@@ -16,49 +16,38 @@ use Destiny\Common\Config;
 </head>
 <body class="embed">
 
-<div id="chat" class="chat chat-icons <?php if(Session::hasRole(UserRole::USER)): ?>authenticated<?php endif ?>">
+<div id="chat" class="chat chat-icons">
 
     <!-- chat output -->
     <div id="chat-output-frame">
         <div id="chat-output" class="nano">
-          <div id="chat-lines" class="nano-content"></div>
-          <div id="chat-scroll-notify">More messages below</div>
+            <div id="chat-lines" class="nano-content"></div>
+            <div id="chat-scroll-notify">More messages below</div>
         </div>
     </div>
     <!-- end chat output -->
 
     <!-- chat input -->
-    <form id="chat-input">
-        <div class="clearfix">
-            <div id="chat-input-wrap">
-                <div id="chat-input-control-wrap">
-                    <input id="chat-input-control" type="text" placeholder="Enter a message..." class="input" spellcheck="true" autocomplete="off" autofocus/>
-                    <span id="emoticon-btn" class="fa fa-smile-o" title="Emotes"></span>
-                </div>
-                <span id="chat-login-msg">
-                  <?php if(!empty($this->follow)): ?>
-                      You must <a href="/login?follow=<?= Tpl::out($this->follow) ?>" target="_parent">sign in</a> to chat
-                  <?php else: ?>
-                      You must <a href="/login" target="_parent">sign in</a> to chat
-                  <?php endif ?>
-                </span>
-            </div>
-            <div id="chat-tools-wrap">
-                <a id="chat-settings-btn" class="iconbtn" title="Settings">
-                    <span class="fa fa-cog"></span>
-                </a>
-                <a id="chat-users-btn" class="iconbtn" title="Users">
-                    <span id="chat-pm-count" class="hidden flash" title="You have unread messages!">0</span>
-                    <span class="fa fa-user"></span>
-                </a>
-            </div>
+    <div id="chat-input">
+        <div id="chat-input-wrap">
+            <textarea id="chat-input-control" placeholder="Write something..." spellcheck="true" autocomplete="off" tabindex="1" autofocus></textarea>
         </div>
-    </form>
+        <div id="chat-tools-wrap">
+            <a id="chat-emoticon-btn" class="iconbtn" title="Emotes" style="float: left;">
+                <span class="fa fa-smile-o"></span>
+            </a>
+            <a id="chat-whisper-btn" class="iconbtn" title="Whispers" style="float: left;">
+                <span class="fa fa-comments-o"></span>
+            </a>
+            <a id="chat-settings-btn" class="iconbtn" title="Settings">
+                <span class="fa fa-cog"></span>
+            </a>
+            <a id="chat-users-btn" class="iconbtn" title="Users">
+                <span class="fa fa-user"></span>
+            </a>
+        </div>
+    </div>
     <!-- end chat input -->
-
-    <!-- top frame -->
-    <div id="chat-top-frame"></div>
-    <!-- end top frame -->
 
     <!-- bot frame -->
     <div id="chat-bottom-frame">
@@ -66,18 +55,12 @@ use Destiny\Common\Config;
         <!-- user list -->
         <div id="chat-user-list" class="chat-menu">
             <div class="list-wrap clearfix">
-
               <div class="toolbar">
-                <h5>
-                  Users (~<span></span>)
-                  <button type="button" class="close" aria-hidden="true">&times;</button>
-                </h5>
+                <h5>Users (~<span>0</span>) <button type="button" class="close" aria-hidden="true">&times;</button></h5>
               </div>
-
               <div class="scrollable nano">
                 <div id="chat-groups" class="content nano-content"></div>
               </div>
-
             </div>
         </div>
         <!-- end user list -->
@@ -85,14 +68,9 @@ use Destiny\Common\Config;
         <!-- settings -->
         <div id="chat-settings" class="chat-menu">
             <div class="list-wrap clearfix">
-
               <div class="toolbar">
-                <h5>
-                  <span>Settings</span>
-                  <button type="button" class="close" aria-hidden="true">&times;</button>
-                </h5>
+                <h5>Settings <button type="button" class="close" aria-hidden="true">&times;</button></h5>
               </div>
-
               <div class="tools">
                 <div class="checkbox">
                   <label title="Show all user flair icons">
@@ -103,6 +81,11 @@ use Destiny\Common\Config;
                   <label title="Show the timestamps next to the messages">
                     <input name="showtime" type="checkbox" /> Show time for messages
                   </label>
+                </div>
+                <div class="checkbox">
+                    <label title="Show removed content">
+                        <input name="showremoved" type="checkbox" /> Show removed messages
+                    </label>
                 </div>
                 <div class="checkbox">
                   <label title="Highlight text that you are mentioned in">
@@ -116,7 +99,7 @@ use Destiny\Common\Config;
                   </label>
                 </div>
                 <div class="checkbox">
-                  <label title="Show desktop notifications on hightlight">
+                  <label title="Show desktop notifications on highlight">
                     <input name="allowNotifications" type="checkbox" /> Desktop notifications
                     <br /><small id="chat-settings-notification-permissions">(Permission unknown)</small>
                   </label>
@@ -126,22 +109,15 @@ use Destiny\Common\Config;
                   <small>See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information</small>
                 </div>
               </div>
-
             </div>
         </div>
         <!-- end settings -->
 
-        <!-- emote list -->
         <div id="chat-emote-list" class="chat-menu">
             <div class="list-wrap clearfix">
-
               <div class="toolbar">
-                <h5>
-                  Emotes
-                  <button type="button" class="close" aria-hidden="true">&times;</button>
-                </h5>
+                <h5><span>Emotes</span> <button type="button" class="close" aria-hidden="true">&times;</button></h5>
               </div>
-
               <div id="chat-emotes" class="scrollable nano">
                 <div class="content nano-content">
                   <div class="emote-group" id="destiny-emotes"></div>
@@ -151,34 +127,46 @@ use Destiny\Common\Config;
                   <div class="emote-group" id="twitch-emotes"></div>
                 </div>
               </div>
-
             </div>
         </div>
-        <!-- emote list -->
 
-        <!-- pm notifications -->
-        <div id="chat-pm-notification" class="chat-menu">
+        <div id="chat-whisper-users" class="chat-menu">
             <div class="list-wrap clearfix">
-              <div class="toolbar">
-                <h5>
-                  Messages
-                  <button type="button" class="close" aria-hidden="true">&times;</button>
-                </h5>
-              </div>
-              <div id="chat-pm-message">
-                <p>You have unread message(s).</p>
-                <p>
-                    <a id="inbox-privmsg" href="/profile/messages" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-envelope"></i> Inbox</a> or
-                    <button id="markread-privmsg" class="btn btn-default btn-sm">Mark All Read</button>
-                </p>
-                <p>or view the <a href="#" id="user-list-link">user list</a></p>
-              </div>
+                <div class="toolbar">
+                    <h5><span>Whispers</span> <button type="button" class="close" aria-hidden="true">&times;</button></h5>
+                </div>
+                <div class="scrollable nano">
+                    <div class="content nano-content">
+                        <ul></ul>
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- pm notifications -->
+
+        <div id="chat-whisper-messages" class="chat-menu">
+            <div class="list-wrap clearfix">
+                <div class="toolbar">
+                    <h5><span>Whisper</span> <button type="button" class="close" aria-hidden="true">&times;</button></h5>
+                </div>
+                <div class="scrollable nano">
+                    <div class="content nano-content"></div>
+                </div>
+            </div>
+        </div>
 
     </div>
     <!-- end bot frame -->
+
+    <div id="chat-login-screen" style="display:none;">
+        <div style="text-align: center;">
+            <div>
+                <h2>Want to chat?</h2>
+                <p>You need to be signed in.<br />Become part of the community and have your say!</p>
+            </div>
+            <button id="chat-btn-login" class="btn btn-primary">Login</button>
+            <button id="chat-btn-cancel" class="btn btn-default">No thanks</button>
+        </div>
+    </div>
 
 </div>
 

@@ -1,10 +1,8 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Chat\ChatEmotes;
+use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Session;
-use Destiny\Common\User\UserFeature;
-use Destiny\Common\User\UserRole;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -12,7 +10,6 @@ use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\MimeType;
 use Destiny\Chat\ChatIntegrationService;
-use Destiny\Common\Config;
 use Destiny\Messages\PrivateMessageService;
 
 /**
@@ -44,17 +41,15 @@ class ChatController {
     }
 
     /**
-     * Chat expects a slightly different signature that what we have in the session
-     *
      * @Route ("/chat/me")
+     * @Secure ({"USER"})
      */
     public function getUser(){
         $cred = Session::getCredentials ();
-        $user = [
+        $response = new Response (Http::STATUS_OK, json_encode([
             'nick'     => $cred->getUsername(),
             'features' => $cred->getFeatures()
-        ];
-        $response = new Response (Http::STATUS_OK, json_encode($user));
+        ]));
         $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
         return $response;
     }

@@ -24,6 +24,11 @@ class ChatSource extends EventEmitter {
         }
     }
 
+    disconnect(){
+        if(this.sock && this.sock.readyState === this.sock.OPEN){
+            this.sock.close();
+    }
+
     // @param event Object {data: 'EVENT "DATA"'}
     parseAndDispatch(event){
         let eventname = event.data.split(' ', 1)[0].toUpperCase(),
@@ -40,7 +45,11 @@ class ChatSource extends EventEmitter {
 
     send(eventname, data){
         const payload = (typeof data === 'string') ? data : JSON.stringify(data);
-        this.sock.send(`${eventname} ${payload}`);
+        if(this.sock.readyState === this.sock.OPEN){
+            this.sock.send(`${eventname} ${payload}`);
+        } else {
+            this.emit('ERR', 'notconnected');
+        }
     }
 
 }

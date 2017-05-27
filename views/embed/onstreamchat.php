@@ -14,7 +14,7 @@ use Destiny\Common\Config;
 </head>
 <body class="embed onstream">
 
-    <div id="destinychat" class="chat chat-icons">
+    <div id="chat" class="chat chat-icons">
 
         <div id="chat-output-frame">
             <div id="chat-output" class="nano">

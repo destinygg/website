@@ -45,10 +45,6 @@ class MessageBuilder {
         return new ChatUserMessage(message, user, timestamp)
     }
 
-    static privateMessage(data, user, messageid, timestamp = null){
-        return new ChatUserPrivateMessage(data, user, messageid, timestamp)
-    }
-
     static emoteMessage(emote, timestamp, count=1){
         return new ChatEmoteMessage(emote, timestamp, count);
     }
@@ -97,9 +93,9 @@ class ChatMessage extends ChatUIMessage {
     }
 
     wrapMessage(){
-        let message = this.message;
-        this.chat.formatters.forEach(formatter => message = formatter.format(message, this.user));
-        return `<span class="text">${message}</span>`;
+        let msg = this.message;
+        this.chat.formatters.forEach(f => msg = f.format(msg, this.user));
+        return `<span class="text">${msg}</span>`;
     }
 
     html(){
@@ -143,7 +139,7 @@ class ChatUserMessage extends ChatMessage {
             classes.push('msg-highlight');
         if(this.chat.lastmessage && this.chat.lastmessage.user && this.user && this.chat.lastmessage.user.username === this.user.username)
             classes.push('msg-continue');
-        return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + ' ' + this.wrapMessage(), classes, attr);
+        return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + ' <span class="ctrl"></span> ' + this.wrapMessage(), classes, attr);
     }
 
     getFeatureHTML(){
@@ -239,55 +235,11 @@ class ChatEmoteMessage extends ChatMessage {
 
 }
 
-class ChatUserPrivateMessage extends ChatUserMessage {
-
-    constructor(data, user, messageid, timestamp){
-        super(data, user, timestamp, MessageTypes.user);
-        this.user = user;
-        this.messageid = messageid;
-        this.isSlashMe = false; // make sure a private message is never reformatted to /me
-    }
-
-    attach(chat){
-        super.attach(chat);
-        return this.ui.on('click', '.mark-as-read', e => {
-            $.ajax({
-                type: 'POST',
-                url : `/profile/messages/${encodeURIComponent(this.messageid)}/open`
-            }).then(data => this.chat.setUnreadMessageCount(data['unread'] || 0));
-            this.ui.find('.icon-mail-send').attr('class', 'icon-mail-open-document');
-            this.ui.find('.message-actions').remove();
-            e.preventDefault();
-            e.stopPropagation();
-        });
-    }
-
-    wrapUser(user){
-        return ` <i class="icon-mail-send" title="Received Message"></i> <a class="user">${user.username}</a>`;
-    }
-
-    html(){
-        const classes = [], args = {};
-        classes.push('private-message');
-        args['data-messageid'] = this.messageid;
-        args['data-username'] = this.user.username.toLowerCase();
-        return this.wrap(
-            this.wrapTime() + ` <a class="user">${this.user.username}</a> ` + this.wrapMessage() +
-            '<span class="message-actions">'+
-            '<a href="#" class="mark-as-read">Mark as read <i class="fa fa-check-square-o"></i></a>'+
-            '</span>'+
-            '<i class="speech-arrow"></i>', classes, args
-        );
-    }
-
-}
-
 export {
     MessageBuilder,
     ChatUIMessage,
     ChatMessage,
     ChatUserMessage,
     ChatEmoteMessage,
-    ChatUserPrivateMessage,
     MessageTypes
 };

@@ -19,8 +19,8 @@ class ChatInputHistory {
     }
 
     show(direction){
-        const dir = direction === -1 ? 'UP':'DOWN';
-        //console.debug(`Show ${dir}(${direction}) index ${this.index} total ${this.history.length}`);
+        // const dir = direction === -1 ? 'UP':'DOWN';
+        // console.debug(`Show ${dir}(${direction}) index ${this.index} total ${this.history.length}`);
         // if we are not currently showing any lines from the history
         if (this.index < 0) {
             // if up arrow
@@ -54,7 +54,6 @@ class ChatInputHistory {
     }
 
     add(message){
-        this.log.debug('Add', message);
         this.index = -1;
         // dont add entry if the last entry is the same
         if(this.history.length > 0 && this.history[this.history.length-1] === message)

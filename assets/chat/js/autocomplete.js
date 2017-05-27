@@ -16,7 +16,7 @@ class ChatAutoComplete {
         this.input         = chat.input;
 
         //HTMLInputElement.prototype.setSelectionRange
-        if (!this.input[0].setSelectionRange)
+        if (!this.input || this.input.length === 0 || !this.input[0].setSelectionRange)
             return this;
 
         setInterval(this.expireUsers.bind(this), 60000); // 1 minute

@@ -56,7 +56,7 @@ class PrivateMessageService extends Service {
                 // $userid sent a message that was NOT read
                 $general_unread_count += 1;
                 
-                // immediatly throttle if sent more than $messagelimit unread 
+                // immediately throttle if sent more than $messagelimit unread
                 // messages to the same $targetuserid in the last $timelimit minutes
                 // ONLY a reply can cancel this, otherwise it would `return false`
                 if ($row['targetuserid'] != $targetuserid)
@@ -77,7 +77,7 @@ class PrivateMessageService extends Service {
                     return true;
             }else {
                 // $userid sent a message that was read OR
-                // $userid recieved a message from someone unrelated to this conversation 
+                // $userid received a message from someone unrelated to this conversation
                 $general_unread_count -= 2;
             }
         }
@@ -433,6 +433,29 @@ class PrivateMessageService extends Service {
         ");
         $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
         $stmt->bindValue('limit', $rowCount, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * @param $userId
+     * @param $limit
+     * @return array
+     */
+    public function getUnreadConversations($userId, $limit){
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            SELECT * FROM (
+              SELECT u.username,MAX(p.timestamp) `timestamp`, COUNT(*) `unread` FROM `privatemessages` p
+              INNER JOIN `dfl_users` u ON (u.userId = p.userid)
+              WHERE p.targetuserid = :userId AND p.isread = 0
+              GROUP BY p.userid
+            ) b
+            ORDER BY b.timestamp DESC, b.unread DESC
+            LIMIT 0,:limit
+        ");
+        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

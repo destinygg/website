@@ -109,7 +109,7 @@ class UrlFormatter extends ChatFormatter {
             path        = "(?:" + pathCont + "|/|\\b|$)",
             port        = "(?::[0-9]+)?",
             webURL      = "(?:" + hostName + port + "/" + path + ")|(?:" + hostName + port + "(?:\\b|$))",
-            scheme      = "(https?|ftp)://",
+            scheme      = "(https?|ftp|wss?)://",
             strict      = "\\b" + scheme + pathCont,
             relaxed     = strict + "|" + webURL;
         this.linkregex   = new RegExp(relaxed, "gi");

@@ -226,4 +226,40 @@ class PrivateMessageController {
         return 'profile/message';
     }
 
+    /**
+     * @Route ("/profile/conversations/unread")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     *
+     * @return Response
+     */
+    public function unreadConversations(){
+        $userId = Session::getCredentials ()->getUserId ();
+        $privateMessageService = PrivateMessageService::instance();
+        $conversations = $privateMessageService->getUnreadConversations($userId, 50);
+        $response = new Response (Http::STATUS_OK, json_encode($conversations));
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        return $response;
+    }
+
+    /**
+     * @Route ("/profile/messages/{username}/unread")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     *
+     * @param array $params
+     * @return Response
+     */
+    public function unreadMessagesFrom(array $params){
+        $userService = UserService::instance();
+        $privateMessageService = PrivateMessageService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
+        $targetuser = $userService->getUserByUsername($params['username']);
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $targetuser['userId'], 0, 10 );
+        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
+        $response = new Response (Http::STATUS_OK, json_encode($messages));
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        return $response;
+    }
+
 }

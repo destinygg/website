@@ -6,18 +6,19 @@ body.onstream, body.onstream .chat {
 
 body.onstream {
 
-  #destinychat {
+  #chat {
     border-radius: 8px;
     text-shadow: -1px -1px 0 rgba(0,0,0,0.75), 1px -1px 1px rgba(0,0,0,0.75), -1px 1px 0 rgba(0,0,0,0.75), 1px 1px 1px rgba(0,0,0,0.75);
     letter-spacing: 0.03em;
   }
 
-  #chat-lines time {
+  #chat-lines time, #chat-lines .features {
     display: none !important;
   }
 
   #chat-lines {
     color: white;
+    line-height: 26px;
   }
 
   #chat-lines,
@@ -64,7 +65,8 @@ body.onstream {
   .chat #chat-lines>.status-msg,
   .chat #chat-lines>.ui-msg,
   .chat #chat-lines>.own-msg,
-  .chat #chat-lines>.highlight {
+  .chat #chat-lines>.highlight,
+  .chat #chat-lines>.msg-continue .text:before {
     color: white;
   }
 
@@ -74,7 +76,6 @@ body.onstream {
     background: none;
   }
 
-  #chat-input,
   .chat #chat-lines i[class^="icon-"],
   .chat .ui-msg,
   time {
@@ -121,5 +122,9 @@ body.onstream {
 
   #chat-lines>div {
     padding: 1px 20px 1px 5px;
+  }
+
+  #chat-lines > div.msg-status .text:before, #chat-lines > div.msg-command .text:before, #chat-lines > div.msg-info .text:before, #chat-lines > div.msg-error .text:before {
+    vertical-align: middle;
   }
 }

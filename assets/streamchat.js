@@ -9,7 +9,7 @@ require('./chat/css/onstream.scss');
 
 const Chat = require('./chat/js/chat.js')['default'];
 const emotes = require('./emotes.json');
-const uri = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`;
+const uri = `ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`;
 
 new Chat()
     .withEmotes(emotes)
