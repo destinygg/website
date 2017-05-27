@@ -11,7 +11,7 @@ class Tpl {
         return json_encode ( $var, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP );
     }
 
-    public static function out($var, $default = null) {
+    public static function out($var, $default = "") {
         return htmlentities ( ((empty ( $var )) ? $default : $var), ENT_QUOTES, 'UTF-8' );
     }
 

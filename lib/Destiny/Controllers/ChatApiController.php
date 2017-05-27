@@ -65,11 +65,11 @@ class ChatApiController {
 
             $ban = $userService->getUserActiveBan ( $params['userid'] );
             if (! empty ( $ban ))
-                throw new Exception ("privmsgbanned");
+                throw new Exception ('privmsgbanned');
 
             $oldEnough = $userService->isUserOldEnough ( $params['userid'] );
             if (! $oldEnough)
-                throw new Exception ("privmsgaccounttooyoung");
+                throw new Exception ('privmsgaccounttooyoung');
 
             $user = $userService->getUserById ( $params['userid'] );
             $credentials = new SessionCredentials ( $user );
@@ -81,7 +81,7 @@ class ChatApiController {
                 
             $canSend = $privateMessageService->canSend( $credentials, $params['targetuserid'] );
             if (! $canSend)
-                throw new Exception ("throttled");
+                throw new Exception ('throttled');
 
             if(empty($user))
                 throw new Exception ('notfound');

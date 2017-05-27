@@ -40,7 +40,7 @@ class AuthenticationRedirectionFilter {
         // Follow url *notice the set, returning and clearing the var
         $follow = Session::set( 'follow' );
 
-        // If the user profile doesnt exist, go to the register page
+        // If the user profile doesn't exist, go to the register page
         if (! $userService->getUserAuthProviderExists ( $authCreds->getAuthId (), $authCreds->getAuthProvider () )) {
             Session::set ( 'authSession', $authCreds );
             $url = '/register?code=' . urlencode ( $authCreds->getAuthCode () );

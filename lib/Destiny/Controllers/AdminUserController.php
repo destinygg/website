@@ -30,8 +30,8 @@ class AdminUserController {
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param array $params
+     * @param ViewModel $model
      * @throws Exception
      * @return string
      */
