@@ -725,10 +725,12 @@ class Chat {
 
     resolveMessage(data){
         for(const message of this.unresolved){
-            if(this.user.username === data.nick && message.message === data.data)
-                return this.unresolved.splice(0, 1)[0].resolve(this);
+            if(this.user.username === data.nick && message.message === data.data){
+                this.unresolved.splice(0, 1);
+                return true;
+            }
         }
-        return null;
+        return false;
     }
 
     censorMessageByUsername(username){
