@@ -25,7 +25,7 @@ class ChatSource extends EventEmitter {
     }
 
     disconnect(){
-        if(this.sock && this.sock.readyState === this.sock.OPEN){
+        if(this.sock && this.sock.readyState === this.sock.OPEN)
             this.sock.close();
     }
 
