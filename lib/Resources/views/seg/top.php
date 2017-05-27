@@ -75,20 +75,20 @@ use Destiny\Common\Session;
                     <li class="divider-vertical visible-xs"></li>
                 <?php endif; ?>
 
-                <li><a title="Blog @ destiny.gg" href="/blog">Blog</a></li>
-                <li><a title="twitter.com" href="/twitter">Twitter</a></li>
-                <li><a title="youtube.com" href="/youtube">Youtube</a></li>
-                <li><a title="reddit.com" href="/reddit">Reddit</a></li>
-                <li><a title="facebook.com" href="/facebook">Facebook</a></li>
-                <li><a title="Amazon" href="/amazon">Amazon</a></li>
+                <li><a title="Blog @ destiny.gg" href="/blog" target="_blank">Blog</a></li>
+                <li><a title="twitter.com" href="/twitter" target="_blank">Twitter</a></li>
+                <li><a title="youtube.com" href="/youtube" target="_blank">Youtube</a></li>
+                <li><a title="reddit.com" href="/reddit" target="_blank">Reddit</a></li>
+                <li><a title="facebook.com" href="/facebook" target="_blank">Facebook</a></li>
+                <li><a title="Amazon" href="/amazon" target="_blank">Amazon</a></li>
 
                 <?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
-                <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription"><span>Subscribe</span></a></li>
+                <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own destiny.gg subscription" target="_blank"><span>Subscribe</span></a></li>
                 <?php else: ?>
-                <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
+                <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!" target="_blank"><span>Subscribe</span></a></li>
                 <?php endif; ?>
 
-                <li><a href="/donate" title="Donate">Donate</a></li>
+                <li><a href="/donate" title="Donate" target="_blank">Donate</a></li>
 
             </ul>
         </div>
