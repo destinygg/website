@@ -50,6 +50,9 @@ hr {
 #chat-output {
     width: 100%;
     height: 100%;
+    border-color: transparent;
+    border-width: 0 2px 0 2px;
+    border-style: solid;
 }
 
 #chat-output-frame {
@@ -332,14 +335,15 @@ hr {
 #chat-input-control:-moz-placeholder { color: $color-chat-disabled; }
 
 #chat-scroll-notify {
-    color: $color-chat-text2;
-    background: rgba($color-surface-dark3, 0.75);
-    padding: 2px 0;
+    color: #838383;
+    background: rgba($color-surface-dark3, 0.95);
+    box-shadow: 0px -1px 3px rgba(0, 0, 0, 0.37);
+    padding: 5px 0;
     position: absolute;
     display: none;
-    bottom : 0;
-    left: 8px;
-    right: 8px;
+    bottom: 0;
+    left: 6px;
+    right: 6px;
     text-align: center;
     cursor: pointer;
     z-index: 130;
@@ -859,7 +863,7 @@ hr {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.85);
     position: absolute;
     top:0;
     left:0;

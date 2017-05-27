@@ -30,7 +30,7 @@ class HtmlTextFormatter extends ChatFormatter {
 
 }
 
-let emoteregex, gemoteregex, twitchemoteregex;
+let gemoteregex, twitchemoteregex;
 
 class EmoteFormatter extends ChatFormatter {
 
@@ -38,13 +38,12 @@ class EmoteFormatter extends ChatFormatter {
         super(chat);
         const emoticons = [...chat.emoticons].join('|');
         const twitchemotes = [...chat.twitchemotes].join('|');
-        emoteregex = new RegExp(`(^|\\s)(${emoticons})(?=$|\\s)`);
         gemoteregex = new RegExp(`(^|\\s)(${emoticons})(?=$|\\s)`, 'gm');
         twitchemoteregex = new RegExp(`(^|\\s)(${emoticons}|${twitchemotes})(?=$|\\s)`, 'gm');
     }
 
     format(str, user){
-        const regex = (user && user.features.length > 0) ? ((user.hasFeature(UserFeatures.SUBSCRIBERT0)) ? twitchemoteregex : gemoteregex) : emoteregex;
+        const regex = (user && user.features.length > 0) ? ((user.hasFeature(UserFeatures.SUBSCRIBERT0)) ? twitchemoteregex : gemoteregex) : gemoteregex;
         return str.replace(regex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
     }
 
