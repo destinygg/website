@@ -12,6 +12,10 @@ class ChatSource extends EventEmitter {
 
     connect(url){
         try {
+            if(this.sock !== null) {
+                this.disconnect();
+                this.sock = null;
+            }
             this.emit('CONNECTING');
             this.sock = new webSocket(url);
             this.sock.onopen = e => this.emit('OPEN', e);
@@ -25,7 +29,7 @@ class ChatSource extends EventEmitter {
     }
 
     disconnect(){
-        if(this.sock && this.sock.readyState === this.sock.OPEN)
+        if(this.sock && this.sock.readyState !== this.sock.CLOSED)
             this.sock.close();
     }
 

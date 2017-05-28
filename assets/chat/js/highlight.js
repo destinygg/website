@@ -20,7 +20,7 @@ class ChatHighlighter {
             this.customregex = new RegExp(`\\b(?:${highlights})\\b`, 'i');
         if (this.chat.user && this.chat.user.username)
             this.userregex = new RegExp(`\\b@?(?:${this.chat.user.username})\\b`, 'i');
-        this.highlightnicks = Object.keys(this.chat.settings.get('highlightnicks'));
+        this.highlightnicks = this.chat.settings.get('highlightnicks');
     }
 
     mustHighlight(message){

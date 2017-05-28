@@ -41,7 +41,7 @@ class ChatAutoComplete {
     getBucketId(id){
         if (id.length === 0)
             return '';
-        return id[0].toLowerCase();
+        return id.match(/[\w]/)[0].toLowerCase();
     }
 
     addToBucket(data, weight, isemote, promoteTimestamp){

@@ -61,8 +61,7 @@ class ChatInputHistory {
         this.history.push(message);
         // limit entries
         if (this.history.length > this.maxentries)
-            this.history = this.history.slice(0, this.history.length-this.maxentries);
-        // set the current index to the start
+            this.history.shift();
         ChatStore.write('chat.history', this.history);
     }
 }

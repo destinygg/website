@@ -82,6 +82,7 @@ hr {
 
 #chat-lines {
     @extend .chat-font;
+    padding-top: 10px;
     font-size: 13px;
     line-height: 20px;
     -webkit-backface-visibility: hidden;
@@ -176,6 +177,7 @@ hr {
         color: $color-text-broadcast;
     }
     &.msg-own,
+    &.msg-historical,
     &.msg-broadcast {
         background-color: lighten( $color-chat-bg, 5 );
     }
@@ -235,6 +237,33 @@ hr {
     }
     &.censored .ctrl:hover:before {
         color: white;
+    }
+    &.msg-historical {
+        padding: 4px 20px 4px 10px;
+    }
+    &.msg-historical .time {
+        display: block !important;
+    }
+    &.msg-historical.msg-continue .text:before {
+        content: '';
+    }
+    &.h-start,
+    &.h-end {
+        padding: 0;
+        display: block;
+        min-height: 10px;
+        background-color: lighten( $color-chat-bg, 5 );
+    }
+    &.h-start {
+        margin-top: 10px;
+        border-radius: 4px 4px 0 0;
+        padding: 10px 10px 10px 10px;
+        color: $color-chat-text3;
+        background-color: lighten( $color-chat-bg, 9 );
+    }
+    &.h-end {
+        margin-bottom: 10px;
+        border-radius: 0 0 4px 4px;
     }
 }
 
@@ -305,7 +334,7 @@ hr {
 
 #chat-input-wrap,
 #chat-input-control {
-    height: 45px;
+    height: 50px;
     position: relative;
 }
 #chat-input-control {
@@ -633,23 +662,6 @@ hr {
     }
 }
 
-/* Emote combo */
-#chat-lines .emotecount {
-    color: white;
-    font-size: 10px;
-    line-height: 10px;
-    border-radius: 10px;
-    padding:3px 6px;
-    margin: 0 0 0 5px;
-    background: #191919;
-    display: inline-block;
-    i {
-        font-style: normal;
-        vertical-align: middle;
-        line-height: 1em;
-    }
-}
-
 .chat-emote.chat-emote-OverRustle:hover {
     animation: rustle-hover 100ms infinite;
 }
@@ -659,76 +671,99 @@ hr {
     to { left: 2px }
 }
 
-@keyframes emotecount {
-    from {
-        color: black;
-        background-color: white;
-    }
-    to {
-        color: white;
-        background-color: #333;
-    }
+$combo-color1: white;
+$combo-color2: $color-label-admin-alt;
+
+@keyframes emote-hit {
+    0% { color: $combo-color1; font-size:200%; }
+    1% { color: $combo-color2; font-size:200%; }
+    2% { color: $combo-color1; font-size:200%; }
+    3% { color: $combo-color2; font-size:200%; }
+    4% { color: $combo-color1; font-size:200%; }
+    100% { color: $combo-color2; font-size:100%; }
 }
-@-webkit-keyframes emotecount {
-    from {
-        color: black;
-        background-color: white;
-    }
-    to {
-        color: white;
-        background-color: #333;
-    }
+@keyframes emote-hit2 {
+    0% { transform: translate(-10px, 0); opacity: 0; text-shadow: 0 0 3px rgba(white, 1); }
+    2% { transform: translate(4px, 0); opacity: 1; text-shadow: 0 0 10px rgba(white, 0.5); }
+    100% { transform: translate(0, 0); opacity: 1; }
+}
+@keyframes emote-greyout {
+    0% { filter: grayscale(0) }
+    75% { filter: grayscale(0) }
+    100% { filter: grayscale(100%) }
 }
 
 .chat .emotecount {
-    animation: emotecount 600ms 1;
-    -moz-animation: emotecount 600ms 1;
-    -webkit-animation: emotecount 600ms 1;
-    &.x5 {
-        border-radius: 20px;
-        .count {
-            font-size: 13px;
-        }
-        .x {
-            font-size: 11px;
-        }
+    color: white;
+    display: inline-block;
+    font-family: 'robotoregular', sans-serif;
+    position: relative;
+    i {
+        font-style: normal;
+        vertical-align: middle;
+        line-height: 1em;
     }
-    &.x10 {
-        border-radius: 20px;
-        .count {
-            font-size: 16px;
-        }
-        .x {
-            font-size: 13px;
-        }
+    .hit,
+    .comb,
+    .x {
+        font-size: 14px;
+        font-family: 'robotoregular', sans-serif;
+        text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
     }
-    &.x20 {
-        border-radius: 30px;
-        .count {
-            font-size: 25px;
-        }
-        .x {
-            font-size: 18px;
-        }
+    .combo {
+        display: none;
+        font-weight: bold;
+        margin-left: 5px;
     }
-    &.x30 {
-        border-radius: 40px;
-        .count {
-            font-size: 35px;
-        }
-        .x {
-            font-size: 30px;
-        }
+    .hit {
+        color: $combo-color2;
+        font-weight: bold;
+        animation: emote-hit 600ms 1;
+        font-style: italic;
+        text-transform: uppercase;
+        margin-left: 0;
+        letter-spacing: 0.05em;
+        display: inline-block;
     }
-    &.x50 {
-        border-radius: 50px;
-        .count {
-            font-size: 40px;
-        }
-        .x {
-            font-size: 30px;
-        }
+    .count {
+        font-size: 16px;
+        letter-spacing: -0.05em;
+        font-weight: bold;
     }
+    &.x5 .count {
+        font-size: 150%;
+    }
+    &.x10 .count {
+        font-size: 200%;
+    }
+    &.x20 .count {
+        font-size: 300%;
+    }
+    &.x30 .count {
+        font-size: 400%;
+    }
+    &.x50 .count {
+        font-size: 500%;
+    }
+    &.combo-complete {
+        animation: emote-greyout 3500ms 1;
+        background: transparent url("../../web/img/blood-1.png") no-repeat center center;
+        background-size: 100% 100%;
+        filter: grayscale(100%);
+    }
+    &.combo-complete .hit {
+        display: none;
+    }
+    &.combo-complete .combo {
+        animation: emote-hit2 3000ms 1;
+        display: inline-block;
+        font-size: 100%;
+    }
+
 }
 
 /* Flair colors */

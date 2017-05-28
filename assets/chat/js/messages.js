@@ -17,8 +17,12 @@ const MessageTypes = {
 
 class MessageBuilder {
 
-    static uiMessage(message){
-        return new ChatUIMessage(message)
+    static cssMessage(classes=[]){
+        return new ChatUIMessage('', classes)
+    }
+
+    static uiMessage(message, classes=[]){
+        return new ChatUIMessage(message, classes)
     }
 
     static statusMessage(message, timestamp = null){
@@ -43,7 +47,7 @@ class MessageBuilder {
 
     static userMessage(message, user, timestamp = null){
         return new ChatUserMessage(message, user, timestamp)
-    }
+}
 
     static emoteMessage(emote, timestamp, count=1){
         return new ChatEmoteMessage(emote, timestamp, count);
@@ -53,11 +57,12 @@ class MessageBuilder {
 
 class ChatUIMessage {
 
-    constructor(str){
+    constructor(str, classes=[]){
         this.ui      = null;
         this.chat    = null;
         this.message = str;
         this.type    = MessageTypes.ui;
+        this.classes = classes;
     }
 
     attach(chat){
@@ -67,6 +72,7 @@ class ChatUIMessage {
     }
 
     wrap(content, classes=[], attr={}){
+        classes.push(this.classes);
         classes.unshift(`msg-${this.type}`);
         attr['class'] = classes.join(' ');
         return $('<div>', attr).html(content)[0].outerHTML;
@@ -109,7 +115,17 @@ class ChatUserMessage extends ChatMessage {
         super(message, timestamp, MessageTypes.user);
         this.user = user;
         this.highlighted = false;
+        this.historical = false;
         this.prepareMessage();
+    }
+
+    wrapTime(){
+        if(this.historical) {
+            const datetime = this.timestamp.format('MMMM Do YYYY, h:mm:ss a');
+            const label = this.timestamp.fromNow();
+            return `<time class="time" title="${datetime}">${label}</time>`;
+        }
+        return super.wrapTime();
     }
 
     prepareMessage(){
@@ -135,6 +151,8 @@ class ChatUserMessage extends ChatMessage {
             classes.push('msg-own');
         if(this.isSlashMe)
             classes.push('msg-emote');
+        if(this.historical)
+            classes.push('msg-historical');
         if(this.highlighted)
             classes.push('msg-highlight');
         if(this.chat.lastmessage && this.chat.lastmessage.user && this.user && this.chat.lastmessage.user.username === this.user.username)
@@ -200,12 +218,13 @@ class ChatEmoteMessage extends ChatMessage {
 
     constructor(emote, timestamp, count=1){
         super(emote, timestamp, MessageTypes.emote);
-        this.emotecount   = count;
+        this.emotecount = count;
         this.emotecountui = null;
+        this.combocomplete = false;
     }
 
     getEmoteCountLabel(){
-        return `<i class='count'>${this.emotecount}</i><i class='x'>X</i> C-C-C-COMBO`;
+        return `<i class='count'>${this.emotecount}</i> <i class="x">X</i> <i class="hit">Hits</i> <i class='combo'>C-C-C-COMBO</i> <span class="emotecountbg"></span>`;
     }
 
     html(){
@@ -214,7 +233,6 @@ class ChatEmoteMessage extends ChatMessage {
 
     incEmoteCount(){
         ++this.emotecount;
-
         let stepClass = '';
         if(this.emotecount >= 50)
             stepClass = ' x50';
@@ -226,11 +244,20 @@ class ChatEmoteMessage extends ChatMessage {
             stepClass = ' x10';
         else if(this.emotecount >= 5)
             stepClass = ' x5';
-
         if(!this.emotecountui)
             this.emotecountui = this.ui.find('.emotecount');
+        this.emotecountui.detach()
+            .attr('class', 'emotecount' + stepClass)
+            .html(this.getEmoteCountLabel())
+            .appendTo(this.ui);
+    }
 
-        this.emotecountui.detach().attr('class', 'emotecount' + stepClass).html(this.getEmoteCountLabel()).appendTo(this.ui);
+    completeCombo(){
+        if(!this.emotecountui)
+            this.emotecountui = this.ui.find('.emotecount');
+        this.emotecountui.addClass('combo-complete');
+        this.combocomplete = true;
+
     }
 
 }

@@ -1,6 +1,7 @@
 /* global $, window, document */
 
 import debounce from 'debounce';
+import moment from 'moment';
 import EventEmitter from './emitter.js';
 import ChatSource from './source.js';
 import ChatUser from './user.js';
@@ -13,7 +14,6 @@ import ChatScrollPlugin from './scroll.js';
 import ChatUserFocus from './focus.js';
 import ChatHighlighter from './highlight.js';
 import ChatStore from './store.js';
-import UserFeatures from './features.js';
 
 const nickregex = /^[a-zA-Z0-9_]{3,20}$/;
 const errorstrings = new Map([
@@ -57,10 +57,66 @@ const settings = new Map([
     ['highlightnicks', []],
     ['showremoved', false]
 ]);
+const commandsinfo = new Map([
+    ['help', ''],
+    ['emotes', ''],
+    ['me', ''],
+    ['msg', ''],
+    ['ignore', 'without arguments to list the nicks ignored'],
+    ['unignore', ''],
+    ['highlight', 'highlights target nicks messages for easier visibility'],
+    ['unhighlight', ''],
+    ['maxlines', ''],
+    ['mute', ''],
+    ['unmute', ''],
+    ['subonly', ''],
+    ['ban', ''],
+    ['unban', 'also unbans ip bans'],
+    ['timestampformat', ''],
+    ['stalk', ''],
+    ['mentions', '']
+]);
 
 class Chat {
 
     constructor(){
+        this.settings   = new Map([...settings, ...(ChatStore.read('chat.settings') || [])]);
+        this.ignoring   = new Set([...ChatStore.read('chat.ignoring') || []]);
+        this.shownhints = new Set([...ChatStore.read('chat.shownhints') || []]);
+
+        // Convert old style settings
+        let arr = null;
+        arr = ChatStore.read('chatignorelist');
+        if(arr){
+            ChatStore.write('chat.ignoring', Object.keys(arr) || []);
+            ChatStore.remove('chatignorelist');
+        }
+        arr = ChatStore.read('inputhistory');
+        if(arr){
+            ChatStore.write('chat.history', arr);
+            ChatStore.remove('inputhistory');
+        }
+        arr = ChatStore.read('chatoptions');
+        if(arr){
+            Object.keys(arr).forEach(k => {
+                switch (k) {
+                    case 'highlightnicks':
+                        this.settings.set('highlightnicks', Object.keys(arr[k]));
+                        break;
+                    default:
+                        this.settings.set(k, arr[k]);
+                        break;
+                }
+            });
+            ChatStore.write('chat.settings', this.settings);
+            ChatStore.remove('chatoptions');
+        }
+        ChatStore.remove('hiddenhints');
+        ChatStore.remove('lasthinttime');
+        ChatStore.remove('unreadMessageCount');
+        arr = null;
+        // End conversion
+
         this.uri             = '';
         this.ui              = $('#chat');
         this.css             = $('#chat-styles')[0]['sheet'];
@@ -73,7 +129,6 @@ class Chat {
         this.source          = new ChatSource();
         this.user            = new ChatUser();
         this.users           = new Map();
-        this.settings        = new Map();
         this.whispers        = new Map();
         this.reconnect       = true;
         this.connected       = false;
@@ -82,15 +137,10 @@ class Chat {
         this.formatters      = [];
         this.emoticons       = new Set();
         this.twitchemotes    = new Set();
-        this.shownhints      = new Set();
-        this.ignoring        = new Set();
         this.ignoreregex     = null;
         this.showstarthint   = true;
         this.authenticated   = true;
-        this.settings        = new Map([...settings, ...(ChatStore.read('chat.settings') || [])]);
-        this.ignoring        = new Set([...ChatStore.read('chat.ignoring') || []]);
-        this.shownhints      = new Set([...ChatStore.read('chat.shownhints') || []]);
-        this.backlogloading  = false; // todo rename
+        this.backlogloading  = false;
         this.autocomplete    = new ChatAutoComplete(this);
         this.highlighter     = new ChatHighlighter(this);
 
@@ -116,7 +166,6 @@ class Chat {
         this.control.on('HINT',            data => this.cmdHINT(data));
         this.control.on('EMOTES',          data => this.cmdEMOTES(data));
         this.control.on('HELP',            data => this.cmdHELP(data));
-        this.control.on('ME',              data => this.cmdME(data));
         this.control.on('IGNORE',          data => this.cmdIGNORE(data));
         this.control.on('UNIGNORE',        data => this.cmdUNIGNORE(data));
         this.control.on('MUTE',            data => this.cmdMUTE(data));
@@ -127,21 +176,28 @@ class Chat {
         this.control.on('UNBAN',           data => this.cmdUNBAN(data));
         this.control.on('SUBONLY',         data => this.cmdSUBONLY(data));
         this.control.on('MAXLINES',        data => this.cmdMAXLINES(data));
-        this.control.on('UNHIGHLIGHT',     data => this.cmdTOGGLEHIGHLIGHT(data));
-        this.control.on('HIGHLIGHT',       data => this.cmdTOGGLEHIGHLIGHT(data));
+        this.control.on('UNHIGHLIGHT',     data => this.cmdTOGGLEHIGHLIGHT(data, 'UNHIGHLIGHT'));
+        this.control.on('HIGHLIGHT',       data => this.cmdTOGGLEHIGHLIGHT(data, 'HIGHLIGHT'));
         this.control.on('TIMESTAMPFORMAT', data => this.cmdTIMESTAMPFORMAT(data));
         this.control.on('BROADCAST',       data => this.cmdBROADCAST(data));
         this.control.on('CONNECT',         data => this.cmdCONNECT(data));
 
-        this.source.on('PRIVMSGSENT', data => this.onPRIVMSGSENT(data));
-        this.source.on('PRIVMSG',     data => this.onPRIVMSG(data));
-        this.control.on('MESSAGE',    data => this.cmdWHISPER(data));
-        this.control.on('MSG',        data => this.cmdWHISPER(data));
-        this.control.on('WHISPER',    data => this.cmdWHISPER(data));
-        this.control.on('W',          data => this.cmdWHISPER(data));
-        this.control.on('TELL',       data => this.cmdWHISPER(data));
-        this.control.on('T',          data => this.cmdWHISPER(data));
-        this.control.on('NOTIFY',     data => this.cmdWHISPER(data));
+        this.source.on('PRIVMSGSENT',      data => this.onPRIVMSGSENT(data));
+        this.source.on('PRIVMSG',          data => this.onPRIVMSG(data));
+        this.control.on('MESSAGE',         data => this.cmdWHISPER(data));
+        this.control.on('MSG',             data => this.cmdWHISPER(data));
+        this.control.on('WHISPER',         data => this.cmdWHISPER(data));
+        this.control.on('W',               data => this.cmdWHISPER(data));
+        this.control.on('TELL',            data => this.cmdWHISPER(data));
+        this.control.on('T',               data => this.cmdWHISPER(data));
+        this.control.on('NOTIFY',          data => this.cmdWHISPER(data));
+
+        this.control.on('MENTIONS',        data => this.cmdMENTIONS(data));
+        this.control.on('M',               data => this.cmdMENTIONS(data));
+        this.control.on('STALK',           data => this.cmdSTALK(data));
+        this.control.on('S',               data => this.cmdSTALK(data));
+
+        [...commandsinfo.entries()].forEach(a => this.autocomplete.addToBucket(`/${a[0]}`, 1, false, 0));
 
         this.updateSettingsCss();
         this.updateIgnoreRegex();
@@ -370,16 +426,21 @@ class Chat {
     }
 
     onMSG(data){
-        const text    = (data.data.substring(0, 4) === '/me ' ? data.data.substring(4) : data.data).trim();
+        const text = (data.data.substring(0, 4) === '/me ' ? data.data.substring(4) : data.data).trim();
         const isemote = this.emoticons.has(text) || this.twitchemotes.has(text);
-        if(isemote && this.lastmessage !== null && this.lastmessage.message === text){
+        const dupmsg = this.lastmessage !== null && this.lastmessage.message === text;
+        if(dupmsg && isemote){
             if(this.lastmessage.type === MessageTypes.emote) {
+                const pinned = this.scrollplugin.isPinned();
                 this.lastmessage.incEmoteCount();
+                this.scrollplugin.updateAndPin(pinned);
             } else {
                 this.lastmessage.ui.remove();
                 this.push(MessageBuilder.emoteMessage(text, data.timestamp, 2));
             }
-        } else if(!this.resolveMessage(data)){
+        } else if(isemote) { // we dont add emotes to the ui ever, so no need to resolve
+            this.push(MessageBuilder.userMessage(data.data, this.users.get(data.nick), data.timestamp));
+        } else if(!this.resolveMessage(data)){ // resolves messages against the user, doesn't add ones it finds to the ui.
             this.push(MessageBuilder.userMessage(data.data, this.users.get(data.nick), data.timestamp));
         }
     }
@@ -437,16 +498,20 @@ class Chat {
 
     cmdSEND(str) {
         if(str !== ''){
+            const isme = str.substring(0, 4).toLowerCase() === '/me ';
+            const iscommand = str.substring(0, 1) === '/';
 
             // If we have the whisper window open, send a whisper instead
+            // If its a command close the window, and continue
             const convmenu = this.menus.get('whisper-messages');
+            if(iscommand && convmenu && convmenu.visible)
+                ChatMenu.closeMenus(this);
+
             if(convmenu && convmenu.visible)
-            {
                 this.cmdWHISPER([convmenu.username, str]);
-            }
 
             // Run a command e.g. /me
-            else if (/^\/[^\/|me]/i.test(str))
+            else if (!isme && iscommand)
             {
                 const command = str.split(' ', 1)[0];
                 this.sendCommand(
@@ -458,7 +523,7 @@ class Chat {
             // Normal chat message or emote
             else
             {
-                const text = (str.substring(0, 4).toLowerCase() === '/me ' ? str.substring(4) : str).trim();
+                const text = (isme ? str.substring(4) : str).trim();
                 if (!this.emoticons.has(text) && !this.twitchemotes.has(text) && this.connected){
                     // Normal text message
                     // We add the message to the gui immediately
@@ -483,7 +548,12 @@ class Chat {
     }
 
     cmdHELP(){
-        this.push(MessageBuilder.infoMessage("Available commands: /emotes /me /msg /ignore (without arguments to list the nicks ignored) /unignore /highlight (highlights target nicks messages for easier visibility) /unhighlight /maxlines /mute /unmute /subonly /ban /ipban /unban (also unbans ip bans) /timestampformat"));
+        let str = 'Available commands: ';
+        [...commandsinfo].forEach(a => {
+            const s = a[1] !== '' ? `(${a[1]})` : '';
+            str += `/${a[0]} ${s} `;
+        });
+        this.push(MessageBuilder.infoMessage(str));
     }
 
     cmdHINT(){
@@ -505,10 +575,6 @@ class Chat {
         }
         ChatStore.write('chat.shownhints', this.shownhints);
         this.push(MessageBuilder.infoMessage(hintstrings.get(key)));
-    }
-
-    cmdME(parts){
-        this.source.send('MSG', {data: parts.join(' ')});
     }
 
     cmdIGNORE(parts){
@@ -593,7 +659,7 @@ class Chat {
 
     cmdMAXLINES(parts, command){
         if (!parts[0]) {
-            this.push(MessageBuilder.infoMessage(`Current number of lines shown: ${this.settings.get('maxlines')}`));
+            this.push(MessageBuilder.infoMessage(`Maximum lines stored: ${this.settings.get('maxlines')}`));
         } else {
             const newmaxlines = Math.abs(parseInt(parts[0], 10));
             if (!newmaxlines) {
@@ -608,23 +674,27 @@ class Chat {
     }
 
     cmdTOGGLEHIGHLIGHT(parts, command){
-        const highlights = this.settings.get('highlightnicks'),
-              nicks      = Object.keys(highlights);
+        const highlights = this.settings.get('highlightnicks');
         if (!parts[0]) {
-            this.push(MessageBuilder.infoMessage('Currently highlighted users: ' + nicks.join(', ')));
+            if(highlights.length > 0)
+                this.push(MessageBuilder.infoMessage('Currently highlighted users: ' + highlights.join(', ')));
+            else
+                this.push(MessageBuilder.infoMessage(`No highlighted users`));
+
         } else if (!nickregex.test(parts[1])) {
             this.push(MessageBuilder.errorMessage(`Invalid nick - /${command} nick`));
         } else {
             const nick = parts[0].toLowerCase();
+            const i = highlights.indexOf(nick);
             switch(command) {
                 case 'UNHIGHLIGHT':
-                    if(highlights[nick]) delete(highlights[nick]);
+                    if(i !== -1) highlights.splice(i, 1);
                     this.push(MessageBuilder.infoMessage(`No longer highlighting ${nick}`));
                     break;
                 default:
                 case 'HIGHLIGHT':
-                    if(!highlights[nick]) highlights[nick] = true;
-                    this.push(MessageBuilder.infoMessage(`Now highlighting ${nick}`));
+                    if(i === -1) highlights.push(nick);
+                    this.push(MessageBuilder.infoMessage(`Highlighting ${nick}`));
                     break;
             }
             this.settings.set('highlightnicks', highlights);
@@ -666,7 +736,7 @@ class Chat {
         if (!this.shouldIgnoreUser(data.nick)){
             this.addWhisper(data.nick, {data: data.data, timestamp: data.timestamp, read: false, nick: data.nick});
             if(this.settings.get('allowNotifications') && !this.input.is(':focus'))
-                Chat.showNotification(data.nick, data.data, data.timestamp);
+                Chat.showNotification(`${data.nick} whispered ...`, data.data, data.timestamp);
         }
     }
 
@@ -687,7 +757,80 @@ class Chat {
         this.uri = parts[0];
         this.source.disconnect();
         this.source.connect(this.uri);
-        this.push(MessageBuilder.infoMessage(`Updated uri to ${this.uri}`));
+    }
+
+    cmdSTALK(parts){
+        if (!parts[0] || !nickregex.test(parts[0].toLowerCase())) {
+            this.push(MessageBuilder.errorMessage('Invalid nick - /stalk <nick>'));
+            return;
+        }
+        if(this.busystalk){
+            this.push(MessageBuilder.errorMessage('Still busy stalking'));
+            return;
+        }
+        if(this.nextallowedstalk && this.nextallowedstalk.isAfter(new Date())){
+            this.push(MessageBuilder.errorMessage(`Next allowed stalk ${this.nextallowedstalk.fromNow()}`));
+            return;
+        }
+        this.busystalk = true;
+        this.push(MessageBuilder.infoMessage(`Getting messages for ${[parts[0]]} ...`));
+        $.ajax({timeout:5000, url: `/chat/api/v1/${encodeURIComponent(parts[0])}/stalk`})
+            .always(() => {
+                this.nextallowedstalk = moment().add(10, 'seconds');
+                this.busystalk = false;
+            })
+            .done(d => {
+                if(d.lines.length === 0) {
+                    this.push(MessageBuilder.infoMessage(`No messages for ${parts[0]}`));
+                } else {
+                    const date = moment.utc(d.lines[d.lines.length-1]['timestamp']*1000).local().format('MMMM Do YYYY, h:mm:ss a');
+                    this.push(MessageBuilder.uiMessage(`Stalked ${parts[0]} ... <a href="https://dgg.overrustlelogs.net/${parts[0]}" target="_blank">overrustlelogs.net</a><br />last seen ${date}`, [`h-start`]));
+                    d.lines.forEach(a => {
+                        const m = MessageBuilder.userMessage(a.text, new ChatUser({nick: d.nick}), a.timestamp*1000);
+                        m.historical = true;
+                        this.push(m);
+                    });
+                    this.push(MessageBuilder.cssMessage([`h-end`]));
+                }
+            })
+            .fail(e => this.push(MessageBuilder.errorMessage(`Error stalking ${parts[0]}. Try again later`)));
+    }
+
+    cmdMENTIONS(parts){
+        if (!parts[0] || !nickregex.test(parts[0].toLowerCase())) {
+            this.push(MessageBuilder.errorMessage('Invalid nick - /mentions <nick>'));
+            return;
+        }
+        if(this.busymentions){
+            this.push(MessageBuilder.errorMessage('Still busy getting mentions'));
+            return;
+        }
+        if(this.nextallowedmentions && this.nextallowedmentions.isAfter(new Date())){
+            this.push(MessageBuilder.errorMessage(`Next allowed mentions ${this.nextallowedmentions.fromNow()}`));
+            return;
+        }
+        this.busymentions = true;
+        this.push(MessageBuilder.infoMessage(`Getting mentions for ${[parts[0]]} ...`));
+        $.ajax({timeout:5000, url: `/chat/api/v1/${encodeURIComponent(parts[0])}/mentions`})
+            .always(() => {
+                this.nextallowedmentions = moment().add(10, 'seconds');
+                this.busymentions = false;
+            })
+            .done(d => {
+                if(d.length === 0) {
+                    this.push(MessageBuilder.infoMessage(`No mentions for ${parts[0]}`));
+                } else {
+                    const date = moment.utc(d[d.length-1].date).local().format('MMMM Do YYYY, h:mm:ss a');
+                    this.push(MessageBuilder.uiMessage(`Mentions for ${parts[0]} ... <a href="https://dgg.overrustlelogs.net/${parts[0]}" target="_blank">overrustlelogs.net</a><br /> last message ${date}`, [`h-start`]));
+                    d.forEach(a => {
+                        const m = MessageBuilder.userMessage(a.text, new ChatUser({nick: a.nick}), a.date);
+                        m.historical = true;
+                        this.push(m);
+                    });
+                    this.push(MessageBuilder.cssMessage([`h-end`]));
+                }
+            })
+            .fail(e => this.push(MessageBuilder.errorMessage(`Error retrieving ${parts[0]} mentions. Try again later`)));
     }
 
     push(message){
@@ -704,6 +847,10 @@ class Chat {
         if(pin && lines.length >= maxlines)
             lines.slice(0, lines.length - maxlines).remove();
 
+        // Break the current combo
+        if(this.lastmessage && this.lastmessage.type === MessageTypes.emote && this.lastmessage.emotecount > 1)
+            this.lastmessage.completeCombo();
+
         // Highlight and append to the chat gui
         message.highlighted = this.highlighter.mustHighlight(message);
         this.lines.append(message.attach(this));
@@ -715,7 +862,7 @@ class Chat {
 
             // Show desktop notification
             if(message.highlighted && this.settings.get('allowNotifications') && !this.input.is(':focus'))
-                Chat.showNotification(message.user.username, message.message, message.timestamp.valueOf());
+                Chat.showNotification(`${message.user.username} said ...`, message.message, message.timestamp.valueOf());
         }
 
         // Cache the last message for interrogation
@@ -790,9 +937,9 @@ class Chat {
         return (!a || !b) ? (a.length !== b.length || a.sort().toString() !== b.sort().toString()) : false;
     }
 
-    static showNotification(username, message, tag){
+    static showNotification(title, message, tag){
         if(Notification.permission === 'granted'){
-            const n = new Notification(`${username} said ...`, {
+            const n = new Notification(title, {
                 body : message,
                 tag  : `dgg${tag}`,
                 icon : '/notifyicon.png',
