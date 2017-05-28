@@ -93,7 +93,7 @@ hr {
 #chat-lines > div {
     clear: both;
     word-wrap: break-word;
-    padding: 3px 20px 3px 5px;
+    padding: 3px;
 
     i[class^="icon-"] {
         display: inline-block;
@@ -179,7 +179,6 @@ hr {
     &.msg-broadcast .text {
         color: $color-text-broadcast;
     }
-    &.msg-tagged,
     &.msg-own,
     &.msg-historical,
     &.msg-broadcast {
@@ -187,6 +186,9 @@ hr {
     }
     &.msg-highlight {
         background-color: $color-chat-mentioned;
+    }
+    &.msg-tagged {
+        background-color: $color-chat-tagged;
     }
 
     &.msg-status .text:before,
@@ -283,6 +285,10 @@ hr {
         display: block;
         background: red;
         content: '';
+    }
+
+    &.msg-historical.msg-tagged:before {
+        background: none !important;
     }
     &.msg-tagged-green:before {
         background-color: #61BD4F;
@@ -811,7 +817,10 @@ $combo-color2: $color-label-admin-alt;
     &.x50 .count {
         font-size: 500%;
     }
-    &.combo-complete {
+    &.combo-complete.x10,
+    &.combo-complete.x20,
+    &.combo-complete.x30,
+    &.combo-complete.x50 {
         animation: emote-greyout 3500ms 1;
         background: transparent url("../../web/img/blood-1.png") no-repeat center center;
         background-size: 100% 100%;
@@ -942,6 +951,7 @@ $combo-color2: $color-label-admin-alt;
     border-radius         : 5px;
 }
 .nano > .nano-pane > .nano-slider {
+    opacity               : 0.8;
     background            : $color-surface-light2;
     position              : relative;
     margin                : 0 1px;

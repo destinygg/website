@@ -332,11 +332,11 @@ class Chat {
             this.loginscrn.hide();
         });
 
-        if(!this.authenticated) {
+        /*if(!this.authenticated) {
             this.loginscrn.show();
             this.input.val('');
             this.input.blur();
-        }
+        }*/
 
         this.input.attr('disabled', false);
         this.input.focus();
@@ -475,8 +475,7 @@ class Chat {
     onMSG(data){
         const text = (data.data.substring(0, 4) === '/me ' ? data.data.substring(4) : data.data).trim();
         const isemote = this.emoticons.has(text) || this.twitchemotes.has(text);
-        const dupmsg = this.lastmessage !== null && this.lastmessage.message === text;
-        if(dupmsg && isemote){
+        if(isemote && this.lastmessage !== null && this.lastmessage.message === text){
             if(this.lastmessage.type === MessageTypes.emote) {
                 const pinned = this.scrollplugin.isPinned();
                 this.lastmessage.incEmoteCount();
@@ -485,7 +484,7 @@ class Chat {
                 this.lastmessage.ui.remove();
                 this.push(MessageBuilder.emoteMessage(text, data.timestamp, 2));
             }
-        } if(!this.resolveMessage(data)){ // resolves messages against the user, doesn't add ones it finds to the ui.
+        } else if(!this.resolveMessage(data)){
             this.push(MessageBuilder.userMessage(data.data, this.users.get(data.nick), data.timestamp));
         }
     }
@@ -866,10 +865,10 @@ class Chat {
                 if(d.length === 0) {
                     this.push(MessageBuilder.infoMessage(`No mentions for ${parts[0]}`));
                 } else {
-                    const date = moment.utc(d[d.length-1].date).local().format('MMMM Do YYYY, h:mm:ss a');
+                    const date = moment.utc(d[d.length-1].date*1000).local().format('MMMM Do YYYY, h:mm:ss a');
                     this.push(MessageBuilder.uiMessage(`Mentions for ${parts[0]} ... <a href="https://dgg.overrustlelogs.net/${parts[0]}" target="_blank">overrustlelogs.net</a><br /> last message ${date}`, [`h-start`]));
                     d.forEach(a => {
-                        const m = MessageBuilder.userMessage(a.text, new ChatUser({nick: a.nick}), a.date);
+                        const m = MessageBuilder.userMessage(a.text, new ChatUser({nick: a.nick}), a.date*1000);
                         m.historical = true;
                         this.push(m);
                     });
@@ -911,7 +910,7 @@ class Chat {
             return;
         }
         const normalized = parts[0].toLowerCase();
-        this.taggednicks.remove(normalized);
+        this.taggednicks.delete(normalized);
         this.settings.set('taggednicks', [...this.taggednicks]);
         this.persistSettings();
         this.push(MessageBuilder.infoMessage(`Un-tagged ${parts[0]} `))

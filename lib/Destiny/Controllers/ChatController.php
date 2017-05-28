@@ -122,7 +122,7 @@ class ChatController {
         }
         Session::set('chat_ucd_mentions', time() + 10);
         $r = new CurlBrowser ([
-            'url' => 'https://polecat.me/api/mentions/'. urlencode($params['username']) .'?size=8',
+            'url' => 'https://overrustlelogs.net/api/v1/mentions/Destinygg/'. urlencode($params['username']) .'.json?limit=8',
             'headers' => ['Client-ID' => Config::$a['meta']['shortName'].'_'.Config::version()],
             'contentType' => MimeType::JSON,
             'timeout' => 5000
