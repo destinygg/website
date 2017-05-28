@@ -911,4 +911,40 @@ class UserService extends Service {
 
     return $stmt->fetchColumn();
   }
+
+    public function saveChatSettings($userId, $settings){
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+          UPDATE dfl_users SET `chatsettings` = :chatsettings
+          WHERE userId = :userid LIMIT 1
+        ");
+        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('chatsettings', $settings, \PDO::PARAM_STR);
+        $stmt->execute();
+        return (bool) $stmt->rowCount();
+    }
+
+    public function fetchChatSettings($userId){
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+            SELECT `chatsettings` FROM dfl_users
+            WHERE `userId` = :userid
+            LIMIT 1
+        ");
+        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
+        $data = $stmt->fetchColumn();
+        return !empty($data) ? json_decode($data) : [];
+    }
+
+    public function deleteChatSettings($userId){
+        $conn = Application::instance ()->getConnection ();
+        $stmt = $conn->prepare("
+          UPDATE dfl_users SET `chatsettings` = NULL
+          WHERE userId = :userid LIMIT 1
+        ");
+        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return (bool) $stmt->rowCount();
+    }
 }

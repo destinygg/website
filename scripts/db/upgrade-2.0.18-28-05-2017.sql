@@ -1,0 +1,1 @@
+ALTER TABLE `dfl_users` ADD COLUMN `chatsettings` BLOB NULL AFTER `discordname`;

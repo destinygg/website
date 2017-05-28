@@ -18,10 +18,15 @@ $.when(
     new Promise(res => $.getJSON({
         url: '/chat/history',
         timeout: 5000
+    }).done(res).fail(() => res(null))),
+    new Promise(res => $.getJSON({
+        url: '/chat/settings',
+        timeout: 5000
     }).done(res).fail(() => res(null)))
-).then((user, history) =>
+).then((user, history, settings) =>
     new Chat()
       .withUser(user)
+      .withSettings(settings || [])
       .withEmotes(emotes)
       .withFormatters()
       .withGui()

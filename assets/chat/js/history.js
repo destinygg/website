@@ -10,7 +10,7 @@ class ChatInputHistory {
         this.index      = -1;
         this.lastinput  = '';
         this.maxentries = 20;
-        this.input.on('keyup', e => {
+        this.input.on('keydown', e => {
             if (!(e.shiftKey || e.metaKey || e.ctrlKey) && (e.which === 38 || e.which === 40))
                 this.show(e.which === 38 ? -1 : 1); // if up arrow we subtract otherwise add
             else

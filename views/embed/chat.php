@@ -72,6 +72,11 @@ use Destiny\Common\Config;
                 <h5>Settings <button type="button" class="close" aria-hidden="true">&times;</button></h5>
               </div>
               <div class="tools">
+                  <div class="checkbox">
+                      <label title="Persistent profile settings">
+                          <input name="profilesettings" type="checkbox" checked="checked"/> Save settings to profile
+                      </label>
+                  </div>
                 <div class="checkbox">
                   <label title="Show all user flair icons">
                     <input name="hideflairicons" type="checkbox" /> Hide flair icons

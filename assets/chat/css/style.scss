@@ -119,6 +119,9 @@ hr {
     &.msg-emote .text {
         font-style: italic;
     }
+    &.msg-emote .chat-emote {
+        vertical-align: baseline;
+    }
 
     &.msg-user .text:before {
         color: $text-color1;
@@ -176,6 +179,7 @@ hr {
     &.msg-broadcast .text {
         color: $color-text-broadcast;
     }
+    &.msg-tagged,
     &.msg-own,
     &.msg-historical,
     &.msg-broadcast {
@@ -239,7 +243,7 @@ hr {
         color: white;
     }
     &.msg-historical {
-        padding: 0px 20px 0px 10px;
+        padding: 0 20px 0 10px;
     }
     &.msg-historical .time {
         display: block !important;
@@ -264,6 +268,51 @@ hr {
     &.h-end {
         margin-bottom: 10px;
         border-radius: 0 0 4px 4px;
+    }
+
+    &.msg-tagged {
+        position: relative;
+        padding-left: 7px;
+    }
+    &.msg-tagged:before {
+        position: absolute;
+        top:0;
+        left:0;
+        bottom:0;
+        min-width: 4px;
+        display: block;
+        background: red;
+        content: '';
+    }
+    &.msg-tagged-green:before {
+        background-color: #61BD4F;
+    }
+    &.msg-tagged-yellow:before {
+        background-color: #F2D600;
+    }
+    &.msg-tagged-orange:before {
+        background-color: #FFAB4A;
+    }
+    &.msg-tagged-red:before {
+        background-color: #EB5A46;
+    }
+    &.msg-tagged-purple:before {
+        background-color: #C377E0;
+    }
+    &.msg-tagged-blue:before {
+        background-color: #0079BF;
+    }
+    &.msg-tagged-sky:before {
+        background-color: #00C2E0;
+    }
+    &.msg-tagged-lime:before {
+        background-color: #51E898;
+    }
+    &.msg-tagged-pink:before {
+        background-color: #FF80CE;
+    }
+    &.msg-tagged-black:before {
+        background-color: #4d4d4d;
     }
 }
 
@@ -716,7 +765,7 @@ $combo-color2: $color-label-admin-alt;
         line-height: 1em;
     }
     .hit,
-    .comb,
+    .combo,
     .x {
         font-size: 14px;
         font-family: 'robotoregular', sans-serif;
@@ -740,6 +789,7 @@ $combo-color2: $color-label-admin-alt;
         margin-left: 0;
         letter-spacing: 0.05em;
         display: inline-block;
+        line-height: 30px;
     }
     .count {
         font-size: 16px;

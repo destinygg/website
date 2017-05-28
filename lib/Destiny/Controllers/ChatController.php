@@ -6,7 +6,10 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\CurlBrowser;
+use Destiny\Common\Exception;
+use Destiny\Common\Request;
 use Destiny\Common\Session;
+use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
@@ -128,6 +131,78 @@ class ChatController {
             $response = new Response (Http::STATUS_OK, json_encode($r->getResponse()));
         } else {
             $response = new Response (Http::STATUS_ERROR);
+        }
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        return $response;
+    }
+
+    /**
+     * @Route ("/chat/settings")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"POST"})
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function saveChatSettings(Request $request){
+        $response = new Response ();
+        try {
+            $data = $request->getBody();
+            if(strlen($data) <= 65535) {
+                $userService = UserService::instance();
+                $userId = Session::getCredentials ()->getUserId();
+                $userService->saveChatSettings($userId, $request->getBody());
+                $response->setStatus(Http::STATUS_OK);
+            } else {
+                throw new Exception("toolarge");
+            }
+        } catch (\Exception $e) {
+            $response->setStatus(Http::STATUS_ERROR);
+            $response->setBody($e->getMessage());
+        }
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        return $response;
+    }
+
+    /**
+     * @Route ("/chat/settings")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     *
+     * @return Response
+     */
+    public function getChatSettings(){
+        $response = new Response ();
+        try {
+            $userService = UserService::instance();
+            $userId = Session::getCredentials ()->getUserId();
+            $response->setStatus(Http::STATUS_OK);
+            $response->setBody(json_encode($userService->fetchChatSettings($userId)));
+        } catch (\Exception $e) {
+            $response->setStatus(Http::STATUS_ERROR);
+            $response->setBody($e->getMessage());
+        }
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        return $response;
+    }
+
+    /**
+     * @Route ("/chat/settings")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"DELETE"})
+     *
+     * @return Response
+     */
+    public function clearChatSettings(){
+        $response = new Response ();
+        try {
+            $userService = UserService::instance();
+            $userId = Session::getCredentials ()->getUserId();
+            $userService->deleteChatSettings($userId);
+            $response->setStatus(Http::STATUS_OK);
+        } catch (\Exception $e) {
+            $response->setStatus(Http::STATUS_ERROR);
+            $response->setBody($e->getMessage());
         }
         $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
         return $response;

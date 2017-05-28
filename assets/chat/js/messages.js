@@ -116,6 +116,7 @@ class ChatUserMessage extends ChatMessage {
         this.user = user;
         this.highlighted = false;
         this.historical = false;
+        this.tag = null;
         this.prepareMessage();
     }
 
@@ -157,6 +158,8 @@ class ChatUserMessage extends ChatMessage {
             classes.push('msg-highlight');
         if(this.chat.lastmessage && this.chat.lastmessage.user && this.user && this.chat.lastmessage.user.username === this.user.username)
             classes.push('msg-continue');
+        if(this.tag)
+            classes.push(`msg-tagged msg-tagged-${this.tag}`);
         return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + ' <span class="ctrl"></span> ' + this.wrapMessage(), classes, attr);
     }
 

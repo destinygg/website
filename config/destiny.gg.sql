@@ -87,6 +87,7 @@ CREATE TABLE `dfl_users` (
   `minecraftname` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,,
   `discorduuid` varchar(36) CHARACTER SET ascii DEFAULT NULL,
   `discordname` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `chatsettings` blob,
   PRIMARY KEY (`userId`),
   UNIQUE KEY `minecraftuuid` (`minecraftuuid`),
   UNIQUE KEY `minecraftname` (`minecraftname`),

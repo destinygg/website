@@ -11,7 +11,6 @@ class ChatHighlighter {
         this.customregex = null;
         this.userregex = null;
         this.highlightnicks = null;
-        this.loadHighlighters();
     }
 
     loadHighlighters(){

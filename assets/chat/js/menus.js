@@ -1,6 +1,5 @@
 /* global $ */
 
-import ChatStore from './store.js';
 import ChatScrollPlugin from './scroll.js';
 import UserFeatures from './features.js';
 import EventEmitter from './emitter.js';
@@ -80,6 +79,10 @@ class ChatSettingsMenu extends ChatMenu {
                 case 'highlight':
                     this.updateSetting(name, checked);
                     break;
+                case 'profilesettings':
+                    if(!checked) $.ajax({url: '/chat/settings', method:'delete'});
+                    this.updateSetting(name, checked);
+                    break;
                 case 'allowNotifications':
                     if(checked){
                         this.notificationPermission().then(
@@ -106,7 +109,7 @@ class ChatSettingsMenu extends ChatMenu {
     updateSetting(name, value){
         this.updateNotification();
         this.chat.settings.set(name, value);
-        ChatStore.write('chat.settings', this.chat.settings);
+        this.chat.persistSettings();
         this.chat.updateSettingsCss();
         this.chat.scrollplugin.updateAndPin(this.chat.scrollplugin.isPinned());
     }
@@ -285,7 +288,7 @@ class ChatWhisperUsers extends ChatMenu {
         try{
             const t = window.parent.document.title.replace(/^\([0-9]+\) /, '');
             window.parent.document.title = this.unread > 0 ? `(${this.unread}) ${t}` : `${t}`;
-        }catch(ignored){console.log(ignored)}
+        }catch(ignored){console.error(ignored)}
 
     }
 

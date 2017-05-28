@@ -74,10 +74,6 @@ class ChatAutoComplete {
         return false;
     }
 
-    addEmote(emote){
-        this.addToBucket(emote, 1, true, 0);
-    }
-
     updateNick(nick){
         const weight = Date.now();
         const data = this.addToBucket(nick, weight, false, 0);
