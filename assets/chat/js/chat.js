@@ -38,7 +38,7 @@ const errorstrings = new Map([
 ]);
 const hintstrings = new Map([
     ['hint', 'Type in /hint for more hints'],
-    ['slashhelp', 'Type in /help for more advanced features, like modifying the scrollback size'],
+    ['slashhelp', 'Type in /help for more a list of commands, do advanced things like modify your scroll-back size'],
     ['tabcompletion', 'Use the tab key to auto-complete usernames and emotes (for user only completion prepend a @ or press shift)'],
     ['hoveremotes', 'Hovering your mouse over an emote will show you the emote code'],
     ['highlight', 'Chat messages containing your username will be highlighted'],
@@ -125,6 +125,7 @@ class Chat {
         this.input           = this.ui.find('#chat-input-control');
         this.scrollnotify    = this.ui.find('#chat-scroll-notify');
         this.loginscrn       = this.ui.find('#chat-login-screen');
+        this.loadingscrn     = this.ui.find('#chat-loading');
         this.control         = new EventEmitter(this);
         this.source          = new ChatSource();
         this.user            = new ChatUser();
@@ -204,6 +205,7 @@ class Chat {
     }
 
     withGui(){
+        this.loadingscrn.fadeOut();
         this.scrollplugin   = new ChatScrollPlugin(this.output);
         this.inputhistory   = new ChatInputHistory(this);
         this.userfocus      = new ChatUserFocus(this, this.css);
@@ -799,6 +801,7 @@ class Chat {
     }
 
     cmdMENTIONS(parts){
+        if (!parts[0]) parts[0] = this.user.username;
         if (!parts[0] || !nickregex.test(parts[0].toLowerCase())) {
             this.push(MessageBuilder.errorMessage('Invalid nick - /mentions <nick>'));
             return;

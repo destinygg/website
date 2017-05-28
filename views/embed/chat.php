@@ -168,6 +168,13 @@ use Destiny\Common\Config;
         </div>
     </div>
 
+    <div id="chat-loading">
+        <div>
+            <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
 </div>
 
 <?php include 'seg/commonbottom.php' ?>

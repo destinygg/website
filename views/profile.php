@@ -32,6 +32,41 @@ use Destiny\Commerce\SubscriptionStatus;
         </div>
       </div>
     </section>
+
+
+  <?php if(!empty($this->ban)): ?>
+  <section class="container">
+      <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Bans</h3>
+      <div id="ban-content" class="content collapse">
+
+              <div class="content-dark clearfix">
+                  <div class="ds-block">
+                      <dl>
+                          <dt>Banned user</dt>
+                          <dd><?=Tpl::out($this->user['username'])?></dd>
+                          <dt>Time of ban</dt>
+                          <dd><?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT)?></dd>
+                          <?php if($this->ban['endtimestamp']): ?>
+                              <dt>Ending on</dt>
+                              <dd><?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?></dd>
+                          <?php endif; ?>
+                          <dt>Ban reason</dt>
+                          <dd><?=Tpl::out($this->ban['reason'])?></dd>
+                      </dl>
+                      <p>
+                          Any non-permanent bans are removed when subscribing as well
+                          as any mutes (there are no permanent mutes, maximum 6 days long).<br/>
+                          This is not meant to be a cash grab, rather a tool for those who would
+                          not like to wait for a manual unban or for the ban to naturally expire
+                          and are willing to pay for it.<br />
+                          Feel free to evade the ban if you have da skillz.
+                      </p>
+                  </div>
+              </div>
+
+      </div>
+  </section>
+  <?php endif ?>
     
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>
@@ -101,7 +136,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <?php endforeach; ?>
         <?php else: ?>
           <div class="content content-dark clearfix">
-            <div class="ds-block">No subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
+            <div class="ds-block">No <?=Config::$a['subscriptionType']?> subscription? <a title="Subscribe" href="/subscribe">Try it out</a></div>
           </div>
         <?php endif ?>
       </div>

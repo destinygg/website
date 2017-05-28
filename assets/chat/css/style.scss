@@ -239,7 +239,7 @@ hr {
         color: white;
     }
     &.msg-historical {
-        padding: 4px 20px 4px 10px;
+        padding: 0px 20px 0px 10px;
     }
     &.msg-historical .time {
         display: block !important;
@@ -281,6 +281,18 @@ hr {
     .greentext {
         color: $color-green-text;
     }
+}
+
+#chat-loading {
+    opacity: 0.3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
 }
 
 @-webkit-keyframes flash {
