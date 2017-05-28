@@ -485,9 +485,7 @@ class Chat {
                 this.lastmessage.ui.remove();
                 this.push(MessageBuilder.emoteMessage(text, data.timestamp, 2));
             }
-        } else if(isemote) { // we dont add emotes to the ui ever, so no need to resolve
-            this.push(MessageBuilder.userMessage(data.data, this.users.get(data.nick), data.timestamp));
-        } else if(!this.resolveMessage(data)){ // resolves messages against the user, doesn't add ones it finds to the ui.
+        } if(!this.resolveMessage(data)){ // resolves messages against the user, doesn't add ones it finds to the ui.
             this.push(MessageBuilder.userMessage(data.data, this.users.get(data.nick), data.timestamp));
         }
     }
