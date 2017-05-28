@@ -282,6 +282,11 @@ class ChatWhisperUsers extends ChatMenu {
         }
         this.notif.text(this.unread);
         this.notif.toggle(this.unread > 0);
+        try{
+            const t = window.parent.document.title.replace(/^\([0-9]+\) /, '');
+            window.parent.document.title = this.unread > 0 ? `(${this.unread}) ${t}` : `${t}`;
+        }catch(ignored){console.log(ignored)}
+
     }
 
     redraw(){
