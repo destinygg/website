@@ -306,6 +306,8 @@ class Chat {
             this.input.blur();
         }
 
+        this.input.attr('disabled', false);
+        this.input.focus();
         this.scrollplugin.updateAndPin(true);
         return this;
     }

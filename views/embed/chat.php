@@ -30,7 +30,7 @@ use Destiny\Common\Config;
     <!-- chat input -->
     <div id="chat-input">
         <div id="chat-input-wrap">
-            <textarea id="chat-input-control" placeholder="Write something..." spellcheck="true" autocomplete="off" tabindex="1" autofocus></textarea>
+            <textarea id="chat-input-control" placeholder="Write something..." spellcheck="true" autocomplete="off" tabindex="1" autofocus disabled></textarea>
         </div>
         <div id="chat-tools-wrap">
             <a id="chat-emoticon-btn" class="iconbtn" title="Emotes" style="float: left;">
