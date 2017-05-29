@@ -49,6 +49,7 @@ class ChatSource extends EventEmitter {
 
     send(eventname, data){
         const payload = (typeof data === 'string') ? data : JSON.stringify(data);
+        console.log(`${eventname} ${payload}`);
         if(this.sock.readyState === this.sock.OPEN){
             this.sock.send(`${eventname} ${payload}`);
         } else {
