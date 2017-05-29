@@ -120,7 +120,6 @@ class Chat {
         this.formatters      = [];
         this.emoticons       = new Set();
         this.twitchemotes    = new Set();
-        this.ignoreregex     = null;
         this.showstarthint   = true;
         this.authenticated   = true;
         this.backlogloading  = false;
@@ -128,6 +127,8 @@ class Chat {
         this.settings        = new Map([...settings]);
         this.taggednicks     = new Map();
         this.ignoring        = new Set();
+        this.ignoreregex     = null;
+        this.highlightregex  = null;
 
         this.source.on('PING',             data => this.source.send('PONG', data));
         this.source.on('OPEN',             data => this.connected = true);
@@ -962,11 +963,19 @@ class Chat {
             this.push(MessageBuilder.errorMessage('Cannot tag yourself'));
             return;
         }
-        const c = parts[1] && tagcolors.indexOf(parts[1]) !== -1 ? parts[1] : [...tagcolors][Math.floor(Math.random()*tagcolors.size)];
-        this.taggednicks.set(normalized, c);
+        const color = parts[1] && tagcolors.indexOf(parts[1]) !== -1 ? parts[1] : tagcolors[Math.floor(Math.random()*tagcolors.length)];
+        this.taggednicks.set(normalized, color);
         this.settings.set('taggednicks', [...this.taggednicks]);
         this.applySettings();
-        this.push(MessageBuilder.infoMessage(`Tagged ${parts[0]} AYYYLMAO with ${c}`));
+
+        this.lines.children(`div.msg-tagged`).removeClass(Chat.removeTagClasses());
+        this.lines.children(`div.msg-user`).get().forEach(e => {
+            const el = $(e);
+            if(this.taggednicks.has(el.attr('data-username'))){
+                el.addClass(`msg-tagged msg-tagged-${color}`);
+            }
+        });
+        this.push(MessageBuilder.infoMessage(`Tagged ${parts[0]} AYYYLMAO with ${color}`));
     }
 
     cmdUNTAG(parts){
@@ -982,7 +991,15 @@ class Chat {
         this.taggednicks.delete(normalized);
         this.settings.set('taggednicks', [...this.taggednicks]);
         this.applySettings();
-        this.push(MessageBuilder.infoMessage(`Un-tagged ${parts[0]} `))
+
+        this.lines.children(`div[data-username="${normalized}"]`).removeClass(Chat.removeTagClasses());
+        this.push(MessageBuilder.infoMessage(`Un-tagged ${parts[0]} `));
+    }
+
+    static removeTagClasses(){
+        return function(i, c) {
+            return (c.match(/(^|\s)msg-tagged?\S+/g) || []).join(' ');
+        }
     }
 
     push(message){
