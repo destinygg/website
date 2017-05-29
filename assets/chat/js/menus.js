@@ -239,6 +239,13 @@ class ChatEmoteMenu extends ChatMenu {
         this.ui.on('click', '.chat-emote', e => this.selectEmote(e.target.innerText));
     }
 
+    show() {
+        if (!this.visible) {
+            this.chat.input.focus();
+        }
+        super.show();
+    }
+
     selectEmote(emote){
         let value = this.input.val().toString().trim();
         this.input.val(value + (value === '' ? '':' ') +  emote + ' ').focus();

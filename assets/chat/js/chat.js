@@ -876,7 +876,7 @@ class Chat {
 
     cmdSTALK(parts){
         if (!parts[0] || !nickregex.test(parts[0].toLowerCase())) {
-            this.push(MessageBuilder.errorMessage('Invalid nick - /stalk <nick>'));
+            this.push(MessageBuilder.errorMessage('Invalid nick - /stalk <nick> <limit>'));
             return;
         }
         if(this.busystalk){
@@ -888,8 +888,9 @@ class Chat {
             return;
         }
         this.busystalk = true;
+        const limit = parts[1] ? parseInt(parts[1]) : 3;
         this.push(MessageBuilder.infoMessage(`Getting messages for ${[parts[0]]} ...`));
-        $.ajax({timeout:5000, url: `/chat/api/v1/${encodeURIComponent(parts[0])}/stalk`})
+        $.ajax({timeout:5000, url: `/chat/api/v1/${encodeURIComponent(parts[0])}/stalk?limit=${limit}`})
             .always(() => {
                 this.nextallowedstalk = moment().add(10, 'seconds');
                 this.busystalk = false;
@@ -914,7 +915,7 @@ class Chat {
     cmdMENTIONS(parts){
         if (!parts[0]) parts[0] = this.user.username;
         if (!parts[0] || !nickregex.test(parts[0].toLowerCase())) {
-            this.push(MessageBuilder.errorMessage('Invalid nick - /mentions <nick>'));
+            this.push(MessageBuilder.errorMessage('Invalid nick - /mentions <nick> <limit>'));
             return;
         }
         if(this.busymentions){
@@ -926,8 +927,9 @@ class Chat {
             return;
         }
         this.busymentions = true;
+        const limit = parts[1] ? parseInt(parts[1]) : 3;
         this.push(MessageBuilder.infoMessage(`Getting mentions for ${[parts[0]]} ...`));
-        $.ajax({timeout:5000, url: `/chat/api/v1/${encodeURIComponent(parts[0])}/mentions`})
+        $.ajax({timeout:5000, url: `/chat/api/v1/${encodeURIComponent(parts[0])}/mentions?limit=${limit}`})
             .always(() => {
                 this.nextallowedmentions = moment().add(10, 'seconds');
                 this.busymentions = false;

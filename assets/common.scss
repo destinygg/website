@@ -42,7 +42,7 @@ $color-surface-dark4:   #333333;
 
 /* Chat */
 $color-chat-text1:      #DEDEDE;
-$color-chat-text2:      #838383;
+$color-chat-text2:      #9E9E9E;
 $color-chat-text3:      #838383;
 $color-chat-disabled:   #414141;
 $color-chat-tagged:     #232323;
@@ -74,17 +74,31 @@ $color-text-broadcast:  #EDEA12;
 $color-underline-nsfl:  #FFF000;
 $color-underline-nsfw:  #FF0000;
 
+$color-green:           #61BD4F;
+$color-yellow:          #F2D600;
+$color-orange:          #FFAB4A;
+$color-red:             #EB5A46;
+$color-purple:          #C377E0;
+$color-blue:            #0079BF;
+$color-sky:             #00C2E0;
+$color-lime:            #51E898;
+$color-pink:            #FF80CE;
+$color-black:           #4d4d4d;
+
 .head-font {
-  font-family: "HelveticaNeue-CondensedBold", "ArialNarrow-Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "HelveticaNeue-CondensedBold", "ArialNarrow-Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .chat-font {
-  font-family: Helvetica, "Trebuchet MS", Verdana, sans-serif;
+    font-family: Helvetica, "Trebuchet MS", Verdana, sans-serif;
 }
 .mono-font {
-  font-family: "Lucida Console", Monaco, monospace;
+    font-family: "Lucida Console", Monaco, monospace;
 }
 .serif-font {
-  font-family: "Trebuchet MS", sans-serif;
+    font-family: "Trebuchet MS", sans-serif;
+}
+.roboto-regular {
+    font-family: 'robotoregular', sans-serif;
 }
 
 @-moz-keyframes spin {
