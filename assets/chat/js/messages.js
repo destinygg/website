@@ -143,7 +143,7 @@ class ChatUserMessage extends ChatMessage {
     }
 
     wrapUser(user){
-        const features = (user.features.length > 0) ? `<span class="features">${this.getFeatureHTML()}</span>` : '';
+        const features = (user.features.length > 0) ? this.getFeatureHTML() : '';
         return `${features} <a class="user ${user.features.join(' ')}">${user.username}</a>`;
     }
 
@@ -224,7 +224,7 @@ class ChatUserMessage extends ChatMessage {
                     break;
             }
         }
-        return icons;
+        return icons.length > 0 ? `<span class="features">${icons}</span>` : '';
     }
 
 }

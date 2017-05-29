@@ -1034,7 +1034,8 @@ class Chat {
             !message.user.hasFeature(UserFeatures.BOT) &&
             message.user.username !== this.user.username &&
             this.highlightregex !== null &&
-            (Boolean(this.highlightregex.test(message.message) || this.highlightregex.test(message.username)));
+            Boolean(this.highlightregex.test(message.message) || this.highlightregex.test(message.user.username));
+
         this.lines.append(message.attach(this));
 
         if(!this.backlogloading){
