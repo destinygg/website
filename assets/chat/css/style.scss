@@ -316,13 +316,15 @@ hr {
         background-color: #4d4d4d;
     }
 
+    &.msg-whisper {
+        margin: 1px 0;
+    }
     &.msg-whisper .text {
         display: block;
         padding: 12px 8px;
     }
-
     &.msg-whisper a.user {
-        background: $color-alert-text;
+        background: $color-accent;
         padding: 1px 4px 1px 4px;
         border-radius: 2px;
         color: white;
