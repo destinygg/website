@@ -473,7 +473,8 @@ class Chat {
     }
 
     onMSG(data){
-        const text = (data.data.substring(0, 4) === '/me ' ? data.data.substring(4) : data.data).trim();
+        const str = data.data;
+        const text = (str.substring(0, 4) === '/me ' ? str.substring(4) : str).trim();
         const isemote = this.emoticons.has(text) || this.twitchemotes.has(text);
         if(isemote && this.lastmessage !== null && this.lastmessage.message === text){
             if(this.lastmessage.type === MessageTypes.emote) {
@@ -484,7 +485,7 @@ class Chat {
                 this.lastmessage.ui.remove();
                 this.push(MessageBuilder.emoteMessage(text, data.timestamp, 2));
             }
-        } else if(!this.resolveMessage(data)){
+        } else if(!this.resolveMessage(data.nick, text)){
             this.push(MessageBuilder.userMessage(data.data, this.users.get(data.nick), data.timestamp));
         }
     }
@@ -551,11 +552,12 @@ class Chat {
             if(iscommand && convmenu && convmenu.visible)
                 ChatMenu.closeMenus(this);
 
-            if(convmenu && convmenu.visible)
+            if(convmenu && convmenu.visible) {
                 this.cmdWHISPER([convmenu.username, str]);
-
+                return; // todo, rather than prevent the history here -- read from a different history
+            }
             // Run a command e.g. /me
-            else if (!isme && iscommand)
+             else if (!isme && iscommand)
             {
                 const command = str.split(' ', 1)[0];
                 this.sendCommand(
@@ -581,7 +583,6 @@ class Chat {
                 }
                 this.source.send('MSG', {data: str});
             }
-
             this.inputhistory.add(str);
             this.autocomplete.markLastComplete();
         }
@@ -960,10 +961,10 @@ class Chat {
         return message;
     }
 
-    resolveMessage(data){
+    resolveMessage(username, str){
         for(const message of this.unresolved){
-            if(this.user.username === data.nick && message.message === data.data){
-                this.unresolved.splice(0, 1);
+            if(this.user.username === username && message.message === str){
+                this.unresolved.splice(this.unresolved.indexOf(message), 1);
                 return true;
             }
         }
