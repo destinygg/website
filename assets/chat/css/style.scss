@@ -179,7 +179,8 @@ hr {
     }
     &.msg-own,
     &.msg-historical,
-    &.msg-broadcast {
+    &.msg-broadcast,
+    &.msg-whisper {
         background-color: lighten( $color-chat-bg, 5 );
     }
     &.msg-tagged {
@@ -317,11 +318,18 @@ hr {
 
     &.msg-whisper .text {
         display: block;
-        padding: 8px;
+        padding: 12px 8px;
     }
-    &.msg-whisper time {
-        float: right;
-        margin-right: 10px;
+
+    &.msg-whisper a.user {
+        background: $color-alert-text;
+        padding: 1px 4px 1px 4px;
+        border-radius: 2px;
+        color: white;
+        font-weight: normal;
+    }
+    &.msg-whisper a.user:hover {
+        text-decoration: none;
     }
 
     .chat-open-whisper:hover,
