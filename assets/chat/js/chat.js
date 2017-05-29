@@ -12,8 +12,8 @@ import ChatAutoComplete from './autocomplete.js';
 import ChatInputHistory from './history.js';
 import ChatScrollPlugin from './scroll.js';
 import ChatUserFocus from './focus.js';
-import ChatHighlighter from './highlight.js';
 import ChatStore from './store.js';
+import UserFeatures from "./features";
 
 const nickregex = /^[a-zA-Z0-9_]{3,20}$/;
 const tagcolors = [
@@ -49,7 +49,6 @@ const errorstrings = new Map([
     ['notconnected', 'You have to be connected to use that']
 ]);
 const hintstrings = new Map([
-    ['hint', 'Type in /hint for more hints'],
     ['slashhelp', 'Type in /help for more a list of commands, do advanced things like modify your scroll-back size'],
     ['tabcompletion', 'Use the tab key to auto-complete usernames and emotes (for user only completion prepend a @ or press shift)'],
     ['hoveremotes', 'Hovering your mouse over an emote will show you the emote code'],
@@ -71,7 +70,9 @@ const settings = new Map([
     ['customhighlight', []],
     ['highlightnicks', []],
     ['taggednicks', []],
-    ['showremoved', false]
+    ['showremoved', false],
+    ['showhispersinchat', false],
+    ['ignorenicks', []]
 ]);
 const commandsinfo = new Map([
     ['help', ''],
@@ -98,8 +99,6 @@ const commandsinfo = new Map([
 class Chat {
 
     constructor(){
-        this.ignoring        = new Set([...ChatStore.read('chat.ignoring') || []]);
-        this.shownhints      = new Set([...ChatStore.read('chat.shownhints') || []]);
         this.uri             = '';
         this.ui              = $('#chat');
         this.css             = $('#chat-styles')[0]['sheet'];
@@ -126,9 +125,9 @@ class Chat {
         this.authenticated   = true;
         this.backlogloading  = false;
         this.autocomplete    = new ChatAutoComplete(this);
-        this.highlighter     = new ChatHighlighter(this);
         this.settings        = new Map([...settings]);
         this.taggednicks     = new Map();
+        this.ignoring        = new Set();
 
         this.source.on('PING',             data => this.source.send('PONG', data));
         this.source.on('OPEN',             data => this.connected = true);
@@ -186,23 +185,29 @@ class Chat {
         this.control.on('S',               data => this.cmdSTALK(data));
     }
 
+    withUserAndSettings(data){
+        return this.withUser(data)
+                   .withSettings(data && data.hasOwnProperty('settings') ? data.settings : []);
+    }
+
+    withUser(user){
+        this.user = this.addUser(user || {});
+        this.authenticated = this.user !== null && this.user.username !== '';
+        return this;
+    }
+
     withSettings(data){
-        this.settings = new Map([...settings, ...(ChatStore.read('chat.settings') || []), ...data]);
+        if(this.authenticated && new Map([...data]).get('profilesettings')){
+            this.settings = new Map([...settings, ...data]);
+        } else {
+            this.settings = new Map([...settings, ...(ChatStore.read('chat.settings') || []), ['profilesettings', false]]);
+        }
 
         // Convert old style settings
-        let arr = null;
-        arr = ChatStore.read('chatignorelist');
+        let save = false;
+        let arr = ChatStore.read('chatoptions');
         if(arr){
-            ChatStore.write('chat.ignoring', Object.keys(arr) || []);
-            ChatStore.remove('chatignorelist');
-        }
-        arr = ChatStore.read('inputhistory');
-        if(arr){
-            ChatStore.write('chat.history', arr);
-            ChatStore.remove('inputhistory');
-        }
-        arr = ChatStore.read('chatoptions');
-        if(arr){
+            save = true;
             Object.keys(arr).forEach(k => {
                 switch (k) {
                     case 'highlightnicks':
@@ -213,23 +218,45 @@ class Chat {
                         break;
                 }
             });
-            ChatStore.write('chat.settings', this.settings);
-            ChatStore.remove('chatoptions');
         }
+
+        arr = ChatStore.read('chatignorelist');
+        if(arr) {
+            save = true;
+            this.settings.set('ignorenicks', Object.keys(arr) || []);
+        }
+
+        arr = ChatStore.read('chat.ignoring');
+        if(arr) {
+            save = true;
+            this.settings.set('ignorenicks', arr);
+        }
+
+        arr = ChatStore.read('inputhistory');
+        if(arr)
+            ChatStore.write('chat.history', arr);
+
+        arr = null;
+        ChatStore.remove('chatoptions');
+        ChatStore.remove('inputhistory');
+        ChatStore.remove('chatignorelist');
         ChatStore.remove('hiddenhints');
         ChatStore.remove('lasthinttime');
         ChatStore.remove('unreadMessageCount');
-        arr = null;
+        ChatStore.remove('chat.shownhints');
+        ChatStore.remove('chat.ignoring');
+        // end of clean up
 
-        if(!data || data.length === 0)
-            this.persistSettings();
+        // If the save flag is one, we save the settings (can result in an api call)
+        if(save) this.saveSettings();
 
-        // End conversion
-        this.taggednicks = new Map(this.settings.get('taggednicks'));
         return this;
     }
 
     withGui(){
+        [...commandsinfo.entries()].forEach(a => this.autocomplete.addToBucket(`/${a[0]}`, 1, false, 0));
+        this.taggednicks    = new Map(this.settings.get('taggednicks'));
+        this.ignoring       = new Set(this.settings.get('ignorenicks'));
         this.scrollplugin   = new ChatScrollPlugin(this.output);
         this.inputhistory   = new ChatInputHistory(this);
         this.userfocus      = new ChatUserFocus(this, this.css);
@@ -241,10 +268,7 @@ class Chat {
             ['whisper-messages',    new ChatWhisperMessages(this.ui.find('#chat-whisper-messages'), $.fn, this)]
         ]);
 
-        this.highlighter.loadHighlighters();
-        [...commandsinfo.entries()].forEach(a => this.autocomplete.addToBucket(`/${a[0]}`, 1, false, 0));
-        this.updateSettingsCss();
-        this.updateIgnoreRegex();
+        this.applySettings(false);
         this.loadingscrn.fadeOut();
 
         // The user input field
@@ -299,8 +323,9 @@ class Chat {
             if(!this.waitingtopin){
                 this.waspinned = this.scrollplugin.isPinned();
             }
-            ChatMenu.closeMenus(this); // todo move out
+            ChatMenu.closeMenus(this);
         });
+        this.input.on('mousedown', () => ChatMenu.closeMenus(this));
 
         // On window resize, update scroll
         let waspinnedbeforeresize = null;
@@ -332,21 +357,80 @@ class Chat {
             this.loginscrn.hide();
         });
 
-        /*if(!this.authenticated) {
-            this.loginscrn.show();
-            this.input.val('');
-            this.input.blur();
-        }*/
-
-        $(document).on('keydown', e => {
-            if(e.keyCode === 27){
-                ChatMenu.closeMenus(this);
+        // whispers
+        this.lines.on('click', '.chat-open-whisper', e => {
+            const nick = $(e.target).data('username');
+            if(this.whispers.has(nick)) {
+                this.menus.get('whisper-users').selectConversation(nick);
             }
+            return false;
+        });
+        this.lines.on('click', '.chat-remove-whisper', e => {
+            const nick = $(e.target).data('username');
+            if(this.whispers.has(nick)) {
+                $.ajax({url: `/profile/messages/${encodeURIComponent(nick)}/unread`, method:'delete'});
+                const pinned = this.scrollplugin.isPinned();
+                this.whispers.delete(nick);
+                this.menus.get('whisper-users').redraw();
+                $(e.target).closest('.msg-whisper').remove();
+                this.scrollplugin.updateAndPin(pinned);
+            }
+            return false;
         });
 
+        // Close menus when esc is pressed
+        $(document).on('keydown', ({keyCode}) => {
+            if(keyCode === 27) ChatMenu.closeMenus(this);
+        });
+
+
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        this.push(MessageBuilder.infoMessage('test'));
+        const msg1 = MessageBuilder.emoteMessage('OverRustle', null, 0);
+        const msg2 = MessageBuilder.emoteMessage('SOTRIGGERED ', null, 0);
+        const msg3 = MessageBuilder.emoteMessage('Heimerdonger ', null, 0);
+        const msg4 = MessageBuilder.emoteMessage('Disgustiny ', null, 0);
+        const msgs = [msg1,msg2,msg3,msg4];
+        const mx = [90,120,20,9];
+        let ind = 0;
+
+        const i2 = setInterval(() => {
+            if(ind > msgs.length-1){
+                clearInterval(i2);
+                return;
+            }
+            const m = msgs[ind];
+            if(m.emotecount === 0){
+                this.push(m);
+            }
+            if(!m.combocomplete) {
+                m.incEmoteCount();
+                this.scrollplugin.updateAndPin(true);
+            }
+            if(m.combocomplete || m.emotecount >= mx[ind]){
+                ind++;
+            }
+        }, 10);
+
+        this.scrollplugin.updateAndPin(true);
         this.input.attr('disabled', false);
         this.input.focus();
-        this.scrollplugin.updateAndPin(true);
         return this;
     }
 
@@ -378,12 +462,6 @@ class Chat {
         return this;
     }
 
-    withUser(user){
-        this.user = this.addUser(user || {});
-        this.authenticated = this.user !== null && this.user.username !== '';
-        return this;
-    }
-
     withMessages(){
         if(this.authenticated) {
             $.ajax({url: "/profile/conversations/unread"})
@@ -404,17 +482,31 @@ class Chat {
         return this;
     }
 
-    persistSettings(){
-        if(this.authenticated && this.settings.get('profilesettings') === true) {
-            if(!this.delayedsettingspersist) {
-                this.delayedsettingspersist = debounce(() => {
-                    $.ajax({url: '/chat/settings', method:'post', data: JSON.stringify([...this.settings])});
-                    return false;
-                }, 1000, false);
+    saveSettings(){
+        if(this.authenticated){
+            if(this.settings.get('profilesettings')) {
+                $.ajax({url: '/chat/settings', method:'post', data: JSON.stringify([...this.settings])});
+            } else {
+                ChatStore.write('chat.settings', this.settings);
             }
-            this.delayedsettingspersist();
+        } else {
+            ChatStore.write('chat.settings', this.settings);
         }
-        ChatStore.write('chat.settings', this.settings);
+    }
+
+    commitSettings(){
+        if(!this.debouncedsave) {
+            this.debouncedsave = debounce(() => this.saveSettings(), 1000, false);
+        }
+        this.debouncedsave();
+    }
+
+    applySettings(save=true){
+        if(save)
+            this.saveSettings();
+        this.updateHighlightRegex();
+        this.updateIgnoreRegex();
+        this.updateSettingsCss();
     }
 
     sendCommand(command, payload=null){
@@ -463,9 +555,9 @@ class Chat {
 
     onNAMES(data){
         this.push(MessageBuilder.statusMessage(`Connected. Server connections: ${data['connectioncount']}`));
-        if(this.showstarthint){
+        if(this.showstarthint) {
+            this.cmdHINT([Math.floor(Math.random() * hintstrings.size)]);
             this.showstarthint = false;
-            this.sendCommand('HINT');
         }
     }
 
@@ -618,25 +710,19 @@ class Chat {
         this.push(MessageBuilder.infoMessage(str));
     }
 
-    cmdHINT(){
-        let i = -1, key = null;
-        const keys = [...hintstrings.keys()];
-        while(true){
-            ++i;
-            if(i >= hintstrings.size){
-                key = keys[0];
-                this.shownhints.clear();
-                this.shownhints.add(key);
-                break;
+    cmdHINT(parts){
+        const arr = [...hintstrings];
+        const i = parts && parts[0] ? parseInt(parts[0])-1 : -1;
+        if(i > 0 && i < hintstrings.size){
+            this.push(MessageBuilder.infoMessage(arr[i][1]));
+        } else {
+            if(this.lasthintindex === undefined || this.lasthintindex === arr.length - 1) {
+                this.lasthintindex = 0;
+            } else  {
+                this.lasthintindex++;
             }
-            key = keys[i];
-            if(!this.shownhints.has(key)){
-                this.shownhints.add(key);
-                break;
-            }
+            this.push(MessageBuilder.infoMessage(arr[this.lasthintindex][1]));
         }
-        ChatStore.write('chat.shownhints', this.shownhints);
-        this.push(MessageBuilder.infoMessage(hintstrings.get(key)));
     }
 
     cmdIGNORE(parts){
@@ -728,8 +814,7 @@ class Chat {
                 this.push(MessageBuilder.infoMessage(`Invalid argument - /${command} is expecting a number`));
             } else {
                 this.settings.set('maxlines', newmaxlines);
-                this.persistSettings();
-                this.updateSettingsCss();
+                this.applySettings();
                 this.push(MessageBuilder.infoMessage(`Current number of lines shown: ${this.settings.get('maxlines')}`));
             }
         }
@@ -760,10 +845,7 @@ class Chat {
                     break;
             }
             this.settings.set('highlightnicks', highlights);
-            this.persistSettings();
-            this.highlighter.loadHighlighters();
-            this.highlighter.redraw();
-            this.updateSettingsCss();
+            this.applySettings();
         }
     }
 
@@ -776,8 +858,7 @@ class Chat {
                 this.push(MessageBuilder.errorMessage('Invalid format, see: http://momentjs.com/docs/#/displaying/format/'));
             } else {
                 this.settings.set('timestampformat', format);
-                this.persistSettings();
-                this.updateSettingsCss();
+                this.applySettings();
                 this.push(MessageBuilder.infoMessage(`New format: ${this.settings.get('timestampformat')}`));
             }
         }
@@ -797,8 +878,13 @@ class Chat {
     onPRIVMSG(data) {
         if (!this.shouldIgnoreUser(data.nick)){
             this.addWhisper(data.nick, {data: data.data, timestamp: data.timestamp, read: false, nick: data.nick});
-            if(this.settings.get('allowNotifications') && !this.input.is(':focus'))
+            if(this.settings.get('showhispersinchat')){
+                let user = this.users.has(data.nick) ? this.users.get(data.nick) : new ChatUser({nick: data.nick});
+                this.push(MessageBuilder.whisperMessage(data.data, user, this.user.username, data.timestamp));
+            }
+            if(this.settings.get('allowNotifications') && !this.input.is(':focus')) {
                 Chat.showNotification(`${data.nick} whispered ...`, data.data, data.timestamp);
+            }
         }
     }
 
@@ -918,9 +1004,8 @@ class Chat {
         const c = parts[1] && tagcolors.indexOf(parts[1]) !== -1 ? parts[1] : [...tagcolors][Math.floor(Math.random()*tagcolors.size)];
         this.taggednicks.set(normalized, c);
         this.settings.set('taggednicks', [...this.taggednicks]);
-        this.persistSettings();
-
-        this.push(MessageBuilder.infoMessage(`Tagged ${parts[0]} AYYYLMAO with ${c}`))
+        this.applySettings();
+        this.push(MessageBuilder.infoMessage(`Tagged ${parts[0]} AYYYLMAO with ${c}`));
     }
 
     cmdUNTAG(parts){
@@ -935,7 +1020,7 @@ class Chat {
         const normalized = parts[0].toLowerCase();
         this.taggednicks.delete(normalized);
         this.settings.set('taggednicks', [...this.taggednicks]);
-        this.persistSettings();
+        this.applySettings();
         this.push(MessageBuilder.infoMessage(`Un-tagged ${parts[0]} `))
     }
 
@@ -965,7 +1050,13 @@ class Chat {
         }
 
         // Highlight and append to the chat gui
-        message.highlighted = this.highlighter.mustHighlight(message);
+        message.highlighted =
+            this.settings.get('highlight') &&
+            message.type === MessageTypes.user &&
+            !message.user.hasFeature(UserFeatures.BOT) &&
+            message.user.username !== this.user.username &&
+            this.highlightregex !== null &&
+            (Boolean(this.highlightregex.test(message.message) || this.highlightregex.test(message.username)));
         this.lines.append(message.attach(this));
 
         if(!this.backlogloading){
@@ -1014,8 +1105,8 @@ class Chat {
             this.ignoring.add(nick);
         else if(this.ignoring.has(nick))
             this.ignoring.delete(nick);
-        ChatStore.write('chat.ignoring', this.ignoring);
-        this.updateIgnoreRegex();
+        this.settings.set('ignorenicks', [...this.ignoring]);
+        this.applySettings();
     }
 
     shouldIgnoreMessage(message){
@@ -1043,7 +1134,15 @@ class Chat {
 
     updateIgnoreRegex(){
         const k = Array.from(this.ignoring.values()).map(Chat.makeSafeForRegex);
-        this.ignoreregex = k.length > 0 ? new RegExp(k.join('|'), 'i') : null;
+        this.ignoreregex = k.length > 0 ? new RegExp(`\\b(?:${k.join('|')})\\b`, 'i') : null;
+    }
+
+    updateHighlightRegex(){
+        let nicks = [...this.settings.get('highlightnicks')];
+        let words = [...this.settings.get('customhighlight')];
+        nicks.push(this.user.username);
+        let arr = [...nicks, ...words].filter(a => a !== '');
+        this.highlightregex = arr.length > 0 ? new RegExp(`\\b(?:${arr.join('|')})\\b`, 'i') : null;
     }
 
     static isArraysEqual(a, b){

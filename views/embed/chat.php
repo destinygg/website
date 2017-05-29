@@ -68,52 +68,57 @@ use Destiny\Common\Config;
         <!-- settings -->
         <div id="chat-settings" class="chat-menu">
             <div class="list-wrap clearfix">
-              <div class="toolbar">
-                <h5>Settings <button type="button" class="close" aria-hidden="true">&times;</button></h5>
-              </div>
-              <div class="tools">
-                  <div class="checkbox">
-                      <label title="Persistent profile settings">
-                          <input name="profilesettings" type="checkbox" checked="checked"/> Save settings to profile
-                      </label>
-                  </div>
-                <div class="checkbox">
-                  <label title="Show all user flair icons">
-                    <input name="hideflairicons" type="checkbox" /> Hide flair icons
-                  </label>
+                <div class="toolbar">
+                    <h5>Settings <button type="button" class="close" aria-hidden="true">&times;</button></h5>
                 </div>
-                <div class="checkbox">
-                  <label title="Show the timestamps next to the messages">
-                    <input name="showtime" type="checkbox" /> Show time for messages
-                  </label>
+                <div class="tools">
+                    <div class="checkbox">
+                        <label title="Persistent profile settings">
+                            <input name="profilesettings" type="checkbox" checked="checked"/> Save settings to profile
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label title="Show all user flair icons">
+                            <input name="hideflairicons" type="checkbox" /> Hide flair icons
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label title="Show the timestamps next to the messages">
+                            <input name="showtime" type="checkbox" /> Show time for messages
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label title="Show removed content">
+                            <input name="showremoved" type="checkbox" /> Show removed messages
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label title="Highlight text that you are mentioned in">
+                            <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label title="Your custom list of words that will make messages highlight" style="width: 100%;">
+                            Custom highlight words.
+                            <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma (,)" />
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label title="Show desktop notifications on highlight">
+                            <input name="allowNotifications" type="checkbox" /> Desktop notifications
+                            <br /><small id="chat-settings-notification-permissions">(Permission unknown)</small>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label title="Show removed content">
+                            <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
+                        </label>
+                    </div>
+                    <div class="form-group checkbox">
+                        <hr />
+                        <small>See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information</small>
+                    </div>
                 </div>
-                <div class="checkbox">
-                    <label title="Show removed content">
-                        <input name="showremoved" type="checkbox" /> Show removed messages
-                    </label>
-                </div>
-                <div class="checkbox">
-                  <label title="Highlight text that you are mentioned in">
-                    <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
-                  </label>
-                </div>
-                <div class="form-group">
-                  <label title="Your custom list of words that will make messages highlight" style="width: 100%;">
-                    Custom highlight words.
-                    <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma (,)" />
-                  </label>
-                </div>
-                <div class="checkbox">
-                  <label title="Show desktop notifications on highlight">
-                    <input name="allowNotifications" type="checkbox" /> Desktop notifications
-                    <br /><small id="chat-settings-notification-permissions">(Permission unknown)</small>
-                  </label>
-                </div>
-                <div class="form-group checkbox">
-                  <hr />
-                  <small>See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information</small>
-                </div>
-              </div>
             </div>
         </div>
         <!-- end settings -->

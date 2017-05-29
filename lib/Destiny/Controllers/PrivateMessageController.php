@@ -262,4 +262,23 @@ class PrivateMessageController {
         return $response;
     }
 
+    /**
+     * @Route ("/profile/messages/{username}/unread")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"DELETE"})
+     *
+     * @param array $params
+     * @return Response
+     */
+    public function markReadMessagesFrom(array $params){
+        $userService = UserService::instance();
+        $privateMessageService = PrivateMessageService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
+        $targetuser = $userService->getUserByUsername($params['username']);
+        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
+        $response = new Response (Http::STATUS_OK);
+        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        return $response;
+    }
+
 }

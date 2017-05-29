@@ -4,6 +4,7 @@ import ChatScrollPlugin from './scroll.js';
 import UserFeatures from './features.js';
 import EventEmitter from './emitter.js';
 import moment from 'moment';
+import debounce from 'debounce';
 
 class ChatMenu extends EventEmitter {
 
@@ -62,56 +63,59 @@ class ChatSettingsMenu extends ChatMenu {
         this.notificationEl = this.ui.find('#chat-settings-notification-permissions');
         this.customHighlightEl = this.ui.find('input[name=customhighlight]');
         this.allowNotificationsEl = this.ui.find('input[name="allowNotifications"]');
-        this.customHighlightEl.on('keypress blur', e => {
-            if (e.which && e.which !== 13) return; // not enter
-            let data = $(e.target).val().toString().split(',').map(s => s.trim());
-            this.chat.settings.set('customhighlight', [...new Set(data)]);
-            this.chat.highlighter.loadHighlighters();
-            this.chat.highlighter.redraw();
-        });
-        this.ui.on('change', 'input[type="checkbox"]', e => {
-            let name    = $(e.target).attr('name'),
-                checked = $(e.target).is(':checked');
-            switch(name){
-                case 'showremoved':
-                case 'showtime':
-                case 'hideflairicons':
-                case 'highlight':
-                    this.updateSetting(name, checked);
-                    break;
-                case 'profilesettings':
-                    if(!checked) $.ajax({url: '/chat/settings', method:'delete'});
-                    this.updateSetting(name, checked);
-                    break;
-                case 'allowNotifications':
-                    if(checked){
-                        this.notificationPermission().then(
-                            p => this.updateSetting(name, true),
-                            p => this.updateSetting(name, false)
-                        );
-                    } else {
-                        this.updateSetting(name, false);
-                    }
-                    break;
-            }
-        });
+        this.customHighlightEl.on('keypress blur', e => this.onCustomHighlightChange(e));
+        this.ui.on('change', 'input[type="checkbox"]', e => this.onSettingsChange(e));
     }
 
-    show(btn){
-        super.show(btn);
-        [...this.chat.settings].forEach(a => this.ui.find(`input[name=${a[0]}][type="checkbox"]`).prop('checked', this.chat.settings.get(a[0])));
-        if(Notification.permission !== 'granted')
-            this.allowNotificationsEl.prop('checked', false);
-        this.customHighlightEl.val( this.chat.settings.get('customhighlight').join(',') );
-        this.updateNotification();
+    onCustomHighlightChange(e){
+        if (e.which && e.which !== 13) return; // not Enter
+        let data = $(e.target).val().toString().split(',').map(s => s.trim());
+        this.chat.settings.set('customhighlight', [...new Set(data)]);
+        this.chat.commitSettings();
     }
 
-    updateSetting(name, value){
+    onSettingsChange(e){
+        let name = $(e.target).attr('name'),
+         checked = $(e.target).is(':checked');
+        switch(name){
+            case 'showremoved':
+            case 'showtime':
+            case 'hideflairicons':
+            case 'highlight':
+            case 'showhispersinchat':
+                this.chat.settings.set(name, checked);
+                break;
+            case 'profilesettings':
+                if(!checked) {
+                    $.ajax({url: '/chat/settings', method:'delete'});
+                }
+                this.chat.settings.set(name, checked);
+                break;
+            case 'allowNotifications':
+                if(checked){
+                    this.notificationPermission().then(
+                        p => this.chat.settings.set(name, true),
+                        p => this.chat.settings.set(name, false)
+                    );
+                } else {
+                    this.chat.settings.set(name, false);
+                }
+                break;
+        }
         this.updateNotification();
-        this.chat.settings.set(name, value);
-        this.chat.persistSettings();
-        this.chat.updateSettingsCss();
-        this.chat.scrollplugin.updateAndPin(this.chat.scrollplugin.isPinned());
+        this.chat.applySettings(false);
+        this.chat.commitSettings();
+    }
+
+    show(){
+        if(!this.visible){
+            [...this.chat.settings].forEach(a => this.ui.find(`input[name=${a[0]}][type="checkbox"]`).prop('checked', this.chat.settings.get(a[0])));
+            if(Notification.permission !== 'granted')
+                this.allowNotificationsEl.prop('checked', false);
+            this.customHighlightEl.val( this.chat.settings.get('customhighlight').join(',') );
+            this.updateNotification();
+        }
+        super.show();
     }
 
     updateNotification(){
@@ -347,11 +351,11 @@ class ChatWhisperMessages extends ChatMenu {
         this.scrollplugin.updateAndPin(true);
     }
 
-    show(btn){
+    show(){
         if(!this.visible){
             this.chat.ui.addClass('focus-user');
         }
-        super.show(btn);
+        super.show();
     }
 
     hide(){

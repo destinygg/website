@@ -47,7 +47,13 @@ class MessageBuilder {
 
     static userMessage(message, user, timestamp = null){
         return new ChatUserMessage(message, user, timestamp)
-}
+    }
+
+    static whisperMessage(message, user, target, timestamp = null){
+        const m =  new ChatUserMessage(message, user, timestamp);
+        m.target = target;
+        return m;
+    }
 
     static emoteMessage(emote, timestamp, count=1){
         return new ChatEmoteMessage(emote, timestamp, count);
@@ -116,8 +122,15 @@ class ChatUserMessage extends ChatMessage {
         this.user = user;
         this.highlighted = false;
         this.historical = false;
+        this.target = null;
         this.tag = null;
-        this.prepareMessage();
+        this.isSlashMe = false;
+        if (this.message.substring(0, 4) === '/me ') {
+            this.isSlashMe = true;
+            this.message = this.message.substring(4);
+        } else if (this.message.substring(0, 2) === '//') {
+            this.message = this.message.substring(1);
+        }
     }
 
     wrapTime(){
@@ -129,16 +142,6 @@ class ChatUserMessage extends ChatMessage {
         return super.wrapTime();
     }
 
-    prepareMessage(){
-        this.isSlashMe = false;
-        if (this.message.substring(0, 4) === '/me ') {
-            this.isSlashMe = true;
-            this.message = this.message.substring(4);
-        } else if (this.message.substring(0, 2) === '//') {
-            this.message = this.message.substring(1);
-        }
-    }
-
     wrapUser(user){
         const features = (user.features.length > 0) ? `<span class="features">${this.getFeatureHTML()}</span>` : '';
         return `${features} <a class="user ${user.features.join(' ')}">${user.username}</a>`;
@@ -146,6 +149,7 @@ class ChatUserMessage extends ChatMessage {
 
     html(){
         const classes = [], attr = {};
+        const continued = this.chat.lastmessage && this.chat.lastmessage.user && this.user && this.chat.lastmessage.user.username === this.user.username;
         if (this.user && this.user.username)
             attr['data-username'] = this.user.username.toLowerCase();
         if(this.chat.user && this.chat.user.username === this.user.username)
@@ -156,11 +160,19 @@ class ChatUserMessage extends ChatMessage {
             classes.push('msg-historical');
         if(this.highlighted)
             classes.push('msg-highlight');
-        if(this.chat.lastmessage && this.chat.lastmessage.user && this.user && this.chat.lastmessage.user.username === this.user.username)
+        if(continued)
             classes.push('msg-continue');
         if(this.tag)
             classes.push(`msg-tagged msg-tagged-${this.tag}`);
-        return this.wrap(this.wrapTime() + ' ' + this.wrapUser(this.user) + ' <span class="ctrl"></span> ' + this.wrapMessage(), classes, attr);
+        if(this.target) {
+            classes.push(`msg-whisper`);
+            const t = `<a data-username="${this.user.username}" class="chat-open-whisper"><i class="fa fa-envelope" aria-hidden="true"></i> open</a> ` +
+                      `<a data-username="${this.user.username}" class="chat-remove-whisper"><i class="fa fa-times" aria-hidden="true"></i> remove</a>`;
+
+            return this.wrap(`${this.wrapTime()} ${this.wrapUser(this.user)} (whispered you) ${t} <span class="ctrl"></span> ${this.wrapMessage()}`, classes, attr);
+        } else {
+            return this.wrap(`${this.wrapTime()} ${this.wrapUser(this.user)}${continued ? '':':'} <span class="ctrl"></span> ${this.wrapMessage()}`, classes, attr);
+        }
     }
 
     getFeatureHTML(){

@@ -56,9 +56,11 @@ class ChatController {
      */
     public function getUser(){
         $cred = Session::getCredentials ();
+        $userService = UserService::instance();
         $response = new Response (Http::STATUS_OK, json_encode([
             'nick'     => $cred->getUsername(),
-            'features' => $cred->getFeatures()
+            'features' => $cred->getFeatures(),
+            'settings' => $userService->fetchChatSettings($cred->getUserId())
         ]));
         $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
         return $response;

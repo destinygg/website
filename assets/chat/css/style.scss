@@ -122,12 +122,6 @@ hr {
     &.msg-emote .chat-emote {
         vertical-align: baseline;
     }
-
-    &.msg-user .text:before {
-        color: $text-color1;
-        content: ': ';
-    }
-
     &.msg-continue .text:before {
         color: $color-chat-disabled;
         content: '> ';
@@ -174,10 +168,14 @@ hr {
     &.msg-ui,
     &.msg-own,
     &.msg-highlight {
-        color: $color-chat-text1;
+        .text {
+            color: $color-chat-text1;
+        }
     }
-    &.msg-broadcast .text {
-        color: $color-text-broadcast;
+    &.msg-broadcast {
+        .text {
+            color: $color-text-broadcast;
+        }
     }
     &.msg-own,
     &.msg-historical,
@@ -220,10 +218,6 @@ hr {
     }
     .chat-user:hover {
         text-decoration: underline;
-    }
-
-    .user {
-        margin-right: -3px;
     }
 
     &.censored .text {
@@ -319,6 +313,22 @@ hr {
     }
     &.msg-tagged-black:before {
         background-color: #4d4d4d;
+    }
+
+    &.msg-whisper .text {
+        display: block;
+        padding: 8px;
+    }
+    &.msg-whisper time {
+        float: right;
+        margin-right: 10px;
+    }
+
+    .chat-open-whisper:hover,
+    .chat-remove-whisper:hover {
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
     }
 }
 
@@ -739,14 +749,14 @@ hr {
     to { left: 2px }
 }
 
-$combo-color1: white;
-$combo-color2: $color-label-admin-alt;
+$combo-color1: $color-label-admin-alt;
+$combo-color2: white;
 
 @keyframes emote-hit {
     0% { color: $combo-color1; font-size:200%; }
-    1% { color: $combo-color2; font-size:200%; }
+    1% { color: $combo-color2; font-size:190%; }
     2% { color: $combo-color1; font-size:200%; }
-    3% { color: $combo-color2; font-size:200%; }
+    3% { color: $combo-color2; font-size:190%; }
     4% { color: $combo-color1; font-size:200%; }
     100% { color: $combo-color2; font-size:100%; }
 }
@@ -785,7 +795,6 @@ $combo-color2: $color-label-admin-alt;
     .combo {
         display: none;
         font-weight: bold;
-        margin-left: 5px;
     }
     .hit {
         color: $combo-color2;
@@ -826,6 +835,9 @@ $combo-color2: $color-label-admin-alt;
         background: transparent url("../../web/img/blood-1.png") no-repeat center center;
         background-size: 100% 100%;
         filter: grayscale(100%);
+        .combo {
+            margin-left: 5px;
+        }
     }
     &.combo-complete .hit {
         display: none;
