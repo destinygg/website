@@ -160,7 +160,7 @@ class ChatUserMessage extends ChatMessage {
             classes.push('msg-historical');
         if(this.highlighted)
             classes.push('msg-highlight');
-        if(continued)
+        if(continued && !this.target)
             classes.push('msg-continue');
         if(this.tag)
             classes.push(`msg-tagged msg-tagged-${this.tag}`);

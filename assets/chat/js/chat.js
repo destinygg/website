@@ -325,7 +325,12 @@ class Chat {
             }
             ChatMenu.closeMenus(this);
         });
-        this.input.on('mousedown', () => ChatMenu.closeMenus(this));
+
+        this.input.on('mousedown', () => {
+            const m = this.menus.get('whisper-messages');
+            if(!m || !m.visible)
+                ChatMenu.closeMenus(this)
+        });
 
         // On window resize, update scroll
         let waspinnedbeforeresize = null;
