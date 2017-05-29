@@ -407,7 +407,7 @@ class Chat {
     }
 
     withHistory(history) {
-        if(history.length > 0) {
+        if(history && history.length > 0) {
             this.backlogloading = true;
             history.forEach(line => this.source.parseAndDispatch({data: line}));
             this.backlogloading = false;
@@ -482,12 +482,13 @@ class Chat {
 
     onDISPATCH({data}){
         if (typeof data === 'object'){
-            const add = ({nick, ignored}) => this.autocomplete.toggleNick(nick, ignored);
             if(data.hasOwnProperty('nick')){
-                add(this.addUser(data));
+                this.autocomplete.updateNick(this.addUser(data).nick);
             }
             if(data.hasOwnProperty('users')){
-                data.users.forEach(u => add(this.addUser(u)));
+                data.users.forEach(u => {
+                    this.autocomplete.updateNick(this.addUser(u).nick);
+                });
             }
         }
     }

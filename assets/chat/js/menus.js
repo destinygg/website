@@ -86,7 +86,7 @@ class ChatSettingsMenu extends ChatMenu {
                 this.chat.settings.set(name, checked);
                 break;
             case 'profilesettings':
-                if(!checked) {
+                if(!checked && this.chat.authenticated) {
                     $.ajax({url: '/chat/settings', method:'delete'});
                 }
                 this.chat.settings.set(name, checked);
