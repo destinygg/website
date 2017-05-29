@@ -226,6 +226,12 @@ class ChatEmoteMessage extends ChatMessage {
         this.combocomplete = false;
     }
 
+    wrapMessage(){
+        let msg = this.message;
+        this.chat.formatters.forEach(f => msg = f.format(msg));
+        return `<span class="text">${msg}</span>`;
+    }
+
     getEmoteCountLabel(){
         return `<i class='count'>${this.emotecount}</i> <i class="x">X</i> <i class="hit">Hits</i> <i class='combo'>C-C-C-COMBO</i> <span class="emotecountbg"></span>`;
     }

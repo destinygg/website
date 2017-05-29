@@ -338,6 +338,12 @@ class Chat {
             this.input.blur();
         }*/
 
+        $(document).on('keydown', e => {
+            if(e.keyCode === 27){
+                ChatMenu.closeMenus(this);
+            }
+        });
+
         this.input.attr('disabled', false);
         this.input.focus();
         this.scrollplugin.updateAndPin(true);

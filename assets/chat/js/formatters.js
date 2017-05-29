@@ -43,7 +43,16 @@ class EmoteFormatter extends ChatFormatter {
     }
 
     format(str, user){
-        const regex = (user && user.features.length > 0) ? ((user.hasFeature(UserFeatures.SUBSCRIBERT0)) ? twitchemoteregex : gemoteregex) : gemoteregex;
+        let regex;
+        if(user) {
+            if(user.hasFeature(UserFeatures.SUBSCRIBERT0)){
+                regex = twitchemoteregex;
+            } else {
+                regex = gemoteregex;
+            }
+        } else {
+            regex = twitchemoteregex;
+        }
         return str.replace(regex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
     }
 
