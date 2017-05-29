@@ -383,51 +383,6 @@ class Chat {
             if(keyCode === 27) ChatMenu.closeMenus(this);
         });
 
-
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        this.push(MessageBuilder.infoMessage('test'));
-        const msg1 = MessageBuilder.emoteMessage('OverRustle', null, 0);
-        const msg2 = MessageBuilder.emoteMessage('SOTRIGGERED ', null, 0);
-        const msg3 = MessageBuilder.emoteMessage('Heimerdonger ', null, 0);
-        const msg4 = MessageBuilder.emoteMessage('Disgustiny ', null, 0);
-        const msgs = [msg1,msg2,msg3,msg4];
-        const mx = [90,120,20,9];
-        let ind = 0;
-
-        const i2 = setInterval(() => {
-            if(ind > msgs.length-1){
-                clearInterval(i2);
-                return;
-            }
-            const m = msgs[ind];
-            if(m.emotecount === 0){
-                this.push(m);
-            }
-            if(!m.combocomplete) {
-                m.incEmoteCount();
-                this.scrollplugin.updateAndPin(true);
-            }
-            if(m.combocomplete || m.emotecount >= mx[ind]){
-                ind++;
-            }
-        }, 10);
-
         this.scrollplugin.updateAndPin(true);
         this.input.attr('disabled', false);
         this.input.focus();
