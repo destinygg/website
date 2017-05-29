@@ -480,7 +480,18 @@ class Chat {
 
     onMSG(data){
         const str = data.data;
-        const text = (str.substring(0, 4) === '/me ' ? str.substring(4) : str).trim();
+        let text = (str.substring(0, 4) === '/me ' ? str.substring(4) : str).trim();
+
+        // todo refactor this
+        // the Message class manipulates the raw string like below.
+        if (text.substring(0, 4) === '/me ') {
+            text = text.substring(4);
+        } else if (text.substring(0, 2) === '//') {
+            text = text.substring(1);
+        }
+        text = text.trim();
+        //
+
         const isemote = this.emoticons.has(text) || this.twitchemotes.has(text);
         if(isemote && this.lastmessage !== null && this.lastmessage.message === text){
             if(this.lastmessage.type === MessageTypes.emote) {
@@ -550,7 +561,7 @@ class Chat {
     cmdSEND(str) {
         if(str !== ''){
             const isme = str.substring(0, 4).toLowerCase() === '/me ';
-            const iscommand = str.substring(0, 1) === '/';
+            const iscommand = str.substring(0, 1) === '/' && str.substring(0, 2) !== '//';
 
             // If we have the whisper window open, send a whisper instead
             // If its a command close the window, and continue
@@ -797,8 +808,13 @@ class Chat {
         } else if (parts[0].toLowerCase() === this.user.username.toLowerCase()) {
             this.push(MessageBuilder.errorMessage('Cannot send a message to yourself'));
         } else {
-            const payload = {nick: parts[0], data: parts.slice(1, parts.length).join(' ')};
-            this.addWhisper(parts[0], {data: payload.data, timestamp: Date.now(), read: true, nick: this.user.username});
+            const data = parts.slice(1, parts.length).join(' ');
+            if(this.whispers.has(parts[0])){
+                // Only add the whisper gui for this message, if the whisper user already exists (we already have gui for it)
+                // Because the request/response for whispers is not a single transaction, we cannot really tell if the pm was successful
+                this.addWhisper(parts[0], {data: data, timestamp: Date.now(), read: true, nick: this.user.username});
+            }
+            const payload = {nick: parts[0], data: data};
             this.source.send('PRIVMSG', payload);
         }
     }

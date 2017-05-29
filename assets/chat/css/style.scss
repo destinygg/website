@@ -184,11 +184,11 @@ hr {
     &.msg-broadcast {
         background-color: lighten( $color-chat-bg, 5 );
     }
-    &.msg-highlight {
-        background-color: $color-chat-mentioned;
-    }
     &.msg-tagged {
         background-color: $color-chat-tagged;
+    }
+    &.msg-highlight {
+        background-color: $color-chat-mentioned;
     }
 
     &.msg-status .text:before,
@@ -416,6 +416,7 @@ hr {
     border-radius: 3px;
     box-shadow: none;
     box-sizing: border-box;
+    display: block;
 }
 #chat-input-control:focus {
     box-shadow: none;
