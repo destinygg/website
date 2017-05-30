@@ -280,7 +280,7 @@ class ChatWhisperUsers extends ChatMenu {
         this.chat.input.focus();
         const menu = this.chat.menus.get('whisper-messages');
         menu.username = username;
-        menu.conv = this.chat.whispers.get(username);
+        menu.conv = this.chat.whispers.get(username.toLowerCase());
         menu.show();
         this.redraw();
     }

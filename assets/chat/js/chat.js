@@ -57,7 +57,8 @@ const hintstrings = new Map([
     ['ignoreuser', 'Use /ignore <username> to hide messages from pesky chatters'],
     ['mutespermanent', 'Mutes are never persistent, don\'t worry it will pass!'],
     ['stalkmentionshint', 'Use the /stalk <nick> or /mentions <nick> to keep up to date'],
-    ['tagshint', `Use the /tag <nick> <color> to highlight users you like. There are preset colors to choose from ${tagcolors.join(', ')}`]
+    ['tagshint', `Use the /tag <nick> <color> to highlight users you like. There are preset colors to choose from ${tagcolors.join(', ')}`],
+    ['bigscreen', `Bigscreen! Did you know you can have the chat on the left or right side of the stream by clicking the swap icon in the top left?`]
 ]);
 const settings = new Map([
     ['showtime', false],
@@ -366,20 +367,24 @@ class Chat {
         // whispers
         this.lines.on('click', '.chat-open-whisper', e => {
             const nick = $(e.target).data('username');
-            if(this.whispers.has(nick)) {
+            if(this.whispers.has(nick.toLowerCase())) {
                 this.menus.get('whisper-users').selectConversation(nick);
             }
             return false;
         });
         this.lines.on('click', '.chat-remove-whisper', e => {
-            const nick = $(e.target).data('username');
-            if(this.whispers.has(nick)) {
-                $.ajax({url: `/profile/messages/${encodeURIComponent(nick)}/unread`, method:'delete'});
-                const pinned = this.scrollplugin.isPinned();
-                this.whispers.delete(nick);
-                this.menus.get('whisper-users').redraw();
-                $(e.target).closest('.msg-whisper').remove();
-                this.scrollplugin.updateAndPin(pinned);
+            const pinned = this.scrollplugin.isPinned();
+            const msg = $(e.target).closest('.msg-user');
+            const nick = msg.data('username'), id = msg.data('id'), normalized = nick.toLowerCase();
+            if(id !== null && this.whispers.has(normalized)) {
+                const conv = this.whispers.get(normalized);
+                const result = conv.messages.filter(m => m.id === id);
+                if(result.length > 0) {
+                    $.ajax({url: `/profile/messages/${encodeURIComponent(id)}/open`, method:'get'});
+                    msg.remove();
+                    this.menus.get('whisper-users').redraw();
+                    this.scrollplugin.updateAndPin(pinned);
+                }
             }
             return false;
         });
@@ -428,7 +433,8 @@ class Chat {
     withMessages(){
         if(this.authenticated) {
             $.ajax({url: "/profile/conversations/unread"})
-                .done(d => d.forEach(e => this.whispers.set(e.username, {
+                .done(d => d.forEach(e => this.whispers.set(e.username.toLowerCase(), {
+                    id: e.messageid,
                     nick: e.username,
                     unread: e.unread,
                     messages: [],
@@ -842,10 +848,11 @@ class Chat {
 
     onPRIVMSG(data) {
         if (!this.shouldIgnoreUser(data.nick)){
-            this.addWhisper(data.nick, {data: data.data, timestamp: data.timestamp, read: false, nick: data.nick});
+            const messageid = data.hasOwnProperty('messageid') ? data.messageid : null;
+            this.addWhisper(data.nick, {data: data.data, timestamp: data.timestamp, read: false, nick: data.nick, id: messageid});
             if(this.settings.get('showhispersinchat')){
                 let user = this.users.has(data.nick) ? this.users.get(data.nick) : new ChatUser({nick: data.nick});
-                this.push(MessageBuilder.whisperMessage(data.data, user, this.user.username, data.timestamp));
+                this.push(MessageBuilder.whisperMessage(data.data, user, this.user.username, data.timestamp, messageid));
             }
             if(this.settings.get('allowNotifications') && !this.input.is(':focus')) {
                 Chat.showNotification(`${data.nick} whispered ...`, data.data, data.timestamp);
@@ -859,11 +866,12 @@ class Chat {
         } else if (parts[0].toLowerCase() === this.user.username.toLowerCase()) {
             this.push(MessageBuilder.errorMessage('Cannot send a message to yourself'));
         } else {
+            const normalized = parts[0].toLowerCase();
             const data = parts.slice(1, parts.length).join(' ');
-            if(this.whispers.has(parts[0])){
+            if(this.whispers.has(normalized)){
                 // Only add the whisper gui for this message, if the whisper user already exists (we already have gui for it)
                 // Because the request/response for whispers is not a single transaction, we cannot really tell if the pm was successful
-                this.addWhisper(parts[0], {data: data, timestamp: Date.now(), read: true, nick: this.user.username});
+                this.addWhisper(normalized, {data: data, timestamp: Date.now(), read: true, nick: this.user.username});
             }
             const payload = {nick: parts[0], data: data};
             this.source.send('PRIVMSG', payload);
@@ -975,9 +983,9 @@ class Chat {
 
         this.lines.children(`div.msg-tagged`).removeClass(Chat.removeTagClasses());
         this.lines.children(`div.msg-user`).get().forEach(e => {
-            const el = $(e);
-            if(this.taggednicks.has(el.attr('data-username'))){
-                el.addClass(`msg-tagged msg-tagged-${color}`);
+            const el = $(e), u = el.attr('data-username');
+            if(this.taggednicks.has(u)){
+                el.addClass(`msg-tagged msg-tagged-${this.taggednicks.get(u)}`);
             }
         });
         this.push(MessageBuilder.infoMessage(`Tagged ${parts[0]} AYYYLMAO with ${color}`));
@@ -1103,8 +1111,9 @@ class Chat {
     }
 
     addWhisper(username, message){
-        const conv = this.whispers.get(username) || {nick:username, unread:0, messages:[], loaded:true};
-        this.whispers.set(username, conv);
+        const normalized = username.toLowerCase();
+        const conv = this.whispers.get(normalized) || {nick:username, unread:0, messages:[], loaded:true};
+        this.whispers.set(normalized, conv);
         if(!message.read)
             conv.unread++;
         if(conv.loaded)

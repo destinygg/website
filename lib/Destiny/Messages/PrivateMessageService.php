@@ -446,7 +446,7 @@ class PrivateMessageService extends Service {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
             SELECT * FROM (
-              SELECT u.username,MAX(p.timestamp) `timestamp`, COUNT(*) `unread` FROM `privatemessages` p
+              SELECT p.id `messageid`,u.username,MAX(p.timestamp) `timestamp`, COUNT(*) `unread` FROM `privatemessages` p
               INNER JOIN `dfl_users` u ON (u.userId = p.userid)
               WHERE p.targetuserid = :userId AND p.isread = 0
               GROUP BY p.userid

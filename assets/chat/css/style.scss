@@ -93,7 +93,7 @@ hr {
 #chat-lines > div {
     clear: both;
     word-wrap: break-word;
-    padding: 3px 6px 3px 3px;
+    padding: 3px 12px 3px 3px;
 
     i[class^="icon-"] {
         display: inline-block;
@@ -763,9 +763,9 @@ hr {
     4% { color: $color-label-admin-alt; font-size:200%; }
     100% { color: $color-light; font-size:100%; }
 }
-@keyframes emote-hit2 {
-    0% { transform: translate(-10px, 0); opacity: 0; text-shadow: 0 0 3px rgba(white, 1); }
-    2% { transform: translate(4px, 0); opacity: 1; text-shadow: 0 0 10px rgba(white, 0.5); }
+@keyframes emote-complete {
+    0% { transform: translate(-10px, 0); opacity: 0;/* text-shadow: 0 0 3px rgba(white, 1);*/ }
+    2% { transform: translate(10px, 0); color: white; opacity: 1;/* text-shadow: 0 0 10px rgba(white, 0.5);*/ }
     100% { transform: translate(0, 0); opacity: 1; }
 }
 @keyframes emote-greyout {
@@ -780,6 +780,7 @@ hr {
     font-size: 14px;
     display: inline-block;
     position: relative;
+    line-height: 34px;
     i {
         font-style: normal;
         vertical-align: middle;
@@ -787,6 +788,7 @@ hr {
     }
     .hit,
     .combo,
+    .count,
     .x {
         @extend .roboto-regular;
         text-shadow:
@@ -797,38 +799,66 @@ hr {
     }
     .combo {
         display: none;
-        font-weight: bold;
+        color: $text-color1;
+        font-weight: normal;
     }
     .hit {
         color: $color-light;
-        font-weight: bold;
         animation: emote-hit 600ms 1;
         font-style: italic;
         text-transform: uppercase;
         margin-left: 0;
         letter-spacing: 0.05em;
         display: inline-block;
-        line-height: 30px;
     }
     .count {
         font-size: 16px;
         letter-spacing: -0.05em;
-        font-weight: bold;
+        font-weight: normal;
     }
-    &.x5 .count {
-        font-size: 150%;
+    .x {
+        font-size: 13px;
     }
-    &.x10 .count {
-        font-size: 200%;
+    &.x5 {
+        .count {
+            font-size: 150%;
+        }
     }
-    &.x20 .count {
-        font-size: 300%;
+    &.x10 {
+        .count {
+            font-size: 200%;
+            font-weight: bold;
+        }
+        .combo {
+            font-weight: bold;
+        }
     }
-    &.x30 .count {
-        font-size: 400%;
+    &.x20 {
+        .count {
+            font-size: 300%;
+            font-weight: bold;
+        }
+        .combo {
+            font-weight: bold;
+        }
     }
-    &.x50 .count {
-        font-size: 500%;
+    &.x30 {
+        .count {
+            font-size: 400%;
+            font-weight: bold;
+        }
+        .combo {
+            font-weight: bold;
+        }
+    }
+    &.x50 {
+        .count {
+            font-size: 500%;
+            font-weight: bold;
+        }
+        .combo {
+            font-weight: bold;
+        }
     }
     &.combo-complete.x10,
     &.combo-complete.x20,
@@ -839,16 +869,16 @@ hr {
         background-size: 100% 100%;
         filter: grayscale(100%);
         .combo {
+            color: $color-light;
             margin-left: 5px;
         }
     }
+    &.combo-complete .combo {
+        animation: emote-complete 1000ms 1;
+        display: inline-block;
+    }
     &.combo-complete .hit {
         display: none;
-    }
-    &.combo-complete .combo {
-        animation: emote-hit2 3000ms 1;
-        display: inline-block;
-        font-size: 100%;
     }
 
 }
