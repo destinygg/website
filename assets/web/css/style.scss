@@ -1148,12 +1148,12 @@ body#emoticons {
 }
 
 iframe.stream-element {
+  display: block;
+  border: none;
+  outline: none;
+  margin: 0;
   width: 100%;
   height: 100%;
-}
-iframe#chat-frame {
-  border:none;
-  width: 100%;
 }
 
 #alerts-container {

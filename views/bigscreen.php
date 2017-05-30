@@ -15,7 +15,7 @@ use Destiny\Common\Config;
 
     <?php include 'seg/top.php' ?>
 
-    <div id="page-content" class="container clearfix">
+    <div id="page-content" class="container">
 
         <div id="stream-panel" class="left">
             <div id="stream-wrap">
