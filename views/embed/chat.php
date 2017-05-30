@@ -110,7 +110,7 @@ use Destiny\Common\Config;
                         </label>
                     </div>
                     <div class="checkbox">
-                        <label title="Show removed content">
+                        <label title="Show whispers in chat">
                             <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
                         </label>
                     </div>

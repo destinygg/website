@@ -85,7 +85,7 @@ $(function(){
                 } else {
                     nwidth = width;
                 }
-                resizebar.css('left', null);
+                resizebar.css('left', '');
                 nwidth = Math.max(nwidth, minwidth);
                 streampanel.css('width', '-moz-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', '-webkit-calc(100% - '+ nwidth +'px)');

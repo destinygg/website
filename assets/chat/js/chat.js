@@ -1006,8 +1006,9 @@ class Chat {
     }
 
     push(message){
+
         // Dont add the gui if user is ignored
-        if (message.type === MessageTypes.user && this.shouldIgnoreMessage(message.message))
+        if (message.type === MessageTypes.user && (this.shouldIgnoreMessage(message.message) || this.shouldIgnoreUser(message.user.nick)))
             return;
 
         // Get the scroll position before adding the new line / removing old lines

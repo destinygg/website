@@ -161,7 +161,7 @@ class ChatUserMenu extends ChatMenu {
         this.group4   = $('<ul id="chat-group4">');
         this.group5   = $('<ul id="chat-group5">');
         this.groups   = [this.group1,this.group2,this.group3,this.group4,this.group5];
-        this.groupsEl.on('click', '.user', e => this.chat.userfocus.toggleFocus(e.target.textContent));
+        this.groupsEl.on('click', 'li', e => this.chat.userfocus.toggleFocus(e.target.textContent));
         this.chat.source.on('JOIN', data => this.addAndRedraw(data.nick));
         this.chat.source.on('QUIT', data => this.removeAndRedraw(data.nick));
         this.chat.source.on('NAMES', data => this.redraw());
@@ -194,13 +194,13 @@ class ChatUserMenu extends ChatMenu {
     }
 
     removeUser(username){
-        return this.groupsEl.find('.user[data-username="'+username+'"]').parent().remove();
+        return this.groupsEl.find('li[data-username="'+username+'"]').parent().remove();
     }
 
     addUser(username){
         const user = this.chat.users.get(username);
         const label = !user.username || user.username === '' ? "You" : user.username;
-        const elem = `<li><a data-username="${user.username}" class="user ${user.features.join(' ')}">${label}</a></li>`;
+        const elem = `<li data-username="${user.username}"><a class="user ${user.features.join(' ')}">${label}</a></li>`;
         if(user.hasFeature(UserFeatures.BOT) || user.hasFeature(UserFeatures.BOT2))
             this.group5.append(elem);
         else if (user.hasFeature(UserFeatures.ADMIN) || user.hasFeature(UserFeatures.VIP))
@@ -214,12 +214,12 @@ class ChatUserMenu extends ChatMenu {
     }
 
     hasUser(username){
-        return this.groupsEl.find('.user[data-username="'+username+'"]').length > 0;
+        return this.groupsEl.find('li[data-username="'+username+'"]').length > 0;
     }
 
     sort(){
         this.groups.forEach(e => {
-            e.children('.user').get()
+            e.children('li').get()
                 .sort((a, b) => a.getAttribute('data-username').localeCompare(b.getAttribute('data-username')))
                 .forEach(a => a.parentNode.appendChild(a))
         });
