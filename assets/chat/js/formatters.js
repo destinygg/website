@@ -63,9 +63,8 @@ class GreenTextFormatter extends ChatFormatter {
     format(str, user){
         if(user && str.indexOf('&gt;') === 0){
             if(user.hasAnyFeatures(
-                    UserFeatures.SUBSCRIBERT3,
-                    UserFeatures.SUBSCRIBERT4,
-                    UserFeatures.SUBSCRIBERT2,
+                    UserFeatures.SUBSCRIBER,
+                    UserFeatures.SUBSCRIBERT0,
                     UserFeatures.ADMIN,
                     UserFeatures.MODERATOR
                 ))
