@@ -29,9 +29,9 @@ $(function(){
     $('body#bigscreen').each(function(){
 
         const chatpanel   = $('#chat-panel'),
-            streampanel = $('#stream-panel'),
-            chatframe   = $('iframe#chat-frame'),
-            overlay     = $('<div class="overlay" />');
+              streampanel = $('#stream-panel'),
+              chatframe   = $('iframe#chat-frame'),
+              overlay     = $('<div class="overlay" />');
 
         chatframe.on('load', function(){
             const chatwindow = this.contentWindow;
@@ -57,6 +57,12 @@ $(function(){
                     streampanel.removeAttr('style');
                     return false;
                 });
+                $(this).on('click', '#swap', function(){
+                    chatpanel.toggleClass('left').toggleClass('right');
+                    streampanel.toggleClass('left').toggleClass('right');
+                    localStorage.setItem('bigscreen.orientation', streampanel.hasClass('left') ? 0:1);
+                    return false;
+                });
             });
         });
 
@@ -67,52 +73,43 @@ $(function(){
                   minwidth     = 320,
                   disableWidth = 768;
 
-            resizebar.css('left', 0);
-
             // Resize the stream / chat frames
-            const resizeFrames = function(nwidth) {
-                if(nwidth < minwidth)
-                    nwidth = minwidth;
+            const resizeFrames = function(width=null) {
+                let nwidth = 0;
+                if(width === null) {
+                    if(chatpanel.hasClass('left')){
+                        nwidth = resizebar.offset().left;
+                    } else {
+                        nwidth = (chatpanel.offset().left + chatpanel.outerWidth()) - resizebar.offset().left;
+                    }
+                } else {
+                    nwidth = width;
+                }
+                resizebar.css('left', null);
+                nwidth = Math.max(nwidth, minwidth);
                 streampanel.css('width', '-moz-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', '-webkit-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', '-o-calc(100% - '+ nwidth +'px)');
                 streampanel.css('width', 'calc(100% - '+ nwidth +'px)');
                 chatpanel.css('width', nwidth);
-                resizebar.css('left', 0);
                 localStorage.setItem('bigscreen.chat.width', nwidth);
             };
 
             resizebar.on('mousedown.chatresize', function(e){
                 e.preventDefault();
-
-                // resizebar css
                 resizebar.addClass('active');
-
-                // disable background
                 overlay.appendTo('body');
-
-                // x,y of the drag bar
                 let offsetX = e.clientX,
                     sx      = resizebar.position().left;
 
                 $(document).on('mouseup.chatresize', function(e){
                     e.preventDefault();
-
-                    // resizebar css
                     resizebar.removeClass('active');
-
-                    // enable background
                     overlay.remove();
-
-                    // position resize bar
                     resizebar.css('left', sx + (e.clientX - offsetX));
-
-                    // no longer need to listen for events until next mouse down
                     $(document).unbind('mousemove.chatresize');
                     $(document).unbind('mouseup.chatresize');
-
-                    // Resize the frames
-                    resizeFrames( (chatpanel.offset().left + chatpanel.outerWidth()) - resizebar.offset().left );
+                    resizeFrames();
                 });
 
                 $(document).on('mousemove.chatresize', function(e){
@@ -134,6 +131,18 @@ $(function(){
             const width = parseInt(localStorage.getItem('bigscreen.chat.width'));
             if(width > minwidth && $(window).width() > disableWidth)
                 resizeFrames(width);
+
+            const dir = localStorage.getItem('bigscreen.orientation') || -1;
+            switch(parseInt(dir)){
+                case 0:
+                    streampanel.removeClass('right').addClass('left');
+                    chatpanel.removeClass('left').addClass('right');
+                    break;
+                case 1:
+                    streampanel.removeClass('left').addClass('right');
+                    chatpanel.removeClass('right').addClass('left');
+                    break;
+            }
 
         });
 
@@ -259,7 +268,7 @@ $(function(){
         checkUser(username, function(response){
             if(response.valid && response.cangift){
                 giftUsername = username;
-                if(giftMsgInput.val() == '')
+                if(giftMsgInput.val() === '')
                     giftMsgInput.focus();
                 else
                     usrSearchFrm.submit();
@@ -274,13 +283,13 @@ $(function(){
     };
 
     usrInput.on('keydown change', function(){
-        usrSelectBtn.attr('disabled', $(this).val() == '');
+        usrSelectBtn.attr('disabled', $(this).val() === '');
         usrSearch.find('label.error').addClass('hidden');
     });
 
     usrSearchFrm.on('submit', function(){
         usrSearch.find('label.error').addClass('hidden');
-        if(giftUsername != usrInput.val()) {
+        if(giftUsername !== usrInput.val()) {
             selectUser(usrInput.val());
         } else {
             $('#subscriptionGiftUsername').text(usrInput.val());

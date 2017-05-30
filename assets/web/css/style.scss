@@ -946,7 +946,7 @@ body#bigscreen {
     width: 100%;
   }
   #stream-wrap {
-    background: #010101;
+    background: $color-surface-dark1;
   }
   #stream-wrap,
   #chat-wrap {
@@ -954,8 +954,7 @@ body#bigscreen {
     width: 100%;
   }
   .panelheader {
-    border-top-left-radius:4px;
-    border-top-right-radius:4px;
+    border-radius:0;
     background: rgba(0,0,0,0.5);
     border-bottom: 1px solid #040404;
     line-height:30px;
@@ -968,24 +967,32 @@ body#bigscreen {
   #chat-panel-resize-bar {
     width: 5px;
     position: absolute;
-    top: 5px;
-    left: 0;
-    bottom: 5px;
+    top: 2px;
+    bottom: 2px;
     cursor: col-resize;
     z-index: 200;
     transition: background-color 0.25s ease;
     border-radius:2px;
   }
   #chat-panel-resize-bar:hover {
-    background-color: rgba(255,255,255,0.5);
+    background-color: rgba($color-light,0.5);
   }
   #chat-panel-resize-bar.active {
-    background-color: rgba(255,255,255,1);
+    background-color: rgba($color-light,1);
+  }
+  #chat-panel.left {
+    #chat-panel-resize-bar {
+      left: 100%;
+    }
+  }
+  #chat-panel.right {
+    #chat-panel-resize-bar {
+      left: 0;
+    }
   }
 }
 
 body#bigscreen.nochat #stream-panel {
-  padding: 5px;
   width: 100%;
 }
 
@@ -1024,16 +1031,20 @@ body#bigscreen.nochat #stream-panel {
 }
 @media (min-width: $screen-sm-min) {
   body#bigscreen #chat-panel {
-    float: right;
-    padding: 5px;
     width: $chat-width;
   }
   body#bigscreen #stream-panel {
-    float: left;
-    padding: 5px 0 5px 5px;
     width: -moz-calc(100% - #{$chat-width});
     width: -webkit-calc(100% - #{$chat-width});
     width: calc(100% - #{$chat-width});
+  }
+  body#bigscreen #stream-panel.left,
+  body#bigscreen #chat-panel.left {
+    float: left;
+  }
+  body#bigscreen #stream-panel.right,
+  body#bigscreen #chat-panel.right {
+    float: right;
   }
 }
 @media (max-width: $screen-xs-max) {
@@ -1076,7 +1087,7 @@ body#bigscreen {
     color: #444;
   }
   #chat-panel-tools a:hover {
-    color: white;
+    color: $color-light;
   }
   .panelheader .channel-stat {
     width:50%;
@@ -1124,7 +1135,7 @@ body#emoticons {
   .emote-label {
     font-size: 12px;
     text-align: center;
-    color: rgba(255,255,255,0.7);
+    color: rgba($color-light,0.7);
     text-overflow: ellipsis;
     overflow: hidden;
     margin-top: 5px;
@@ -1132,7 +1143,7 @@ body#emoticons {
     display: block;
   }
   .emote-label:hover {
-    color: white;
+    color: $color-light;
   }
 }
 
@@ -1160,7 +1171,7 @@ iframe#chat-frame {
   font-family: "Lucida Console", Monaco, monospace;
   text-decoration: none;
   font-size: 10px;
-  color: white;
+  color: $color-light;
   background-color: $color-alert-bg;
   line-height: 10px;
   padding: 3px;
@@ -1221,7 +1232,7 @@ body.error #error-container {
 
 .card .graph-outer {
   border-radius: 3px;
-  background: #222;
+  background: $color-surface-dark3;
   overflow: hidden;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
   margin: 10px 0;
@@ -1231,7 +1242,7 @@ body.error #error-container {
 body#messages section h4,
 body#message section h4 {
   margin-left: 10px;
-  color: #737373;
+  color: $color-chat-text3;
   font-size: 16px;
   font-weight: normal;
 }
@@ -1262,19 +1273,19 @@ table.messages {
   }
   tr td.selector:hover {
     cursor: default;
-    color: #eee;
+    color: $color-light;
   }
   tr.pressed td.selector,
   tr td.selector.active {
-    color: #fff;
+    color: $color-light;
   }
   .count {
     font-weight: normal;
-    color: #444;
+    color: $color-chat-disabled;
   }
   .message span {
     font-family: Helvetica,"Trebuchet MS",Verdana,sans-serif;
-    color: #444;
+    color: $color-chat-disabled;
     font-size: 13px;
     display: block;
     white-space: nowrap;
@@ -1290,7 +1301,7 @@ table#inbox .unread .from a {
   font-weight: bold;
 }
 table#inbox .read .from a {
-  color: #999;
+  color: $color-chat-text3;
 }
 table#inbox a {
   text-decoration: none;
@@ -1354,10 +1365,10 @@ table#inbox a {
     margin: 10px;
   }
   .message-notme .message-from {
-    color: #DFDFDF;
+    color: $color-chat-text1;
   }
   .message-me .message-from span {
-    color: #666;
+    color: $color-chat-text3;
   }
   .message-summary {
     position: relative;
@@ -1369,14 +1380,14 @@ table#inbox a {
   }
   .message-summary .message-snippet {
     padding-left: 1em;
-    color: #444;
+    color: $color-chat-disabled;
   }
   .message-summary .message-date {
     position: absolute;
     right: 10px;
   }
   .message-date {
-    color: #666;
+    color: $color-chat-text3;
   }
 
 }

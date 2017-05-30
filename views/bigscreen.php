@@ -17,20 +17,21 @@ use Destiny\Common\Config;
 
     <div id="page-content" class="container clearfix">
 
-        <div id="stream-panel">
+        <div id="stream-panel" class="left">
             <div id="stream-wrap">
                 <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="//player.twitch.tv/?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless allowfullscreen></iframe>
             </div>
         </div>
 
-        <div id="chat-panel">
+        <div id="chat-panel" class="right">
             <div id="chat-panel-resize-bar"></div>
             <div class="panelheader clearfix">
                 <div class="toolgroup clearfix">
                     <div id="chat-panel-tools">
                         <a title="Refresh" id="refresh" class="pull-left"><span class="fa fa-refresh"></span></a>
                         <a title="Close" id="close" class="pull-right"><span class="fa fa-remove"></span></a>
-                        <a title="Popout" id="popout" class="pull-right"><span class="fa fa-share"></span></a>
+                        <a title="Popout" id="popout" class="pull-right"><span class="fa fa-external-link-square"></span></a>
+                        <a title="Swap" id="swap" class="pull-right"><span class="fa fa-exchange"></span></a>
                     </div>
                 </div>
             </div>
