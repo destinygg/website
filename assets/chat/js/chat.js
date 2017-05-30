@@ -120,7 +120,7 @@ class Chat {
         this.formatters      = [];
         this.emoticons       = new Set();
         this.twitchemotes    = new Set();
-        this.showstarthint   = true;
+        this.showmotd        = true;
         this.authenticated   = true;
         this.backlogloading  = false;
         this.autocomplete    = new ChatAutoComplete(this);
@@ -517,9 +517,10 @@ class Chat {
 
     onNAMES(data){
         this.push(MessageBuilder.statusMessage(`Connected. Server connections: ${data['connectioncount']}`));
-        if(this.showstarthint) {
+        if(this.showmotd) {
+            this.push(MessageBuilder.infoMessage('New updates to chat! https://github.com/destinygg/website/wiki/Destiny-chat-update-2.0.x'));
             this.cmdHINT([Math.floor(Math.random() * hintstrings.size)]);
-            this.showstarthint = false;
+            this.showmotd = false;
         }
     }
 
