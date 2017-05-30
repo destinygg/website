@@ -388,6 +388,8 @@ class Chat {
         $(document).on('keydown', ({keyCode}) => {
             if(keyCode === 27) ChatMenu.closeMenus(this);
         });
+        // Focus input when window focuses
+        $(window).on('focus', () => this.input.focus());
 
         this.scrollplugin.updateAndPin(true);
         this.input.attr('disabled', false);

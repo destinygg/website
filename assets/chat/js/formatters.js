@@ -65,6 +65,10 @@ class GreenTextFormatter extends ChatFormatter {
             if(user.hasAnyFeatures(
                     UserFeatures.SUBSCRIBER,
                     UserFeatures.SUBSCRIBERT0,
+                    UserFeatures.NOTABLE,
+                    UserFeatures.TRUSTED,
+                    UserFeatures.CONTRIBUTOR,
+                    UserFeatures.COMPCHALLENGE,
                     UserFeatures.ADMIN,
                     UserFeatures.MODERATOR
                 ))
