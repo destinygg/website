@@ -3,28 +3,27 @@
 import moment from 'moment';
 
 
+// Generic popup defaults
+const popupDefaults = {
+    height     :500,
+    width      :420,
+    scrollbars :0,
+    toolbar    :0,
+    location   :0,
+    status     :'no',
+    menubar    :0,
+    resizable  :0,
+    dependent  :0
+};
+const getOptionsString = function(options){
+    options = (!options) ? popupDefaults : $.extend({}, popupDefaults, options);
+    return Object.keys(options).map(k => `${k}=${options[k]}`).join(',');
+};
+
 // Document ready
 $(function(){
 
     const body = $('body');
-
-    // Generic popup defaults
-    const popupDefaults = {
-        height     :500,
-        width      :420,
-        scrollbars :0,
-        toolbar    :0,
-        location   :0,
-        status     :'no',
-        menubar    :0,
-        resizable  :0,
-        dependent  :0
-    };
-    window.getOptionsString = (function(options){
-        options = (!options) ? popupDefaults : $.extend({}, popupDefaults, options);
-        let str = '';
-        return Object.keys(options).forEach(k => str += `${k}=${options[k]},`);
-    });
 
     $('body#bigscreen').each(function(){
 
@@ -41,7 +40,7 @@ $(function(){
 
             $('#chat-panel-tools').each(function(){
                 $(this).on('click', '#popout', function(){
-                    window.open('/embed/chat', '_blank', window.getOptionsString());
+                    window.open('/embed/chat', '_blank', getOptionsString());
                     $('body').addClass('nochat');
                     chatpanel.remove();
                     streampanel.removeAttr('style');
@@ -176,7 +175,7 @@ $(function(){
     // Generic popup links
     body.on('click', 'a.popup', function(e){
         const a = $(this);
-        a.data('popup', window.open(a.attr('href'), '_blank', window.getOptionsString(a.data('options'))) );
+        a.data('popup', window.open(a.attr('href'), '_blank', getOptionsString(a.data('options'))) );
         e.preventDefault();
         return true;
     });
