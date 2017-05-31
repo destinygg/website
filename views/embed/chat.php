@@ -94,6 +94,11 @@ use Destiny\Common\Config;
                             </label>
                         </div>
                         <div class="form-group checkbox">
+                            <label title="Notification auto close">
+                                <input name="notificationtimeout" type="checkbox" /> Notification auto close
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
                             <label title="Show whispers in chat">
                                 <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
                             </label>

@@ -15,7 +15,7 @@ import ChatUserFocus from './focus.js';
 import ChatStore from './store.js';
 import UserFeatures from "./features";
 
-const nickmessageregex = /((?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
+const nickmessageregex = /(?:(?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
 const nickregex = /^[a-zA-Z0-9_]{3,20}$/;
 const tagcolors = [
     "green",
@@ -75,7 +75,8 @@ const settings = new Map([
     ['showremoved', false],
     ['showhispersinchat', false],
     ['ignorenicks', []],
-    ['focusmentioned', false]
+    ['focusmentioned', false],
+    ['notificationtimeout', -1]
 ]);
 const commandsinfo = new Map([
     ['help', ''],
@@ -528,7 +529,7 @@ class Chat {
     onNAMES(data){
         this.push(MessageBuilder.statusMessage(`Connected. Server connections: ${data['connectioncount']}`));
         if(this.showmotd) {
-            this.push(MessageBuilder.infoMessage('New updates to chat! https://github.com/destinygg/website/wiki/Destiny-chat-update-2.0.x'));
+            //this.push(MessageBuilder.infoMessage('New updates to chat! https://github.com/destinygg/website/wiki/Destiny-chat-update-2.0.x'));
             this.cmdHINT([Math.floor(Math.random() * hintstrings.size)]);
             this.showmotd = false;
         }
@@ -850,7 +851,7 @@ class Chat {
 
     onPRIVMSG(data) {
         if (!this.shouldIgnoreUser(data.nick)){
-            const messageid = data.hasOwnProperty('messageid') ? data.messageid : null;
+            const messageid = data.hasOwnProperty('messageid') ? data['messageid'] : null;
             this.addWhisper(data.nick, {data: data.data, timestamp: data.timestamp, read: false, nick: data.nick, id: messageid});
             if(this.settings.get('showhispersinchat')){
                 let user = this.users.has(data.nick) ? this.users.get(data.nick) : new ChatUser({nick: data.nick});
@@ -1045,8 +1046,12 @@ class Chat {
 
         // Populate the tagging, mentioned users and if the message is highlighted.
         if(message.type === MessageTypes.user){
+            let match, nicks = new Set();
+            while (match = nickmessageregex.exec(message.message)) {
+                nicks.add(match[1]);
+            }
             message.tag = this.taggednicks.get(message.user.nick.toLowerCase());
-            message.mentioned = [...(message.message.match(nickmessageregex) || [])].filter(a => this.users.has(a));
+            message.mentioned = [...nicks].filter(a => this.users.has(a));
             message.highlighted =   this.settings.get('highlight') &&
                                     !message.user.hasFeature(UserFeatures.BOT) &&
                                     message.user.username !== this.user.username &&
@@ -1151,18 +1156,17 @@ class Chat {
         return (!a || !b) ? (a.length !== b.length || a.sort().toString() !== b.sort().toString()) : false;
     }
 
-    static showNotification(title, message, tag){
+    static showNotification(title, message, timestamp){
         if(Notification.permission === 'granted'){
+            const timeout = this.settings.get('notificationtimeout');
             const n = new Notification(title, {
                 body : message,
-                tag  : `dgg${tag}`,
+                tag  : `dgg${timestamp}`,
                 icon : '/notifyicon.png',
                 dir  : 'auto'
             });
-            setTimeout(() => n.close(), 5000);
-            n.onclick = function(){
-                // todo open chat at specific line
-            };
+            n.onclick = function(){}; // todo open chat at specific line
+            if(timeout > 0) setTimeout(() => n.close(), timeout);
         }
     }
 

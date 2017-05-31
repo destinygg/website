@@ -86,6 +86,9 @@ class ChatSettingsMenu extends ChatMenu {
             case 'focusmentioned':
                 this.chat.settings.set(name, checked);
                 break;
+            case 'notificationtimeout':
+                this.chat.settings.set(name, checked ? 8000 : -1);
+                break;
             case 'profilesettings':
                 if(!checked && this.chat.authenticated) {
                     $.ajax({url: '/chat/settings', method:'delete'});

@@ -78,7 +78,7 @@ class MentionedUserFormatter extends ChatFormatter {
 
     format(str, user, message){
         if(message && message.mentioned && message.mentioned.length > 0){
-            return str.replace(new RegExp(`\\b(${message.mentioned.join('|')})\\b`, 'igm'), `<span class="chat-user">$1</span>`);
+            return str.replace(new RegExp(`((?:^|\\s)@?)(${message.mentioned.join('|')})(?=$|\\s|[\.\?!,])`, 'igm'), `$1<span class="chat-user">$2</span>`);
         }
         return str;
     }
