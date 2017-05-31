@@ -1,6 +1,6 @@
 {
   "name": "Destiny",
-  "version": "2.0.49",
+  "version": "2.0.51",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {

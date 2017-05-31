@@ -71,6 +71,7 @@ class ChatSettingsMenu extends ChatMenu {
         if (e.which && e.which !== 13) return; // not Enter
         let data = $(e.target).val().toString().split(',').map(s => s.trim());
         this.chat.settings.set('customhighlight', [...new Set(data)]);
+        this.chat.applySettings(false);
         this.chat.commitSettings();
     }
 

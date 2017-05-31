@@ -131,8 +131,11 @@ class Chat {
         this.settings        = new Map([...settings]);
         this.taggednicks     = new Map();
         this.ignoring        = new Set();
-        this.ignoreregex     = null;
-        this.highlightregex  = null;
+
+        this.regexignore = null;
+        this.regexhighlightcustom = null;
+        this.regexhighlightnicks = null;
+        this.regexhighlightself = null;
 
         this.source.on('PING',             data => this.source.send('PONG', data));
         this.source.on('OPEN',             data => this.connected = true);
@@ -1050,10 +1053,11 @@ class Chat {
             message.tag = this.taggednicks.get(message.user.nick.toLowerCase());
             message.mentioned = [...nicks].filter(a => this.users.has(a));
 
-            const canhighlight = this.settings.get('highlight') && !message.user.hasFeature(UserFeatures.BOT) && message.user.username !== this.user.username;
+            const canhighlight = !message.user.hasFeature(UserFeatures.BOT) && message.user.username.toLowerCase() !== this.user.username.toLowerCase();
             message.highlighted = canhighlight && (
-                (this.highlightregex !== null && (this.highlightregex.test(message.message) || this.highlightregex.test(message.user.username))) ||
-                message.user.username.match(new RegExp([...(this.settings.get('highlightnicks') || []), this.user.username].join('|'), 'i'))
+                (this.regexhighlightself && this.settings.get('highlight') && this.regexhighlightself.test(message.message)) ||
+                (this.regexhighlightcustom && (this.regexhighlightcustom.test(message.message) || this.regexhighlightcustom.test(message.user.username))) ||
+                (this.regexhighlightnicks && this.regexhighlightnicks.test(message.user.username))
             );
         }
 
@@ -1120,14 +1124,16 @@ class Chat {
     }
 
     updateIgnoreRegex(){
-        const k = Array.from(this.ignoring.values()).map(Chat.makeSafeForRegex);
-        this.ignoreregex = k.length > 0 ? new RegExp(`\\b(?:${k.join('|')})\\b`, 'i') : null;
+        const arr = Array.from(this.ignoring.values()).map(Chat.makeSafeForRegex);
+        this.ignoreregex = arr.length > 0 ? new RegExp(`\\b(?:${arr.join('|')})\\b`, 'i') : null;
     }
 
     updateHighlightRegex(){
-        let words = [...this.settings.get('customhighlight')];
-        let arr = [...words].filter(a => a !== '');
-        this.highlightregex = arr.length > 0 ? new RegExp(`\\b(?:${arr.join('|')})\\b`, 'i') : null;
+        const arr = [...(this.settings.get('customhighlight') || [])].filter(a => a !== '');
+        const nicks = [...(this.settings.get('highlightnicks') || [])].filter(a => a !== '');
+        this.regexhighlightself = this.user.username ? new RegExp(`\\b(?:${this.user.username})\\b`, 'i') : null;
+        this.regexhighlightcustom = arr.length > 0 ? new RegExp(`\\b(?:${arr.join('|')})\\b`, 'i') : null;
+        this.regexhighlightnicks = nicks.length > 0 ? new RegExp(nicks.join('|'), 'i') : null;
     }
 
     addWhisper(username, message){
