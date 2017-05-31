@@ -1131,9 +1131,9 @@ class Chat {
     updateHighlightRegex(){
         const arr = [...(this.settings.get('customhighlight') || [])].filter(a => a !== '');
         const nicks = [...(this.settings.get('highlightnicks') || [])].filter(a => a !== '');
-        this.regexhighlightself = this.user.username ? new RegExp(`\\b(?:${this.user.username})\\b`, 'i') : null;
+        this.regexhighlightself = this.user.nick ? new RegExp(`\\b(?:${this.user.nick})\\b`, 'i') : null;
         this.regexhighlightcustom = arr.length > 0 ? new RegExp(`\\b(?:${arr.join('|')})\\b`, 'i') : null;
-        this.regexhighlightnicks = nicks.length > 0 ? new RegExp(nicks.join('|'), 'i') : null;
+        this.regexhighlightnicks = nicks.length > 0 ? new RegExp(`\\b(?:${nicks.join('|')})\\b`, 'i') : null;
     }
 
     addWhisper(username, message){
