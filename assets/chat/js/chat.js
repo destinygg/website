@@ -393,8 +393,8 @@ class Chat {
             return false;
         });
 
-        $(window).on('keydown.chat', ({keyCode}) => keyCode === 27 && ChatMenu.closeMenus(this));
-        $(window).on('focus.chat', () => this.input.focus());
+        $(document).on('keydown', ({keyCode}) => keyCode === 27 && ChatMenu.closeMenus(this));
+        $(window).on('focus', () => this.input.focus());
 
         this.scrollplugin.updateAndPin(true);
         this.input.attr('disabled', false);
