@@ -58,19 +58,22 @@ use Destiny\Common\Config;
             <div class="scrollable nano">
                 <div class="content nano-content">
                     <div class="clearfix">
+
                         <div class="form-group checkbox">
                             <label title="Persistent profile settings">
                                 <input name="profilesettings" type="checkbox" checked="checked"/> Save settings to profile
                             </label>
                         </div>
+
+                        <h4>Messages</h4>
                         <div class="form-group checkbox">
                             <label title="Show all user flair icons">
-                                <input name="hideflairicons" type="checkbox" /> Hide flair icons
+                                <input name="hideflairicons" type="checkbox" /> Hide flairs
                             </label>
                         </div>
                         <div class="form-group checkbox">
                             <label title="Show the timestamps next to the messages">
-                                <input name="showtime" type="checkbox" /> Show time for messages
+                                <input name="showtime" type="checkbox" /> Show time
                             </label>
                         </div>
                         <div class="form-group checkbox">
@@ -79,14 +82,28 @@ use Destiny\Common\Config;
                             </label>
                         </div>
                         <div class="form-group checkbox">
+                            <label title="Show whispers in chat">
+                                <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
+                            </label>
+                        </div>
+
+                        <h4>Highlighting &amp; Focus</h4>
+                        <div class="form-group checkbox">
                             <label title="Highlight text that you are mentioned in">
-                                <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
+                                <input name="highlight" type="checkbox" checked="checked"/> Auto highlight myself
                             </label>
                         </div>
                         <div class="form-group">
-                            <label>Custom highlight words</label>
+                            <label>Custom highlights</label>
                             <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma" />
                         </div>
+                        <div class="form-group checkbox">
+                            <label title="Include mentions when focused">
+                                <input name="focusmentioned" type="checkbox" /> Include mentions when <i title="Occurs when you click on a user in chat.">focused</i>
+                            </label>
+                        </div>
+
+                        <h4>Notifications</h4>
                         <div class="form-group checkbox">
                             <label title="Show desktop notifications on highlight">
                                 <input name="allowNotifications" type="checkbox" /> Desktop notifications
@@ -98,17 +115,9 @@ use Destiny\Common\Config;
                                 <input name="notificationtimeout" type="checkbox" /> Notification auto close
                             </label>
                         </div>
-                        <div class="form-group checkbox">
-                            <label title="Show whispers in chat">
-                                <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
-                            </label>
-                        </div>
-                        <div class="form-group checkbox">
-                            <label title="Include mentions when focused">
-                                <input name="focusmentioned" type="checkbox" /> Include mentions when focused
-                            </label>
-                        </div>
+
                         <hr class="separator" />
+
                         <div class="form-group">
                             <p>See <a href="/chat/faq" target="_blank">the chat faq</a> for more information</p>
                         </div>

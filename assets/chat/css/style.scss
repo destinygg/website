@@ -40,8 +40,9 @@ hr {
     right:0;
     bottom:0;
 }
+
 #chat-loading {
-    opacity: 0.3;
+    opacity: 0.2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -961,6 +962,14 @@ $menuheightmax: 420px;
     hr {
         margin-left: 20px;
         margin-right: 20px;
+    }
+    h4 {
+        margin-top: 25px;
+        margin-bottom: 10px;
+        padding-left: 18px;
+        font-size: 85%;
+        color: $text-color2;
+        text-transform: uppercase;
     }
 
     .form-control {

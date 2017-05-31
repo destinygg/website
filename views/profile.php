@@ -18,41 +18,46 @@ use Destiny\Commerce\SubscriptionStatus;
 <body id="account" class="no-contain">
   <div id="page-wrap">
 
-    <?php include 'seg/top.php' ?>
-    <?php include 'seg/alerts.php' ?>
-    <?php include 'profile/menu.php' ?>
+      <?php include 'seg/top.php' ?>
+      <?php include 'seg/alerts.php' ?>
+      <?php include 'profile/menu.php' ?>
 
-    <section class="container">
-      <div class="content-dark clearfix">
-        <div class="ds-block">
-          <h3><?= Tpl::out($this->user['username']) ?></h3>
-          <span>
-            Joined on <?=Tpl::moment(Date::getDateTime($this->user['createdDate']), Date::STRING_DATE_FORMAT, 'Do MMMM, YYYY')?>
-          </span>
-        </div>
-      </div>
-    </section>
+      <section class="container">
+          <div class="content-dark clearfix">
+              <div class="ds-block">
+                  <h3><?= Tpl::out($this->user['username']) ?></h3>
+                  <span>Joined on <?=Tpl::moment(Date::getDateTime($this->user['createdDate']), Date::STRING_DATE_FORMAT, 'Do MMMM, YYYY')?></span>
+              </div>
+          </div>
+      </section>
 
-
-  <?php if(!empty($this->ban)): ?>
-  <section class="container">
-      <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Bans</h3>
-      <div id="ban-content" class="content collapse">
-
+      <?php if(!empty($this->ban)): ?>
+      <section class="container">
+          <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Bans</h3>
+          <div id="ban-content" class="content collapse">
               <div class="content-dark clearfix">
                   <div class="ds-block">
-                      <dl>
+                      <dl class="dl-horizontal">
                           <dt>Banned user</dt>
                           <dd><?=Tpl::out($this->user['username'])?></dd>
                           <dt>Time of ban</dt>
                           <dd><?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT)?></dd>
                           <?php if($this->ban['endtimestamp']): ?>
-                              <dt>Ending on</dt>
-                              <dd><?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?></dd>
+                          <dt>Ending on</dt>
+                          <dd><?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?></dd>
+                          <?php else: ?>
+                          <dt>Ending</dt>
+                          <dd>Never</dd>
                           <?php endif; ?>
                           <dt>Ban reason</dt>
-                          <dd><?=Tpl::out($this->ban['reason'])?></dd>
+                          <dd>
+                              <blockquote>
+                                  <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($this->ban['reason'])?></p>
+                                  <small><?=Tpl::out((!empty($this->ban['username'])) ? $this->ban['username']:'System')?></small>
+                              </blockquote>
+                          </dd>
                       </dl>
+                      <hr/>
                       <p>
                           Any non-permanent bans are removed when subscribing as well
                           as any mutes (there are no permanent mutes, maximum 6 days long).<br/>
@@ -63,10 +68,9 @@ use Destiny\Commerce\SubscriptionStatus;
                       </p>
                   </div>
               </div>
-
-      </div>
-  </section>
-  <?php endif ?>
+          </div>
+      </section>
+      <?php endif ?>
     
     <section class="container">
       <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>

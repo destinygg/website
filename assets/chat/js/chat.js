@@ -37,14 +37,14 @@ const errorstrings = new Map([
     ['invalidmsg', 'The message was invalid'],
     ['throttled', 'Throttled! You were trying to send messages too fast'],
     ['duplicate', 'The message is identical to the last one you sent'],
-    ['muted', 'You are muted (subscribing auto-removes mutes). Check your profile for more information.'],
+    ['muted', 'You are muted (subscribing removes mutes). Check your profile for more information.'],
     ['submode', 'The channel is currently in subscriber only mode'],
     ['needbanreason', 'Providing a reason for the ban is mandatory'],
-    ['banned', 'You have been banned (subscribing auto-removes non-permanent bans), disconnecting. Check your profile for more information.'],
+    ['banned', 'You have been banned (subscribing removes non-permanent bans). Check your profile for more information.'],
+    ['privmsgbanned', 'Cannot send private messages while banned'],
     ['requiresocket', 'This chat requires WebSockets'],
     ['toomanyconnections', 'Only 5 concurrent connections allowed'],
     ['socketerror', 'Error contacting server'],
-    ['privmsgbanned', 'Cannot send private messages while banned'],
     ['privmsgaccounttooyoung', 'Your account is too recent to send private messages'],
     ['notfound', 'The user was not found'],
     ['notconnected', 'You have to be connected to use that']
@@ -137,11 +137,10 @@ class Chat {
         this.source.on('PING',             data => this.source.send('PONG', data));
         this.source.on('OPEN',             data => this.connected = true);
         this.source.on('REFRESH',          data => window.location.reload(false));
-        this.source.on('CONNECTING',       data => this.onCONNECTING(data));
+        this.source.on('CONNECTING',       data => this.push(MessageBuilder.statusMessage('Connecting...')));
         this.source.on('DISPATCH',         data => this.onDISPATCH(data));
         this.source.on('CLOSE',            data => this.onCLOSE(data));
         this.source.on('NAMES',            data => this.onNAMES(data));
-        this.source.on('JOIN',             data => this.onJOIN(data));
         this.source.on('QUIT',             data => this.onQUIT(data));
         this.source.on('MSG',              data => this.onMSG(data));
         this.source.on('MUTE',             data => this.onMUTE(data));
@@ -274,7 +273,6 @@ class Chat {
         ]);
 
         this.applySettings(false);
-        this.loadingscrn.fadeOut();
 
         // The user input field
         this.input.on('keypress', e => {
@@ -402,6 +400,7 @@ class Chat {
         this.scrollplugin.updateAndPin(true);
         this.input.attr('disabled', false);
         this.input.focus();
+        this.loadingscrn.fadeOut(500, () => this.loadingscrn.remove());
         return this;
     }
 
@@ -522,10 +521,6 @@ class Chat {
         }
     }
 
-    onCONNECTING(){
-        this.push(MessageBuilder.statusMessage('Connecting...'));
-    }
-
     onNAMES(data){
         this.push(MessageBuilder.statusMessage(`Connected. Server connections: ${data['connectioncount']}`));
         if(this.showmotd) {
@@ -534,8 +529,6 @@ class Chat {
             this.showmotd = false;
         }
     }
-
-    onJOIN(data){}
 
     onQUIT(data){
         if (this.users.has(data.nick)){
@@ -574,38 +567,42 @@ class Chat {
     }
 
     onMUTE(data){
-        let suppressednick = data.data;
-        if (this.user.username.toLowerCase() === data.data.toLowerCase())
-            suppressednick = 'You have been';
         this.censorMessageByUsername(data.data);
-        this.push(MessageBuilder.commandMessage(`${suppressednick} muted by ${data.nick}`, data.timestamp));
+        if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
+            this.push(MessageBuilder.commandMessage(`You have been muted by ${data.nick}. Check your profile for more information.`, data.timestamp));
+        } else {
+            this.push(MessageBuilder.commandMessage(`${data.data} muted by ${data.nick}.`, data.timestamp));
+        }
     }
 
     onUNMUTE(data){
-        let suppressednick = data.data;
-        if (this.user.username.toLowerCase() === data.data.toLowerCase())
-            suppressednick = 'You have been';
-        this.push(MessageBuilder.commandMessage(`${suppressednick} unmuted by ${data.nick}`, data.timestamp));
+        if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
+            this.push(MessageBuilder.commandMessage(`You have been unmuted by ${data.nick}.`, data.timestamp));
+        } else {
+            this.push(MessageBuilder.commandMessage(`${data.data} unmuted by ${data.nick}.`, data.timestamp));
+        }
     }
 
+    // data.data is the nick which has been banned, no info about duration
     onBAN(data){
-        // data.data is the nick which has been banned, no info about duration
-        let suppressednick = data.data;
-        if (this.user.username.toLowerCase() === suppressednick.toLowerCase())
-            suppressednick = 'You have been';
         this.censorMessageByUsername(data.data);
-        this.push(MessageBuilder.commandMessage(`${suppressednick} banned by ${data.nick}`, data.timestamp));
+        if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
+            this.push(MessageBuilder.commandMessage(`You have been banned by ${data.nick}. Check your profile for more information.`, data.timestamp));
+        } else {
+            this.push(MessageBuilder.commandMessage(`${data.data} banned by ${data.nick}.`, data.timestamp));
+        }
     }
 
     onUNBAN(data){
-        let suppressednick = data.data;
-        if (this.user.username.toLowerCase() === data.data.toLowerCase())
-            suppressednick = 'You have been';
-        this.push(MessageBuilder.commandMessage(`${suppressednick} unbanned by ${data.nick}`, data.timestamp));
+        if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
+            this.push(MessageBuilder.commandMessage(`You have been unbanned by ${data.nick}.`, data.timestamp));
+        } else {
+            this.push(MessageBuilder.commandMessage(`${data.data} unbanned by ${data.nick}.`, data.timestamp));
+        }
     }
 
     onERR(data){
-        this.reconnect = (data !== 'toomanyconnections' && data !== 'banned');
+        this.reconnect = data !== 'toomanyconnections';
         const errorString = errorstrings.has(data) ? errorstrings.get(data) : data;
         const convmenu = this.menus.get('whisper-messages');
         if(convmenu && convmenu.visible){
@@ -858,7 +855,7 @@ class Chat {
                 this.push(MessageBuilder.whisperMessage(data.data, user, this.user.username, data.timestamp, messageid));
             }
             if(this.settings.get('allowNotifications') && !this.input.is(':focus')) {
-                Chat.showNotification(`${data.nick} whispered ...`, data.data, data.timestamp);
+                Chat.showNotification(`${data.nick} whispered ...`, data.data, data.timestamp, this.settings.get('notificationtimeout'));
             }
         }
     }
@@ -1052,11 +1049,12 @@ class Chat {
             }
             message.tag = this.taggednicks.get(message.user.nick.toLowerCase());
             message.mentioned = [...nicks].filter(a => this.users.has(a));
-            message.highlighted =   this.settings.get('highlight') &&
-                                    !message.user.hasFeature(UserFeatures.BOT) &&
-                                    message.user.username !== this.user.username &&
-                                    this.highlightregex !== null &&
-                                    Boolean(this.highlightregex.test(message.message) || this.highlightregex.test(message.user.username));
+
+            const canhighlight = this.settings.get('highlight') && !message.user.hasFeature(UserFeatures.BOT) && message.user.username !== this.user.username;
+            message.highlighted = canhighlight && (
+                (this.highlightregex !== null && (this.highlightregex.test(message.message) || this.highlightregex.test(message.user.username))) ||
+                message.user.username.match(new RegExp([...(this.settings.get('highlightnicks') || []), this.user.username].join('|'), 'i'))
+            );
         }
 
         this.lines.append(message.attach(this));
@@ -1068,7 +1066,7 @@ class Chat {
 
             // Show desktop notification
             if(message.highlighted && this.settings.get('allowNotifications') && !this.input.is(':focus'))
-                Chat.showNotification(`${message.user.username} said ...`, message.message, message.timestamp.valueOf());
+                Chat.showNotification(`${message.user.username} said ...`, message.message, message.timestamp.valueOf(), this.settings.get('notificationtimeout'));
         }
 
         // Cache the last message for interrogation
@@ -1121,6 +1119,17 @@ class Chat {
         return this.ignoring.has(nick.toLowerCase());
     }
 
+    updateIgnoreRegex(){
+        const k = Array.from(this.ignoring.values()).map(Chat.makeSafeForRegex);
+        this.ignoreregex = k.length > 0 ? new RegExp(`\\b(?:${k.join('|')})\\b`, 'i') : null;
+    }
+
+    updateHighlightRegex(){
+        let words = [...this.settings.get('customhighlight')];
+        let arr = [...words].filter(a => a !== '');
+        this.highlightregex = arr.length > 0 ? new RegExp(`\\b(?:${arr.join('|')})\\b`, 'i') : null;
+    }
+
     addWhisper(username, message){
         const normalized = username.toLowerCase();
         const conv = this.whispers.get(normalized) || {nick:username, unread:0, messages:[], loaded:true};
@@ -1139,26 +1148,14 @@ class Chat {
              .forEach(key => this.ui.toggleClass(`pref-${key}`, this.settings.get(key)));
     }
 
-    updateIgnoreRegex(){
-        const k = Array.from(this.ignoring.values()).map(Chat.makeSafeForRegex);
-        this.ignoreregex = k.length > 0 ? new RegExp(`\\b(?:${k.join('|')})\\b`, 'i') : null;
-    }
 
-    updateHighlightRegex(){
-        let nicks = [...this.settings.get('highlightnicks')];
-        let words = [...this.settings.get('customhighlight')];
-        nicks.push(this.user.username);
-        let arr = [...nicks, ...words].filter(a => a !== '');
-        this.highlightregex = arr.length > 0 ? new RegExp(`\\b(?:${arr.join('|')})\\b`, 'i') : null;
-    }
 
     static isArraysEqual(a, b){
         return (!a || !b) ? (a.length !== b.length || a.sort().toString() !== b.sort().toString()) : false;
     }
 
-    static showNotification(title, message, timestamp){
+    static showNotification(title, message, timestamp, timeout=0){
         if(Notification.permission === 'granted'){
-            const timeout = this.settings.get('notificationtimeout');
             const n = new Notification(title, {
                 body : message,
                 tag  : `dgg${timestamp}`,
