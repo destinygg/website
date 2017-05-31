@@ -768,6 +768,34 @@ $menuheightmax: 420px;
         cursor: pointer;
         color: $color-light;
     }
+
+    .form-control {
+        background-color: $color-surface-dark2;
+        border-color: #303030;
+        color: #C0C0C0;
+    }
+    .form-control:focus {
+        background-color: $color-surface-light1;
+        border: 1px solid #CCCCCC;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        color: #555;
+    }
+    .form-control[disabled],.form-control[readonly],fieldset[disabled] .form-control {
+        background-color: #1B1B1B;
+        opacity: 1;
+    }
+    .form-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $color-chat-disabled;
+    }
+    .form-control::-moz-placeholder { /* Firefox 19+ */
+        color: $color-chat-disabled;
+    }
+    .form-control:-ms-input-placeholder { /* IE 10+ */
+        color: $color-chat-disabled;
+    }
+    .form-control:-moz-placeholder { /* Firefox 18- */
+        color: $color-chat-disabled;
+    }
 }
 
 .chat-menu {
@@ -835,7 +863,11 @@ $menuheightmax: 420px;
         cursor: pointer;
         padding-left: 10px;
         .user {
+            color: $color-accent;
             display: block;
+        }
+        .user:hover {
+            color: $color-accent-light;
         }
         .badge, .remove {
             float: right;
@@ -849,14 +881,18 @@ $menuheightmax: 420px;
             text-decoration: none;
         }
         .remove:hover {
-            color: white;
+            color: $color-light;
         }
     }
     .unread-0 .badge {
         display: none;
     }
+    .unread-0 .user,
+    .unread-0 .user:hover {
+        color: $text-color1;
+    }
     .empty {
-        color: $text-color2;
+        color: $text-color;
     }
 }
 #chat-whisper-messages {
@@ -926,21 +962,70 @@ $menuheightmax: 420px;
     }
 }
 #chat-user-list {
-    ul {
-        list-style: none;
-        margin: 5px 0;
-        padding: 0 20px;
-        border: 0;
-    }
-    ul:first-child {
-        margin-top: 10px;
-    }
-    ul:last-child {
-        margin-bottom: 10px;
-    }
     .user {
+        margin: 0;
+        padding: 0 32px;
+        display: block;
         cursor: pointer;
+        text-decoration: none;
+        position: relative;
         @extend .serif-font;
+
+        .whisper-nick {
+            display: none;
+            padding: 3px;
+            color: $text-color2;
+            position: absolute;
+            top: 0;
+            left: 8px;
+        }
+        .whisper-nick:hover {
+            color: $text-color;
+        }
+        &:hover .whisper-nick {
+            display: block;
+        }
+    }
+    .content {
+        padding: 20px 0;
+    }
+    .scrollable {
+        /* 36 + 35 */
+        max-height: calc(100% - 71px);
+    }
+    #chat-user-list-search {
+        background: $color-surface-dark2;
+        height: 40px;
+        .form-control {
+            background: $color-surface-dark3;
+            border: none;
+            border-radius: 0 0 4px 4px;
+            padding-left: 20px;
+            padding-right: 20px;
+            height: 40px;
+        }
+        .form-control:focus {
+            background-color: $color-surface-light1;
+        }
+        .form-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            color: $color-chat-text3;
+        }
+        .form-control::-moz-placeholder { /* Firefox 19+ */
+            color: $color-chat-text3;
+        }
+        .form-control:-ms-input-placeholder { /* IE 10+ */
+            color: $color-chat-text3;
+        }
+        .form-control:-moz-placeholder { /* Firefox 18- */
+            color: $color-chat-text3;
+        }
+    }
+
+    &.search-in .user {
+        display: none;
+    }
+    &.search-in .user.found {
+        display: block;
     }
 }
 #chat-settings {
@@ -970,34 +1055,6 @@ $menuheightmax: 420px;
         font-size: 85%;
         color: $text-color2;
         text-transform: uppercase;
-    }
-
-    .form-control {
-        background-color: $color-surface-dark2;
-        border-color: #303030;
-        color: #C0C0C0;
-    }
-    .form-control:focus {
-        background-color: $color-surface-light1;
-        border: 1px solid #CCCCCC;
-        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-        color: #555;
-    }
-    .form-control[disabled],.form-control[readonly],fieldset[disabled] .form-control {
-        background-color: #1B1B1B;
-        opacity: 1;
-    }
-    .form-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-        color: $color-chat-disabled;
-    }
-    .form-control::-moz-placeholder { /* Firefox 19+ */
-        color: $color-chat-disabled;
-    }
-    .form-control:-ms-input-placeholder { /* IE 10+ */
-        color: $color-chat-disabled;
-    }
-    .form-control:-moz-placeholder { /* Firefox 18- */
-        color: $color-chat-disabled;
     }
 }
 /* End menus */

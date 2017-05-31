@@ -158,76 +158,115 @@ class ChatUserMenu extends ChatMenu {
 
     constructor(ui, btn, chat){
         super(ui, btn, chat);
-        this.header   = this.ui.find('h5 span');
-        this.groupsEl = $('#chat-groups');
-        this.group1   = $('<ul id="chat-group1">');
-        this.group2   = $('<ul id="chat-group2">');
-        this.group3   = $('<ul id="chat-group3">');
-        this.group4   = $('<ul id="chat-group4">');
-        this.group5   = $('<ul id="chat-group5">');
-        this.groups   = [this.group1,this.group2,this.group3,this.group4,this.group5];
-        this.groupsEl.on('click', 'li', e => this.chat.userfocus.toggleFocus(e.target.textContent));
+        this.debouncesearch = debounce(s => {
+            this.searchterm = s;
+            this.filter();
+            this.redraw();
+        }, 100);
+        this.searchterm = '';
+        this.searchcount = 0;
+        this.header = this.ui.find('h5 span');
+        this.container = this.ui.find('.content:first');
+        this.searchinput = this.ui.find('#chat-user-list-search .form-control:first');
+        this.container.on('click', '.user', e => this.chat.userfocus.toggleFocus(e.target.getAttribute('data-username')));
+        this.container.on('click', '.whisper-nick', e => {
+            ChatMenu.closeMenus(this.chat);
+            const value = this.chat.input.val().toString().trim();
+            const username = $(e.target).parent().data('username');
+            this.chat.input.val(value + (value === '' ? '':' ') +  username + ' ').focus();
+            return false;
+        });
         this.chat.source.on('JOIN', data => this.addAndRedraw(data.nick));
         this.chat.source.on('QUIT', data => this.removeAndRedraw(data.nick));
-        this.chat.source.on('NAMES', data => this.redraw());
+        this.chat.source.on('NAMES', data => this.addAll());
+        this.searchinput.on('keyup', e => this.debouncesearch($(e.target).val()));
     }
 
     redraw(){
         if(this.visible){
-            this.groups.forEach(e => e.detach().children('li').remove());
-            this.chat.users.forEach(({username}) => this.addUser(username));
-            this.sort();
-            this.groupsEl.append(this.groups);
-            this.header.text(this.chat.users.size);
+            const searching = this.searchterm.length > 0;
+            if(searching && this.chat.users.size !== this.searchcount) {
+                this.header.text(`Users (${this.searchcount} out of ${this.chat.users.size})`);
+            } else {
+                this.header.text(`Users (${this.chat.users.size})`);
+            }
+            this.ui.toggleClass('search-in', searching);
         }
         super.redraw();
     }
 
+    addAll(){
+        this.container.empty();
+        this.chat.users.forEach(({username}) => this.addElement(username));
+        this.sort();
+        this.filter();
+        this.redraw();
+    }
+
     addAndRedraw(username){
-        if(this.visible && !this.hasUser(username)){
-            this.addUser(username);
-            this.sort();
-            this.redraw();
+        if(!this.hasElement(username)){
+            this.addElement(username);
+            //this.sort();
+            //this.filter();
+            //this.redraw();
         }
     }
 
     removeAndRedraw(username){
-        if(this.visible && this.hasUser(username)){
-            this.removeUser(username);
+        if(this.hasElement(username)){
+            this.removeElement(username);
             this.redraw();
         }
     }
 
-    removeUser(username){
-        return this.groupsEl.find('li[data-username="'+username+'"]').parent().remove();
+    removeElement(username){
+        return this.container.find('.user[data-username="'+username+'"]').remove();
     }
 
-    addUser(username){
+    addElement(username){
         const user = this.chat.users.get(username);
-        const label = !user.username || user.username === '' ? "You" : user.username;
-        const elem = `<li data-username="${user.username}"><a class="user ${user.features.join(' ')}">${label}</a></li>`;
-        if(user.hasFeature(UserFeatures.BOT) || user.hasFeature(UserFeatures.BOT2))
-            this.group5.append(elem);
-        else if (user.hasFeature(UserFeatures.ADMIN) || user.hasFeature(UserFeatures.VIP))
-            this.group1.append(elem);
-        else if(user.hasFeature(UserFeatures.BROADCASTER))
-            this.group2.append(elem);
-        else if(user.hasFeature(UserFeatures.SUBSCRIBER))
-            this.group3.append(elem);
-        else
-            this.group4.append(elem);
+        const label = !user.username || user.username === '' ? 'Anonymous' : user.username;
+        const features = user.features.length === 0 ? 'nofeature' : user.features.join(' ');
+        this.container.append(`<a data-username="${user.username}" class="user ${features}">${label} <i class="fa fa-share-square whisper-nick" aria-hidden="true"></i></a>`);
     }
 
-    hasUser(username){
-        return this.groupsEl.find('li[data-username="'+username+'"]').length > 0;
+    hasElement(username){
+        return this.container.find('.user[data-username="'+username+'"]').length > 0;
+    }
+
+    filter(){
+        this.searchcount = 0;
+        this.container.children('.user').get().forEach(a => {
+            const f = a.getAttribute('data-username').toLowerCase().indexOf(this.searchterm.toLowerCase()) >= 0;
+            $(a).toggleClass('found', f);
+            if(f) this.searchcount++;
+        });
     }
 
     sort(){
-        this.groups.forEach(e => {
-            e.children('li').get()
-                .sort((a, b) => a.getAttribute('data-username').localeCompare(b.getAttribute('data-username')))
-                .forEach(a => a.parentNode.appendChild(a))
-        });
+        this.container.children('.user').get().sort((a, b) => {
+            const u1 = this.chat.users.get(a.getAttribute('data-username'));
+            const u2 = this.chat.users.get(b.getAttribute('data-username'));
+            const v1 = u1.hasFeature(UserFeatures.ADMIN) || u1.hasFeature(UserFeatures.VIP);
+            const v2 = u2.hasFeature(UserFeatures.ADMIN) || u2.hasFeature(UserFeatures.VIP);
+            const bot1 = u1.hasFeature(UserFeatures.BOT) || u1.hasFeature(UserFeatures.BOT2);
+            const bot2 = u2.hasFeature(UserFeatures.BOT) || u2.hasFeature(UserFeatures.BOT2);
+            const br1 = u1.hasFeature(UserFeatures.BROADCASTER) || u1.hasFeature(UserFeatures.BROADCASTER);
+            const br2 = u2.hasFeature(UserFeatures.BROADCASTER) || u2.hasFeature(UserFeatures.BROADCASTER);
+            const s1 = u1.hasFeature(UserFeatures.SUBSCRIBER) || u1.hasFeature(UserFeatures.SUBSCRIBER);
+            const s2 = u2.hasFeature(UserFeatures.SUBSCRIBER) || u2.hasFeature(UserFeatures.SUBSCRIBER);
+            if (v1 > v2) return -1;
+            if (v1 < v2) return 1;
+            if (bot1 > bot2) return 1;
+            if (bot1 < bot2) return -1;
+            if (br1 > br2) return -1;
+            if (br1 < br2) return 1;
+            if (s1 > s2) return -1;
+            if (s1 < s2) return 1;
+            if (u1.nick < u2.nick) return -1;
+            if (u1.nick > u2.nick) return 1;
+            return 0;
+        }).forEach(a => a.parentNode.appendChild(a));
     }
 
 }
@@ -237,8 +276,8 @@ class ChatEmoteMenu extends ChatMenu {
     constructor(ui, btn, chat) {
         super(ui, btn, chat);
         this.input = $(this.chat.input);
-        this.temotes = $('#twitch-emotes');
-        this.demotes = $('#destiny-emotes');
+        this.temotes = this.ui.find('#twitch-emotes');
+        this.demotes = this.ui.find('#destiny-emotes');
         this.demotes.append([...this.chat.emoticons].map(emote => ChatEmoteMenu.buildEmote(emote)).join(''));
         this.temotes.append([...this.chat.twitchemotes].map(emote => ChatEmoteMenu.buildEmote(emote)).join(''));
         this.ui.on('click', '.chat-emote', e => this.selectEmote(e.target.innerText));

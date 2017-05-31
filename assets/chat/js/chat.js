@@ -68,7 +68,7 @@ const settings = new Map([
     ['timestampformat', 'HH:mm'],
     ['maxlines', 250],
     ['allowNotifications', false],
-    ['highlight', true],
+    ['highlight', true], // todo rename this to `highlightself` or something
     ['customhighlight', []],
     ['highlightnicks', []],
     ['taggednicks', []],
@@ -168,8 +168,8 @@ class Chat {
         this.control.on('UNBAN',           data => this.cmdUNBAN(data, 'UNBAN'));
         this.control.on('SUBONLY',         data => this.cmdSUBONLY(data, 'SUBONLY'));
         this.control.on('MAXLINES',        data => this.cmdMAXLINES(data, 'MAXLINES'));
-        this.control.on('UNHIGHLIGHT',     data => this.cmdTOGGLEHIGHLIGHT(data, 'UNHIGHLIGHT'));
-        this.control.on('HIGHLIGHT',       data => this.cmdTOGGLEHIGHLIGHT(data, 'HIGHLIGHT'));
+        this.control.on('UNHIGHLIGHT',     data => this.cmdHIGHLIGHT(data, 'UNHIGHLIGHT'));
+        this.control.on('HIGHLIGHT',       data => this.cmdHIGHLIGHT(data, 'HIGHLIGHT'));
         this.control.on('TIMESTAMPFORMAT', data => this.cmdTIMESTAMPFORMAT(data));
         this.control.on('BROADCAST',       data => this.cmdBROADCAST(data));
         this.control.on('CONNECT',         data => this.cmdCONNECT(data));
@@ -794,30 +794,33 @@ class Chat {
         }
     }
 
-    cmdTOGGLEHIGHLIGHT(parts, command){
+    cmdHIGHLIGHT(parts, command){
         const highlights = this.settings.get('highlightnicks');
         if (!parts[0]) {
-            if(highlights.length > 0)
-                this.push(MessageBuilder.infoMessage('Currently highlighted users: ' + highlights.join(', ')));
+            if (highlights.length > 0)
+                this.push(MessageBuilder.infoMessage('Currently highlighted users: ' + highlights.join(',')));
             else
                 this.push(MessageBuilder.infoMessage(`No highlighted users`));
-
-        } else if (!nickregex.test(parts[1])) {
+            return;
+        }
+        const nicks = parts[0].split(',').map(a => a.trim()).filter(a => nickregex.test(a));
+        if (nicks.length === 0) {
             this.push(MessageBuilder.errorMessage(`Invalid nick - /${command} nick`));
         } else {
-            const nick = parts[0].toLowerCase();
-            const i = highlights.indexOf(nick);
-            switch(command) {
-                case 'UNHIGHLIGHT':
-                    if(i !== -1) highlights.splice(i, 1);
-                    this.push(MessageBuilder.infoMessage(`No longer highlighting ${nick}`));
-                    break;
-                default:
-                case 'HIGHLIGHT':
-                    if(i === -1) highlights.push(nick);
-                    this.push(MessageBuilder.infoMessage(`Highlighting ${nick}`));
-                    break;
-            }
+            nicks.forEach(n => {
+                const nick = n.toLowerCase();
+                const i = highlights.indexOf(nick);
+                switch(command) {
+                    case 'UNHIGHLIGHT':
+                        if(i !== -1) highlights.splice(i, 1);
+                        break;
+                    default:
+                    case 'HIGHLIGHT':
+                        if(i === -1) highlights.push(nick);
+                        break;
+                }
+            });
+            this.push(MessageBuilder.infoMessage(command === 'HIGHLIGHT' ? `Highlighting ${nicks.join(',')}` : `No longer highlighting ${nicks.join(',')}`));
             this.settings.set('highlightnicks', highlights);
             this.applySettings();
         }
@@ -1055,9 +1058,12 @@ class Chat {
 
             const canhighlight = !message.user.hasFeature(UserFeatures.BOT) && message.user.username.toLowerCase() !== this.user.username.toLowerCase();
             message.highlighted = canhighlight && (
+                // Check current user nick against msg.message (if highlight setting is on)
                 (this.regexhighlightself && this.settings.get('highlight') && this.regexhighlightself.test(message.message)) ||
-                (this.regexhighlightcustom && (this.regexhighlightcustom.test(message.message) || this.regexhighlightcustom.test(message.user.username))) ||
-                (this.regexhighlightnicks && this.regexhighlightnicks.test(message.user.username))
+                // Check /highlight nicks against msg.nick
+                (this.regexhighlightnicks && this.regexhighlightnicks.test(message.user.username)) ||
+                // Check custom highlight against msg.nick and msg.message
+                (this.regexhighlightcustom && this.regexhighlightcustom.test(message.user.username + ' ' + message.message))
             );
         }
 

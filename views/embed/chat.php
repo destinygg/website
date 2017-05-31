@@ -90,7 +90,7 @@ use Destiny\Common\Config;
                         <h4>Highlighting &amp; Focus</h4>
                         <div class="form-group checkbox">
                             <label title="Highlight text that you are mentioned in">
-                                <input name="highlight" type="checkbox" checked="checked"/> Auto highlight myself
+                                <input name="highlight" type="checkbox" checked="checked"/> Highlight myself when mentioned
                             </label>
                         </div>
                         <div class="form-group">
@@ -132,10 +132,13 @@ use Destiny\Common\Config;
     <div id="chat-user-list" class="chat-menu right">
         <div class="list-wrap clearfix">
             <div class="toolbar">
-                <h5>Users (~<span>0</span>) <i class="fa fa-chevron-circle-right menu-close"></i></h5>
+                <h5><span>Users</span> <i class="fa fa-chevron-circle-right menu-close"></i></h5>
             </div>
             <div class="scrollable nano">
-                <div id="chat-groups" class="content nano-content"></div>
+                <div class="content nano-content"></div>
+            </div>
+            <div id="chat-user-list-search">
+                <input type="text" class="form-control input-sm" value="" placeholder="Username search ..." />
             </div>
         </div>
     </div>
