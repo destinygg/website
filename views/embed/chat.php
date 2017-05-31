@@ -49,123 +49,124 @@ use Destiny\Common\Config;
     </div>
     <!-- end chat input -->
 
-    <!-- bot frame -->
-    <div id="chat-bottom-frame">
-
-        <!-- user list -->
-        <div id="chat-user-list" class="chat-menu">
-            <div class="list-wrap clearfix">
-              <div class="toolbar">
-                <h5>Users (~<span>0</span>) <button type="button" class="close" aria-hidden="true">&times;</button></h5>
-              </div>
-              <div class="scrollable nano">
-                <div id="chat-groups" class="content nano-content"></div>
-              </div>
+    <!-- settings -->
+    <div id="chat-settings" class="chat-menu right">
+        <div class="list-wrap clearfix">
+            <div class="toolbar">
+                <h5>Settings <i class="fa fa-chevron-circle-right menu-close"></i></h5>
             </div>
-        </div>
-        <!-- end user list -->
-
-        <!-- settings -->
-        <div id="chat-settings" class="chat-menu">
-            <div class="list-wrap clearfix">
-                <div class="toolbar">
-                    <h5>Settings <button type="button" class="close" aria-hidden="true">&times;</button></h5>
-                </div>
-                <div class="tools">
-                    <div class="checkbox">
-                        <label title="Persistent profile settings">
-                            <input name="profilesettings" type="checkbox" checked="checked"/> Save settings to profile
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label title="Show all user flair icons">
-                            <input name="hideflairicons" type="checkbox" /> Hide flair icons
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label title="Show the timestamps next to the messages">
-                            <input name="showtime" type="checkbox" /> Show time for messages
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label title="Show removed content">
-                            <input name="showremoved" type="checkbox" /> Show removed messages
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label title="Highlight text that you are mentioned in">
-                            <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label title="Your custom list of words that will make messages highlight" style="width: 100%;">
-                            Custom highlight words.
-                            <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma (,)" />
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label title="Show desktop notifications on highlight">
-                            <input name="allowNotifications" type="checkbox" /> Desktop notifications
-                            <br /><small id="chat-settings-notification-permissions">(Permission unknown)</small>
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label title="Show whispers in chat">
-                            <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
-                        </label>
-                    </div>
-                    <div class="form-group checkbox">
-                        <hr />
-                        <small>See the <a href="/chat/faq" target="_blank">chat FAQ</a> for more information</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- end settings -->
-
-        <div id="chat-emote-list" class="chat-menu">
-            <div class="list-wrap clearfix">
-              <div class="toolbar">
-                <h5><span>Emotes</span> <button type="button" class="close" aria-hidden="true">&times;</button></h5>
-              </div>
-              <div id="chat-emotes" class="scrollable nano">
+            <div class="scrollable nano">
                 <div class="content nano-content">
-                  <div class="emote-group" id="destiny-emotes"></div>
-                  <hr/>
-                  <h6>Twitch Emotes</h6>
-                  <div id="emote-subscribe-note">Twitch subscribers only</div>
-                  <div class="emote-group" id="twitch-emotes"></div>
-                </div>
-              </div>
-            </div>
-        </div>
-
-        <div id="chat-whisper-users" class="chat-menu">
-            <div class="list-wrap clearfix">
-                <div class="toolbar">
-                    <h5><span>Whispers</span> <button type="button" class="close" aria-hidden="true">&times;</button></h5>
-                </div>
-                <div class="scrollable nano">
-                    <div class="content nano-content">
-                        <ul></ul>
+                    <div class="clearfix">
+                        <div class="form-group checkbox">
+                            <label title="Persistent profile settings">
+                                <input name="profilesettings" type="checkbox" checked="checked"/> Save settings to profile
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Show all user flair icons">
+                                <input name="hideflairicons" type="checkbox" /> Hide flair icons
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Show the timestamps next to the messages">
+                                <input name="showtime" type="checkbox" /> Show time for messages
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Show removed content">
+                                <input name="showremoved" type="checkbox" /> Show removed messages
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Highlight text that you are mentioned in">
+                                <input name="highlight" type="checkbox" checked="checked"/> Highlight on mention
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Custom highlight words</label>
+                            <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma" />
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Show desktop notifications on highlight">
+                                <input name="allowNotifications" type="checkbox" /> Desktop notifications
+                                <br /><small id="chat-settings-notification-permissions">(Permission unknown)</small>
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Show whispers in chat">
+                                <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Include mentions when focused">
+                                <input name="focusmentioned" type="checkbox" /> Include mentions when focused
+                            </label>
+                        </div>
+                        <hr class="separator" />
+                        <div class="form-group">
+                            <p>See <a href="/chat/faq" target="_blank">the chat faq</a> for more information</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <!-- end settings -->
 
-        <div id="chat-whisper-messages" class="chat-menu">
-            <div class="list-wrap clearfix">
-                <div class="toolbar">
-                    <h5><span>Whisper</span> <button type="button" class="close" aria-hidden="true">&times;</button></h5>
-                </div>
-                <div class="scrollable nano">
-                    <div class="content nano-content"></div>
+    <!-- user list -->
+    <div id="chat-user-list" class="chat-menu right">
+        <div class="list-wrap clearfix">
+            <div class="toolbar">
+                <h5>Users (~<span>0</span>) <i class="fa fa-chevron-circle-right menu-close"></i></h5>
+            </div>
+            <div class="scrollable nano">
+                <div id="chat-groups" class="content nano-content"></div>
+            </div>
+        </div>
+    </div>
+    <!-- end user list -->
+
+    <div id="chat-emote-list" class="chat-menu left">
+        <div class="list-wrap clearfix">
+            <div class="toolbar">
+                <h5><span>Emotes</span> <i class="fa fa-chevron-circle-left menu-close"></i></h5>
+            </div>
+            <div class="scrollable nano">
+                <div class="content nano-content">
+                    <div class="emote-group" id="destiny-emotes"></div>
+                    <hr/>
+                    <h6>Twitch Emotes</h6>
+                    <div id="emote-subscribe-note">Twitch subscribers only</div>
+                    <div class="emote-group" id="twitch-emotes"></div>
                 </div>
             </div>
         </div>
-
     </div>
-    <!-- end bot frame -->
+
+    <div id="chat-whisper-users" class="chat-menu left">
+        <div class="list-wrap clearfix">
+            <div class="toolbar">
+                <h5><span>Whispers</span> <i class="fa fa-chevron-circle-left menu-close"></i></h5>
+            </div>
+            <div class="scrollable nano">
+                <div class="content nano-content">
+                    <ul></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-whisper-messages" class="chat-menu right">
+        <div class="list-wrap clearfix">
+            <div class="toolbar">
+                <h5><span>Whisper</span> <i class="fa fa-chevron-circle-right menu-close"></i></h5>
+            </div>
+            <div class="scrollable nano">
+                <div class="content nano-content"></div>
+            </div>
+        </div>
+    </div>
 
     <div id="chat-login-screen" style="display:none;">
         <div style="text-align: center;">

@@ -39,6 +39,11 @@ class Request {
      */
     private $headers;
 
+    /**
+     * @var array
+     */
+    private $allheaders;
+
     public function __construct(){
         if (isset ($_GET))
             $this->get = $_GET;
@@ -61,6 +66,12 @@ class Request {
                 $this->ipAddress = $_SERVER ['HTTP_X_FORWARDED_FOR'];
             else
                 $this->ipAddress = $_SERVER ['REMOTE_ADDR'];
+
+            foreach ($_SERVER as $k => $v) {
+                if(substr($k, 0, 6 ) === 'HTTP_X') {
+                    $this->allheaders[$k] = $v;
+                }
+            }
 
             if (isset ($_SERVER['HTTP_IF_NONE_MATCH']))
                 $this->headers[self::HEADER_IF_NONE_MATCH] = $_SERVER['HTTP_IF_NONE_MATCH'];
@@ -109,6 +120,11 @@ class Request {
 
     public function header($name) {
         return isset($this->headers[$name]) ? $this->headers[$name] : null;
+    }
+
+    public function rawheader($name) {
+        $name = 'HTTP_' . str_replace('-', '_', strtoupper($name));
+        return isset($this->allheaders[$name]) ? $this->allheaders[$name] : null;
     }
 
 }

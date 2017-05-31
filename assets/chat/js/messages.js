@@ -107,7 +107,7 @@ class ChatMessage extends ChatUIMessage {
 
     wrapMessage(){
         let msg = this.message;
-        this.chat.formatters.forEach(f => msg = f.format(msg, this.user));
+        this.chat.formatters.forEach(f => msg = f.format(msg, this.user, this));
         return `<span class="text">${msg}</span>`;
     }
 
@@ -127,6 +127,7 @@ class ChatUserMessage extends ChatMessage {
         this.target = null;
         this.tag = null;
         this.isSlashMe = false;
+        this.mentioned = [];
         if (this.message.substring(0, 4) === '/me ') {
             this.isSlashMe = true;
             this.message = this.message.substring(4);
@@ -152,6 +153,7 @@ class ChatUserMessage extends ChatMessage {
     html(){
         const classes = [], attr = {};
         const continued = this.chat.lastmessage && this.chat.lastmessage.user && this.user && this.chat.lastmessage.user.username === this.user.username;
+
         if(this.id !== null)
             attr['data-id'] = this.id;
         if(this.user && this.user.username)
@@ -168,17 +170,23 @@ class ChatUserMessage extends ChatMessage {
             classes.push('msg-continue');
         if(this.tag)
             classes.push(`msg-tagged msg-tagged-${this.tag}`);
-        if(this.target) {
+        if(this.target)
             classes.push(`msg-whisper`);
-            const t =   '<span>'+
-                            `<a data-username="${this.user.username}" class="chat-open-whisper"><i class="fa fa-envelope" aria-hidden="true"></i> open</a> ` +
-                            `<a data-username="${this.user.username}" class="chat-remove-whisper"><i class="fa fa-times" aria-hidden="true"></i> remove</a>`+
-                        '</span>';
+        if(this.mentioned !== null && this.mentioned.length > 0)
+            attr['data-mentioned'] = this.mentioned.join(' ').toLowerCase();
 
-            return this.wrap(`${this.wrapTime()} ${this.wrapUser(this.user)} whispered you ... ${t} <span class="ctrl"></span> ${this.wrapMessage()}`, classes, attr);
+        let t = '';
+        if(this.target) {
+            t = ' whispered you ... '+
+                '<span>'+
+                    `<a data-username="${this.user.username}" class="chat-open-whisper"><i class="fa fa-envelope" aria-hidden="true"></i> open</a> ` +
+                    `<a data-username="${this.user.username}" class="chat-remove-whisper"><i class="fa fa-times" aria-hidden="true"></i> remove</a>`+
+                '</span>';
         } else {
-            return this.wrap(`${this.wrapTime()} ${this.wrapUser(this.user)}${continued ? '':':'} <span class="ctrl"></span> ${this.wrapMessage()}`, classes, attr);
+            t = continued ? '':':';
         }
+
+        return this.wrap(`${this.wrapTime()} ${this.wrapUser(this.user)}${t} <span class="ctrl"></span> ${this.wrapMessage()}`, classes, attr);
     }
 
     getFeatureHTML(){

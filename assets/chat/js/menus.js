@@ -16,7 +16,7 @@ class ChatMenu extends EventEmitter {
         this.visible = false;
         this.shown   = false;
         this.ui.find('.scrollable').get().forEach(el => this.scrollplugin = new ChatScrollPlugin(el));
-        this.ui.on('click', '.close', this.hide.bind(this));
+        this.ui.on('click', '.close,.menu-close', this.hide.bind(this));
         this.btn.on('click', e => this.toggle());
     }
 
@@ -83,6 +83,7 @@ class ChatSettingsMenu extends ChatMenu {
             case 'hideflairicons':
             case 'highlight':
             case 'showhispersinchat':
+            case 'focusmentioned':
                 this.chat.settings.set(name, checked);
                 break;
             case 'profilesettings':
@@ -354,7 +355,7 @@ class ChatWhisperMessages extends ChatMenu {
     }
 
     error(msg){
-        this.el.append(`<div class="label label-danger">${msg}</div>`);
+        this.el.append(`<div><span class="label label-danger">${msg}</span></div>`);
         this.scrollplugin.updateAndPin(true);
     }
 

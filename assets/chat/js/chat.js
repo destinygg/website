@@ -15,6 +15,7 @@ import ChatUserFocus from './focus.js';
 import ChatStore from './store.js';
 import UserFeatures from "./features";
 
+const nickmessageregex = /((?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
 const nickregex = /^[a-zA-Z0-9_]{3,20}$/;
 const tagcolors = [
     "green",
@@ -73,7 +74,8 @@ const settings = new Map([
     ['taggednicks', []],
     ['showremoved', false],
     ['showhispersinchat', false],
-    ['ignorenicks', []]
+    ['ignorenicks', []],
+    ['focusmentioned', false]
 ]);
 const commandsinfo = new Map([
     ['help', ''],
@@ -341,7 +343,9 @@ class Chat {
             this.scrollplugin.updateAndPin(waspinnedbeforeresize);
             isresizing = false;
         }, 300);
+        const closemenudebounce = debounce(() => ChatMenu.closeMenus(this), 1000, true);
         $(window).on('resize', () => {
+            closemenudebounce();
             if(!isresizing){
                 waspinnedbeforeresize = this.scrollplugin.isPinned();
                 isresizing = true;
@@ -389,12 +393,8 @@ class Chat {
             return false;
         });
 
-        // Close menus when esc is pressed
-        $(document).on('keydown', ({keyCode}) => {
-            if(keyCode === 27) ChatMenu.closeMenus(this);
-        });
-        // Focus input when window focuses
-        $(window).on('focus', () => this.input.focus());
+        $(window).on('keydown.chat', ({keyCode}) => keyCode === 27 && ChatMenu.closeMenus(this));
+        $(window).on('focus.chat', () => this.input.focus());
 
         this.scrollplugin.updateAndPin(true);
         this.input.attr('disabled', false);
@@ -886,6 +886,10 @@ class Chat {
     }
 
     cmdSTALK(parts){
+        if (parts[0] && /^\d+$/.test(parts[0])){
+            parts[1] = parts[0];
+            parts[0] = this.user.username;
+        }
         if (!parts[0] || !nickregex.test(parts[0].toLowerCase())) {
             this.push(MessageBuilder.errorMessage('Invalid nick - /stalk <nick> <limit>'));
             return;
@@ -924,6 +928,10 @@ class Chat {
     }
 
     cmdMENTIONS(parts){
+        if (parts[0] && /^\d+$/.test(parts[0])){
+            parts[1] = parts[0];
+            parts[0] = this.user.username;
+        }
         if (!parts[0]) parts[0] = this.user.username;
         if (!parts[0] || !nickregex.test(parts[0].toLowerCase())) {
             this.push(MessageBuilder.errorMessage('Invalid nick - /mentions <nick> <limit>'));
@@ -1016,7 +1024,6 @@ class Chat {
     }
 
     push(message){
-
         // Dont add the gui if user is ignored
         if (message.type === MessageTypes.user && (this.shouldIgnoreMessage(message.message) || this.shouldIgnoreUser(message.user.nick)))
             return;
@@ -1034,21 +1041,16 @@ class Chat {
         if(this.lastmessage && this.lastmessage.type === MessageTypes.emote && this.lastmessage.emotecount > 1)
             this.lastmessage.completeCombo();
 
+        // Populate the tagging, mentioned users and if the message is highlighted.
         if(message.type === MessageTypes.user){
-            const normalized = message.user.nick.toLowerCase();
-            if(this.taggednicks.has(normalized)) {
-                message.tag = this.taggednicks.get(normalized);
-            }
+            message.tag = this.taggednicks.get(message.user.nick.toLowerCase());
+            message.mentioned = [...(message.message.match(nickmessageregex) || [])].filter(a => this.users.has(a));
+            message.highlighted =   this.settings.get('highlight') &&
+                                    !message.user.hasFeature(UserFeatures.BOT) &&
+                                    message.user.username !== this.user.username &&
+                                    this.highlightregex !== null &&
+                                    Boolean(this.highlightregex.test(message.message) || this.highlightregex.test(message.user.username));
         }
-
-        // Highlight and append to the chat gui
-        message.highlighted =
-            this.settings.get('highlight') &&
-            message.type === MessageTypes.user &&
-            !message.user.hasFeature(UserFeatures.BOT) &&
-            message.user.username !== this.user.username &&
-            this.highlightregex !== null &&
-            Boolean(this.highlightregex.test(message.message) || this.highlightregex.test(message.user.username));
 
         this.lines.append(message.attach(this));
 
@@ -1094,10 +1096,12 @@ class Chat {
 
     ignoreNick(nick, ignore=true){
         nick = nick.toLowerCase();
-        if(!ignore)
+        const exists = this.ignoring.has(nick);
+        if(ignore && !exists){
             this.ignoring.add(nick);
-        else if(this.ignoring.has(nick))
+        } else if(!ignore && exists) {
             this.ignoring.delete(nick);
+        }
         this.settings.set('ignorenicks', [...this.ignoring]);
         this.applySettings();
     }
@@ -1123,7 +1127,9 @@ class Chat {
     }
 
     updateSettingsCss(){
-        Array.from(this.settings.keys()).filter(key => typeof this.settings.get(key) === 'boolean').forEach(key => this.ui.toggleClass(`pref-${key}`, this.settings.get(key)));
+        Array.from(this.settings.keys())
+             .filter(key => typeof this.settings.get(key) === 'boolean')
+             .forEach(key => this.ui.toggleClass(`pref-${key}`, this.settings.get(key)));
     }
 
     updateIgnoreRegex(){

@@ -43,16 +43,7 @@ class EmoteFormatter extends ChatFormatter {
     }
 
     format(str, user){
-        let regex;
-        if(user) {
-            if(user.hasFeature(UserFeatures.SUBSCRIBERT0)){
-                regex = twitchemoteregex;
-            } else {
-                regex = gemoteregex;
-            }
-        } else {
-            regex = twitchemoteregex;
-        }
+        let regex = (user && user.hasFeature(UserFeatures.SUBSCRIBERT0)) || user === null ? twitchemoteregex : gemoteregex;
         return str.replace(regex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
     }
 
@@ -72,7 +63,7 @@ class GreenTextFormatter extends ChatFormatter {
                     UserFeatures.ADMIN,
                     UserFeatures.MODERATOR
                 ))
-                str = `<span class="greentext">${str}</span>`;
+                str = `<span class="greentext">${str}</span>`;``
         }
         return str;
     }
@@ -83,11 +74,13 @@ class MentionedUserFormatter extends ChatFormatter {
 
     constructor(chat){
         super(chat);
-        this.userregex = /((?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g;
     }
 
-    format(str, user){
-        return str.replace(this.userregex, (match, prefix, nick) => this.chat.users.has(nick) ? `${prefix}<span class="chat-user">${nick}</span>` : match);
+    format(str, user, message){
+        if(message && message.mentioned && message.mentioned.length > 0){
+            return str.replace(new RegExp(`\\b(${message.mentioned.join('|')})\\b`, 'igm'), `<span class="chat-user">$1</span>`);
+        }
+        return str;
     }
 
 }

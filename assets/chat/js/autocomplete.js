@@ -61,10 +61,6 @@ class ChatAutoComplete {
         return this.buckets[id][data];
     }
 
-    toggleNick(data, val){
-        return val ? this.removeNick(data) : this.updateNick(data);
-    }
-
     removeNick(data){
         let id = this.getBucketId(data);
         if(this.buckets[id] && this.buckets[id][data]){
