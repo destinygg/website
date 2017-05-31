@@ -393,7 +393,9 @@ class Chat {
             return false;
         });
 
-        $(document).on('keydown', ({keyCode}) => keyCode === 27 && ChatMenu.closeMenus(this));
+        $(document).on('keydown', ({keyCode}) => {
+            if(keyCode === 27) ChatMenu.closeMenus(this); // 27:ESC
+        });
         $(window).on('focus', () => this.input.focus());
 
         this.scrollplugin.updateAndPin(true);
