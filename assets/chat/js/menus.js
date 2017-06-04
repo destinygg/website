@@ -1,10 +1,37 @@
-/* global $ */
+/* global $, Notification */
 
-import ChatScrollPlugin from './scroll.js';
-import UserFeatures from './features.js';
-import EventEmitter from './emitter.js';
-import moment from 'moment';
+import ChatUser from './user';
+import ChatScrollPlugin from './scroll';
+import UserFeatures from './features';
+import EventEmitter from './emitter';
+import ChatWindow from './window';
 import debounce from 'debounce';
+import {MessageBuilder} from "./messages";
+import moment from "moment";
+
+function buildEmote(emote){
+    return `<div class="emote"><span title="${emote}" class="chat-emote chat-emote-${emote}">${emote}</span></div>`
+}
+function getSettingValue(e){
+    switch(e.getAttribute('type')){
+        case 'checkbox':
+            const val = $(e).is(':checked');
+            return Boolean(e.hasAttribute('data-opposite') ? !val : val);
+        case 'text':
+            return $(e).val();
+    }
+    return undefined;
+}
+function setSettingValue(e, val){
+    switch(e.getAttribute('type')){
+        case 'checkbox':
+            $(e).prop('checked', Boolean(e.hasAttribute('data-opposite') ? !val : val));
+            break;
+        case 'text':
+            $(e).val(val);
+            break;
+    }
+}
 
 class ChatMenu extends EventEmitter {
 
@@ -15,9 +42,13 @@ class ChatMenu extends EventEmitter {
         this.chat    = chat;
         this.visible = false;
         this.shown   = false;
-        this.ui.find('.scrollable').get().forEach(el => this.scrollplugin = new ChatScrollPlugin(el));
+        this.ui.find('.scrollable').get().forEach(el => this.scrollplugin = new ChatScrollPlugin(chat, el));
         this.ui.on('click', '.close,.menu-close', this.hide.bind(this));
-        this.btn.on('click', e => this.toggle());
+        this.btn.on('click', e => {
+            if(this.visible)
+                chat.input.focus();
+            this.toggle(e);
+        });
     }
 
     show(){
@@ -61,10 +92,8 @@ class ChatSettingsMenu extends ChatMenu {
     constructor(ui, btn, chat) {
         super(ui, btn, chat);
         this.notificationEl = this.ui.find('#chat-settings-notification-permissions');
-        this.customHighlightEl = this.ui.find('input[name=customhighlight]');
-        this.allowNotificationsEl = this.ui.find('input[name="allowNotifications"]');
-        this.customHighlightEl.on('keypress blur', e => this.onCustomHighlightChange(e));
         this.ui.on('change', 'input[type="checkbox"]', e => this.onSettingsChange(e));
+        this.ui.on('keypress blur', 'textarea[name="customhighlight"]', e => this.onCustomHighlightChange(e));
     }
 
     onCustomHighlightChange(e){
@@ -76,48 +105,36 @@ class ChatSettingsMenu extends ChatMenu {
     }
 
     onSettingsChange(e){
-        let name = $(e.target).attr('name'),
-         checked = $(e.target).is(':checked');
-        switch(name){
-            case 'showremoved':
-            case 'showtime':
-            case 'hideflairicons':
-            case 'highlight':
-            case 'showhispersinchat':
-            case 'focusmentioned':
-                this.chat.settings.set(name, checked);
-                break;
-            case 'notificationtimeout':
-                this.chat.settings.set(name, checked ? 8000 : -1);
-                break;
-            case 'profilesettings':
-                if(!checked && this.chat.authenticated) {
-                    $.ajax({url: '/chat/settings', method:'delete'});
-                }
-                this.chat.settings.set(name, checked);
-                break;
-            case 'allowNotifications':
-                if(checked){
-                    this.notificationPermission().then(
-                        p => this.chat.settings.set(name, true),
-                        p => this.chat.settings.set(name, false)
-                    );
-                } else {
-                    this.chat.settings.set(name, false);
-                }
-                break;
+        const val = getSettingValue(e.target);
+        const name = e.target.getAttribute('name');
+        if(val !== undefined) {
+
+            switch(name){
+                case 'profilesettings':
+                    if(!val && this.chat.authenticated) {
+                        $.ajax({url: '/api/chat/me/settings', method:'delete'});
+                    }
+                    break;
+                case 'notificationwhisper':
+                case 'notificationhighlight':
+                    if(val){
+                        this.notificationPermission().then(() => this.updateNotification());
+                    }
+                    break;
+            }
+
+            this.chat.settings.set(name, val);
+            this.chat.applySettings(false);
+            this.chat.commitSettings();
         }
-        this.updateNotification();
-        this.chat.applySettings(false);
-        this.chat.commitSettings();
     }
 
     show(){
         if(!this.visible){
-            [...this.chat.settings].forEach(a => this.ui.find(`input[name=${a[0]}][type="checkbox"]`).prop('checked', this.chat.settings.get(a[0])));
-            if(Notification.permission !== 'granted')
-                this.allowNotificationsEl.prop('checked', false);
-            this.customHighlightEl.val( this.chat.settings.get('customhighlight').join(',') );
+            this.ui.find('input').get()
+                .filter(e => this.chat.settings.has(e.getAttribute('name')))
+                .forEach(e => setSettingValue(e, this.chat.settings.get(e.getAttribute('name'))));
+            this.ui.find('textarea[name="customhighlight"]').val(this.chat.settings.get('customhighlight') || '');
             this.updateNotification();
         }
         super.show();
@@ -158,13 +175,9 @@ class ChatUserMenu extends ChatMenu {
 
     constructor(ui, btn, chat){
         super(ui, btn, chat);
-        this.debouncesearch = debounce(s => {
-            this.searchterm = s;
-            this.filter();
-            this.redraw();
-        }, 100);
         this.searchterm = '';
         this.searchcount = 0;
+        this.totalcount = 0;
         this.header = this.ui.find('h5 span');
         this.container = this.ui.find('.content:first');
         this.searchinput = this.ui.find('#chat-user-list-search .form-control:first');
@@ -179,16 +192,25 @@ class ChatUserMenu extends ChatMenu {
         this.chat.source.on('JOIN', data => this.addAndRedraw(data.nick));
         this.chat.source.on('QUIT', data => this.removeAndRedraw(data.nick));
         this.chat.source.on('NAMES', data => this.addAll());
-        this.searchinput.on('keyup', e => this.debouncesearch($(e.target).val()));
+        this.searchinput.on('keyup', debounce(() => {
+            this.searchterm = this.searchinput.val();
+            this.filter();
+            this.redraw();
+        }, 100));
+    }
+
+    show(){
+        super.show();
+        this.searchinput.focus();
     }
 
     redraw(){
         if(this.visible){
             const searching = this.searchterm.length > 0;
-            if(searching && this.chat.users.size !== this.searchcount) {
-                this.header.text(`Users (${this.searchcount} out of ${this.chat.users.size})`);
+            if(searching && this.totalcount !== this.searchcount) {
+                this.header.text(`Users (${this.searchcount} out of ${this.totalcount})`);
             } else {
-                this.header.text(`Users (${this.chat.users.size})`);
+                this.header.text(`Users (${this.totalcount})`);
             }
             this.ui.toggleClass('search-in', searching);
         }
@@ -196,8 +218,9 @@ class ChatUserMenu extends ChatMenu {
     }
 
     addAll(){
+        this.totalcount = 0;
         this.container.empty();
-        this.chat.users.forEach(({username}) => this.addElement(username));
+        [...this.chat.users.keys()].forEach(username => this.addElement(username));
         this.sort();
         this.filter();
         this.redraw();
@@ -206,9 +229,9 @@ class ChatUserMenu extends ChatMenu {
     addAndRedraw(username){
         if(!this.hasElement(username)){
             this.addElement(username);
-            //this.sort();
-            //this.filter();
-            //this.redraw();
+            this.sort();
+            this.filter();
+            this.redraw();
         }
     }
 
@@ -220,14 +243,16 @@ class ChatUserMenu extends ChatMenu {
     }
 
     removeElement(username){
-        return this.container.find('.user[data-username="'+username+'"]').remove();
+        this.container.find(`.user[data-username="${username}"]`).remove();
+        this.totalcount--;
     }
 
     addElement(username){
-        const user = this.chat.users.get(username);
+        const user = this.chat.users.get(username.toLowerCase());
         const label = !user.username || user.username === '' ? 'Anonymous' : user.username;
         const features = user.features.length === 0 ? 'nofeature' : user.features.join(' ');
         this.container.append(`<a data-username="${user.username}" class="user ${features}">${label} <i class="fa fa-share-square whisper-nick" aria-hidden="true"></i></a>`);
+        this.totalcount++;
     }
 
     hasElement(username){
@@ -236,36 +261,53 @@ class ChatUserMenu extends ChatMenu {
 
     filter(){
         this.searchcount = 0;
-        this.container.children('.user').get().forEach(a => {
-            const f = a.getAttribute('data-username').toLowerCase().indexOf(this.searchterm.toLowerCase()) >= 0;
-            $(a).toggleClass('found', f);
-            if(f) this.searchcount++;
-        });
+        if(this.searchterm && this.searchterm.length > 0) {
+            this.container.children('.user').get().forEach(a => {
+                const f = a.getAttribute('data-username').toLowerCase().indexOf(this.searchterm.toLowerCase()) >= 0;
+                $(a).toggleClass('found', f);
+                if(f) this.searchcount++;
+            });
+        } else {
+            this.container.children('.user').removeClass('found');
+        }
     }
 
     sort(){
-        this.container.children('.user').get().sort((a, b) => {
-            const u1 = this.chat.users.get(a.getAttribute('data-username'));
-            const u2 = this.chat.users.get(b.getAttribute('data-username'));
-            const v1 = u1.hasFeature(UserFeatures.ADMIN) || u1.hasFeature(UserFeatures.VIP);
-            const v2 = u2.hasFeature(UserFeatures.ADMIN) || u2.hasFeature(UserFeatures.VIP);
-            const bot1 = u1.hasFeature(UserFeatures.BOT) || u1.hasFeature(UserFeatures.BOT2);
-            const bot2 = u2.hasFeature(UserFeatures.BOT) || u2.hasFeature(UserFeatures.BOT2);
-            const br1 = u1.hasFeature(UserFeatures.BROADCASTER) || u1.hasFeature(UserFeatures.BROADCASTER);
-            const br2 = u2.hasFeature(UserFeatures.BROADCASTER) || u2.hasFeature(UserFeatures.BROADCASTER);
-            const s1 = u1.hasFeature(UserFeatures.SUBSCRIBER) || u1.hasFeature(UserFeatures.SUBSCRIBER);
-            const s2 = u2.hasFeature(UserFeatures.SUBSCRIBER) || u2.hasFeature(UserFeatures.SUBSCRIBER);
+        const users = this.container.children('.user').get();
+        users.sort((a, b) => {
+            const u1 = this.chat.users.get(a.getAttribute('data-username').toLowerCase());
+            const u2 = this.chat.users.get(b.getAttribute('data-username').toLowerCase());
+            if(!u1 || !u2) return 0;
+            let v1, v2;
+
+            v1 = u1.hasFeature(UserFeatures.ADMIN) || u1.hasFeature(UserFeatures.VIP);
+            v2 = u2.hasFeature(UserFeatures.ADMIN) || u2.hasFeature(UserFeatures.VIP);
             if (v1 > v2) return -1;
             if (v1 < v2) return 1;
-            if (bot1 > bot2) return 1;
-            if (bot1 < bot2) return -1;
-            if (br1 > br2) return -1;
-            if (br1 < br2) return 1;
-            if (s1 > s2) return -1;
-            if (s1 < s2) return 1;
+
+            v1 = u1.hasFeature(UserFeatures.BOT2);
+            v2 = u2.hasFeature(UserFeatures.BOT2);
+            if (v1 > v2) return 1;
+            if (v1 < v2) return -1;
+            v1 = u1.hasFeature(UserFeatures.BOT);
+            v2 = u2.hasFeature(UserFeatures.BOT);
+            if (v1 > v2) return 1;
+            if (v1 < v2) return -1;
+
+            v1 = u1.hasFeature(UserFeatures.BROADCASTER) || u1.hasFeature(UserFeatures.BROADCASTER);
+            v2 = u2.hasFeature(UserFeatures.BROADCASTER) || u2.hasFeature(UserFeatures.BROADCASTER);
+            if (v1 > v2) return -1;
+            if (v1 < v2) return 1;
+
+            v1 = u1.hasFeature(UserFeatures.SUBSCRIBER) || u1.hasFeature(UserFeatures.SUBSCRIBER);
+            v2 = u2.hasFeature(UserFeatures.SUBSCRIBER) || u2.hasFeature(UserFeatures.SUBSCRIBER);
+            if (v1 > v2) return -1;
+            if (v1 < v2) return 1;
+
             if (u1.nick < u2.nick) return -1;
             if (u1.nick > u2.nick) return 1;
             return 0;
+
         }).forEach(a => a.parentNode.appendChild(a));
     }
 
@@ -275,12 +317,14 @@ class ChatEmoteMenu extends ChatMenu {
 
     constructor(ui, btn, chat) {
         super(ui, btn, chat);
-        this.input = $(this.chat.input);
         this.temotes = this.ui.find('#twitch-emotes');
         this.demotes = this.ui.find('#destiny-emotes');
-        this.demotes.append([...this.chat.emoticons].map(emote => ChatEmoteMenu.buildEmote(emote)).join(''));
-        this.temotes.append([...this.chat.twitchemotes].map(emote => ChatEmoteMenu.buildEmote(emote)).join(''));
-        this.ui.on('click', '.chat-emote', e => this.selectEmote(e.target.innerText));
+        this.demotes.append([...this.chat.emoticons].map(buildEmote).join(''));
+        this.temotes.append([...this.chat.twitchemotes].map(buildEmote).join(''));
+        this.ui.on('click', '.chat-emote', e => {
+            ChatMenu.closeMenus(chat);
+            this.selectEmote(e.target.innerText);
+        });
     }
 
     show() {
@@ -291,12 +335,8 @@ class ChatEmoteMenu extends ChatMenu {
     }
 
     selectEmote(emote){
-        let value = this.input.val().toString().trim();
-        this.input.val(value + (value === '' ? '':' ') +  emote + ' ').focus();
-    }
-
-    static buildEmote(emote){
-        return `<div class="emote"><span title="${emote}" class="chat-emote chat-emote-${emote}">${emote}</span></div>`
+        let value = this.chat.input.val().toString().trim();
+        this.chat.input.val(value + (value === '' ? '':' ') + emote + ' ').focus();
     }
 
 }
@@ -314,19 +354,53 @@ class ChatWhisperUsers extends ChatMenu {
         this.usersEl.on('click', '.remove', e => this.removeConversation(e.target.getAttribute('data-username')))
     }
 
-    removeConversation(username){
-        this.chat.whispers.delete(username);
+    removeConversation(nick){
+        const normalized = nick.toLowerCase();
+        this.chat.whispers.delete(normalized);
+        this.chat.removeWindow(normalized);
         this.redraw();
     }
 
-    selectConversation(username){
+    selectConversation(nick){
         ChatMenu.closeMenus(this.chat);
-        this.chat.input.focus();
-        const menu = this.chat.menus.get('whisper-messages');
-        menu.username = username;
-        menu.conv = this.chat.whispers.get(username.toLowerCase());
-        menu.show();
-        this.redraw();
+        const normalized = nick.toLowerCase();
+        const conv = this.chat.whispers.get(normalized);
+        if(conv){
+            conv.unread = 0;
+            const user = this.chat.users.get(normalized) || new ChatUser({nick: nick});
+            let win = this.chat.getWindow(normalized);
+            if(!win){
+                win = new ChatWindow(nick, 'chat-output-whisper', user.nick).into(this.chat);
+                this.chat.windowToFront(win.name);
+
+                MessageBuilder.info(`Messages from ${user.nick}`).into(this.chat, win);
+                MessageBuilder.info(
+                    `Enter /close to exit this conversation, click the round icons below and center of the chat input to toggle between them\
+                     or close them from the whispers menu.`
+                ).into(this.chat, win);
+                MessageBuilder.info(`Loading messages ...`).into(this.chat, win);
+                $.ajax({url: `/api/messages/${encodeURIComponent(user.nick)}/unread`})
+                    .done(data => {
+                        if(data.length === 0) {
+                            MessageBuilder.info(`No messages returned.`).into(this.chat, win);
+                        } else {
+                            const date = moment(data[0].timestamp).format('MMMM Do YYYY, h:mm:ss a');
+                            MessageBuilder.info(`Last message ${date}`).into(this.chat, win);
+                            data.reverse().forEach(e => {
+                                const user = this.chat.users.get(e['from'].toLowerCase()) || new ChatUser({nick: e['from']});
+                                MessageBuilder.historical(e.message, user, e.timestamp).into(this.chat, win)
+                            });
+                        }
+                        conv.loaded = true;
+                    })
+                    .fail(() => MessageBuilder.error(`Failed to load whispers :(`).into(this.chat, win));
+
+            } else {
+                this.chat.windowToFront(win.name);
+            }
+            this.chat.input.focus();
+            this.redraw();
+        }
     }
 
     updateNotification(){
@@ -335,16 +409,16 @@ class ChatWhisperUsers extends ChatMenu {
             .map(e => parseInt(e[1].unread))
             .reduce((a,b) => a+b, 0);
         if(wasunread < this.unread) {
-            this.btn.addClass('pulse-once');
-            setTimeout(() => this.btn.removeClass('pulse-once'), 2000);
+            this.btn.addClass('ping');
+            setTimeout(() => this.btn.removeClass('ping'), 2000);
         }
         this.notif.text(this.unread);
         this.notif.toggle(this.unread > 0);
         try{
+            // Add the number of unread items to the window title.
             const t = window.parent.document.title.replace(/^\([0-9]+\) /, '');
             window.parent.document.title = this.unread > 0 ? `(${this.unread}) ${t}` : `${t}`;
         }catch(ignored){console.error(ignored)}
-
     }
 
     redraw(){
@@ -354,8 +428,7 @@ class ChatWhisperUsers extends ChatMenu {
             if(this.chat.whispers.size === 0) {
                 this.usersEl.append(this.empty);
             } else {
-                [...this.chat.whispers.entries()]
-                .sort((a,b) => {
+                [...this.chat.whispers.entries()].sort((a,b) => {
                     if(a[1].unread === 0){
                         return 1;
                     } else if(b[1].unread === 0){
@@ -371,91 +444,13 @@ class ChatWhisperUsers extends ChatMenu {
     }
 
     addConversation(nick, unread){
+        const user = this.chat.users.get(nick.toLowerCase()) || new ChatUser({nick: nick});
         this.usersEl.append(`
             <li class="conversation unread-${unread}">
-                <a data-username="${nick}" title="Hide" class="fa fa-times remove"></a>
-                <a data-username="${nick}" class="user">${nick} <span class="badge">${unread}</span></a>
+                <a data-username="${user.nick.toLowerCase()}" title="Hide" class="fa fa-times remove"></a>
+                <a data-username="${user.nick.toLowerCase()}" class="user">${user.nick} <span class="badge">${unread}</span></a>
             </li>
         `);
-    }
-
-}
-
-class ChatWhisperMessages extends ChatMenu {
-
-    constructor(ui, btn, chat) {
-        super(ui, btn, chat);
-        this.username = '';
-        this.conv = null;
-        this.title = ui.find('.toolbar span:first');
-        this.el = ui.find('.content:first');
-        this.loading = $(
-            `<div>
-                <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
-                <span>Loading...</span>
-             </div>`
-        );
-    }
-
-    error(msg){
-        this.el.append(`<div><span class="label label-danger">${msg}</span></div>`);
-        this.scrollplugin.updateAndPin(true);
-    }
-
-    show(){
-        if(!this.visible){
-            this.chat.ui.addClass('focus-user');
-        }
-        super.show();
-    }
-
-    hide(){
-        if(this.visible){
-            this.chat.ui.removeClass('focus-user');
-        }
-        super.hide();
-    }
-
-    fetchMessages(){
-        return $.ajax({url: `/profile/messages/${encodeURIComponent(this.username)}/unread`});
-    }
-
-    redraw() {
-        if (this.visible) {
-            this.el.empty();
-            this.conv.unread = 0;
-            this.title.text(this.username);
-            if(!this.conv.loaded) {
-                this.conv.loaded = true;
-                this.loading.appendTo(this.el);
-                this.fetchMessages()
-                    .always(() => this.loading.detach())
-                    .done(d => {
-                        d.reverse().forEach(e => this.conv.messages.push({data: e.message, timestamp: e.timestamp, nick: e.from}));
-                        this.conv.messages.forEach(m => this.addMessage(m));
-                    });
-            } else {
-                this.conv.messages.forEach(m => this.addMessage(m));
-            }
-        }
-        super.redraw();
-    }
-
-    addMessage(data){
-        let message = data.data;
-        const t = moment.utc(data.timestamp).local();
-        const label = t.format('MMMM Do YYYY, h:mm:ss a');
-        const time = t.format(this.chat.settings.get('timestampformat'));
-        const me = this.chat.user.nick.toLowerCase() === data.nick.toLowerCase();
-        this.chat.formatters.forEach(formatter => message = formatter.format(message));
-        this.el.append(`
-            <div class="msg ${me ? 'me' : ''}" title="${label} from ${data.nick}">
-                <div class="tri"></div>
-                <time>${time}</time>
-                <div class="text">${message}</div>
-            </div>
-        `);
-        this.scrollplugin.updateAndPin(true);
     }
 
 }
@@ -465,6 +460,5 @@ export {
     ChatSettingsMenu,
     ChatUserMenu,
     ChatEmoteMenu,
-    ChatWhisperUsers,
-    ChatWhisperMessages
+    ChatWhisperUsers
 };

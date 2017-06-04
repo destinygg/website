@@ -15,13 +15,11 @@ use Destiny\Common\Config;
 <body class="embed onstream">
 
     <div id="chat" class="chat chat-icons">
-
         <div id="chat-output-frame">
-            <div id="chat-output" class="nano">
-              <div id="chat-lines" class="nano-content"></div>
+            <div id="chat-output-main" class="chat-output nano">
+                <div class="chat-lines nano-content"></div>
             </div>
         </div>
-
     </div>
 
     <?php include 'seg/commonbottom.php' ?>

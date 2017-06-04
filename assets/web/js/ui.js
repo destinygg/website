@@ -233,7 +233,7 @@ $(function(){
 
     const checkUser = function(username, success){
         $.ajax({
-            url: '/gift/check',
+            url: '/api/info/giftcheck',
             data: {s: username},
             type: 'GET',
             success: function(data){
@@ -367,7 +367,7 @@ $(function(){
 
         setInterval(function(){
             $.ajax({
-                url: '/stream.json',
+                url: '/api/info/stream',
                 type: 'GET',
                 success: function(data) {
                     try {

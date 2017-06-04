@@ -5,7 +5,7 @@ import ChatStore from './store.js';
 class ChatInputHistory {
 
     constructor(chat){
-        this.input      = $(chat.input);
+        this.input      = chat.input;
         this.history    = ChatStore.read('chat.history') || [];
         this.index      = -1;
         this.lastinput  = '';
@@ -61,7 +61,7 @@ class ChatInputHistory {
         this.history.push(message);
         // limit entries
         if (this.history.length > this.maxentries)
-            this.history.shift();
+            this.history.slice(-this.maxentries);
         ChatStore.write('chat.history', this.history);
     }
 }

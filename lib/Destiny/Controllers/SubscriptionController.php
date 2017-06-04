@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatEmotes;
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Request;
 use Destiny\Common\ViewModel;
@@ -549,35 +550,29 @@ class SubscriptionController {
     }
 
     /**
-     * @Route ("/gift/check")
+     * @Route ("/api/info/giftcheck")
      * @Secure ({"USER"})
+     * @ResponseBody
      *
      * @param array $params
-     * @return Response
+     * @return array
      */
     public function giftCheckUser(array $params) {
-      FilterParams::required($params, 's');
-
-      $userService = UserService::instance ();
-      $subscriptionService = SubscriptionsService::instance();
-      $userId = Session::getCredentials ()->getUserId ();
-
-      $data = array(
-        'valid'    => false,
-        'cangift'  => false,
-        'username' => $params ['s']
-      );
-
-      $user = $userService->getUserByUsername( $params ['s'] );
-      if(!empty($user)){
-          $data['cangift'] = $subscriptionService->getCanUserReceiveGift ( $userId, $user['userId'] );
-          $data['valid']   = true;
-      }
-
-      $response = new Response ( Http::STATUS_OK );
-      $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-      $response->setBody ( json_encode ( $data ) );
-      return $response;
+        FilterParams::required($params, 's');
+        $userService = UserService::instance();
+        $subscriptionService = SubscriptionsService::instance();
+        $userId = Session::getCredentials()->getUserId();
+        $data = [
+            'valid' => false,
+            'cangift' => false,
+            'username' => $params ['s']
+        ];
+        $user = $userService->getUserByUsername($params ['s']);
+        if (!empty($user)) {
+            $data['cangift'] = $subscriptionService->getCanUserReceiveGift($userId, $user['userId']);
+            $data['valid'] = true;
+        }
+        return $data;
     }
   
 }

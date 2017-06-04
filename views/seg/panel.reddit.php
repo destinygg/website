@@ -10,6 +10,7 @@ use Destiny\Common\Utils\Date;
                 <span>Tweets</span>
                 <a href="/twitter">twitter.com</a>
             </h3>
+            <?php if(!empty($this->tweets)): ?>
             <div class="entries">
                 <?php foreach($this->tweets as $i=>$tweet): ?>
                 <?php if($i == 4){break;}; ?>
@@ -26,12 +27,18 @@ use Destiny\Common\Utils\Date;
                     </div>
                 <?php endforeach; ?>
             </div>
+            <?php else: ?>
+            <div class="empty">
+                <p>We're working on those tweets ...</p>
+            </div>
+            <?php endif; ?>
         </div>
 
         <div class="media-block col-sm-6 stream">
             <h3 class="title">
                 <span>Reddit</span> <a href="/reddit">reddit.com</a>
             </h3>
+            <?php if(!empty($this->posts)): ?>
             <div class="entries">
                 <?php foreach($this->posts as $i=>$a): ?>
                 <?php if($i == 4){break;}; ?>
@@ -50,6 +57,11 @@ use Destiny\Common\Utils\Date;
                 </div>
                 <?php endforeach; ?>
             </div>
+            <?php else: ?>
+            <div class="empty">
+                <p>We're getting those latest reddit posts ...</p>
+            </div>
+            <?php endif; ?>
         </div>
 
     </div>

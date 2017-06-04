@@ -1,91 +1,168 @@
 /* global $ */
 
-import UserFeatures from './features.js';
+import UserFeatures from './features';
 import moment from 'moment';
 
 const MessageTypes = {
-    status    : 'status',
-    error     : 'error',
-    info      : 'info',
-    command   : 'command',
-    broadcast : 'broadcast',
-    ui        : 'ui',
-    chat      : 'chat',
-    user      : 'user',
-    emote     : 'emote'
+    STATUS    : 'STATUS',
+    ERROR     : 'ERROR',
+    INFO      : 'INFO',
+    COMMAND   : 'COMMAND',
+    BROADCAST : 'BROADCAST',
+    UI        : 'UI',
+    CHAT      : 'CHAT',
+    USER      : 'USER',
+    EMOTE     : 'EMOTE'
 };
+const MessageGlobals = {
+    timeformat: 'HH:mm',
+    datetimeformat: 'MMMM Do YYYY, h:mm:ss a'
+};
+
+function buildFeatures(user){
+    const features = [...user.features || []]
+        .filter(e => !UserFeatures.SUBSCRIBER.equals(e))
+        .sort((a, b) => {
+            let a1,a2;
+
+            a1 = UserFeatures.SUBSCRIBERT4.equals(a);
+            a2 = UserFeatures.SUBSCRIBERT4.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.SUBSCRIBERT3.equals(a);
+            a2 = UserFeatures.SUBSCRIBERT3.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.SUBSCRIBERT2.equals(a);
+            a2 = UserFeatures.SUBSCRIBERT2.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.SUBSCRIBERT1.equals(a);
+            a2 = UserFeatures.SUBSCRIBERT1.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.SUBSCRIBERT0.equals(a);
+            a2 = UserFeatures.SUBSCRIBERT0.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.BOT2.equals(a) || UserFeatures.BOT.equals(a);
+            a2 = UserFeatures.BOT2.equals(a) || UserFeatures.BOT.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.VIP.equals(a);
+            a2 = UserFeatures.VIP.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.CONTRIBUTOR.equals(a) || UserFeatures.TRUSTED.equals(a);
+            a2 = UserFeatures.CONTRIBUTOR.equals(b) || UserFeatures.TRUSTED.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            a1 = UserFeatures.NOTABLE.equals(a);
+            a2 = UserFeatures.NOTABLE.equals(b);
+            if (a1 > a2) return -1; if (a1 < a2) return 1;
+
+            if (a > b) return -1; if (a < b) return 1;
+            return 0;
+        })
+        .map(e => {
+            const f = UserFeatures.valueOf(e);
+            return `<i class="flair icon-${e.toLowerCase()}" title="${f !== null ? f.label : e}" />`;
+        })
+        .join('');
+    return features.length > 0 ? `<span class="features">${features}</span>` : '';
+}
+function buildEmoteCount(count){
+    return `<i class='count'>${count}</i> <i class="x">X</i> <i class="hit">Hits</i> <i class='combo'>C-C-C-COMBO</i>`;
+}
+function buildTime(message){
+    const datetime = message.timestamp.format(MessageGlobals.datetimeformat);
+    const label = message.timestamp.format(message.timeformat);
+    return `<time class="time" title="${datetime}">${label}</time>`;
+}
+function buildMessageTxt(chat, message){
+    // TODO we strip off the `/me ` of every message -- must be a better way to do this
+    let msg = message.message.substring(0, 4).toLowerCase() === '/me ' ? message.message.substring(4) : message.message;
+    chat.formatters.forEach(f => msg = f.format(msg, message.user, message));
+    return `<span class="text">${msg}</span>`;
+}
+function buildWhisperTools(){
+    return  '<span>'+
+                `<a class="chat-open-whisper"><i class="fa fa-envelope" aria-hidden="true"></i> open</a> ` +
+                `<a class="chat-remove-whisper"><i class="fa fa-times" aria-hidden="true"></i> remove</a>`+
+            '</span>';
+}
 
 class MessageBuilder {
 
-    static cssMessage(classes=[]){
-        return new ChatUIMessage('', classes)
-    }
-
-    static uiMessage(message, classes=[]){
+    static element(message, classes=[]){
         return new ChatUIMessage(message, classes)
     }
 
-    static statusMessage(message, timestamp = null){
-        return new ChatMessage(message, timestamp, MessageTypes.status)
+    static status(message, timestamp = null){
+        return new ChatMessage(message, timestamp, MessageTypes.STATUS)
     }
 
-    static errorMessage(message, timestamp = null){
-        return new ChatMessage(message, timestamp, MessageTypes.error)
+    static error(message, timestamp = null){
+        return new ChatMessage(message, timestamp, MessageTypes.ERROR)
     }
 
-    static infoMessage(message, timestamp = null){
-        return new ChatMessage(message, timestamp, MessageTypes.info)
+    static info(message, timestamp = null){
+        return new ChatMessage(message, timestamp, MessageTypes.INFO)
     }
 
-    static broadcastMessage(message, timestamp = null){
-        return new ChatMessage(message, timestamp, MessageTypes.broadcast)
+    static broadcast(message, timestamp = null){
+        return new ChatMessage(message, timestamp, MessageTypes.BROADCAST)
     }
 
-    static commandMessage(message, timestamp = null){
-        return new ChatMessage(message, timestamp, MessageTypes.command)
+    static command(message, timestamp = null){
+        return new ChatMessage(message, timestamp, MessageTypes.COMMAND)
     }
 
-    static userMessage(message, user, timestamp = null){
+    static message(message, user, timestamp = null){
         return new ChatUserMessage(message, user, timestamp)
     }
 
-    static whisperMessage(message, user, target, timestamp = null, id = null){
-        const m =  new ChatUserMessage(message, user, timestamp);
+    static emote(emote, timestamp, count=1){
+        return new ChatEmoteMessage(emote, timestamp, count);
+    }
+
+    static whisper(message, user, target, timestamp = null, id = null){
+        const m = new ChatUserMessage(message, user, timestamp);
         m.id = id;
         m.target = target;
         return m;
     }
 
-    static emoteMessage(emote, timestamp, count=1){
-        return new ChatEmoteMessage(emote, timestamp, count);
+    static historical(message, user, timestamp = null){
+        const m = new ChatUserMessage(message, user, timestamp);
+        m.historical = true;
+        return m;
     }
 
 }
 
 class ChatUIMessage {
 
-    constructor(str, classes=[]){
-        this.ui      = null;
-        this.chat    = null;
-        this.message = str;
-        this.type    = MessageTypes.ui;
+    constructor(message, classes=[]){
+        this.type = MessageTypes.UI;
+        this.message = message;
         this.classes = classes;
     }
 
-    attach(chat){
-        this.chat = chat;
-        this.ui = $(this.html());
-        return this.ui;
+    into(chat, window=null){
+        chat.addMessage(this, window);
+        return this;
     }
 
     wrap(content, classes=[], attr={}){
         classes.push(this.classes);
-        classes.unshift(`msg-${this.type}`);
+        classes.unshift(`msg-${this.type.toLowerCase()}`);
+        classes.unshift(`msg-chat`);
         attr['class'] = classes.join(' ');
-        return $('<div>', attr).html(content)[0].outerHTML;
+        return $('<div />', attr).html(content)[0].outerHTML;
     }
 
-    html(){
+    html(chat=null){
         return this.wrap(this.message);
     }
 
@@ -93,152 +170,73 @@ class ChatUIMessage {
 
 class ChatMessage extends ChatUIMessage {
 
-    constructor(message, timestamp=null, type=MessageTypes.chat){
+    constructor(message, timestamp=null, type=MessageTypes.CHAT){
         super(message);
+        this.user = null;
         this.type = type;
-        this.timestamp = (timestamp) ? moment.utc(timestamp).local() : moment();
+        this.continued = false;
+        this.timestamp = timestamp ? moment.utc(timestamp).local() : moment();
+        this.timeformat = MessageGlobals.timeformat;
     }
 
-    wrapTime(){
-        const datetime = this.timestamp.format('MMMM Do YYYY, h:mm:ss a');
-        const label = this.timestamp.format(this.chat.settings.get('timestampformat'));
-        return `<time class="time" title="${datetime}">${label}</time>`;
-    }
-
-    wrapMessage(){
-        let msg = this.message;
-        this.chat.formatters.forEach(f => msg = f.format(msg, this.user, this));
-        return `<span class="text">${msg}</span>`;
-    }
-
-    html(){
-        return this.wrap(this.wrapTime() + ' ' + this.wrapMessage());
+    html(chat=null){
+        const classes = [], attr = {};
+        if(this.continued)
+            classes.push('msg-continue');
+        return this.wrap(buildTime(this) + ' ' + buildMessageTxt(chat, this), classes, attr);
     }
 }
 
 class ChatUserMessage extends ChatMessage {
 
     constructor(message, user, timestamp=null) {
-        super(message, timestamp, MessageTypes.user);
+        super(message, timestamp, MessageTypes.USER);
         this.user = user;
         this.id = null;
+        this.isown = false;
         this.highlighted = false;
         this.historical = false;
         this.target = null;
         this.tag = null;
-        this.isSlashMe = false;
+        this.slashme = false;
         this.mentioned = [];
-        if (this.message.substring(0, 4) === '/me ') {
-            this.isSlashMe = true;
-            this.message = this.message.substring(4);
-        } else if (this.message.substring(0, 2) === '//') {
-            this.message = this.message.substring(1);
-        }
     }
 
-    wrapTime(){
-        if(this.historical) {
-            const datetime = this.timestamp.format('MMMM Do YYYY, h:mm:ss a');
-            const label = this.timestamp.fromNow();
-            return `<time class="time" title="${datetime}">${label}</time>`;
-        }
-        return super.wrapTime();
-    }
-
-    wrapUser(user){
-        const features = (user.features.length > 0) ? this.getFeatureHTML() : '';
-        return `${features} <a class="user ${user.features.join(' ')}">${user.username}</a>`;
-    }
-
-    html(){
+    html(chat=null){
         const classes = [], attr = {};
-        const continued = this.chat.lastmessage && this.chat.lastmessage.user && this.user && this.chat.lastmessage.user.username === this.user.username;
 
-        if(this.id !== null)
+        if(this.id)
             attr['data-id'] = this.id;
         if(this.user && this.user.username)
             attr['data-username'] = this.user.username.toLowerCase();
-        if(this.chat.user && this.chat.user.username === this.user.username)
+        if(this.mentioned && this.mentioned.length > 0)
+            attr['data-mentioned'] = this.mentioned.join(' ').toLowerCase();
+
+        if(this.isown)
             classes.push('msg-own');
-        if(this.isSlashMe)
+        if(this.slashme)
             classes.push('msg-emote');
         if(this.historical)
             classes.push('msg-historical');
         if(this.highlighted)
             classes.push('msg-highlight');
-        if(continued && !this.target)
+        if(this.continued && !this.target)
             classes.push('msg-continue');
         if(this.tag)
             classes.push(`msg-tagged msg-tagged-${this.tag}`);
         if(this.target)
             classes.push(`msg-whisper`);
-        if(this.mentioned !== null && this.mentioned.length > 0)
-            attr['data-mentioned'] = this.mentioned.join(' ').toLowerCase();
 
-        let t = '';
-        if(this.target) {
-            t = ' whispered you ... '+
-                '<span>'+
-                    `<a data-username="${this.user.username}" class="chat-open-whisper"><i class="fa fa-envelope" aria-hidden="true"></i> open</a> ` +
-                    `<a data-username="${this.user.username}" class="chat-remove-whisper"><i class="fa fa-times" aria-hidden="true"></i> remove</a>`+
-                '</span>';
-        } else {
-            t = continued ? '':':';
-        }
+        let ctrl = ': ';
+        if(this.target)
+            ctrl = ` whispered you ... ` + buildWhisperTools();
+        else if(this.slashme)
+            ctrl = '';
+        else if(this.continued)
+            ctrl = '';
 
-        return this.wrap(`${this.wrapTime()} ${this.wrapUser(this.user)}${t} <span class="ctrl"></span> ${this.wrapMessage()}`, classes, attr);
-    }
-
-    getFeatureHTML(){
-        let icons = '';
-        let user = this.user;
-
-        if(user.hasFeature(UserFeatures.SUBSCRIBERT4))
-            icons += '<i class="icon-subscribert4" title="Subscriber (T4)"/>';
-        else if(user.hasFeature(UserFeatures.SUBSCRIBERT3))
-            icons += '<i class="icon-subscribert3" title="Subscriber (T3)"/>';
-        else if(user.hasFeature(UserFeatures.SUBSCRIBERT2))
-            icons += '<i class="icon-subscribert2" title="Subscriber (T2)"/>';
-        else if(user.hasFeature(UserFeatures.SUBSCRIBERT1))
-            icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
-        else if(!user.hasFeature(UserFeatures.SUBSCRIBERT0) && user.hasFeature(UserFeatures.SUBSCRIBER))
-            icons += '<i class="icon-subscriber" title="Subscriber (T1)"/>';
-
-        for(const feature of user.features){
-            switch(feature){
-                case UserFeatures.SUBSCRIBERT0 :
-                    icons += '<i class="icon-minitwitch" title="Twitch subscriber"/>';
-                    break;
-                case UserFeatures.BOT :
-                    icons += '<i class="icon-bot" title="Bot"/>';
-                    break;
-                case UserFeatures.BOT2 :
-                    icons += '<i class="icon-bot2" title="Bot"/>';
-                    break;
-                case UserFeatures.NOTABLE :
-                    icons += '<i class="icon-notable" title="Notable"/>';
-                    break;
-                case UserFeatures.TRUSTED :
-                    icons += '<i class="icon-trusted" title="Trusted"/>';
-                    break;
-                case UserFeatures.CONTRIBUTOR :
-                    icons += '<i class="icon-contributor" title="Contributor"/>';
-                    break;
-                case UserFeatures.COMPCHALLENGE :
-                    icons += '<i class="icon-compchallenge" title="Composition Winner"/>';
-                    break;
-                case UserFeatures.EVE :
-                    icons += '<i class="icon-eve" title="Eve"/>';
-                    break;
-                case UserFeatures.SC2 :
-                    icons += '<i class="icon-sc2" title="Starcraft 2"/>';
-                    break;
-                case UserFeatures.BROADCASTER :
-                    icons += '<i class="icon-broadcaster" title="Broadcaster"/>';
-                    break;
-            }
-        }
-        return icons.length > 0 ? `<span class="features">${icons}</span>` : '';
+        const user = buildFeatures(this.user) + ` <a class="user ${this.user.features.join(' ')}">${this.user.username}</a>`;
+        return this.wrap(buildTime(this) + ` ${user}<span class="ctrl">${ctrl}</span> ` + buildMessageTxt(chat, this), classes, attr);
     }
 
 }
@@ -246,24 +244,13 @@ class ChatUserMessage extends ChatMessage {
 class ChatEmoteMessage extends ChatMessage {
 
     constructor(emote, timestamp, count=1){
-        super(emote, timestamp, MessageTypes.emote);
+        super(emote, timestamp, MessageTypes.EMOTE);
         this.emotecount = count;
         this.emotecountui = null;
-        this.combocomplete = false;
     }
 
-    wrapMessage(){
-        let msg = this.message;
-        this.chat.formatters.forEach(f => msg = f.format(msg));
-        return `<span class="text">${msg}</span>`;
-    }
-
-    getEmoteCountLabel(){
-        return `<i class='count'>${this.emotecount}</i> <i class="x">X</i> <i class="hit">Hits</i> <i class='combo'>C-C-C-COMBO</i> <span class="emotecountbg"></span>`;
-    }
-
-    html(){
-        return this.wrap(`${this.wrapTime()} ${this.wrapMessage()} <span class="emotecount">${this.getEmoteCountLabel()}<span>`);
+    html(chat=null){
+        return this.wrap(`${buildTime(this)} ${buildMessageTxt(chat, this)} <span class="chat-combo">${buildEmoteCount(this.emotecount)}<span>`);
     }
 
     incEmoteCount(){
@@ -280,25 +267,25 @@ class ChatEmoteMessage extends ChatMessage {
         else if(this.emotecount >= 5)
             stepClass = ' x5';
         if(!this.emotecountui)
-            this.emotecountui = this.ui.find('.emotecount');
-        this.emotecountui.detach()
-            .attr('class', 'emotecount' + stepClass)
-            .html(this.getEmoteCountLabel())
+            this.emotecountui = this.ui.find('.chat-combo');
+        this.emotecountui
+            .detach()
+            .attr('class', 'chat-combo' + stepClass)
+            .html(buildEmoteCount(this.emotecount))
             .appendTo(this.ui);
     }
 
     completeCombo(){
         if(!this.emotecountui)
-            this.emotecountui = this.ui.find('.emotecount');
+            this.emotecountui = this.ui.find('.chat-combo');
         this.emotecountui.addClass('combo-complete');
-        this.combocomplete = true;
-
     }
 
 }
 
 export {
     MessageBuilder,
+    MessageGlobals,
     ChatUIMessage,
     ChatMessage,
     ChatUserMessage,

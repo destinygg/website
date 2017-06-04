@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\MimeType;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
@@ -36,23 +37,22 @@ class HomeController {
     }
 
     /**
-     * @Route ("/stream.json")
-     * @return Response
+     * @Route ("/api/info/stream")
+     * @param Response $response
+     * @ResponseBody
+     * @return array|false|mixed
      */
-    public function stream() {
+    public function stream(Response $response) {
         $cache = Application::instance()->getCacheDriver();
         $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : TwitchApiService::$STREAM_INFO;
-        $json = json_encode($streaminfo);
-        $response = new Response (Http::STATUS_OK, json_encode($streaminfo));
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'private');
         $response->addHeader(Http::HEADER_PRAGMA, 'public');
-        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
-        $response->addHeader(Http::HEADER_ETAG, md5($json));
-        return $response;
+        $response->addHeader(Http::HEADER_ETAG, md5(var_export($streaminfo, true)));
+        return $streaminfo;
     }
 
     /**
-     * @Route ("/help/agreement")
+     * @Route ("/agreement")
      *
      * @param ViewModel $model
      * @return string
@@ -65,12 +65,10 @@ class HomeController {
     /**
      * @Route ("/ping")
      *
-     * @return Response
+     * @param Response $response
      */
-    public function ping() {
-        $response = new Response ( Http::STATUS_OK );
+    public function ping(Response $response) {
         $response->addHeader ( 'X-Pong', Config::$a['meta']['shortName'] );
-        return $response;
     }
 
     /**

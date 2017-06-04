@@ -96,7 +96,7 @@ use Destiny\Common\Config;
             <button type="submit" class="btn btn-primary btn-lg">Continue</button>
             <a href="/login" class="btn btn-lg">Cancel</a>
             <p class="agreement">
-              <span>By clicking the &quot;Continue&quot; button, you are confirming that you have read and agree with the <a href="/help/agreement">user agreement</a>.</span>
+              <span>By clicking the &quot;Continue&quot; button, you are confirming that you have read and agree with the <a href="/agreement">user agreement</a>.</span>
             </p>
           </div>
         </form>

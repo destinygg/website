@@ -12,48 +12,48 @@ body.onstream {
     letter-spacing: 0.03em;
   }
 
-  #chat-lines time, #chat-lines .features {
+  .chat-lines time, .chat-lines .features {
     display: none !important;
   }
 
-  #chat-lines {
+  .chat-lines {
     color: white;
     line-height: 26px;
   }
 
-  #chat-lines,
-  #chat-lines a,
-  #chat-lines a.user {
+  .chat-lines,
+  .chat-lines a,
+  .chat-lines a.user {
     font-size: 20px;
   }
 
-  #chat-lines,
-  #chat-lines a,
-  #chat-lines a.user,
-  .chat #chat-lines > .command-msg,
-  .chat #chat-lines > .own-msg,
-  .chat #chat-lines > .highlight .msg,
-  .chat #chat-lines > .broadcast-msg .msg {
+  .chat-lines,
+  .chat-lines a,
+  .chat-lines a.user,
+  .chat .chat-lines > .command-msg,
+  .chat .chat-lines > .own-msg,
+  .chat .chat-lines > .highlight .msg,
+  .chat .chat-lines > .broadcast-msg .msg {
     font-family: 'robotoregular', sans-serif;
     text-decoration: none;
     font-size: 20px;
   }
-  .chat #chat-lines>.command-msg,
-  .chat #chat-lines>.error-msg,
-  .chat #chat-lines>.status-msg,
-  .chat #chat-lines>.ui-msg,
-  .chat #chat-lines>.own-msg,
-  .chat #chat-lines>.highlight,
-  .chat #chat-lines>.msg-continue .text:before {
+  .chat .chat-lines>.command-msg,
+  .chat .chat-lines>.error-msg,
+  .chat .chat-lines>.status-msg,
+  .chat .chat-lines>.ui-msg,
+  .chat .chat-lines>.own-msg,
+  .chat .chat-lines>.highlight,
+  .chat .chat-lines>.msg-continue .text:before {
     color: white;
   }
 
-  .chat #chat-lines > .highlight,
-  .chat #chat-lines > .broadcast-msg {
+  .chat .chat-lines > .highlight,
+  .chat .chat-lines > .broadcast-msg {
     background: none;
   }
 
-  .chat #chat-lines i[class^="icon-"],
+  .chat .chat-lines i[class^="icon-"],
   .chat .ui-msg,
   time {
     display: none !important;
@@ -79,29 +79,25 @@ body.onstream {
     color: #e564f4;
   }
 
-  #chat-lines a.externallink,
-  #chat-lines a.externallink:hover {
+  .chat-lines a.externallink,
+  .chat-lines a.externallink:hover {
     color: #82e1ff;
   }
 
-  #chat-lines > div {
+  .chat-lines > div {
     margin: 0;
   }
 
-  #chat-lines > div .continue,
+  .chat-lines > div .continue,
   .nano .nano-slider {
     visibility: hidden;
   }
 
-  .chat #chat-output-frame {
-    margin-bottom: 0;
-  }
-
-  #chat-lines>div {
+  .chat-lines>div {
     padding: 1px 20px 1px 5px;
   }
 
-  #chat-lines > div.msg-status .text:before, #chat-lines > div.msg-command .text:before, #chat-lines > div.msg-info .text:before, #chat-lines > div.msg-error .text:before {
+  .chat-lines > div.msg-status .text:before, .chat-lines > div.msg-command .text:before, .chat-lines > div.msg-info .text:before, .chat-lines > div.msg-error .text:before {
     vertical-align: middle;
   }
 }

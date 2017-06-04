@@ -4,8 +4,17 @@ require('nanoscroller');
 
 class ChatScrollPlugin {
 
-    constructor(el, options={sliderMinHeight: 40, tabIndex: 1}){
-        this.scroller = $(el).nanoScroller(Object.assign({
+    constructor(chat, e, options={sliderMinHeight: 40, tabIndex: 1}){
+        const el = $(e);
+        if(el.find('.chat-scroll-notify').length > 0) {
+            el.on('update', () => el.toggleClass('chat-unpinned', !this.isPinned())); //debounce
+            el.on('mousedown', '.chat-scroll-notify', () => false);
+            el.on('mouseup', '.chat-scroll-notify', () => {
+                this.updateAndPin(true);
+                return false;
+            });
+        }
+        this.scroller = el.nanoScroller(Object.assign({
             disableResize: true,
             preventPageScrolling: true
         }, options))[0].nanoscroller;
@@ -13,7 +22,7 @@ class ChatScrollPlugin {
 
     isPinned(){
         // 30 is used to allow the scrollbar to be just offset, but still count as scrolled to bottom
-        return (!this.scroller.isActive) ? true : (this.scroller.contentScrollTop >= this.scroller.maxScrollTop - 30);
+        return !this.scroller.isActive ? true : (this.scroller.contentScrollTop >= this.scroller.maxScrollTop - 30);
     }
 
     updateAndPin(pin){
@@ -23,6 +32,10 @@ class ChatScrollPlugin {
 
     reset(){
         this.scroller.reset();
+    }
+
+    destroy(){
+        this.scroller.destroy();
     }
 
 }

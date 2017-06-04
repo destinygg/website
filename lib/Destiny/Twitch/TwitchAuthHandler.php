@@ -5,6 +5,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
+use Destiny\Common\Response;
 use OAuth2\Client;
 
 class TwitchAuthHandler{

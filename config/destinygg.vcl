@@ -49,12 +49,12 @@ sub dgg_recv {
 	}
 
 	// cache some of the api requests - we need stateful json for the others - until I clean it up
-	if (req.url ~ "(?i)^/(stream)\.json$") {
+	if (req.url ~ "(?i)^/api/info/stream$") {
 		unset req.http.cookie;
 	}
 
 	// drop any cookies on the chat history file
-	if ( req.url ~ "(?i)^/chat/history" ) {
+	if ( req.url ~ "(?i)^/api/chat/history" ) {
 		unset req.http.cookie;
 	}
 
@@ -136,7 +136,7 @@ sub dgg_response {
 	}
 
 	// do not cache the chat history for long
-	if ( bereq.url ~ "(?i)^/chat/history" ) {
+	if ( bereq.url ~ "(?i)^/api/chat/history" ) {
 		set beresp.ttl = 100ms;
 	}
 }

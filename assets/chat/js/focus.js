@@ -3,10 +3,10 @@
 class ChatUserFocus {
 
     constructor(chat, css){
-        this.chat    = chat;
-        this.css     = css;
+        this.chat = chat;
+        this.css = css;
         this.focused = [];
-        this.chat.lines.on('mousedown', e => this.toggleElement(e.target));
+        this.chat.output.on('mousedown', e => this.toggleElement(e.target));
     }
 
     toggleElement(target){

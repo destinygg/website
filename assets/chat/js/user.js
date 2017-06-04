@@ -8,7 +8,7 @@ class ChatUser {
 
     hasAnyFeatures(...args){
         for (const element of args) {
-            if(this.features.indexOf(element) !== -1)
+            if(this.features.indexOf(typeof element !== 'string' ? element.toString() : element) !== -1)
                 return true;
         }
         return false;

@@ -112,7 +112,7 @@ use Destiny\Common\Config;
               <button type="submit" class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Pay subscription</button>
               <a href="/subscribe" class="btn btn-link">Cancel</a>
               <p class="agreement">
-                <span>By clicking the &quot;Pay subscription&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/help/agreement">user agreement</a>.</span>
+                <span>By clicking the &quot;Pay subscription&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</span>
               </p>
             </div>
 

@@ -116,6 +116,10 @@ form.form-alt {
   .navbar-nav.navbar-right:last-child {
     margin-right: 0;
   }
+  .icon-tv {
+    display: inline-block;
+    vertical-align: bottom;
+  }
 
 }
 
@@ -402,49 +406,6 @@ body.no-brand #main-nav .brand {
   clear: both;
 }
 
-i.icon-bobross {
-  background: url("../img/bobross.png") no-repeat center center;
-  margin-bottom: 1px;
-  margin-top: 0;
-  width:16px;
-  height:16px;
-  display: inline-block;
-}
-i.icon-bobross {
-  -webkit-transform: rotate(0deg);
-  -webkit-transition: rotate 0.2s ease-in-out;
-  -moz-transition: rotate 0.2s ease-in-out;
-  -o-transition: rotate 0.2s ease-in-out;
-  transition: rotate 0.2s ease-in-out;
-}
-a:hover i.icon-bobross {
-  -moz-animation: spin 3s infinite linear;
-  -webkit-animation: spin 3s infinite linear;
-}
-
-i.icon-twitch,
-i.icon-twitter,
-i.icon-google,
-i.icon-reddit {
-  width:16px;
-  height:16px;
-  background-position: center center;
-  background-repeat: no-repeat;
-  display: inline-block;
-}
-i.icon-twitch {
-  background-image: url("../img/ico/twitch-16.png");
-}
-i.icon-twitter {
-  background-image: url("../img/ico/twitter-16.png");
-}
-i.icon-google {
-  background-image: url("../img/ico/google-16.png");
-}
-i.icon-reddit {
-  background-image: url("../img/ico/reddit-16.png");
-}
-
 .stream {
   .thumbnails {
     margin: 0;
@@ -506,6 +467,9 @@ i.icon-reddit {
   .entries {
     min-height: 200px;
   }
+  .thumbnails {
+     min-height: 132px;
+  }
   .media-body {
     display: block;
     width: auto;
@@ -532,6 +496,10 @@ i.icon-reddit {
     text-overflow: ellipsis;
     font-size: $font-size-base;
     line-height: $line-height-base;
+  }
+  .empty {
+    color: #000;
+    padding: 22px;
   }
 }
 
@@ -922,14 +890,6 @@ i.td-fill {
 }
 .content .stream:last-child table.grid thead td:first-child {
   border-top-left-radius: 0;
-}
-
-.icon-bigscreen {
-  background: url("../img/ico/tv-32.png") no-repeat top left !important;
-  width: 30px !important;
-  height: 19px !important;
-  display: inline-block;
-  vertical-align: bottom;
 }
 
 body#bigscreen {

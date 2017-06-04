@@ -1,170 +1,181 @@
-/* glue: 0.11.1 hash: 5a569ffa63 */
-
-/* start destiny.gg */
-.icon-subscriber,
-.icon-subscribert2,
-.icon-subscribert3,
-.icon-subscribert4 {
-    -webkit-transform: rotate(0deg);
-    -webkit-transition: rotate 0.2s ease-in-out;
-    -moz-transition: rotate 0.2s ease-in-out;
-    -o-transition: rotate 0.2s ease-in-out;
-    transition: rotate 0.2s ease-in-out;  
-}
-.icon-subscriber:hover,
-.icon-subscribert2:hover,
-.icon-subscribert3:hover,
-.icon-subscribert4:hover {
-    -moz-animation: spin 3s infinite linear;
-    -webkit-animation: spin 3s infinite linear;
-}
-/* end destiny.gg */
-
-.icon-trusted,.icon-subscribert4,.icon-subscribert3,.icon-subscribert2,.icon-subscriber,.icon-status,.icon-sc2,.icon-notable,.icon-moderator,.icon-minitwitch,.icon-mail,.icon-mail-send,.icon-mail-receive,.icon-mail-open-document,.icon-info,.icon-eve,.icon-error,.icon-contributor,.icon-compchallenge,.icon-command,.icon-broadcaster,.icon-bot:hover,.icon-bot2,.icon-bot{
+/* glue: 0.11.1 hash: 80266d4485 */
+.icon-tv,.icon-twitter,.icon-twitch,.icon-subscriber,.icon-status,.icon-reddit,.icon-info,.icon-google,.icon-flair9,.icon-flair8,.icon-flair6,.icon-flair5,.icon-flair4,.icon-flair3,.icon-flair2,.icon-flair13,.icon-flair12,.icon-flair11,.icon-flair10,.icon-flair1,.icon-eve,.icon-error,.icon-command,.icon-bot:hover,.icon-bot{
+    display: inline-block;
     background-image:url('../../icons/icons.png');
     background-repeat:no-repeat;
 }
 
-.icon-trusted{
+.icon-tv{
+    display: inline-block;
     background-position:0 0;
+    width:30px;
+    height:19px;
+}
+
+.icon-twitter{
+    display: inline-block;
+    background-position:-30px 0;
     width:16px;
     height:16px;
 }
 
-.icon-subscribert4{
-    background-position:-16px 0;
-    width:16px;
-    height:16px;
-}
-
-.icon-subscribert3{
-    background-position:0 -16px;
-    width:16px;
-    height:16px;
-}
-
-.icon-subscribert2{
-    background-position:-16px -16px;
+.icon-twitch{
+    display: inline-block;
+    background-position:0 -19px;
     width:16px;
     height:16px;
 }
 
 .icon-subscriber{
-    background-position:-32px 0;
+    display: inline-block;
+    background-position:-16px -19px;
     width:16px;
     height:16px;
 }
 
 .icon-status{
-    background-position:-32px -16px;
+    display: inline-block;
+    background-position:-46px 0;
     width:16px;
     height:16px;
 }
 
-.icon-sc2{
-    background-position:0 -32px;
-    width:16px;
-    height:16px;
-}
-
-.icon-notable{
-    background-position:-16px -32px;
-    width:16px;
-    height:16px;
-}
-
-.icon-moderator{
-    background-position:-32px -32px;
-    width:16px;
-    height:16px;
-}
-
-.icon-minitwitch{
-    background-position:-48px 0;
-    width:16px;
-    height:16px;
-}
-
-.icon-mail{
-    background-position:-48px -16px;
-    width:16px;
-    height:16px;
-}
-
-.icon-mail-send{
-    background-position:-48px -32px;
-    width:16px;
-    height:16px;
-}
-
-.icon-mail-receive{
-    background-position:0 -48px;
-    width:16px;
-    height:16px;
-}
-
-.icon-mail-open-document{
-    background-position:-16px -48px;
+.icon-reddit{
+    display: inline-block;
+    background-position:-46px -16px;
     width:16px;
     height:16px;
 }
 
 .icon-info{
-    background-position:-32px -48px;
+    display: inline-block;
+    background-position:0 -35px;
+    width:16px;
+    height:16px;
+}
+
+.icon-google{
+    display: inline-block;
+    background-position:-16px -35px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair9{
+    display: inline-block;
+    background-position:-32px -35px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair8{
+    display: inline-block;
+    background-position:-62px 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair6{
+    display: inline-block;
+    background-position:-62px -16px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair5{
+    display: inline-block;
+    background-position:-62px -32px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair4{
+    display: inline-block;
+    background-position:0 -51px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair3{
+    display: inline-block;
+    background-position:-16px -51px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair2{
+    display: inline-block;
+    background-position:-32px -51px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair13{
+    display: inline-block;
+    background-position:-48px -51px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair12{
+    display: inline-block;
+    background-position:-78px 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair11{
+    display: inline-block;
+    background-position:-78px -16px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair10{
+    display: inline-block;
+    background-position:-78px -32px;
+    width:16px;
+    height:16px;
+}
+
+.icon-flair1{
+    display: inline-block;
+    background-position:-78px -48px;
     width:16px;
     height:16px;
 }
 
 .icon-eve{
-    background-position:-48px -48px;
+    display: inline-block;
+    background-position:0 -67px;
     width:16px;
     height:16px;
 }
 
 .icon-error{
-    background-position:-64px 0;
-    width:16px;
-    height:16px;
-}
-
-.icon-contributor{
-    background-position:-64px -16px;
-    width:16px;
-    height:16px;
-}
-
-.icon-compchallenge{
-    background-position:-64px -32px;
+    display: inline-block;
+    background-position:-16px -67px;
     width:16px;
     height:16px;
 }
 
 .icon-command{
-    background-position:-64px -48px;
-    width:16px;
-    height:16px;
-}
-
-.icon-broadcaster{
-    background-position:0 -64px;
+    display: inline-block;
+    background-position:-32px -67px;
     width:16px;
     height:16px;
 }
 
 .icon-bot:hover{
-    background-position:-16px -64px;
-    width:16px;
-    height:16px;
-}
-
-.icon-bot2{
-    background-position:-32px -64px;
+    display: inline-block;
+    background-position:-48px -67px;
     width:16px;
     height:16px;
 }
 
 .icon-bot{
-    background-position:-48px -64px;
+    display: inline-block;
+    background-position:-64px -67px;
     width:16px;
     height:16px;
 }

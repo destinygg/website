@@ -1,19 +1,22 @@
 /* global $, destiny */
 
-import Chat from './chat.js';
+import Chat from "./chat.js";
 
 class ChatAutoComplete {
 
-    constructor(chat){
-
+    constructor(){
         this.minWordLength = 1;
-        this.maxResults    = 10;
-        this.buckets       = {};
-        this.origVal       = null;
+        this.maxResults = 10;
+        this.buckets = {};
+        this.origVal = null;
         this.searchResults = [];
-        this.searchIndex   = -1;
-        this.searchWord    = null;
-        this.input         = chat.input;
+        this.searchIndex = -1;
+        this.searchWord = null;
+        this.input = null;
+    }
+
+    bind(chat){
+        this.input = chat.input;
 
         //HTMLInputElement.prototype.setSelectionRange
         if (!this.input || this.input.length === 0 || !this.input[0].setSelectionRange)

@@ -40,6 +40,11 @@ class Route {
      */
     public $url;
 
+    /**
+     * @var string
+     */
+    public $responseBody;
+
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
             Options::setOptions ( $this, $params );
@@ -54,7 +59,8 @@ class Route {
             'httpMethod',
             'secure',
             'feature',
-            'url'
+            'url',
+            'responseBody'
         );
     }
 
@@ -116,6 +122,14 @@ class Route {
 
     public function setUrl($url) {
         $this->url = $url;
+    }
+
+    public function getResponseBody() {
+        return $this->responseBody;
+    }
+
+    public function setResponseBody($responseBody) {
+        $this->responseBody = $responseBody;
     }
 
 }

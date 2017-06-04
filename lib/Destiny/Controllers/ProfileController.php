@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Commerce\SubscriptionStatus;
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Application;
 use Destiny\Common\MimeType;
 use Destiny\Common\Response;
@@ -32,18 +33,6 @@ use Destiny\Google\GoogleRecaptchaHandler;
  * @Controller
  */
 class ProfileController {
-
-    /**
-     * @Route ("/profile/info")
-     * @Secure ({"USER"})
-     *
-     * @return string
-     */
-    public function profileInfo() {
-        $response = new Response ( Http::STATUS_OK, json_encode ( Session::getCredentials ()->getData () ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
-    }
     
     /**
      * @Route ("/profile")

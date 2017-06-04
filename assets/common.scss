@@ -45,9 +45,12 @@ $color-chat-text1:      #DEDEDE;
 $color-chat-text2:      #9E9E9E;
 $color-chat-text3:      #838383;
 $color-chat-disabled:   #414141;
+
 $color-chat-tagged:     #232323;
-$color-chat-mentioned:  #06263e;
+$color-chat-highlight:  #06263E;
+$color-chat-emphasize:  #151515;
 $color-chat-bg:         #080808;
+
 $color-label-user:      #CACACA;
 $color-label-user-alt:  #FAFAFA;
 $color-label-sub:       #488CE7;
@@ -99,13 +102,4 @@ $color-black:           #4d4d4d;
 }
 .roboto-regular {
     font-family: 'robotoregular', sans-serif;
-}
-
-@-moz-keyframes spin {
-  0% { -moz-transform: rotate(0deg); }
-  100% { -moz-transform: rotate(-360deg); }
-}
-@-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100%{ -webkit-transform: rotate(-360deg); }
 }

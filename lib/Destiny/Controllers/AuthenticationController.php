@@ -1,6 +1,8 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Api\ApiAuthenticationService;
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -17,7 +19,6 @@ use Destiny\Google\GoogleAuthHandler;
 use Destiny\Common\ViewModel;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
-use Destiny\Api\ApiAuthHandler;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Reddit\RedditAuthHandler;
@@ -25,7 +26,6 @@ use Destiny\Common\Exception;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
-use Destiny\Common\MimeType;
 
 /**
  * @Controller
@@ -40,18 +40,22 @@ class AuthenticationController {
     }
 
     /**
+     * @Route ("/api/info/profile")
      * @Route ("/auth/info")
      * @HttpMethod ({"GET"})
+     * @ResponseBody
      *
+     * @param Response $response
      * @param array $params
      * @return string
      */
-    public function profileInfo(array $params) {
+    public function profileInfo(Response $response, array $params) {
         $log = Application::instance()->getLogger();
 
         if(! $this->checkPrivateKey($params, 'api')) {
-            $log->info("Bad key check");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
+            $log->info('Bad key check');
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'privatekey';
         }
 
         $userid = null;
@@ -71,14 +75,17 @@ class AuthenticationController {
                 $userid = $userService->getUserIdByField('username', $params['username']);
             } else {
                 $log->info("No identification field");
-                return new Response (Http::STATUS_BAD_REQUEST, "fielderror");
+                $response->setStatus(Http::STATUS_BAD_REQUEST);
+                return 'fielderror';
             }
         } catch (FilterParamsException $e) {
             $log->error("Field error", $e);
-            return new Response ( Http::STATUS_BAD_REQUEST, "fielderror" );
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'fielderror';
         } catch (Exception $e) {
             $log->error("Internal error", $e);
-            return new Response ( Http::STATUS_ERROR, "server" );
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'server';
         }
 
         if(!empty($userid)) {
@@ -87,62 +94,66 @@ class AuthenticationController {
                 $authService = AuthenticationService::instance();
                 $creds = $authService->getUserCredentials($user, 'request');
                 $log->info("Authentication successful", $creds->getData ());
-                $response = new Response ( Http::STATUS_OK, json_encode ( $creds->getData () ) );
-                $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-                return $response;
+                $response->setStatus(Http::STATUS_OK);
+                return $creds->getData();
             }
         }
 
-        //$log->info("User not found");
-        $response = new Response ( Http::STATUS_ERROR, "usernotfound" );
-        return $response;
+        $response->setStatus(Http::STATUS_ERROR);
+        return 'usernotfound';
     }
 
     /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"GET"})
+     * @ResponseBody
      *
+     * @param Response $response
      * @param array $params
-     * @return Response
-     * @throws Exception
+     * @return array|string
      */
-    public function authMinecraftGET(array $params) {
+    public function authMinecraftGET(Response $response, array $params) {
         $log = Application::instance()->getLogger();
-
-        $log->info("Minecraft auth [GET]", $params);
+        $log->info('Minecraft auth [GET]', $params);
 
         if(! $this->checkPrivateKey($params, 'minecraft')) {
-            $log->info("Bad key check");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
+            $log->info('Bad key check');
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'privatekey';
         }
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 ) {
-            $log->info("Bad uuid format");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
+            $log->info('Bad uuid format');
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'uuid';
         }
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) ) {
-            $log->info("Bad uuid format");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
+            $log->info('Bad uuid format');
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'uuid';
         }
 
         $userService = UserService::instance();
         $userid = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
         if (!$userid) {
-            $log->info("User not found");
-            return new Response (Http::STATUS_NOT_FOUND, 'userNotFound');
+            $log->info('User not found');
+            $response->setStatus(Http::STATUS_NOT_FOUND);
+            return 'userNotFound';
         }
 
         $ban = $userService->getUserActiveBan($userid, @$params ['ipaddress']);
         if (!empty($ban)) {
-            $log->info("User banned");
-            return new Response (Http::STATUS_FORBIDDEN, 'userBanned');
+            $log->info('User banned');
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return 'userBanned';
         }
 
         $user = $userService->getUserById($userid);
         if (empty ( $user )) {
-            $log->info("User not found");
-            return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
+            $log->info('User not found');
+            $response->setStatus(Http::STATUS_NOT_FOUND);
+            return 'userNotFound';
         }
 
         $sub = SubscriptionsService::instance()->getUserActiveSubscription($userid);
@@ -152,67 +163,74 @@ class AuthenticationController {
                 $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
             }
         } else {
-            $log->info("Subscription not found");
-            return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
+            $log->info('Subscription not found');
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return 'subscriptionNotFound';
         }
 
-        $log->info("Auth successful");
-        $response = new Response ( Http::STATUS_OK, json_encode (['end'  => strtotime($sub['endDate']) * 1000]) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
+        $log->info('Auth successful');
+        $response->setStatus(Http::STATUS_OK);
+        return ['end'  => strtotime($sub['endDate']) * 1000];
     }
 
     /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"POST"})
+     * @ResponseBody
      *
+     * @param Response $response
      * @param array $params
-     * @return Response
-     * @throws Exception
+     * @return array|string
      */
-    public function authMinecraftPOST(array $params) {
+    public function authMinecraftPOST(Response $response, array $params) {
         $log = Application::instance()->getLogger();
-
         $log->info("Minecraft auth [POST]", $params);
 
         if(! $this->checkPrivateKey($params, 'minecraft')) {
             $log->info("Bad key check");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'privatekey' );
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'privatekey';
         }
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 ) {
             $log->info("Bad uuid format");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'uuid';
         }
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) ) {
             $log->info("Bad uuid format");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'uuid' );
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'uuid';
         }
 
 
         if (empty ( $params ['name'] ) || mb_strlen ( $params ['name'] ) > 16 ) {
             $log->info("Bad name format");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'name' );
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'name';
         }
 
         $userService = UserService::instance ();
         $userid = $userService->getUserIdByField('minecraftname', $params ['name']);
         if (! $userid) {
             $log->info("user not found");
-            return new Response ( Http::STATUS_NOT_FOUND, 'nameNotFound' );
+            $response->setStatus(Http::STATUS_NOT_FOUND);
+            return 'nameNotFound';
         }
 
         $ban = $userService->getUserActiveBan( $userid, @$params ['ipaddress'] );
         if (!empty( $ban )) {
             $log->info("user banned");
-            return new Response ( Http::STATUS_FORBIDDEN, 'userBanned' );
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return 'userBanned';
         }
 
         $user = $userService->getUserById($userid);
         if (empty ( $user )) {
             $log->info("user not found");
-            return new Response ( Http::STATUS_NOT_FOUND, 'userNotFound' );
+            $response->setStatus(Http::STATUS_NOT_FOUND);
+            return 'userNotFound';
         }
 
         $end = null;
@@ -228,7 +246,8 @@ class AuthenticationController {
             }
         } else {
             $log->info("Subscription not found");
-            return new Response (Http::STATUS_FORBIDDEN, 'subscriptionNotFound');
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return 'subscriptionNotFound';
         }
 
         try {
@@ -240,40 +259,51 @@ class AuthenticationController {
               // only fail if the already set uuid is not the same
               if ( !$existingUserId or $existingUserId != $userid ) {
                   $log->info("uuidAlreadySet");
-                  return new Response ( Http::STATUS_FORBIDDEN, 'uuidAlreadySet' );
+                  $response->setStatus(Http::STATUS_FORBIDDEN);
+                  return 'uuidAlreadySet';
               }
             }
 
         } catch ( \Doctrine\DBAL\DBALException $e ) {
             $log->info("duplicateUUID");
-            return new Response ( Http::STATUS_BAD_REQUEST, 'duplicateUUID' );
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return 'duplicateUUID';
         }
 
-        $response = [
+        $log->info("Auth successful");
+        $response->setStatus(Http::STATUS_OK);
+        return [
             'nick' => $user['username'],
             'end'  => strtotime( $sub['endDate'] ) * 1000,
         ];
-
-        $log->info("Auth successful");
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
     }
 
     /**
      * @Route ("/api/auth")
+     * @ResponseBody
      *
+     * @param Response $response
      * @param array $params
-     * @return Response
-     * @throws Exception
+     * @return array|string
      */
-    public function authApi(array $params) {
-        try {
-            $authHandler = new ApiAuthHandler ();
-            return $authHandler->authenticate ( $params );
-        } catch ( \Exception $e ) {
-            return new Response ( Http::STATUS_ERROR, $e->getMessage () );
+    public function authApi(Response $response, array $params){
+        if (!isset ($params ['authtoken']) || empty ($params ['authtoken'])) {
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return 'Invalid or empty authToken';
         }
+        $authToken = ApiAuthenticationService::instance()->getAuthToken($params ['authtoken']);
+        if (empty ($authToken)) {
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return 'Auth token not found';
+        }
+        $user = UserService::instance()->getUserById($authToken ['userId']);
+        if (empty ($user)) {
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return 'User not found';
+        }
+        $authenticationService = AuthenticationService::instance();
+        $credentials = $authenticationService->getUserCredentials($user, 'API');
+        return $credentials->getData();
     }
 
     /**

@@ -18,21 +18,14 @@ use Destiny\Common\Config;
 
 <div id="chat" class="chat chat-icons">
 
-    <!-- chat output -->
-    <div id="chat-output-frame">
-        <div id="chat-output" class="nano">
-            <div id="chat-lines" class="nano-content"></div>
-            <div id="chat-scroll-notify">More messages below</div>
-        </div>
-    </div>
-    <!-- end chat output -->
+    <div id="chat-output-frame" data-scroll-notify></div>
 
-    <!-- chat input -->
     <div id="chat-input">
         <div id="chat-input-wrap">
-            <textarea id="chat-input-control" placeholder="Write something..." spellcheck="true" autocomplete="off" tabindex="1" autofocus disabled></textarea>
+            <textarea id="chat-input-control" placeholder="Write something..." spellcheck="true" autocomplete="off" tabindex="1" autofocus></textarea>
         </div>
         <div id="chat-tools-wrap">
+            <div id="chat-windows-thumbnails"></div>
             <a id="chat-emoticon-btn" class="iconbtn" title="Emotes" style="float: left;">
                 <span class="fa fa-smile-o"></span>
             </a>
@@ -47,9 +40,11 @@ use Destiny\Common\Config;
             </a>
         </div>
     </div>
-    <!-- end chat input -->
 
-    <!-- settings -->
+    <a id="chat-popout-btn" class="iconbtn" title="Popout" style="display: none;">
+        <span class="fa fa-external-link-square"></span>
+    </a>
+
     <div id="chat-settings" class="chat-menu right">
         <div class="list-wrap clearfix">
             <div class="toolbar">
@@ -68,7 +63,7 @@ use Destiny\Common\Config;
                         <h4>Messages</h4>
                         <div class="form-group checkbox">
                             <label title="Show all user flair icons">
-                                <input name="hideflairicons" type="checkbox" /> Hide flairs
+                                <input name="hideflairicons" type="checkbox" data-opposite/> Show flairs
                             </label>
                         </div>
                         <div class="form-group checkbox">
@@ -77,43 +72,57 @@ use Destiny\Common\Config;
                             </label>
                         </div>
                         <div class="form-group checkbox">
-                            <label title="Show removed content">
-                                <input name="showremoved" type="checkbox" /> Show removed messages
+                            <label title="&lt;censored&gt; instead of removing messages">
+                                <input name="showremoved" type="checkbox" /> &lt;censored&gt;
                             </label>
                         </div>
                         <div class="form-group checkbox">
-                            <label title="Show whispers in chat">
-                                <input name="showhispersinchat" type="checkbox" /> Show whispers in chat
-                            </label>
-                        </div>
-
-                        <h4>Highlighting &amp; Focus</h4>
-                        <div class="form-group checkbox">
-                            <label title="Highlight text that you are mentioned in">
-                                <input name="highlight" type="checkbox" checked="checked"/> Highlight myself when mentioned
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>Custom highlights</label>
-                            <input name="customhighlight" type="text" class="form-control input-sm" placeholder="Separated using a comma" />
-                        </div>
-                        <div class="form-group checkbox">
-                            <label title="Include mentions when focused">
-                                <input name="focusmentioned" type="checkbox" /> Include mentions when <i title="Occurs when you click on a user in chat.">focused</i>
+                            <label title="Ignore messages that mention ignored users">
+                                <input name="ignorementions" type="checkbox" /> Harsh ignore
                             </label>
                         </div>
 
                         <h4>Notifications</h4>
                         <div class="form-group checkbox">
-                            <label title="Show desktop notifications on highlight">
-                                <input name="allowNotifications" type="checkbox" /> Desktop notifications
-                                <br /><small id="chat-settings-notification-permissions">(Permission unknown)</small>
+                            <label title="Notification auto close">
+                                <input name="notificationtimeout" type="checkbox" /> Close after short period
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <p><small id="chat-settings-notification-permissions">(Permission unknown)</small></p>
+                        </div>
+
+                        <h4>Whispers</h4>
+                        <div class="form-group checkbox">
+                            <label title="Notification on whisper">
+                                <input name="notificationwhisper" type="checkbox" /> Notification
                             </label>
                         </div>
                         <div class="form-group checkbox">
-                            <label title="Notification auto close">
-                                <input name="notificationtimeout" type="checkbox" /> Notification auto close
+                            <label title="Whispers shown in chat">
+                                <input name="showhispersinchat" type="checkbox" /> In-line messages
                             </label>
+                        </div>
+
+                        <h4>Highlights &amp; Focus</h4>
+                        <div class="form-group checkbox">
+                            <label title="Notification on highlight">
+                                <input name="notificationhighlight" type="checkbox" /> Notification
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Highlights messages you are mentioned in">
+                                <input name="highlight" type="checkbox" checked="checked"/> Highlight when mentioned
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label title="Include mentions when focused">
+                                <input name="focusmentioned" type="checkbox" /> Include mentions when <span title="Occurs when you click on a user in chat.">focused</span>
+                            </label>
+                        </div>
+                        <div class="form-group row">
+                            <label title="Highlights usernames or text that match">Custom Highlights</label>
+                            <textarea name="customhighlight" style="resize: vertical;" class="form-control" placeholder="Comma separated ..."></textarea>
                         </div>
 
                         <hr class="separator" />
@@ -126,9 +135,7 @@ use Destiny\Common\Config;
             </div>
         </div>
     </div>
-    <!-- end settings -->
 
-    <!-- user list -->
     <div id="chat-user-list" class="chat-menu right">
         <div class="list-wrap clearfix">
             <div class="toolbar">
@@ -142,7 +149,6 @@ use Destiny\Common\Config;
             </div>
         </div>
     </div>
-    <!-- end user list -->
 
     <div id="chat-emote-list" class="chat-menu left">
         <div class="list-wrap clearfix">
@@ -170,17 +176,6 @@ use Destiny\Common\Config;
                 <div class="content nano-content">
                     <ul></ul>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="chat-whisper-messages" class="chat-menu right">
-        <div class="list-wrap clearfix">
-            <div class="toolbar">
-                <h5><span>Whisper</span> <i class="fa fa-chevron-circle-right menu-close"></i></h5>
-            </div>
-            <div class="scrollable nano">
-                <div class="content nano-content"></div>
             </div>
         </div>
     </div>

@@ -2,7 +2,6 @@
 namespace Destiny\Common;
 
 use Destiny\Common\Utils\Http;
-use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Doctrine\Common\Annotations\Reader;
@@ -59,76 +58,124 @@ class Application extends Service {
      * @param Request $request
      */
     public function executeRequest(Request $request) {
-        $route = $this->router->findRoute ( $request );
+        $response = new Response();
+        $response->setStatus(Http::STATUS_OK);
+        $route = $this->router->findRoute($request);
         $model = new ViewModel ();
 
-        if ($route == null) {
-            $model->title = Http::$HEADER_STATUSES [Http::STATUS_NOT_FOUND];
-            $this->handleResponse(new Response (
-                Http::STATUS_NOT_FOUND,
-                $this->template('errors/' . Http::STATUS_NOT_FOUND . '.php', $model)
-            ));
+        if ($route === null) {
+            $model->code = Http::STATUS_NOT_FOUND;
+            $model->error = new Exception('notfound');
+            $response->setStatus(Http::STATUS_NOT_FOUND);
+            $response->setBody($this->template('error.php', $model));
+            $this->handleResponse($response);
         }
 
+        $useResponseAsBody = $route->getResponseBody();
         if ($route->isSecure()) {
             $creds = Session::getCredentials();
             if ($creds->isValid() && strcasecmp($creds->getUserStatus(), 'Active') !== 0) {
-                $model->error = new Exception (sprintf('User status not active. Status: %s', $creds->getUserStatus()));
-                $model->code = Http::STATUS_ERROR;
-                $model->title = 'Inactive user';
-                $this->handleResponse(new Response (
-                    Http::STATUS_ERROR,
-                    $this->template('errors/' . Http::STATUS_ERROR . '.php', $model)
-                ));
+                $model->code = Http::STATUS_FORBIDDEN;
+                $model->error = new Exception('inactiveuser');
+                $response->setStatus(Http::STATUS_FORBIDDEN);
+                $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+                $this->handleResponse($response);
             }
             if (!$this->hasRouteSecurity($route, $creds)) {
-                $model->title = Http::$HEADER_STATUSES [Http::STATUS_FORBIDDEN];
-                $this->handleResponse(new Response (
-                    Http::STATUS_FORBIDDEN,
-                    $this->template('errors/' . Http::STATUS_FORBIDDEN . '.php', $model)
-                ));
+                $model->code = Http::STATUS_FORBIDDEN;
+                $model->error = new Exception('forbidden');
+                $response->setStatus(Http::STATUS_FORBIDDEN);
+                $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+                $this->handleResponse($response);
             }
         }
 
         $url = $route->getUrl();
         if (!empty($url)) {
-            $response = new Response (Http::STATUS_OK);
             $response->setLocation($url);
-        } else {
-            try {
-                $response = $this->executeController($route, $request, $model);
-            } catch (Exception $e) {
-                $this->logger->error($e->getMessage() . PHP_EOL . $e->getTraceAsString());
-                $model->error = new Exception ($e->getMessage());
-                $model->code = Http::STATUS_ERROR;
-                $model->title = 'Error';
-                $response = new Response (
-                    Http::STATUS_ERROR,
-                    $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model )
-                );
-            } catch (\Exception $e) {
-                $this->logger->critical($e->getMessage() . PHP_EOL . $e->getTraceAsString());
-                $model->error = new Exception ('Maximum over-rustle has been achieved');
-                $model->code = Http::STATUS_ERROR;
-                $model->title = 'Error';
-                $response = new Response (
-                    Http::STATUS_ERROR,
-                    $this->template ( 'errors/' . Http::STATUS_ERROR . '.php', $model )
-                );
-            }
+            $this->handleResponse($response);
         }
 
-        $this->handleResponse ( $response );
+        try {
+            $result = $this->executeController($route, $request, $response, $model);
+            if($useResponseAsBody) {
+                // Use result as response body
+                $response->setBody($result);
+            } else if (is_string($result)) {
+                if (substr($result, 0, 10) === 'redirect: ') {
+                    // Redirect response
+                    $redirect = substr($result, 10);
+                    $response->setStatus(Http::STATUS_OK);
+                    $response->setLocation($redirect);
+                } else {
+                    // Template response
+                    $response->setStatus(Http::STATUS_OK);
+                    $response->setBody($this->template($result . '.php', $model));
+                }
+            } else if($result !== null) {
+                $this->logger->critical($result);
+                throw new Exception('invalidresponse');
+            }
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            $model->code = Http::STATUS_ERROR;
+            $model->error = new Exception ($e->getMessage());
+            $response->setStatus(Http::STATUS_ERROR);
+            $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+        } catch (\Exception $e) {
+            $this->logger->critical($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            $model->code = Http::STATUS_ERROR;
+            $model->error = new Exception ('Application error');
+            $response->setStatus(Http::STATUS_ERROR);
+            $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+        }
+
+        $this->handleResponse($response);
     }
 
-    private function executeController(Route $route, Request $request, ViewModel $model) {
+    /**
+     * @param Response $response
+     * @throws Exception
+     * @return void
+     */
+    private function handleResponse(Response $response){
+        $location = $response->getLocation();
+        if (!empty ($location)) {
+            Http::header(Http::HEADER_LOCATION, $location);
+            exit;
+        }
+        Http::status($response->getStatus());
+        $headers = $response->getHeaders();
+        foreach ($headers as $header) {
+            Http::header($header [0], $header [1]);
+        }
+        $body = $response->getBody();
+        if($body !== null && !is_string($body)) {
+            Http::header(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+            $body = json_encode($body);
+        }
+        if($body !== null || $body !== ''){
+            echo $body;
+        }
+        exit;
+    }
+
+    /**
+     * Runs a controller method
+     * Does some magic around what parameters are passed in.
+     *
+     * @param Route $route
+     * @param Request $request
+     * @param Response $response
+     * @param ViewModel $model
+     * @return mixed
+     */
+    private function executeController(Route $route, Request $request, Response $response, ViewModel $model) {
         $className = $route->getClass();
         $classMethod = $route->getClassMethod();
         $classReflection = new \ReflectionClass ($className);
         $classInstance = $classReflection->newInstance();
-
-        // Order the controller arguments and invoke the controller
-        $args = array();
+        $args = [];
         $methodReflection = $classReflection->getMethod($classMethod);
         $methodParams = $methodReflection->getParameters();
         foreach ($methodParams as $methodParam) {
@@ -144,56 +191,11 @@ class Application extends Service {
                 $args[] = &$model;
             } else if ($paramType->isInstance($request)) {
                 $args[] = &$request;
+            } else if ($paramType->isInstance($response)) {
+                $args[] = &$response;
             }
         }
-
-        // Execute the controller
-        $response = $methodReflection->invokeArgs($classInstance, $args);
-
-        if (empty ($response))
-            throw new Exception ('Invalid action response');
-
-        // Redirect response
-        if (is_string($response) && substr($response, 0, 10) === 'redirect: ') {
-            $redirect = substr($response, 10);
-            $response = new Response (Http::STATUS_OK);
-            $response->setLocation($redirect);
-        }
-
-        // Template response
-        if (is_string($response)) {
-            $tpl = $response . '.php';
-            $response = new Response (Http::STATUS_OK, $this->template($tpl, $model));
-        }
-
-        if (!$response instanceof Response) {
-            throw new Exception ('Invalid response');
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param Response $response
-     * @throws Exception
-     * @return void
-     */
-    private function handleResponse(Response $response) {
-        $location = $response->getLocation ();
-        if (! empty ( $location )) {
-            Http::header ( Http::HEADER_LOCATION, $location );
-            exit ();
-        }
-        $headers = $response->getHeaders ();
-        foreach ( $headers as $header ) {
-            Http::header ( $header [0], $header [1] );
-        }
-        Http::status ( $response->getStatus () );
-        $body = $response->getBody ();
-        if (! empty ( $body )) {
-            echo $body;
-        }
-        exit ();
+        return $methodReflection->invokeArgs($classInstance, $args);
     }
 
     /**

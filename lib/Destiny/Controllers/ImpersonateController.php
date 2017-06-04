@@ -49,6 +49,10 @@ class ImpersonateController {
         Session::start ();
         Session::updateCredentials ( $credentials );
         ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
+        $follow = $params['follow'];
+        if (!empty ($follow) && substr($follow, 0, 1) == '/') {
+            return 'redirect: ' . $follow;
+        }
         return 'redirect: /';
     }
 

@@ -131,7 +131,6 @@ class PrivateMessageService extends Service {
 
     /**
      * @param int $id
-     * @return int insert_id()
      */
     public function openMessageById($id){
         $conn = Application::instance ()->getConnection ();

@@ -1,29 +1,33 @@
 <?php
 use Destiny\Common\Application;
 use Destiny\Common\Config;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\DriverManager;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-ini_set ( 'date.timezone', 'UTC' );
+ini_set('date.timezone', 'UTC');
 
-define ( '_BASEDIR', realpath ( __DIR__ . '/../' ) );
-define ( 'PP_CONFIG_PATH', _BASEDIR . '/config/' );
+define('_BASEDIR', realpath(__DIR__ . '/../'));
+define('PP_CONFIG_PATH', _BASEDIR . '/config/');
 $loader = require _BASEDIR . '/vendor/autoload.php';
 
-Config::load ( array_replace_recursive (
+Config::load(array_replace_recursive(
     require _BASEDIR . '/config/config.php',
     require _BASEDIR . '/config/config.local.php',
-    json_decode ( file_get_contents ( _BASEDIR . '/package.json' ), true )
-) );
+    json_decode(file_get_contents(_BASEDIR . '/package.json'), true)
+));
 set_include_path(get_include_path() . PATH_SEPARATOR . Config::$a['tpl']['path']);
 
+// Required to auto-load custom annotations
+AnnotationRegistry::registerLoader([$loader, 'loadClass']);
+
 $app = Application::instance();
-$app->setLoader ( $loader );
+$app->setLoader($loader);
 
 $log = new Logger('web');
 $log->pushHandler(new StreamHandler('php://stdout', Logger::WARNING));
-$app->setLogger( $log );
+$app->setLogger($log);
 
-$app->setConnection ( DriverManager::getConnection ( Config::$a ['db'] ) );
-$app->setCacheDriver ( new Doctrine\Common\Cache\ArrayCache() );
+$app->setConnection(DriverManager::getConnection(Config::$a ['db']));
+$app->setCacheDriver(new Doctrine\Common\Cache\ArrayCache());

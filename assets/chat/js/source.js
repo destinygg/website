@@ -14,6 +14,10 @@ class ChatSource extends EventEmitter {
         try {
             if(this.sock !== null) {
                 this.disconnect();
+                this.sock.onopen = null;
+                this.sock.onclose = null;
+                this.sock.onerror = null;
+                this.sock.onmessage = null;
                 this.sock = null;
             }
             this.emit('CONNECTING');
@@ -28,9 +32,12 @@ class ChatSource extends EventEmitter {
         }
     }
 
+    connected(){
+        return this.sock && this.sock.readyState === this.sock.OPEN;
+    }
+
     disconnect(){
-        if(this.sock && this.sock.readyState !== this.sock.CLOSED)
-            this.sock.close();
+        if(this.sock && this.sock.readyState !== this.sock.CLOSED) this.sock.close();
     }
 
     // @param event Object {data: 'EVENT "DATA"'}
@@ -49,7 +56,7 @@ class ChatSource extends EventEmitter {
 
     send(eventname, data){
         const payload = (typeof data === 'string') ? data : JSON.stringify(data);
-        if(this.sock.readyState === this.sock.OPEN){
+        if(this.connected()){
             this.sock.send(`${eventname} ${payload}`);
         } else {
             this.emit('ERR', 'notconnected');

@@ -7,6 +7,7 @@ interface NanoScroll {
     content?: HTMLElement
     el?: HTMLElement
     reset()
+    destroy()
     updateScrollValues()
     scrollTo(node?: HTMLElement)
     scrollTop(offsetY?: number)

@@ -3,6 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Commerce\PaymentStatus;
 use Destiny\Commerce\SubscriptionsService;
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Application;
@@ -21,17 +22,21 @@ class IpnController {
 
     /**
      * @Route ("/ipn")
+     * @ResponseBody
      *
      * Handles the incoming HTTP request
-     * @return Response
+     *
+     * @param Response $response
+     * @return string
      */
-    public function ipn() {
+    public function ipn(Response $response) {
         $log = Application::instance()->getLogger();
         try {
             $ipnMessage = new PPIPNMessage ();
             if (!$ipnMessage->validate()) {
                 $log->error('Got a invalid IPN ' . json_encode($ipnMessage->getRawData()));
-                return new Response (Http::STATUS_ERROR, 'Got a invalid IPN');
+                $response->setStatus(Http::STATUS_ERROR);
+                return 'Got a invalid IPN';
             }
             $data = $ipnMessage->getRawData();
             $log->info(sprintf('Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId(), $data ['txn_type']));
@@ -46,26 +51,18 @@ class IpnController {
             // Make sure this IPN is for the merchant
             if (strcasecmp(Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email']) !== 0) {
                 $log->critical(sprintf('IPN originated with incorrect receiver_email [%s]', $data ['ipn_track_id']));
-                return new Response (Http::STATUS_ERROR, 'Invalid IPN');
+                $response->setStatus(Http::STATUS_ERROR);
+                return 'Invalid IPN';
             }
 
             // Handle the IPN
             $this->handleIPNTransaction($data ['txn_id'], $data ['txn_type'], $data);
 
-            // Return success response
-            return new Response (Http::STATUS_OK);
-
         } catch (SubscriptionNotFoundException $e) {
-
             $log->critical($e->getMessage());
-            return new Response (Http::STATUS_OK);
-
-        } catch (\Exception $e) {
-
-            $log->critical($e->getMessage());
-            return new Response (Http::STATUS_ERROR, 'Error');
-
         }
+
+        return 'ok';
     }
 
     /**

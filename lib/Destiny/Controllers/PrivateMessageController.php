@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
@@ -48,19 +49,20 @@ class PrivateMessageController {
      * @Route ("/profile/messages/send")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
+     * @ResponseBody
      *
      * Expects the following GET|POST variables:
      *     message=string
      *     recipients[]=username|group
      *
      * @param array $params
-     * @return Response
+     * @return array
      */
     public function sendMessage(array $params) {
         $privateMessageService = PrivateMessageService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
         $userService = UserService::instance();
-        $response = array('success' => false, 'message' => '');
+        $result = ['success' => false, 'message' => ''];
 
         try {
 
@@ -132,63 +134,27 @@ class PrivateMessageController {
                 }
             }
 
-            $response['message'] = 'Message sent';
-            $response['success'] = true;
+            $result['message'] = 'Message sent';
+            $result['success'] = true;
 
         } catch (\Exception $e) {
-            $response['success'] = false;
-            $response['message'] = $e->getMessage();
+            $result['success'] = false;
+            $result['message'] = $e->getMessage();
         }
 
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
+        return $result;
     }
 
     /**
      * @Route ("/profile/messages/openall")
      * @Secure ({"USER"})
-     *
-     * @return string
+     * @ResponseBody
      */
     public function openAll() {
         $privateMessageService = PrivateMessageService::instance();
         $userId = Session::getCredentials()->getUserId();
         $privateMessageService->markAllMessagesRead($userId);
-        $response = new Response (Http::STATUS_OK, json_encode(['success' => true]));
-        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
-        return $response;
-    }
-
-    /**
-     * @Route ("/profile/messages/{id}/open")
-     * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @return Response
-     */
-    public function openMessage(array $params) {
-
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $response = ['success' => true, 'message' => '', 'unread' => 0];
-
-        try {
-            FilterParams::required($params, 'id');
-
-            // could not find the message that is targeted at the user
-            if(!$privateMessageService->markMessageRead( $params['id'], $userId ))
-                throw new Exception('Invalid message');
-
-        } catch (\Exception $e) {
-            $response['success'] = false;
-            $response['message'] = $e->getMessage();
-        }
-
-        $response['unread'] = $privateMessageService->getUnreadMessageCount($userId);
-        $response = new Response ( Http::STATUS_OK, json_encode ( $response ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
+        return ['success' => true];
     }
 
     /**
@@ -224,61 +190,6 @@ class PrivateMessageController {
         $viewModel->userId = $userId;
         $viewModel->title = 'Message';
         return 'profile/message';
-    }
-
-    /**
-     * @Route ("/profile/conversations/unread")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"GET"})
-     *
-     * @return Response
-     */
-    public function unreadConversations(){
-        $userId = Session::getCredentials ()->getUserId ();
-        $privateMessageService = PrivateMessageService::instance();
-        $conversations = $privateMessageService->getUnreadConversations($userId, 50);
-        $response = new Response (Http::STATUS_OK, json_encode($conversations));
-        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
-        return $response;
-    }
-
-    /**
-     * @Route ("/profile/messages/{username}/unread")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"GET"})
-     *
-     * @param array $params
-     * @return Response
-     */
-    public function unreadMessagesFrom(array $params){
-        $userService = UserService::instance();
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $targetuser = $userService->getUserByUsername($params['username']);
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $targetuser['userId'], 0, 10 );
-        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
-        $response = new Response (Http::STATUS_OK, json_encode($messages));
-        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
-        return $response;
-    }
-
-    /**
-     * @Route ("/profile/messages/{username}/unread")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"DELETE"})
-     *
-     * @param array $params
-     * @return Response
-     */
-    public function markReadMessagesFrom(array $params){
-        $userService = UserService::instance();
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $targetuser = $userService->getUserByUsername($params['username']);
-        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
-        $response = new Response (Http::STATUS_OK);
-        $response->addHeader(Http::HEADER_CONTENTTYPE, MimeType::JSON);
-        return $response;
     }
 
 }

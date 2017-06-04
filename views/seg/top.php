@@ -20,7 +20,7 @@ use Destiny\Common\Session;
 
             <li class="bigscreen">
                 <a title="So. Much. Girth." href="/bigscreen" rel="bigscreen">
-                    <i class="icon-bigscreen"></i>
+                    <i class="icon-tv"></i>
                     <span class="visible-lg-inline">Big screen</span>
                 </a>
             </li>

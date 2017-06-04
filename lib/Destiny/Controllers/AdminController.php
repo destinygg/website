@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Commerce\StatisticsService;
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserRole;
@@ -12,9 +13,6 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Application;
-use Destiny\Common\Response;
-use Destiny\Common\Utils\Http;
-use Destiny\Common\MimeType;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
@@ -135,9 +133,10 @@ class AdminController {
     /**
      * @Route ("/admin/chart/{type}")
      * @Secure ({"ADMIN"})
+     * @ResponseBody
      *
      * @param array $params
-     * @return Response
+     * @return array|false|mixed
      */
     public function chartData(array $params){
         FilterParams::required($params, 'type');
@@ -220,9 +219,7 @@ class AdminController {
                 }
                 break;
         }
-        $response = new Response ( Http::STATUS_OK, json_encode ( $data ) );
-        $response->addHeader ( Http::HEADER_CONTENTTYPE, MimeType::JSON );
-        return $response;
+        return $data;
     }
 
 }
