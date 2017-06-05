@@ -80,29 +80,78 @@ const settingsdefault = new Map([
     ['ignorenicks', []],
     ['focusmentioned', false],
     ['notificationtimeout', true],
-    ['ignorementions', false]
+    ['ignorementions', false],
+    ['autocompletehelper', true]
 ]);
 const commandsinfo = new Map([
-    ['help', ''],
-    ['emotes', ''],
-    ['me', ''],
-    ['msg', ''],
-    ['ignore', 'without arguments to list the nicks ignored'],
-    ['unignore', ''],
-    ['highlight', 'highlights target nicks messages for easier visibility'],
-    ['unhighlight', ''],
-    ['maxlines', ''],
-    ['mute', ''],
-    ['unmute', ''],
-    ['subonly', ''],
-    ['ban', ''],
-    ['unban', 'also unbans ip bans'],
-    ['timestampformat', ''],
-    ['stalk', ''],
-    ['mentions', ''],
-    ['tag', ''],
-    ['untag', ''],
-    ['close', 'exit a conversation']
+    ['help', {
+        description: 'Helpful information.'
+    }],
+    ['emotes', {
+        description: 'A list of the chats emotes in text form.',
+    }],
+    ['me', {
+        description: 'A normal message, but emotive.',
+    }],
+    ['message', {
+        description: 'Whisper someone',
+        alias: ['msg', 'whisper', 'w', 'tell', 't', 'notify']
+    }],
+    ['ignore', {
+        description: 'No longer see user messages, without <nick> to list the nicks ignored'
+    }],
+    ['unignore', {
+        description: 'Remove a user from your ignore list'
+    }],
+    ['highlight', {
+        description: 'Highlights target nicks messages for easier visibility'
+    }],
+    ['unhighlight', {
+        description: 'Unhighlight target nick'
+    }],
+    ['maxlines', {
+        description: 'The maximum number of lines the chat will store'
+    }],
+    ['mute', {
+        description: 'The users messages will be blocked from everyone.',
+        admin: true
+    }],
+    ['unmute', {
+        description: 'Unmute the user.',
+        admin: true
+    }],
+    ['subonly', {
+        description: 'Subscribers only',
+        admin: true
+    }],
+    ['ban', {
+        description: 'User will no longer be able to connect to the chat.',
+        admin: true
+    }],
+    ['unban', {
+        description: 'Unban a user',
+        admin: true
+    }],
+    ['timestampformat', {
+        description: 'Set the time format of the chat.'
+    }],
+    ['stalk', {
+        description: 'Return a list of messages from <nick>',
+        alias: ['s']
+    }],
+    ['mentions', {
+        description: 'Return a list of messages where <nick> is mentioned',
+        alias: ['m']
+    }],
+    ['tag', {
+        description: 'Mark a users messages'
+    }],
+    ['untag', {
+        description: 'No longer mark the users messages'
+    }],
+    ['close', {
+        description: 'Exit the conversation'
+    }]
 ]);
 const banstruct = {
     id: 0,
@@ -211,6 +260,7 @@ class Chat {
 
         this.source.on('PRIVMSGSENT',      data => this.onPRIVMSGSENT(data));
         this.source.on('PRIVMSG',          data => this.onPRIVMSG(data));
+
         this.control.on('MESSAGE',         data => this.cmdWHISPER(data));
         this.control.on('MSG',             data => this.cmdWHISPER(data));
         this.control.on('WHISPER',         data => this.cmdWHISPER(data));
@@ -280,9 +330,12 @@ class Chat {
         this.menus.set('whisper-users',
             new ChatWhisperUsers(this.ui.find('#chat-whisper-users'), this.ui.find('#chat-whisper-btn'), this));
 
-        [...commandsinfo.keys()].forEach(k => this.autocomplete.addToBucket(`/${k}`, 1, false, 0));
-        this.emoticons.forEach(e => this.autocomplete.addToBucket(e, 1, true, 0));
-        this.twitchemotes.forEach(e => this.autocomplete.addToBucket(e, 1, true, 0));
+        commandsinfo.forEach((a, k) => {
+            this.autocomplete.add(`/${k}`);
+            (a['alias'] || []).forEach(k => this.autocomplete.add(`/${k}`));
+        });
+        this.emoticons.forEach(e => this.autocomplete.add(e, true));
+        this.twitchemotes.forEach(e => this.autocomplete.add(e, true));
         this.autocomplete.bind(this);
         this.applySettings(false);
 
@@ -704,10 +757,13 @@ class Chat {
 
     onDISPATCH({data}){
         if (typeof data === 'object'){
+            let users = [];
+            const now = Date.now();
             if(data.hasOwnProperty('nick'))
-                this.autocomplete.updateNick(this.addUser(data).nick);
+                users.push(this.addUser(data));
             if(data.hasOwnProperty('users'))
-                data.users.forEach(u => this.autocomplete.updateNick(this.addUser(u).nick.toLowerCase()));
+                users = users.concat(data.users.map(d => this.addUser(d)));
+            users.forEach(u => this.autocomplete.weight(u.nick, now));
         }
     }
 
@@ -735,7 +791,7 @@ class Chat {
         const normalized = data.nick.toLowerCase();
         if (this.users.has(normalized)){
             this.users.delete(normalized);
-            this.autocomplete.removeNick(data.nick);
+            this.autocomplete.remove(data.nick);
         }
     }
 
@@ -857,7 +913,6 @@ class Chat {
                 {
                     this.removeWindow(win.name);
                     this.inputhistory.add(str);
-                    this.autocomplete.markLastComplete();
                 }
                 else if(!isme && iscommand) {
                     MessageBuilder.error(`No commands in private channels yet.`).into(this, win);
@@ -886,7 +941,6 @@ class Chat {
                     MessageBuilder.error(`Unknown command. Try /help`).into(this);
                 }
                 this.inputhistory.add(str);
-                this.autocomplete.markLastComplete();
             }
 
             // Normal chat message or emote
@@ -905,7 +959,6 @@ class Chat {
                 }
                 this.source.send('MSG', {data: str});
                 this.inputhistory.add(str);
-                this.autocomplete.markLastComplete();
             }
         }
     }
@@ -915,10 +968,9 @@ class Chat {
     }
 
     cmdHELP(){
-        let str = 'Available commands: ';
-        [...commandsinfo].forEach(a => {
-            const s = a[1] !== '' ? `(${a[1]})` : '';
-            str += `/${a[0]} ${s} `;
+        let str = `Available commands: \r`;
+        commandsinfo.forEach((a, k) => {
+            str += ` /${k} - ${a.description} \r`;
         });
         MessageBuilder.info(str).into(this);
     }

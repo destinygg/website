@@ -49,7 +49,7 @@ hr {
     line-height: 1.5em;
 }
 #chat-input {
-    padding: 2px 8px 0 8px;
+    padding: 2px 4px 0 4px;
     position: absolute;
     width: 100%;
     bottom: 0;
@@ -96,6 +96,7 @@ hr {
         line-height: 30px;
     }
 }
+
 .chat-tools-item {
     font-size: 20px;
     cursor: pointer;
@@ -395,6 +396,12 @@ a {
 }
 
 /* Status messages */
+.msg-status,
+.msg-command,
+.msg-error,
+.msg-info {
+    white-space: pre;
+}
 .msg-status,
 .msg-command,
 .msg-error {
@@ -841,6 +848,7 @@ a {
         box-shadow: -2px 2px 3px 0 rgba(0, 0, 0, 0.2);
     }
 }
+
 #chat-emote-list {
     max-width: $menuwidthmax;
     min-width: $menuwidthmax;
@@ -1099,4 +1107,54 @@ a {
 .nano-pane.flashed {
     visibility : visible\9; /* Target only IE7 and IE8 with this hack */
     opacity    : 0.99;
+}
+
+#chat-auto-complete {
+    display: none;
+    z-index: 131;
+    border-radius: 3px;
+    position: absolute;
+    line-height: 25px;
+    top: -35px;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 14px;
+    height: 25px;
+
+    ul {
+        transition: all 100ms ease;
+        position: absolute;
+        white-space: nowrap;
+        list-style: none;
+        padding:0;
+        margin:0;
+    }
+
+    li {
+        padding: 0 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        color: #868686;
+        background: #272727;
+
+        &:hover {
+            color: $text-color1;
+        }
+        &.active {
+            color: $text-color;
+        }
+        &:first-child {
+            border-radius: 3px 0 0 3px;
+        }
+        &:last-child {
+            border-radius: 0 3px 3px 0;
+        }
+    }
+}
+
+.pref-autocompletehelper #chat-auto-complete.active {
+    display: block;
 }

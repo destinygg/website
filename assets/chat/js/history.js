@@ -11,10 +11,14 @@ class ChatInputHistory {
         this.lastinput  = '';
         this.maxentries = 20;
         this.input.on('keydown', e => {
-            if (!(e.shiftKey || e.metaKey || e.ctrlKey) && (e.which === 38 || e.which === 40))
-                this.show(e.which === 38 ? -1 : 1); // if up arrow we subtract otherwise add
-            else
+            // if up arrow we subtract otherwise add
+            if (!(e.shiftKey || e.metaKey || e.ctrlKey) && (e.which === 38 || e.which === 40)) {
+                this.show(e.which === 38 ? -1 : 1);
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
                 this.index = -1;
+            }
         });
     }
 
@@ -29,7 +33,7 @@ class ChatInputHistory {
                 // that's done later
                 this.index = this.history.length;
                 // store the typed in message so that we can go back to it
-                this.lastinput = this.input.val();
+                this.lastinput = this.input.val().toString();
 
                 if (this.index <= 0) // nothing in the history, bail out
                     return;
@@ -39,18 +43,19 @@ class ChatInputHistory {
         }
 
         const index = this.index + direction;
+        let val = this.lastinput;
         // out of bounds
         if (index >= this.history.length || index < 0) {
             // down arrow was pressed to get back to the original line, reset
             if (index >= this.history.length) {
-                this.input.val(this.lastinput);
                 this.index = -1;
             }
-            return;
+        } else {
+            this.index = index;
+            val = this.history[index];
         }
 
-        this.index = index;
-        this.input.val(this.history[index]);
+        this.input.val(val);
     }
 
     add(message){

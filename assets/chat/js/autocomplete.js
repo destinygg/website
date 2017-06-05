@@ -1,238 +1,260 @@
 /* global $, destiny */
 
-import Chat from "./chat.js";
+import Chat from "./chat";
+import {KEYCODES} from "./keys";
+
+const getBucketId = id => {
+    return (id.match(/[\S]/)[0] || '_').toLowerCase();
+};
+const sortResults = (a, b) => {
+    if(!a || !b)
+        return 0;
+
+    // order promoted things first
+    if (a.promoted !== b.promoted)
+        return a.promoted > b.promoted? -1: 1;
+
+    // order emotes second
+    if (a.isemote !== b.isemote)
+        return a.isemote && !b.isemote? -1: 1;
+
+    // order according to recency third
+    if (a.weight !== b.weight)
+        return a.weight > b.weight? -1: 1;
+
+    // order lexically fourth
+    a = a.data.toLowerCase();
+    b = b.data.toLowerCase();
+
+    if (a === b)
+        return 0;
+
+    return a > b? 1: -1;
+};
+const getSearchCriteria = (str, offset) => {
+    let pre          = str.substring(0, offset),
+        post         = str.substring(offset),
+        startCaret   = pre.lastIndexOf(' ') + 1,
+        endCaret     = post.indexOf(' '),
+        isUserSearch = false;
+
+    if (startCaret > 0)
+        pre = pre.substring(startCaret);
+
+    if (endCaret > -1)
+        post = post.substring(0, endCaret);
+
+    // Ignore the first char as part of the search and flag as a user only search
+    if(pre.lastIndexOf('@') === 0){
+        startCaret++;
+        pre = pre.substring(1);
+        isUserSearch = true;
+    }
+
+    return {
+        word: pre + post,
+        pre: pre,
+        post: post,
+        startCaret: startCaret,
+        isUserSearch: isUserSearch,
+        orig: str
+    };
+};
 
 class ChatAutoComplete {
 
     constructor(){
         this.minWordLength = 1;
-        this.maxResults = 10;
-        this.buckets = {};
-        this.origVal = null;
+        this.maxResults = 20;
+        this.buckets = new Map();
         this.searchResults = [];
-        this.searchIndex = -1;
-        this.searchWord = null;
+        this.searchCriteria = null;
+        this.selectedIndex = -1;
         this.input = null;
+        this.timeout = null;
+        this.ui = $(`<div id="chat-auto-complete"></div>`);
+        this.container = null;
+    }
+
+    redrawHelpers(){
+        const elements = this.searchResults.map((res, k) => `<li data-index="${k}">${res.data}</li>`);
+        this.container = $(`<ul>${elements.join('')}</ul>`);
+        this.ui.detach()
+            .empty()
+            .append(this.container)
+            .toggleClass('active', elements.length > 0);
+        this.input.before(this.ui);
+        this.updateHelpers();
+    }
+
+    updateHelpers() {
+        this.ui.find(`li.active`).removeClass('active');
+        this.ui.find(`li[data-index="${this.selectedIndex}"]`).addClass('active');
+        const offset = this.container.position().left,
+            maxwidth = this.ui.width(),
+                  li = this.ui.find(`li`).get(),
+                curr = this.ui.find(`li.active`);
+        if (curr.length > 0) {
+            $(li[this.selectedIndex + 3]).each((i, e) => {
+                const right = ($(e).position().left + offset) + $(e).outerWidth();
+                if(right > maxwidth)
+                    this.container.css('left', offset + maxwidth - right);
+            });
+            $(li[Math.max(0, this.selectedIndex - 2)]).each((i, e) => {
+                const left = $(e).position().left + offset;
+                if(left < 0)
+                    this.container.css('left', $(e).position().left);
+            });
+        }
     }
 
     bind(chat){
         this.input = chat.input;
 
-        //HTMLInputElement.prototype.setSelectionRange
-        if (!this.input || this.input.length === 0 || !this.input[0].setSelectionRange)
-            return this;
-
-        setInterval(this.expireUsers.bind(this), 60000); // 1 minute
-
-        this.input.on('mousedown', this.resetSearch.bind(this));
-        this.input.on('keydown', e => {
-            if (e.which === 9) { // if TAB
-                e.preventDefault();
-                e.stopPropagation();
-                if (this.searchResults.length <= 0) {
-                    this.resetSearch();
-                    this.searchSelectWord(e.shiftKey);
-                }
-                this.showAutoComplete();
+        // Mouse down, if there is no text selection search the word from where the caret is
+        this.input.on('mouseup', () => {
+            const offset = this.input[0].selectionStart;
+            if(offset !== this.input[0].selectionEnd){
+                this.reset();
+                this.redrawHelpers();
             } else {
-                // Cancel the search and continue the keydown
-                this.resetSearch();
+                const needle = this.input.val().toString();
+                this.search(needle, offset);
             }
         });
+
+        // Key down for any key, but we cannot get the charCode from it (like keypress).
+        let originval = '';
+        this.input.on('keydown', e => {
+            originval = this.input.val().toString();
+            switch (e.keyCode) {
+                case KEYCODES.TAB:
+                    if(this.searchResults.length > 0) {
+                        this.selectResult(this.selectedIndex >= this.searchResults.length - 1 ? 0 : this.selectedIndex + 1);
+                        this.updateHelpers();
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
+                    break;
+            }
+        });
+
+        // Key press of characters that actually input into the field
+        this.input.on('keypress', e => {
+            const char = String.fromCharCode(e.keyCode) || '';
+            switch (e.keyCode) {
+                case KEYCODES.ENTER:
+                case KEYCODES.TAB:
+                    break;
+                default:
+                    if (char.length > 0) {
+                        this.promoteIfSelected();
+                        const str = this.input.val().toString(),
+                            offset = this.input[0].selectionStart,
+                            pre = str.substring(0, offset),
+                            post = str.substring(offset);
+                        const needle = pre + char + post;
+                        this.search(needle, offset);
+                    }
+                    break;
+            }
+        });
+
+        // Key up, we handle things like backspace if the keypress never found a char.
+        this.input.on('keyup', e => {
+            const needle = this.input.val().toString();
+            switch (e.keyCode) {
+                case KEYCODES.TAB:
+                    break;
+                case KEYCODES.ENTER:
+                    this.reset();
+                    this.redrawHelpers();
+                    break;
+                default:
+                    if (needle !== originval) {
+                        const offset = this.input[0].selectionStart;
+                        this.search(needle, offset);
+                    }
+                    if(needle === '') {
+                        this.reset();
+                        this.redrawHelpers();
+                    }
+                    break;
+            }
+            originval = '';
+        });
+
+        this.ui.on('click', 'li', e => {
+            this.selectResult(parseInt(e.currentTarget.getAttribute('data-index')));
+            this.redrawHelpers();
+        });
+
+        setInterval(this.expireUsers.bind(this), 60000); // 1 minute
     }
 
-    getBucketId(id){
-        if (id.length === 0)
-            return '';
-        return id.match(/[\w]/)[0].toLowerCase();
+    search(needle, offset, userSearch=false){
+        this.reset();
+        const criteria = getSearchCriteria(needle, offset);
+        if(userSearch) criteria.isUserSearch = true;
+        this.searchCriteria = criteria;
+        this.searchResults = this.find(criteria);
+        this.redrawHelpers();
     }
 
-    addToBucket(data, weight, isemote, promoteTimestamp){
-        let id = this.getBucketId(data);
-
-        if(!this.buckets[id])
-            this.buckets[id] = {};
-
-        if (!this.buckets[id][data])
-            this.buckets[id][data] = {
-                data: data,
-                weight: weight,
-                isemote: !!isemote,
-                promoted: promoteTimestamp
-            };
-
-        return this.buckets[id][data];
+    reset(){
+        this.searchCriteria = null;
+        this.searchResults = [];
+        this.selectedIndex = -1;
     }
 
-    removeNick(data){
-        let id = this.getBucketId(data);
-        if(this.buckets[id] && this.buckets[id][data]){
-            delete this.buckets[id][data];
+    add(str, isemote=false, weight=1, promote=0){
+        const id = getBucketId(str);
+        const bucket = this.buckets.get(id) || new Map();
+        const data = bucket.get(str) || {
+            data: str,
+            weight: weight,
+            isemote: isemote,
+            promoted: promote
+        };
+        bucket.set(str, data);
+        this.buckets.set(id, bucket);
+        return data;
+    }
+
+    remove(str){
+        const id = getBucketId(str);
+        const bucket = this.buckets.get(id);
+        if(bucket && bucket.has(str)) {
+            bucket.delete(str);
             return true;
         }
         return false;
     }
 
-    updateNick(nick){
-        const weight = Date.now();
-        const data = this.addToBucket(nick, weight, false, 0);
+    weight(str, weight=Date.now(), promote=0){
+        const data = this.add(str, false, weight, promote);
         data.weight = weight;
     }
 
-    promoteNick(nick){
-        const promoteTimestamp = Date.now();
-        const data = this.addToBucket(nick, 1, false, promoteTimestamp);
-
-        if (data.isemote)
-            return this;
-
-        data.promoted = promoteTimestamp;
-    }
-
-    getSearchWord(str, offset){
-        let pre          = str.substring(0, offset),
-            post         = str.substring(offset),
-            startCaret   = pre.lastIndexOf(' ') + 1,
-            endCaret     = post.indexOf(' '),
-            isUserSearch = false;
-
-        if (startCaret > 0)
-            pre = pre.substring(startCaret);
-
-        if (endCaret > -1)
-            post = post.substring(0, endCaret);
-
-        // Ignore the first char as part of the search and flag as a user only search
-        if(pre.lastIndexOf('@') === 0){
-            startCaret++;
-            pre = pre.substring(1);
-            isUserSearch = true;
+    find(criteria){
+        if(criteria.word.length >= this.minWordLength) {
+            const id = getBucketId(criteria.word);
+            const bucket = this.buckets.get(id) || new Map();
+            const regex = new RegExp('^' + Chat.makeSafeForRegex(criteria.pre), 'i');
+            return [...bucket.values()]
+                .filter(a => a.data.toLowerCase() !== criteria.word.toLowerCase())
+                .filter(a => (!criteria.isUserSearch || !a.isemote) && regex.test(a.data))
+                .sort(sortResults)
+                .slice(0, this.maxResults);
         }
-
-        return {
-            word: pre + post,
-            startCaret: startCaret,
-            isUserSearch: isUserSearch
-        };
+        return [];
     }
 
-    sortResults(a, b){
-        if(!a || !b)
-            return 0;
-
-        // order promoted things first
-        if (a.promoted !== b.promoted)
-            return a.promoted > b.promoted? -1: 1;
-
-        // order emotes second
-        if (a.isemote !== b.isemote)
-            return a.isemote && !b.isemote? -1: 1;
-
-        // order according to recency third
-        if (a.weight !== b.weight)
-            return a.weight > b.weight? -1: 1;
-
-        // order lexically fourth
-        a = a.data.toLowerCase();
-        b = b.data.toLowerCase();
-
-        if (a === b)
-            return 0;
-
-        return a > b? 1: -1;
-    }
-
-    searchBuckets(str, limit, usernamesOnly){
-        str = Chat.makeSafeForRegex(str);
-        let res  = [],
-            f    = new RegExp('^'+str, 'i'),
-            data = this.buckets[this.getBucketId(str)] || {};
-
-        for (let nick in data) {
-            if (!data.hasOwnProperty(nick) || (usernamesOnly && data[nick].isemote))
-                continue;
-
-            if (f.test(nick))
-                res.push(data[nick]);
-        }
-
-        res.sort(this.sortResults);
-        return res.slice(0, limit);
-    }
-
-    expireUsers(){
-        // every 10 minutes reset the promoted users so that emotes can be
-        // ordered before the user again
-        let tenminutesago = Date.now() - 600000;
-        for (let i in this.buckets) {
-            if (!this.buckets.hasOwnProperty(i))
-                continue;
-
-            for(let j in this.buckets[i]) {
-                if (!this.buckets[i].hasOwnProperty(j))
-                    continue;
-
-                let data = this.buckets[i][j];
-                if (!data.isemote && data.promoted <= tenminutesago)
-                    data.promoted = 0;
-
-                if (!data.isemote && data.weight <= tenminutesago)
-                    data.weight = 1;
-            }
-        }
-    }
-
-    markLastComplete(){
-        if(!this.lastComplete)
-            return;
-
-        let data = this.buckets[this.getBucketId(this.lastComplete)] || {};
-
-        // should never happen, but just in case
-        if (!data[this.lastComplete])
-            return this.lastComplete = null;
-
-        if (data[this.lastComplete].isemote) {
-            // reset the promotion of users near the emote
-            for(let j in data) {
-                if (!data.hasOwnProperty(j))
-                    continue;
-
-                data[j].promoted = 0;
-            }
-            return this.lastComplete = null;
-        }
-
-        this.promoteNick(this.lastComplete);
-        this.lastComplete = null;
-    }
-
-    resetSearch(){
-        this.origVal       = null;
-        this.searchResults = [];
-        this.searchIndex   = -1;
-        this.searchWord    = null;
-    }
-
-    searchSelectWord(forceUserSearch){
-        let searchWord = this.getSearchWord(this.input.val(), this.input[0].selectionStart);
-        if (searchWord.word.length >= this.minWordLength){
-            this.searchWord    = searchWord;
-            let isUserSearch   = forceUserSearch? true: this.searchWord.isUserSearch;
-            this.searchResults = this.searchBuckets(this.searchWord.word, this.maxResults, isUserSearch);
-            this.origVal       = this.input.val().toString();
-        }
-    }
-
-    showAutoComplete(){
-        this.searchIndex = this.searchIndex >= this.searchResults.length - 1 ? 0 : this.searchIndex + 1;
-        let result = this.searchResults[this.searchIndex];
-        if (!result || result.data === this.searchWord.word)
-            return;
-
-        this.lastComplete = result.data;
-        let pre  = this.origVal.substr(0, this.searchWord.startCaret),
-            post = this.origVal.substr(this.searchWord.startCaret + this.searchWord.word.length);
+    selectResult(index){
+        this.selectedIndex = Math.min(index, this.searchResults.length-1);
+        const result = this.searchResults[this.selectedIndex];
+        let pre = this.searchCriteria.orig.substr(0, this.searchCriteria.startCaret),
+            post = this.searchCriteria.orig.substr(this.searchCriteria.startCaret + this.searchCriteria.word.length);
 
         // always add a space after our completion if there isn't one since people
         // would add one anyway
@@ -243,6 +265,38 @@ class ChatAutoComplete {
 
         // Move the caret to the end of the replacement string + 1 for the space
         this.input[0].setSelectionRange(pre.length + result.data.length + 1, pre.length + result.data.length + 1);
+        this.selectedIndex = index;
+    }
+
+    promoteIfSelected(){
+        if(this.selectedIndex >= 0) {
+            const result = this.searchResults[this.selectedIndex];
+            if(result) {
+                result.promoted = Date.now();
+                if(result.isemote) {
+                    const bucket = this.buckets.get(getBucketId(result.data)) || new Map();
+                    [...bucket.values()]
+                        .filter(a => !a.isemote)
+                        .forEach(a => a.promoted = 0);
+                }
+            }
+        }
+    }
+
+    expireUsers(){
+        // every 10 minutes reset the promoted users so that emotes can be
+        // ordered before the user again
+        let tenminutesago = Date.now() - 600000;
+        this.buckets.forEach(bucket => {
+            [...bucket.values()]
+                .filter(a => !a.isemote)
+                .forEach(a => {
+                    if (a.promoted <= tenminutesago)
+                        a.promoted = 0;
+                    if (a.weight <= tenminutesago)
+                        a.weight = 1;
+                });
+        });
     }
 
 }

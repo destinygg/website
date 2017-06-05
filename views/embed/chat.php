@@ -125,6 +125,13 @@ use Destiny\Common\Config;
                             <textarea name="customhighlight" style="resize: vertical;" class="form-control" placeholder="Comma separated ..."></textarea>
                         </div>
 
+                        <h4>Autocomplete</h4>
+                        <div class="form-group checkbox">
+                            <label title="Show or hid the auto complete helper">
+                                <input name="autocompletehelper" type="checkbox" /> Auto-complete helper
+                            </label>
+                        </div>
+
                         <hr class="separator" />
 
                         <div class="form-group">

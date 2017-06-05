@@ -14,16 +14,12 @@ use Destiny\Common\Config;
 </head>
 <body class="embed onstream">
 
-    <div id="chat" class="chat chat-icons">
-        <div id="chat-output-frame">
-            <div id="chat-output-main" class="chat-output nano">
-                <div class="chat-lines nano-content"></div>
-            </div>
-        </div>
-    </div>
+<div id="chat" class="chat chat-icons">
+    <div id="chat-output-frame"></div>
+</div>
 
-    <?php include 'seg/commonbottom.php' ?>
-    <script src="<?=Config::cdnv()?>/streamchat.js"></script>
+<?php include 'seg/commonbottom.php' ?>
+<script src="<?=Config::cdnv()?>/streamchat.js"></script>
 
 </body>
 </html>
