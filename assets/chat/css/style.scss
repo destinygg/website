@@ -499,9 +499,11 @@ a {
 
 /* Tagging */
 .msg-tagged {
-    background-color: $color-chat-tagged;
     position: relative;
     padding-left: 7px;
+}
+.pref-taggedvisibility .msg-tagged {
+    background-color: $color-chat-tagged;
 }
 .msg-tagged:before {
     position: absolute;
@@ -543,6 +545,7 @@ a {
 .msg-tagged-black:before {
     background-color: $color-black;
 }
+
 
 /* Historical messages */
 .msg-historical {
@@ -586,6 +589,9 @@ a {
     time, .continue {
         color: $color-chat-text3;
     }
+}
+.pref-taggedvisibility .msg-highlight {
+    background-color: $color-chat-highlight;
 }
 
 /* Focus or highlight a line */
@@ -771,7 +777,7 @@ a {
         display: inline-block;
         font-size: 13px;
         color: $color-chat-text3;
-        background: $color-surface-dark3;
+        background: rgba($color-surface-dark1, 0.75);
 
         &:first-child {
             border-radius: 3px 0 0 0;

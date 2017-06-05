@@ -56,7 +56,7 @@ use Destiny\Common\Config;
 
                         <div class="form-group checkbox">
                             <label title="Persistent profile settings">
-                                <input name="profilesettings" type="checkbox" checked="checked"/> Save settings to profile
+                                <input name="profilesettings" type="checkbox"/> Save settings to profile
                             </label>
                         </div>
 
@@ -104,7 +104,7 @@ use Destiny\Common\Config;
                             </label>
                         </div>
 
-                        <h4>Highlights &amp; Focus</h4>
+                        <h4>Highlights &amp; Focus &amp; Tags</h4>
                         <div class="form-group checkbox">
                             <label title="Notification on highlight">
                                 <input name="notificationhighlight" type="checkbox" /> Notification
@@ -112,12 +112,17 @@ use Destiny\Common\Config;
                         </div>
                         <div class="form-group checkbox">
                             <label title="Highlights messages you are mentioned in">
-                                <input name="highlight" type="checkbox" checked="checked"/> Highlight when mentioned
+                                <input name="highlight" type="checkbox"/> Highlight when mentioned
                             </label>
                         </div>
                         <div class="form-group checkbox">
                             <label title="Include mentions when focused">
                                 <input name="focusmentioned" type="checkbox" /> Include mentions when <span title="Occurs when you click on a user in chat.">focused</span>
+                            </label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <label>
+                                <input name="taggedvisibility" type="checkbox" /> Increased visibility of tagged users
                             </label>
                         </div>
                         <div class="form-group row">

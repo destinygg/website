@@ -165,13 +165,14 @@ class ChatAutoComplete {
                     break;
                 default:
                     if (char.length > 0) {
-                        this.promoteIfSelected();
                         const str = this.input.val().toString(),
                             offset = this.input[0].selectionStart,
                             pre = str.substring(0, offset),
                             post = str.substring(offset);
+
+                        this.promoteIfSelected();
                         const needle = pre + char + post;
-                        this.search(needle, offset);
+                        this.search(needle, offset, !!e.shiftKey);
                     }
                     break;
             }
@@ -190,7 +191,7 @@ class ChatAutoComplete {
                 default:
                     if (needle !== originval) {
                         const offset = this.input[0].selectionStart;
-                        this.search(needle, offset);
+                        this.search(needle, offset, !!e.shiftKey);
                     }
                     if(needle === '') {
                         this.reset();
@@ -259,7 +260,7 @@ class ChatAutoComplete {
             const bucket = this.buckets.get(id) || new Map();
             const regex = new RegExp('^' + Chat.makeSafeForRegex(criteria.pre), 'i');
             return [...bucket.values()]
-                .filter(a => a.data.toLowerCase() !== criteria.word.toLowerCase())
+                .filter(a => a.data !== criteria.word)
                 .filter(a => (!criteria.isUserSearch || !a.isemote) && regex.test(a.data))
                 .sort(sortResults)
                 .slice(0, this.maxResults);
@@ -284,7 +285,6 @@ class ChatAutoComplete {
 
         // Move the caret to the end of the replacement string + 1 for the space
         this.input[0].setSelectionRange(pre.length + result.data.length + 1, pre.length + result.data.length + 1);
-        this.selectedIndex = index;
     }
 
     promoteIfSelected(){

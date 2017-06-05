@@ -81,7 +81,8 @@ const settingsdefault = new Map([
     ['focusmentioned', false],
     ['notificationtimeout', true],
     ['ignorementions', false],
-    ['autocompletehelper', true]
+    ['autocompletehelper', false],
+    ['taggedvisibility', false]
 ]);
 const commandsinfo = new Map([
     ['help', {
