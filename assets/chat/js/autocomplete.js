@@ -146,10 +146,6 @@ class ChatAutoComplete {
             originval = this.input.val().toString();
             switch (getKeyCode(e)) {
                 case KEYCODES.TAB:
-                    if(this.searchResults.length > 0) {
-                        this.selectResult(this.selectedIndex >= this.searchResults.length - 1 ? 0 : this.selectedIndex + 1);
-                        this.updateHelpers();
-                    }
                     e.preventDefault();
                     e.stopPropagation();
                     break;
@@ -160,8 +156,6 @@ class ChatAutoComplete {
         this.input.on('keypress', e => {
             const char = String.fromCharCode(getKeyCode(e)) || '';
             switch (getKeyCode(e)) {
-                case KEYCODES.TAB:
-                    break;
                 case KEYCODES.ENTER:
                     this.promoteIfSelected();
                     break;
@@ -185,6 +179,12 @@ class ChatAutoComplete {
             const needle = this.input.val().toString();
             switch (getKeyCode(e)) {
                 case KEYCODES.TAB:
+                    if(this.searchResults.length > 0) {
+                        this.selectResult(this.selectedIndex >= this.searchResults.length - 1 ? 0 : this.selectedIndex + 1);
+                        this.updateHelpers();
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
                     break;
                 case KEYCODES.ENTER:
                     this.reset();
