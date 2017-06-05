@@ -339,7 +339,6 @@ class Chat {
         this.applySettings(false);
 
         // Chat input
-        this.input.on('focus', e => ChatMenu.closeMenus(this));
         this.input.on('keypress', e => {
             if(isKeyCode(e, KEYCODES.ENTER) && !e.shiftKey && !e.ctrlKey) {
                 e.preventDefault();

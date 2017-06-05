@@ -84,6 +84,7 @@ class ChatAutoComplete {
             .append(this.container)
             .toggleClass('active', elements.length > 0);
         this.input.before(this.ui);
+        this.chat.ui.toggleClass('chat-autocomplete-in', elements.length > 0);
         this.updateHelpers();
     }
 
@@ -109,6 +110,7 @@ class ChatAutoComplete {
     }
 
     bind(chat){
+        this.chat = chat;
         this.input = chat.input;
 
         // Mouse down, if there is no text selection search the word from where the caret is

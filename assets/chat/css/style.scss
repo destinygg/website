@@ -82,17 +82,17 @@ hr {
         animation: whisper-pulse 2s 1;
         border-radius:50%;
     }
+}
 
-    #chat-whisper-notif {
-        margin-left:3px;
-        color: $color-light;
-        font-size: 11px;
-        display: inline-block;
-        position: absolute;
-        vertical-align: text-bottom;
-        height: 30px;
-        line-height: 30px;
-    }
+#chat-whisper-notif {
+    margin-left:3px;
+    color: $color-light;
+    font-size: 11px;
+    display: inline-block;
+    position: absolute;
+    vertical-align: text-bottom;
+    height: 30px;
+    line-height: 30px;
 }
 
 .chat-tools-item {
@@ -398,7 +398,7 @@ a {
 .msg-command,
 .msg-error,
 .msg-info {
-    white-space: pre;
+    white-space: pre-wrap;
 }
 .msg-status,
 .msg-command,
@@ -713,24 +713,26 @@ a {
 /* Helpers */
 .chat-scroll-notify {
     color: $color-chat-text3;
-    background: rgba($color-surface-dark3, 0.95);
-    box-shadow: 0px -1px 3px rgba(0, 0, 0, 0.37);
-    padding: 5px 0;
+    background: $color-surface-dark3;
     position: absolute;
     display: none;
     bottom: 0;
-    left: 6px;
-    right: 6px;
+    left: 4px;
+    right: 4px;
     text-align: center;
     cursor: pointer;
     z-index: 130;
     border-radius: 3px;
+    line-height: 25px;
 }
 .chat-scroll-notify:hover {
     color: $color-chat-text1;
 }
 .chat-output.chat-unpinned .chat-scroll-notify {
     display: block;
+}
+.chat.chat-autocomplete-in .chat-scroll-notify  {
+    display: none;
 }
 .chat-output-whisper .msg-chat {
     line-height: 150%;
@@ -764,8 +766,9 @@ a {
         cursor: pointer;
         text-decoration: none;
         display: inline-block;
-        color: $text-color1;
-        background: $color-surface-dark1;
+        font-size: 13px;
+        color: $color-chat-text3;
+        background: $color-surface-dark3;
 
         &:first-child {
             border-radius: 3px 0 0 3px;
@@ -774,7 +777,7 @@ a {
             border-radius: 0 3px 3px 0;
         }
         &:hover {
-            color: $text-color1;
+            color: lighten($color-chat-text3,20);
         }
         &.active {
             color: $text-color;

@@ -54,6 +54,7 @@ class ChatMenu extends EventEmitter {
 
     show(){
         if(!this.visible){
+            console.log('show');
             this.visible = true;
             this.shown = true;
             this.btn.addClass('active');
@@ -65,6 +66,7 @@ class ChatMenu extends EventEmitter {
 
     hide(){
         if(this.visible){
+            console.log('hide');
             this.visible = false;
             this.btn.removeClass('active');
             this.ui.removeClass('active');
@@ -73,6 +75,7 @@ class ChatMenu extends EventEmitter {
     }
 
     toggle(){
+        console.log(this.visible);
         const wasVisible = this.visible;
         ChatMenu.closeMenus(this.chat);
         if(!wasVisible) this.show();
