@@ -442,15 +442,6 @@ a {
     color: $color-chat-text1;
 }
 
-/* Highlight */
-.msg-highlight {
-    color: $color-chat-text1;
-    background-color: $color-chat-highlight;
-    time, .continue {
-        color: $color-chat-text3;
-    }
-}
-
 /* Censored */
 .censored .text {
     display: none;
@@ -586,6 +577,15 @@ a {
 .msg-broadcast {
     background-color: $color-chat-emphasize;
     color: $color-text-broadcast;
+}
+
+/* Highlight */
+.msg-highlight {
+    color: $color-chat-text1;
+    background-color: $color-chat-highlight;
+    time, .continue {
+        color: $color-chat-text3;
+    }
 }
 
 /* Focus or highlight a line */
