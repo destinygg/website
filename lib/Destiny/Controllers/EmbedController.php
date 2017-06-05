@@ -3,11 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Config;
-use Destiny\Common\Session;
-use Destiny\Common\User\UserRole;
 use Destiny\Common\ViewModel;
-use Destiny\Messages\PrivateMessageService;
 
 /**
  * @Controller

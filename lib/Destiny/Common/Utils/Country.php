@@ -2,7 +2,6 @@
 namespace Destiny\Common\Utils;
 
 use Destiny\Common\Application;
-use Destiny\Common\Config;
 
 /**
  * This class is weird

@@ -5,7 +5,6 @@ use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
-use Destiny\Common\Exception;
 use Destiny\Common\TaskInterface;
 use Destiny\Common\Utils\ImageDownload;
 use Destiny\Twitch\TwitchApiService;

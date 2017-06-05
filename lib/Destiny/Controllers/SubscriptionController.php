@@ -23,9 +23,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Commerce\PaymentStatus;
-use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\MimeType;
 use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\PayPal\PayPalApiService;
 

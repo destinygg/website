@@ -13,7 +13,6 @@ use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Config;
 use Destiny\Common\Response;
-use Destiny\Common\MimeType;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatIntegrationService;
 use Destiny\Messages\PrivateMessageService;
@@ -247,6 +246,7 @@ class ChatApiController {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }
+        return null;
     }
 
     /**
@@ -281,6 +281,7 @@ class ChatApiController {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }
+        return null;
     }
 
     /**

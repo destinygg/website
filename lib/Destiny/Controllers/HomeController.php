@@ -2,7 +2,6 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Annotation\ResponseBody;
-use Destiny\Common\MimeType;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
