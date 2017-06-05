@@ -233,7 +233,7 @@ hr {
 #chat-input-control {
     color: $color-chat-text2;
     background: $color-surface-dark1;
-    border: 1px solid lighten($color-surface-dark1, 9);
+    border: 1px solid $color-surface-dark3;
     outline: none;
     resize: none;
     margin: 0;
@@ -243,6 +243,9 @@ hr {
     box-shadow: none;
     box-sizing: border-box;
     display: block;
+}
+.chat.chat-autocomplete-in #chat-input-control  {
+    border-radius: 0 0 3px 3px;
 }
 #chat-input-control:focus {
     box-shadow: none;
@@ -740,12 +743,13 @@ a {
 
 /* Auto complete */
 #chat-auto-complete {
-    display: none;
+    transition: opacity 100ms, transform 100ms;
+    opacity: 0;
     z-index: 131;
-    border-radius: 3px;
+    border-radius: 3px 3px 0 0;
     position: absolute;
     line-height: 25px;
-    top: -35px;
+    top: -20px;
     left: 0;
     right: 0;
     overflow: hidden;
@@ -754,7 +758,6 @@ a {
     height: 25px;
 
     ul {
-        transition: all 100ms ease;
         position: absolute;
         white-space: nowrap;
         list-style: none;
@@ -771,10 +774,10 @@ a {
         background: $color-surface-dark3;
 
         &:first-child {
-            border-radius: 3px 0 0 3px;
+            border-radius: 3px 0 0 0;
         }
         &:last-child {
-            border-radius: 0 3px 3px 0;
+            border-radius: 0 3px 0 0;
         }
         &:hover {
             color: lighten($color-chat-text3,20);
@@ -783,6 +786,10 @@ a {
             color: $text-color;
         }
     }
+}
+#chat-auto-complete.active {
+    transform: translateY(-5px);
+    opacity: 1;
 }
 
 /* Chat menus */
@@ -1026,7 +1033,8 @@ a {
     display: none;
 }
 .pref-autocompletehelper #chat-auto-complete.active {
-    display: block;
+    //display: block;
+    opacity: 1;
 }
 
 /* Nano */

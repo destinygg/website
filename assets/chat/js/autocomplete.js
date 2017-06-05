@@ -3,10 +3,10 @@
 import Chat from "./chat";
 import {KEYCODES,getKeyCode} from "./const";
 
-const getBucketId = id => {
+function getBucketId(id){
     return (id.match(/[\S]/)[0] || '_').toLowerCase();
-};
-const sortResults = (a, b) => {
+}
+function sortResults(a, b){
     if(!a || !b)
         return 0;
 
@@ -30,8 +30,8 @@ const sortResults = (a, b) => {
         return 0;
 
     return a > b? 1: -1;
-};
-const getSearchCriteria = (str, offset) => {
+}
+function getSearchCriteria(str, offset) {
     let pre          = str.substring(0, offset),
         post         = str.substring(offset),
         startCaret   = pre.lastIndexOf(' ') + 1,
@@ -59,7 +59,17 @@ const getSearchCriteria = (str, offset) => {
         isUserSearch: isUserSearch,
         orig: str
     };
-};
+}
+let suggestTimeoutId;
+function suggestTimeoutDone(autocomplete){
+    autocomplete.reset();
+    autocomplete.redrawHelpers();
+}
+function suggestTimeout(autocomplete){
+    if(suggestTimeoutId)
+        clearTimeout(suggestTimeoutId);
+    suggestTimeoutId = setTimeout(suggestTimeoutDone, 15000, autocomplete);
+}
 
 class ChatAutoComplete {
 
@@ -78,14 +88,18 @@ class ChatAutoComplete {
 
     redrawHelpers(){
         const elements = this.searchResults.map((res, k) => `<li data-index="${k}">${res.data}</li>`);
-        this.container = $(`<ul>${elements.join('')}</ul>`);
-        this.ui.detach()
-            .empty()
-            .append(this.container)
-            .toggleClass('active', elements.length > 0);
-        this.input.before(this.ui);
+        if(elements.length > 0) {
+            this.container = $(`<ul>${elements.join('')}</ul>`);
+            this.ui
+                .detach()
+                .empty()
+                .append(this.container)
+                .insertBefore(this.input);
+            this.updateHelpers();
+            suggestTimeout(this);
+        }
         this.chat.ui.toggleClass('chat-autocomplete-in', elements.length > 0);
-        this.updateHelpers();
+        this.ui.toggleClass('active', elements.length > 0);
     }
 
     updateHelpers() {
@@ -107,6 +121,7 @@ class ChatAutoComplete {
                     this.container.css('left', $(e).position().left);
             });
         }
+        suggestTimeout(this);
     }
 
     bind(chat){
@@ -255,6 +270,8 @@ class ChatAutoComplete {
     selectResult(index){
         this.selectedIndex = Math.min(index, this.searchResults.length-1);
         const result = this.searchResults[this.selectedIndex];
+        if(!result) return;
+
         let pre = this.searchCriteria.orig.substr(0, this.searchCriteria.startCaret),
             post = this.searchCriteria.orig.substr(this.searchCriteria.startCaret + this.searchCriteria.word.length);
 

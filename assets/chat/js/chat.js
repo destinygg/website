@@ -479,6 +479,8 @@ class Chat {
         // Keep the website session alive.
         setInterval(() => $.ajax({url: '/ping'}), 10*60*1000);
 
+        MessageBuilder.broadcast('SOmeone has subscribed.').into(this);
+
         this.loadingscrn.fadeOut(500, () => this.loadingscrn.remove());
         this.mainwindow.updateAndPin();
         this.input.focus();
