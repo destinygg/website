@@ -351,7 +351,7 @@ class ChatWhisperUsers extends ChatMenu {
         this.notif = $(`<span id="chat-whisper-notif"></span>`);
         this.btn.append(this.notif);
         this.usersEl = ui.find('ul:first');
-        this.usersEl.on('click', '.user', e => this.selectConversation(e.target.getAttribute('data-username')));
+        this.usersEl.on('click', '.user', e => chat.openConversation(e.target.getAttribute('data-username')));
         this.usersEl.on('click', '.remove', e => this.removeConversation(e.target.getAttribute('data-username')))
     }
 
@@ -360,49 +360,6 @@ class ChatWhisperUsers extends ChatMenu {
         this.chat.whispers.delete(normalized);
         this.chat.removeWindow(normalized);
         this.redraw();
-    }
-
-    selectConversation(nick){
-        ChatMenu.closeMenus(this.chat);
-        const normalized = nick.toLowerCase();
-        const conv = this.chat.whispers.get(normalized);
-        if(conv){
-            conv.unread = 0;
-            const user = this.chat.users.get(normalized) || new ChatUser({nick: nick});
-            let win = this.chat.getWindow(normalized);
-            if(!win){
-                win = new ChatWindow(nick, 'chat-output-whisper', user.nick).into(this.chat);
-                this.chat.windowToFront(win.name);
-
-                MessageBuilder.info(
-                    `Messages between you and ${user.nick}\r`+
-                    `Enter /close to exit this conversation, click the round icons below and center of the chat input to toggle between them\r`+
-                    `or close them from the whispers menu.\r`+
-                    `Loading messages ...`
-                ).into(this.chat, win);
-
-                $.ajax({url: `/api/messages/${encodeURIComponent(user.nick)}/unread`})
-                    .done(data => {
-                        if(data.length === 0) {
-                            MessageBuilder.info(`No messages returned.`).into(this.chat, win);
-                        } else {
-                            const date = moment(data[0].timestamp).format('MMMM Do YYYY, h:mm:ss a');
-                            MessageBuilder.info(`Last message ${date}`).into(this.chat, win);
-                            data.reverse().forEach(e => {
-                                const user = this.chat.users.get(e['from'].toLowerCase()) || new ChatUser({nick: e['from']});
-                                MessageBuilder.historical(e.message, user, e.timestamp).into(this.chat, win)
-                            });
-                        }
-                        conv.loaded = true;
-                    })
-                    .fail(() => MessageBuilder.error(`Failed to load whispers :(`).into(this.chat, win));
-
-            } else {
-                this.chat.windowToFront(win.name);
-            }
-            this.chat.input.focus();
-            this.redraw();
-        }
     }
 
     updateNotification(){
@@ -424,20 +381,16 @@ class ChatWhisperUsers extends ChatMenu {
     }
 
     redraw(){
-        this.updateNotification();
+        this.updateNotification(); // its always visible
         if(this.visible){
             this.usersEl.empty();
             if(this.chat.whispers.size === 0) {
                 this.usersEl.append(this.empty);
             } else {
                 [...this.chat.whispers.entries()].sort((a,b) => {
-                    if(a[1].unread === 0){
-                        return 1;
-                    } else if(b[1].unread === 0){
-                        return -1;
-                    } else if(a[1] === b[1]){
-                        return 0;
-                    }
+                    if(a[1].unread === 0) return 1;
+                    else if(b[1].unread === 0) return -1;
+                    else if(a[1] === b[1]) return 0;
                 })
                 .forEach(e => this.addConversation(e[0], e[1].unread));
             }

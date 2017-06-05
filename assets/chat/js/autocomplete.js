@@ -160,8 +160,10 @@ class ChatAutoComplete {
         this.input.on('keypress', e => {
             const char = String.fromCharCode(getKeyCode(e)) || '';
             switch (getKeyCode(e)) {
-                case KEYCODES.ENTER:
                 case KEYCODES.TAB:
+                    break;
+                case KEYCODES.ENTER:
+                    this.promoteIfSelected();
                     break;
                 default:
                     if (char.length > 0) {

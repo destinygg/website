@@ -10,7 +10,6 @@ module.exports = {
             'jquery',
             'moment',
             'font-awesome/scss/font-awesome.scss',
-            './assets/fonts/roboto.scss',
             'bootstrap/dist/css/bootstrap.css',
             'bootstrap/dist/js/bootstrap.js'
         ],

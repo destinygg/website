@@ -434,25 +434,18 @@ class Chat {
         // Whisper
         this.output.on('click', '.chat-open-whisper', e => {
             const msg = $(e.target).closest('.msg-chat'),
-                normalized = msg.data('username').toString().toLowerCase();
-            if(this.whispers.has(normalized)) {
-                this.menus.get('whisper-users').selectConversation(normalized);
-            }
+                 nick = msg.data('username').toString().toLowerCase();
+            this.openConversation(nick);
             return false;
         });
         this.output.on('click', '.chat-remove-whisper', e => {
             this.mainwindow.lock();
-            const msg  = $(e.target).closest('.msg-chat'),
-            normalized = msg.data('username').toString().toLowerCase(),
-                    id = msg.data('id');
-            if(id !== null && this.whispers.has(normalized)) {
-                const conv = this.whispers.get(normalized);
-                const result = conv.messages.filter(m => m.id === id);
-                if(result.length > 0) {
-                    $.ajax({url: `/api/messages/${encodeURIComponent(id)}/open`, method:'get'});
-                    msg.remove();
-                    this.menus.get('whisper-users').redraw();
-                }
+            const msg = $(e.target).closest('.msg-chat'),
+                   id = $(e.target).closest('.msg-chat').data('id').toString();
+            if(id !== null) {
+                $.ajax({url: `/api/messages/${encodeURIComponent(id)}/open`, method:'get'});
+                this.menus.get('whisper-users').redraw();
+                msg.remove();
             }
             this.mainwindow.unlock();
             return false;
@@ -509,9 +502,7 @@ class Chat {
                 .done(d => d.forEach(e => this.whispers.set(e.username.toLowerCase(), {
                     id: e['messageid'],
                     nick: e['username'],
-                    unread: e['unread'],
-                    messages: [],
-                    loaded: false
+                    unread: e['unread']
                 })))
                 .always(e => this.menus.get('whisper-users').redraw());
         }
@@ -664,16 +655,18 @@ class Chat {
 
 
     windowToFront(name){
-        this.windows.forEach(win => {
-            if(win.visible) {
-                if(!win.locked()) win.lock();
-                win.hide();
-            }
-        });
         const win = this.windows.get(name);
-        win.show();
-        if(win.locked()) win.unlock();
-        this.redrawWindowIndicators();
+        if(win !== this.getActiveWindow()) {
+            this.windows.forEach(w => {
+                if(w.visible) {
+                    if(!w.locked()) w.lock();
+                    w.hide();
+                }
+            });
+            win.show();
+            if(win.locked()) win.unlock();
+            this.redrawWindowIndicators();
+        }
     }
 
     getActiveWindow(){
@@ -716,7 +709,6 @@ class Chat {
             });
         }
     }
-
 
     censor(nick){
         this.mainwindow.lock();
@@ -868,25 +860,24 @@ class Chat {
     onPRIVMSG(data) {
         const normalized = data.nick.toLowerCase();
         if (!this.ignoring.has(normalized)){
+            if(!this.whispers.has(normalized))
+                this.whispers.set(normalized, {nick:data.nick, unread:0});
+
+            const conv = this.whispers.get(normalized);
             const user = this.users.get(normalized) || new ChatUser({nick: data.nick});
             const messageid = data.hasOwnProperty('messageid') ? data['messageid'] : null;
-            const message = {data: data.data, timestamp: data.timestamp, read: false, nick: data.nick, id: messageid};
-            const conv = this.whispers.get(normalized) || {nick:data.nick, unread:0, messages:[], loaded:true};
-            this.whispers.set(normalized, conv);
-            if(!message.read)
-                conv.unread++;
-            if(conv.loaded)
-                conv.messages.push(message);
-            const win = this.getWindow(normalized);
-            if(win) {
-                MessageBuilder.historical(data.data, user, data.timestamp).into(this, win);
-            }
-            if(this.settings.get('showhispersinchat')){
+            if(this.settings.get('showhispersinchat'))
                 MessageBuilder.whisper(data.data, user, this.user.username, data.timestamp, messageid).into(this);
-            }
-            if(this.settings.get('notificationwhisper') && !this.input.is(':focus')) {
+            if(this.settings.get('notificationwhisper') && !this.input.is(':focus'))
                 Chat.showNotification(`${data.nick} whispered ...`, data.data, data.timestamp, this.settings.get('notificationtimeout'));
-            }
+
+            const win = this.getWindow(normalized);
+            if(win)
+                MessageBuilder.historical(data.data, user, data.timestamp).into(this, win);
+            if(win === this.getActiveWindow())
+                $.ajax({url: `/api/messages/${messageid}/open`, method:'get'});
+            else
+                conv.unread++;
             this.menus.get('whisper-users').redraw();
         }
     }
@@ -1299,6 +1290,42 @@ class Chat {
                 MessageBuilder.info(`End of ban information`).into(this);
             })
             .fail(e => MessageBuilder.error('Error loading ban info. Check your profile.').into(this));
+    }
+
+    openConversation(nick){
+        ChatMenu.closeMenus(this);
+        const normalized = nick.toLowerCase();
+        const conv = this.whispers.get(normalized);
+        if(!conv)
+            return;
+        let win = this.getWindow(normalized);
+        if(!win) {
+            const user = this.users.get(normalized) || new ChatUser({nick: nick});
+            win = new ChatWindow(nick, 'chat-output-whisper', user.nick).into(this);
+            MessageBuilder.info(
+                `Messages between you and ${user.nick}\r`+
+                `Enter /close to exit this conversation, click the round icons below and center of the chat input to toggle between them\r`+
+                `or close them from the whispers menu.\r`+
+                `Loading messages ...`
+            ).into(this, win);
+            $.ajax({url: `/api/messages/${encodeURIComponent(user.nick)}/unread`})
+                .done(data => {
+                    if(data.length > 0) {
+                        const date = moment(data[0].timestamp).format('MMMM Do YYYY, h:mm:ss a');
+                        MessageBuilder.info(`Last message ${date}`).into(this, win);
+                        data.reverse().forEach(e => {
+                            const user = this.users.get(e['from'].toLowerCase()) || new ChatUser({nick: e['from']});
+                            MessageBuilder.historical(e.message, user, e.timestamp).into(this, win)
+                        });
+                    }
+                    MessageBuilder.info(`End of messages`).into(this, win);
+                })
+                .fail(() => MessageBuilder.error(`Failed to load messages :(`).into(this, win));
+        }
+        conv.unread = 0;
+        this.windowToFront(normalized);
+        this.menus.get('whisper-users').redraw();
+        this.input.focus();
     }
 
     static extractTextOnly(msg){
