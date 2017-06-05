@@ -84,7 +84,7 @@ CREATE TABLE `dfl_users` (
   `allowGifting` tinyint(1) DEFAULT '1',
   `istwitchsubscriber` int(11) NOT NULL DEFAULT '0',
   `minecraftuuid` varchar(36) CHARACTER SET ascii DEFAULT NULL,
-  `minecraftname` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,,
+  `minecraftname` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `discorduuid` varchar(36) CHARACTER SET ascii DEFAULT NULL,
   `discordname` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `chatsettings` blob,

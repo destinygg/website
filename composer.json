@@ -12,7 +12,7 @@
         "ext-mcrypt" : "*",
         "paypal/merchant-sdk-php" : "3.8.107",
         "monolog/monolog" : "1.12.0",
-        "doctrine/dbal": "2.6.*",
+        "doctrine/dbal": "2.5.12",
         "themattharris/tmhoauth": "0.8.4",
         "adoy/oauth2": "dev-master",
         "misd/linkify": "1.1.*"
