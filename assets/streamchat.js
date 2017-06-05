@@ -13,6 +13,5 @@ const uri = `ws${window.location.protocol === 'https:' ? 's' : ''}://${window.lo
 
 new Chat()
     .withEmotes(emotes)
-    .withFormatters()
     .withGui()
     .connect(uri);

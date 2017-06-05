@@ -1,6 +1,7 @@
 /* global Math */
 
-import ChatStore from './store.js';
+import {KEYCODES,isKeyCode} from "./const";
+import ChatStore from './store';
 
 class ChatInputHistory {
 
@@ -12,8 +13,9 @@ class ChatInputHistory {
         this.maxentries = 20;
         this.input.on('keydown', e => {
             // if up arrow we subtract otherwise add
-            if (!(e.shiftKey || e.metaKey || e.ctrlKey) && (e.which === 38 || e.which === 40)) {
-                this.show(e.which === 38 ? -1 : 1);
+
+            if (!(e.shiftKey || e.metaKey || e.ctrlKey) && (isKeyCode(e, KEYCODES.UP) || isKeyCode(e, KEYCODES.DOWN))) {
+                this.show(isKeyCode(e, KEYCODES.UP) ? -1 : 1);
                 e.preventDefault();
                 e.stopPropagation();
             } else {

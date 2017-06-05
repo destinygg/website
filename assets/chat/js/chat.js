@@ -1,5 +1,6 @@
 /* global $, window, document */
 
+import {KEYCODES,getKeyCode,isKeyCode} from "./const";
 import debounce from 'debounce';
 import moment from 'moment';
 import EventEmitter from './emitter';
@@ -7,7 +8,6 @@ import ChatSource from './source';
 import ChatUser from './user';
 import {MessageBuilder, MessageTypes, MessageGlobals} from './messages';
 import {ChatMenu, ChatUserMenu, ChatWhisperUsers, ChatEmoteMenu, ChatSettingsMenu} from './menus';
-import {EmoteFormatter, GreenTextFormatter, HtmlTextFormatter, MentionedUserFormatter, UrlFormatter} from './formatters';
 import ChatAutoComplete from './autocomplete';
 import ChatInputHistory from './history';
 import ChatUserFocus from './focus';
@@ -200,7 +200,6 @@ class Chat {
         this.authenticated   = false;
         this.backlogloading  = false;
         this.unresolved      = [];
-        this.formatters      = [];
         this.emoticons       = new Set();
         this.twitchemotes    = new Set();
         this.control         = new EventEmitter(this);
@@ -340,8 +339,9 @@ class Chat {
         this.applySettings(false);
 
         // Chat input
+        this.input.on('focus', e => ChatMenu.closeMenus(this));
         this.input.on('keypress', e => {
-            if(e.keyCode === 13 && !e.shiftKey && !e.ctrlKey) {
+            if(isKeyCode(e, KEYCODES.ENTER) && !e.shiftKey && !e.ctrlKey) {
                 e.preventDefault();
                 e.stopPropagation();
                 if(!this.authenticated) {
@@ -362,7 +362,7 @@ class Chat {
 
         // ESC
         document.addEventListener('keydown', e => {
-            if(e.keyCode === 27) ChatMenu.closeMenus(this); // ESC key
+            if(isKeyCode(e, KEYCODES.ESC)) ChatMenu.closeMenus(this); // ESC key
         });
 
         // Visibility
@@ -483,15 +483,6 @@ class Chat {
         this.loadingscrn.fadeOut(500, () => this.loadingscrn.remove());
         this.mainwindow.updateAndPin();
         this.input.focus();
-        return this;
-    }
-
-    withFormatters(){
-        this.formatters.push(new HtmlTextFormatter(this));
-        this.formatters.push(new UrlFormatter(this));
-        this.formatters.push(new EmoteFormatter(this));
-        this.formatters.push(new MentionedUserFormatter(this));
-        this.formatters.push(new GreenTextFormatter(this));
         return this;
     }
 
@@ -718,7 +709,7 @@ class Chat {
         if(this.windows.size > 1) {
             this.windows.forEach(w => {
                 this.windowselect.append(
-                    `<span title="${w.label}" data-name="${w.name}" class="ctrl win-${w.name} tag-${w.tag} ${w.visible ? 'active' : ''}" aria-hidden="true">\
+                    `<span title="${w.label}" data-name="${w.name}" class="ctrl win-${w.name} tag-${w.tag} ${w.visible ? 'active' : ''}">\
                         <i class="fa fa-times" data-name="${w.name}"></i>
                      </span>`
                 )

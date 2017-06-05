@@ -1,6 +1,6 @@
 /* global window */
 
-import EventEmitter from './emitter.js';
+import EventEmitter from './emitter';
 const webSocket = window['WebSocket'] || window['MozWebSocket'];
 
 class ChatSource extends EventEmitter {

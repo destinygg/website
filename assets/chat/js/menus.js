@@ -8,6 +8,7 @@ import ChatWindow from './window';
 import debounce from 'debounce';
 import {MessageBuilder} from "./messages";
 import moment from "moment";
+import {isKeyCode, KEYCODES} from "./const";
 
 function buildEmote(emote){
     return `<div class="emote"><span title="${emote}" class="chat-emote chat-emote-${emote}">${emote}</span></div>`
@@ -97,7 +98,7 @@ class ChatSettingsMenu extends ChatMenu {
     }
 
     onCustomHighlightChange(e){
-        if (e.which && e.which !== 13) return; // not Enter
+        if (!isKeyCode(e, KEYCODES.ENTER)) return; // not Enter
         let data = $(e.target).val().toString().split(',').map(s => s.trim());
         this.chat.settings.set('customhighlight', [...new Set(data)]);
         this.chat.applySettings(false);
@@ -323,7 +324,7 @@ class ChatEmoteMenu extends ChatMenu {
         this.temotes.append([...this.chat.twitchemotes].map(buildEmote).join(''));
         this.ui.on('click', '.chat-emote', e => {
             ChatMenu.closeMenus(chat);
-            this.selectEmote(e.target.innerText);
+            this.selectEmote(e.currentTarget.innerText);
         });
     }
 
@@ -373,12 +374,13 @@ class ChatWhisperUsers extends ChatMenu {
                 win = new ChatWindow(nick, 'chat-output-whisper', user.nick).into(this.chat);
                 this.chat.windowToFront(win.name);
 
-                MessageBuilder.info(`Messages from ${user.nick}`).into(this.chat, win);
                 MessageBuilder.info(
-                    `Enter /close to exit this conversation, click the round icons below and center of the chat input to toggle between them\
-                     or close them from the whispers menu.`
+                    `Messages between you and ${user.nick}\r`+
+                    `Enter /close to exit this conversation, click the round icons below and center of the chat input to toggle between them\r`+
+                    `or close them from the whispers menu.\r`+
+                    `Loading messages ...`
                 ).into(this.chat, win);
-                MessageBuilder.info(`Loading messages ...`).into(this.chat, win);
+
                 $.ajax({url: `/api/messages/${encodeURIComponent(user.nick)}/unread`})
                     .done(data => {
                         if(data.length === 0) {

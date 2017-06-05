@@ -1,4 +1,4 @@
-import UserFeatures from './features.js';
+import UserFeatures from './features';
 
 /** @var Array tlds */
 const tlds = require('../../tld.json');
@@ -8,7 +8,7 @@ let gemoteregex, twitchemoteregex;
 
 class HtmlTextFormatter {
 
-    format(str){
+    format(chat, str, message=null){
         el.textContent = str;
         return el.innerHTML;
     }
@@ -17,15 +17,14 @@ class HtmlTextFormatter {
 
 class EmoteFormatter {
 
-    constructor(chat){
-        const emoticons = [...chat.emoticons].join('|');
-        const twitchemotes = [...chat.twitchemotes].join('|');
-        gemoteregex = new RegExp(`(^|\\s)(${emoticons})(?=$|\\s)`, 'gm');
-        twitchemoteregex = new RegExp(`(^|\\s)(${emoticons}|${twitchemotes})(?=$|\\s)`, 'gm');
-    }
-
-    format(str, user=null){
-        let regex = (user && user.hasFeature(UserFeatures.SUBSCRIBERT0)) || !user ? twitchemoteregex : gemoteregex;
+    format(chat, str, message=null){
+        if(!gemoteregex || !twitchemoteregex) {
+            const emoticons = [...chat.emoticons].join('|');
+            const twitchemotes = [...chat.twitchemotes].join('|');
+            gemoteregex = new RegExp(`(^|\\s)(${emoticons})(?=$|\\s)`, 'gm');
+            twitchemoteregex = new RegExp(`(^|\\s)(${emoticons}|${twitchemotes})(?=$|\\s)`, 'gm');
+        }
+        let regex = (message.user && message.user.hasFeature(UserFeatures.SUBSCRIBERT0)) || !message.user ? twitchemoteregex : gemoteregex;
         return str.replace(regex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
     }
 
@@ -33,9 +32,9 @@ class EmoteFormatter {
 
 class GreenTextFormatter {
 
-    format(str, user){
-        if(user && str.indexOf('&gt;') === 0){
-            if(user.hasAnyFeatures(UserFeatures.SUBSCRIBER,
+    format(chat, str, message=null){
+        if(message.user && str.indexOf('&gt;') === 0){
+            if(message.user.hasAnyFeatures(UserFeatures.SUBSCRIBER,
                     UserFeatures.SUBSCRIBERT0,
                     UserFeatures.SUBSCRIBERT1,
                     UserFeatures.SUBSCRIBERT2,
@@ -57,7 +56,7 @@ class GreenTextFormatter {
 
 class MentionedUserFormatter {
 
-    format(str, user, message){
+    format(chat, str, message=null){
         if(message && message.mentioned && message.mentioned.length > 0){
             return str.replace(new RegExp(`((?:^|\\s)@?)(${message.mentioned.join('|')})(?=$|\\s|[\.\?!,])`, 'igm'), `$1<span class="chat-user">$2</span>`);
         }
@@ -117,7 +116,7 @@ class UrlFormatter {
         replace(/>/g, '&gt;');
     }
 
-    format(str){
+    format(chat, str, message=null){
         if (!str) return;
         const self = this;
         let extraclass = '';
@@ -129,14 +128,15 @@ class UrlFormatter {
 
         return str.replace(self.linkregex, function(url, scheme) {
             scheme = scheme? '': 'http://';
-            const decodedUrl = self._elem.html(url).text(),
-                m          = decodedUrl.match(self.linkregex);
-            if (!m)
-                return url;
-            url = self.encodeUrl(m[0]);
-            const extra = self.encodeUrl(decodedUrl.substring(m[0].length));
-            const href = scheme + url;
-            return `<a target="_blank" class="externallink ${extraclass}" href="${href}" rel="nofollow">${url}</a> ${extra}`;
+            const decodedUrl = self._elem.html(url).text();
+            const m = decodedUrl.match(self.linkregex);
+            if (m) {
+                url = self.encodeUrl(m[0]);
+                const extra = self.encodeUrl(decodedUrl.substring(m[0].length));
+                const href = scheme + url;
+                return `<a target="_blank" class="externallink ${extraclass}" href="${href}" rel="nofollow">${url}</a>${extra}`;
+            }
+            return url;
         });
     }
 

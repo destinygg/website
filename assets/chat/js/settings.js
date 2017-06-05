@@ -1,4 +1,4 @@
-import ChatStore from './store.js';
+import ChatStore from './store';
 
 function upgradeSettings(chat, oldversion, newversion){
     // DGG 1.x -> 2.x

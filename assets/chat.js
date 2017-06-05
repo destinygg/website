@@ -21,7 +21,6 @@ $.when(
     new Chat()
       .withUserAndSettings(me)
       .withEmotes(emotes)
-      .withFormatters()
       .withGui()
       .withHistory(history)
       .withWhispers()

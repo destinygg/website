@@ -1,5 +1,6 @@
 /* global $ */
 
+import {EmoteFormatter, GreenTextFormatter, HtmlTextFormatter, MentionedUserFormatter,UrlFormatter} from './formatters';
 import UserFeatures from './features';
 import moment from 'moment';
 
@@ -19,6 +20,19 @@ const MessageGlobals = {
     datetimeformat: 'MMMM Do YYYY, h:mm:ss a'
 };
 
+const formatters = [];
+formatters.push(new HtmlTextFormatter());
+formatters.push(new UrlFormatter());
+formatters.push(new EmoteFormatter());
+formatters.push(new MentionedUserFormatter());
+formatters.push(new GreenTextFormatter());
+
+function buildMessageTxt(chat, message){
+    // TODO we strip off the `/me ` of every message -- must be a better way to do this
+    let msg = message.message.substring(0, 4).toLowerCase() === '/me ' ? message.message.substring(4) : message.message;
+    formatters.forEach(f => msg = f.format(chat, msg, message));
+    return `<span class="text">${msg}</span>`;
+}
 function buildFeatures(user){
     const features = [...user.features || []]
         .filter(e => !UserFeatures.SUBSCRIBER.equals(e))
@@ -79,16 +93,10 @@ function buildTime(message){
     const label = message.timestamp.format(message.timeformat);
     return `<time class="time" title="${datetime}">${label}</time>`;
 }
-function buildMessageTxt(chat, message){
-    // TODO we strip off the `/me ` of every message -- must be a better way to do this
-    let msg = message.message.substring(0, 4).toLowerCase() === '/me ' ? message.message.substring(4) : message.message;
-    chat.formatters.forEach(f => msg = f.format(msg, message.user, message));
-    return `<span class="text">${msg}</span>`;
-}
 function buildWhisperTools(){
     return  '<span>'+
-                `<a class="chat-open-whisper"><i class="fa fa-envelope" aria-hidden="true"></i> open</a> ` +
-                `<a class="chat-remove-whisper"><i class="fa fa-times" aria-hidden="true"></i> remove</a>`+
+                `<a class="chat-open-whisper"><i class="fa fa-envelope"></i> open</a> ` +
+                `<a class="chat-remove-whisper"><i class="fa fa-times" ></i> remove</a>`+
             '</span>';
 }
 

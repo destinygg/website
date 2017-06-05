@@ -1,7 +1,7 @@
 /* global $, destiny */
 
 import Chat from "./chat";
-import {KEYCODES} from "./keys";
+import {KEYCODES,getKeyCode} from "./const";
 
 const getBucketId = id => {
     return (id.match(/[\S]/)[0] || '_').toLowerCase();
@@ -127,7 +127,7 @@ class ChatAutoComplete {
         let originval = '';
         this.input.on('keydown', e => {
             originval = this.input.val().toString();
-            switch (e.keyCode) {
+            switch (getKeyCode(e)) {
                 case KEYCODES.TAB:
                     if(this.searchResults.length > 0) {
                         this.selectResult(this.selectedIndex >= this.searchResults.length - 1 ? 0 : this.selectedIndex + 1);
@@ -141,8 +141,8 @@ class ChatAutoComplete {
 
         // Key press of characters that actually input into the field
         this.input.on('keypress', e => {
-            const char = String.fromCharCode(e.keyCode) || '';
-            switch (e.keyCode) {
+            const char = String.fromCharCode(getKeyCode(e)) || '';
+            switch (getKeyCode(e)) {
                 case KEYCODES.ENTER:
                 case KEYCODES.TAB:
                     break;
@@ -163,7 +163,7 @@ class ChatAutoComplete {
         // Key up, we handle things like backspace if the keypress never found a char.
         this.input.on('keyup', e => {
             const needle = this.input.val().toString();
-            switch (e.keyCode) {
+            switch (getKeyCode(e)) {
                 case KEYCODES.TAB:
                     break;
                 case KEYCODES.ENTER:

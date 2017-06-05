@@ -35,4 +35,12 @@ const KEYCODES = {
     F12: 123
 };
 
-export {KEYCODES};
+function getKeyCode(e){
+    return e.which || e.keyCode || -1;
+}
+
+function isKeyCode(e, code){
+    return getKeyCode(e) === code;
+}
+
+export {KEYCODES,isKeyCode,getKeyCode};
