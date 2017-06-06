@@ -182,6 +182,8 @@ class ChatAutoComplete {
         this.input.on('keyup', e => {
             const needle = this.input.val().toString();
             switch (getKeyCode(e)) {
+                case KEYCODES.TAB:
+                    break;
                 case KEYCODES.ENTER:
                     this.reset();
                     this.redrawHelpers();
