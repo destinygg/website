@@ -92,7 +92,7 @@ class ChatController {
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         $r = new CurlBrowser ([
-            'url' => 'https://overrustlelogs.net/api/v1/stalk/Destinygg%20chatlog/'. urlencode($params['username']) .'.json?limit=' . urlencode($limit),
+            'url' => 'https://overrustlelogs.net/api/v1/stalk/Destinygg/'. urlencode($params['username']) .'.json?limit=' . urlencode($limit),
             'headers' => ['Client-ID' => Config::$a['meta']['shortName'].'_'.Config::version()],
             'contentType' => MimeType::JSON,
             'timeout' => 5000
