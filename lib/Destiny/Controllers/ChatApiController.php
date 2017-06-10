@@ -2,13 +2,11 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Annotation\ResponseBody;
-use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Request;
-use Destiny\Common\Session;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Config;
@@ -32,82 +30,6 @@ class ChatApiController {
      */
     protected function checkPrivateKey($privatekey){
         return (Config::$a['privateKeys']['chat'] === $privatekey);
-    }
-
-    /**
-     * @Route ("/api/messages/{id}/open")
-     * @Secure ({"USER"})
-     * @ResponseBody
-     *
-     * @param array $params
-     * @return array
-     */
-    public function openMessage(array $params) {
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $result = ['success' => true, 'message' => '', 'unread' => 0];
-        try {
-            FilterParams::required($params, 'id');
-            // could not find the message that is targeted at the user
-            if(!$privateMessageService->markMessageRead( $params['id'], $userId ))
-                throw new Exception('Invalid message');
-
-        } catch (\Exception $e) {
-            $result['success'] = false;
-            $result['message'] = $e->getMessage();
-        }
-        $result['unread'] = $privateMessageService->getUnreadMessageCount($userId);
-        return $result;
-    }
-
-    /**
-     * @Route ("/api/messages/inbox")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"GET"})
-     * @ResponseBody
-     */
-    public function unreadConversations(){
-        $userId = Session::getCredentials ()->getUserId ();
-        $privateMessageService = PrivateMessageService::instance();
-        $conversations = $privateMessageService->getUnreadConversations($userId, 50);
-        return $conversations;
-    }
-
-    /**
-     * @Route ("/api/messages/{username}/unread")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"GET"})
-     * @ResponseBody
-     *
-     * @param array $params
-     * @return array
-     */
-    public function unreadMessagesFrom(array $params){
-        $userService = UserService::instance();
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $targetuser = $userService->getUserByUsername($params['username']);
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $targetuser['userId'], 0, 10 );
-        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
-        return $messages;
-    }
-
-    /**
-     * @Route ("/api/messages/{username}/unread")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"DELETE"})
-     * @ResponseBody
-     *
-     * @param array $params
-     * @return string
-     */
-    public function markReadMessagesFrom(array $params){
-        $userService = UserService::instance();
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $targetuser = $userService->getUserByUsername($params['username']);
-        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
-        return 'success';
     }
 
     /**

@@ -21,74 +21,46 @@ use Destiny\Common\Config;
 
         <section class="container">
             <button accesskey="n" class="btn btn-default btn-primary" data-toggle="modal" data-target="#compose">New Message</button>
-            <button class="btn btn-default pull-right" id="mark-all">Mark All Read</button>
+            <button class="btn btn-danger" id="mark-all">Mark All Read</button>
         </section>
       
         <section class="container">
-            <h3 data-toggle="collapse" data-target="#inbox-content">Inbox</h3>
+            <h3 data-toggle="collapse" data-target="#inbox-content">Inbox <i id="inbox-loading" class="fa fa-cog fa-spin"  style="display: none;"></i></h3>
             <div id="inbox-content" class="content collapse in">
                 <div class="content-dark">
-
-                    <?php if(!empty($this->inbox['read']) || !empty($this->inbox['unread'])): ?>
                     <table id="inbox" class="grid messages">
                         <colgroup>
-                            <!-- <col class="c1"> -->
                             <col class="c2">
                             <col class="c3">
                             <col class="c4">
                         </colgroup>
                         <tbody>
-
-                            <?php foreach($this->inbox['unread'] as $id => $thread): ?>
-                            <tr data-id="<?= $id ?>" class="unread">
-                                <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
-                                <td class="from">
-                                    <a href="/profile/messages/<?= $id ?>"><?= Tpl::out($thread['othernick']) ?></a>
-                                    <span class="count">(<?= $thread['count'] ?>)</span>
-                                </td>
-                                <td class="message"><span><?= Tpl::formatTextForDisplay($thread['message']) ?></span></td>
-                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp'])); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-
-                            <?php foreach($this->inbox['read'] as $id => $thread): ?>
-                            <tr data-id="<?= $id ?>" class="read">
-                                <!-- <td class="selector"><i class="fa fa-circle-o"></i></td> -->
-                                <td class="from">
-                                    <a href="/profile/messages/<?= $id ?>">
-                                        <?= Tpl::out($thread['othernick']) ?>
-                                    </a>
-                                    <span class="count">(<?= $thread['count'] ?>)</span>
-                                </td>
-                                <td class="message"><span><?= Tpl::formatTextForDisplay($thread['message']) ?></span></td>
-                                <td class="timestamp"><?= Tpl::calendar(Date::getDateTime($thread['timestamp'])); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-
                         </tbody>
                     </table>
-                    <?php endif ?>
-
-                    <?php if(empty($this->inbox['read']) && empty($this->inbox['unread'])): ?>
-                    <table id="inbox" class="grid messages">
+                    <table id="inbox-empty" class="grid messages" style="display: none;">
                         <tbody>
                         <tr>
                             <td>You have no messages</td>
                         </tr>
                         </tbody>
                     </table>
-                    <?php endif ?>
-
                 </div>
             </div>
         </section>
-      
+
+        <div style="text-align: center; clear: both;">
+            <a class="btn btn-primary" accesskey="m" id="inbox-show-more" style="display: none;">
+                Show more messages
+            </a>
+        </div>
+
     </div>
   
     <?php include 'compose.php' ?>
     <?php include 'seg/foot.php' ?>
     <?php include 'seg/commonbottom.php' ?>
     <script src="<?=Config::cdnv()?>/web.js"></script>
+    <script src="<?=Config::cdnv()?>/messages.js"></script>
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
   "name": "Destiny",
-  "version": "2.0.70",
+  "version": "2.0.72",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
@@ -39,7 +39,6 @@
     "clean-webpack-plugin": "~0.1.13",
     "core-js": "~2.4.1",
     "css-loader": "~0.28.0",
-    "debounce": "~1.0.0",
     "del": "~2.2.2",
     "extract-text-webpack-plugin": "~2.1.0",
     "file-loader": "~0.11.1",
@@ -52,10 +51,12 @@
     "nanoscroller": "~0.8.7",
     "sass-loader": "~6.0.3",
     "style-loader": "~0.16.1",
+    "node-sass": "~4.5.3",
     "ts-loader": "~2.0.0",
     "typescript": "~2.2.2",
     "webpack": "~2.3.3",
-    "webpack-dev-server": "~2.4.2"
+    "webpack-dev-server": "~2.4.2",
+    "throttle-debounce": "~1.0.1"
   },
   "engines": {
     "node": "~5.0.2",

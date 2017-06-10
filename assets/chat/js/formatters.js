@@ -24,7 +24,7 @@ class EmoteFormatter {
             gemoteregex = new RegExp(`(^|\\s)(${emoticons})(?=$|\\s)`, 'gm');
             twitchemoteregex = new RegExp(`(^|\\s)(${emoticons}|${twitchemotes})(?=$|\\s)`, 'gm');
         }
-        let regex = (message.user && message.user.hasFeature(UserFeatures.SUBSCRIBERT0)) || !message.user ? twitchemoteregex : gemoteregex;
+        let regex = (message && message.user && message.user.hasFeature(UserFeatures.SUBSCRIBERT0)) || (!message || !message.user) ? twitchemoteregex : gemoteregex;
         return str.replace(regex, '$1<div title="$2" class="chat-emote chat-emote-$2">$2 </div>');
     }
 
@@ -34,7 +34,8 @@ class GreenTextFormatter {
 
     format(chat, str, message=null){
         if(message.user && str.indexOf('&gt;') === 0){
-            if(message.user.hasAnyFeatures(UserFeatures.SUBSCRIBER,
+            if(message.user.hasAnyFeatures(
+                    UserFeatures.SUBSCRIBER,
                     UserFeatures.SUBSCRIBERT0,
                     UserFeatures.SUBSCRIBERT1,
                     UserFeatures.SUBSCRIBERT2,

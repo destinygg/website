@@ -1,14 +1,11 @@
 /* global $, Notification */
 
-import ChatUser from './user';
-import ChatScrollPlugin from './scroll';
-import UserFeatures from './features';
-import EventEmitter from './emitter';
-import ChatWindow from './window';
-import debounce from 'debounce';
-import {MessageBuilder} from "./messages";
-import moment from "moment";
-import {isKeyCode, KEYCODES} from "./const";
+import ChatUser from './user'
+import ChatScrollPlugin from './scroll'
+import UserFeatures from './features'
+import EventEmitter from './emitter'
+import debounce from 'throttle-debounce/debounce'
+import {isKeyCode, KEYCODES} from "./const"
 
 function buildEmote(emote){
     return `<div class="emote"><span title="${emote}" class="chat-emote chat-emote-${emote}">${emote}</span></div>`
@@ -193,11 +190,11 @@ class ChatUserMenu extends ChatMenu {
         this.chat.source.on('JOIN', data => this.addAndRedraw(data.nick));
         this.chat.source.on('QUIT', data => this.removeAndRedraw(data.nick));
         this.chat.source.on('NAMES', data => this.addAll());
-        this.searchinput.on('keyup', debounce(() => {
+        this.searchinput.on('keyup', debounce(100, () => {
             this.searchterm = this.searchinput.val();
             this.filter();
             this.redraw();
-        }, 100));
+        }));
     }
 
     show(){
@@ -373,8 +370,7 @@ class ChatWhisperUsers extends ChatMenu {
         }
         this.notif.text(this.unread);
         this.notif.toggle(this.unread > 0);
-        try{
-            // Add the number of unread items to the window title.
+        try{ // Add the number of unread items to the window title.
             const t = window.parent.document.title.replace(/^\([0-9]+\) /, '');
             window.parent.document.title = this.unread > 0 ? `(${this.unread}) ${t}` : `${t}`;
         }catch(ignored){console.error(ignored)}
@@ -399,13 +395,13 @@ class ChatWhisperUsers extends ChatMenu {
     }
 
     addConversation(nick, unread){
-        const user = this.chat.users.get(nick.toLowerCase()) || new ChatUser({nick: nick});
+        const user = this.chat.users.get(nick.toLowerCase()) || new ChatUser(nick)
         this.usersEl.append(`
             <li class="conversation unread-${unread}">
                 <a data-username="${user.nick.toLowerCase()}" title="Hide" class="fa fa-times remove"></a>
                 <a data-username="${user.nick.toLowerCase()}" class="user">${user.nick} <span class="badge">${unread}</span></a>
             </li>
-        `);
+        `)
     }
 
 }

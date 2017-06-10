@@ -1127,58 +1127,6 @@ iframe.stream-element {
   margin: 10px;
 }
 
-.pm-count {
-  font-family: "Lucida Console", Monaco, monospace;
-  text-decoration: none;
-  font-size: 10px;
-  color: $color-light;
-  background-color: $color-alert-bg;
-  line-height: 10px;
-  padding: 3px;
-  position: absolute;
-  border-radius: 8px;
-  top: 5px;
-  right: 0;
-  display: block;
-  text-shadow: 1px 1px 0 black;
-  text-align: center;
-  box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
-  min-width: 15px;
-}
-@-webkit-keyframes flash {
-  0%, 50%, 100% {
-    opacity: 1;
-  }
-  25%, 75% {
-    opacity: 0;
-  }
-}
-@keyframes flash {
-  0%, 50%, 100% {
-    opacity: 1;
-  }
-  25%, 75% {
-    opacity: 0;
-  }
-}
-.pm-count.flash {
-  -webkit-animation-name: flash;
-  -webkit-animation-duration:1.5s;
-  -webkit-animation-direction:alternate;
-  -webkit-animation-timing-function:linear;
-  -webkit-animation-delay:0s;
-  -webkit-animation-iteration-count:infinite;
-  -moz-animation-name: flash;
-  -moz-animation-duration:1.5s;
-  -moz-animation-direction:alternate;
-  -moz-animation-timing-function:linear;
-  -moz-animation-delay:0s;
-  -moz-animation-iteration-count:infinite;
-  animation-name: flash;
-  animation-duration: 1.5s;
-  animation-iteration-count:infinite;
-}
-
 #mortyface {
   background: url("../img/mortyface.png") no-repeat center center;
   width: 194px;
@@ -1201,8 +1149,7 @@ body.error #error-container {
 /** INBOX **/
 body#messages section h4,
 body#message section h4 {
-  margin-left: 10px;
-  color: $color-chat-text3;
+  color: $text-color2;
   font-size: 16px;
   font-weight: normal;
 }
@@ -1266,103 +1213,68 @@ table#inbox .read .from a {
 table#inbox a {
   text-decoration: none;
 }
+#inbox-show-more {
+    margin: 25px 0;
+    display: inline-block;
+}
+#inbox-loading {
+    color: $text-color2;
+}
 
 /** MESSAGES **/
-.message-list {
-
-  .message-hidden .message-content,
-  .message-active .message-summary {
-    display: none;
-  }
-  .message-hidden {
-    min-height: 20px;
-  }
-  .message {
-    border-bottom: 1px solid #151515;
-    margin: 5px 0 5px 0;
-    position: relative;
-    width: 90%;
-  }
-  .message.message-me {
-    margin-left: 0;
-    background-color: rgba(0,0,0,0.4);
-    float: right;
-  }
-  .message.message-notme {
-    margin-left: 0;
-    background-color: #000;
-    float: left;
-  }
-  .message.message-notme .speech-arrow {
-    top: 15px;
-    left: -5px;
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 5px 5px 5px 0;
-    border-color: transparent rgba(0,0,0,0.6) transparent transparent;
-  }
-  .message-summary,
-  .message-header {
-    cursor: pointer;
-  }
-  .page-title {
-    margin: 10px 10px 20px 10px;
-  }
-  .message-snippet  {
-    font-size: 13px;
-  }
-  .message .message-txt {
-    margin: 20px 10px 20px 20px;
-    /* pre-wrap can also be used; pre-line collapses multiple white space characters. */
-    white-space: pre-line;
-    word-break: break-all;
-    font-size: 14px;
-  }
-  .message-header,
-  .message-users {
-    margin: 10px;
-  }
-  .message-notme .message-from {
-    color: $color-chat-text1;
-  }
-  .message-me .message-from span {
-    color: $color-chat-text3;
-  }
-  .message-summary {
-    position: relative;
-    padding: 10px 200px 10px 10px;
-    height: 40px;
-    white-space: nowrap;
+#inbox-content .chat-emote,
+#message-list .chat-emote {
+    z-index: 1;
+    top: 10px;
+    margin: 0 2px;
     overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .message-summary .message-snippet {
-    padding-left: 1em;
-    color: $color-chat-disabled;
-  }
-  .message-summary .message-date {
-    position: absolute;
-    right: 10px;
-  }
-  .message-date {
-    color: $color-chat-text3;
-  }
-
+    text-indent: -90000px;
+    vertical-align: middle;
+    display: inline-block;
 }
-
-
-.message-reply {
-  clear: both;
-  margin-top: 10px;
-  line-height: 30px;
+#message-list {
+    #message-list-title {
+        margin-bottom: 20px;
+        em {
+            color: $text-color;
+            font-style: normal;
+        }
+    }
+    .message {
+        position: relative;
+        margin: 10px 0;
+    }
+    .message-content {
+        padding: 20px 10px 20px 20px;
+        border-radius: 8px;
+        background-color: $color-surface-dark1;
+    }
+    .message-me {
+        opacity: 0.25;
+        &:hover {
+            opacity: 1;
+        }
+    }
+    .message-txt {
+        white-space: pre-line;
+        word-break: break-all;
+    }
+    .message-date {
+        font-size: 90%;
+        color: $text-color2;
+    }
+    .message-list-item-status.read:before {
+        content: "\f2b6";
+        color: $text-color3;
+    }
+    .message-list-item-status.unread:before {
+        content: "\f0e0";
+        color: $text-color2;
+    }
 }
-.message-reply > div {
-  margin: 10px 20px;
-}
-.message-list-title {
-  margin-bottom: 20px;
+#message-reply {
+    text-align: center;
+    margin: 15px 0;
 }
 
 .collapsed-group .message,
@@ -1467,16 +1379,6 @@ table#inbox a {
 
 #message-alerts .alert-info {
   margin-bottom: 0;
-}
-.icon-message-read,
-.icon-message-unread {
-  margin: 2px 0 0 10px;
-}
-.icon-message-read {
-  color: $color-success-text;
-}
-.icon-message-unread {
-  color: $text-color-disabled;
 }
 
 #stream-status {

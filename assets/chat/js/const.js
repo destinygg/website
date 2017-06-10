@@ -1,3 +1,8 @@
+const DATE_FORMATS = {
+    FULL: 'MMMM Do YYYY, h:mm:ss a',
+    TIME: 'HH:mm'
+}
+
 const KEYCODES = {
     TAB: 9,
     STRG: 17,
@@ -33,14 +38,14 @@ const KEYCODES = {
     F10: 121,
     F11: 122,
     F12: 123
-};
+}
 
 function getKeyCode(e){
-    return e.which || e.keyCode || -1;
+    return e.which || e.keyCode || -1
 }
 
 function isKeyCode(e, code){
-    return getKeyCode(e) === code;
+    return getKeyCode(e) === code
 }
 
-export {KEYCODES,isKeyCode,getKeyCode};
+export {KEYCODES,DATE_FORMATS,isKeyCode,getKeyCode}

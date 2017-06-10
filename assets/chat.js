@@ -3,6 +3,7 @@
 require('bootstrap/dist/css/bootstrap.css');
 require('bootstrap/dist/js/bootstrap.js');
 require('./chat/css/style.scss');
+require('./chat/js/notification')
 
 const Chat = require('./chat/js/chat.js')['default'];
 const emotes = require('./emotes.json');

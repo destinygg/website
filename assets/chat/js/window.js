@@ -1,4 +1,7 @@
-import ChatScrollPlugin from './scroll';
+/* global $ */
+
+import ChatScrollPlugin from './scroll'
+import EventEmitter from "./emitter";
 const tagcolors = [
     "green",
     "yellow",
@@ -8,25 +11,27 @@ const tagcolors = [
     "sky",
     "lime",
     "pink"
-];
+]
 
-class ChatWindow {
+class ChatWindow extends EventEmitter {
 
     constructor(name, type='', label=''){
-        this.name = name;
-        this.label = label;
-        this.maxlines = 0;
-        this.linecount = 0;
-        this.locks = 0;
-        this.waspinned = true;
-        this.scrollplugin = null;
-        this.visible = false;
-        this.tag = null;
-        this.ui = $(`<div id="chat-win-${name}" class="chat-output ${type} nano" style="display: none;">\
-                        <div class="chat-lines nano-content"></div>\
-                        <div class="chat-scroll-notify">More messages below</div>\
-                     </div>`);
-        this.lines = this.ui.find('.chat-lines');
+        super()
+        this.name = name
+        this.label = label
+        this.maxlines = 0
+        this.linecount = 0
+        this.locks = 0
+        this.waspinned = true
+        this.scrollplugin = null
+        this.visible = false
+        this.tag = null
+        this.lastmessage = null
+        this.ui = $(`<div id="chat-win-${name}" class="chat-output ${type} nano" style="display: none;">`+
+                        `<div class="chat-lines nano-content"></div>`+
+                        `<div class="chat-scroll-notify">More messages below</div>`+
+                     `</div>`)
+        this.lines = this.ui.find('.chat-lines')
     }
 
     destroy(){
@@ -36,32 +41,38 @@ class ChatWindow {
     }
 
     into(chat){
-        this.maxlines = chat.settings.get('maxlines');
-        this.scrollplugin = new ChatScrollPlugin(chat, this.ui);
-        this.tag = chat.taggednicks.get(this.name) || tagcolors[Math.floor(Math.random()*tagcolors.length)];
-        chat.output.append(this.ui);
-        chat.addWindow(this.name.toLowerCase(), this);
-        chat.windowToFront(this.name.toLowerCase());
-        return this;
+        const normalized = this.name.toLowerCase()
+        this.maxlines = chat.settings.get('maxlines')
+        this.scrollplugin = new ChatScrollPlugin(chat, this.ui)
+        this.tag = chat.taggednicks.get(normalized) || tagcolors[Math.floor(Math.random()*tagcolors.length)]
+        chat.output.append(this.ui)
+        chat.addWindow(normalized, this)
+        return this
     }
 
     show(){
         if(!this.visible){
-            this.visible = true;
-            this.ui.show();
+            this.visible = true
+            this.emit('show')
+            this.ui.show()
         }
     }
 
     hide(){
         if(this.visible) {
-            this.visible = false;
-            this.ui.hide();
+            this.visible = false
+            this.emit('hide')
+            this.ui.hide()
         }
     }
 
-    addline(e){
-        this.lines.append(e);
-        this.linecount++;
+    addMessage(chat, message){
+        message.ui = $(message.html(chat))
+        message.afterRender(chat)
+        this.lastmessage = message
+        this.lines.append(message.ui)
+        this.linecount++
+        this.cleanup()
     }
 
     getlines(sel){

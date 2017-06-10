@@ -88,24 +88,6 @@ class PrivateMessageService extends Service {
 
         return $cansend;
     }
-    
-    /**
-     * @param int $targetuserid
-     * @return int
-     */
-    public function getUnreadMessageCount($targetuserid) {
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare("
-            SELECT COUNT(*)
-            FROM privatemessages
-            WHERE
-                targetuserid = :targetuserid AND
-                isread       = 0
-        ");
-        $stmt->bindValue("targetuserid", $targetuserid, \PDO::PARAM_INT);
-        $stmt->execute();
-        return intval($stmt->fetchColumn());
-    }
 
     /**
      * @param array $data
@@ -142,93 +124,37 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param int $userId
-     * @param int $targetuserid
-     * @return int affected_rows()
-     */
-    public function openMessagesByUserIdAndTargetUserId($userId, $targetuserid){
-        $conn = Application::instance ()->getConnection ();
-        return $conn->update( 'privatemessages', array (
-            'isread' => 1
-        ), array(
-            'userId' => $userId,
-            'targetuserid' => $targetuserid
-        ));
-    }
-
-    /**
      * @param $userid
+     * @param int $start
+     * @param int $limit
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
      */
-    public function getInboxMessagesByUserId($userid){
+    public function getMessagesInboxByUserId($userid, $start=0, $limit=20){
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare("
-            SELECT
-                pm.id,
-                pm.userid,
-                pm.targetuserid,
-                pm.message,
-                pm.timestamp,
-                pm.isread,
-                du.username AS fromuser,
-                tdu.username AS touser
-            FROM privatemessages AS pm
-            LEFT JOIN dfl_users AS du ON(
-                du.userId = pm.userid
-            )
-            LEFT JOIN dfl_users AS tdu ON(
-                tdu.userId = pm.targetuserid
-            )
-            WHERE
-                pm.userid       = :userid OR
-                pm.targetuserid = :userid
-            ORDER BY pm.id DESC
+            SELECT z.*,pm3.message FROM (
+                SELECT
+                    MAX(pm.id) `id`,
+                    MAX(pm.timestamp) `timestamp`,
+                    IF(pm.targetuserid = :userid, du.userId, tdu.userId) AS `userid`,
+                    IF(pm.targetuserid = :userid, du.username, tdu.username) AS `user`,
+                    SUM(IF(pm.isread=0 AND pm.targetuserid = :userid,1,0)) `unread`,
+                    SUM(IF(pm.isread=1 AND pm.targetuserid = :userid,1,0)) `read`
+                FROM privatemessages AS pm
+                LEFT JOIN dfl_users AS du ON(du.userId = pm.userid)
+                LEFT JOIN dfl_users AS tdu ON(tdu.userId = pm.targetuserid)
+                WHERE pm.targetuserid = :userid OR pm.userid = :userid
+                GROUP BY IF(pm.targetuserid = :userid, du.userId, tdu.userId)
+            ) z
+            LEFT JOIN privatemessages AS pm3 ON (pm3.id = z.id)
+            ORDER BY `unread` DESC, z.timestamp DESC
+            LIMIT :start,:limit
         ");
         $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
-
-        $threads = array();
-        $unreadthreads = array();
-        while($row = $stmt->fetch()) {
-            if ($row['targetuserid'] != $userid) {
-                $index = $row['targetuserid'];
-                $nick  = $row['touser'];
-            } else {
-                $index = $row['userid'];
-                $nick  = $row['fromuser'];
-            }
-
-            // since we are ordered descending, this will init the thread with
-            // the latest message and timestamp
-            if (!isset($threads[ $index ]))
-                $threads[ $index ] = array(
-                    'othernick' => $nick,
-                    'timestamp' => $row['timestamp'],
-                    'message'   => $row['message'],
-                    'count'     => 0,
-                );
-
-            $threads[ $index ]['count']++;
-            if ($row['targetuserid'] == $userid and !$row['isread'])
-                $unreadthreads[ $index ] = true;
-        }
-
-        $unread = array();
-        $read = array();
-        foreach($threads as $threadid => $value) {
-            if (isset($unreadthreads[ $threadid ]))
-                $unread[ $threadid ] = $value;
-            else
-                $read[ $threadid ] = $value;
-
-            unset($threads[ $threadid ]);
-        }
-
-        return array(
-            'unread' => $unread,
-            'read'   => $read,
-        );
+        return $stmt->fetchAll();
     }
 
     /**
@@ -246,25 +172,6 @@ class PrivateMessageService extends Service {
         ');
         $stmt->bindValue('id', $id, \PDO::PARAM_INT);
         $stmt->bindValue('targetUserId', $targetUserId, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param int $id
-     * @param int $userid
-     * @return array
-     */
-    public function getMessageByIdAndTargetUserIdOrUserId($id, $userid) {
-        $conn = Application::instance ()->getConnection ();
-        $stmt = $conn->prepare('
-            SELECT p.*, `from`.username `from` FROM privatemessages p
-            LEFT JOIN `dfl_users` `from` ON (`from`.userId = p.userid)
-            WHERE p.id = :id AND (p.targetuserid = :userid OR p.userid = :userid)
-            LIMIT 0,1
-        ');
-        $stmt->bindValue('id', $id, \PDO::PARAM_INT);
-        $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }

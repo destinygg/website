@@ -29,14 +29,8 @@ class PrivateMessageController {
      * @param ViewModel $viewModel
      * @return string
      */
-    public function inbox(ViewModel $viewModel) {
-        $userId = Session::getCredentials ()->getUserId ();
+    public function profileInbox(ViewModel $viewModel) {
         $username = Session::getCredentials ()->getUsername ();
-
-        $privateMessageService = PrivateMessageService::instance();
-        $inbox = $privateMessageService->getInboxMessagesByUserId( $userId );
-
-        $viewModel->inbox = $inbox;
         $viewModel->username = $username;
         $viewModel->title = 'Messages';
         return 'profile/inbox';
@@ -55,7 +49,7 @@ class PrivateMessageController {
      * @param array $params
      * @return array
      */
-    public function sendMessage(array $params) {
+    public function profileSend(array $params) {
         $privateMessageService = PrivateMessageService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
         $userService = UserService::instance();
@@ -143,18 +137,6 @@ class PrivateMessageController {
     }
 
     /**
-     * @Route ("/profile/messages/openall")
-     * @Secure ({"USER"})
-     * @ResponseBody
-     */
-    public function openAll() {
-        $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials()->getUserId();
-        $privateMessageService->markAllMessagesRead($userId);
-        return ['success' => true];
-    }
-
-    /**
      * @Route ("/profile/messages/{targetuserid}")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
@@ -165,28 +147,101 @@ class PrivateMessageController {
      * @throws Exception
      * @throws \Destiny\Common\Utils\FilterParamsException
      */
-    public function message(array $params, ViewModel $viewModel) {
+    public function profileMessages(array $params, ViewModel $viewModel) {
         FilterParams::required($params, 'targetuserid');
-
-        $privateMessageService = PrivateMessageService::instance();
         $userService = UserService::instance();
-
         $userId = Session::getCredentials ()->getUserId ();
         $username = Session::getCredentials ()->getUsername ();
-
         $targetuser = $userService->getUserById($params['targetuserid']);
         if(empty($targetuser))
             throw new Exception('Invalid user');
-
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $params['targetuserid'], 0, 1000 );
-        $privateMessageService->markMessagesRead( $userId, $params['targetuserid'] );
-
         $viewModel->targetuser = $targetuser;
-        $viewModel->messages = $messages;
         $viewModel->username = $username;
         $viewModel->userId = $userId;
         $viewModel->title = 'Message';
         return 'profile/message';
+    }
+
+    /**
+     * @Route ("/api/messages/open")
+     * @Secure ({"USER"})
+     * @ResponseBody
+     */
+    public function messagesOpen() {
+        $userId = Session::getCredentials()->getUserId();
+        $privateMessageService = PrivateMessageService::instance();
+        $privateMessageService->markAllMessagesRead($userId);
+        return ['success' => true];
+    }
+
+    /**
+     * @Route ("/api/messages/inbox")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     * @ResponseBody
+     *
+     * @param array $params
+     * @return array
+     */
+    public function messagesInbox(array $params){
+        $userId = Session::getCredentials ()->getUserId ();
+        $privateMessageService = PrivateMessageService::instance();
+        $start = isset($params['s']) ? intval($params['s']) : 0;
+        return $privateMessageService->getMessagesInboxByUserId( $userId, $start, 25 );
+    }
+
+    /**
+     * @Route ("/api/messages/unread")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     * @ResponseBody
+     */
+    public function messagesUnread(){
+        $userId = Session::getCredentials ()->getUserId ();
+        $privateMessageService = PrivateMessageService::instance();
+        return $privateMessageService->getUnreadConversations($userId, 50);
+    }
+
+    /**
+     * @Route ("/api/messages/usr/{username}/inbox")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     * @ResponseBody
+     *
+     * @param array $params
+     * @return array
+     */
+    public function messagesUserInbox(array $params){
+        $userService = UserService::instance();
+        $privateMessageService = PrivateMessageService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
+        $start = isset($params['s']) ? intval($params['s']) : 0;
+        $targetuser = $userService->getUserByUsername($params['username']);
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $targetuser['userId'], $start, 10 );
+        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
+        return $messages;
+    }
+
+    /**
+     * @Route ("/api/messages/msg/{id}/open")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"POST"})
+     * @ResponseBody
+     *
+     * @param array $params
+     * @return array
+     */
+    public function messageOpen(array $params) {
+        try {
+            FilterParams::required($params, 'id');
+            $privateMessageService = PrivateMessageService::instance();
+            $userId = Session::getCredentials ()->getUserId ();
+            if(!$privateMessageService->markMessageRead( intval($params['id']), $userId ))
+                throw new Exception('Invalid message');
+            return ['success' => true];
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
     }
 
 }

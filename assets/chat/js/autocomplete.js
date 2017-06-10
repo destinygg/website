@@ -3,16 +3,22 @@
 import Chat from "./chat";
 import {KEYCODES,getKeyCode} from "./const";
 
+let suggestTimeoutId
+let minWordLength = 1
+let maxResults = 20
+
 function getBucketId(id){
     return (id.match(/[\S]/)[0] || '_').toLowerCase();
+}
+
+function promoteIfSelected(ac){
+    if(ac.selected >= 0 && ac.results[ac.selected]) {
+        ac.results[ac.selected].weight = Date.now()
+    }
 }
 function sortResults(a, b){
     if(!a || !b)
         return 0;
-
-    // order promoted things first
-    if (a.promoted !== b.promoted)
-        return a.promoted > b.promoted? -1: 1;
 
     // order emotes second
     if (a.isemote !== b.isemote)
@@ -31,24 +37,24 @@ function sortResults(a, b){
 
     return a > b? 1: -1;
 }
-function getSearchCriteria(str, offset) {
+function buildSearchCriteria(str, offset) {
     let pre          = str.substring(0, offset),
         post         = str.substring(offset),
         startCaret   = pre.lastIndexOf(' ') + 1,
         endCaret     = post.indexOf(' '),
-        isUserSearch = false;
+        useronly     = false
 
     if (startCaret > 0)
-        pre = pre.substring(startCaret);
+        pre = pre.substring(startCaret)
 
     if (endCaret > -1)
-        post = post.substring(0, endCaret);
+        post = post.substring(0, endCaret)
 
     // Ignore the first char as part of the search and flag as a user only search
     if(pre.lastIndexOf('@') === 0){
-        startCaret++;
-        pre = pre.substring(1);
-        isUserSearch = true;
+        startCaret++
+        pre = pre.substring(1)
+        useronly = true
     }
 
     return {
@@ -56,268 +62,205 @@ function getSearchCriteria(str, offset) {
         pre: pre,
         post: post,
         startCaret: startCaret,
-        isUserSearch: isUserSearch,
+        useronly: useronly,
         orig: str
-    };
+    }
 }
-let suggestTimeoutId;
-function suggestTimeoutDone(autocomplete){
-    autocomplete.reset();
-    autocomplete.redrawHelpers();
+function buildHelpers(ac){
+    if(ac.results.length > 0) {
+        ac.container[0].innerHTML = ac.results
+            .map((res, k) => `<li data-index="${k}">${res.data}</li>`)
+            .join('')
+    }
 }
-function suggestTimeout(autocomplete){
+function timeoutHelpers(ac){
     if(suggestTimeoutId)
-        clearTimeout(suggestTimeoutId);
-    suggestTimeoutId = setTimeout(suggestTimeoutDone, 15000, autocomplete);
+        clearTimeout(suggestTimeoutId)
+    suggestTimeoutId = setTimeout(() => ac.reset(), 15000, ac)
+}
+function updateHelpers(ac){
+    ac.chat.ui.toggleClass('chat-autocomplete-in', ac.results.length > 0)
+    ac.ui.toggleClass('active', ac.results.length > 0)
+}
+function selectHelper(ac) {
+    // Positioning
+    if (ac.selected !== -1 && ac.results.length > 0) {
+        const list   = ac.ui.find(`li`).get()
+        const offset = ac.container.position().left,
+            maxwidth = ac.ui.width()
+        $(list[ac.selected + 3]).each((i, e) => {
+            const right = ($(e).position().left + offset) + $(e).outerWidth()
+            if(right > maxwidth)
+                ac.container.css('left', offset + maxwidth - right)
+        })
+        $(list[Math.max(0, ac.selected - 2)]).each((i, e) => {
+            const left = $(e).position().left + offset
+            if(left < 0)
+                ac.container.css('left', $(e).position().left)
+        })
+        list.forEach((e, i) => $(e).toggleClass('active', i === ac.selected))
+    }
 }
 
 class ChatAutoComplete {
 
     constructor(){
-        this.minWordLength = 1;
-        this.maxResults = 20;
-        this.buckets = new Map();
-        this.searchResults = [];
-        this.searchCriteria = null;
-        this.selectedIndex = -1;
-        this.input = null;
-        this.timeout = null;
-        this.ui = $(`<div id="chat-auto-complete"></div>`);
-        this.container = null;
-    }
-
-    redrawHelpers(){
-        const elements = this.searchResults.map((res, k) => `<li data-index="${k}">${res.data}</li>`);
-        if(elements.length > 0) {
-            this.container = $(`<ul>${elements.join('')}</ul>`);
-            this.ui
-                .detach()
-                .empty()
-                .append(this.container)
-                .insertBefore(this.input);
-            this.updateHelpers();
-            suggestTimeout(this);
-        }
-        this.chat.ui.toggleClass('chat-autocomplete-in', elements.length > 0);
-        this.ui.toggleClass('active', elements.length > 0);
-    }
-
-    updateHelpers() {
-        this.ui.find(`li.active`).removeClass('active');
-        this.ui.find(`li[data-index="${this.selectedIndex}"]`).addClass('active');
-        const offset = this.container.position().left,
-            maxwidth = this.ui.width(),
-                  li = this.ui.find(`li`).get(),
-                curr = this.ui.find(`li.active`);
-        if (curr.length > 0) {
-            $(li[this.selectedIndex + 3]).each((i, e) => {
-                const right = ($(e).position().left + offset) + $(e).outerWidth();
-                if(right > maxwidth)
-                    this.container.css('left', offset + maxwidth - right);
-            });
-            $(li[Math.max(0, this.selectedIndex - 2)]).each((i, e) => {
-                const left = $(e).position().left + offset;
-                if(left < 0)
-                    this.container.css('left', $(e).position().left);
-            });
-        }
-        suggestTimeout(this);
+        /** @member jQuery */
+        this.ui = $(`<div id="chat-auto-complete"><ul></ul></div>`)
+        this.ui.on('click', 'li', e => this.select(parseInt(e.currentTarget.getAttribute('data-index'))))
+        this.container = $(this.ui[0].firstElementChild)
+        this.buckets = new Map()
+        this.results = []
+        this.criteria = null
+        this.selected = -1
+        this.input = null
     }
 
     bind(chat){
-        this.chat = chat;
-        this.input = chat.input;
+        this.chat = chat
+        this.input = chat.input
+        this.ui.insertBefore(chat.input)
+        let originval = '',
+            shiftdown = false,
+           keypressed = false
 
-        // Mouse down, if there is no text selection search the word from where the caret is
-        this.input.on('mouseup', () => {
-            const offset = this.input[0].selectionStart;
-            if(offset !== this.input[0].selectionEnd){
-                this.reset();
-                this.redrawHelpers();
-            } else {
-                const needle = this.input.val().toString();
-                this.search(needle, offset);
-            }
-        });
-
+        // The reason why this has a bind method, is that the chat relies autocomplete objecting being around
         // Key down for any key, but we cannot get the charCode from it (like keypress).
-        let originval = '';
         this.input.on('keydown', e => {
-            originval = this.input.val().toString();
-            switch (getKeyCode(e)) {
-                case KEYCODES.TAB:
-                    if(this.searchResults.length > 0) {
-                        this.selectResult(this.selectedIndex >= this.searchResults.length - 1 ? 0 : this.selectedIndex + 1);
-                        this.updateHelpers();
-                    }
-                    e.preventDefault();
-                    e.stopPropagation();
-                    break;
+            originval = this.input.val().toString()
+            const keycode = getKeyCode(e)
+            if(keycode === KEYCODES.TAB) {
+                if(this.results.length > 0)
+                    this.select(this.selected >= this.results.length - 1 ? 0 : this.selected + 1)
+                e.preventDefault()
+                e.stopPropagation()
             }
-        });
-
+            else if(shiftdown !== e.shiftKey && this.criteria !== null) {
+                shiftdown = !!e.shiftKey
+                this.search(this.criteria, shiftdown)
+            }
+        })
         // Key press of characters that actually input into the field
         this.input.on('keypress', e => {
-            const char = String.fromCharCode(getKeyCode(e)) || '';
-            switch (getKeyCode(e)) {
-                case KEYCODES.ENTER:
-                    this.promoteIfSelected();
-                    break;
-                default:
-                    if (char.length > 0) {
-                        const str = this.input.val().toString(),
-                            offset = this.input[0].selectionStart+1,
-                            pre = str.substring(0, offset),
-                            post = str.substring(offset);
-
-                        this.promoteIfSelected();
-                        const needle = pre + char + post;
-                        this.search(needle, offset, !!e.shiftKey);
-                    }
-                    break;
+            const keycode = getKeyCode(e),
+                     char = String.fromCharCode(keycode) || ''
+            if(keycode === KEYCODES.ENTER) {
+                promoteIfSelected(this)
+                this.reset()
             }
-        });
-
+            else if (char.length > 0) {
+                promoteIfSelected(this)
+                const str = this.input.val().toString(),
+                   offset = this.input[0].selectionStart+1,
+                      pre = str.substring(0, offset),
+                     post = str.substring(offset)
+                const criteria = buildSearchCriteria(pre + char + post, offset)
+                this.search(criteria)
+                keypressed = true
+            }
+        })
         // Key up, we handle things like backspace if the keypress never found a char.
         this.input.on('keyup', e => {
-            const needle = this.input.val().toString();
-            switch (getKeyCode(e)) {
-                case KEYCODES.TAB:
-                    break;
-                case KEYCODES.ENTER:
-                    this.reset();
-                    this.redrawHelpers();
-                    break;
-                default:
-                    if (needle !== originval) {
-                        const offset = this.input[0].selectionStart;
-                        this.search(needle, offset, !!e.shiftKey);
-                    }
-                    if(needle === '') {
-                        this.reset();
-                        this.redrawHelpers();
-                    }
-                    break;
+            const keycode = getKeyCode(e)
+            if(keycode !== KEYCODES.TAB && keycode !== KEYCODES.ENTER) {
+                const needle = this.input.val().toString()
+                if(needle.trim().length === 0)
+                    this.reset()
+                // If a key WAS pressed, but keypress event did not fire
+                // Check if the value changed between the key down, and key up
+                // Keys like `backspace`
+                else if (!keypressed && needle !== originval) {
+                    const offset = this.input[0].selectionStart
+                    const criteria = buildSearchCriteria(needle, offset)
+                    this.search(criteria)
+                }
+                else if(shiftdown !== e.shiftKey && this.criteria !== null) {
+                    shiftdown = !!e.shiftKey
+                    this.search(this.criteria, shiftdown)
+                }
             }
-            originval = '';
-        });
-
-        this.ui.on('click', 'li', e => {
-            this.selectResult(parseInt(e.currentTarget.getAttribute('data-index')));
-            this.redrawHelpers();
-        });
-
-        setInterval(this.expireUsers.bind(this), 60000); // 1 minute
+            keypressed = false
+            originval = ''
+        })
+        // Mouse down, if there is no text selection search the word from where the caret is
+        this.input.on('mouseup', () => {
+            if(this.input[0].selectionStart !== this.input[0].selectionEnd)
+                return this.reset()
+            const needle = this.input.val().toString()
+            const offset = this.input[0].selectionStart
+            const criteria = buildSearchCriteria(needle, offset)
+            this.search(criteria)
+        })
     }
 
-    search(needle, offset, userSearch=false){
-        this.reset();
-        const criteria = getSearchCriteria(needle, offset);
-        if(userSearch) criteria.isUserSearch = true;
-        this.searchCriteria = criteria;
-        this.searchResults = this.find(criteria);
-        this.redrawHelpers();
+    search(criteria, useronly=false){
+        this.selected = -1
+        this.results = []
+        this.criteria = criteria
+        if(criteria.word.length >= minWordLength) {
+            const bucket = this.buckets.get(getBucketId(criteria.word)) || new Map();
+            const regex = new RegExp('^' + Chat.makeSafeForRegex(criteria.pre), 'i');
+            this.results = [...bucket.values()]
+                // filter exact matches
+                .filter(a => a.data !== criteria.word)
+                // filter users if user search
+                .filter(a => (!a.isemote || !(criteria.useronly || useronly)) && regex.test(a.data))
+                .sort(sortResults)
+                .slice(0, maxResults);
+        }
+        buildHelpers(this)
+        updateHelpers(this)
+        timeoutHelpers(this)
     }
 
     reset(){
-        this.searchCriteria = null;
-        this.searchResults = [];
-        this.selectedIndex = -1;
+        this.criteria = null
+        this.results = []
+        this.selected = -1
+        updateHelpers(this)
     }
 
-    add(str, isemote=false, weight=1, promote=0){
-        const id = getBucketId(str);
-        const bucket = this.buckets.get(id) || new Map();
-        const data = bucket.get(str) || {
+    add(str, isemote=false, weight=1){
+        const id = getBucketId(str)
+        const bucket = this.buckets.get(id) || this.buckets.set(id, new Map()).get(id);
+        const data = Object.assign(bucket.get(str) || {}, {
             data: str,
             weight: weight,
-            isemote: isemote,
-            promoted: promote
-        };
-        bucket.set(str, data);
-        this.buckets.set(id, bucket);
-        return data;
+            isemote: isemote
+        });
+        bucket.set(str, data)
+        return data
     }
 
     remove(str){
-        const id = getBucketId(str);
-        const bucket = this.buckets.get(id);
-        if(bucket && bucket.has(str)) {
-            bucket.delete(str);
-            return true;
-        }
-        return false;
+        const bucket = this.buckets.get(getBucketId(str))
+        if(bucket && bucket.has(str))
+            bucket.delete(str)
     }
 
-    weight(str, weight=Date.now(), promote=0){
-        const data = this.add(str, false, weight, promote);
-        data.weight = weight;
-    }
+    select(index){
+        this.selected = Math.min(index, this.results.length-1)
+        const result = this.results[this.selected]
+        if(!result) return
 
-    find(criteria){
-        if(criteria.word.length >= this.minWordLength) {
-            const id = getBucketId(criteria.word);
-            const bucket = this.buckets.get(id) || new Map();
-            const regex = new RegExp('^' + Chat.makeSafeForRegex(criteria.pre), 'i');
-            return [...bucket.values()]
-                .filter(a => a.data !== criteria.word)
-                .filter(a => (!criteria.isUserSearch || !a.isemote) && regex.test(a.data))
-                .sort(sortResults)
-                .slice(0, this.maxResults);
-        }
-        return [];
-    }
-
-    selectResult(index){
-        this.selectedIndex = Math.min(index, this.searchResults.length-1);
-        const result = this.searchResults[this.selectedIndex];
-        if(!result) return;
-
-        let pre = this.searchCriteria.orig.substr(0, this.searchCriteria.startCaret),
-            post = this.searchCriteria.orig.substr(this.searchCriteria.startCaret + this.searchCriteria.word.length);
+        let pre = this.criteria.orig.substr(0, this.criteria.startCaret),
+            post = this.criteria.orig.substr(this.criteria.startCaret + this.criteria.word.length)
 
         // always add a space after our completion if there isn't one since people
-        // would add one anyway
+        // would usually add one anyway
         if (post[0] !== ' ' || post.length === 0)
-            post = ' ' + post;
-
-        this.input.focus().val(pre + result.data + post);
+            post = ' ' + post
+        this.input.focus().val(pre + result.data + post)
 
         // Move the caret to the end of the replacement string + 1 for the space
-        this.input[0].setSelectionRange(pre.length + result.data.length + 1, pre.length + result.data.length + 1);
-    }
+        const s = pre.length + result.data.length + 1
+        this.input[0].setSelectionRange(s, s)
 
-    promoteIfSelected(){
-        if(this.selectedIndex >= 0) {
-            const result = this.searchResults[this.selectedIndex];
-            if(result) {
-                result.promoted = Date.now();
-                if(result.isemote) {
-                    const bucket = this.buckets.get(getBucketId(result.data)) || new Map();
-                    [...bucket.values()]
-                        .filter(a => !a.isemote)
-                        .forEach(a => a.promoted = 0);
-                }
-            }
-        }
-    }
-
-    expireUsers(){
-        // every 10 minutes reset the promoted users so that emotes can be
-        // ordered before the user again
-        let tenminutesago = Date.now() - 600000;
-        this.buckets.forEach(bucket => {
-            [...bucket.values()]
-                .filter(a => !a.isemote)
-                .forEach(a => {
-                    if (a.promoted <= tenminutesago)
-                        a.promoted = 0;
-                    if (a.weight <= tenminutesago)
-                        a.weight = 1;
-                });
-        });
+        // Update selection gui
+        selectHelper(this)
+        updateHelpers(this)
     }
 
 }
 
-export default ChatAutoComplete;
+export default ChatAutoComplete

@@ -442,6 +442,11 @@ a {
     color: $color-chat-text1;
 }
 
+/* Emote combo / message */
+.msg-emote .chat-emote {
+    vertical-align: baseline;
+}
+
 /* Censored */
 .censored .text {
     display: none;
@@ -470,11 +475,8 @@ a {
 }
 
 /* /ME message */
-.msg-emote .text {
+.msg-me .text {
     font-style: italic;
-}
-.msg-emote .chat-emote {
-    vertical-align: baseline;
 }
 
 /* Whispers */
@@ -609,24 +611,24 @@ a {
     overflow: hidden;
     text-indent: -90000px;
     vertical-align: middle;
+    padding-left: 0.5em;
 }
 .chat-combo {
-    @extend .roboto-regular;
     color: $color-light;
     font-size: 14px;
     display: inline-block;
     position: relative;
     line-height: 34px;
+    padding-left: 5px;
     i {
         font-style: normal;
+        display: inline-block;
         vertical-align: middle;
-        line-height: 1em;
     }
     .hit,
     .combo,
     .count,
     .x {
-        @extend .roboto-regular;
         text-shadow:
                 -1px -1px 0 #000,
                 1px -1px 0 #000,
@@ -696,27 +698,28 @@ a {
             font-weight: bold;
         }
     }
-    &.combo-complete.x10,
-    &.combo-complete.x20,
-    &.combo-complete.x30,
-    &.combo-complete.x50 {
-        animation: emote-greyout 3500ms 1;
-        background: transparent url("../../web/img/blood-1.png") no-repeat center center;
-        background-size: 100% 100%;
-        filter: grayscale(100%);
+    &.combo-complete {
+        &.x10,
+        &.x20,
+        &.x30,
+        &.x50 {
+            animation: emote-greyout 3500ms 1;
+            background: transparent url("../../web/img/blood-1.png") no-repeat center center;
+            background-size: 100% 100%;
+            filter: grayscale(100%);
+            .combo {
+                color: $color-light;
+                margin-left: 5px;
+            }
+        }
         .combo {
-            color: $color-light;
-            margin-left: 5px;
+            animation: emote-complete 1000ms 1;
+            display: inline-block;
+        }
+        .hit {
+            display: none;
         }
     }
-    &.combo-complete .combo {
-        animation: emote-complete 1000ms 1;
-        display: inline-block;
-    }
-    &.combo-complete .hit {
-        display: none;
-    }
-
 }
 
 /* Helpers */

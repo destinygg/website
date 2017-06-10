@@ -1,8 +1,10 @@
 /* global $ */
 
-import {EmoteFormatter, GreenTextFormatter, HtmlTextFormatter, MentionedUserFormatter,UrlFormatter} from './formatters';
-import UserFeatures from './features';
-import moment from 'moment';
+import {EmoteFormatter, GreenTextFormatter, HtmlTextFormatter, MentionedUserFormatter,UrlFormatter} from './formatters'
+import {DATE_FORMATS} from './const'
+import UserFeatures from './features'
+import throttle from 'throttle-debounce/throttle'
+import moment from 'moment'
 
 const MessageTypes = {
     STATUS    : 'STATUS',
@@ -14,24 +16,19 @@ const MessageTypes = {
     CHAT      : 'CHAT',
     USER      : 'USER',
     EMOTE     : 'EMOTE'
-};
-const MessageGlobals = {
-    timeformat: 'HH:mm',
-    datetimeformat: 'MMMM Do YYYY, h:mm:ss a'
-};
-
-const formatters = [];
-formatters.push(new HtmlTextFormatter());
-formatters.push(new UrlFormatter());
-formatters.push(new EmoteFormatter());
-formatters.push(new MentionedUserFormatter());
-formatters.push(new GreenTextFormatter());
+}
+const formatters = new Map()
+formatters.set('html', new HtmlTextFormatter())
+formatters.set('url', new UrlFormatter())
+formatters.set('emote', new EmoteFormatter())
+formatters.set('mentioned', new MentionedUserFormatter())
+formatters.set('green', new GreenTextFormatter())
 
 function buildMessageTxt(chat, message){
     // TODO we strip off the `/me ` of every message -- must be a better way to do this
-    let msg = message.message.substring(0, 4).toLowerCase() === '/me ' ? message.message.substring(4) : message.message;
-    formatters.forEach(f => msg = f.format(chat, msg, message));
-    return `<span class="text">${msg}</span>`;
+    let msg = message.message.substring(0, 4).toLowerCase() === '/me ' ? message.message.substring(4) : message.message
+    formatters.forEach(f => msg = f.format(chat, msg, message))
+    return `<span class="text">${msg}</span>`
 }
 function buildFeatures(user){
     const features = [...user.features || []]
@@ -85,12 +82,9 @@ function buildFeatures(user){
         .join('');
     return features.length > 0 ? `<span class="features">${features}</span>` : '';
 }
-function buildEmoteCount(count){
-    return `<i class='count'>${count}</i> <i class="x">X</i> <i class="hit">Hits</i> <i class='combo'>C-C-C-COMBO</i>`;
-}
 function buildTime(message){
-    const datetime = message.timestamp.format(MessageGlobals.datetimeformat);
-    const label = message.timestamp.format(message.timeformat);
+    const datetime = message.timestamp.format(DATE_FORMATS.FULL);
+    const label = message.timestamp.format(DATE_FORMATS.TIME);
     return `<time class="time" title="${datetime}">${label}</time>`;
 }
 function buildWhisperTools(){
@@ -152,9 +146,14 @@ class MessageBuilder {
 class ChatUIMessage {
 
     constructor(message, classes=[]){
-        this.type = MessageTypes.UI;
-        this.message = message;
-        this.classes = classes;
+        /** @type String */
+        this.type = MessageTypes.UI
+        /** @type String */
+        this.message = message
+        /** @type Array */
+        this.classes = classes
+        /** @type JQuery */
+        this.ui = null
     }
 
     into(chat, window=null){
@@ -174,6 +173,8 @@ class ChatUIMessage {
         return this.wrap(this.message);
     }
 
+    afterRender(chat=null){}
+
 }
 
 class ChatMessage extends ChatUIMessage {
@@ -184,14 +185,13 @@ class ChatMessage extends ChatUIMessage {
         this.type = type;
         this.continued = false;
         this.timestamp = timestamp ? moment.utc(timestamp).local() : moment();
-        this.timeformat = MessageGlobals.timeformat;
     }
 
     html(chat=null){
         const classes = [], attr = {};
         if(this.continued)
             classes.push('msg-continue');
-        return this.wrap(buildTime(this) + ' ' + buildMessageTxt(chat, this), classes, attr);
+        return this.wrap(`${buildTime(this)} ${buildMessageTxt(chat, this)}`, classes, attr);
     }
 }
 
@@ -223,7 +223,7 @@ class ChatUserMessage extends ChatMessage {
         if(this.isown)
             classes.push('msg-own');
         if(this.slashme)
-            classes.push('msg-emote');
+            classes.push('msg-me');
         if(this.historical)
             classes.push('msg-historical');
         if(this.highlighted)
@@ -249,51 +249,65 @@ class ChatUserMessage extends ChatMessage {
 
 }
 
+function ChatEmoteMessageCount(message){
+    if(!message || !message._combo)
+        return;
+    let stepClass = ''
+    if(message.emotecount >= 50)
+        stepClass = ' x50'
+    else if(message.emotecount >= 30)
+        stepClass = ' x30'
+    else if(message.emotecount >= 20)
+        stepClass = ' x20'
+    else if(message.emotecount >= 10)
+        stepClass = ' x10'
+    else if(message.emotecount >= 5)
+        stepClass = ' x5'
+    if(!message._combo)
+        console.error('no combo', message._combo)
+    message._combo.attr('class', 'chat-combo' + stepClass)
+    message._combo_count.text(`${message.emotecount}`)
+    message.ui.append(message._text.detach(), message._combo.detach())
+}
+const ChatEmoteMessageCountThrottle = throttle(63, ChatEmoteMessageCount)
+
 class ChatEmoteMessage extends ChatMessage {
 
     constructor(emote, timestamp, count=1){
-        super(emote, timestamp, MessageTypes.EMOTE);
-        this.emotecount = count;
-        this.emotecountui = null;
+        super(emote, timestamp, MessageTypes.EMOTE)
+        this.emotecount = count
     }
 
     html(chat=null){
-        return this.wrap(`${buildTime(this)} ${buildMessageTxt(chat, this)} <span class="chat-combo">${buildEmoteCount(this.emotecount)}<span>`);
+        this._text          = $(`<span class="text">${formatters.get('emote').format(chat, this.message, this)}</span>`)
+        this._combo         = $(`<span class="chat-combo" />`)
+        this._combo_count   = $(`<i class="count">${this.emotecount}</i>`)
+        this._combo_x       = $(`<i class="x">X</i>`)
+        this._combo_hits    = $(`<i class="hit">Hits</i>`)
+        this._combo_txt     = $(`<i class="combo">C-C-C-COMBO</i>`)
+        return this.wrap(buildTime(this))
+    }
+
+    afterRender(chat=null){
+        this._combo.append(this._combo_count, ' ', this._combo_x, ' ', this._combo_hits, ' ', this._combo_txt)
+        this.ui.append(this._text, this._combo)
     }
 
     incEmoteCount(){
-        ++this.emotecount;
-        let stepClass = '';
-        if(this.emotecount >= 50)
-            stepClass = ' x50';
-        else if(this.emotecount >= 30)
-            stepClass = ' x30';
-        else if(this.emotecount >= 20)
-            stepClass = ' x20';
-        else if(this.emotecount >= 10)
-            stepClass = ' x10';
-        else if(this.emotecount >= 5)
-            stepClass = ' x5';
-        if(!this.emotecountui)
-            this.emotecountui = this.ui.find('.chat-combo');
-        this.emotecountui
-            .detach()
-            .attr('class', 'chat-combo' + stepClass)
-            .html(buildEmoteCount(this.emotecount))
-            .appendTo(this.ui);
+        ++this.emotecount
+        ChatEmoteMessageCountThrottle(this)
     }
 
     completeCombo(){
-        if(!this.emotecountui)
-            this.emotecountui = this.ui.find('.chat-combo');
-        this.emotecountui.addClass('combo-complete');
+        ChatEmoteMessageCount(this)
+        this._combo.attr('class', this._combo.attr('class') + ' combo-complete')
+        this._combo = this._combo_count = this._combo_x = this._combo_hits = this._combo_txt = null
     }
 
 }
 
 export {
     MessageBuilder,
-    MessageGlobals,
     ChatUIMessage,
     ChatMessage,
     ChatUserMessage,
