@@ -36,7 +36,7 @@ class IpnController {
             if (!$ipnMessage->validate()) {
                 $log->error('Got a invalid IPN ' . json_encode($ipnMessage->getRawData()));
                 $response->setStatus(Http::STATUS_ERROR);
-                return 'Got a invalid IPN';
+                return 'Invalid IPN';
             }
             $data = $ipnMessage->getRawData();
             $log->info(sprintf('Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId(), $data ['txn_type']));

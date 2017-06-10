@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Controllers;
 
 use Destiny\Common\Exception;

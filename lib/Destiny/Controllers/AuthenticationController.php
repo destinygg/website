@@ -47,7 +47,7 @@ class AuthenticationController {
      *
      * @param Response $response
      * @param array $params
-     * @return string
+     * @return string|array
      */
     public function profileInfo(Response $response, array $params) {
         $log = Application::instance()->getLogger();

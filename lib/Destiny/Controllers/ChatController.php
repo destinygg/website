@@ -25,18 +25,6 @@ use Destiny\Chat\ChatIntegrationService;
 class ChatController {
 
     /**
-     * @Route ("/chat/faq")
-     * @HttpMethod ({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
-     */
-    public function faq(ViewModel $model) {
-        $model->title = 'Frequently Asked Questions';
-        return 'chat/faq';
-    }
-
-    /**
      * @Route ("/api/chat/history")
      * @HttpMethod ({"GET"})
      * @ResponseBody

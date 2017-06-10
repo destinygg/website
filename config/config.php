@@ -12,6 +12,9 @@ return [
     'profile' => [
         'nameChangeLimit' => 0
     ],
+    'blog' => [
+        'feed' => ''
+    ],
     'android' => [
         'app' => ''
     ],

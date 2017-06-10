@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Blog;
 
+use Destiny\Common\Config;
 use Destiny\Common\Service;
 use Destiny\Common\CurlBrowser;
 use Destiny\Common\MimeType;
@@ -18,7 +19,7 @@ class BlogApiService extends Service {
     public function getBlogPosts(array $options = array()) {
         return new CurlBrowser ( array_merge ( array (
             'timeout' => 25,
-            'url' => 'http://blog.destiny.gg/feed/json',
+            'url' => Config::$a['blog']['feed'],
             'contentType' => MimeType::JSON,
             'onfetch' => function ($json) {
                 if (empty($json) || !is_array($json)) {

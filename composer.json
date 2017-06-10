@@ -2,7 +2,7 @@
     "name" : "destiny/website",
     "description": "Destiny.gg website",
     "license": "proprietary",
-    "version": "1.7.23",
+    "version": "1.7.24",
     "minimum-stability": "dev",
     "require": {
         "php" : ">=5.3.0",
@@ -14,8 +14,7 @@
         "monolog/monolog" : "1.12.0",
         "doctrine/dbal": "2.5.12",
         "themattharris/tmhoauth": "0.8.4",
-        "adoy/oauth2": "dev-master",
-        "misd/linkify": "1.1.*"
+        "adoy/oauth2": "dev-master"
     },
     "autoload": {
         "psr-0": {"Destiny":"lib/"}

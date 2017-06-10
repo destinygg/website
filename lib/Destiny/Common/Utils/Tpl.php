@@ -1,9 +1,7 @@
 <?php
 namespace Destiny\Common\Utils;
 
-use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Config;
-use Misd\Linkify\Linkify;
 
 class Tpl {
 
@@ -49,33 +47,6 @@ class Tpl {
 
     public static function calendar(\DateTime $date, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
         return sprintf ( '<time title="%s" data-moment="true" data-moment-calendar="true" datetime="%s" data-format="%s">%s</time>', $date->format ( Date::STRING_FORMAT ), $date->format ( Date::FORMAT ), $momentFormat, Date::getElapsedTime ( $date ) );
-    }
-
-    public static function formatTextForDisplay($text) {
-        $linkify = new Linkify();
-        return self::emotify($linkify->process(self::out($text), array('attr'=>array('target'=>'_blank'))));
-    }
-
-    public static function emotify($text) {
-        $emotes = ChatEmotes::get('destiny');
-        $pattern = '/(^|[\s,\.\?!])('. join($emotes, '|') .')(?=$|[\s,\.\?!])/';
-        $callback = function ($match) use ($emotes) {
-            return '<i class="chat-emote chat-emote-' . $emotes[array_search($match[2], $emotes)] . '"></i>';
-        };
-        $chunks = preg_split('/(<.+?>)/is', $text, 0, PREG_SPLIT_DELIM_CAPTURE);
-        $openTag = null;
-        for ($i = 0; $i < count($chunks); $i++) {
-            if ($i % 2 === 0) {
-                if ($openTag === null)
-                    $chunks[$i] = preg_replace_callback($pattern, $callback, $chunks[$i]);
-            } else {
-                if ($openTag === null && preg_match("`<(.+?).*(?<!/)>$`is", $chunks[$i], $matches))
-                    $openTag = $matches[1];
-                else if (preg_match('`</\s*' . $openTag . '>`i', $chunks[$i], $matches))
-                    $openTag = null;
-            }
-        }
-        return implode($chunks);
     }
 
 }

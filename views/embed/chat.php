@@ -137,11 +137,6 @@ use Destiny\Common\Config;
                             </label>
                         </div>
 
-                        <hr class="separator" />
-
-                        <div class="form-group">
-                            <p>See <a href="/chat/faq" target="_blank">the chat faq</a> for more information</p>
-                        </div>
                     </div>
                 </div>
             </div>
