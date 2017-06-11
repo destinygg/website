@@ -12,6 +12,10 @@ return [
     'profile' => [
         'nameChangeLimit' => 0
     ],
+    'overrustle' => [
+        'stalk' => '',
+        'mentions' => ''
+    ],
     'blog' => [
         'feed' => ''
     ],

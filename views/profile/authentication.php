@@ -7,8 +7,7 @@ use Destiny\Common\Config;
 <html>
 <head>
 <title><?=Tpl::title($this->title)?></title>
-<meta charset="utf-8">
-<?php include 'seg/commontop.php' ?>
+<?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 <style>
   .btn-post { min-width: 75px; }
@@ -17,7 +16,7 @@ use Destiny\Common\Config;
 <body id="authentication" class="no-contain">
   <div id="page-wrap">
 
-    <?php include 'seg/top.php' ?>
+    <?php include 'seg/nav.php' ?>
     <?php include 'seg/alerts.php' ?>
     <?php include 'menu.php' ?>
     
@@ -107,7 +106,7 @@ use Destiny\Common\Config;
   </div>
   
   <?php include 'seg/foot.php' ?>
-  <?php include 'seg/commonbottom.php' ?>
+  <?php include 'seg/tracker.php' ?>
   <script src="<?=Config::cdnv()?>/web.js"></script>
 
   <script src="https://www.google.com/recaptcha/api.js"></script>

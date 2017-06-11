@@ -1,13 +1,16 @@
 /* global $, window */
 
-require('bootstrap/dist/css/bootstrap.css');
-require('bootstrap/dist/js/bootstrap.js');
-require('./chat/css/style.scss');
+require('core-js/es6')
+require('jquery')
+require('moment')
+require('normalize.css')
+require('font-awesome/scss/font-awesome.scss')
 require('./chat/js/notification')
+require('./chat/css/style.scss')
 
-const Chat = require('./chat/js/chat.js')['default'];
-const emotes = require('./emotes.json');
-const uri = `ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`;
+const Chat = require('./chat/js/chat.js')['default']
+const emotes = require('./emotes.json')
+const uri = `ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`
 
 $.when(
     new Promise(res => $.getJSON({
@@ -26,4 +29,4 @@ $.when(
       .withHistory(history)
       .withWhispers()
       .connect(uri)
-);
+)

@@ -4,6 +4,7 @@ const chatemotes = require('../../emotes.json')
 const ctx = {emoticons: chatemotes.destiny, twitchemotes:chatemotes.twitch}
 const formatters = [new chatformatters.HtmlTextFormatter(),new chatformatters.UrlFormatter(),new chatformatters.EmoteFormatter()]
 
+// COMPOSE
 $(function(){
 
     $('#compose.message-composition').each(function(){
@@ -209,7 +210,7 @@ $(function(){
                inboxempty = $('#inbox-empty'),
              inboxloading = $('#inbox-loading')
         function displayInbox(data){
-            start += 10
+            start += 25
             inboxloading.fadeOut()
             const container = inboxtable.find('tbody')
             const out = (data.length? data: []).map(msg => {

@@ -1,13 +1,13 @@
 {
   "name": "Destiny",
-  "version": "2.0.73",
+  "version": "2.0.74",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
     "tld": "node scripts/tasks/tld.js",
     "glue": "node scripts/tasks/glue.js",
     "build": "npm run tld && npm run glue && webpack -p",
-    "watch": "npm run webpack -w"
+    "watch": "webpack -w"
   },
   "repository": {
     "type": "git",
@@ -43,7 +43,6 @@
     "extract-text-webpack-plugin": "~2.1.2",
     "file-loader": "~0.11.2",
     "font-awesome": "~4.7.0",
-    "imports-loader": "~0.7.1",
     "jquery": "~3.2.1",
     "jquery-validation": "~1.16.0",
     "json-loader": "~0.5.4",
@@ -56,7 +55,10 @@
     "typescript": "~2.3.4",
     "webpack": "~2.6.1",
     "webpack-dev-server": "~2.4.5",
-    "throttle-debounce": "~1.0.1"
+    "throttle-debounce": "~1.0.1",
+    "postcss-loader": "~2.0.5",
+    "autoprefixer": "~7.1.1",
+    "normalize.css": "~7.0.0"
   },
   "engines": {
     "node": "~5.0.2",

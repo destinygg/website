@@ -64,13 +64,10 @@ class HomeController {
     /**
      * @Route ("/embed/chat")
      *
-     * @param array $params
      * @param ViewModel $model
      * @return string
      */
-    public function embedChat(array $params, ViewModel $model) {
-        if(isset($params['follow']) && !empty($params['follow']) && substr( $params['follow'], 0, 1 ) == '/')
-            $model->follow = $params['follow'];
+    public function embedChat(ViewModel $model) {
         $model->title = 'Chat';
         return 'embed/chat';
     }

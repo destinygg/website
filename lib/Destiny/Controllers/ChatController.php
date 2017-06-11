@@ -11,7 +11,6 @@ use Destiny\Common\Request;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\ViewModel;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
@@ -80,7 +79,7 @@ class ChatController {
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         $r = new CurlBrowser ([
-            'url' => 'https://overrustlelogs.net/api/v1/stalk/Destinygg/'. urlencode($params['username']) .'.json?limit=' . urlencode($limit),
+            'url' => Config::$a['overrustle']['stalk'] . urlencode($params['username']) .'.json?limit=' . urlencode($limit),
             'headers' => ['Client-ID' => Config::$a['meta']['shortName'].'_'.Config::version()],
             'contentType' => MimeType::JSON,
             'timeout' => 5000
@@ -118,7 +117,7 @@ class ChatController {
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         $r = new CurlBrowser ([
-            'url' => 'https://overrustlelogs.net/api/v1/mentions/Destinygg/'. urlencode($params['username']) .'.json?limit=' . urlencode($limit),
+            'url' => Config::$a['overrustle']['mentions'] . urlencode($params['username']) .'.json?limit=' . urlencode($limit),
             'headers' => ['Client-ID' => Config::$a['meta']['shortName'].'_'.Config::version()],
             'contentType' => MimeType::JSON,
             'timeout' => 5000

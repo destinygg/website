@@ -7,13 +7,12 @@ use Destiny\Common\Config;
 <html>
 <head>
 <title><?=Tpl::title($this->title)?></title>
-<meta charset="utf-8">
-<?php include 'seg/commontop.php' ?>
+<?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="bigscreen" class="no-contain">
 
-    <?php include 'seg/top.php' ?>
+    <?php include 'seg/nav.php' ?>
 
     <div id="page-content" class="container">
 
@@ -42,7 +41,7 @@ use Destiny\Common\Config;
 
     </div>
 
-    <?php include 'seg/commonbottom.php' ?>
+    <?php include 'seg/tracker.php' ?>
     <script src="<?=Config::cdnv()?>/web.js"></script>
 
 </body>

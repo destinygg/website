@@ -2,9 +2,12 @@
 
 require('nanoscroller');
 
+const is_touch_device =  'ontouchstart' in window        // works on most browsers
+                      || navigator['maxTouchPoints']     // works on IE10/11 and Surface
+
 class ChatScrollPlugin {
 
-    constructor(chat, e, options={sliderMinHeight: 40, tabIndex: 1}){
+    constructor(chat, e){
         const el = $(e);
         if(el.find('.chat-scroll-notify').length > 0) {
             el.on('update', () => el.toggleClass('chat-unpinned', !this.isPinned())); //debounce
@@ -14,10 +17,12 @@ class ChatScrollPlugin {
                 return false;
             });
         }
-        this.scroller = el.nanoScroller(Object.assign({
+        this.scroller = el.nanoScroller({
+            sliderMinHeight: 40,
             disableResize: true,
-            preventPageScrolling: true
-        }, options))[0].nanoscroller;
+            preventPageScrolling: true,
+            alwaysVisible: is_touch_device
+        })[0].nanoscroller;
     }
 
     isPinned(){

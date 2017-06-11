@@ -64,7 +64,7 @@ const hintstrings = new Map([
 ])
 const settingsdefault = new Map([
     ['schemaversion', 1],
-    ['showtime', false],
+    ['showtime', true],
     ['hideflairicons', false],
     ['profilesettings', false],
     ['timestampformat', 'HH:mm'],
@@ -187,13 +187,13 @@ class Chat {
 
     constructor(){
         this.uri             = '';
+        /** @type JQuery */
         this.ui              = null;
         this.css             = null;
         this.output          = null;
         this.input           = null;
         this.loginscrn       = null;
         this.loadingscrn     = null;
-        this.popoutbtn       = null;
         this.reconnect       = true;
         this.connected       = false;
         this.showmotd        = true;
@@ -315,7 +315,6 @@ class Chat {
         this.input          = this.ui.find('#chat-input-control');
         this.loginscrn      = this.ui.find('#chat-login-screen');
         this.loadingscrn    = this.ui.find('#chat-loading');
-        this.popoutbtn      = this.ui.find('#chat-popout-btn');
         this.windowselect   = this.ui.find('#chat-windows-thumbnails');
         this.inputhistory   = new ChatInputHistory(this);
         this.userfocus      = new ChatUserFocus(this, this.css);
@@ -348,19 +347,28 @@ class Chat {
                 e.stopPropagation();
                 if(!this.authenticated) {
                     this.loginscrn.show();
-                    this.input.blur();
                 } else {
                     this.control.emit('SEND', this.input.val().toString().trim());
-                    this.input.val('').focus();
+                    this.input.val('');
                 }
+                this.input.focus();
             }
         });
 
         // Chat focus / menu close when clicking on some areas
+        let downinoutput = false
+        this.output.on('mousedown', () => downinoutput = true)
         this.output.on('mouseup', () => {
-            ChatMenu.closeMenus(this);
-            focusIfNothingSelected(this);
-        });
+            if(downinoutput) {
+                downinoutput = false
+                ChatMenu.closeMenus(this)
+                focusIfNothingSelected(this)
+            }
+        })
+        this.ui.on('click', '#chat-tools-wrap',() => {
+            ChatMenu.closeMenus(this)
+            focusIfNothingSelected(this)
+        })
 
         // ESC
         document.addEventListener('keydown', e => {
@@ -395,7 +403,7 @@ class Chat {
         window.addEventListener('resize', onresize, false);
 
         // Chat window selectors
-        this.windowselect.on('click', '.ctrl', e => {
+        this.windowselect.on('click', '.chat-tool-btn', e => {
             ChatMenu.closeMenus(this);
             const el = $(e.currentTarget);
             if(!el.hasClass('active')) {
@@ -442,7 +450,7 @@ class Chat {
                  nick = msg.data('username').toString().toLowerCase();
             this.openConversation(nick);
             return false;
-        });
+        })
         this.output.on('click', '.chat-remove-whisper', e => {
             const win = this.getActiveWindow();
             win.lock();
@@ -455,24 +463,24 @@ class Chat {
             }
             win.unlock();
             return false;
-        });
+        })
 
         // If we are in an iframe from a different host, add the popout button.
         try {
             const referrer = extractHostname(document.referrer);
             if(window.self !== window.top && referrer.localeCompare(window.location.hostname) !== 0) {
-                this.popoutbtn.on('click', () => {
+                $(`<div id="chat-popout-btn" class="chat-tool-btn" title="Popout">`+
+                      `<span class="fa fa-external-link-square"></span>`+
+                  `</div>`)
+                .on('click', () => {
                     window.open('/embed/chat', '_blank', `height=500,width=420,scrollbars=0,toolbar=0,location=0,status:no,menubar:0,resizable:0,dependent:0`);
                     MessageBuilder.info('Disconnecting... Good bye.').into(this);
                     this.reconnect = false;
                     this.source.disconnect();
                     return false;
-                }).show();
-            } else {
-                this.popoutbtn.remove();
+                }).appendTo(this.ui);
             }
         } catch (e) {
-            this.popoutbtn.remove();
             console.error(e);
         }
 
@@ -482,6 +490,7 @@ class Chat {
         this.loadingscrn.fadeOut(250, () => this.loadingscrn.remove())
         this.mainwindow.updateAndPin()
         this.input.focus()
+        this.input.attr('placeholder', this.authenticated ? `Write something ${this.user.username} ...` : 'You need to be signed in to chat.')
         return this
     }
 
@@ -706,7 +715,7 @@ class Chat {
         if(this.windows.size > 1) {
             this.windows.forEach(w => {
                 this.windowselect.append(
-                    `<span title="${w.label}" data-name="${w.name}" class="ctrl win-${w.name} tag-${w.tag} ${w.visible ? 'active' : ''}">\
+                    `<span title="${w.label}" data-name="${w.name}" class="chat-tool-btn win-${w.name} tag-${w.tag} ${w.visible ? 'active' : ''}">\
                         <i class="fa fa-times" data-name="${w.name}"></i>
                      </span>`
                 )
@@ -1151,7 +1160,7 @@ class Chat {
                 this.busystalk = false;
             })
             .done(d => {
-                if(d.lines.length === 0) {
+                if(!d || !d.lines || d.lines.length === 0) {
                     MessageBuilder.info(`No messages for ${parts[0]}`).into(this);
                 } else {
                     const date = moment.utc(d.lines[d.lines.length-1]['timestamp']*1000).local().format(DATE_FORMATS.FULL);
@@ -1190,7 +1199,7 @@ class Chat {
                 this.busymentions = false;
             })
             .done(d => {
-                if(d.length === 0) {
+                if(!d || d.length === 0) {
                     MessageBuilder.info(`No mentions for ${parts[0]}`).into(this);
                 } else {
                     const date = moment.utc(d[d.length-1].date*1000).local().format(DATE_FORMATS.FULL);

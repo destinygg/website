@@ -31,7 +31,7 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
             <div id="stream-status-preview">
                 <a href="/bigscreen" style="background-image: url('<?= Tpl::out($streaminfo['preview']) ?>');" data-animated="<?= Tpl::out($streaminfo['animated_preview']) ?>"></a>
                 <div class="dropdown">
-                    <i title="RTBA made me." data-toggle="dropdown" class="dropdown-toggle fa fa-clone fa-flip-horizontal"></i>
+                    <i data-toggle="dropdown" class="dropdown-toggle fa fa-clone fa-flip-horizontal"></i>
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li><a target="_blank" class="popup" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Chat</a></li>
                         <li><a target="_blank" class="popup" href="//www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Stream</a></li>

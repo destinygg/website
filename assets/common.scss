@@ -1,18 +1,9 @@
 /* Dimensions */
-$screen-xxs:     650px;
-$screen-xs-max:  829px;
-$screen-sm-min:  830px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
-$screen-md-max:  991px;
-$screen-lg-min:  1200px;
-
-$xs-nav-height:  31px;
-$nav-height:     51px;
-$chat-width:     450px;
-
-/* General */
-
-$font-size-base:        14px;
-$line-height-base:      1.428571429 !default;
+$screen-xxs:            650px;
+$screen-xs-max:         829px;
+$screen-sm-min:         830px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
+$screen-md-max:         991px;
+$screen-lg-min:         1200px;
 
 $color-light:           #FFF7F9;
 $color-dark:            #201F1E;
@@ -45,6 +36,7 @@ $color-chat-text1:      #DEDEDE;
 $color-chat-text2:      #9E9E9E;
 $color-chat-text3:      #838383;
 $color-chat-disabled:   #414141;
+$color-chat-place:      #404040;
 
 $color-chat-tagged:     #232323;
 $color-chat-highlight:  #06263E;
@@ -87,30 +79,3 @@ $color-sky:             #00C2E0;
 $color-lime:            #51E898;
 $color-pink:            #FF80CE;
 $color-black:           #4d4d4d;
-
-@font-face {
-    font-family: 'robotoregular';
-    src: url('../../fonts/Roboto-Regular-webfont.eot');
-    src: url('../../fonts/Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-    url('../../fonts/Roboto-Regular-webfont.woff') format('woff'),
-    url('../../fonts/Roboto-Regular-webfont.ttf') format('truetype'),
-    url('../../fonts/Roboto-Regular-webfont.svg#robotoregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-.head-font {
-    font-family: "HelveticaNeue-CondensedBold", "ArialNarrow-Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-.chat-font {
-    font-family: Helvetica, "Trebuchet MS", Verdana, sans-serif;
-}
-.mono-font {
-    font-family: "Lucida Console", Monaco, monospace;
-}
-.serif-font {
-    font-family: "Trebuchet MS", sans-serif;
-}
-.roboto-regular {
-    font-family: 'robotoregular', sans-serif;
-}

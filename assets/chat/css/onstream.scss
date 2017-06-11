@@ -1,90 +1,62 @@
 @import "../../common";
+@import url("https://fonts.googleapis.com/css?family=Roboto");
 
-body.onstream, body.onstream .chat {
-  background: transparent !important;
+body, .chat-lines {
+    font-family: 'Roboto', Helvetica, "Trebuchet MS", Verdana, sans-serif;
+}
+#chat-output-frame {
+    margin: 0;
 }
 
-body.onstream {
-
-  .combo {
-    color: $text-color !important;
-  }
-
-  #chat {
-    border-radius: 8px;
-    text-shadow: -1px -1px 0 rgba(0,0,0,0.75), 1px -1px 1px rgba(0,0,0,0.75), -1px 1px 0 rgba(0,0,0,0.75), 1px 1px 1px rgba(0,0,0,0.75);
-    letter-spacing: 0.03em;
-  }
-
-  .chat-lines time, .chat-lines .features {
-    display: none !important;
-  }
-
-  .chat-lines,
-  .chat-lines a,
-  .chat-lines a.user {
-    font-size: 20px;
-  }
-
-  .msg-chat,
-  .msg-chat .greentext{
-    color: white;
-    line-height: 26px;
+html,
+body,
+#chat,
+.msg-chat,
+.greentext {
     background: none !important;
-  }
-  .msg-emote {
-    line-height: 34px;
-  }
+}
 
-  .chat-lines,
-  .chat-lines a,
-  .chat-lines a.user,
-  .chat .chat-lines > .command-msg,
-  .chat .chat-lines > .own-msg,
-  .chat .chat-lines > .highlight .msg,
-  .chat .chat-lines > .broadcast-msg .msg {
-    font-family: 'robotoregular', sans-serif;
-    text-decoration: none;
-    font-size: 20px;
-  }
-  .chat .chat-lines>.command-msg,
-  .chat .chat-lines>.error-msg,
-  .chat .chat-lines>.status-msg,
-  .chat .chat-lines>.ui-msg,
-  .chat .chat-lines>.own-msg,
-  .chat .chat-lines>.highlight,
-  .chat .chat-lines>.msg-continue .text:before {
-    color: white;
-  }
-
-  .chat .chat-lines i[class^="icon-"],
-  .chat .ui-msg, time {
+time,
+i[class^="icon-"],
+.features,
+.pref-showtime .time {
     display: none !important;
-  }
+}
 
-  #chat-output-frame {
+.continue,
+.nano-slider {
+    visibility: hidden !important;
+}
+
+.chat-lines,
+.msg-chat,
+.msg-chat .text:before,
+.greentext,
+.combo {
+    color: $text-color !important;
+}
+
+.chat-lines {
+    font-size: 20px;
+    line-height: 26px;
+}
+
+.msg-chat {
     margin: 0;
-  }
-
-  .chat-lines a.externallink,
-  .chat-lines a.externallink:hover {
-    color: #82e1ff;
-  }
-
-  .chat-lines > div {
-    margin: 0;
-  }
-
-  .chat-lines > div .continue,
-  .nano .nano-slider {
-    visibility: hidden;
-  }
-
-  .chat-lines>div {
     padding: 1px 20px 1px 5px;
-  }
-
-  .chat-lines > div.msg-status .text:before, .chat-lines > div.msg-command .text:before, .chat-lines > div.msg-info .text:before, .chat-lines > div.msg-error .text:before {
-    vertical-align: middle;
-  }
+    text-shadow:    -1px -1px 0 rgba(black,0.75),
+                    1px -1px 1px rgba(black,0.75),
+                    -1px 1px 0 rgba(black,0.75),
+                    1px 1px 1px rgba(black,0.75);
+    letter-spacing: 0.03em;
+}
+.msg-chat .text:before {
+    vertical-align: middle !important;
+}
+.msg-emote {
+    line-height: 34px;
+}
+a.externallink,
+a.externallink:hover {
+    color: $color-accent-light;
 }

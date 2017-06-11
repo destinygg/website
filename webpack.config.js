@@ -5,17 +5,9 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     entry: {
-        common: [
-            'core-js/es6',
-            'jquery',
-            'moment',
-            'font-awesome/scss/font-awesome.scss',
-            'bootstrap/dist/css/bootstrap.css',
-            'bootstrap/dist/js/bootstrap.js'
-        ],
         web       : './assets/web.js',
         admin     : './assets/admin.js',
-        messages  : './assets/messages.js',
+        profile   : './assets/profile.js',
         chat      : './assets/chat.js',
         streamchat: './assets/streamchat.js'
     },
@@ -25,10 +17,11 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache']}),
-        new webpack.ProvidePlugin({'$': 'jquery', 'jQuery': 'jquery', 'window.jQuery': 'jquery'}),
-        new webpack.optimize.CommonsChunkPlugin({name:'common', filename:'common.js'}),
         new ExtractTextPlugin({filename: '[name].css'})
     ],
+    watchOptions: {
+        ignored: /node_modules/
+    },
     module: {
         rules: [
             {
@@ -52,6 +45,7 @@ module.exports = {
                     use: [
                         {loader: 'css-loader'},
                         {loader: 'sass-loader'},
+                        {loader: 'postcss-loader'},
                     ]
                 })
             },

@@ -11,14 +11,13 @@ use Destiny\Commerce\SubscriptionStatus;
 <html>
 <head>
 <title><?=Tpl::title($this->title)?></title>
-<meta charset="utf-8">
-<?php include 'seg/commontop.php' ?>
+<?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="account" class="no-contain">
   <div id="page-wrap">
 
-      <?php include 'seg/top.php' ?>
+      <?php include 'seg/nav.php' ?>
       <?php include 'seg/alerts.php' ?>
       <?php include 'profile/menu.php' ?>
 
@@ -360,7 +359,7 @@ use Destiny\Commerce\SubscriptionStatus;
   </div>
 
   <?php include 'seg/foot.php' ?>
-  <?php include 'seg/commonbottom.php' ?>
+  <?php include 'seg/tracker.php' ?>
   <script src="<?=Config::cdnv()?>/web.js"></script>
   
 </body>

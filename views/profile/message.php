@@ -7,14 +7,13 @@ use Destiny\Common\Config;
 <html>
 <head>
 <title><?=Tpl::title($this->title)?></title>
-<meta charset="utf-8">
-<?php include 'seg/commontop.php' ?>
+<?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="message" class="no-contain">
     <div id="page-wrap">
 
-        <?php include 'seg/top.php' ?>
+        <?php include 'seg/nav.php' ?>
         <?php include 'seg/alerts.php' ?>
         <?php include 'menu.php' ?>
         
@@ -37,9 +36,9 @@ use Destiny\Common\Config;
 
     <?php include 'compose.php' ?>
     <?php include 'seg/foot.php' ?>
-    <?php include 'seg/commonbottom.php' ?>
+    <?php include 'seg/tracker.php' ?>
     <script src="<?=Config::cdnv()?>/web.js"></script>
-    <script src="<?=Config::cdnv()?>/messages.js"></script>
+    <script src="<?=Config::cdnv()?>/profile.js"></script>
 
 </body>
 </html>

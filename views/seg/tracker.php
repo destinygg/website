@@ -7,4 +7,3 @@ ga('create', '<?=Config::$a['analytics']['account']?>', 'auto');
 ga('send', 'pageview');
 </script>
 <script async src="https://www.google-analytics.com/analytics.js"></script>
-<script src="<?=Config::cdnv()?>/common.js"></script>

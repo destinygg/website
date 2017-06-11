@@ -36,7 +36,6 @@ use Destiny\Common\Session;
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="/profile">Account</a></li>
                     <li><a href="/profile/messages">Messages</a></li>
-                    <li><a href="/profile/authentication">Authentication</a></li>
                     <li class="divider"></li>
                     <li><a href="/logout">Sign Out</a></li>
                 </ul>

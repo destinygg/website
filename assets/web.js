@@ -1,8 +1,8 @@
-/* global $ */
-
-require('bootstrap/dist/css/bootstrap.css');
-require('bootstrap/dist/js/bootstrap.js');
-require('font-awesome/scss/font-awesome.scss');
-require('./web/css/style.scss');
-require('imports-loader?this=>window!jquery-validation');
-require('imports-loader?this=>window!./web/js/ui.js');
+require('core-js/es6')
+require('jquery')
+require('jquery-validation')
+require('bootstrap/dist/js/bootstrap.js')
+require('bootstrap/dist/css/bootstrap.css')
+require('font-awesome/scss/font-awesome.scss')
+require('./web/css/style.scss')
+require('./web/js/web.js')

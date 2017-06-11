@@ -7,15 +7,14 @@ use Destiny\Common\Config;
 <html>
 <head>
 <title><?=Tpl::title($this->title)?></title>
-<meta charset="utf-8">
-<?php include 'seg/commontop.php' ?>
+<?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="orderconfirm" class="no-brand">
   <div id="page-wrap">
 
-    <?php include 'seg/top.php' ?>
-    <?php include 'seg/headerband.php' ?>
+    <?php include 'seg/nav.php' ?>
+    <?php include 'seg/banner.php' ?>
 
     <section class="container">
 
@@ -122,7 +121,7 @@ use Destiny\Common\Config;
     </section>
   </div>
   <?php include 'seg/foot.php' ?>
-  <?php include 'seg/commonbottom.php' ?>
+  <?php include 'seg/tracker.php' ?>
   <script src="<?=Config::cdnv()?>/web.js"></script>
   
   <script>

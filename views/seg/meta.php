@@ -2,6 +2,7 @@
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Http;
 ?>
+<meta charset="utf-8">
 <meta property="og:site_name" content="<?=Config::$a ['meta'] ['shortName']?>" />
 <meta property="og:title" content="<?=Config::$a ['meta'] ['title']?>" />
 <meta property="og:description" content="<?=Config::$a['meta']['description']?>" />
@@ -17,4 +18,3 @@ use Destiny\Common\Utils\Http;
 <meta name="google-site-verification" content="<?=Config::$a['google-verification']?>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="shortcut icon" href="/favicon.ico?v3">
-<link href="<?=Config::cdnv()?>/common.css" rel="stylesheet" media="screen">

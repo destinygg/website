@@ -97,7 +97,7 @@ class UrlFormatter {
             strict      = "\\b" + scheme + pathCont,
             relaxed     = strict + "|" + webURL;
         this.linkregex  = new RegExp(relaxed, "gi");
-        this._elem      = $('<div/>');
+        this._elem      = $('<div></div>');
     }
 
     // stolen from angular.js

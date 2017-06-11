@@ -6,13 +6,13 @@ use Destiny\Common\Config;
 <html>
 <head>
 <title><?=Tpl::title($this->title)?></title>
-<meta charset="utf-8">
-<?php include 'seg/commontop.php' ?>
+<?php include 'seg/meta.php' ?>
+<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 <link href="<?=Config::cdnv()?>/admin.css" rel="stylesheet" media="screen">
 </head>
 <body id="admin" class="no-contain">
   <div id="page-wrap">
-    <?php include 'seg/top.php' ?>
+    <?php include 'seg/nav.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
@@ -73,7 +73,8 @@ use Destiny\Common\Config;
   </div>
 
   <?php include 'seg/foot.php' ?>
-  <?php include 'seg/commonbottom.php' ?>
+  <?php include 'seg/tracker.php' ?>
+  <script src="<?=Config::cdnv()?>/web.js"></script>
   <script src="<?=Config::cdnv()?>/admin.js"></script>
   
 </body>

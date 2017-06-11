@@ -30,6 +30,40 @@ function setSettingValue(e, val){
             break;
     }
 }
+function userComparator(a, b){
+    const u1 = this.chat.users.get(a.getAttribute('data-username').toLowerCase())
+    const u2 = this.chat.users.get(b.getAttribute('data-username').toLowerCase())
+    if(!u1 || !u2) return 0
+    let v1, v2
+
+    v1 = u1.hasFeature(UserFeatures.ADMIN) || u1.hasFeature(UserFeatures.VIP)
+    v2 = u2.hasFeature(UserFeatures.ADMIN) || u2.hasFeature(UserFeatures.VIP)
+    if (v1 > v2) return -1
+    if (v1 < v2) return 1
+
+    v1 = u1.hasFeature(UserFeatures.BOT2)
+    v2 = u2.hasFeature(UserFeatures.BOT2)
+    if (v1 > v2) return 1
+    if (v1 < v2) return -1
+    v1 = u1.hasFeature(UserFeatures.BOT)
+    v2 = u2.hasFeature(UserFeatures.BOT)
+    if (v1 > v2) return 1
+    if (v1 < v2) return -1
+
+    v1 = u1.hasFeature(UserFeatures.BROADCASTER) || u1.hasFeature(UserFeatures.BROADCASTER)
+    v2 = u2.hasFeature(UserFeatures.BROADCASTER) || u2.hasFeature(UserFeatures.BROADCASTER)
+    if (v1 > v2) return -1
+    if (v1 < v2) return 1
+
+    v1 = u1.hasFeature(UserFeatures.SUBSCRIBER) || u1.hasFeature(UserFeatures.SUBSCRIBER)
+    v2 = u2.hasFeature(UserFeatures.SUBSCRIBER) || u2.hasFeature(UserFeatures.SUBSCRIBER)
+    if (v1 > v2) return -1
+    if (v1 < v2) return 1
+
+    if (u1.nick < u2.nick) return -1
+    if (u1.nick > u2.nick) return 1
+    return 0
+}
 
 class ChatMenu extends EventEmitter {
 
@@ -44,9 +78,10 @@ class ChatMenu extends EventEmitter {
         this.ui.on('click', '.close,.menu-close', this.hide.bind(this));
         this.btn.on('click', e => {
             if(this.visible)
-                chat.input.focus();
-            this.toggle(e);
-        });
+                chat.input.focus()
+            this.toggle(e)
+            return false
+        })
     }
 
     show(){
@@ -226,8 +261,7 @@ class ChatUserMenu extends ChatMenu {
 
     addAndRedraw(username){
         if(!this.hasElement(username)){
-            this.addElement(username);
-            this.sort();
+            this.addElement(username, true);
             this.filter();
             this.redraw();
         }
@@ -245,12 +279,27 @@ class ChatUserMenu extends ChatMenu {
         this.totalcount--;
     }
 
-    addElement(username){
-        const user = this.chat.users.get(username.toLowerCase());
-        const label = !user.username || user.username === '' ? 'Anonymous' : user.username;
-        const features = user.features.length === 0 ? 'nofeature' : user.features.join(' ');
-        this.container.append(`<a data-username="${user.username}" class="user ${features}">${label} <i class="fa fa-share-square whisper-nick" aria-hidden="true"></i></a>`);
-        this.totalcount++;
+    addElement(username, sort=false){
+        const user = this.chat.users.get(username.toLowerCase()),
+             label = !user.username || user.username === '' ? 'Anonymous' : user.username,
+          features = user.features.length === 0 ? 'nofeature' : user.features.join(' '),
+               usr = $(`<a data-username="${user.username}" class="user ${features}">${label} <i class="fa fa-share-square whisper-nick"></i></a>`)
+        if(sort && this.totalcount > 0) {
+            // Insert item in the correct order (instead of resorting the entire list)
+            const items = this.container.children('.user').get()
+            let min = 0, max = items.length, index = Math.floor((min + max) / 2)
+            while (max > min) {
+                if (userComparator.apply(this, [usr[0], items[index]]) < 0)
+                    max = index
+                else
+                    min = index + 1
+                index = Math.floor((min + max) / 2)
+            }
+            usr.insertAfter(items[index])
+        } else {
+            this.container.append(usr)
+        }
+        this.totalcount++
     }
 
     hasElement(username){
@@ -271,42 +320,9 @@ class ChatUserMenu extends ChatMenu {
     }
 
     sort(){
-        const users = this.container.children('.user').get();
-        users.sort((a, b) => {
-            const u1 = this.chat.users.get(a.getAttribute('data-username').toLowerCase());
-            const u2 = this.chat.users.get(b.getAttribute('data-username').toLowerCase());
-            if(!u1 || !u2) return 0;
-            let v1, v2;
-
-            v1 = u1.hasFeature(UserFeatures.ADMIN) || u1.hasFeature(UserFeatures.VIP);
-            v2 = u2.hasFeature(UserFeatures.ADMIN) || u2.hasFeature(UserFeatures.VIP);
-            if (v1 > v2) return -1;
-            if (v1 < v2) return 1;
-
-            v1 = u1.hasFeature(UserFeatures.BOT2);
-            v2 = u2.hasFeature(UserFeatures.BOT2);
-            if (v1 > v2) return 1;
-            if (v1 < v2) return -1;
-            v1 = u1.hasFeature(UserFeatures.BOT);
-            v2 = u2.hasFeature(UserFeatures.BOT);
-            if (v1 > v2) return 1;
-            if (v1 < v2) return -1;
-
-            v1 = u1.hasFeature(UserFeatures.BROADCASTER) || u1.hasFeature(UserFeatures.BROADCASTER);
-            v2 = u2.hasFeature(UserFeatures.BROADCASTER) || u2.hasFeature(UserFeatures.BROADCASTER);
-            if (v1 > v2) return -1;
-            if (v1 < v2) return 1;
-
-            v1 = u1.hasFeature(UserFeatures.SUBSCRIBER) || u1.hasFeature(UserFeatures.SUBSCRIBER);
-            v2 = u2.hasFeature(UserFeatures.SUBSCRIBER) || u2.hasFeature(UserFeatures.SUBSCRIBER);
-            if (v1 > v2) return -1;
-            if (v1 < v2) return 1;
-
-            if (u1.nick < u2.nick) return -1;
-            if (u1.nick > u2.nick) return 1;
-            return 0;
-
-        }).forEach(a => a.parentNode.appendChild(a));
+        this.container.children('.user').get()
+            .sort(userComparator.bind(this))
+            .forEach(a => a.parentNode.appendChild(a));
     }
 
 }
@@ -345,7 +361,7 @@ class ChatWhisperUsers extends ChatMenu {
         super(ui, btn, chat);
         this.unread = 0;
         this.empty = $(`<span class="empty">No new whispers :(</span>`);
-        this.notif = $(`<span id="chat-whisper-notif"></span>`);
+        this.notif = $(`<span id="chat-whisper-unread-indicator"></span>`);
         this.btn.append(this.notif);
         this.usersEl = ui.find('ul:first');
         this.usersEl.on('click', '.user', e => chat.openConversation(e.target.getAttribute('data-username')));

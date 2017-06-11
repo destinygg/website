@@ -14,32 +14,9 @@
     2% { color: $color-label-admin-alt; font-size:200%; }
     3% { color: $color-light; font-size:190%; }
     4% { color: $color-label-admin-alt; font-size:200%; }
-    100% { color: $color-light; font-size:100%; }
+    100% { color: $color-light; font-size:120%; }
 }
-@keyframes emote-complete {
-    0% { transform: translate(-10px, 0); opacity: 0;/* text-shadow: 0 0 3px rgba(white, 1);*/ }
-    2% { transform: translate(10px, 0); color: white; opacity: 1;/* text-shadow: 0 0 10px rgba(white, 0.5);*/ }
-    100% { transform: translate(0, 0); opacity: 1; }
-}
-@keyframes emote-greyout {
-    0% { filter: grayscale(0) }
-    75% { filter: grayscale(0) }
-    100% { filter: grayscale(100%) }
-}
-@keyframes whisper-pulse {
-    0% {
-        color: white;
-        background: rgba(255,255,255,0.4);
-        box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
-    }
-    70% {
-        background:none;
-        box-shadow: 0 0 0 10px rgba(255,255,255,0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255,255,255,0);
-    }
-}
+
 @keyframes rustle {
     from { left: 0; }
     to { left: 2px; }

@@ -2,7 +2,6 @@
 
 import moment from 'moment';
 
-
 // Generic popup defaults
 const popupDefaults = {
     height     :500,
@@ -185,7 +184,7 @@ $(function(){
 });
 
 // Change time on selected elements
-(function(){
+$(function(){
 
     const applyMomentToElement = function(e){
 
@@ -218,10 +217,10 @@ $(function(){
         applyMomentToElement(this);
     });
 
-})();
+});
 
 // Gifting / user search
-(function(){
+$(function(){
 
     let usrSearch    = $('#userSearchModal'),
         usrInput     = usrSearch.find('input#userSearchInput'),
@@ -329,8 +328,9 @@ $(function(){
             $(element).closest('.form-group').removeClass('error');
         }
     });
-})();
+});
 
+// Stream status
 $(function(){
 
     $('#stream-status').each(function(){

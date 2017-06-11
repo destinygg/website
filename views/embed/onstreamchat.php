@@ -8,7 +8,7 @@ use Destiny\Common\Config;
 <title><?=Tpl::title($this->title)?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
 <meta name="referrer" content="no-referrer">
-<?php include 'seg/commontop.php' ?>
+<?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/streamchat.css" rel="stylesheet" media="screen">
 <style id="chat-styles" type="text/css"></style>
 </head>
@@ -18,7 +18,7 @@ use Destiny\Common\Config;
     <div id="chat-output-frame"></div>
 </div>
 
-<?php include 'seg/commonbottom.php' ?>
+<?php include 'seg/tracker.php' ?>
 <script src="<?=Config::cdnv()?>/streamchat.js"></script>
 
 </body>

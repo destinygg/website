@@ -77,7 +77,7 @@ function buildFeatures(user){
         })
         .map(e => {
             const f = UserFeatures.valueOf(e);
-            return `<i class="flair icon-${e.toLowerCase()}" title="${f !== null ? f.label : e}" />`;
+            return `<i class="flair icon-${e.toLowerCase()}" title="${f !== null ? f.label : e}"></i>`;
         })
         .join('');
     return features.length > 0 ? `<span class="features">${features}</span>` : '';
@@ -166,7 +166,7 @@ class ChatUIMessage {
         classes.unshift(`msg-${this.type.toLowerCase()}`);
         classes.unshift(`msg-chat`);
         attr['class'] = classes.join(' ');
-        return $('<div />', attr).html(content)[0].outerHTML;
+        return $('<div></div>', attr).html(content)[0].outerHTML;
     }
 
     html(chat=null){
@@ -280,7 +280,7 @@ class ChatEmoteMessage extends ChatMessage {
 
     html(chat=null){
         this._text          = $(`<span class="text">${formatters.get('emote').format(chat, this.message, this)}</span>`)
-        this._combo         = $(`<span class="chat-combo" />`)
+        this._combo         = $(`<span class="chat-combo"></span>`)
         this._combo_count   = $(`<i class="count">${this.emotecount}</i>`)
         this._combo_x       = $(`<i class="x">X</i>`)
         this._combo_hits    = $(`<i class="hit">Hits</i>`)
