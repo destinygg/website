@@ -1,8 +1,9 @@
 @import "../../common";
-@import url("https://fonts.googleapis.com/css?family=Roboto");
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500");
 
 body, .chat-lines {
     font-family: 'Roboto', Helvetica, "Trebuchet MS", Verdana, sans-serif;
+    font-weight: 500 !important;
 }
 #chat-output-frame {
     margin: 0;
