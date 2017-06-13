@@ -5,7 +5,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
-use OAuth2\Client;
+use OAuth2;
 
 class TwitchAuthHandler{
   
@@ -20,8 +20,8 @@ class TwitchAuthHandler{
     public function getAuthenticationUrl() {
         $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
         $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
-        $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
-        $client->setAccessTokenType ( Client::ACCESS_TOKEN_OAUTH );
+        $client = new OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
+        $client->setAccessTokenType ( OAuth2\Client::ACCESS_TOKEN_OAUTH );
         return $client->getAuthenticationUrl ( 'https://api.twitch.tv/kraken/oauth2/authorize', $callback, array (
             'scope' => 'user_read' 
         ) );
@@ -38,8 +38,8 @@ class TwitchAuthHandler{
         }
         
         $oAuthConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
-        $client = new Client ( $oAuthConf ['clientId'], $oAuthConf ['clientSecret'] );
-        $client->setAccessTokenType ( Client::ACCESS_TOKEN_OAUTH );
+        $client = new OAuth2\Client ( $oAuthConf ['clientId'], $oAuthConf ['clientSecret'] );
+        $client->setAccessTokenType ( OAuth2\Client::ACCESS_TOKEN_OAUTH );
         $response = $client->getAccessToken ( 'https://api.twitch.tv/kraken/oauth2/token', 'authorization_code', array (
           'redirect_uri' => sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ),
           'code' => $params ['code']
@@ -52,7 +52,9 @@ class TwitchAuthHandler{
             throw new Exception ( 'Failed request for access token' );
         
         $client->setAccessToken ( $response ['result'] ['access_token'] );
-        $response = $client->fetch ( 'https://api.twitch.tv/kraken/user', [], Client::HTTP_METHOD_GET, ['Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId']] );
+        $response = $client->fetch ( 'https://api.twitch.tv/kraken/user', [], OAuth2\Client::HTTP_METHOD_GET, [
+            'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId']
+        ]);
         
         if (empty ( $response ['result'] ) || isset ( $response ['error'] ))
            throw new Exception ( 'Invalid user details response' );

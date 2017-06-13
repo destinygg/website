@@ -2,10 +2,11 @@
 namespace Destiny\Blog;
 
 use Destiny\Common\Config;
+use Destiny\Common\Log;
 use Destiny\Common\Service;
-use Destiny\Common\CurlBrowser;
-use Destiny\Common\MimeType;
 use Destiny\Common\Exception;
+use Destiny\Common\Utils\Http;
+use GuzzleHttp;
 
 /**
  * @method static BlogApiService instance()
@@ -13,21 +14,25 @@ use Destiny\Common\Exception;
 class BlogApiService extends Service {
     
     /**
-     * @param array $options
-     * @return CurlBrowser
+     * @return null|array
      */
-    public function getBlogPosts(array $options = array()) {
-        return new CurlBrowser ( array_merge ( array (
-            'timeout' => 25,
-            'url' => Config::$a['blog']['feed'],
-            'contentType' => MimeType::JSON,
-            'onfetch' => function ($json) {
+    public function getBlogPosts() {
+        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get(Config::$a['blog']['feed'], [
+            'headers' => ['User-Agent' => Config::userAgent()]
+        ]);
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            try {
+                $json = GuzzleHttp\json_decode($response->getBody(), true);
                 if (empty($json) || !is_array($json)) {
                     throw new Exception('Invalid blog API response');
                 }
-                return array_slice ( $json, 0, 6 );
-            } 
-        ), $options ) );
+                return array_slice($json, 0, 6);
+            } catch (\Exception $e) {
+                Log::error("Invalid blog response");
+            }
+        }
+        return null;
     }
 
 }

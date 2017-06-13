@@ -24,9 +24,9 @@ class TwitterAuthHandler {
         $tmhOAuth = new \tmhOAuth ( array (
                 'consumer_key' => $authConf ['clientId'],
                 'consumer_secret' => $authConf ['clientSecret'],
-                'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
-                'curl_timeout' => Config::$a ['curl'] ['timeout'],
-                'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
+                'curl_connecttimeout' => 10,
+                'curl_timeout' => 15,
+                'curl_ssl_verifypeer' => false
         ) );
         $code = $tmhOAuth->apponly_request ( array (
                 'without_bearer' => true,
@@ -66,9 +66,9 @@ class TwitterAuthHandler {
                 'consumer_secret' => $twitterOAuthConf ['clientSecret'],
                 'token' => $oauth ['oauth_token'],
                 'secret' => $oauth ['oauth_token_secret'],
-                'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
-                'curl_timeout' => Config::$a ['curl'] ['timeout'],
-                'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'] 
+                'curl_connecttimeout' => 10,
+                'curl_timeout' => 30,
+                'curl_ssl_verifypeer' => false
         ) );
         /** @noinspection PhpVoidFunctionResultUsedInspection */
         $code = $tmhOAuth->user_request ( array (

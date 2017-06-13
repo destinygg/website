@@ -4,6 +4,7 @@ namespace Destiny\Controllers;
 use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
@@ -26,6 +27,8 @@ use Destiny\Commerce\PaymentStatus;
 use Destiny\Common\Utils\Http;
 use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\PayPal\PayPalApiService;
+use Destiny\StreamLabs\StreamLabsAlertsType;
+use Destiny\StreamLabs\StreamLabsService;
 
 /**
  * @Controller
@@ -156,7 +159,6 @@ class SubscriptionController {
            throw new Exception( 'Invalid subscription status' );
         }
 
-        $log = Application::instance()->getLogger();
         $conn = Application::instance()->getConnection();
         $conn->beginTransaction();
 
@@ -191,7 +193,7 @@ class SubscriptionController {
             $authenticationService->flagUserForUpdate ( $subscription ['userId'] );
             $conn->commit();
         } catch ( \Exception $e ) {
-            $log->critical("Error cancelling subscription", $subscription);
+            Log::critical("Error cancelling subscription", $subscription);
             $conn->rollBack();
             throw $e;
         }
@@ -257,7 +259,7 @@ class SubscriptionController {
 
         $model->subscriptionType = $subscriptionType;
         $model->title = 'Subscription Confirm';
-        return 'order/orderconfirm';
+        return 'subscribe/confirm';
     }
 
     /**
@@ -275,8 +277,7 @@ class SubscriptionController {
         $userService = UserService::instance ();
         $subscriptionsService = SubscriptionsService::instance ();
         $payPalApiService = PayPalApiService::instance ();
-        $log = Application::instance ()->getLogger ();
-        
+
         $userId = Session::getCredentials ()->getUserId ();
         $subscriptionType = $subscriptionsService->getSubscriptionType ( $params ['subscription'] );
         $recurring = (isset ( $params ['renew'] ) && $params ['renew'] == '1');
@@ -303,7 +304,7 @@ class SubscriptionController {
             $model->title = 'Subscription Error';
             $model->subscription = null;
             $model->error = $e;
-            return 'order/ordererror';
+            return 'subscribe/error';
         }
 
         $conn = Application::instance()->getConnection();
@@ -340,9 +341,10 @@ class SubscriptionController {
             $returnUrl = Http::getBaseUrl () . '/subscription/process?success=true&subscriptionId=' . urlencode ( $subscriptionId );
             $cancelUrl = Http::getBaseUrl () . '/subscription/process?success=false&subscriptionId=' . urlencode ( $subscriptionId );
 
-            $token = $payPalApiService->createECResponse ( $returnUrl, $cancelUrl, $subscriptionType, $recurring );
-            if (empty ( $token ))
-                throw new Exception ( "Error getting paypal response" );
+            $token = $payPalApiService->createSubscribeECResponse($returnUrl, $cancelUrl, $subscriptionType, $recurring);
+            if (empty ($token)) {
+                throw new Exception ("Error getting paypal response");
+            }
 
             // Commit transaction and continue to paypal.
             $conn->commit();
@@ -350,7 +352,7 @@ class SubscriptionController {
             return 'redirect: ' . Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode ( $token );
 
         } catch ( \Exception $e ) {
-            $log->critical("Error creating order");
+            Log::critical("Error creating order");
             $conn->rollBack();
             throw $e;
         }
@@ -381,7 +383,6 @@ class SubscriptionController {
         $payPalApiService = PayPalApiService::instance ();
         $chatIntegrationService = ChatIntegrationService::instance ();
         $authenticationService = AuthenticationService::instance ();
-        $log = Application::instance ()->getLogger ();
 
         $subscription = $subscriptionsService->getSubscriptionById ( $params ['subscriptionId'] );
         if (empty ( $subscription ) || strcasecmp($subscription ['status'], SubscriptionStatus::_NEW) !== 0)
@@ -398,7 +399,8 @@ class SubscriptionController {
             if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false)
                 throw new Exception ('Order request failed');
 
-            if (!$payPalApiService->retrieveCheckoutInfo($params ['token']))
+            $checkinfo = $payPalApiService->retrieveCheckoutInfo($params ['token']);
+            if ($checkinfo === null)
                 throw new Exception ('Failed to retrieve express checkout details');
 
             FilterParams::required($params, 'PayerID'); // if the order status is an error, the payerID is not returned
@@ -455,7 +457,7 @@ class SubscriptionController {
                 'status' => SubscriptionStatus::ERROR
             ));
 
-            $log->critical ( $e->getMessage(), $subscription );
+            Log::critical ( $e->getMessage(), $subscription );
             return 'redirect: /subscription/' . urlencode ( $subscription ['subscriptionId'] ) . '/error';
         }
 
@@ -467,19 +469,29 @@ class SubscriptionController {
         }
 
         // Broadcast
-        $randomEmote = ChatEmotes::random('destiny');
-        if(!empty($subscription['gifter'])){
-            $gifter   = $userService->getUserById( $subscription['gifter'] );
-            $userName = $gifter['username'];
-            $chatIntegrationService->sendBroadcast ( sprintf ( "%s gifted %s a %s subscription! %s", $gifter['username'], $user['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
-        }else{
-            $userName = $user['username'];
-            $chatIntegrationService->sendBroadcast ( sprintf ( "%s is now a %s subscriber! %s", $user['username'], $subscriptionType ['tierLabel'], $randomEmote ) );
+        try {
+            $subMessage = Session::set('subMessage');
+            $randomEmote = ChatEmotes::random('destiny');
+            if (!empty($subscription['gifter'])) {
+                $gifter = $userService->getUserById($subscription['gifter']);
+                $gifternick = $gifter['username'];
+                $message = sprintf("%s gifted %s a %s subscription!", $gifter['username'], $user['username'], $subscriptionType ['tierLabel']);
+            } else {
+                $gifternick = $user['username'];
+                $message = sprintf("%s is now a %s subscriber!", $user['username'], $subscriptionType ['tierLabel']);
+            }
+            $broadcast = $message . ' ' . $randomEmote;
+            if (!empty($subMessage)) {
+                $subMessage = trim(preg_replace('/\s\s+/', ' ', $subMessage));
+                $broadcast .= "\r" . $gifternick . " said... \r" . $subMessage;
+            }
+            $chatIntegrationService->sendBroadcast($broadcast);
+            $streamLabService = StreamLabsService::instance();
+            $streamLabService->useDefaultAuth();
+            $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);
+        } catch (\Exception $e) {
+            Log::critical("Error sending subscription broadcast");
         }
-
-        $subMessage = Session::set('subMessage');
-        if(!empty($subMessage))
-            $chatIntegrationService->sendBroadcast ( sprintf ( "%s: %s", $userName, $subMessage ) );
 
         // Update the user
         $authenticationService->flagUserForUpdate ( $user['userId'] );
@@ -519,7 +531,7 @@ class SubscriptionController {
         $model->title = 'Subscription Complete';
         $model->subscription = $subscription;
         $model->subscriptionType = $subscriptionType;
-        return 'order/ordercomplete';
+        return 'subscribe/complete';
     }
 
     /**
@@ -544,7 +556,7 @@ class SubscriptionController {
 
         $model->title = 'Subscription Error';
         $model->subscription = $subscription;
-        return 'order/ordererror';
+        return 'subscribe/error';
     }
 
     /**

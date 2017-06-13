@@ -4,9 +4,9 @@ namespace Destiny\Controllers;
 use Destiny\Commerce\PaymentStatus;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Log;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
@@ -30,16 +30,15 @@ class IpnController {
      * @return string
      */
     public function ipn(Response $response) {
-        $log = Application::instance()->getLogger();
         try {
             $ipnMessage = new PPIPNMessage ();
             if (!$ipnMessage->validate()) {
-                $log->error('Got a invalid IPN ' . json_encode($ipnMessage->getRawData()));
+                Log::error('Got a invalid IPN ' . json_encode($ipnMessage->getRawData()));
                 $response->setStatus(Http::STATUS_ERROR);
                 return 'Invalid IPN';
             }
             $data = $ipnMessage->getRawData();
-            $log->info(sprintf('Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId(), $data ['txn_type']));
+            Log::info(sprintf('Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId(), $data ['txn_type']));
             $orderService = OrdersService::instance();
             $orderService->addIpnRecord(array(
                 'ipnTrackId' => $data ['ipn_track_id'],
@@ -50,7 +49,7 @@ class IpnController {
 
             // Make sure this IPN is for the merchant
             if (strcasecmp(Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email']) !== 0) {
-                $log->critical(sprintf('IPN originated with incorrect receiver_email [%s]', $data ['ipn_track_id']));
+                Log::critical(sprintf('IPN originated with incorrect receiver_email [%s]', $data ['ipn_track_id']));
                 $response->setStatus(Http::STATUS_ERROR);
                 return 'Invalid IPN';
             }
@@ -58,8 +57,8 @@ class IpnController {
             // Handle the IPN
             $this->handleIPNTransaction($data ['txn_id'], $data ['txn_type'], $data);
 
-        } catch (SubscriptionNotFoundException $e) {
-            $log->critical($e->getMessage());
+        } catch (\Exception $e) {
+            Log::critical($e->getMessage());
         }
 
         return 'ok';
@@ -73,7 +72,6 @@ class IpnController {
      */
     protected function handleIPNTransaction($txnId, $txnType, array $data) {
 
-        $log = Application::instance()->getLogger();
         $orderService = OrdersService::instance();
         $subscriptionsService = SubscriptionsService::instance();
 
@@ -107,7 +105,7 @@ class IpnController {
                     }
 
                 } else {
-                    $log->info(sprintf('Express checkout IPN called, but no payment found [%s]', $txnId));
+                    Log::info(sprintf('Express checkout IPN called, but no payment found [%s]', $txnId));
                 }
                 break;
 
@@ -137,7 +135,7 @@ class IpnController {
                     'paymentStatus'   => $data ['payment_status'],
                     'paymentDate'     => Date::getDateTime($data ['payment_date'])->format('Y-m-d H:i:s'),
                 ));
-                $log->notice(sprintf('Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                Log::notice(sprintf('Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
 
             case 'RECURRING_PAYMENT_SKIPPED':
@@ -146,7 +144,7 @@ class IpnController {
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::SKIPPED
                 ));
-                $log->debug(sprintf('Payment skipped %s', $data ['recurring_payment_id']));
+                Log::debug(sprintf('Payment skipped %s', $data ['recurring_payment_id']));
                 break;
 
             case 'RECURRING_PAYMENT_PROFILE_CANCEL' :
@@ -155,7 +153,7 @@ class IpnController {
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::CANCELLED
                 ));
-                $log->debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                Log::debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
 
             case 'RECURRING_PAYMENT_FAILED' :
@@ -164,7 +162,7 @@ class IpnController {
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::FAILED
                 ));
-                $log->debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                Log::debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
 
             // Sent on first post-back when the user subscribes
@@ -174,7 +172,7 @@ class IpnController {
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::ACTIVE
                 ));
-                $log->debug(sprintf('Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                Log::debug(sprintf('Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
                 break;
         }
     }
@@ -182,7 +180,7 @@ class IpnController {
     /**
      * @param array $data
      * @return array|null
-     * @throws SubscriptionNotFoundException|Exception
+     * @throws Exception
      */
     protected function getSubscriptionByPaymentProfileData( array $data ){
         $subscription = null;
@@ -191,13 +189,10 @@ class IpnController {
             $subscription = $subscriptionService->getSubscriptionByPaymentProfileId( $data ['recurring_payment_id'] );
         }
         if(empty($subscription)){
-            $log = Application::instance()->getLogger();
-            $log->critical('Could not load subscription using IPN', $data);
-            throw new SubscriptionNotFoundException( 'Could not load subscription by payment data' );
+            Log::critical('Could not load subscription using IPN', $data);
+            throw new Exception( 'Could not load subscription by payment data' );
         }
         return $subscription;
     }
 
 }
-
-class SubscriptionNotFoundException extends Exception {}

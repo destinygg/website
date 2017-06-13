@@ -4,9 +4,9 @@ namespace Destiny\Twitch;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Config;
-use Destiny\Common\MimeType;
-use Destiny\Common\CurlBrowser;
 use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\Http;
+use GuzzleHttp;
 
 /**
  * @method static TwitchApiService instance()
@@ -79,55 +79,81 @@ class TwitchApiService extends Service {
      * @return array
      */
     public function getChannelHost($id){
-        $json = (new CurlBrowser (array_merge(array(
-            'timeout' => 25,
-            'url' => 'https://tmi.twitch.tv/hosts?include_logins=1&host=' . $id,
-            'headers' => ['Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId']],
-            'contentType' => MimeType::JSON
-        ))))->getResponse();
-        if(empty($json))
-            $json = [];
-        if(isset($json['hosts']))
-            $json = $json['hosts'][0];
-        return $json;
+        $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get('https://tmi.twitch.tv/hosts', [
+            'headers' => [
+                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
+                'User-Agent' => Config::userAgent()
+            ],
+            'query' => [
+                'include_logins' => '1',
+                'host' => $id
+            ]
+        ]);
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            $json = GuzzleHttp\json_decode($response->getBody(), true);
+            if(!empty($json) && isset($json['hosts']))
+                return $json['hosts'][0];
+            return $json;
+        }
+        return null;
     }
 
     /**
      * @param int $limit
      * @return array
      */
-    public function getPastBroadcasts($limit=4) {
-        return (new CurlBrowser (array_merge(array(
-            'timeout' => 10,
-            'url' => 'https://api.twitch.tv/kraken/channels/' . Config::$a ['twitch'] ['user'] . '/videos?broadcasts=true&limit=' . $limit,
-            'headers' => ['Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId']],
-            'contentType' => MimeType::JSON
-        ))))->getResponse();
+    public function getPastBroadcasts($limit = 4) {
+        $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get('https://api.twitch.tv/kraken/channels/' . Config::$a ['twitch'] ['user'] . '/videos', [
+            'headers' => [
+                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
+                'User-Agent' => Config::userAgent()
+            ],
+            'query' => [
+                'broadcasts' => true,
+                'limit' => $limit
+            ]
+        ]);
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            return GuzzleHttp\json_decode($response->getBody(), true);
+        }
+        return null;
     }
 
     /**
-     * @return array
+     * @return null|array
      */
     public function getStream() {
-        return (new CurlBrowser (array_merge(array(
-            'timeout' => 10,
-            'url' => 'https://api.twitch.tv/kraken/streams/' . Config::$a ['twitch'] ['user'],
-            'headers' => ['Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId']],
-            'contentType' => MimeType::JSON
-        ))))->getResponse();
+        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get('https://api.twitch.tv/kraken/streams/' . Config::$a ['twitch'] ['user'], [
+            'headers' => [
+                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
+                'User-Agent' => Config::userAgent()
+            ]
+        ]);
+        if($response->getStatusCode() == Http::STATUS_OK) {
+            return GuzzleHttp\json_decode($response->getBody(), true);
+        }
+        return null;
     }
 
     /**
      * @param $name string channel name
-     * @return array
+     * @return null|array
      */
     public function getChannel($name) {
-        return (new CurlBrowser (array_merge(array(
-            'timeout' => 10,
-            'url' => 'https://api.twitch.tv/kraken/channels/' . $name,
-            'headers' => ['Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId']],
-            'contentType' => MimeType::JSON
-        ))))->getResponse();
+        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get('https://api.twitch.tv/kraken/channels/' . $name, [
+            'headers' => [
+                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
+                'User-Agent' => Config::userAgent()
+            ]
+        ]);
+        if($response->getStatusCode() == Http::STATUS_OK) {
+            return GuzzleHttp\json_decode($response->getBody(), true);
+        }
+        return null;
     }
 
     /**

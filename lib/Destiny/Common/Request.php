@@ -4,10 +4,10 @@ namespace Destiny\Common;
 class Request {
 
     const HEADER_CONTENT_TYPE      = 'Content-Type';
-    const HEADER_AUTH_TOKEN        = 'AuthToken';
     const HEADER_IF_MODIFIED_SINCE = 'If-Modified-Since';
     const HEADER_IF_NONE_MATCH     = 'If-None-Match';
     const HEADER_REQUESTED_WITH    = 'Requested-With';
+    const HEADER_AUTH_TOKEN        = 'AuthToken';
 
     /**
      * @var string

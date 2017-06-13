@@ -1,8 +1,9 @@
 <?php
 namespace Destiny\Common\Utils;
 
-use Destiny\Common\Application;
 use Destiny\Common\Config;
+use Destiny\Common\Log;
+use GuzzleHttp;
 
 class ImageDownload {
 
@@ -26,69 +27,41 @@ class ImageDownload {
      *
      * @return string a RELATIVE path to the file, or an empty string if something went wrong
      */
-    public static function download($url, $path, $overwrite = false){
-
-        $response = "";
-        if(empty($url)) return $response;
-
-        $log   = Application::instance()->getLogger();
-        $uri   = parse_url($url, PHP_URL_PATH);
-        $ext   = strtolower(pathinfo($uri, PATHINFO_EXTENSION));
-        $name  = md5($url);
-        $tmp   = $path . $name . ".tmp";
+    public static function download($url, $overwrite = false, $path = null){
+        $response = '';
+        if (empty($url))
+            return $response;
+        if (empty($path))
+            $path = Config::$a['images']['path'];
+        $uri = parse_url($url, PHP_URL_PATH);
+        $ext = strtolower(pathinfo($uri, PATHINFO_EXTENSION));
+        $name = md5($url);
         $shard = (preg_match("/[a-z0-9]/i", $name, $match)) ? $match[0] : "0";
         $final = $shard . self::$PATH_SEPARATOR . $name . "." . $ext;
-
-        if(strlen($shard) <= 0){
-            $log->error("Invalid shard." . $shard);
+        Log::debug("Downloading ..." . $uri);
+        if (strlen($shard) <= 0) {
+            Log::error("Invalid shard." . $shard);
         } else if (!file_exists($path . $shard) && !mkdir($path . $shard)) {
-            $log->error("Could not make shard sub-folder. " . $path . $shard);
-        } else if(empty($ext) || !in_array($ext, self::$ALLOWED_EXT)){
-            $log->error("File type not supported or invalid extension." . $uri);
+            Log::error("Could not make shard sub-folder. " . $path . $shard);
+        } else if (empty($ext) || !in_array($ext, self::$ALLOWED_EXT)) {
+            Log::error("File type not supported or invalid extension." . $uri);
         } else if ($overwrite === false && file_exists($path . $final)) {
-            $log->notice("Not downloading image, one already exists.");
+            Log::notice("Not downloading image, one already exists.");
             $response = $final;
         } else {
-
-            $fp = null;
-            $ch = null;
             try {
-                $ch = curl_init($url);
-                $fp = fopen($tmp, "wb");
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_HEADER         => false,
-                    CURLOPT_USERAGENT      => Config::userAgent(),
-                    CURLOPT_CONNECTTIMEOUT => 5,
-                    CURLOPT_TIMEOUT        => 20,
-                    CURLOPT_SSL_VERIFYPEER => false
+                $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5]);
+                $r = $client->request('GET', $url, [
+                    'headers' => ['User-Agent' => Config::userAgent()],
+                    'sink' => $path . $final
                 ]);
-                curl_setopt($ch, CURLOPT_FILE, $fp);
-                if(!curl_exec($ch))
-                    $log->error("Curl error: " . curl_error($ch));
-                $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            } finally {
-                if ($fp != null) fclose($fp);
-                if ($ch != null) curl_close($ch);
-            }
-
-            try {
-                if ($code !== 200) {
-                    $log->error("Invalid http response code. [" . $code . "] " . $url);
-                } else if (!file_exists($tmp)) {
-                    $log->error("Temp file could not be saved. " . $tmp);
-                } else {
-                    // Logic is mentioned on the @overwrite parameter.
-                    if($overwrite === true)
-                        $final = $shard . self::$PATH_SEPARATOR . md5_file($tmp) . "." . $ext;
-                    $response = rename($tmp, $path . $final) ? $final : "";
+                $code = $r->getStatusCode();
+                if ($code != Http::STATUS_OK) {
+                    Log::error("Invalid http response code. [" . $code . "] " . $url);
                 }
             } catch (\Exception $e) {
-                $log->error($e);
-            } finally {
-                @unlink($tmp);
+                Log::error($e->getMessage());
             }
-
         }
         return $response;
     }

@@ -12,9 +12,9 @@ use Destiny\Common\TaskInterface;
 class BlogFeed implements TaskInterface {
 
     public function execute() {
-        $response = BlogApiService::instance ()->getBlogPosts ()->getResponse ();
-        if (! empty ( $response ))
-            Application::instance ()->getCacheDriver ()->save ( 'recentblog', $response );
+        $response = BlogApiService::instance()->getBlogPosts();
+        if (!empty ($response))
+            Application::instance()->getCacheDriver()->save('recentblog', $response);
     }
 
 }

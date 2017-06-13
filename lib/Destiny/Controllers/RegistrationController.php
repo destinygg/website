@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Application;
+use Destiny\Common\Log;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
@@ -125,7 +126,6 @@ class RegistrationController {
             return 'register';
         }
 
-        $log = Application::instance()->getLogger();
         $conn = Application::instance()->getConnection();
         $conn->beginTransaction();
 
@@ -136,17 +136,18 @@ class RegistrationController {
             $user ['userStatus'] = 'Active';
             $user ['country'] = $country;
             $user ['userId'] = $userService->addUser ( $user );
-            $userService->addUserAuthProfile ( array (
+            $userService->addUserAuthProfile([
                 'userId' => $user ['userId'],
-                'authProvider' => $authCreds->getAuthProvider (),
-                'authId' => $authCreds->getAuthId (),
-                'authCode' => $authCreds->getAuthCode (),
-                'authDetail' => $authCreds->getAuthDetail ()
-            ) );
+                'authProvider' => $authCreds->getAuthProvider(),
+                'authId' => $authCreds->getAuthId(),
+                'authCode' => $authCreds->getAuthCode(),
+                'authDetail' => $authCreds->getAuthDetail(),
+                'refreshToken' => $authCreds->getRefreshToken()
+            ]);
             $conn->commit();
             Session::set ( 'authSession' );
         } catch ( \Exception $e ) {
-            $log->critical("Error registering user");
+            Log::critical("Error registering user");
             $conn->rollBack();
             throw $e;
         }

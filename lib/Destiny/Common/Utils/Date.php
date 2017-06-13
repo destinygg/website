@@ -8,8 +8,6 @@ abstract class Date {
     
     const STRING_FORMAT_YEAR = 'g:ia, D jS F Y e';
     const STRING_FORMAT = 'D jS F Y, g:ia e';
-    const STRING_DATE_FORMAT = 'jS F, Y';
-    const STRING_TIME_FORMAT = 'H:i';
     const FORMAT = DATE_ISO8601;
 
     /**

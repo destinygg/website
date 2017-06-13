@@ -19,6 +19,22 @@ const getOptionsString = function(options){
     return Object.keys(options).map(k => `${k}=${options[k]}`).join(',');
 };
 
+// textarea[maxlength] , form.validate
+$(function(){
+
+    $('.text-message textarea[maxlength]').each((i, e) => {
+        const ta = $(e), max = ta.attr('maxlength')
+        const indicator = $(`<div class="max-length-indicator">250</div>`)
+        ta.on('keyup', () => indicator.text(max - ta.val().toString().length))
+        ta.after(indicator)
+    });
+
+    $('form.validate').validate({
+        highlight: (e) => $(e).closest('.form-group').addClass('error'),
+        unhighlight: (e) => $(e).closest('.form-group').removeClass('error')
+    });
+})
+
 // Document ready
 $(function(){
 
@@ -181,7 +197,7 @@ $(function(){
 
     // Tooltips
     $(this).find('[data-toggle="tooltip"]').tooltip();
-});
+})
 
 // Change time on selected elements
 $(function(){
@@ -217,7 +233,7 @@ $(function(){
         applyMomentToElement(this);
     });
 
-});
+})
 
 // Gifting / user search
 $(function(){
@@ -319,16 +335,7 @@ $(function(){
         cancelUserSelect();
         return false;
     });
-
-    $('form.validate').validate({
-        highlight: function(element) {
-            $(element).closest('.form-group').addClass('error');
-        },
-        unhighlight: function(element) {
-            $(element).closest('.form-group').removeClass('error');
-        }
-    });
-});
+})
 
 // Stream status
 $(function(){
@@ -389,4 +396,25 @@ $(function(){
         });
     });
 
-});
+})
+
+// Subscription, donate
+$(function(){
+
+    let subform = $('form#subscribe-form')
+    if(subform.length > 0) {
+        subform.on('submit', () => {
+            subform.find('button').attr("disabled", "disabled")
+            window.setTimeout(() => subform.find('[type="submit"]').removeAttr("disabled"), 30000)
+        })
+    }
+
+    let donateform = $('form#donate-form')
+    if(donateform.length > 0) {
+        donateform.on('submit', () => {
+            donateform.find('button').attr("disabled", "disabled")
+            window.setTimeout(() => donateform.find('[type="submit"]').removeAttr("disabled"), 30000)
+        })
+    }
+
+})

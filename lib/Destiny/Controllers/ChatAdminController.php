@@ -28,14 +28,6 @@ class ChatAdminController {
      */
     public function adminChat(ViewModel $model) {
         $model->title = 'Chat';
-        if (Session::has ( 'modelSuccess' )) {
-            $model->success = Session::get ( 'modelSuccess' );
-            Session::set ( 'modelSuccess' );
-        }
-        if (Session::has ( 'modelError' )) {
-            $model->error = Session::get ( 'modelError' );
-            Session::set ( 'modelError' );
-        }
         return 'admin/chat';
     }
     
@@ -55,7 +47,7 @@ class ChatAdminController {
         $chatIntegrationService = ChatIntegrationService::instance ();
         $chatIntegrationService->sendBroadcast ( $params ['message'] );
 
-        Session::set ( 'modelSuccess', sprintf ( 'Sent broadcast: %s', $params ['message'] ) );
+        Session::setSuccessBag(sprintf('Sent broadcast: %s', $params ['message']));
         return 'redirect: /admin/chat';
     }
     

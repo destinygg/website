@@ -33,10 +33,10 @@ AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 $app = Application::instance();
 $app->setLoader($loader);
 
-$log = new Logger ('web');
-$log->pushHandler(new StreamHandler (Config::$a ['log'] ['path'] . 'web.log', Logger::CRITICAL));
-$log->pushProcessor(new Monolog\Processor\WebProcessor ());
-$app->setLogger($log);
+$logger = new Logger ('web');
+$logger->pushHandler(new StreamHandler (Config::$a ['log'] ['path'] . 'web.log', Logger::CRITICAL));
+$logger->pushProcessor(new Monolog\Processor\WebProcessor ());
+$app->setLogger($logger);
 
 $app->setConnection(DriverManager::getConnection(Config::$a ['db']));
 

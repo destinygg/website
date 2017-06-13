@@ -19,6 +19,9 @@ return [
     'blog' => [
         'feed' => ''
     ],
+    'reddit' => [
+        'threads' => ''
+    ],
     'android' => [
         'app' => ''
     ],
@@ -41,11 +44,6 @@ return [
         'port'          => 6379,
         'database'      => 0,
         'scriptdir'     => _BASEDIR . '/scripts/redis/',
-    ],
-    'curl' => [
-        'verifypeer'     => false,
-        'timeout'        => 30,
-        'connecttimeout' => 5
     ],
     'authProfiles' => [
         'twitch',

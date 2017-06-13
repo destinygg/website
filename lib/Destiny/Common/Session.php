@@ -105,8 +105,8 @@ abstract class Session {
      * @return boolean
      */
     public static function hasRole($roleId) {
-        $credentials = self::getCredentials ();
-        if (! empty ( $credentials ) && $credentials->hasRole ( $roleId )) {
+        $credentials = self::getCredentials();
+        if (!empty ($credentials) && $credentials->hasRole($roleId)) {
             return true;
         }
         return false;
@@ -119,11 +119,30 @@ abstract class Session {
      * @return boolean
      */
     public static function hasFeature($featureId) {
-        $credentials = self::getCredentials ();
-        if (! empty ( $credentials ) && $credentials->hasFeature ( $featureId )) {
+        $credentials = self::getCredentials();
+        if (!empty ($credentials) && $credentials->hasFeature($featureId)) {
             return true;
         }
         return false;
+    }
+
+    public static function applyBags(ViewModel $model){
+        if (self::has('modelSuccess')) {
+            $model->success = self::get('modelSuccess');
+            self::set('modelSuccess');
+        }
+        if (self::has('modelError')) {
+            $model->error = self::get('modelError');
+            self::set('modelError');
+        }
+    }
+
+    public static function setSuccessBag($message){
+        self::set('modelSuccess', $message);
+    }
+
+    public static function setErrorBag($message){
+        self::set('modelError', $message);
     }
 
 }

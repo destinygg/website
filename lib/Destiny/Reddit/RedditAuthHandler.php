@@ -5,7 +5,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
-use OAuth2\Client;
+use OAuth2;
 
 class RedditAuthHandler {
     
@@ -20,7 +20,7 @@ class RedditAuthHandler {
     public function getAuthenticationUrl() {
         $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
         $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
-        $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'], Client::AUTH_TYPE_AUTHORIZATION_BASIC );
+        $client = new OAuth2\Client ( $authConf ['clientId'], $authConf ['clientSecret'], OAuth2\Client::AUTH_TYPE_AUTHORIZATION_BASIC );
         return $client->getAuthenticationUrl ( 'https://ssl.reddit.com/api/v1/authorize', $callback, array (
             'scope' => 'identity',
             'state' => md5 ( time () . 'eFdcSA_' ) 
@@ -38,8 +38,8 @@ class RedditAuthHandler {
         }
         
         $oAuthConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
-        $client = new Client ( $oAuthConf ['clientId'], $oAuthConf ['clientSecret'], Client::AUTH_TYPE_AUTHORIZATION_BASIC );
-        $client->setAccessTokenType ( Client::ACCESS_TOKEN_BEARER );
+        $client = new OAuth2\Client ( $oAuthConf ['clientId'], $oAuthConf ['clientSecret'], OAuth2\Client::AUTH_TYPE_AUTHORIZATION_BASIC );
+        $client->setAccessTokenType ( OAuth2\Client::ACCESS_TOKEN_BEARER );
         $response = $client->getAccessToken ( 'https://ssl.reddit.com/api/v1/access_token', 'authorization_code', array (
             'redirect_uri' => sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider ),
             'code' => $params ['code'] 

@@ -1,9 +1,9 @@
 <?php
 namespace Destiny\Common\Authentication;
 
+use Destiny\Common\Log;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
-use Destiny\Common\Application;
 use Destiny\Common\Exception;
 use Destiny\Common\Session;
 
@@ -20,7 +20,7 @@ class AuthenticationRedirectionFilter {
         
         // Make sure the creds are valid
         if (! $authCreds->isValid ()) {
-            Application::instance ()->getLogger ()->error ( sprintf ( 'Error validating auth credentials %s', var_export ( $authCreds, true ) ) );
+            Log::error ( sprintf ( 'Error validating auth credentials %s', var_export ( $authCreds, true ) ) );
             throw new Exception ( 'Invalid auth credentials' );
         }
 

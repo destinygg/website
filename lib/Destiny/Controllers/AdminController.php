@@ -43,6 +43,7 @@ class AdminController {
      * @HttpMethod ({"GET","POST"})
      *
      * @return string
+     * @internal param ViewModel $model
      */
     public function income() {
         return 'admin/income';
@@ -142,82 +143,86 @@ class AdminController {
         FilterParams::required($params, 'type');
         $statisticsService = StatisticsService::instance();
         $cacheDriver = Application::instance()->getCacheDriver ();
-        $data = array();
-        switch(strtoupper($params['type'])){
-            case 'REVENUELASTXDAYS':
-                FilterParams::required($params, 'days');
-                $key = 'RevenueLastXDays '. intval($params['days']);
-                if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getRevenueLastXDays( intval($params['days']) );
-                    $cacheDriver->save($key, $data, 30);
-                } else {
-                    $data = $cacheDriver->fetch($key);
-                }
-                break;
-            case 'REVENUELASTXMONTHS':
-                FilterParams::required($params, 'months');
-                $key = 'RevenueLastXMonths '. intval($params['months']);
-                if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getRevenueLastXMonths( intval($params['months']) );
-                    $cacheDriver->save($key, $data, 30);
-                } else {
-                    $data = $cacheDriver->fetch($key);
-                }
-                break;
-            case 'REVENUELASTXYEARS':
-                FilterParams::required($params, 'years');
-                $key = 'RevenueLastXYears '. intval($params['years']);
-                if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getRevenueLastXYears( intval($params['years']) );
-                    $cacheDriver->save($key, $data, 30);
-                } else {
-                    $data = $cacheDriver->fetch($key);
-                }
-                break;
-            case 'NEWSUBSCRIBERSLASTXDAYS':
-                FilterParams::required($params, 'days');
-                $key = 'NewSubscribersLastXDays '. intval($params['days']);
-                if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getNewSubscribersLastXDays( intval($params['days']) );
-                    $cacheDriver->save($key, $data, 30);
-                } else {
-                    $data = $cacheDriver->fetch($key);
-                }
-                break;
-            case 'NEWSUBSCRIBERSLASTXMONTHS':
-                FilterParams::required($params, 'months');
-                $key = 'NewSubscribersLastXMonths '. intval($params['months']);
-                if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getNewSubscribersLastXMonths( intval($params['months']) );
-                    $cacheDriver->save($key, $data, 30);
-                } else {
-                    $data = $cacheDriver->fetch($key);
-                }
-                break;
-            case 'NEWSUBSCRIBERSLASTXYEARS':
-                FilterParams::required($params, 'years');
-                $key = 'NewSubscribersLastXYears '. intval($params['years']);
-                if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getNewSubscribersLastXYears( intval($params['years']) );
-                    $cacheDriver->save($key, $data, 30);
-                } else {
-                    $data = $cacheDriver->fetch($key);
-                }
-                break;
-            case 'NEWTIEREDSUBSCRIBERSLASTXDAYS':
-                FilterParams::required($params, 'fromDate');
-                FilterParams::required($params, 'toDate');
-                $fromDate = Date::getDateTime($params['fromDate']);
-                $toDate = Date::getDateTime($params['toDate']);
-                $toDate->setTime(23, 59, 59);
-                $key = 'NewTieredSubscribersLastXDays'. $fromDate->format('Ymdhis'). $toDate->format('Ymdhis');
-                if(!$cacheDriver->contains($key)){
-                    $data = $statisticsService->getNewTieredSubscribersLastXDays( $fromDate, $toDate );
-                    $cacheDriver->save($key, $data, 30);
-                } else {
-                    $data = $cacheDriver->fetch($key);
-                }
-                break;
+        $data = [];
+        try {
+            switch(strtoupper($params['type'])){
+                case 'REVENUELASTXDAYS':
+                    FilterParams::required($params, 'days');
+                    $key = 'RevenueLastXDays '. intval($params['days']);
+                    if(!$cacheDriver->contains($key)){
+                        $data = $statisticsService->getRevenueLastXDays( intval($params['days']) );
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'REVENUELASTXMONTHS':
+                    FilterParams::required($params, 'months');
+                    $key = 'RevenueLastXMonths '. intval($params['months']);
+                    if(!$cacheDriver->contains($key)){
+                        $data = $statisticsService->getRevenueLastXMonths( intval($params['months']) );
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'REVENUELASTXYEARS':
+                    FilterParams::required($params, 'years');
+                    $key = 'RevenueLastXYears '. intval($params['years']);
+                    if(!$cacheDriver->contains($key)){
+                        $data = $statisticsService->getRevenueLastXYears( intval($params['years']) );
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWSUBSCRIBERSLASTXDAYS':
+                    FilterParams::required($params, 'days');
+                    $key = 'NewSubscribersLastXDays '. intval($params['days']);
+                    if(!$cacheDriver->contains($key)){
+                        $data = $statisticsService->getNewSubscribersLastXDays( intval($params['days']) );
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWSUBSCRIBERSLASTXMONTHS':
+                    FilterParams::required($params, 'months');
+                    $key = 'NewSubscribersLastXMonths '. intval($params['months']);
+                    if(!$cacheDriver->contains($key)){
+                        $data = $statisticsService->getNewSubscribersLastXMonths( intval($params['months']) );
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWSUBSCRIBERSLASTXYEARS':
+                    FilterParams::required($params, 'years');
+                    $key = 'NewSubscribersLastXYears '. intval($params['years']);
+                    if(!$cacheDriver->contains($key)){
+                        $data = $statisticsService->getNewSubscribersLastXYears( intval($params['years']) );
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWTIEREDSUBSCRIBERSLASTXDAYS':
+                    FilterParams::required($params, 'fromDate');
+                    FilterParams::required($params, 'toDate');
+                    $fromDate = Date::getDateTime($params['fromDate']);
+                    $toDate = Date::getDateTime($params['toDate']);
+                    $toDate->setTime(23, 59, 59);
+                    $key = 'NewTieredSubscribersLastXDays'. $fromDate->format('Ymdhis'). $toDate->format('Ymdhis');
+                    if(!$cacheDriver->contains($key)){
+                        $data = $statisticsService->getNewTieredSubscribersLastXDays( $fromDate, $toDate );
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+            }
+        } catch (\Exception $e) {
+            // ignored
         }
         return $data;
     }

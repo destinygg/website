@@ -1,10 +1,12 @@
 <?php
 namespace Destiny\Reddit;
 
-use Destiny\Common\CurlBrowser;
+use Destiny\Common\Config;
 use Destiny\Common\Exception;
-use Destiny\Common\MimeType;
+use Destiny\Common\Log;
 use Destiny\Common\Service;
+use Destiny\Common\Utils\Http;
+use GuzzleHttp;
 
 /**
  * @method static RedditFeedService instance()
@@ -21,41 +23,43 @@ class RedditFeedService extends Service {
 
     /**
      * @throws Exception
-     * @return CurlBrowser
+     * @return null|array
      */
     public function getHotThreads() {
-        $url = 'https://www.reddit.com/r/destiny/hot.json?sort=new&limit=6';
-        return new CurlBrowser ([
-            'url' => $url,
-            'contentType' => MimeType::JSON,
-            'onfetch' => function ($json) {
+        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get(Config::$a['reddit']['threads'], [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'query' => ['limit' => 6, 'sort' => 'new']
+        ]);
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            $json = GuzzleHttp\json_decode($response->getBody(), true);
+            if (isset($json['data']) && !empty($json['data']) && isset($json['data']['children']) && !empty($json['data']['children'])) {
                 $data = [];
-                if (isset($json['data']) && !empty($json['data']) && isset($json['data']['children']) && !empty($json['data']['children'])) {
-                    foreach ($json['data']['children'] as $child) {
-                        if (isset($child['data'])) {
-                            $c = $child['data'];
-                            array_push($data, [
-                                'id' => $c['id'],
-                                'title' => $c['title'],
-                                'created' => $c['created_utc'],
-                                'score' => $c['score'],
-                                'stickied' => $c['stickied'],
-                                'locked' => $c['locked'],
-                                'spoiler' => $c['spoiler'],
-                                'archived' => $c['archived'],
-                                'permalink' => 'https://www.reddit.com' . $c['permalink'],
-                                'thumbnail' => $c['thumbnail'],
-                                'num_comments' => $c['num_comments'],
-                                'author' => $c['author'],
-                                'downs' => $c['downs'],
-                                'ups' => $c['ups']
-                            ]);
-                        }
+                foreach ($json['data']['children'] as $child) {
+                    if (isset($child['data'])) {
+                        $c = $child['data'];
+                        array_push($data, [
+                            'id' => $c['id'],
+                            'title' => $c['title'],
+                            'created' => $c['created_utc'],
+                            'score' => $c['score'],
+                            'stickied' => $c['stickied'],
+                            'locked' => $c['locked'],
+                            'spoiler' => $c['spoiler'],
+                            'archived' => $c['archived'],
+                            'permalink' => 'https://www.reddit.com' . $c['permalink'],
+                            'thumbnail' => $c['thumbnail'],
+                            'num_comments' => $c['num_comments'],
+                            'author' => $c['author'],
+                            'downs' => $c['downs'],
+                            'ups' => $c['ups']
+                        ]);
                     }
                 }
                 return $data;
             }
-        ]);
+        }
+        return null;
     }
 
 }

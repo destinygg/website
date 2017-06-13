@@ -28,6 +28,11 @@ class AuthenticationCredentials {
     /**
      * @var string
      */
+    private $refreshToken;
+
+    /**
+     * @var string
+     */
     private $username;
 
     /**
@@ -45,6 +50,7 @@ class AuthenticationCredentials {
             'authCode',
             'authId',
             'authDetail',
+            'refreshToken',
             'username',
             'email' 
         );
@@ -103,6 +109,14 @@ class AuthenticationCredentials {
 
     public function setEmail($email) {
         $this->email = $email;
+    }
+
+    public function getRefreshToken() {
+        return $this->refreshToken;
+    }
+
+    public function setRefreshToken($refreshToken) {
+        $this->refreshToken = $refreshToken;
     }
 
 }

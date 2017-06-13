@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Application;
+use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
@@ -74,16 +75,6 @@ class AdminUserController {
 
         $model->gifters = $gifters;
         $model->recipients = $recipients;
-
-        if (Session::has ( 'modelSuccess' )) {
-            $model->success = Session::get ( 'modelSuccess' );
-            Session::set ( 'modelSuccess' );
-        }
-        if (Session::has ( 'modelError' )) {
-            $model->error = Session::get ( 'modelError' );
-            Session::set ( 'modelError' );
-        }
-
         $model->title = 'User';
         return 'admin/user';
     }
@@ -156,13 +147,13 @@ class AdminUserController {
 
         $dUid = $userService->getUserIdByField('discordname', $params['discordname']);
         if($discordname != null && !empty($dUid) &&intval($dUid) !== intval($user ['userId'])) {
-            Session::set ( 'modelError', 'Discord name already in use #' . $dUid );
+            Session::setErrorBag('Discord name already in use #' . $dUid);
             return $redirect;
         }
 
         $mUid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
         if($minecraftname != null && !empty($mUid) && intval($mUid) !== intval($user ['userId'])) {
-            Session::set ( 'modelError', 'Minecraft name already in use #' );
+            Session::setErrorBag('Minecraft name already in use #');
             return $redirect;
         }
 
@@ -178,7 +169,6 @@ class AdminUserController {
             'discorduuid' => $discorduuid
         );
 
-        $log = Application::instance()->getLogger();
         $conn = Application::instance()->getConnection();
         $conn->beginTransaction();
 
@@ -191,12 +181,12 @@ class AdminUserController {
             $authService->flagUserForUpdate ( $user ['userId'] );
             $conn->commit();
         } catch (\Exception $e){
-            $log->critical("Error updating user", $user);
+            Log::critical("Error updating user", $user);
             $conn->rollBack();
             throw $e;
         }
 
-        Session::set ( 'modelSuccess', 'User profile updated' );
+        Session::setSuccessBag('User profile updated');
         return $redirect;
     }
     
@@ -258,11 +248,6 @@ class AdminUserController {
             $payments = $ordersService->getPaymentsBySubscriptionId ( $subscription ['subscriptionId'] );
         }
         
-        if (Session::has ( 'modelSuccess' )) {
-            $model->success = Session::get ( 'modelSuccess' );
-            Session::set ( 'modelSuccess' );
-        }
-        
         $model->user = $userService->getUserById ( $params ['id'] );
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         $model->subscription = $subscription;
@@ -314,15 +299,15 @@ class AdminUserController {
                 $subscription ['gifter'] = $params['gifter'];
             }
         }
-        
-        if (isset ( $params ['subscriptionId'] ) && ! empty ( $params ['subscriptionId'] )) {
+
+        if (isset ($params ['subscriptionId']) && !empty ($params ['subscriptionId'])) {
             $subscription ['subscriptionId'] = $params ['subscriptionId'];
             $subscriptionId = $subscription ['subscriptionId'];
-            $subscriptionsService->updateSubscription ( $subscription );
-            Session::set ( 'modelSuccess', 'Subscription updated!' );
+            $subscriptionsService->updateSubscription($subscription);
+            Session::setSuccessBag('Subscription updated!');
         } else {
-            $subscriptionId = $subscriptionsService->addSubscription ( $subscription );
-            Session::set ( 'modelSuccess', 'Subscription created!' );
+            $subscriptionId = $subscriptionsService->addSubscription($subscription);
+            Session::setSuccessBag('Subscription created!');
         }
         
         
@@ -341,10 +326,10 @@ class AdminUserController {
      * @return string
      */
     public function authProviderDelete(array $params) {
-        $apiAuthService = ApiAuthenticationService::instance ();
+        $apiAuthService = ApiAuthenticationService::instance();
         $apiAuthService->deleteAuthProfileByUserId($params['id'], $params['provider']);
-        Session::set ( 'modelSuccess', 'Authentication profile removed!' );
-        return 'redirect: /admin/user/'. urlencode($params['id']) .'/edit';
+        Session::setSuccessBag('Authentication profile removed!');
+        return 'redirect: /admin/user/' . urlencode($params['id']) . '/edit';
     }
 
     /**

@@ -3,6 +3,7 @@ namespace Destiny\Twitter;
 
 use Destiny\Common\Config;
 use Destiny\Common\Service;
+use Destiny\Common\Utils\Http;
 
 /**
  * @method static TwitterApiService instance()
@@ -18,9 +19,9 @@ class TwitterApiService extends Service {
         $tmhOAuth = new \tmhOAuth ([
             'consumer_key' => $twitterOAuthConf ['clientId'],
             'consumer_secret' => $twitterOAuthConf ['clientSecret'],
-            'curl_ssl_verifypeer' => Config::$a ['curl'] ['verifypeer'],
-            'curl_connecttimeout' => Config::$a ['curl'] ['connecttimeout'],
-            'curl_timeout' => Config::$a ['curl'] ['timeout']
+            'curl_ssl_verifypeer' => false,
+            'curl_connecttimeout' => 10,
+            'curl_timeout' => 30
         ]);
         /** @noinspection PhpVoidFunctionResultUsedInspection */
         $code = $tmhOAuth->user_request ([
@@ -31,7 +32,7 @@ class TwitterApiService extends Service {
                 'trim_user' => true
             ]
         ]);
-        if ($code == 200) {
+        if ($code == Http::STATUS_OK) {
             $result = json_decode($tmhOAuth->response ['response'], true);
             foreach ($result as $tweet) {
                 $html = $tweet ['text'];

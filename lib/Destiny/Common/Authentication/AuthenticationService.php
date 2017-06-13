@@ -58,7 +58,7 @@ class AuthenticationService extends Service {
             throw new Exception ( 'Too many underscores in username' );
         
         if (preg_match_all ( "/[0-9]/", $username, $m ) > round ( strlen ( $username ) / 2 ))
-            throw new Exception ( 'Number ratio is too damn high in username' );
+            throw new Exception ( 'Number ratio is too high in username' );
         
         if (UserService::instance ()->getIsUsernameTaken ( $username, ((! empty ( $user )) ? $user ['userId'] : 0) ))
             throw new Exception ( 'The username you asked for is already being used' );
@@ -180,7 +180,7 @@ class AuthenticationService extends Service {
             throw new Exception ( 'Invalid auth user' );
         }
         
-        // The user has registed before...
+        // The user has register before...
         // Update the auth profile for this provider
         $authProfile = $userService->getUserAuthProfile ( $user ['userId'], $authCreds->getAuthProvider () );
         if (! empty ( $authProfile )) {
@@ -228,17 +228,16 @@ class AuthenticationService extends Service {
             // So we have a profile for a different user to the one logged in, we delete that user, and add a profile for the current user
             $userService->removeAuthProfile ( $user ['userId'], $authCreds->getAuthProvider () );
             // Set the user profile to Merged
-            $userService->updateUser ( $user ['userId'], array (
-                'userStatus' => 'Merged' 
-            ) );
+            $userService->updateUser ( $user ['userId'], ['userStatus' => 'Merged']);
         }
-        $userService->addUserAuthProfile ( array (
+        $userService->addUserAuthProfile([
             'userId' => $sessAuth ['userId'],
-            'authProvider' => $authCreds->getAuthProvider (),
-            'authId' => $authCreds->getAuthId (),
-            'authCode' => $authCreds->getAuthCode (),
-            'authDetail' => $authCreds->getAuthDetail () 
-        ) );
+            'authProvider' => $authCreds->getAuthProvider(),
+            'authId' => $authCreds->getAuthId(),
+            'authCode' => $authCreds->getAuthCode(),
+            'authDetail' => $authCreds->getAuthDetail(),
+            'refreshToken' => $authCreds->getRefreshToken()
+        ]);
     }
 
     /**

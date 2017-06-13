@@ -8,11 +8,6 @@ use Psr\Log\LoggerInterface;
 class Scheduler {
     
     /**
-     * @var LoggerInterface
-     */
-    public $logger = null;
-    
-    /**
      * @var array
      */
     public $schedule = array ();
@@ -64,7 +59,7 @@ class Scheduler {
         }
         $startTime = microtime ( true );
         try {
-            $this->logger->debug ( 'Schedule starting' );
+            Log::debug ( 'Schedule starting' );
             foreach ( $this->schedule as $i => $action ) {
                 $nextExecute = Date::getDateTime ( $this->schedule [$i] ['lastExecuted'] );
                 $nextExecute->modify ( '+' . $this->schedule [$i] ['frequency'] . ' ' . $this->schedule [$i] ['period'] );
@@ -75,14 +70,14 @@ class Scheduler {
                     $this->executeTask ( $this->schedule [$i] );
                 }
             }
-            $this->logger->debug ( 'Schedule complete' );
+            Log::debug ( 'Schedule complete' );
 
         } catch ( Exception $e ) {
-            $this->logger->error ( $e->getMessage () );
+            Log::error ( $e->getMessage () );
         } catch ( \Exception $e ) {
-            $this->logger->critical ( $e->getMessage () );
+            Log::critical ( $e->getMessage () );
         }
-        $this->logger->debug ( 'Completed in ' . (microtime ( true ) - $startTime) . ' seconds' );
+        Log::debug ( 'Completed in ' . (microtime ( true ) - $startTime) . ' seconds' );
     }
 
     /**
@@ -159,7 +154,7 @@ class Scheduler {
      * @param string $name
      */
     public function executeTaskByName($name) {
-        $this->logger->debug ( sprintf ( 'Schedule task %s', $name ) );
+        Log::debug ( sprintf ( 'Schedule task %s', $name ) );
         $task = $this->getTaskByName ( $name );
         if (! empty ( $task )) {
             $task ['executeCount'] = intval ( $task ['executeCount'] ) + 1;
@@ -174,7 +169,7 @@ class Scheduler {
      * @throws Exception
      */
     protected function executeTask(array $task) {
-        $this->logger->debug ( sprintf ( 'Execute start %s', $task ['action'] ) );
+        Log::debug ( sprintf ( 'Execute start %s', $task ['action'] ) );
         $actionClass = 'Destiny\\Tasks\\' . $task ['action'];
         if (class_exists ( $actionClass, true )) {
             $actionObj = new $actionClass ($task);
@@ -183,15 +178,7 @@ class Scheduler {
         } else {
             throw new Exception ( sprintf ( 'Action not found: %s', $actionClass ) );
         }
-        $this->logger->debug ( sprintf ( 'Execute end %s', $task ['action'] ) );
-    }
-
-    public function getLogger() {
-        return $this->logger;
-    }
-
-    public function setLogger(LoggerInterface $logger) {
-        $this->logger = $logger;
+        Log::debug ( sprintf ( 'Execute end %s', $task ['action'] ) );
     }
 
     public function getSchedule() {

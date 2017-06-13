@@ -5,5 +5,4 @@ namespace Destiny\Common\Annotation;
  * @Annotation
  * @Target("CLASS")
  */
-class Controller {
-}
+class Controller {}

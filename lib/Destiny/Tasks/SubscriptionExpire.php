@@ -7,9 +7,12 @@ use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\Log;
 use Destiny\Common\TaskInterface;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
+use Destiny\StreamLabs\StreamLabsAlertsType;
+use Destiny\StreamLabs\StreamLabsService;
 
 /**
  * @Schedule(frequency=5,period="minute")
@@ -17,7 +20,6 @@ use Destiny\Common\Utils\Date;
 class SubscriptionExpire implements TaskInterface {
 
     public function execute() {
-        $log = Application::instance()->getLogger();
         $authenticationService = AuthenticationService::instance();
         $subscriptionService = SubscriptionsService::instance ();
         $users = array();
@@ -44,7 +46,7 @@ class SubscriptionExpire implements TaskInterface {
                 $this->sendResubscribeBroadcast ( $subscription );
                 $users[] = $subscription ['userId'];
             } catch (\Exception $e) {
-                $log->critical("Could not roll over subscription", $subscription);
+                Log::critical("Could not roll over subscription", $subscription);
             }
         }
 
@@ -77,18 +79,21 @@ class SubscriptionExpire implements TaskInterface {
     }
 
     private function sendResubscribeBroadcast(array $subscription) {
-        $log = Application::instance ()->getLogger ();
         $userService = UserService::instance();
-        $user = $userService->getUserById ( $subscription['userId'] );
-        if(!empty($user)){
+        $user = $userService->getUserById($subscription['userId']);
+        if (!empty($user)) {
             try {
                 // the subscription endDate has not been updated with the new subscription time
                 $months = max(1, Date::getDateTime($subscription['createdDate'])->diff(Date::getDateTime($subscription['endDate']))->m);
-                $months = ($months > 1) ? $months. " months" : $months. " month";
+                $months = ($months > 1) ? $months . " months" : $months . " month";
+                $message = sprintf("%s has resubscribed! Active for %s", $user['username'], $months);
                 $chatIntegrationService = ChatIntegrationService::instance();
-                $chatIntegrationService->sendBroadcast(sprintf("%s has resubscribed! Active for %s", $user['username'], $months));
-            }catch (\Exception $e){
-                $log->critical ( 'Could not send resubscribe broadcast', $subscription );
+                $chatIntegrationService->sendBroadcast($message);
+                $streamLabService = StreamLabsService::instance();
+                $streamLabService->useDefaultAuth();
+                $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);
+            } catch (\Exception $e) {
+                Log::critical('Could not send resubscribe broadcast', $subscription);
             }
         }
     }

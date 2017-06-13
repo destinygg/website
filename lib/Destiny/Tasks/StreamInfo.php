@@ -22,10 +22,10 @@ class StreamInfo implements TaskInterface {
         // STREAM STATUS
         $streaminfo = $twitchApiService->getStreamInfo(Config::$a ['twitch']['user']);
         if (!empty($streaminfo)) {
-            $path = ImageDownload::download($streaminfo['preview'], Config::$a['images']['path'], true);
+            $path = ImageDownload::download($streaminfo['preview'], true);
             if (!empty($path))
                 $streaminfo['preview'] = Config::cdni() . '/' . $path;
-            $path = ImageDownload::download($streaminfo['animated_preview'], Config::$a['images']['path'], true);
+            $path = ImageDownload::download($streaminfo['animated_preview'], true);
             if (!empty($path))
                 $streaminfo['animated_preview'] = Config::cdni() . '/' . $path;
         }

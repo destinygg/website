@@ -13,7 +13,7 @@ class RedditFeed implements TaskInterface {
 
     public function execute() {
         $redditService = RedditFeedService::instance();
-        $posts = $redditService->getHotThreads()->getResponse();
+        $posts = $redditService->getHotThreads();
         if (! empty ( $posts ))
             Application::instance ()->getCacheDriver ()->save( 'recentposts', $posts );
     }

@@ -64,7 +64,7 @@ const hintstrings = new Map([
 ])
 const settingsdefault = new Map([
     ['schemaversion', 1],
-    ['showtime', true],
+    ['showtime', false],
     ['hideflairicons', false],
     ['profilesettings', false],
     ['timestampformat', 'HH:mm'],
@@ -1063,8 +1063,8 @@ class Chat {
         if (!newmaxlines) {
             MessageBuilder.info(`Invalid argument - /${command} is expecting a number`).into(this);
         } else {
-            MessageBuilder.info(`Current number of lines shown: ${this.settings.get('maxlines')}`).into(this);
             this.settings.set('maxlines', newmaxlines);
+            MessageBuilder.info(`Current maximum lines: ${this.settings.get('maxlines')}`).into(this);
             this.applySettings();
         }
     }

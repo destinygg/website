@@ -101,6 +101,7 @@ CREATE TABLE `dfl_users_auth` (
   `authCode` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `authId` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `authDetail` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `refreshToken` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   `modifiedDate` datetime DEFAULT NULL,
   KEY `authProvider` (`authProvider`,`authId`),
@@ -150,6 +151,17 @@ CREATE TABLE `dfl_users_subscriptions` (
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `donations` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `userid` int(11) NOT NULL,
+  `currency` varchar(4) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `message` blob NULL,
+  `status` varchar(100) NULL,
+  `timestamp` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users_address` (
   `id` int(14) NOT NULL AUTO_INCREMENT,

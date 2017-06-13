@@ -109,6 +109,7 @@ class Application extends Service {
                     $response->setLocation($redirect);
                 } else {
                     // Template response
+                    Session::applyBags($model);
                     $response->setStatus(Http::STATUS_OK);
                     $response->setBody($this->template($result . '.php', $model));
                 }

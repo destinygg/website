@@ -2,8 +2,6 @@
 namespace Destiny\Common\Annotation;
 
 /**
- * This annotation relies on the Route annotation being present
- * 
  * @Annotation
  * @Target({"CLASS","METHOD"})
  */

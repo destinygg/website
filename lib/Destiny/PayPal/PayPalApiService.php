@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\PayPal;
 
-use Destiny\Common\Application;
+use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
@@ -100,7 +100,7 @@ class PayPalApiService extends Service {
         $scheduleDetails = new ScheduleDetailsType ();
         $scheduleDetails->Description = $agreement;
         $scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
-        
+
         $createRPProfileRequestDetail = new CreateRecurringPaymentsProfileRequestDetailsType ();
         $createRPProfileRequestDetail->Token = $token;
         $createRPProfileRequestDetail->ScheduleDetails = $scheduleDetails;
@@ -122,15 +122,15 @@ class PayPalApiService extends Service {
     }
 
     /**
-     * Execute the setExpressCheckout process, forwards to paypal
+     * Create an ExpressCheckout @ paypal before doing a 302 redirect
      *
      * @param string $returnUrl
      * @param string $cancelUrl
      * @param array $subscriptionType
-     * @param bool $recurring
-     * @return string $token
+     * @param boolean $recurring
+     * @return null|string
      */
-    public function createECResponse($returnUrl, $cancelUrl, array $subscriptionType, $recurring = false) {
+    public function createSubscribeECResponse($returnUrl, $cancelUrl, array $subscriptionType, $recurring = false) {
 
         $token = null;
         $amount = $subscriptionType ['amount'];
@@ -158,15 +158,15 @@ class PayPalApiService extends Service {
         $paymentDetails->OrderTotal = new BasicAmountType ( $currency, $amount );
         $paymentDetails->ItemTotal = new BasicAmountType ( $currency, $amount );
         $paymentDetails->Recurring = 0;
+        $setECReqDetails->PaymentDetails [0] = $paymentDetails;
+
         $itemDetails = new PaymentDetailsItemType ();
         $itemDetails->Name = $subscriptionType ['itemLabel'];
         $itemDetails->Amount = new BasicAmountType ( $currency, $amount );
         $itemDetails->Quantity = 1;
-        // TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
-        $itemDetails->ItemCategory = 'Physical';
+        $itemDetails->ItemCategory = 'Physical'; // TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
         $itemDetails->Number = $subscriptionType ['id'];
         $paymentDetails->PaymentDetailsItem [0] = $itemDetails;
-        $setECReqDetails->PaymentDetails [0] = $paymentDetails;
         
         // Paypal UI settings
         $setECReqDetails->BrandName = Config::$a['meta']['title'];
@@ -176,17 +176,82 @@ class PayPalApiService extends Service {
         $setECReqType->SetExpressCheckoutRequestDetails = $setECReqDetails;
         $setECReq = new SetExpressCheckoutReq ();
         $setECReq->SetExpressCheckoutRequest = $setECReqType;
-        
         $paypalService = new PayPalAPIInterfaceServiceService ();
+        /** @var \PayPal\PayPalAPI\SetExpressCheckoutResponseType $response */
         $response = $paypalService->SetExpressCheckout ( $setECReq );
 
         if ($response->Ack == 'Success') {
             $token = $response->Token;
         } else {
-            $log = Application::instance()->getLogger();
-            $log->critical("Error getting checkout response: " . $response->Errors->ShortMessage );
+            /** @var \PayPal\EBLBaseComponents\ErrorType $errors */
+            $errors = $response->Errors;
+            Log::critical("Error getting checkout response: " . $errors->ShortMessage );
         }
 
+        return $token;
+    }
+
+    /**
+     * Create an ExpressCheckout @ paypal before doing a 302 redirect
+     *
+     * @param string $returnUrl
+     * @param string $cancelUrl
+     * @param array $donation
+     * @return null|string
+     */
+    public function createDonateECResponse($returnUrl, $cancelUrl, array $donation){
+        $token = null;
+        $amount = $donation ['amount'];
+        $label = "$amount donation";
+        $currency = Config::$a ['commerce'] ['currency'];
+
+        $setECReqDetails = new SetExpressCheckoutRequestDetailsType ();
+        $setECReqDetails->BrandName = Config::$a['meta']['title'];
+        $setECReqDetails->ReqConfirmShipping = 0;
+        $setECReqDetails->NoShipping = 1;
+        $setECReqDetails->AllowNote = 0;
+        $setECReqDetails->ReturnURL = $returnUrl;
+        $setECReqDetails->CancelURL = $cancelUrl;
+        $setECReqDetails->SolutionType = 'Sole';
+
+        $paymentDetails = new PaymentDetailsType ();
+        $paymentDetails->PaymentAction = 'Sale';
+        $paymentDetails->NotifyURL = Config::$a ['paypal'] ['api'] ['ipn'];
+        $paymentDetails->OrderTotal = new BasicAmountType ( $currency, $amount );
+        $paymentDetails->ItemTotal = new BasicAmountType ( $currency, $amount );
+        $paymentDetails->Recurring = 0;
+
+        $paymentDetails = new PaymentDetailsType ();
+        $paymentDetails->PaymentAction = 'Sale';
+        $paymentDetails->NotifyURL = Config::$a ['paypal'] ['api'] ['ipn'];
+        $paymentDetails->OrderTotal = new BasicAmountType ( $currency, $amount );
+        $paymentDetails->ItemTotal = new BasicAmountType ( $currency, $amount );
+        $setECReqDetails->PaymentDetails [0] = $paymentDetails;
+
+        $itemDetails = new PaymentDetailsItemType ();
+        $itemDetails->Name = $label;
+        $itemDetails->Amount = new BasicAmountType ( $currency, $amount );
+        $itemDetails->Quantity = 1;
+        $itemDetails->ItemCategory = 'Physical'; // TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
+        $itemDetails->Number = -1;
+        $paymentDetails->PaymentDetailsItem [0] = $itemDetails;
+
+        // Execute checkout
+        $setECReqType = new SetExpressCheckoutRequestType ();
+        $setECReqType->SetExpressCheckoutRequestDetails = $setECReqDetails;
+        $setECReq = new SetExpressCheckoutReq ();
+        $setECReq->SetExpressCheckoutRequest = $setECReqType;
+        $paypalService = new PayPalAPIInterfaceServiceService ();
+        /** @var \PayPal\PayPalAPI\SetExpressCheckoutResponseType $response */
+        $response = $paypalService->SetExpressCheckout ($setECReq);
+
+        if ($response->Ack == 'Success') {
+            $token = $response->Token;
+        } else {
+            /** @var \PayPal\EBLBaseComponents\ErrorType $errors */
+            $errors = $response->Errors;
+            Log::critical("Error getting checkout response: " . $errors->ShortMessage );
+        }
         return $token;
     }
 
@@ -194,14 +259,14 @@ class PayPalApiService extends Service {
      * Retrieve the checkout instance from paypal
      *
      * @param string $token
-     * @return boolean
+     * @return null|\PayPal\PayPalAPI\GetExpressCheckoutDetailsResponseType
      */
     public function retrieveCheckoutInfo($token) {
         $paypalService = new PayPalAPIInterfaceServiceService ();
         $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq ();
         $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType ( $token );
         $response = $paypalService->GetExpressCheckoutDetails ( $getExpressCheckoutReq );
-        return ( isset ( $response ) && $response->Ack == 'Success');
+        return (isset ( $response ) && $response->Ack == 'Success') ? $response : null;
     }
 
     /**
@@ -241,12 +306,18 @@ class PayPalApiService extends Service {
     public function getResponsePayments(DoExpressCheckoutPaymentResponseType $DoECResponse){
         $payments = array();
         if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
-            if (isset ($DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo)) {
-                for ($i = 0; $i < count($DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo); ++$i) {
-                    $paymentInfo = $DoECResponse->DoExpressCheckoutPaymentResponseDetails->PaymentInfo [$i];
+            /** @var \PayPal\EBLBaseComponents\DoExpressCheckoutPaymentResponseDetailsType $details */
+            $details = $DoECResponse->DoExpressCheckoutPaymentResponseDetails;
+            if (isset ($details->PaymentInfo) && !empty($details->PaymentInfo)) {
+                /** @var \PayPal\EBLBaseComponents\PaymentInfoType $payments */
+                $payments = $details->PaymentInfo;
+                for ($i = 0; $i < count($payments); ++$i) {
+                    $paymentInfo = $payments [$i];
+                    /** @var \PayPal\CoreComponentTypes\BasicAmountType $amount */
+                    $amount = $paymentInfo->GrossAmount;
                     $payment = array ();
-                    $payment ['amount'] = $paymentInfo->GrossAmount->value;
-                    $payment ['currency'] = $paymentInfo->GrossAmount->currencyID;
+                    $payment ['amount'] = $amount->value;
+                    $payment ['currency'] = $amount->currencyID;
                     $payment ['transactionId'] = $paymentInfo->TransactionID;
                     $payment ['transactionType'] = $paymentInfo->TransactionType;
                     $payment ['paymentType'] = $paymentInfo->PaymentType;

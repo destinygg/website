@@ -5,8 +5,8 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Config;
-use Destiny\Common\CurlBrowser;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserService;
@@ -15,8 +15,8 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\MimeType;
 use Destiny\Chat\ChatIntegrationService;
+use GuzzleHttp;
 
 /**
  * @Controller
@@ -78,19 +78,21 @@ class ChatController {
         Session::set('chat_ucd_stalks', time() + 10);
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
-        $r = new CurlBrowser ([
-            'url' => Config::$a['overrustle']['stalk'] . urlencode($params['username']) .'.json?limit=' . urlencode($limit),
-            'headers' => ['Client-ID' => Config::$a['meta']['shortName'].'_'.Config::version()],
-            'contentType' => MimeType::JSON,
-            'timeout' => 5000
-        ]);
-        if($r->getResponseCode() === Http::STATUS_OK){
-            $response->setStatus(Http::STATUS_OK);
-            return $r->getResponse();
-        } else {
-            $response->setStatus(Http::STATUS_ERROR);
-            return 'badproxyresponse';
+        try {
+            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $r = $client->get(Config::$a['overrustle']['stalk'] . urlencode($params['username']) . '.json', [
+                'headers' => ['User-Agent' => Config::userAgent()],
+                'query' => ['limit' => $limit]
+            ]);
+            if($r->getStatusCode() == Http::STATUS_OK) {
+                $response->setStatus(Http::STATUS_OK);
+                return GuzzleHttp\json_decode($r->getBody(), true);
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to return valid response for chat stalk");
         }
+        $response->setStatus(Http::STATUS_ERROR);
+        return 'badproxyresponse';
     }
 
     /**
@@ -116,19 +118,21 @@ class ChatController {
         Session::set('chat_ucd_mentions', time() + 10);
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
-        $r = new CurlBrowser ([
-            'url' => Config::$a['overrustle']['mentions'] . urlencode($params['username']) .'.json?limit=' . urlencode($limit),
-            'headers' => ['Client-ID' => Config::$a['meta']['shortName'].'_'.Config::version()],
-            'contentType' => MimeType::JSON,
-            'timeout' => 5000
-        ]);
-        if($r->getResponseCode() === Http::STATUS_OK){
-            $response->setStatus(Http::STATUS_OK);
-            return $r->getResponse();
-        } else {
-            $response->setStatus(Http::STATUS_ERROR);
-            return 'badproxyresponse';
+        try {
+            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $r = $client->get(Config::$a['overrustle']['mentions'] . urlencode($params['username']) . '.json', [
+                'headers' => ['User-Agent' => Config::userAgent()],
+                'query' => ['limit' => $limit]
+            ]);
+            if($r->getStatusCode() == Http::STATUS_OK) {
+                $response->setStatus(Http::STATUS_OK);
+                return GuzzleHttp\json_decode($r->getBody(), true);
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to return valid response for chat mentions");
         }
+        $response->setStatus(Http::STATUS_ERROR);
+        return 'badproxyresponse';
     }
 
     /**

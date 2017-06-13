@@ -14,25 +14,25 @@ use Destiny\LastFm\LastFMApiService;
 class LastFmFeed implements TaskInterface {
 
     public function execute() {
-        $json = LastFMApiService::instance ()->getLastPlayedTracks ()->getResponse ();
-        if (! empty ( $json )){
-            foreach ( $json ['recenttracks'] ['track'] as $i => $track ) {
-                $path = ImageDownload::download($track['image'][1]['#text'], Config::$a['images']['path']);
+        $json = LastFMApiService::instance()->getLastPlayedTracks();
+        if (!empty ($json)) {
+            foreach ($json ['recenttracks'] ['track'] as $i => $track) {
+                $path = ImageDownload::download($track['image'][1]['#text']);
                 if (!empty($path))
                     $json ['recenttracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdni() . '/' . $path;
             }
             $cache = Application::instance()->getCacheDriver();
-            $cache->save ( 'recenttracks', $json );
+            $cache->save('recenttracks', $json);
         }
-        $json = LastFMApiService::instance ()->getTopTracks()->getResponse ();
-        if (! empty ( $json )){
-            foreach ( $json ['toptracks'] ['track'] as $i => $track ) {
-                $path = ImageDownload::download($track['image'][1]['#text'], Config::$a['images']['path']);
+        $json = LastFMApiService::instance()->getTopTracks();
+        if (!empty ($json)) {
+            foreach ($json ['toptracks'] ['track'] as $i => $track) {
+                $path = ImageDownload::download($track['image'][1]['#text']);
                 if (!empty($path))
                     $json ['toptracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdni() . '/' . $path;
             }
             $cache = Application::instance()->getCacheDriver();
-            $cache->save ( 'toptracks', $json );
+            $cache->save('toptracks', $json);
         }
     }
 

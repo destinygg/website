@@ -14,10 +14,10 @@ use Destiny\Youtube\YoutubeApiService;
 class YoutubeFeed implements TaskInterface {
 
     public function execute() {
-        $json = YoutubeApiService::instance()->getYoutubePlaylist()->getResponse();
+        $json = YoutubeApiService::instance()->getYoutubePlaylist();
         if (!empty ($json)) {
             foreach ($json ['items'] as $i => $item) {
-                $path = ImageDownload::download($json ['items'][$i]['snippet']['thumbnails']['high']['url'], Config::$a['images']['path']);
+                $path = ImageDownload::download($json ['items'][$i]['snippet']['thumbnails']['high']['url']);
                 if (!empty($path))
                     $json ['items'][$i]['snippet']['thumbnails']['high']['url'] = Config::cdni() . '/' . $path;
             }

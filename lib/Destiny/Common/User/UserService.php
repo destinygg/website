@@ -261,10 +261,10 @@ class UserService extends Service {
   public function updateUserAuthProfile($userId, $authProvider, array $auth) {
     $conn = Application::instance ()->getConnection ();
     $auth ['modifiedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
-    $conn->update ( 'dfl_users_auth', $auth, array (
+    $conn->update ( 'dfl_users_auth', $auth, [
       'userId' => $userId,
       'authProvider' => $authProvider
-    ) );
+    ]);
   }
 
   /**
@@ -279,12 +279,14 @@ class UserService extends Service {
       'authId' => $auth ['authId'],
       'authCode' => $auth ['authCode'],
       'authDetail' => $auth ['authDetail'],
+      'refreshToken' => $auth ['refreshToken'],
       'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ),
       'modifiedDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
     ), array (
       \PDO::PARAM_INT,
       \PDO::PARAM_STR,
       \PDO::PARAM_INT,
+      \PDO::PARAM_STR,
       \PDO::PARAM_STR,
       \PDO::PARAM_STR,
       \PDO::PARAM_STR,

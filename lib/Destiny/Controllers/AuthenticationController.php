@@ -3,11 +3,11 @@ namespace Destiny\Controllers;
 
 use Destiny\Api\ApiAuthenticationService;
 use Destiny\Common\Annotation\ResponseBody;
-use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\Log;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserFeaturesService;
@@ -50,10 +50,8 @@ class AuthenticationController {
      * @return string|array
      */
     public function profileInfo(Response $response, array $params) {
-        $log = Application::instance()->getLogger();
-
         if(! $this->checkPrivateKey($params, 'api')) {
-            $log->info('Bad key check');
+            Log::info('Bad key check');
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'privatekey';
         }
@@ -74,16 +72,16 @@ class AuthenticationController {
                 FilterParams::required($params, 'username');
                 $userid = $userService->getUserIdByField('username', $params['username']);
             } else {
-                $log->info("No identification field");
+                Log::info("No identification field");
                 $response->setStatus(Http::STATUS_BAD_REQUEST);
                 return 'fielderror';
             }
         } catch (FilterParamsException $e) {
-            $log->error("Field error", $e);
+            Log::error("Field error", $e);
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'fielderror';
         } catch (Exception $e) {
-            $log->error("Internal error", $e);
+            Log::error("Internal error", $e);
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'server';
         }
@@ -93,7 +91,7 @@ class AuthenticationController {
             if(!empty($user)){
                 $authService = AuthenticationService::instance();
                 $creds = $authService->getUserCredentials($user, 'request');
-                $log->info("Authentication successful", $creds->getData ());
+                Log::info("Authentication successful", $creds->getData ());
                 $response->setStatus(Http::STATUS_OK);
                 return $creds->getData();
             }
@@ -113,23 +111,22 @@ class AuthenticationController {
      * @return array|string
      */
     public function authMinecraftGET(Response $response, array $params) {
-        $log = Application::instance()->getLogger();
-        $log->info('Minecraft auth [GET]', $params);
+        Log::info('Minecraft auth [GET]', $params);
 
         if(! $this->checkPrivateKey($params, 'minecraft')) {
-            $log->info('Bad key check');
+            Log::info('Bad key check');
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'privatekey';
         }
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 ) {
-            $log->info('Bad uuid format');
+            Log::info('Bad uuid format');
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'uuid';
         }
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) ) {
-            $log->info('Bad uuid format');
+            Log::info('Bad uuid format');
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'uuid';
         }
@@ -137,21 +134,21 @@ class AuthenticationController {
         $userService = UserService::instance();
         $userid = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
         if (!$userid) {
-            $log->info('User not found');
+            Log::info('User not found');
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'userNotFound';
         }
 
         $ban = $userService->getUserActiveBan($userid, @$params ['ipaddress']);
         if (!empty($ban)) {
-            $log->info('User banned');
+            Log::info('User banned');
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return 'userBanned';
         }
 
         $user = $userService->getUserById($userid);
         if (empty ( $user )) {
-            $log->info('User not found');
+            Log::info('User not found');
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'userNotFound';
         }
@@ -163,12 +160,12 @@ class AuthenticationController {
                 $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
             }
         } else {
-            $log->info('Subscription not found');
+            Log::info('Subscription not found');
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return 'subscriptionNotFound';
         }
 
-        $log->info('Auth successful');
+        Log::info('Auth successful');
         $response->setStatus(Http::STATUS_OK);
         return ['end'  => strtotime($sub['endDate']) * 1000];
     }
@@ -183,30 +180,29 @@ class AuthenticationController {
      * @return array|string
      */
     public function authMinecraftPOST(Response $response, array $params) {
-        $log = Application::instance()->getLogger();
-        $log->info("Minecraft auth [POST]", $params);
+        Log::info("Minecraft auth [POST]", $params);
 
         if(! $this->checkPrivateKey($params, 'minecraft')) {
-            $log->info("Bad key check");
+            Log::info("Bad key check");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'privatekey';
         }
 
         if (empty ( $params ['uuid'] ) || strlen ( $params ['uuid'] ) > 36 ) {
-            $log->info("Bad uuid format");
+            Log::info("Bad uuid format");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'uuid';
         }
 
         if ( !preg_match('/^[a-f0-9-]{32,36}$/', $params ['uuid'] ) ) {
-            $log->info("Bad uuid format");
+            Log::info("Bad uuid format");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'uuid';
         }
 
 
         if (empty ( $params ['name'] ) || mb_strlen ( $params ['name'] ) > 16 ) {
-            $log->info("Bad name format");
+            Log::info("Bad name format");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'name';
         }
@@ -214,21 +210,21 @@ class AuthenticationController {
         $userService = UserService::instance ();
         $userid = $userService->getUserIdByField('minecraftname', $params ['name']);
         if (! $userid) {
-            $log->info("user not found");
+            Log::info("user not found");
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'nameNotFound';
         }
 
         $ban = $userService->getUserActiveBan( $userid, @$params ['ipaddress'] );
         if (!empty( $ban )) {
-            $log->info("user banned");
+            Log::info("user banned");
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return 'userBanned';
         }
 
         $user = $userService->getUserById($userid);
         if (empty ( $user )) {
-            $log->info("user not found");
+            Log::info("user not found");
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'userNotFound';
         }
@@ -245,32 +241,32 @@ class AuthenticationController {
                 $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
             }
         } else {
-            $log->info("Subscription not found");
+            Log::info("Subscription not found");
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return 'subscriptionNotFound';
         }
 
         try {
             $success = $userService->setMinecraftUUID( $userid, $params['uuid'] );
-            $log->info("uuidAlreadySet");
+            Log::info("uuidAlreadySet");
             if (!$success) {
               $existingUserId = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
 
               // only fail if the already set uuid is not the same
               if ( !$existingUserId or $existingUserId != $userid ) {
-                  $log->info("uuidAlreadySet");
+                  Log::info("uuidAlreadySet");
                   $response->setStatus(Http::STATUS_FORBIDDEN);
                   return 'uuidAlreadySet';
               }
             }
 
         } catch ( \Doctrine\DBAL\DBALException $e ) {
-            $log->info("duplicateUUID");
+            Log::info("duplicateUUID");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'duplicateUUID';
         }
 
-        $log->info("Auth successful");
+        Log::info("Auth successful");
         $response->setStatus(Http::STATUS_OK);
         return [
             'nick' => $user['username'],
@@ -381,7 +377,7 @@ class AuthenticationController {
      */
     private function handleAuthError(\Exception $e, ViewModel $model) {
         if(Session::hasRole ( UserRole::USER )){
-            Session::set('modelError', $e->getMessage());
+            Session::setErrorBag($e->getMessage());
             return 'redirect: /profile/authentication';
         } else {
             $model->title = 'Login error';

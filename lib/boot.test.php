@@ -25,9 +25,9 @@ AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 $app = Application::instance();
 $app->setLoader($loader);
 
-$log = new Logger('web');
-$log->pushHandler(new StreamHandler('php://stdout', Logger::WARNING));
-$app->setLogger($log);
+$logger = new Logger('web');
+$logger->pushHandler(new StreamHandler('php://stdout', Logger::WARNING));
+$app->setLogger($logger);
 
 $app->setConnection(DriverManager::getConnection(Config::$a ['db']));
 $app->setCacheDriver(new Doctrine\Common\Cache\ArrayCache());

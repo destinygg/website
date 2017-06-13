@@ -17,7 +17,7 @@ class BroadcastsFeed  implements TaskInterface {
         $broadcasts = TwitchApiService::instance ()->getPastBroadcasts ();
         if (! empty ( $broadcasts )){
             foreach ($broadcasts['videos'] as $i=>$video){
-                $path = ImageDownload::download($video['preview'], Config::$a['images']['path']);
+                $path = ImageDownload::download($video['preview']);
                 if(!empty($path))
                     $broadcasts['videos'][$i]['preview'] = Config::cdni() . '/' . $path;
             }
