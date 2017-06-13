@@ -48,7 +48,7 @@ use Destiny\Common\Config;
               <label class="control-label" for="inputStarttimestamp">Start</label>
               <div class="controls">
                 <input type="text" class="form-control" name="starttimestamp" id="inputStarttimestamp" value="<?=Tpl::out($this->ban['starttimestamp'])?>" placeholder="Y-m-d H:i:s">
-                <span class="help-block">time specificed in UCT</span>
+                <span class="help-block">time specified in UCT</span>
               </div>
             </div>
 
@@ -56,7 +56,7 @@ use Destiny\Common\Config;
               <label class="control-label" for="inputEndtimestamp">End</label>
               <div class="controls">
                 <input type="text" class="form-control" name="endtimestamp" id="inputEndtimestamp" value="<?=Tpl::out($this->ban['endtimestamp'])?>" placeholder="Y-m-d H:i:s">
-                <span class="help-block">time specificed in UCT</span>
+                <span class="help-block">time specified in UCT</span>
               </div>
             </div>
           </div>

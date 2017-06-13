@@ -10,7 +10,7 @@ use Destiny\Common\Config;
 <?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
-<body id="orderconfirm" class="no-brand">
+<body id="subscription-confirm" class="no-brand">
   <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
@@ -45,7 +45,7 @@ use Destiny\Common\Config;
         </div>
 
         <div style="width: 100%;" class="clearfix stream">
-          <form class="onceoff" action="/subscription/create" method="post">
+          <form id="subscribe-form" action="/subscription/create" method="post">
 
             <input type="hidden" name="subscription" value="<?= $this->subscriptionType['id'] ?>">
             <input type="hidden" name="gift" value="<?= $this->gift ?>">
@@ -91,16 +91,15 @@ use Destiny\Common\Config;
             </div>
 
             <?php endif ?>
-            <div id="extraMessage" class="ds-block">
+            <div class="ds-block text-message">
               <div>Send a message with your subscription (optional):</div>
               <textarea name="sub-message" autocomplete="off" maxlength="250" rows="5" class="form-control" placeholder=""></textarea>
-              <small style="display: none;">Maximum message length 250 characters</small>
             </div>
 
             <div class="ds-block">
               <div class="checkbox">
                 <label for="renew">
-                  <div><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></div>
+                  <span><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></span>
                   <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
                 </label>
               </div>
@@ -123,21 +122,6 @@ use Destiny\Common\Config;
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/tracker.php' ?>
   <script src="<?=Config::cdnv()?>/web.js"></script>
-  
-  <script>
-  $(function(){
-    $('form.onceoff').on('submit', function(){
-      var frm = $(this);
-      frm.find('[type="submit"]').attr("disabled", "disabled");
-      window.setTimeout(function(){
-        frm.find('[type="submit"]').removeAttr("disabled");
-      }, 30000);
-    });
-    $('textarea[name="sub-message"]').on('keyup', function(){
-      $('#extraMessage small').css('display',($(this).val().length > 200) ? 'block':'none');
-    });
-  });
-  </script>
-  
+
 </body>
 </html>

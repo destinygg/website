@@ -72,7 +72,7 @@ use Destiny\Common\Config;
         </div>
       </div>
 
-      <div class="subfeature active">
+      <div class="subfeature">
         <div class="subfeature-desc">
           <h1>Tier III</h1>
           <p>Wow such value so prestige you should purchase immediately.</p>

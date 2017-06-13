@@ -10,7 +10,7 @@ use Destiny\Common\Config;
 <?php include 'seg/meta.php' ?>
 <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
-<body id="ordererror" class="no-brand">
+<body id="subscription-error" class="no-brand">
   <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>

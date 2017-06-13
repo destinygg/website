@@ -6,13 +6,14 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($this->title)?></title>
-<?php include 'seg/meta.php' ?>
-<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <title><?=Tpl::title($this->title)?></title>
+    <?php include 'seg/meta.php' ?>
+    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
 <body id="message" class="no-contain">
     <div id="page-wrap">
 
+        <div id="alerts-container"></div>
         <?php include 'seg/nav.php' ?>
         <?php include 'seg/alerts.php' ?>
         <?php include 'menu.php' ?>

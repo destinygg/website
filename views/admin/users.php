@@ -6,15 +6,16 @@ use Destiny\Common\Utils\Date;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($this->title)?></title>
-<?php include 'seg/meta.php' ?>
-<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
-<link href="<?=Config::cdnv()?>/admin.css" rel="stylesheet" media="screen">
+    <title><?=Tpl::title($this->title)?></title>
+    <?php include 'seg/meta.php' ?>
+    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <link href="<?=Config::cdnv()?>/admin.css" rel="stylesheet" media="screen">
 </head>
 <body id="admin" class="no-contain">
   <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
+    <?php include 'seg/alerts.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
