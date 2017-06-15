@@ -2,6 +2,8 @@
 namespace Destiny\Twitch;
 
 use Destiny\Common\Application;
+use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
@@ -58,6 +60,8 @@ class TwitchApiService extends Service {
      * What channel {you} are hosting
      * @param $id
      * @return array
+     *
+     * @throws Exception
      */
     public function getChannelHostWithInfo($id){
         $info = [];
@@ -77,6 +81,8 @@ class TwitchApiService extends Service {
      * What channel {you} are hosting
      * @param $id int stream id
      * @return array
+     *
+     * @throws Exception
      */
     public function getChannelHost($id){
         $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
@@ -91,10 +97,16 @@ class TwitchApiService extends Service {
             ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
-            $json = GuzzleHttp\json_decode($response->getBody(), true);
-            if(!empty($json) && isset($json['hosts']))
-                return $json['hosts'][0];
-            return $json;
+            try {
+                $json = GuzzleHttp\json_decode($response->getBody(), true);
+                if(!empty($json) && isset($json['hosts']))
+                    return $json['hosts'][0];
+                return $json;
+            } catch (\InvalidArgumentException $e) {
+                $n = new Exception("Failed to parse channel host", $e);
+                Log::error($n);
+                throw $n;
+            }
         }
         return null;
     }
@@ -102,6 +114,8 @@ class TwitchApiService extends Service {
     /**
      * @param int $limit
      * @return array
+     *
+     * @throws Exception
      */
     public function getPastBroadcasts($limit = 4) {
         $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
@@ -116,13 +130,21 @@ class TwitchApiService extends Service {
             ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
-            return GuzzleHttp\json_decode($response->getBody(), true);
+            try {
+                return GuzzleHttp\json_decode($response->getBody(), true);
+            } catch (\InvalidArgumentException $e) {
+                $n = new Exception("Failed to parse past broadcasts", $e);
+                Log::error($n);
+                throw $n;
+            }
         }
         return null;
     }
 
     /**
-     * @return null|array
+     * @return array|null
+     *
+     * @throws Exception
      */
     public function getStream() {
         $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
@@ -133,14 +155,22 @@ class TwitchApiService extends Service {
             ]
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
-            return GuzzleHttp\json_decode($response->getBody(), true);
+            try {
+                return GuzzleHttp\json_decode($response->getBody(), true);
+            } catch (\InvalidArgumentException $e) {
+                $n = new Exception("Failed to parse streams", $e);
+                Log::error($n);
+                throw $n;
+            }
         }
         return null;
     }
 
     /**
      * @param $name string channel name
-     * @return null|array
+     * @return array|null
+     *
+     * @throws Exception
      */
     public function getChannel($name) {
         $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
@@ -151,7 +181,13 @@ class TwitchApiService extends Service {
             ]
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
-            return GuzzleHttp\json_decode($response->getBody(), true);
+            try {
+                return GuzzleHttp\json_decode($response->getBody(), true);
+            } catch (\InvalidArgumentException $e) {
+                $n = new Exception("Failed to parse channel", $e);
+                Log::error($n);
+                throw $n;
+            }
         }
         return null;
     }
@@ -159,6 +195,8 @@ class TwitchApiService extends Service {
     /**
      * @param $name string stream name
      * @return array
+     *
+     * @throws Exception
      */
     public function getStreamInfo($name) {
         $cache = Application::instance()->getCacheDriver();

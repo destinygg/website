@@ -16,6 +16,7 @@ use Destiny\Chat\ChatIntegrationService;
 use Destiny\Messages\PrivateMessageService;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Authentication\AuthenticationService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -46,6 +47,8 @@ class ChatApiController {
      * @param Response $response
      * @param array $params
      * @return array
+     *
+     * @throws DBALException
      */
     public function sendMessage(Response $response, array $params) {
         $privateMessageService = PrivateMessageService::instance();
@@ -73,7 +76,7 @@ class ChatApiController {
 
             $user = $userService->getUserById ( $params['userid'] );
             $credentials = new SessionCredentials ( $user );
-            $credentials->addRoles ( $userService->getUserRolesByUserId ( $params['userid'] ) );
+            $credentials->addRoles ( $userService->getRolesByUserId ( $params['userid'] ) );
             $targetuser = $userService->getUserById ( $params['targetuserid'] );
 
             if(empty($targetuser))
@@ -121,6 +124,8 @@ class ChatApiController {
      * @param Response $response
      * @param array $params
      * @return array
+     *
+     * @throws DBALException
      */
     public function getSubscription(Response $response, array $params) {
         $userService = UserService::instance();
@@ -151,18 +156,18 @@ class ChatApiController {
      * @param Response $response
      * @param Request $request
      * @return array
+     *
+     * @throws DBALException
      */
     public function postSubscription(array $params, Response $response, Request $request) {
         try {
             FilterParams::required($params, 'privatekey');
             if(!$this->checkPrivateKey($params['privatekey']))
                 throw new Exception ('Invalid shared private key.');
-
             $subs = json_decode($request->getBody(), true);
             if(is_array($subs) && count($subs) > 0) {
                 $this->updateSubsAndBroadcast($subs, "%s is now a Twitch subscriber!");
             }
-
             $response->setStatus(Http::STATUS_NO_CONTENT);
         } catch (Exception $e) {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
@@ -186,6 +191,8 @@ class ChatApiController {
      * @param Response $response
      * @param Request $request
      * @return array
+     *
+     * @throws DBALException
      */
     public function postReSubscription(array $params, Response $response, Request $request) {
         try {
@@ -221,6 +228,8 @@ class ChatApiController {
      * @param array $params
      * @param Request $request
      * @return array
+     *
+     * @throws DBALException
      */
     public function addSubscription(Response $response, array $params, Request $request) {
         $userService = UserService::instance();
@@ -254,6 +263,9 @@ class ChatApiController {
      * @param array $subs
      * @param string $fmt
      * @return void
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     private function updateSubsAndBroadcast(array $subs, $fmt) {
         $chatIntegrationService = ChatIntegrationService::instance();

@@ -20,9 +20,11 @@ class Schedule {
     /**
      * @param array $params
      */
-    public function __construct(array $params) {
-        $this->frequency = $params ['frequency'];
-        $this->period = $params ['period'];
+    public function __construct(array $params = null) {
+        if(!empty($params)) {
+            $this->frequency = $params ['frequency'];
+            $this->period = $params ['period'];
+        }
     }
 
 }

@@ -10,6 +10,7 @@ use Destiny\Common\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\StreamLabs\StreamLabsService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -20,9 +21,7 @@ class StreamLabsController {
      * @Route ("/twitchalerts/authorize")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET"})
-     *
      * @return string
-     * @throws Exception
      */
     public function authorize() {
         $handler = new StreamLabsService();
@@ -36,7 +35,11 @@ class StreamLabsController {
      *
      * @param array $params
      * @return string
+     *
      * @throws Exception
+     * @throws DBALException
+     * @throws \OAuth2\Exception
+     * @throws \OAuth2\InvalidArgumentException
      */
     public function oauth(array $params) {
         if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {

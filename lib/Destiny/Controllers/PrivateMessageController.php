@@ -15,6 +15,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
 use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\SessionCredentials;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -144,8 +145,9 @@ class PrivateMessageController {
      * @param array $params
      * @param ViewModel $viewModel
      * @return string
+     *
      * @throws Exception
-     * @throws \Destiny\Common\Utils\FilterParamsException
+     * @throws DBALException
      */
     public function profileMessages(array $params, ViewModel $viewModel) {
         FilterParams::required($params, 'targetuserid');
@@ -182,6 +184,8 @@ class PrivateMessageController {
      *
      * @param array $params
      * @return array
+     *
+     * @throws DBALException
      */
     public function messagesInbox(array $params){
         $userId = Session::getCredentials ()->getUserId ();
@@ -210,6 +214,8 @@ class PrivateMessageController {
      *
      * @param array $params
      * @return array
+     *
+     * @throws DBALException
      */
     public function messagesUserInbox(array $params){
         $userService = UserService::instance();

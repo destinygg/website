@@ -5,6 +5,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
+use Doctrine\DBAL\DBALException;
 use OAuth2;
 
 class TwitchAuthHandler{
@@ -31,6 +32,10 @@ class TwitchAuthHandler{
      * @param array $params
      * @return string
      * @throws Exception
+     *
+     * @throws DBALException
+     * @throws OAuth2\Exception
+     * @throws OAuth2\InvalidArgumentException
      */
     public function authenticate(array $params) {
         if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {

@@ -18,7 +18,7 @@ use Destiny\Common\Config;
 
         <div id="stream-panel" class="left">
             <div id="stream-wrap">
-                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="//player.twitch.tv/?channel=<?=Config::$a['twitch']['user']?>" scrolling="no" seamless allowfullscreen></iframe>
+                <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="<?= Config::$a['embed']['stream'] ?>" scrolling="no" seamless allowfullscreen></iframe>
             </div>
         </div>
 
@@ -35,7 +35,7 @@ use Destiny\Common\Config;
                 </div>
             </div>
             <div id="chat-wrap">
-                <iframe id="chat-frame" class="stream-element" seamless="seamless" src="/embed/chat?follow=/bigscreen"></iframe>
+                <iframe id="chat-frame" class="stream-element" seamless="seamless" src="<?= Config::$a['embed']['chat'] ?>?follow=<?= urlencode('/bigscreen') ?>"></iframe>
             </div>
         </div>
 

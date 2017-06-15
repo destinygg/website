@@ -6,7 +6,7 @@ namespace Destiny\Common\Annotation;
  * @Target({"CLASS","METHOD"})
  */
 class HttpMethod {
-    
+
     /**
      * @var string[]
      */
@@ -15,8 +15,10 @@ class HttpMethod {
     /**
      * @param array $params
      */
-    public function __construct(array $params) {
-        $this->allow = $params ['value'];
+    public function __construct(array $params = null) {
+        if (!empty($params)) {
+            $this->allow = $params ['value'];
+        }
     }
 
 }

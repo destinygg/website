@@ -7,28 +7,28 @@ class Log {
         return Application::instance()->getLogger();
     }
 
-    public static function info($message, array $context = array()){
-        self::logger()->info($message, $context);
+    public static function info($message, array $ctx = []){
+        self::logger()->info($message, $ctx);
     }
 
-    public static function warn($message, array $context = array()){
-        self::logger()->warning($message, $context);
+    public static function warn($message, array $ctx = []){
+        self::logger()->warning($message, $ctx);
     }
 
-    public static function notice($message, array $context = array()){
-        self::logger()->notice($message, $context);
+    public static function notice($message, array $ctx = []){
+        self::logger()->notice($message, $ctx);
     }
 
-    public static function debug($message, array $context = array()){
-        self::logger()->debug($message, $context);
+    public static function debug($message, array $ctx = []){
+        self::logger()->debug($message, $ctx);
     }
 
-    public static function error($message, array $context = array()){
-        self::logger()->error($message, $context);
+    public static function error($message, array $ctx = []){
+        self::logger()->error($message, $ctx);
     }
 
-    public static function critical($message, array $context = array()){
-        self::logger()->critical($message, $context);
+    public static function critical($message, array $ctx = []){
+        self::logger()->critical($message, $ctx);
     }
 
 }

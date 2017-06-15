@@ -18,31 +18,35 @@ use Destiny\Common\Config;
     <section id="error-container" class="container">
         <a title="Rick and Morty" href="http://www.adultswim.com/videos/rick-and-morty/" target="_blank" id="mortyface"></a>
         <h1>Aw geez, Rick!</h1>
-        <p>An error has occurred.</p>
 
-        <?php if($this->code === Http::STATUS_UNAUTHORIZED): ?>
-            <p>You must be authenticated to view this page. Go to the <a href="/login">sign in</a> page</p>
+        <p>
+            <?php if($this->code === Http::STATUS_UNAUTHORIZED): ?>
+            You must be authenticated to view this page. Go to the <a href="/login">sign in</a> page
+            <?php elseif($this->code === Http::STATUS_FORBIDDEN): ?>
+            This request has been forbidden.
+            <?php elseif($this->code === Http::STATUS_NOT_FOUND): ?>
+            We could'nt find the page you were looking for.
+            <?php elseif($this->code === Http::STATUS_ERROR): ?>
+            A application error occurred :(
+            <?php elseif($this->code === Http::STATUS_SERVICE_UNAVAILABLE): ?>
+            We are doing some work on the site. We will be back shortly.
+            <?php else: ?>
+            Something went really bad, call help...
+            <?php endif; ?>
+            <br />
+            <?php if(!empty($this->id)): ?>
+            Include this ID in your support query <label class="label label-danger"><?=Tpl::out($this->id)?></label>
+            <?php endif; ?>
+        </p>
+
+        <?php $ini = @ini_get('display_errors') ?>
+        <?php if($ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>
+        <?php $msg = $this->error->getMessage() ?>
+        <?php if($this->error && is_string($msg) && strlen($msg) > 0): ?>
+        <p><code><?=Tpl::out(trim($this->error->getMessage()))?></code></p>
+        <?php endif; ?>
         <?php endif; ?>
 
-        <?php if($this->code === Http::STATUS_FORBIDDEN): ?>
-            <p>This request has been forbidden.</p>
-        <?php endif; ?>
-
-        <?php if($this->code === Http::STATUS_NOT_FOUND): ?>
-            <p>We could'nt find the page you were looking for.</p>
-        <?php endif; ?>
-
-        <?php if($this->code === Http::STATUS_ERROR): ?>
-            <p>A application error occurred :(.</p>
-        <?php endif; ?>
-
-        <?php if($this->code === Http::STATUS_SERVICE_UNAVAILABLE): ?>
-            <p>We are doing some work on the site. We will be back shortly.</p>
-        <?php endif; ?>
-
-        <?php if($this->error && strlen(trim($this->error->getMessage())) > 0): ?>
-        <p><code><?=Tpl::out($this->error->getMessage())?></code></p>
-        <?php endif; ?>
     </section>
 </div>
 <?php include 'seg/foot.php' ?>

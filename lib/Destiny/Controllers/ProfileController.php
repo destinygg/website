@@ -25,12 +25,13 @@ use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Google\GoogleRecaptchaHandler;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
  */
 class ProfileController {
-    
+
     /**
      * @Route ("/profile")
      * @HttpMethod ({"GET"})
@@ -38,6 +39,9 @@ class ProfileController {
      *
      * @param ViewModel $model
      * @return string
+     *
+     * @throws DBALException
+     * @throws Exception
      */
     public function profile(ViewModel $model) {
       $userService = UserService::instance ();
@@ -75,9 +79,9 @@ class ProfileController {
      *
      * @param array $params
      * @return string
+     *
      * @throws Exception
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Exception
+     * @throws DBALException
      */
     public function profileSave(array $params) {
         // Get user
@@ -144,6 +148,8 @@ class ProfileController {
      *
      * @param ViewModel $model
      * @return string
+     *
+     * @throws DBALException
      */
     public function profileAuthentication(ViewModel $model) {
         $userService = UserService::instance();
@@ -175,7 +181,9 @@ class ProfileController {
      * @param array $params
      * @param Request $request
      * @return string
-     * @throws \Exception
+     *
+     * @throws DBALException
+     * @throws Exception
      */
     public function profileAuthTokenCreate(array $params, Request $request) {
         if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
@@ -192,15 +200,16 @@ class ProfileController {
         }
 
         $conn = Application::instance()->getConnection();
-        $conn->beginTransaction();
         try {
-            $token = $apiAuthService->createAuthToken ( $userId );
-            $apiAuthService->addAuthToken ( $userId, $token );
+            $conn->beginTransaction();
+            $token = $apiAuthService->createAuthToken($userId);
+            $apiAuthService->addAuthToken($userId, $token);
             $conn->commit();
-        } catch ( \Exception $e ) {
-            Log::critical("Error creating auth token");
+        } catch (DBALException $e) {
+            $n = new Exception("Error creating auth token", $e);
+            Log::critical($n);
             $conn->rollBack();
-            throw $e;
+            throw $n;
         }
         Session::setSuccessBag('Auth token created!');
         return 'redirect: /profile/authentication';
@@ -213,8 +222,9 @@ class ProfileController {
      *
      * @param array $params
      * @return string
+     *
+     * @throws DBALException
      * @throws Exception
-     * @throws \Destiny\Common\Utils\FilterParamsException
      */
     public function profileAuthTokenDelete(array $params) {
         FilterParams::required ( $params, 'authToken' );
@@ -239,8 +249,8 @@ class ProfileController {
    *
    * @param array $params
    * @return string
+   *
    * @throws Exception
-   * @throws \Destiny\Common\Utils\FilterParamsException
    */
     public function profileConnect(array $params) {
       FilterParams::required ( $params, 'provider' );
@@ -287,6 +297,9 @@ class ProfileController {
      *
      * @param array $params
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function updateAddress(array $params){
         FilterParams::required ( $params, 'fullName' );
@@ -333,6 +346,9 @@ class ProfileController {
      *
      * @param array $params
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function updateMinecraft(array $params){
         $userService = UserService::instance();
@@ -368,6 +384,9 @@ class ProfileController {
      *
      * @param array $params
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function updateDiscord(array $params){
         $userService = UserService::instance();

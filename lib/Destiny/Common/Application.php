@@ -4,7 +4,6 @@ namespace Destiny\Common;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
@@ -43,11 +42,6 @@ class Application extends Service {
      * @var Router
      */
     protected $router;
-    
-    /**
-     * @var Reader
-     */
-    protected $annotationReader;
     
     /**
      * @var callable
@@ -118,15 +112,19 @@ class Application extends Service {
                 throw new Exception('invalidresponse');
             }
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            $id = self::randomString(12);
+            $this->logger->error("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
             $model->code = Http::STATUS_ERROR;
-            $model->error = new Exception ($e->getMessage());
+            $model->error = $e;
+            $model->id = $id;
             $response->setStatus(Http::STATUS_ERROR);
             $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
         } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            $id = self::randomString(12);
+            $this->logger->critical("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
             $model->code = Http::STATUS_ERROR;
-            $model->error = new Exception ('Application error');
+            $model->error = new Exception ('Application error', $e);
+            $model->id = $id;
             $response->setStatus(Http::STATUS_ERROR);
             $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
         }
@@ -135,8 +133,21 @@ class Application extends Service {
     }
 
     /**
+     * @param int $length
+     * @return string
+     */
+    private static function randomString($length = 10) {
+        $str = [];
+        for ($i = 0; $i < $length; $i++) {
+            $str[] = self::$characters[rand(0, strlen(self::$characters) - 1)];
+        }
+        return join('', $str);
+    }
+
+    private static $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    /**
      * @param Response $response
-     * @throws Exception
      * @return void
      */
     private function handleResponse(Response $response){
@@ -170,6 +181,8 @@ class Application extends Service {
      * @param Response $response
      * @param ViewModel $model
      * @return mixed
+     *
+     * @throws \Exception
      */
     private function executeController(Route $route, Request $request, Response $response, ViewModel $model) {
         $className = $route->getClass();
@@ -289,14 +302,6 @@ class Application extends Service {
 
     public function setLoader($loader) {
         $this->loader = $loader;
-    }
-
-    public function getAnnotationReader() {
-        return $this->annotationReader;
-    }
-
-    public function setAnnotationReader(Reader $annotationReader) {
-        $this->annotationReader = $annotationReader;
     }
 
 }

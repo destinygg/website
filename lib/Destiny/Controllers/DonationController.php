@@ -19,6 +19,7 @@ use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
 use Destiny\PayPal\PayPalApiService;
 use Destiny\StreamLabs\StreamLabsService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -64,16 +65,18 @@ class DonationController {
      *
      * @param array $params
      * @return string
-     * @throws \Exception
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function donatePost(array $params){
         FilterParams::required($params, 'amount');
         FilterParams::declared($params, 'message');
+        $donationService = DonationService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
         $conn = Application::instance()->getConnection();
-        $conn->beginTransaction();
         try {
-            $userId = Session::getCredentials ()->getUserId ();
-            $donationService = DonationService::instance();
+            $conn->beginTransaction();
             $donation = $donationService->addDonation([
                 'userid'    => $userId,
                 'currency'  => Config::$a ['commerce'] ['currency'],
@@ -85,17 +88,17 @@ class DonationController {
             $payPalApiService = PayPalApiService::instance();
             $returnUrl = Http::getBaseUrl() . '/donate/process?success=true&donationid=' . urlencode($donation['id']);
             $cancelUrl = Http::getBaseUrl() . '/donate/process?success=false&donationid=' . urlencode($donation['id']);
-            $token = $payPalApiService->createDonateECResponse($returnUrl, $cancelUrl, $donation);
+            $token = $payPalApiService->createDonateECRequest($returnUrl, $cancelUrl, $donation);
             if (empty ($token)) {
                 throw new Exception ('Error getting paypal response');
             }
             $conn->commit();
-            return 'redirect: ' . Config::$a ['paypal'] ['api'] ['endpoint'] . urlencode($token);
+            return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (\Exception $e) {
-            Log::critical('Error creating order');
+            Log::critical(new Exception("Failed to create order", $e));
             $conn->rollBack();
+            return 'redirect: /donate/error';
         }
-        return 'redirect: /donate/error';
     }
 
     /**
@@ -105,13 +108,23 @@ class DonationController {
      *
      * @param array $params
      * @return string
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function donateProcess(array $params){
         FilterParams::required($params, 'donationid');
         FilterParams::required($params, 'token');
         FilterParams::declared($params, 'success');
+        $creds = Session::getCredentials();
+        $donationService = DonationService::instance();
         try {
+            $donation = $donationService->findById($params['donationid']);
+            if (empty($donation) || $donation['status'] !== DonationStatus::PENDING) {
+                throw new Exception ('Invalid donation');
+            }
+            if (intval($donation['userid']) !== intval($creds->getUserId ())) {
+                throw new Exception ('Permission to donation denied');
+            }
             if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {
                 throw new Exception ('Donation failed');
             }
@@ -127,24 +140,15 @@ class DonationController {
                 $payment = $details->PaymentDetails[0];
                 /** @var \PayPal\CoreComponentTypes\BasicAmountType $total */
                 $total = $payment->OrderTotal;
+                if (strcasecmp($total->currencyID, $donation['currency']) !== 0 || number_format($total->value, 2) !== number_format($donation['amount'], 2)) {
+                    throw new Exception ('Invalid donation amount');
+                }
+                $donationService->updateDonation($params['donationid'], ['status' => DonationStatus::COMPLETED]);
+                Session::setSuccessBag('Donation successful! Thank you');
             } catch (\Exception $e) {
+                $donationService->updateDonation($params['donationid'], ['status' => DonationStatus::ERROR]);
                 throw new Exception ('Invalid payment result', $e);
             }
-
-            $creds = Session::getCredentials();
-            $donationService = DonationService::instance();
-            $donation = $donationService->findById($params['donationid']);
-            if (empty($donation)) {
-                throw new Exception ('Invalid donation');
-            }
-            if (intval($donation['userid']) !== intval($creds->getUserId ())) {
-                throw new Exception ('Permission to donation denied');
-            }
-            if (strcasecmp($total->currencyID, $donation['currency']) !== 0 || number_format($total->value, 2) !== number_format($donation['amount'], 2)) {
-                throw new Exception ('Invalid donation details');
-            }
-            $donationService->updateDonation($params['donationid'], ['status' => DonationStatus::COMPLETED]);
-
             try {
                 $emote = $randomEmote = ChatEmotes::random('destiny');
                 $chatService = ChatIntegrationService::instance();
@@ -158,10 +162,8 @@ class DonationController {
                     'amount'        => number_format($donation['amount'], 2),
                     'currency'      => $donation['currency']
                 ]);
-                Session::setSuccessBag('Donation successful! Thank you');
             } catch (\Exception $e) {
                 Log::error('Error sending donation broadcast. ' . $e->getMessage());
-                Session::setErrorBag('Error sending donation broadcast.');
             }
         } catch (\Exception $e) {
             Log::error('Error processing donation. ' . $e->getMessage());

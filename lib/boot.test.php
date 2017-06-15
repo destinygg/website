@@ -7,15 +7,14 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 ini_set('date.timezone', 'UTC');
-
+define('_APP_VERSION', '2.0.75'); // auto-generated: 1497453147749
 define('_BASEDIR', realpath(__DIR__ . '/../'));
-define('PP_CONFIG_PATH', _BASEDIR . '/config/');
-$loader = require _BASEDIR . '/vendor/autoload.php';
 
+$loader = require _BASEDIR . '/vendor/autoload.php';
 Config::load(array_replace_recursive(
     require _BASEDIR . '/config/config.php',
     require _BASEDIR . '/config/config.local.php',
-    json_decode(file_get_contents(_BASEDIR . '/package.json'), true)
+    ['version' => _APP_VERSION]
 ));
 set_include_path(get_include_path() . PATH_SEPARATOR . Config::$a['tpl']['path']);
 
@@ -26,7 +25,7 @@ $app = Application::instance();
 $app->setLoader($loader);
 
 $logger = new Logger('web');
-$logger->pushHandler(new StreamHandler('php://stdout', Logger::WARNING));
+$logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 $app->setLogger($logger);
 
 $app->setConnection(DriverManager::getConnection(Config::$a ['db']));

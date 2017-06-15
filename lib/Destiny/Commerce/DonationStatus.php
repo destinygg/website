@@ -13,5 +13,10 @@ abstract class DonationStatus {
      */
     const COMPLETED = 'Completed';
 
+    /**
+     * Used for when a donation could not be completed
+     */
+    const ERROR = 'Error';
+
 
 }

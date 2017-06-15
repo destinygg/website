@@ -16,6 +16,7 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatIntegrationService;
+use Doctrine\DBAL\DBALException;
 use GuzzleHttp;
 
 /**
@@ -42,8 +43,9 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
      * @return array
+     *
+     * @throws DBALException
      */
     public function getUser(){
         $cred = Session::getCredentials ();
@@ -141,7 +143,9 @@ class ChatController {
      * @HttpMethod ({"POST"})
      *
      * @param Request $request
+     *
      * @throws Exception
+     * @throws DBALException
      */
     public function saveChatSettings(Request $request){
         $data = $request->getBody();
@@ -185,11 +189,13 @@ class ChatController {
      *
      * @param Request $request
      * @return array|string
+     *
+     * @throws DBALException
      */
     public function banInfo(Request $request){
         $userService = UserService::instance();
         $userId = Session::getCredentials ()->getUserId();
-        $ban = $userService->getUserActiveBan($userId, $request->ipAddress());
+        $ban = $userService->getUserActiveBan($userId, $request->address());
         return empty($ban) ? 'bannotfound' : $ban;
     }
 

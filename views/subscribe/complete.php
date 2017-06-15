@@ -39,7 +39,7 @@ use Destiny\Common\Config;
 
                   <div class="ds-block">
                       <p>Your order was successful, The order reference is <span class="label label-default">#<?=$this->subscription['subscriptionId']?></span>
-                      <br />Please email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for any queries or issues.<br /><br />
+                      <br />Please email <a href="mailto:<?=Config::$a['support_email']?>"><?=Config::$a['support_email']?></a> for any queries or issues.<br /><br />
                       Thank you for your support!</p>
                   </div>
 

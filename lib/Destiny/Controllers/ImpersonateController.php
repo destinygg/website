@@ -10,6 +10,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -21,8 +22,10 @@ class ImpersonateController {
      * @HttpMethod ({"GET"})
      *
      * @param array $params
-     * @throws Exception
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function impersonate(array $params) {
         if (! Config::$a ['allowImpersonation']) {
@@ -45,7 +48,7 @@ class ImpersonateController {
             throw new Exception ( 'User not found. Try a different userId or username' );
         }
         
-        $credentials = $authService->getUserCredentials ( $user, 'impersonating' );
+        $credentials = $authService->buildUserCredentials ( $user, 'impersonating' );
         Session::start ();
         Session::updateCredentials ( $credentials );
         ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );

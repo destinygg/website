@@ -45,14 +45,16 @@ class LoginController {
         $model->follow = (isset ( $params ['follow'] )) ? $params ['follow'] : '';
         return 'login';
     }
-    
+
     /**
      * @Route ("/login")
      * @HttpMethod ({"POST"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param array $params
+     * @param ViewModel $model
      * @return string
+     *
+     * @throws Exception
      */
     public function loginPost(array $params, ViewModel $model) {
         $authProvider = (isset ( $params ['authProvider'] ) && ! empty ( $params['authProvider'] )) ? $params ['authProvider'] : '';

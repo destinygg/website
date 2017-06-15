@@ -1,57 +1,89 @@
 <?php
 namespace Destiny\Common;
 
+use Destiny\Common\Annotation;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Doctrine\Common\Annotations\Reader;
 use \ReflectionClass;
 use \ReflectionMethod;
 
-abstract class ControllerAnnotationLoader {
-    
-    public static function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
-        foreach ( $classIterator as $refl ) {
-            self::loadClass ( $refl, $reader, $router );
+class ControllerAnnotationLoader {
+
+    /**
+     * @var ReflectionClass
+     */
+    private $controllerRef;
+
+    /**
+     * @var ReflectionClass
+     */
+    private $responseBodyRef;
+
+    /**
+     * @var ReflectionClass
+     */
+    private $httpMethodRef;
+
+    /**
+     * @var ReflectionClass
+     */
+    private $secureRef;
+
+    /**
+     * @var ReflectionClass
+     */
+    private $routeRef;
+
+    /**
+     * @param DirectoryClassIterator $classIterator
+     * @param Reader $reader
+     * @param Router $router
+     */
+    public function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
+        $this->controllerRef = new ReflectionClass(new Annotation\Controller());
+        $this->responseBodyRef = new ReflectionClass(new Annotation\ResponseBody());
+        $this->httpMethodRef = new ReflectionClass(new Annotation\HttpMethod());
+        $this->secureRef = new ReflectionClass(new Annotation\Secure());
+        $this->routeRef = new ReflectionClass(new Annotation\Route());
+        foreach ($classIterator as $refl) {
+            $annotation = $reader->getClassAnnotation($refl, $this->controllerRef->getName());
+            if (!empty($annotation)) {
+                $this->loadClass($refl, $reader, $router);
+            }
         }
     }
-    
-    public static function loadClass(ReflectionClass $refl, Reader $reader, Router $router) {
-        $annotation = $reader->getClassAnnotation ( $refl, 'Destiny\Common\Annotation\Controller' );
-        if (empty ( $annotation))
-            return;
-        
-        $methods = $refl->getMethods ( ReflectionMethod::IS_PUBLIC );
-        foreach ( $methods as $method ) {
-            /** @var Route[] $routes */
-            $routes = array ();
 
-            $annotations = $reader->getMethodAnnotations ( $method );
-            for($i=0; $i < count($annotations); ++$i){
-                /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-                if($annotations[$i] instanceof \Destiny\Common\Annotation\Route){
+    /**
+     * @param ReflectionClass $classRef
+     * @param Reader $reader
+     * @param Router $router
+     */
+    public function loadClass(ReflectionClass $classRef, Reader $reader, Router $router) {
+        $methods = $classRef->getMethods(ReflectionMethod::IS_PUBLIC);
+        foreach ($methods as $method) {
+            /** @var Route[] $routes */
+            $routes = [];
+            $annotations = $reader->getMethodAnnotations($method);
+            for ($i = 0; $i < count($annotations); ++$i) {
+                if ($this->routeRef->isInstance($annotations[$i])) {
                     $routes[] = $annotations[$i];
                 }
             }
-
-            if(count($routes) <= 0)
-                continue;
-
-            /** @var \Destiny\Common\Annotation\ResponseBody $responseBody */
-            $responseBody = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\ResponseBody' );
-            /** @var \Destiny\Common\Annotation\HttpMethod $httpMethod */
-            $httpMethod = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\HttpMethod' );
-            /** @var \Destiny\Common\Annotation\Secure $secure */
-            $secure = $reader->getMethodAnnotation ( $method, 'Destiny\Common\Annotation\Secure' );
-
-            for($i=0; $i < count($routes); ++$i){
-                $router->addRoute (new Route([
-                    'path' => $routes[$i]->path,
-                    'classMethod' => $method->name,
-                    'responseBody' => !!$responseBody,
-                    'class' => $refl->name,
-                    'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
-                    'secure' => ($secure) ? $secure->roles : null
-                ]));
+            if (count($routes) > 0) {
+                $responseBody = $reader->getMethodAnnotation($method, $this->responseBodyRef->getName());
+                $httpMethod = $reader->getMethodAnnotation($method, $this->httpMethodRef->getName());
+                $secure = $reader->getMethodAnnotation($method, $this->secureRef->getName());
+                for ($i = 0; $i < count($routes); ++$i) {
+                    $router->addRoute(new Route([
+                        'path' => $routes[$i]->path,
+                        'classMethod' => $method->name,
+                        'responseBody' => !!$responseBody,
+                        'class' => $classRef->name,
+                        'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
+                        'secure' => ($secure) ? $secure->roles : null
+                    ]));
+                }
             }
         }
     }

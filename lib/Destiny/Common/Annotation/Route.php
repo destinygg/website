@@ -15,8 +15,10 @@ class Route {
     /**
      * @param array $params
      */
-    public function __construct(array $params) {
-        $this->path = $params ['value'];
+    public function __construct(array $params = null) {
+        if(!empty($params)) {
+            $this->path = $params ['value'];
+        }
     }
     
     /**

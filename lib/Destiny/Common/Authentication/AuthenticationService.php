@@ -13,19 +13,20 @@ use Destiny\Common\SessionCredentials;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;
-use Destiny\Common\User\UserFeaturesService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @method static AuthenticationService instance()
  */
 class AuthenticationService extends Service {
-    
+
     /**
      * @param string $username
      * @param array $user
      * @throws Exception
+     * @throws DBALException
      */
     public function validateUsername($username, array $user = null) {
         if (empty ( $username ))
@@ -68,23 +69,24 @@ class AuthenticationService extends Service {
      * @param string $email
      * @param array $user
      * @param null|boolean $skipusercheck
+     * @throws DBALException
      * @throws Exception
      */
     public function validateEmail($email, array $user = null, $skipusercheck = null) {
-        if (! filter_var ( $email, FILTER_VALIDATE_EMAIL ))
-            throw new Exception ( 'A valid email is required' );
-        
-        if (! $skipusercheck and ! empty ( $user )) {
-            if (UserService::instance ()->getIsEmailTaken ( $email, $user ['userId'] ))
-                throw new Exception ( 'The email you asked for is already being used' );
-        } elseif (! $skipusercheck ) {
-            if (UserService::instance ()->getIsEmailTaken ( $email ))
-                throw new Exception ( 'The email you asked for is already being used' );
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+            throw new Exception ('A valid email is required');
+
+        if (!$skipusercheck and !empty ($user)) {
+            if (UserService::instance()->getIsEmailTaken($email, $user ['userId']))
+                throw new Exception ('The email you asked for is already being used');
+        } elseif (!$skipusercheck) {
+            if (UserService::instance()->getIsEmailTaken($email))
+                throw new Exception ('The email you asked for is already being used');
         }
 
-        $emailDomain = strtolower( substr( $email, strpos( $email, '@' ) + 1 ) );
-        if ( isset( Config::$a ['blacklistedDomains'][ $emailDomain ] ) )
-            throw new Exception ( 'The email is blacklisted' );
+        $emailDomain = strtolower(substr($email, strpos($email, '@') + 1));
+        if (isset(Config::$a ['blacklistedDomains'][$emailDomain]))
+            throw new Exception ('The email is blacklisted');
 
     }
 
@@ -95,10 +97,13 @@ class AuthenticationService extends Service {
      * @throws Exception
      */
     public function startSession() {
-
+        $chatIntegrationService = ChatIntegrationService::instance ();
         // If the session has a cookie, start it
-        if ( Session::hasSessionCookie () && Session::start() && Session::hasRole ( UserRole::USER ) ) {
-            ChatIntegrationService::instance ()->renewChatSessionExpiration ( Session::getSessionId () );
+        if (Session::hasSessionCookie() && Session::start() && Session::hasRole(UserRole::USER)) {
+            $sessionId = Session::getSessionId ();
+            if(!empty($sessionId)) {
+                $chatIntegrationService->renewChatSessionExpiration(Session::getSessionId());
+            }
         }
 
         // Check the Remember me cookie if the session is invalid
@@ -106,7 +111,7 @@ class AuthenticationService extends Service {
             $user = $this->getRememberMe ();
             if (!empty($user)) {
                 Session::start();
-                Session::updateCredentials ( $this->getUserCredentials ( $user, 'rememberme' ) );
+                Session::updateCredentials ( $this->buildUserCredentials ( $user, 'rememberme' ) );
                 $this->setRememberMe ( $user );
 
                 // flagUserForUpdate updates the credentials AGAIN, but since its low impact
@@ -122,9 +127,9 @@ class AuthenticationService extends Service {
                 $user = UserService::instance ()->getUserById ( $userId );
                 if ( !empty ( $user ) ) {
                     $this->clearUserUpdateFlag ( $userId );
-                    Session::updateCredentials ( $this->getUserCredentials ( $user, 'session' ) );
+                    Session::updateCredentials ( $this->buildUserCredentials ( $user, 'session' ) );
                     // the refreshChatSession differs from this call, because only here we have access to the session id.
-                    ChatIntegrationService::instance ()->setChatSession ( Session::getCredentials(), Session::getSessionId () );
+                    $chatIntegrationService->setChatSession ( Session::getCredentials(), Session::getSessionId () );
                 }
             }
         }
@@ -134,19 +139,21 @@ class AuthenticationService extends Service {
      * @param array $user
      * @param string $authProvider
      * @return SessionCredentials
+     * @throws DBALException
      */
-    public function getUserCredentials(array $user, $authProvider) {
-        $credentials = new SessionCredentials ( $user );
-        $credentials->setAuthProvider ( $authProvider );
-        $credentials->addRoles ( UserRole::USER );
-        $credentials->addFeatures ( UserFeaturesService::instance ()->getUserFeatures ( $user ['userId'] ) );
-        $credentials->addRoles ( UserService::instance ()->getUserRolesByUserId ( $user ['userId'] ) );
+    public function buildUserCredentials(array $user, $authProvider) {
+        $userService = UserService::instance();
+        $credentials = new SessionCredentials ($user);
+        $credentials->setAuthProvider($authProvider);
+        $credentials->addRoles(UserRole::USER);
+        $credentials->addFeatures($userService->getFeaturesByUserId($user ['userId']));
+        $credentials->addRoles($userService->getRolesByUserId($user ['userId']));
 
-        $sub = SubscriptionsService::instance ()->getUserActiveSubscription ( $user ['userId'] );
-        if(!empty ($sub)){
+        $sub = SubscriptionsService::instance()->getUserActiveSubscription($user ['userId']);
+        if (!empty ($sub)) {
             $credentials->setSubscription([
                 'start' => Date::getDateTime($sub['createdDate'])->format(Date::FORMAT),
-                'end'   => Date::getDateTime($sub['endDate'])->format(Date::FORMAT)
+                'end' => Date::getDateTime($sub['endDate'])->format(Date::FORMAT)
             ]);
         }
         if (!empty ($sub) or $user ['istwitchsubscriber']) {
@@ -170,38 +177,36 @@ class AuthenticationService extends Service {
 
     /**
      * @param AuthenticationCredentials $authCreds
+     * @return array
+     * @throws DBALException
      * @throws Exception
      */
     public function handleAuthCredentials(AuthenticationCredentials $authCreds) {
-        $userService = UserService::instance ();
-        $user = $userService->getUserByAuthId ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
-        
-        if (empty ( $user )) {
-            throw new Exception ( 'Invalid auth user' );
+        $userService = UserService::instance();
+        $user = $userService->getUserByAuthId($authCreds->getAuthId(), $authCreds->getAuthProvider());
+
+        if (empty ($user)) {
+            throw new Exception ('Invalid auth user');
         }
-        
+
         // The user has register before...
         // Update the auth profile for this provider
-        $authProfile = $userService->getUserAuthProfile ( $user ['userId'], $authCreds->getAuthProvider () );
-        if (! empty ( $authProfile )) {
-            $userService->updateUserAuthProfile ( $user ['userId'], $authCreds->getAuthProvider (), array (
-                'authCode' => $authCreds->getAuthCode (),
-                'authDetail' => $authCreds->getAuthDetail () 
-            ) );
+        $authProfile = $userService->getUserAuthProfile($user ['userId'], $authCreds->getAuthProvider());
+        if (!empty ($authProfile)) {
+            $userService->updateUserAuthProfile($user ['userId'], $authCreds->getAuthProvider(), array(
+                'authCode' => $authCreds->getAuthCode(),
+                'authDetail' => $authCreds->getAuthDetail()
+            ));
         }
-        
+
         // Renew the session upon successful login, makes it slightly harder to hijack
-        $session = Session::instance ();
-        $session->renew ( true );
-        
-        $credentials = $this->getUserCredentials ( $user, $authCreds->getAuthProvider () );
-        Session::updateCredentials ( $credentials );
-        ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
-        
-        // Variable is sent from the login form
-        if (Session::set ( 'rememberme' )) {
-            $this->setRememberMe ( $user );
-        }
+        $session = Session::instance();
+        $session->renew(true);
+
+        $credentials = $this->buildUserCredentials($user, $authCreds->getAuthProvider());
+        Session::updateCredentials($credentials);
+        ChatIntegrationService::instance()->setChatSession($credentials, Session::getSessionId());
+        return $user;
     }
 
     /**
@@ -209,6 +214,7 @@ class AuthenticationService extends Service {
      * Merging of an account is basically connecting multiple authenticators to one user
      *
      * @param AuthenticationCredentials $authCreds
+     * @throws DBALException
      * @throws Exception
      */
     public function handleAuthAndMerge(AuthenticationCredentials $authCreds) {
@@ -247,28 +253,24 @@ class AuthenticationService extends Service {
      * @param array $user
      * @throws \Exception
      */
-    protected function setRememberMe(array $user) {
+    public function setRememberMe(array $user) {
         $cookie = Session::instance()->getRememberMeCookie();
         $rawData = $cookie->getValue();
-
         if (! empty ( $rawData ))
             $cookie->clearCookie();
-
         $expires = Date::getDateTime (time() + mt_rand(0,2419200)); // 0-28 days
         $expires->add(new \DateInterval('P1M'));
-
         $data = Crypto::encrypt(serialize([
             'userId' => $user['userId'],
             'expires' => $expires->getTimestamp()
         ]));
-
         $cookie->setValue ( $data, Date::getDateTime ('NOW + 2 MONTHS')->getTimestamp() );
     }
 
     /**
      * Returns the user record associated with a remember me cookie
-     *
      * @return array
+     *
      * @throws \Exception
      */
     protected function getRememberMe() {
@@ -306,19 +308,22 @@ class AuthenticationService extends Service {
      * So that on their next request, the session data is updated.
      * Also does a chat session refresh
      *
-     * @param int $userId
+     * @param array|number $user
+     * @throws DBALException
      */
-    public function flagUserForUpdate($userId) {
-        $user = UserService::instance ()->getUserById ( $userId );
-        if(!empty($user)){
-            $cache = Application::instance ()->getCacheDriver ();
-            $cache->save ( sprintf ( 'refreshusersession-%s', $userId ), time (), intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
-            ChatIntegrationService::instance ()->refreshChatUserSession ( $this->getUserCredentials ( $user, 'session' ) );
+    public function flagUserForUpdate($user) {
+        if (!is_array($user)) {
+            $user = UserService::instance()->getUserById($user);
+        }
+        if (!empty($user)) {
+            $cache = Application::instance()->getCacheDriver();
+            $cache->save(sprintf('refreshusersession-%s', $user['userId']), time(), intval(ini_get('session.gc_maxlifetime')));
+            ChatIntegrationService::instance()->refreshChatUserSession($this->buildUserCredentials($user, 'session'));
         }
     }
 
     /**
-     * @param int $userId
+     * @param $userId
      */
     protected function clearUserUpdateFlag($userId) {
         $cache = Application::instance ()->getCacheDriver ();

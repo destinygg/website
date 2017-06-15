@@ -1,26 +1,29 @@
 <?php
 namespace Destiny\Common;
 
+use Destiny\Common\Annotation;
 use Doctrine\Common\Annotations\Reader;
 use \ReflectionClass;
 
 abstract class TaskAnnotationLoader {
 
     public static function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Scheduler $scheduler) {
-        foreach ( $classIterator as $refl ) {
-            self::loadClass ( $refl, $reader, $scheduler );
+        $annot = new ReflectionClass(new Annotation\Schedule());
+        foreach ($classIterator as $refl) {
+            self::loadClass($annot, $refl, $reader, $scheduler);
         }
     }
 
-    public static function loadClass(ReflectionClass $refl, Reader $reader, Scheduler $scheduler) {
+    private static function loadClass(ReflectionClass $annot, ReflectionClass $class, Reader $reader, Scheduler $scheduler) {
         /** @var \Destiny\Common\Annotation\Schedule $annotation */
-        $annotation = $reader->getClassAnnotation ( $refl, 'Destiny\Common\Annotation\Schedule' );
-        if(!empty($annotation)){
-            $scheduler->addTask(array(
-                'action' => $refl->getShortName(),
+        $annotation = $reader->getClassAnnotation($class, $annot->getName());
+        if (!empty($annotation)) {
+            $scheduler->addTask($class->getShortName(), [
+                'class' => $class->getName(),
+                'action' => $class->getShortName(),
                 'frequency' => $annotation->frequency,
                 'period' => $annotation->period
-            ));
+            ]);
         }
     }
 

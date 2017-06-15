@@ -19,3 +19,5 @@ config/config.local.php
 *.swp
 
 /.idea
+
+./phpunit.phar

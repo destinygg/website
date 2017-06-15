@@ -7,6 +7,7 @@ use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Session;
+use Doctrine\DBAL\DBALException;
 use OAuth2\Client;
 
 class GoogleAuthHandler {
@@ -25,8 +26,8 @@ class GoogleAuthHandler {
         $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
         $client->setAccessTokenType ( Client::ACCESS_TOKEN_BEARER );
         return $client->getAuthenticationUrl ( 'https://accounts.google.com/o/oauth2/auth', $callback, array (
-                'scope' => 'openid email',
-                'state' => 'security_token=' . Session::getSessionId () 
+            'scope' => 'openid email',
+            'state' => 'security_token=' . Session::getSessionId ()
         ) );
     }
 
@@ -34,6 +35,10 @@ class GoogleAuthHandler {
      * @param array $params
      * @return string
      * @throws Exception
+     *
+     * @throws DBALException
+     * @throws \OAuth2\Exception
+     * @throws \OAuth2\InvalidArgumentException
      */
     public function authenticate(array $params) {
         if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
@@ -44,8 +49,8 @@ class GoogleAuthHandler {
         $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
         $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
         $response = $client->getAccessToken ( 'https://accounts.google.com/o/oauth2/token', 'authorization_code', array (
-                'redirect_uri' => $callback,
-                'code' => $params ['code'] 
+            'redirect_uri' => $callback,
+            'code' => $params ['code']
         ) );
         
         if (empty ( $response ) || isset ( $response ['error'] ))
@@ -69,6 +74,7 @@ class GoogleAuthHandler {
      * @param string $code
      * @param array $data
      * @return AuthenticationCredentials
+     *
      * @throws Exception
      */
     private function getAuthCredentials($code, array $data) {

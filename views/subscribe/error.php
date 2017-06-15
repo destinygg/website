@@ -43,7 +43,7 @@ use Destiny\Common\Config;
           <br />Your reference is #<?=Tpl::out($this->subscription['subscriptionId'])?>
           <?php endif ?>
 
-          <br>Please start again or email <a href="mailto:<?=Config::$a['paypal']['support_email']?>"><?=Config::$a['paypal']['support_email']?></a> for queries.
+          <br>Please start again or email <a href="mailto:<?=Config::$a['support_email']?>"><?=Config::$a['support_email']?></a> for queries.
           </p>
 
           <?php if(!empty($this->error)): ?>

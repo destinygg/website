@@ -6,6 +6,8 @@ use Destiny\Common\Service;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Doctrine\DBAL\DBALException;
+use \Redis;
 
 /**
  * @method static ChatIntegrationService instance()
@@ -17,10 +19,8 @@ class ChatIntegrationService extends Service {
      * @return void
      */
     public function renewChatSessionExpiration($sessionId) {
-        if (! empty ( $sessionId )) {
-            $redis = Application::instance ()->getRedis ();
-            $redis->expire ( sprintf ( 'CHAT:session-%s', $sessionId ), intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
-        }
+        $redis = Application::instance()->getRedis();
+        $redis->expire(sprintf('CHAT:session-%s', $sessionId), intval(ini_get('session.gc_maxlifetime')));
     }
 
     /**
@@ -28,23 +28,23 @@ class ChatIntegrationService extends Service {
      * @param string $sessionId         
      */
     public function setChatSession(SessionCredentials $credentials, $sessionId) {
-        $redis = Application::instance ()->getRedis ();
-        $json = json_encode ( $credentials->getData () );
-        $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-        $redis->set ( sprintf ( 'CHAT:session-%s', $sessionId ), $json, intval ( ini_get ( 'session.gc_maxlifetime' ) ) );
-        $redis->publish ( sprintf ( 'refreshuser-%s', Config::$a ['redis'] ['database'] ), $json );
-        $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
+        $redis = Application::instance()->getRedis();
+        $json = json_encode($credentials->getData());
+        $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_NONE);
+        $redis->set(sprintf('CHAT:session-%s', $sessionId), $json, intval(ini_get('session.gc_maxlifetime')));
+        $redis->publish(sprintf('refreshuser-%s', Config::$a ['redis'] ['database']), $json);
+        $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
     }
 
     /**
      * @param SessionCredentials $credentials
      */
     public function refreshChatUserSession(SessionCredentials $credentials) {
-        $redis = Application::instance ()->getRedis ();
-        $json = json_encode ( $credentials->getData () );
-        $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE );
-        $redis->publish ( sprintf ( 'refreshuser-%s', Config::$a ['redis'] ['database'] ), $json );
-        $redis->setOption ( \Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP );
+        $redis = Application::instance()->getRedis();
+        $json = json_encode($credentials->getData());
+        $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_NONE);
+        $redis->publish(sprintf('refreshuser-%s', Config::$a ['redis'] ['database']), $json);
+        $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
     }
 
     /**
@@ -88,8 +88,8 @@ class ChatIntegrationService extends Service {
     }
 
     /**
-     * @throws Exception
      * @return array
+     * @throws DBALException
      */
     public function getActiveBans() {
         $conn = Application::instance ()->getConnection ();
@@ -127,23 +127,20 @@ class ChatIntegrationService extends Service {
      * so it actually notices the bans being removed
      *
      * @return int
-     * @throws Exception
+     * @throws DBALException
      */
     public function purgeBans() {
-        $conn  = Application::instance ()->getConnection ();
-        $redis = Application::instance ()->getRedis ();
-
-        $stmt = $conn->prepare("
-            TRUNCATE TABLE bans
-        ");
+        $app = Application::instance ();
+        $conn = $app->getConnection ();
+        $redis = $app->getRedis ();
+        $stmt = $conn->prepare('TRUNCATE TABLE bans');
         $stmt->execute();
-        return $redis->publish ( sprintf ( 'refreshbans-%s', Config::$a ['redis'] ['database'] ), "doesnotmatter" );
+        return $redis->publish ( sprintf ( 'refreshbans-%s', Config::$a ['redis'] ['database'] ), 'doesnotmatter' );
     }
 
     /**
      * @param array $data
      * @return int
-     * @throws Exception
      */
     public function publishPrivateMessage(array $data) {
         $data = array(
@@ -160,7 +157,6 @@ class ChatIntegrationService extends Service {
 
     /**
      * @param array $data
-     * @throws Exception
      */
     public function publishPrivateMessages(array $data){
         $redis = Application::instance ()->getRedis ();

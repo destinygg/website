@@ -3,10 +3,12 @@ namespace Destiny\StreamLabs;
 
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
+use Doctrine\DBAL\DBALException;
 use OAuth2;
 use GuzzleHttp;
 
@@ -48,15 +50,21 @@ class StreamLabsService extends Service {
 
     public function useDefaultAuth(){
         if(empty($this->default)) {
-            $this->default = UserService::instance()->getUserAuthProfile(12, 'twitchalerts');
+            try {
+                $this->default = UserService::instance()->getUserAuthProfile(12, 'twitchalerts');
+            } catch (\Exception $e) {
+                Log::error("Error getting default auth profile. " . $e->getMessage());
+            }
         }
         $this->auth = $this->default;
     }
 
     /**
-     * @param array $auth
      * @param array $args
+     * @param array $auth
      * @return null|\Psr\Http\Message\ResponseInterface
+     *
+     * @throws DBALException
      */
     public function sendAlert(array $args, array $auth = null){
         if($auth === null) {
@@ -64,7 +72,7 @@ class StreamLabsService extends Service {
         }
         $token = $this->getAlwaysValidToken($auth);
         if (!empty($token)) {
-            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10]);
             return $client->post("$this->domain/alerts", [
                 'form_params' => array_merge($args, ['access_token'=> $token])]
             );
@@ -76,6 +84,8 @@ class StreamLabsService extends Service {
      * @param array $args
      * @param array $auth
      * @return null|\Psr\Http\Message\ResponseInterface
+     *
+     * @throws DBALException
      */
     public function sendDonation(array $args, array $auth = null){
         if($auth === null) {
@@ -83,7 +93,7 @@ class StreamLabsService extends Service {
         }
         $token = $this->getAlwaysValidToken($auth);
         if (!empty($token)) {
-            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10]);
             return $client->post("$this->domain/donations", [
                 'form_params' => array_merge($args, ['access_token'=> $token])
             ]);
@@ -95,12 +105,12 @@ class StreamLabsService extends Service {
      * @param array $auth
      * @return string
      *
-     * @throws \Exception
+     * @throws DBALException
      */
     private function renewToken(array $auth){
         $token = $auth['authCode'];
         $userService = UserService::instance();
-        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5]);
+        $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10]);
         $response = $client->post("$this->domain/token", [
             'form_params' => [
                 'grant_type'    => 'refresh_token',
@@ -127,7 +137,7 @@ class StreamLabsService extends Service {
      * @param array $auth
      * @return string
      *
-     * @throws \Exception
+     * @throws DBALException
      */
     private function getAlwaysValidToken(array $auth){
         $createdDate = Date::getDateTime($auth['createdDate']);
@@ -140,8 +150,6 @@ class StreamLabsService extends Service {
 
     /**
      * @return string
-     *
-     * @throws Exception
      */
     public function getAuthenticationUrl() {
         $client = new OAuth2\Client ( Config::$a['twitchalerts']['client_id'], Config::$a['twitchalerts']['client_secret'] );
@@ -154,7 +162,9 @@ class StreamLabsService extends Service {
      * @param $code
      * @return array
      *
-     * @throws \Exception
+     * @throws Exception
+     * @throws OAuth2\Exception
+     * @throws OAuth2\InvalidArgumentException
      */
     public function authenticate($code) {
         $auth = null;

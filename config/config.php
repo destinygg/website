@@ -12,6 +12,10 @@ return [
     'profile' => [
         'nameChangeLimit' => 0
     ],
+    'embed' => [
+        'stream' => '',
+        'chat' => '/embed/chat'
+    ],
     'overrustle' => [
         'stalk' => '',
         'mentions' => ''
@@ -25,7 +29,8 @@ return [
     'android' => [
         'app' => ''
     ],
-    'links' => [],
+    'links' => [
+    ],
     'privateKeys' => [
         'chat' => '',
         'minecraft' => '',
@@ -99,6 +104,7 @@ return [
         'charset'       => 'UTF8',
         'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8,time_zone = \'+0:00\'']
     ],
+    'support_email' => '',
     'meta' => [
         'shortName'      => 'Website',
         'title'          => 'Website - probably the best',
@@ -110,12 +116,21 @@ return [
         'image'          => ''
     ],
     'paypal' => [
-        'support_email' => '',
-        'email' => '',
-        'name' => '',
-        'api' => [
-            'endpoint' => '',
-            'ipn' => ''
+        'endpoint_checkout' => 'https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=',
+        'sdk' => [
+            'mode'                      => 'sandbox',
+            'acct1.ClientId'            => '',
+            'acct1.ClientSecret'        => '',
+            'acct1.UserName'            => '',
+            'acct1.Password'            => '',
+            'acct1.Signature'           => '',
+            'acct1.CertPath'            => '',
+            'service.Endpoint.IPN'      => '',
+            'log.LogEnabled'            => true,
+            'log.FileName'              => _BASEDIR . 'log/paypal.log',
+            'log.LogLevel'              => 'ERROR',
+            'http.ConnectionTimeOut'    => 10,
+            'http.Retry'                => 1,
         ]
     ],
     'youtube' => [

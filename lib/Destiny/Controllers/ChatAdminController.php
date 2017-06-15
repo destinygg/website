@@ -11,6 +11,7 @@ use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Session;
 use Destiny\Chat\ChatIntegrationService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -50,15 +51,17 @@ class ChatAdminController {
         Session::setSuccessBag(sprintf('Sent broadcast: %s', $params ['message']));
         return 'redirect: /admin/chat';
     }
-    
+
     /**
      * @Route ("/admin/chat/ip")
      * @Secure ({"ADMIN"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
-     * @throws Exception
+     * @param array $params
+     * @param ViewModel $model
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function adminChatIp(array $params, ViewModel $model){
         $model->title = 'Chat';

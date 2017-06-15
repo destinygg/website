@@ -5,12 +5,18 @@ use DateTime;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @method static StatisticsService instance()
  */
 class StatisticsService extends Service {
 
+    /**
+     * @param $days
+     * @return array
+     * @throws DBALException
+     */
     public function getRevenueLastXDays ( $days ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -27,6 +33,11 @@ class StatisticsService extends Service {
         return $stmt->fetchAll ();
     }
 
+    /**
+     * @param $months
+     * @return array
+     * @throws DBALException
+     */
     public function getRevenueLastXMonths ( $months ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -43,6 +54,11 @@ class StatisticsService extends Service {
         return $stmt->fetchAll ();
     }
 
+    /**
+     * @param $years
+     * @return array
+     * @throws DBALException
+     */
     public function getRevenueLastXYears( $years ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -59,6 +75,11 @@ class StatisticsService extends Service {
         return $stmt->fetchAll ();
     }
 
+    /**
+     * @param $days
+     * @return array
+     * @throws DBALException
+     */
     public function getNewSubscribersLastXDays ( $days ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -74,6 +95,12 @@ class StatisticsService extends Service {
         return $stmt->fetchAll ();
     }
 
+    /**
+     * @param DateTime $fromDate
+     * @param DateTime $toDate
+     * @return array
+     * @throws DBALException
+     */
     public function getNewTieredSubscribersLastXDays ( DateTime $fromDate, DateTime $toDate ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -90,6 +117,11 @@ class StatisticsService extends Service {
         return $stmt->fetchAll ();
     }
 
+    /**
+     * @param $months
+     * @return array
+     * @throws DBALException
+     */
     public function getNewSubscribersLastXMonths ( $months ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '
@@ -105,6 +137,11 @@ class StatisticsService extends Service {
         return $stmt->fetchAll ();
     }
 
+    /**
+     * @param $years
+     * @return array
+     * @throws DBALException
+     */
     public function getNewSubscribersLastXYears ( $years ) {
         $conn = Application::instance ()->getConnection ();
         $stmt = $conn->prepare ( '

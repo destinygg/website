@@ -36,6 +36,15 @@ class HomeController {
     }
 
     /**
+     * @Route ("/ping")
+     *
+     * @param Response $response
+     */
+    public function ping(Response $response) {
+        $response->addHeader ( 'X-Pong', Config::$a['meta']['shortName'] );
+    }
+
+    /**
      * @Route ("/api/info/stream")
      * @param Response $response
      * @ResponseBody
@@ -53,12 +62,10 @@ class HomeController {
     /**
      * @Route ("/embed/stream")
      *
-     * @param ViewModel $model
      * @return string
      */
-    public function embedStream(ViewModel $model){
-        $model->title = 'Stream';
-        return 'embed/stream';
+    public function embedStream(){
+        return 'redirect: ' . Config::$a['embed']['stream'];
     }
 
     /**
@@ -69,7 +76,7 @@ class HomeController {
      */
     public function embedChat(ViewModel $model) {
         $model->title = 'Chat';
-        return 'embed/chat';
+        return 'chat';
     }
 
     /**
@@ -78,9 +85,9 @@ class HomeController {
      * @param ViewModel $model
      * @return string
      */
-    public function embedOnStreamChat(ViewModel $model) {
+    public function chatstreamed(ViewModel $model) {
         $model->title = 'Chat';
-        return 'embed/onstreamchat';
+        return 'chatstreamed';
     }
 
     /**
@@ -89,18 +96,9 @@ class HomeController {
      * @param ViewModel $model
      * @return string
      */
-    public function helpAgreement(ViewModel $model) {
+    public function agreement(ViewModel $model) {
         $model->title = 'User agreement';
         return 'agreement';
-    }
-
-    /**
-     * @Route ("/ping")
-     *
-     * @param Response $response
-     */
-    public function ping(Response $response) {
-        $response->addHeader ( 'X-Pong', Config::$a['meta']['shortName'] );
     }
 
     /**

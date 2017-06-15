@@ -6,6 +6,7 @@ use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Session;
+use Doctrine\DBAL\DBALException;
 
 class TwitterAuthHandler {
     
@@ -51,6 +52,8 @@ class TwitterAuthHandler {
      * @param array $params
      * @return string
      * @throws Exception
+     *
+     * @throws DBALException
      */
     public function authenticate(array $params) {
         if ((! isset ( $params ['oauth_token'] ) || empty ( $params ['oauth_token'] )) || ! isset ( $params ['oauth_verifier'] ) || empty ( $params ['oauth_verifier'] )) {

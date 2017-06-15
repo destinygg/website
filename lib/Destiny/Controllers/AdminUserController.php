@@ -11,7 +11,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Api\ApiAuthenticationService;
@@ -20,12 +19,13 @@ use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Config;
 use Destiny\Commerce\OrdersService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
  */
 class AdminUserController {
-  
+
     /**
      * @Route ("/admin/user/{id}/edit")
      * @Secure ({"ADMIN"})
@@ -33,8 +33,10 @@ class AdminUserController {
      *
      * @param array $params
      * @param ViewModel $model
-     * @throws Exception
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function adminUserEdit(array $params, ViewModel $model) {
         FilterParams::required($params, 'id');
@@ -44,17 +46,16 @@ class AdminUserController {
         }
         
         $userService = UserService::instance ();
-        $userFeaturesService = UserFeaturesService::instance ();
         $apiAuthenticationService = ApiAuthenticationService::instance ();
         $subscriptionsService = SubscriptionsService::instance();
         
-        $user ['roles'] = $userService->getUserRolesByUserId ( $user ['userId'] );
-        $user ['features'] = $userFeaturesService->getUserFeatures ( $user ['userId'] );
+        $user ['roles'] = $userService->getRolesByUserId ( $user ['userId'] );
+        $user ['features'] = $userService->getFeaturesByUserId ( $user ['userId'] );
         $user ['ips'] = $userService->getIPByUserId( $user ['userId'] );
 
         $model->user = $user;
         $model->smurfs = $userService->findSameIPUsers( $user ['userId'] );
-        $model->features = $userFeaturesService->getNonPseudoFeatures ();
+        $model->features = $userService->getNonPseudoFeatures ();
         $model->ban = $userService->getUserActiveBan ( $user ['userId'] );
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
         $model->address = $userService->getAddressByUserId ( $user ['userId'] );
@@ -87,8 +88,9 @@ class AdminUserController {
      * @param array $params
      * @param ViewModel $model
      * @return string
+     *
+     * @throws DBALException
      * @throws Exception
-     * @throws \Exception
      */
     public function adminUserEditProcess(array $params, ViewModel $model) {
         $model->title = 'User';
@@ -97,8 +99,6 @@ class AdminUserController {
         
         $authService = AuthenticationService::instance ();
         $userService = UserService::instance ();
-        $userFeatureService = UserFeaturesService::instance ();
-        
         $user = $userService->getUserById ( $params ['id'] );
         if (empty ( $user )) {
             throw new Exception ( 'User was not found' );
@@ -170,17 +170,16 @@ class AdminUserController {
         );
 
         $conn = Application::instance()->getConnection();
-        $conn->beginTransaction();
-
         try {
+            $conn->beginTransaction();
             $userService->updateUser ( $user ['userId'], $userData );
             $user = $userService->getUserById ( $params ['id'] );
             if (! isset ( $params ['features'] ))
                 $params ['features'] = array ();
-            $userFeatureService->setUserFeatures ( $user ['userId'], $params ['features'] );
+            $userService->setUserFeatures ( $user ['userId'], $params ['features'] );
             $authService->flagUserForUpdate ( $user ['userId'] );
             $conn->commit();
-        } catch (\Exception $e){
+        } catch (DBALException $e){
             Log::critical("Error updating user", $user);
             $conn->rollBack();
             throw $e;
@@ -189,16 +188,18 @@ class AdminUserController {
         Session::setSuccessBag('User profile updated');
         return $redirect;
     }
-    
+
     /**
      * @Route ("/admin/user/{id}/subscription/add")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
-     * @throws Exception
+     * @param array $params
+     * @param ViewModel $model
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function subscriptionAdd(array $params, ViewModel $model) {
         FilterParams::required ( $params, 'id');
@@ -221,16 +222,18 @@ class AdminUserController {
         $model->title = 'Subscription';
         return "admin/subscription";
     }
-    
+
     /**
      * @Route ("/admin/user/{id}/subscription/{subscriptionId}/edit")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
-     * @throws Exception
+     * @param array $params
+     * @param ViewModel $model
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function subscriptionEdit(array $params, ViewModel $model) {
         FilterParams::required ( $params, 'id' );
@@ -264,8 +267,9 @@ class AdminUserController {
      *
      * @param array $params
      * @return string
+     *
      * @throws Exception
-     * @throws \Destiny\Common\Utils\FilterParamsException
+     * @throws DBALException
      */
     public function subscriptionSave(array $params) {
         FilterParams::required ( $params, 'subscriptionType' );
@@ -324,6 +328,9 @@ class AdminUserController {
      *
      * @param array $params
      * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
      */
     public function authProviderDelete(array $params) {
         $apiAuthService = ApiAuthenticationService::instance();
@@ -340,7 +347,9 @@ class AdminUserController {
      * @param array $params
      * @param ViewModel $model
      * @return string
+     *
      * @throws Exception
+     * @throws DBALException
      */
     public function addBan(array $params, ViewModel $model) {
         $model->title = 'New Ban';
@@ -371,7 +380,9 @@ class AdminUserController {
      *
      * @param array $params
      * @return string
+     *
      * @throws Exception
+     * @throws DBALException
      */
     public function insertBan(array $params) {
         if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
@@ -401,7 +412,9 @@ class AdminUserController {
      * @param array $params
      * @param ViewModel $model
      * @return string
+     *
      * @throws Exception
+     * @throws DBALException
      */
     public function editBan(array $params, ViewModel $model) {
         $model->title = 'Update Ban';
@@ -430,7 +443,9 @@ class AdminUserController {
      *
      * @param array $params
      * @return string
+     *
      * @throws Exception
+     * @throws DBALException
      */
     public function updateBan(array $params) {
         if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
@@ -467,7 +482,9 @@ class AdminUserController {
      *
      * @param array $params
      * @return string
+     *
      * @throws Exception
+     * @throws DBALException
      */
     public function removeBan(array $params) {
         if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {

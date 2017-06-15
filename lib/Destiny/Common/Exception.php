@@ -1,4 +1,12 @@
 <?php
 namespace Destiny\Common;
 
-class Exception extends \Exception {}
+use Throwable;
+
+class Exception extends \Exception {
+
+    public function __construct($message = "", Throwable $previous = null) {
+        parent::__construct($message, 0, $previous);
+    }
+
+}

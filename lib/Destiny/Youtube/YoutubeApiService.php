@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Youtube;
 
+use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
@@ -15,8 +16,7 @@ class YoutubeApiService extends Service {
 
     /**
      * @param array $params
-     * @throws Exception
-     * @return null|array
+     * @return array|null
      */
     public function getYoutubePlaylist(array $params = array()) {
         // Get the channel ID's from a specific person
@@ -36,12 +36,17 @@ class YoutubeApiService extends Service {
             ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
-            $json = GuzzleHttp\json_decode($response->getBody(), true);
-            if (is_array($json ['items'])) {
-                foreach ($json ['items'] as $i => $item) {
-                    $item ['snippet'] ['publishedAt'] = Date::getDateTime($item ['snippet'] ['publishedAt']);
+            try {
+                $json = GuzzleHttp\json_decode($response->getBody(), true);
+                if (is_array($json ['items'])) {
+                    foreach ($json ['items'] as $i => $item) {
+                        $item ['snippet'] ['publishedAt'] = Date::getDateTime($item ['snippet'] ['publishedAt']);
+                    }
+                    return $json;
                 }
-                return $json;
+            } catch (\InvalidArgumentException $e) {
+                $n = new Exception("Failed to parse youtube playlist", $e);
+                Log::error($n);
             }
         }
         return null;

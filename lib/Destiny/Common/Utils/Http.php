@@ -1,10 +1,8 @@
 <?php
 namespace Destiny\Common\Utils;
 
-use Destiny\Common\Exception;
-
 abstract class Http {
-    
+
     const HEADER_ETAG = 'Etag';
     const HEADER_STATUS = 'Status';
     const HEADER_CONTENTLENGTH = 'Content-Length';
@@ -15,6 +13,10 @@ abstract class Http {
     const HEADER_LOCATION = 'Location';
     const HEADER_PRAGMA = 'Pragma';
     const HEADER_CONNECTION = 'Connection';
+    const HEADER_CONTENT_TYPE = 'Content-Type';
+    const HEADER_IF_NONE_MATCH = 'If-None-Match';
+    const HEADER_REQUESTED_WITH = 'Requested-With';
+    const HEADER_AUTH_TOKEN = 'AuthToken';
 
     const STATUS_MOVED_PERMANENTLY = 301;
     const STATUS_NOT_MODIFIED = 304;
@@ -51,12 +53,8 @@ abstract class Http {
 
     /**
      * @param int $status
-     * @throws Exception
      */
     public static function status($status) {
-        if (! isset ( self::$HEADER_STATUSES [intval ( $status )] )) {
-            throw new Exception ( sprintf ( 'HTTP status not supported %s', $status ) );
-        }
         header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
     }
     
@@ -71,6 +69,41 @@ abstract class Http {
         $host = $_SERVER ['HTTP_HOST'];
         $request = $_SERVER ['PHP_SELF'];
         return dirname ( $protocol . '://' . $host . $request );
+    }
+
+    /**
+     * @param array $server
+     * @return mixed|null
+     */
+    public static function extractIpAddress(array $server){
+        $ip = isset($server ['REMOTE_ADDR']) ? $server ['REMOTE_ADDR'] : null;
+        if (!empty ($server ['HTTP_X_REAL_IP'])) // ip from haproxy
+            $ip = $server ['HTTP_X_REAL_IP'];
+        else if (!empty ($server ['HTTP_CLIENT_IP'])) // check ip from share internet
+            $ip = $server ['HTTP_CLIENT_IP'];
+        else if (!empty ($server ['HTTP_X_FORWARDED_FOR'])) // to check ip is pass from proxy
+            $ip = $server ['HTTP_X_FORWARDED_FOR'];
+        return $ip;
+    }
+
+    /**
+     * TODO if you need an arbitrary header, its not currently possible
+     * @param array $server
+     * @return array
+     */
+    public static function extractHeaders(array $server){
+        $headers = [];
+        if (isset ($server['HTTP_IF_NONE_MATCH']))
+            $headers[self::HEADER_IF_NONE_MATCH] = $server['HTTP_IF_NONE_MATCH'];
+        if (isset ($server['HTTP_IF_MODIFIED_SINCE']))
+            $headers[self::HEADER_IF_MODIFIED_SINCE] = $server['HTTP_IF_MODIFIED_SINCE'];
+        if (isset ($server['HTTP_X_REQUESTED_WITH']))
+            $headers[self::HEADER_REQUESTED_WITH] = $server['HTTP_X_REQUESTED_WITH'];
+        if (isset ($server['HTTP_X_AUTH_TOKEN']))
+            $headers[self::HEADER_AUTH_TOKEN] = $server['HTTP_X_AUTH_TOKEN'];
+        if (isset($server['HTTP_CONTENT_TYPE']))
+            $headers[self::HEADER_CONTENT_TYPE] = $server['HTTP_CONTENT_TYPE'];
+        return $headers;
     }
 
 }

@@ -3,8 +3,8 @@ namespace Destiny\Controllers;
 
 use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Exception;
 use Destiny\Common\Session;
-use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;
@@ -17,6 +17,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Utils\FilterParams;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -57,6 +58,8 @@ class AdminController {
      * @param array $params
      * @param ViewModel $model
      * @return string
+     *
+     * @throws DBALException
      */
     public function users(array $params, ViewModel $model) {
         if (empty ( $params ['page'] ))
@@ -82,10 +85,7 @@ class AdminController {
         $model->page = $params ['page'];
         $model->search = $params ['search'];
         $model->feature = $params ['feature'];
-
-        $userFeaturesService = UserFeaturesService::instance ();
-        $model->features = $userFeaturesService->getNonPseudoFeatures ();
-
+        $model->features = UserService::instance()->getNonPseudoFeatures ();
         $model->title = 'Admin';
         return 'admin/users';
     }
@@ -96,6 +96,8 @@ class AdminController {
      *
      * @param ViewModel $model
      * @return string
+     *
+     * @throws DBALException
      */
     public function adminSubscribers(ViewModel $model) {
         $subService = SubscriptionsService::instance ();
@@ -113,6 +115,8 @@ class AdminController {
      *
      * @param ViewModel $model
      * @return string
+     *
+     * @throws DBALException
      */
     public function adminBans(ViewModel $model) {
         $chatService = ChatIntegrationService::instance ();
@@ -138,6 +142,8 @@ class AdminController {
      *
      * @param array $params
      * @return array|false|mixed
+     *
+     * @throws Exception
      */
     public function chartData(array $params){
         FilterParams::required($params, 'type');

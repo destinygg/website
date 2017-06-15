@@ -4,7 +4,9 @@ namespace Destiny\Controllers;
 use Destiny\Commerce\PaymentStatus;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Application;
 use Destiny\Common\Log;
+use Destiny\Common\Request;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Config;
@@ -13,6 +15,8 @@ use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Commerce\OrdersService;
+use Doctrine\DBAL\ConnectionException;
+use Doctrine\DBAL\DBALException;
 use PayPal\IPN\PPIPNMessage;
 
 /**
@@ -26,55 +30,62 @@ class IpnController {
      *
      * Handles the incoming HTTP request
      *
+     * @param Request $request
      * @param Response $response
      * @return string
      */
-    public function ipn(Response $response) {
+    public function ipn(Request $request, Response $response) {
         try {
-            $ipnMessage = new PPIPNMessage ();
+            $ipnMessage = new PPIPNMessage ($request->getBody(), Config::$a['paypal']['sdk']);
             if (!$ipnMessage->validate()) {
-                Log::error('Got a invalid IPN ' . json_encode($ipnMessage->getRawData()));
-                $response->setStatus(Http::STATUS_ERROR);
-                return 'Invalid IPN';
+                Log::error('Got a invalid IPN');
+                $response->setStatus(Http::STATUS_BAD_REQUEST);
+                return 'invalid_ipn';
             }
             $data = $ipnMessage->getRawData();
-            Log::info(sprintf('Got a valid IPN [txn_id: %s, txn_type: %s]', $ipnMessage->getTransactionId(), $data ['txn_type']));
-            $orderService = OrdersService::instance();
-            $orderService->addIpnRecord(array(
-                'ipnTrackId' => $data ['ipn_track_id'],
-                'ipnTransactionId' => $data ['txn_id'],
-                'ipnTransactionType' => $data ['txn_type'],
-                'ipnData' => json_encode($data, JSON_UNESCAPED_UNICODE)
-            ));
-
             // Make sure this IPN is for the merchant
-            if (strcasecmp(Config::$a ['commerce'] ['receiver_email'], $data ['receiver_email']) !== 0) {
-                Log::critical(sprintf('IPN originated with incorrect receiver_email [%s]', $data ['ipn_track_id']));
-                $response->setStatus(Http::STATUS_ERROR);
-                return 'Invalid IPN';
+            if (!isset($data['receiver_email']) || strcasecmp(Config::$a ['commerce'] ['receiver_email'], $data['receiver_email']) !== 0) {
+                Log::critical('IPN originated with incorrect receiver_email [{ipn_track_id},{receiver_email}]', $data);
+                $response->setStatus(Http::STATUS_BAD_REQUEST);
+                return 'invalid_ipn';
             }
-
+            try {
+                Log::info('Got a valid IPN [txn_id: {txn_id}, txn_type: {txn_type}]', $data);
+                $orderService = OrdersService::instance();
+                $orderService->addIpnRecord(array(
+                    'ipnTrackId' => $data ['ipn_track_id'],
+                    'ipnTransactionId' => $data ['txn_id'],
+                    'ipnTransactionType' => $data ['txn_type'],
+                    'ipnData' => json_encode($data, JSON_UNESCAPED_UNICODE)
+                ));
+            } catch (\Exception $e) {
+                Log::critical('Could not save IPN Record');
+                throw $e;
+            }
             // Handle the IPN
-            $this->handleIPNTransaction($data ['txn_id'], $data ['txn_type'], $data);
-
+            $this->handleIPNTransaction($data);
+            //
+        } catch (Exception $e) {
+            Log::error($e);
         } catch (\Exception $e) {
-            Log::critical($e->getMessage());
+            Log::critical($e);
         }
-
         return 'ok';
     }
 
     /**
-     * @param string $txnId
-     * @param string $txnType
      * @param array $data
+     *
+     * @throws ConnectionException
+     * @throws DBALException
      * @throws Exception
      */
-    protected function handleIPNTransaction($txnId, $txnType, array $data) {
-
+    protected function handleIPNTransaction(array $data) {
+        $txnId = $data ['txn_id'];
+        $txnType = $data ['txn_type'];
         $orderService = OrdersService::instance();
         $subscriptionsService = SubscriptionsService::instance();
-
+        $conn = Application::instance()->getConnection();
         switch (strtoupper($txnType)) {
 
             // This is sent when a express checkout has been performed by a user
@@ -82,30 +93,31 @@ class IpnController {
             case 'EXPRESS_CHECKOUT' :
                 $payment = $orderService->getPaymentByTransactionId($txnId);
                 if (!empty ($payment)) {
-
                     // Make sure the payment values are the same
                     if (number_format($payment ['amount'], 2) != number_format($data ['mc_gross'], 2)) {
                         throw new Exception ('Amount for payment do not match');
                     }
-
-                    // Update the payment status
-                    $orderService->updatePayment(array(
-                        'paymentId' => $payment ['paymentId'],
-                        'paymentStatus' => $data ['payment_status']
-                    ));
-
-                    // Update the subscription paymentStatus to active (may have been pending)
-                    // TODO we set the paymentStatus to active without checking it because we get the opportunity to check it after subscription completion
-                    $subscription = $subscriptionsService->getSubscriptionById ( $payment ['subscriptionId'] );
-                    if (!empty ($subscription)) {
-                        $subscriptionsService->updateSubscription(array(
-                            'subscriptionId' => $subscription['subscriptionId'],
-                            'paymentStatus' => PaymentStatus::ACTIVE
-                        ));
+                    $subscription = $subscriptionsService->getSubscriptionById($payment ['subscriptionId']);
+                    try {
+                        // Update the payment status and subscription paymentStatus to active (may have been pending)
+                        $conn->beginTransaction();
+                        $orderService->updatePayment([
+                            'paymentId' => $payment ['paymentId'],
+                            'paymentStatus' => $data ['payment_status']
+                        ]);
+                        if (!empty ($subscription)) {
+                            $subscriptionsService->updateSubscription([
+                                'subscriptionId' => $subscription['subscriptionId'],
+                                'paymentStatus' => PaymentStatus::ACTIVE
+                            ]);
+                        }
+                        $conn->commit();
+                    } catch (DBALException $e) {
+                        $conn->rollBack();
+                        throw $e;
                     }
-
                 } else {
-                    Log::info(sprintf('Express checkout IPN called, but no payment found [%s]', $txnId));
+                    Log::warn('Express checkout IPN called, but no payment found {txn_id}', $data);
                 }
                 break;
 
@@ -117,62 +129,68 @@ class IpnController {
                     throw new Exception ('Invalid next_payment_date');
 
                 $nextPaymentDate = Date::getDateTime($data ['next_payment_date']);
-                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
-                $subscriptionsService->updateSubscription(array(
-                    'subscriptionId' => $subscription['subscriptionId'],
-                    'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s'),
-                    'paymentStatus' => PaymentStatus::ACTIVE
-                ));
-
-                $orderService->addPayment(array(
-                    'subscriptionId'  => $subscription ['subscriptionId'],
-                    'payerId'         => $data ['payer_id'],
-                    'amount'          => $data ['mc_gross'],
-                    'currency'        => $data ['mc_currency'],
-                    'transactionId'   => $txnId,
-                    'transactionType' => $txnType,
-                    'paymentType'     => $data ['payment_type'],
-                    'paymentStatus'   => $data ['payment_status'],
-                    'paymentDate'     => Date::getDateTime($data ['payment_date'])->format('Y-m-d H:i:s'),
-                ));
-                Log::notice(sprintf('Added order payment %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                $subscription = $this->getSubscriptionByPaymentProfileData($data);
+                try {
+                    $conn->beginTransaction();
+                    $subscriptionsService->updateSubscription(array(
+                        'subscriptionId' => $subscription['subscriptionId'],
+                        'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s'),
+                        'paymentStatus' => PaymentStatus::ACTIVE
+                    ));
+                    $orderService->addPayment(array(
+                        'subscriptionId' => $subscription ['subscriptionId'],
+                        'payerId' => $data ['payer_id'],
+                        'amount' => $data ['mc_gross'],
+                        'currency' => $data ['mc_currency'],
+                        'transactionId' => $txnId,
+                        'transactionType' => $txnType,
+                        'paymentType' => $data ['payment_type'],
+                        'paymentStatus' => $data ['payment_status'],
+                        'paymentDate' => Date::getDateTime($data ['payment_date'])->format('Y-m-d H:i:s'),
+                    ));
+                    $conn->commit();
+                } catch (DBALException $e) {
+                    $conn->rollBack();
+                    throw $e;
+                }
+                Log::notice('Added order payment {recurring_payment_id} status {profile_status}', $data);
                 break;
 
             case 'RECURRING_PAYMENT_SKIPPED':
-                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
-                $subscriptionsService->updateSubscription(array (
+                $subscription = $this->getSubscriptionByPaymentProfileData($data);
+                $subscriptionsService->updateSubscription(array(
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::SKIPPED
                 ));
-                Log::debug(sprintf('Payment skipped %s', $data ['recurring_payment_id']));
+                Log::debug('Payment skipped {recurring_payment_id}', $data);
                 break;
 
             case 'RECURRING_PAYMENT_PROFILE_CANCEL' :
-                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
-                $subscriptionsService->updateSubscription(array (
+                $subscription = $this->getSubscriptionByPaymentProfileData($data);
+                $subscriptionsService->updateSubscription(array(
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::CANCELLED
                 ));
-                Log::debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
                 break;
 
             case 'RECURRING_PAYMENT_FAILED' :
-                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
-                $subscriptionsService->updateSubscription(array (
+                $subscription = $this->getSubscriptionByPaymentProfileData($data);
+                $subscriptionsService->updateSubscription(array(
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::FAILED
                 ));
-                Log::debug(sprintf('Payment profile cancelled %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
                 break;
 
             // Sent on first post-back when the user subscribes
             case 'RECURRING_PAYMENT_PROFILE_CREATED' :
-                $subscription = $this->getSubscriptionByPaymentProfileData( $data );
-                $subscriptionsService->updateSubscription(array (
+                $subscription = $this->getSubscriptionByPaymentProfileData($data);
+                $subscriptionsService->updateSubscription(array(
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::ACTIVE
                 ));
-                Log::debug(sprintf('Updated payment profile %s status %s', $data ['recurring_payment_id'], $data ['profile_status']));
+                Log::debug('Updated payment profile {recurring_payment_id} status {profile_status}', $data);
                 break;
         }
     }
@@ -180,17 +198,18 @@ class IpnController {
     /**
      * @param array $data
      * @return array|null
+     * @throws DBALException
      * @throws Exception
      */
-    protected function getSubscriptionByPaymentProfileData( array $data ){
+    protected function getSubscriptionByPaymentProfileData(array $data) {
         $subscription = null;
         if (isset ($data ['recurring_payment_id']) && !empty ($data ['recurring_payment_id'])) {
             $subscriptionService = SubscriptionsService::instance();
-            $subscription = $subscriptionService->getSubscriptionByPaymentProfileId( $data ['recurring_payment_id'] );
+            $subscription = $subscriptionService->getSubscriptionByPaymentProfileId($data ['recurring_payment_id']);
         }
-        if(empty($subscription)){
+        if (empty($subscription)) {
             Log::critical('Could not load subscription using IPN', $data);
-            throw new Exception( 'Could not load subscription by payment data' );
+            throw new Exception('Could not load subscription by payment data');
         }
         return $subscription;
     }

@@ -22,8 +22,8 @@ use GuzzleHttp;
 class RedditFeedService extends Service {
 
     /**
-     * @throws Exception
      * @return null|array
+     * @throws Exception
      */
     public function getHotThreads() {
         $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
@@ -31,33 +31,38 @@ class RedditFeedService extends Service {
             'headers' => ['User-Agent' => Config::userAgent()],
             'query' => ['limit' => 6, 'sort' => 'new']
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
-            $json = GuzzleHttp\json_decode($response->getBody(), true);
-            if (isset($json['data']) && !empty($json['data']) && isset($json['data']['children']) && !empty($json['data']['children'])) {
-                $data = [];
-                foreach ($json['data']['children'] as $child) {
-                    if (isset($child['data'])) {
-                        $c = $child['data'];
-                        array_push($data, [
-                            'id' => $c['id'],
-                            'title' => $c['title'],
-                            'created' => $c['created_utc'],
-                            'score' => $c['score'],
-                            'stickied' => $c['stickied'],
-                            'locked' => $c['locked'],
-                            'spoiler' => $c['spoiler'],
-                            'archived' => $c['archived'],
-                            'permalink' => 'https://www.reddit.com' . $c['permalink'],
-                            'thumbnail' => $c['thumbnail'],
-                            'num_comments' => $c['num_comments'],
-                            'author' => $c['author'],
-                            'downs' => $c['downs'],
-                            'ups' => $c['ups']
-                        ]);
+        try {
+            if ($response->getStatusCode() == Http::STATUS_OK) {
+                $json = GuzzleHttp\json_decode($response->getBody(), true);
+                if (isset($json['data']) && !empty($json['data']) && isset($json['data']['children']) && !empty($json['data']['children'])) {
+                    $data = [];
+                    foreach ($json['data']['children'] as $child) {
+                        if (isset($child['data'])) {
+                            $c = $child['data'];
+                            array_push($data, [
+                                'id' => $c['id'],
+                                'title' => $c['title'],
+                                'created' => $c['created_utc'],
+                                'score' => $c['score'],
+                                'stickied' => $c['stickied'],
+                                'locked' => $c['locked'],
+                                'spoiler' => $c['spoiler'],
+                                'archived' => $c['archived'],
+                                'permalink' => 'https://www.reddit.com' . $c['permalink'],
+                                'thumbnail' => $c['thumbnail'],
+                                'num_comments' => $c['num_comments'],
+                                'author' => $c['author'],
+                                'downs' => $c['downs'],
+                                'ups' => $c['ups']
+                            ]);
+                        }
                     }
+                    return $data;
                 }
-                return $data;
             }
+        } catch (\InvalidArgumentException $e) {
+            $n = new Exception("Failed to parse reddit threads", $e);
+            Log::error($n);
         }
         return null;
     }

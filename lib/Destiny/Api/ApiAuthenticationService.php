@@ -4,6 +4,7 @@ namespace Destiny\Api;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Service;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @method static ApiAuthenticationService instance()
@@ -18,6 +19,7 @@ class ApiAuthenticationService extends Service {
     /**
      * @param int $userId
      * @return string
+     * @throws DBALException
      */
     public function createAuthToken($userId) {
         $token = md5 ( $this->authTokenSalt . microtime ( true ) . $userId );
@@ -30,6 +32,7 @@ class ApiAuthenticationService extends Service {
     /**
      * @param int $userId
      * @param string $authToken
+     * @throws DBALException
      */
     public function addAuthToken($userId, $authToken) {
         $conn = Application::instance ()->getConnection ();
@@ -42,6 +45,7 @@ class ApiAuthenticationService extends Service {
 
     /**
      * @param int $id
+     * @throws DBALException
      */
     public function removeAuthToken($id) {
         $conn = Application::instance ()->getConnection ();
@@ -55,6 +59,7 @@ class ApiAuthenticationService extends Service {
      * @param int $limit
      * @param int $start
      * @return array
+     * @throws DBALException
      */
     public function getAuthTokensByUserId($userId, $limit = 5, $start = 0) {
         $conn = Application::instance ()->getConnection ();
@@ -73,6 +78,7 @@ class ApiAuthenticationService extends Service {
     /**
      * @param string $authToken
      * @return array
+     * @throws DBALException
      */
     public function getAuthToken($authToken) {
         $conn = Application::instance ()->getConnection ();
@@ -87,6 +93,7 @@ class ApiAuthenticationService extends Service {
      *
      * @param string $authToken
      * @return boolean
+     * @throws DBALException
      */
     public function getAuthTokenExists($authToken) {
         $conn = Application::instance ()->getConnection ();
@@ -101,6 +108,7 @@ class ApiAuthenticationService extends Service {
      * @param int $limit
      * @param int $start
      * @return array
+     * @throws DBALException
      */
     public function getAuthSessionsByUserId($userId, $limit = 5, $start = 0) {
         $conn = Application::instance ()->getConnection ();
@@ -119,6 +127,7 @@ class ApiAuthenticationService extends Service {
     /**
      * @param int $userId
      * @param string $authProfile
+     * @throws DBALException
      */
     public function deleteAuthProfileByUserId($userId, $authProfile) {
         $conn = Application::instance ()->getConnection ();

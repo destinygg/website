@@ -6,18 +6,21 @@ use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\User\UserRole;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @method static PrivateMessageService instance()
  */
 class PrivateMessageService extends Service {
-    
+
     /**
      * Check if a user is allowed to send a message based on various criteria
      *
      * @param \Destiny\Common\SessionCredentials $user
      * @param int $targetuserid
-     * @return boolean
+     * @return bool
+     *
+     * @throws DBALException
      */
     public function canSend($user, $targetuserid) {
         if ($user->hasRole(UserRole::ADMIN))
@@ -92,6 +95,8 @@ class PrivateMessageService extends Service {
     /**
      * @param array $data
      * @return int last_insert_id()
+     *
+     * @throws DBALException
      */
     public function addMessage(array $data){
         $conn = Application::instance ()->getConnection ();
@@ -113,6 +118,8 @@ class PrivateMessageService extends Service {
 
     /**
      * @param int $id
+     *
+     * @throws DBALException
      */
     public function openMessageById($id){
         $conn = Application::instance ()->getConnection ();
@@ -128,6 +135,8 @@ class PrivateMessageService extends Service {
      * @param int $start
      * @param int $limit
      * @return array
+     *
+     * @throws DBALException
      */
     public function getMessagesInboxByUserId($userid, $start=0, $limit=20){
         $conn = Application::instance ()->getConnection ();
@@ -161,6 +170,8 @@ class PrivateMessageService extends Service {
      * @param int $id
      * @param int $targetUserId
      * @return array
+     *
+     * @throws DBALException
      */
     public function getMessageByIdAndTargetUserId($id, $targetUserId){
         $conn = Application::instance ()->getConnection ();
@@ -182,6 +193,8 @@ class PrivateMessageService extends Service {
      * @param int $start
      * @param int $limit
      * @return array
+     *
+     * @throws DBALException
      */
     public function getMessagesBetweenUserIdAndTargetUserId($userId, $targetUserId, $start=0, $limit=50){
         $conn = Application::instance ()->getConnection ();
@@ -213,7 +226,8 @@ class PrivateMessageService extends Service {
 
     /**
      * @param int $targetuserid
-     * @throws \Doctrine\DBAL\DBALException
+     *
+     * @throws DBALException
      */
     public function markAllMessagesRead($targetuserid) {
         $conn = Application::instance ()->getConnection ();
@@ -230,6 +244,8 @@ class PrivateMessageService extends Service {
      * @param int $targetuserid
      * @param int $fromuserid
      * @return void
+     *
+     * @throws DBALException
      */
     public function markMessagesRead($targetuserid, $fromuserid) {
         $conn = Application::instance ()->getConnection ();
@@ -249,6 +265,8 @@ class PrivateMessageService extends Service {
      * @param int $messageid
      * @param int $targetuserid
      * @return boolean $success
+     *
+     * @throws DBALException
      */
     public function markMessageRead($messageid, $targetuserid) {
         $conn = Application::instance ()->getConnection ();
@@ -272,6 +290,8 @@ class PrivateMessageService extends Service {
      * @param array $recipients
      *              A list of usernames and groups
      * @return array
+     *
+     * @throws DBALException
      */
     public function batchAddMessage($userId, $message, array $recipients){
 
@@ -347,6 +367,8 @@ class PrivateMessageService extends Service {
      * @param $userId
      * @param $limit
      * @return array
+     *
+     * @throws DBALException
      */
     public function getUnreadConversations($userId, $limit){
         $conn = Application::instance ()->getConnection ();

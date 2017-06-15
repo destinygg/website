@@ -16,6 +16,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Google\GoogleRecaptchaHandler;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -83,7 +84,9 @@ class RegistrationController {
      * @param ViewModel $model
      * @param Request $request
      * @return string
-     * @throws \Exception
+     *
+     * @throws DBALException
+     * @throws Exception
      */
     public function registerProcess(array $params, ViewModel $model, Request $request) {
         $userService = UserService::instance ();
@@ -127,15 +130,14 @@ class RegistrationController {
         }
 
         $conn = Application::instance()->getConnection();
-        $conn->beginTransaction();
-
         try {
-            $user = array ();
+            $conn->beginTransaction();
+            $user = array();
             $user ['username'] = $username;
             $user ['email'] = $email;
             $user ['userStatus'] = 'Active';
             $user ['country'] = $country;
-            $user ['userId'] = $userService->addUser ( $user );
+            $user ['userId'] = $userService->addUser($user);
             $userService->addUserAuthProfile([
                 'userId' => $user ['userId'],
                 'authProvider' => $authCreds->getAuthProvider(),
@@ -145,11 +147,12 @@ class RegistrationController {
                 'refreshToken' => $authCreds->getRefreshToken()
             ]);
             $conn->commit();
-            Session::set ( 'authSession' );
-        } catch ( \Exception $e ) {
-            Log::critical("Error registering user");
+            Session::set('authSession');
+        } catch (DBALException $e) {
+            $n = new Exception("Failed to insert user records", $e);
+            Log::critical($n);
             $conn->rollBack();
-            throw $e;
+            throw $n;
         }
 
         $authCredHandler = new AuthenticationRedirectionFilter ();

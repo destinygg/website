@@ -6,7 +6,7 @@ namespace Destiny\Common\Annotation;
  * @Target({"CLASS","METHOD"})
  */
 class Secure {
-    
+
     /**
      * @var string[]
      */
@@ -15,8 +15,10 @@ class Secure {
     /**
      * @param array $params
      */
-    public function __construct(array $params) {
-        $this->roles = $params ['value'];
+    public function __construct(array $params = null) {
+        if (!empty($params)) {
+            $this->roles = $params ['value'];
+        }
     }
 
 }

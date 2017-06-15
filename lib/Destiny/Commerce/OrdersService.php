@@ -4,6 +4,7 @@ namespace Destiny\Commerce;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @method static OrdersService instance()
@@ -12,6 +13,8 @@ class OrdersService extends Service {
 
     /**
      * @param array $ipn
+     *
+     * @throws DBALException
      */
     public function addIpnRecord(array $ipn) {
         $conn = Application::instance ()->getConnection ();
@@ -25,6 +28,8 @@ class OrdersService extends Service {
 
     /**
      * @param array $payment
+     *
+     * @throws DBALException
      */
     public function updatePayment(array $payment) {
         $conn = Application::instance ()->getConnection ();
@@ -34,6 +39,8 @@ class OrdersService extends Service {
     /**
      * @param string $transactionId
      * @return mixed
+     *
+     * @throws DBALException
      */
     public function getPaymentByTransactionId($transactionId) {
         $conn = Application::instance ()->getConnection ();
@@ -50,7 +57,8 @@ class OrdersService extends Service {
      * @param int $limit
      * @param int $start
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     *
+     * @throws DBALException
      */
     public function getPaymentsBySubscriptionId($subscriptionId, $limit = 100, $start = 0) {
         $conn = Application::instance ()->getConnection ();
@@ -71,6 +79,8 @@ class OrdersService extends Service {
     /**
      * @param array $payment
      * @return int paymentId
+     *
+     * @throws DBALException
      */
     public function addPayment(array $payment) {
         $conn = Application::instance ()->getConnection ();

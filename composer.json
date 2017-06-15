@@ -10,7 +10,7 @@
         "ext-json" : "*",
         "ext-openssl" : "*",
         "ext-mcrypt" : "*",
-        "paypal/merchant-sdk-php" : "3.8.107",
+        "paypal/merchant-sdk-php" : "3.11.*",
         "monolog/monolog" : "1.12.0",
         "doctrine/dbal": "2.5.12",
         "themattharris/tmhoauth": "0.8.4",

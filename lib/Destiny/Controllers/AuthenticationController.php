@@ -10,7 +10,6 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Log;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserFeature;
-use Destiny\Common\User\UserFeaturesService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
@@ -26,6 +25,7 @@ use Destiny\Common\Exception;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -33,10 +33,7 @@ use Destiny\Common\User\UserService;
 class AuthenticationController {
 
     protected function checkPrivateKey(array $params, $type) {
-        if (empty ( $params['privatekey'] ) )
-            return false;
-
-        return Config::$a['privateKeys'][$type] === $params['privatekey'];
+        return isset($params['privatekey']) && Config::$a['privateKeys'][$type] === $params['privatekey'];
     }
 
     /**
@@ -47,21 +44,22 @@ class AuthenticationController {
      *
      * @param Response $response
      * @param array $params
-     * @return string|array
+     * @return array|string
+     *
+     * @throws DBALException
      */
     public function profileInfo(Response $response, array $params) {
         if(! $this->checkPrivateKey($params, 'api')) {
-            Log::info('Bad key check');
+            Log::warn('Profile info requested with bad key');
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'privatekey';
         }
-
         $userid = null;
         try {
             $userService = UserService::instance();
             if (isset($params['userid'])) {
                 FilterParams::required($params, 'userid');
-                $userid = $userService->getUserIdByField('userId', $params['userid']);
+                $userid = $params['userid'];
             } else if (isset($params['discordname'])) {
                 FilterParams::required($params, 'discordname');
                 $userid = $userService->getUserIdByField('discordname', $params['discordname']);
@@ -90,8 +88,7 @@ class AuthenticationController {
             $user = $userService->getUserById($userid);
             if(!empty($user)){
                 $authService = AuthenticationService::instance();
-                $creds = $authService->getUserCredentials($user, 'request');
-                Log::info("Authentication successful", $creds->getData ());
+                $creds = $authService->buildUserCredentials($user, 'request');
                 $response->setStatus(Http::STATUS_OK);
                 return $creds->getData();
             }
@@ -109,6 +106,8 @@ class AuthenticationController {
      * @param Response $response
      * @param array $params
      * @return array|string
+     *
+     * @throws DBALException
      */
     public function authMinecraftGET(Response $response, array $params) {
         Log::info('Minecraft auth [GET]', $params);
@@ -154,7 +153,7 @@ class AuthenticationController {
         }
 
         $sub = SubscriptionsService::instance()->getUserActiveSubscription($userid);
-        $features = UserFeaturesService::instance()->getUserFeatures($userid);
+        $features = $userService->getFeaturesByUserId($userid);
         if (in_array(UserFeature::MINECRAFTVIP, $features) || boolval($user ['istwitchsubscriber']) || (!empty ($sub) && intval($sub ['subscriptionTier']) >= 1)) {
             if (empty($sub)) {
                 $sub = ['endDate' => Date::getDateTime('+1 hour')->format ( 'Y-m-d H:i:s' )];
@@ -178,6 +177,8 @@ class AuthenticationController {
      * @param Response $response
      * @param array $params
      * @return array|string
+     *
+     * @throws DBALException
      */
     public function authMinecraftPOST(Response $response, array $params) {
         Log::info("Minecraft auth [POST]", $params);
@@ -231,7 +232,7 @@ class AuthenticationController {
 
         $end = null;
         $sub = SubscriptionsService::instance()->getUserActiveSubscription($userid);
-        $features = UserFeaturesService::instance()->getUserFeatures($userid);
+        $features = $userService->getFeaturesByUserId($userid);
         /**
          * If user has MINECRAFTVIP feature
          * or if the user is a twitch subscriber and has a subscription with a tier 1 or higher
@@ -260,7 +261,7 @@ class AuthenticationController {
               }
             }
 
-        } catch ( \Doctrine\DBAL\DBALException $e ) {
+        } catch ( DBALException $e ) {
             Log::info("duplicateUUID");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'duplicateUUID';
@@ -281,6 +282,8 @@ class AuthenticationController {
      * @param Response $response
      * @param array $params
      * @return array|string
+     *
+     * @throws DBALException
      */
     public function authApi(Response $response, array $params){
         if (!isset ($params ['authtoken']) || empty ($params ['authtoken'])) {
@@ -298,7 +301,7 @@ class AuthenticationController {
             return 'User not found';
         }
         $authenticationService = AuthenticationService::instance();
-        $credentials = $authenticationService->getUserCredentials($user, 'API');
+        $credentials = $authenticationService->buildUserCredentials($user, 'API');
         return $credentials->getData();
     }
 
