@@ -223,7 +223,7 @@ class SubscriptionController {
                 $model->currentSubscriptionType = $subscriptionsService->getSubscriptionType($currentSubscription ['subscriptionType']);
                 // Warn about identical subscription overwrite
                 if ($model->currentSubscriptionType['id'] == $subscriptionType ['id']) {
-                    $model->warning = new Exception('you are about to overwrite your existing subscription with a duplicate one.');
+                    $model->warning = new Exception('Already subscribed. Your highest tier subscription will be shown.');
                 }
             }
         }
@@ -303,7 +303,7 @@ class SubscriptionController {
         }
 
         $token = null;
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
             $subscriptionId = $subscriptionsService->addSubscription($subscription);
@@ -346,7 +346,7 @@ class SubscriptionController {
         $payPalApiService = PayPalApiService::instance();
         $chatIntegrationService = ChatIntegrationService::instance();
         $authenticationService = AuthenticationService::instance();
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
 
         $subscription = $subscriptionsService->getSubscriptionById($params ['subscriptionId']);
         if (empty ($subscription) || strcasecmp($subscription ['status'], SubscriptionStatus::_NEW) !== 0) {
@@ -466,9 +466,13 @@ class SubscriptionController {
                 $broadcast .= "\r" . $gifternick . " said... \r" . $subMessage;
             }
             $chatIntegrationService->sendBroadcast($broadcast);
-            $streamLabService = StreamLabsService::instance();
-            $streamLabService->useDefaultAuth();
-            $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);
+            if(Config::$a['streamlabs']['alert_subscriptions']) {
+                $streamLabService = StreamLabsService::instance();
+                $streamLabService->sendAlert([
+                    'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
+                    'message' => $message
+                ]);
+            }
         } catch (\Exception $e) {
             $n = new Exception("Error sending subscription broadcast.", $e);
             Log::error($n);

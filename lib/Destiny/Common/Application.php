@@ -6,6 +6,7 @@ use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -14,19 +15,14 @@ use Psr\Log\LoggerInterface;
 class Application extends Service {
 
     /**
-     * @var LoggerInterface
-     */
-    public $logger = null;
-    
-    /**
      * @var CacheProvider
      */
-    public $cacheDriver = null;
+    public $cache = null;
     
     /**
      * @var Connection
      */
-    protected $connection;
+    protected $dbal;
     
     /**
      * @var SessionInstance
@@ -49,6 +45,13 @@ class Application extends Service {
     public $loader;
 
     /**
+     * @return Connection
+     */
+    public static function getDbConn(){
+        return self::instance()->getDbal();
+    }
+
+    /**
      * @param Request $request
      */
     public function executeRequest(Request $request) {
@@ -61,7 +64,7 @@ class Application extends Service {
             $model->code = Http::STATUS_NOT_FOUND;
             $model->error = new Exception('notfound');
             $response->setStatus(Http::STATUS_NOT_FOUND);
-            $response->setBody($this->template('error.php', $model));
+            $response->setBody($this->errorTemplate($model));
             $this->handleResponse($response);
         }
 
@@ -72,14 +75,14 @@ class Application extends Service {
                 $model->code = Http::STATUS_FORBIDDEN;
                 $model->error = new Exception('inactiveuser');
                 $response->setStatus(Http::STATUS_FORBIDDEN);
-                $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+                $response->setBody($this->errorTemplate($model, $useResponseAsBody));
                 $this->handleResponse($response);
             }
             if (!$this->hasRouteSecurity($route, $creds)) {
                 $model->code = Http::STATUS_FORBIDDEN;
                 $model->error = new Exception('forbidden');
                 $response->setStatus(Http::STATUS_FORBIDDEN);
-                $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+                $response->setBody($this->errorTemplate($model, $useResponseAsBody));
                 $this->handleResponse($response);
             }
         }
@@ -108,25 +111,25 @@ class Application extends Service {
                     $response->setBody($this->template($result . '.php', $model));
                 }
             } else if($result !== null) {
-                $this->logger->critical($result);
+                Log::critical($result);
                 throw new Exception('invalidresponse');
             }
         } catch (Exception $e) {
             $id = self::randomString(12);
-            $this->logger->error("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            Log::error("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
             $model->code = Http::STATUS_ERROR;
             $model->error = $e;
             $model->id = $id;
             $response->setStatus(Http::STATUS_ERROR);
-            $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+            $response->setBody($this->errorTemplate($model, $useResponseAsBody));
         } catch (\Exception $e) {
             $id = self::randomString(12);
-            $this->logger->critical("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            Log::critical("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
             $model->code = Http::STATUS_ERROR;
             $model->error = new Exception ('Application error', $e);
             $model->id = $id;
             $response->setStatus(Http::STATUS_ERROR);
-            $response->setBody(!$useResponseAsBody ? $this->template('error.php', $model) : $model);
+            $response->setBody($this->errorTemplate($model, $useResponseAsBody));
         }
 
         $this->handleResponse($response);
@@ -164,7 +167,12 @@ class Application extends Service {
         $body = $response->getBody();
         if($body !== null && !is_string($body)) {
             Http::header(Http::HEADER_CONTENTTYPE, MimeType::JSON);
-            $body = json_encode($body);
+            try {
+                $body = \GuzzleHttp\json_encode($body);
+            } catch (InvalidArgumentException $e) {
+                $n = new Exception('Invalid response body.', $e);
+                Log::error($n);
+            }
         }
         if($body !== null || $body !== ''){
             echo $body;
@@ -243,33 +251,43 @@ class Application extends Service {
      * @param string $filename
      * @param ViewModel $model
      * @return string
+     * @throws \Exception
      */
-    protected function template($filename, /** @noinspection PhpUnusedParameterInspection */ ViewModel $model) {
+    protected function template($filename, ViewModel $model) {
         return $model->getContent($filename);
     }
 
-    public function getConnection() {
-        return $this->connection;
+    /**
+     * @param ViewModel $model
+     * @param bool $useResponseAsBody
+     * @return \Exception|string
+     */
+    protected function errorTemplate(ViewModel $model, $useResponseAsBody=false) {
+        try {
+            if($useResponseAsBody) {
+                return $model;
+            } else {
+                return $model->getContent('error.php');
+            }
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 
-    public function setConnection(Connection $connection) {
-        $this->connection = $connection;
+    public function getDbal() {
+        return $this->dbal;
     }
 
-    public function getCacheDriver() {
-        return $this->cacheDriver;
+    public function setDbal(Connection $dbal) {
+        $this->dbal = $dbal;
     }
 
-    public function setCacheDriver(CacheProvider $cacheDriver) {
-        $this->cacheDriver = $cacheDriver;
+    public function getCache() {
+        return $this->cache;
     }
 
-    public function getLogger() {
-        return $this->logger;
-    }
-
-    public function setLogger(LoggerInterface $logger) {
-        $this->logger = $logger;
+    public function setCache(CacheProvider $cache) {
+        $this->cache = $cache;
     }
 
     public function getSession() {

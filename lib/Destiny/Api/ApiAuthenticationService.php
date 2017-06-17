@@ -35,7 +35,7 @@ class ApiAuthenticationService extends Service {
      * @throws DBALException
      */
     public function addAuthToken($userId, $authToken) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->insert ( 'dfl_users_auth_token', array (
             'userId' => $userId,
             'authToken' => $authToken,
@@ -48,7 +48,7 @@ class ApiAuthenticationService extends Service {
      * @throws DBALException
      */
     public function removeAuthToken($id) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->delete ( 'dfl_users_auth_token', array (
             'authTokenId' => $id 
         ) );
@@ -62,7 +62,7 @@ class ApiAuthenticationService extends Service {
      * @throws DBALException
      */
     public function getAuthTokensByUserId($userId, $limit = 5, $start = 0) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT * FROM dfl_users_auth_token WHERE userId = :userId
             ORDER BY createdDate DESC
@@ -81,7 +81,7 @@ class ApiAuthenticationService extends Service {
      * @throws DBALException
      */
     public function getAuthToken($authToken) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( 'SELECT * FROM dfl_users_auth_token WHERE authToken = :authToken LIMIT 0,1' );
         $stmt->bindValue ( 'authToken', $authToken, \PDO::PARAM_INT );
         $stmt->execute ();
@@ -96,7 +96,7 @@ class ApiAuthenticationService extends Service {
      * @throws DBALException
      */
     public function getAuthTokenExists($authToken) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( 'SELECT COUNT(*) FROM dfl_users_auth_token WHERE authToken = :authToken LIMIT 0,1' );
         $stmt->bindValue ( 'authToken', $authToken, \PDO::PARAM_INT );
         $stmt->execute ();
@@ -111,7 +111,7 @@ class ApiAuthenticationService extends Service {
      * @throws DBALException
      */
     public function getAuthSessionsByUserId($userId, $limit = 5, $start = 0) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT * FROM dfl_users_auth WHERE userId = :userId
             ORDER BY createdDate DESC
@@ -130,7 +130,7 @@ class ApiAuthenticationService extends Service {
      * @throws DBALException
      */
     public function deleteAuthProfileByUserId($userId, $authProfile) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->delete ( 'dfl_users_auth', array (
             'userId' => $userId,
             'authProvider' => $authProfile,

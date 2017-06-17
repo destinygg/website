@@ -85,7 +85,7 @@ class IpnController {
         $txnType = $data ['txn_type'];
         $orderService = OrdersService::instance();
         $subscriptionsService = SubscriptionsService::instance();
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         switch (strtoupper($txnType)) {
 
             // This is sent when a express checkout has been performed by a user

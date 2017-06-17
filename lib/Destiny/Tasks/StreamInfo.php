@@ -15,7 +15,7 @@ use Destiny\Twitch\TwitchApiService;
 class StreamInfo implements TaskInterface {
 
     public function execute() {
-        $cache = Application::instance()->getCacheDriver();
+        $cache = Application::instance()->getCache();
         $twitchApiService = TwitchApiService::instance();
         $chatIntegration = ChatIntegrationService::instance();
 

@@ -5,5 +5,6 @@
         <li><a href="/admin/chat">Chat</a></li>
         <li><a href="/admin/subscribers">Subscribers</a></li>
         <li><a href="/admin/bans">Bans</a></li>
+        <li><a href="/admin/streamlabs">StreamLabs</a></li>
     </ol>
 </section>

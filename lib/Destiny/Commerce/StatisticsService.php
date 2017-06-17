@@ -18,7 +18,7 @@ class StatisticsService extends Service {
      * @throws DBALException
      */
     public function getRevenueLastXDays ( $days ) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, SUM(amount) `sum`, DATE_FORMAT(paymentDate, \'%Y-%m-%d\') `date`
             FROM `dfl_orders_payments`
@@ -39,7 +39,7 @@ class StatisticsService extends Service {
      * @throws DBALException
      */
     public function getRevenueLastXMonths ( $months ) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, SUM(amount) `sum`, DATE_FORMAT(paymentDate, \'%Y-%m-01\') `date`
             FROM `dfl_orders_payments`
@@ -60,7 +60,7 @@ class StatisticsService extends Service {
      * @throws DBALException
      */
     public function getRevenueLastXYears( $years ) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, SUM(amount) `sum`, DATE_FORMAT(paymentDate, \'%Y-01-01\') `date`
             FROM `dfl_orders_payments`
@@ -81,7 +81,7 @@ class StatisticsService extends Service {
      * @throws DBALException
      */
     public function getNewSubscribersLastXDays ( $days ) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-%d\') `date`
             FROM `dfl_users_subscriptions` s
@@ -102,7 +102,7 @@ class StatisticsService extends Service {
      * @throws DBALException
      */
     public function getNewTieredSubscribersLastXDays ( DateTime $fromDate, DateTime $toDate ) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-%d\') `date`, s.subscriptionTier
             FROM `dfl_users_subscriptions` s
@@ -123,7 +123,7 @@ class StatisticsService extends Service {
      * @throws DBALException
      */
     public function getNewSubscribersLastXMonths ( $months ) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-%m-01\') `date`
             FROM `dfl_users_subscriptions` s
@@ -143,7 +143,7 @@ class StatisticsService extends Service {
      * @throws DBALException
      */
     public function getNewSubscribersLastXYears ( $years ) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT COUNT(*) `total`, DATE_FORMAT(createdDate, \'%Y-01-01\') `date` FROM `dfl_users_subscriptions` s
             WHERE s.createdDate BETWEEN CURDATE()-INTERVAL :years YEAR AND CURDATE() + INTERVAL 1 DAY

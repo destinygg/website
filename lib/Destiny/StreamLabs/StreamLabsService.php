@@ -12,15 +12,12 @@ use Doctrine\DBAL\DBALException;
 use OAuth2;
 use GuzzleHttp;
 
-/**
- * @method static StreamLabsService instance()
- */
 class StreamLabsService extends Service {
 
     /**
      * @var string
      */
-    public $authProvider = 'twitchalerts';
+    public $authProvider = 'streamlabs';
     private $domain = 'https://streamlabs.com/api/v1.0';
     private $auth = null;
     private $default = null;
@@ -44,24 +41,40 @@ class StreamLabsService extends Service {
     ];
     */
 
+    /**
+     * @param array|null $auth
+     * @return StreamLabsService
+     */
+    public static function instance(array $auth = null) {
+        /** @var StreamLabsService $instance */
+        $instance = parent::instance();
+        if(empty($auth)) {
+            $auth = $instance->getDefaultAuth();
+        }
+        $instance->setAuth($auth);
+        return $instance;
+    }
+
     public function setAuth(array $auth) {
         $this->auth = $auth;
     }
 
-    public function useDefaultAuth(){
+    public function getDefaultAuth(){
         if(empty($this->default)) {
             try {
-                $this->default = UserService::instance()->getUserAuthProfile(12, 'twitchalerts');
+                $userService = UserService::instance();
+                $this->default = $userService->getUserAuthProfile(Config::$a['streamlabs']['default_user'], 'streamlabs');
             } catch (\Exception $e) {
-                Log::error("Error getting default auth profile. " . $e->getMessage());
+                $n = new Exception("Error getting default auth profile.", $e);
+                Log::error($n);
             }
         }
-        $this->auth = $this->default;
+        return $this->default;
     }
 
     /**
      * @param array $args
-     * @param array $auth
+     * @param array|null $auth
      * @return null|\Psr\Http\Message\ResponseInterface
      *
      * @throws DBALException
@@ -72,8 +85,9 @@ class StreamLabsService extends Service {
         }
         $token = $this->getAlwaysValidToken($auth);
         if (!empty($token)) {
-            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10]);
+            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
             return $client->post("$this->domain/alerts", [
+                'headers' => ['User-Agent' => Config::userAgent()],
                 'form_params' => array_merge($args, ['access_token'=> $token])]
             );
         }
@@ -93,8 +107,9 @@ class StreamLabsService extends Service {
         }
         $token = $this->getAlwaysValidToken($auth);
         if (!empty($token)) {
-            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10]);
+            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
             return $client->post("$this->domain/donations", [
+                'headers' => ['User-Agent' => Config::userAgent()],
                 'form_params' => array_merge($args, ['access_token'=> $token])
             ]);
         }
@@ -114,15 +129,15 @@ class StreamLabsService extends Service {
         $response = $client->post("$this->domain/token", [
             'form_params' => [
                 'grant_type'    => 'refresh_token',
-                'client_id'     => Config::$a['twitchalerts']['client_id'],
-                'client_secret' => Config::$a['twitchalerts']['client_secret'],
-                'redirect_uri'  => Config::$a['twitchalerts']['redirect_uri'],
+                'client_id'     => Config::$a['streamlabs']['client_id'],
+                'client_secret' => Config::$a['streamlabs']['client_secret'],
+                'redirect_uri'  => Config::$a['streamlabs']['redirect_uri'],
                 'refresh_token' => $auth['refreshToken']
             ]
         ]);
         $data = json_decode((string) $response->getBody(), true);
         if(!empty($response) && $response->getStatusCode() == Http::STATUS_OK){
-            $userService->updateUserAuthProfile($auth['userId'], "twitchalerts", [
+            $userService->updateUserAuthProfile($auth['userId'], "streamlabs", [
                 'refreshToken'  => $data ['refresh_token'],
                 'authCode'      => $data ['access_token'],
                 'createdDate'   => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
@@ -152,8 +167,8 @@ class StreamLabsService extends Service {
      * @return string
      */
     public function getAuthenticationUrl() {
-        $client = new OAuth2\Client ( Config::$a['twitchalerts']['client_id'], Config::$a['twitchalerts']['client_secret'] );
-        return $client->getAuthenticationUrl ( "$this->domain/authorize", Config::$a['twitchalerts']['redirect_uri'], [
+        $client = new OAuth2\Client ( Config::$a['streamlabs']['client_id'], Config::$a['streamlabs']['client_secret'] );
+        return $client->getAuthenticationUrl ( "$this->domain/authorize", Config::$a['streamlabs']['redirect_uri'], [
             'scope' => 'alerts.create donations.create',
         ]);
     }
@@ -168,9 +183,9 @@ class StreamLabsService extends Service {
      */
     public function authenticate($code) {
         $auth = null;
-        $client = new OAuth2\Client ( Config::$a['twitchalerts']['client_id'], Config::$a['twitchalerts']['client_secret'] );
+        $client = new OAuth2\Client ( Config::$a['streamlabs']['client_id'], Config::$a['streamlabs']['client_secret'] );
         $response = $client->getAccessToken ( "$this->domain/token", 'authorization_code', [
-            'redirect_uri' => Config::$a['twitchalerts']['redirect_uri'],
+            'redirect_uri' => Config::$a['streamlabs']['redirect_uri'],
             'code' => $code
         ]);
         if (is_array($response) && isset($response['result']) && is_array($response['result']) && isset($response['result']['access_token']) && isset($response['result']['refresh_token'])){
@@ -179,7 +194,7 @@ class StreamLabsService extends Service {
                 'refresh_token' => $response['result']['refresh_token']
             ];
         } else {
-            throw new Exception ( 'Bad response from twitchalerts' );
+            throw new Exception ( 'Bad response from streamlabs' );
         }
         return $auth;
     }

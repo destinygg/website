@@ -755,8 +755,7 @@ body.no-contain #footer-inner {
     ul li {
         margin: 0;
         position: relative;
-        background: $color-accent;
-        background: linear-gradient(to bottom, $color-accent-light 0%, $color-accent 100%);
+        background: $color-surface-dark3;
         flex: 1;
     }
     ul li:first-child {
@@ -769,12 +768,12 @@ body.no-contain #footer-inner {
     }
     ul li a {
         font-size: 16px;
-        color: rgba(255, 255, 255, 0.95);
+        color: $text-color;
         text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
         line-height: 60px;
         text-align: center;
-        display: block;
         text-decoration: none;
+        display: block;
     }
     ul li .arrow {
         bottom: -14px;
@@ -785,7 +784,7 @@ body.no-contain #footer-inner {
         height: 0;
         border-left: 14px solid transparent;
         border-right: 14px solid transparent;
-        border-top: 14px solid $color-accent;
+        border-top: 14px solid $color-surface-dark3;
     }
 }
 

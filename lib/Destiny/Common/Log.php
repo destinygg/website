@@ -1,34 +1,37 @@
 <?php
 namespace Destiny\Common;
 
+use Monolog\Logger;
+
 class Log {
 
-    private static function logger() {
-        return Application::instance()->getLogger();
-    }
+    /**
+     * @var Logger
+     */
+    public static $log;
 
     public static function info($message, array $ctx = []){
-        self::logger()->info($message, $ctx);
+        self::$log->info($message, $ctx);
     }
 
     public static function warn($message, array $ctx = []){
-        self::logger()->warning($message, $ctx);
+        self::$log->warning($message, $ctx);
     }
 
     public static function notice($message, array $ctx = []){
-        self::logger()->notice($message, $ctx);
+        self::$log->notice($message, $ctx);
     }
 
     public static function debug($message, array $ctx = []){
-        self::logger()->debug($message, $ctx);
+        self::$log->debug($message, $ctx);
     }
 
     public static function error($message, array $ctx = []){
-        self::logger()->error($message, $ctx);
+        self::$log->error($message, $ctx);
     }
 
     public static function critical($message, array $ctx = []){
-        self::logger()->critical($message, $ctx);
+        self::$log->critical($message, $ctx);
     }
 
 }

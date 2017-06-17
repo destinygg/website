@@ -83,7 +83,7 @@ class Scheduler {
      * @throws DBALException
      */
     public function loadTasks(){
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM dfl_scheduled_tasks');
         $stmt->execute();
         foreach ($stmt->fetchAll() as $data) {
@@ -108,7 +108,7 @@ class Scheduler {
      * @throws DBALException
      */
     protected function updateTask(array $task) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->update('dfl_scheduled_tasks', array(
             'lastExecuted' => $task ['lastExecuted'],
             'executeCount' => $task ['executeCount']
@@ -127,7 +127,7 @@ class Scheduler {
      * @throws DBALException
      */
     protected function insertTask(array $task) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->insert('dfl_scheduled_tasks', array(
             'action' => $task ['action'],
             'lastExecuted' => $task ['lastExecuted'],

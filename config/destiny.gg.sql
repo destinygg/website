@@ -44,6 +44,7 @@ CREATE TABLE `dfl_orders_ipn` (
 
 CREATE TABLE `dfl_orders_payments` (
   `paymentId` int(14) NOT NULL AUTO_INCREMENT,
+  `donationId` int(14) DEFAULT NULL,
   `subscriptionId` int(14) DEFAULT NULL,
   `amount` float DEFAULT NULL,
   `currency` varchar(4) COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -55,7 +56,7 @@ CREATE TABLE `dfl_orders_payments` (
   `paymentDate` datetime DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   PRIMARY KEY (`paymentId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `dfl_roles` (
   `roleId` int(14) NOT NULL,

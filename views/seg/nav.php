@@ -26,19 +26,11 @@ use Destiny\Common\Session;
             </li>
 
             <?php if(Session::hasRole(UserRole::USER)): ?>
-            <li class="dropdown hidden-xs">
-                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                    <span class="hidden-lg"><span class="fa fa-ellipsis-v"></span></span>
-                    <span class="visible-lg-inline">
-                        Profile <span class="caret"></span>
-                    </span>
+            <li class="hidden-xs">
+                <a href="/profile">
+                    <span class="fa fa-user-circle"></span>
+                    <span class="sign-in-link visible-lg-inline visible-xs-inline">Account</span>
                 </a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="/profile">Account</a></li>
-                    <li><a href="/profile/messages">Messages</a></li>
-                    <li class="divider"></li>
-                    <li><a href="/logout">Sign Out</a></li>
-                </ul>
             </li>
             <?php else: ?>
             <li>

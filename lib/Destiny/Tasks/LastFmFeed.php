@@ -21,7 +21,7 @@ class LastFmFeed implements TaskInterface {
                 if (!empty($path))
                     $json ['recenttracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdni() . '/' . $path;
             }
-            $cache = Application::instance()->getCacheDriver();
+            $cache = Application::instance()->getCache();
             $cache->save('recenttracks', $json);
         }
         $json = LastFMApiService::instance()->getTopTracks();
@@ -31,7 +31,7 @@ class LastFmFeed implements TaskInterface {
                 if (!empty($path))
                     $json ['toptracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdni() . '/' . $path;
             }
-            $cache = Application::instance()->getCacheDriver();
+            $cache = Application::instance()->getCache();
             $cache->save('toptracks', $json);
         }
     }

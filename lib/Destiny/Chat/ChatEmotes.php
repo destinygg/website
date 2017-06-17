@@ -14,7 +14,7 @@ class ChatEmotes {
      */
     public static function get($type=null){
         if (self::$emotes == null) {
-            $cacheDriver = Application::instance()->getCacheDriver();
+            $cacheDriver = Application::instance()->getCache();
             $key = 'emotes_' . str_replace('.', '', Config::$a['version']);
             $emotes = $cacheDriver->fetch($key);
             if (empty ($emotes)) {

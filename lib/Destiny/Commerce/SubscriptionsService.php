@@ -22,7 +22,7 @@ class SubscriptionsService extends Service {
      */
     public function cancelSubscription(array $subscription, $cancel = false){
         $payPalAPIService = PayPalApiService::instance();
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
             // Cancel subscription
@@ -77,7 +77,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getRecurringSubscriptionsToRenew() {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT s.* FROM dfl_users_subscriptions s
             WHERE s.recurring = 1 AND s.paymentStatus = :paymentStatus AND s.endDate <= NOW() AND s.billingNextDate > NOW()
@@ -94,7 +94,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionsToExpire() {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE status = :status AND endDate <= NOW()');
         $stmt->bindValue('status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
         $stmt->execute();
@@ -113,7 +113,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getUserActiveSubscription($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
@@ -134,7 +134,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getUserActiveAndPendingSubscriptions($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
@@ -160,7 +160,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionByIdAndUserIdAndStatus($subscriptionId, $userId, $status) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
@@ -181,7 +181,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionByIdAndUserId($subscriptionId, $userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
           LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
@@ -201,7 +201,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionByUserIdAndStatus($userId, $status) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND status = :status ORDER BY createdDate DESC LIMIT 0,1');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->bindValue('status', $status, \PDO::PARAM_STR);
@@ -215,7 +215,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionsByTier($tier) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT
             u.userId,
@@ -250,7 +250,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionsByGifterIdAndStatus($gifterId, $status) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*, u2.username, u.username `gifterUsername` 
           FROM dfl_users_subscriptions s
@@ -277,7 +277,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionByIdAndGifterIdAndStatus($subscriptionId, $gifterId, $status) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*, u2.username, u.username `gifterUsername` 
           FROM dfl_users_subscriptions s
@@ -300,7 +300,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function addSubscription(array $subscription) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->insert('dfl_users_subscriptions', $subscription);
         return $conn->lastInsertId();
     }
@@ -311,7 +311,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function updateSubscription(array $subscription) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->update('dfl_users_subscriptions', $subscription, array('subscriptionId' => $subscription ['subscriptionId']));
     }
 
@@ -324,7 +324,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionsByUserId($userId, $limit = 100, $start = 0) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT * FROM dfl_users_subscriptions
           WHERE userId = :userId
@@ -344,7 +344,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionById($subscriptionId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT * FROM dfl_users_subscriptions
             WHERE subscriptionId = :subscriptionId
@@ -368,7 +368,7 @@ class SubscriptionsService extends Service {
         }
 
         // Make sure the the giftee accepts gifts
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT userId FROM dfl_users WHERE userId = :userId AND allowGifting = 1');
         $stmt->bindValue('userId', $giftee, \PDO::PARAM_INT);
         $stmt->execute();
@@ -395,7 +395,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionsByGifter($gifterId, $limit = 100, $start = 0) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT * FROM dfl_users_subscriptions
           WHERE gifter = :gifter
@@ -414,7 +414,7 @@ class SubscriptionsService extends Service {
      * @throws DBALException
      */
     public function getSubscriptionByPaymentProfileId($paymentProfileId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT * FROM dfl_users_subscriptions
             WHERE paymentProfileId = :paymentProfileId

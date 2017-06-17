@@ -21,7 +21,7 @@ class BroadcastsFeed  implements TaskInterface {
                 if(!empty($path))
                     $broadcasts['videos'][$i]['preview'] = Config::cdni() . '/' . $path;
             }
-            $cache = Application::instance ()->getCacheDriver ();
+            $cache = Application::instance ()->getCache ();
             $cache->save ( 'pastbroadcasts', $broadcasts );
         }
     }

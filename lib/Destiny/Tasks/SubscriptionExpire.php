@@ -69,7 +69,7 @@ class SubscriptionExpire implements TaskInterface {
         };
 
         // Clean-up old unfinished subscriptions (where users have aborted the process)
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
           DELETE FROM `dfl_users_subscriptions`
           WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 1 HOUR)
@@ -90,7 +90,6 @@ class SubscriptionExpire implements TaskInterface {
                 $chatIntegrationService = ChatIntegrationService::instance();
                 $chatIntegrationService->sendBroadcast($message);
                 $streamLabService = StreamLabsService::instance();
-                $streamLabService->useDefaultAuth();
                 $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);
             } catch (\Exception $e) {
                 Log::critical('Could not send resubscribe broadcast', $subscription);

@@ -32,7 +32,7 @@ AuthenticationService::instance ()->startSession();
 $router = new Router();
 (new ControllerAnnotationLoader())->loadClasses(
     new DirectoryClassIterator (_BASEDIR . '/lib/', 'Destiny/Controllers/'),
-    new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $app->getCacheDriver()),
+    new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $app->getCache()),
     $router
 );
 foreach (Config::$a['links'] as $path => $url) {

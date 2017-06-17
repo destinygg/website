@@ -129,7 +129,7 @@ class RegistrationController {
             return 'register';
         }
 
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
             $user = array();

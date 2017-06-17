@@ -23,14 +23,21 @@ class ViewModel extends \stdClass {
     /**
      * @param $filename
      * @return string
+     * @throws \Exception
      */
     public function getContent($filename){
-        $filename = Config::$a['tpl']['path'] . $filename;
-        ob_start ();
-        /** @noinspection PhpIncludeInspection */
-        require $filename;
-        $contents = ob_get_contents ();
-        ob_end_clean ();
+        $path = Config::$a['tpl']['path'] . $filename;
+        $contents = '';
+        try {
+            ob_start();
+            /** @noinspection PhpIncludeInspection */
+            require $path;
+            $contents = ob_get_contents();
+        } catch (\Exception $e) {
+            throw new ViewModelException("Exception thrown in template. [$filename]", $e);
+        } finally {
+            ob_end_clean ();
+        }
         return $contents;
     }
 

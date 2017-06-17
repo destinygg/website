@@ -316,7 +316,7 @@ class AuthenticationService extends Service {
             $user = UserService::instance()->getUserById($user);
         }
         if (!empty($user)) {
-            $cache = Application::instance()->getCacheDriver();
+            $cache = Application::instance()->getCache();
             $cache->save(sprintf('refreshusersession-%s', $user['userId']), time(), intval(ini_get('session.gc_maxlifetime')));
             ChatIntegrationService::instance()->refreshChatUserSession($this->buildUserCredentials($user, 'session'));
         }
@@ -326,7 +326,7 @@ class AuthenticationService extends Service {
      * @param $userId
      */
     protected function clearUserUpdateFlag($userId) {
-        $cache = Application::instance ()->getCacheDriver ();
+        $cache = Application::instance ()->getCache ();
         $cache->delete ( sprintf ( 'refreshusersession-%s', $userId ));
     }
 
@@ -335,7 +335,7 @@ class AuthenticationService extends Service {
      * @return bool
      */
     protected function isUserFlaggedForUpdate($userId) {
-        $cache = Application::instance ()->getCacheDriver ();
+        $cache = Application::instance ()->getCache ();
         $lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
         return !empty ($lastUpdated);
     }

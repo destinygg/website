@@ -13,7 +13,7 @@ class TwitterFeed implements TaskInterface {
 
     public function execute() {
         $app = Application::instance ();
-        $cacheDriver = $app->getCacheDriver ();
+        $cacheDriver = $app->getCache ();
         $cacheDriver->save('twitter', TwitterApiService::instance()->getTweets());
     }
 

@@ -1,13 +1,15 @@
 <?php
 use Destiny\Common\Application;
 use Destiny\Common\Config;
+use Destiny\Common\Log;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\DriverManager;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Monolog\Processor\PsrLogMessageProcessor;
 
 ini_set('date.timezone', 'UTC');
-define('_APP_VERSION', '2.0.75'); // auto-generated: 1497453147749
+define('_APP_VERSION', '2.0.77'); // auto-generated: 1497728712784
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
@@ -24,9 +26,9 @@ AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 $app = Application::instance();
 $app->setLoader($loader);
 
-$logger = new Logger('web');
-$logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
-$app->setLogger($logger);
+Log::$log = new Logger('web');
+Log::$log->pushProcessor(new PsrLogMessageProcessor());
+Log::$log->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 
-$app->setConnection(DriverManager::getConnection(Config::$a ['db']));
-$app->setCacheDriver(new Doctrine\Common\Cache\ArrayCache());
+$app->setDbal(DriverManager::getConnection(Config::$a ['db']));
+$app->setCache(new Doctrine\Common\Cache\ArrayCache());

@@ -21,7 +21,7 @@ class YoutubeFeed implements TaskInterface {
                 if (!empty($path))
                     $json ['items'][$i]['snippet']['thumbnails']['high']['url'] = Config::cdni() . '/' . $path;
             }
-            $cache = Application::instance()->getCacheDriver();
+            $cache = Application::instance()->getCache();
             $cache->save('youtubeplaylist', $json);
         }
     }

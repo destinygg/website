@@ -31,7 +31,7 @@ abstract class Country {
      */
     public static function getCountries() {
         if (self::$countries == null) {
-            $cacheDriver = Application::instance ()->getCacheDriver ();
+            $cacheDriver = Application::instance ()->getCache ();
             $countries = $cacheDriver->fetch ( 'geodata' );
             if (empty ( $countries )) {
                 $countries = json_decode ( file_get_contents ( _BASEDIR . '/assets/countries.json' ), true );

@@ -199,7 +199,7 @@ class TwitchApiService extends Service {
      * @throws Exception
      */
     public function getStreamInfo($name) {
-        $cache = Application::instance()->getCacheDriver();
+        $cache = Application::instance()->getCache();
         $streaminfo = self::$STREAM_INFO;
 
         $channel = $this->getChannel($name);

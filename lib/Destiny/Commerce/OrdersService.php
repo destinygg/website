@@ -17,7 +17,7 @@ class OrdersService extends Service {
      * @throws DBALException
      */
     public function addIpnRecord(array $ipn) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->insert ( 'dfl_orders_ipn', array (
             'ipnTrackId' => $ipn ['ipnTrackId'],
             'ipnTransactionId' => $ipn ['ipnTransactionId'],
@@ -32,7 +32,7 @@ class OrdersService extends Service {
      * @throws DBALException
      */
     public function updatePayment(array $payment) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->update ( 'dfl_orders_payments', $payment, array ('paymentId' => $payment['paymentId']) );
     }
 
@@ -43,7 +43,7 @@ class OrdersService extends Service {
      * @throws DBALException
      */
     public function getPaymentByTransactionId($transactionId) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payments WHERE transactionId = :transactionId LIMIT 0,1' );
         $stmt->bindValue ( 'transactionId', $transactionId, \PDO::PARAM_STR );
         $stmt->execute ();
@@ -61,7 +61,7 @@ class OrdersService extends Service {
      * @throws DBALException
      */
     public function getPaymentsBySubscriptionId($subscriptionId, $limit = 100, $start = 0) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT p.* FROM dfl_orders_payments `p`
             INNER JOIN dfl_users_subscriptions `s` ON (s.subscriptionId = p.subscriptionId)
@@ -83,7 +83,7 @@ class OrdersService extends Service {
      * @throws DBALException
      */
     public function addPayment(array $payment) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->insert ( 'dfl_orders_payments', array (
             'subscriptionId' => $payment ['subscriptionId'],
             'amount' => $payment ['amount'],

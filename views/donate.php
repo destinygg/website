@@ -28,16 +28,6 @@ use Destiny\Common\Config;
         <?php include 'seg/alerts.php' ?>
 
         <div class="content content-dark clearfix">
-            <div class="ui-step-legend-wrap clearfix">
-                <div class="ui-step-legend clearfix">
-                    <ul>
-                        <li class="active"><a>Setup</a><i class="arrow"></i></li>
-                        <li><a>Payment</a></li>
-                        <li><a>Complete</a></li>
-                    </ul>
-                </div>
-            </div>
-
             <form id="donate-form" class="validate" action="/donate" method="post">
                 <div class="ds-block">
                     <p>Donation amount</p>
@@ -49,14 +39,14 @@ use Destiny\Common\Config;
                 </div>
                 <div class="ds-block text-message">
                     <div>Send a message with your donation (optional):</div>
-                    <textarea name="message" autocomplete="off" maxlength="250" rows="5" class="form-control" placeholder="Write a message ..."></textarea>
+                    <textarea name="message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
                 </div>
                 <div class="form-actions">
                     <a class="pull-right powered-paypal" title="Powered by Paypal" href="https://www.paypal.com" target="_blank">Paypal</a>
-                    <button class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Donate</button>
+                    <button class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Continue</button>
                     <a href="/" class="btn btn-link">Cancel</a>
                     <p class="agreement">
-                        <span>By clicking the &quot;Donate&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</span>
+                        <span>By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</span>
                     </p>
                 </div>
             </form>

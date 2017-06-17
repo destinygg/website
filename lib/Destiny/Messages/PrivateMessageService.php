@@ -27,7 +27,7 @@ class PrivateMessageService extends Service {
             return true;
 
         $userid = $user->getUserId();
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT
                 userid,
@@ -99,7 +99,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function addMessage(array $data){
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->insert ( 'privatemessages', array (
             'userid' => $data['userid'],
             'targetuserid' => $data['targetuserid'],
@@ -122,7 +122,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function openMessageById($id){
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $conn->update( 'privatemessages', array (
             'isread' => 1
         ), array(
@@ -139,7 +139,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function getMessagesInboxByUserId($userid, $start=0, $limit=20){
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT z.*,pm3.message FROM (
                 SELECT
@@ -174,7 +174,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function getMessageByIdAndTargetUserId($id, $targetUserId){
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT p.*, `from`.username `from` FROM privatemessages p
             LEFT JOIN `dfl_users` `from` ON (`from`.userId = p.userid)
@@ -197,7 +197,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function getMessagesBetweenUserIdAndTargetUserId($userId, $targetUserId, $start=0, $limit=50){
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT
                 p.*,
@@ -230,7 +230,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function markAllMessagesRead($targetuserid) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             UPDATE privatemessages
             SET isread = 1
@@ -248,7 +248,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function markMessagesRead($targetuserid, $fromuserid) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             UPDATE privatemessages
             SET isread = 1
@@ -269,7 +269,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function markMessageRead($messageid, $targetuserid) {
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             UPDATE privatemessages
             SET isread = 1
@@ -313,7 +313,7 @@ class PrivateMessageService extends Service {
             }
         }
 
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->executeQuery("
             INSERT INTO privatemessages
             SELECT 
@@ -371,7 +371,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function getUnreadConversations($userId, $limit){
-        $conn = Application::instance ()->getConnection ();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT * FROM (
               SELECT p.id `messageid`,u.username,MAX(p.timestamp) `timestamp`, COUNT(*) `unread` FROM `privatemessages` p

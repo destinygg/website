@@ -4,6 +4,7 @@ namespace Destiny\Controllers;
 use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
@@ -17,6 +18,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Utils\FilterParams;
+use Destiny\StreamLabs\StreamLabsService;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -148,7 +150,7 @@ class AdminController {
     public function chartData(array $params){
         FilterParams::required($params, 'type');
         $statisticsService = StatisticsService::instance();
-        $cacheDriver = Application::instance()->getCacheDriver ();
+        $cacheDriver = Application::instance()->getCache ();
         $data = [];
         try {
             switch(strtoupper($params['type'])){
@@ -228,7 +230,9 @@ class AdminController {
                     break;
             }
         } catch (\Exception $e) {
-            // ignored
+            $n = new Exception('Error loading graph data.', $e);
+            Log::error($n);
+            // swallowed
         }
         return $data;
     }

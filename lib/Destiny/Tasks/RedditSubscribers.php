@@ -22,8 +22,8 @@ class RedditSubscribers implements TaskInterface {
     public function execute() {
         if (empty ( $this->output ))
             return;
-        
-        $conn = Application::instance ()->getConnection ();
+
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare ( '
             SELECT 
                 auth.authId,

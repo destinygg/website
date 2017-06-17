@@ -1,4 +1,5 @@
 ALTER TABLE `dfl_users_auth` ADD COLUMN `refreshToken` VARCHAR(255) NULL AFTER `authDetail`;
+ALTER TABLE `dfl_orders_payments` ADD COLUMN `donationId` INT(14) NULL AFTER `paymentId`;
 
 CREATE TABLE `donations` (
   `id` int(14) NOT NULL AUTO_INCREMENT,

@@ -12,7 +12,6 @@ use Destiny\Commerce\SubscriptionStatus;
     <title><?=Tpl::title($this->title)?></title>
     <?php include 'seg/meta.php' ?>
     <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
-    <link href="<?=Config::cdnv()?>/admin.css" rel="stylesheet" media="screen">
 </head>
 <body id="admin" class="no-contain">
   <div id="page-wrap">
@@ -122,21 +121,28 @@ use Destiny\Commerce\SubscriptionStatus;
               <?php endforeach; ?>
             </div>
 
-            <div class="form-group">
-              <label>Website Roles <small>(Not editable)</small></label>
-              <div class="checkbox">
-                <label>
-                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::ADMIN?>" <?=(in_array(UserRole::ADMIN, $this->user['roles']))?'checked="checked"':''?>>
-                  Administrator
-                </label>
+              <div class="form-group">
+                  <label>Website Roles <small>(Not editable)</small></label>
+                  <div class="checkbox">
+                      <label>
+                          <input disabled type="checkbox" name="roles[]" value="<?=UserRole::ADMIN?>" <?=(in_array(UserRole::ADMIN, $this->user['roles']))?'checked="checked"':''?>>
+                          Administrator
+                      </label>
+                  </div>
+                  <div class="checkbox">
+                      <label>
+                          <input disabled type="checkbox" name="roles[]" value="<?=UserRole::FINANCE?>" <?=(in_array(UserRole::FINANCE, $this->user['roles']))?'checked="checked"':''?>>
+                          Finance
+                      </label>
+                  </div>
+                  <div class="checkbox">
+                      <label>
+                          <input disabled type="checkbox" name="roles[]" value="<?=UserRole::STREAMLABS?>" <?=(in_array(UserRole::STREAMLABS, $this->user['roles']))?'checked="checked"':''?>>
+                          StreamLabs
+                      </label>
+                  </div>
               </div>
-              <div class="checkbox">
-                <label>
-                  <input disabled type="checkbox" name="roles[]" value="<?=UserRole::FINANCE?>" <?=(in_array(UserRole::FINANCE, $this->user['roles']))?'checked="checked"':''?>>
-                  Finance
-                </label>
-              </div>
-            </div>
+
           </div>
 
           <div class="form-actions">

@@ -169,7 +169,7 @@ class AdminUserController {
             'discorduuid' => $discorduuid
         );
 
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
             $userService->updateUser ( $user ['userId'], $userData );

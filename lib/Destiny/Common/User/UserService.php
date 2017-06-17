@@ -43,7 +43,7 @@ class UserService extends Service {
      */
     public function getUserRoles() {
         if (!$this->roles) {
-            $conn = Application::instance()->getConnection();
+            $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT * FROM `dfl_roles`');
             $stmt->execute();
             $this->roles = $stmt->fetchAll();
@@ -74,7 +74,7 @@ class UserService extends Service {
      */
     public function addUserRole($userId, $roleName) {
         $roleId = $this->getRoleIdByName($roleName);
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->insert('dfl_users_roles', array(
             'userId' => $userId,
             'roleId' => $roleId
@@ -87,7 +87,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function removeAllUserRoles($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->delete('dfl_users_roles', array(
             'userId' => $userId
         ));
@@ -100,7 +100,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getIsUsernameTaken($username, $excludeUserId = 0) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId AND userStatus IN (\'Active\',\'Suspended\',\'Inactive\')');
         $stmt->bindValue('username', $username, \PDO::PARAM_STR);
         $stmt->bindValue('excludeUserId', $excludeUserId, \PDO::PARAM_INT);
@@ -115,7 +115,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getIsEmailTaken($email, $excludeUserId = 0) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE email = :email AND userId != :excludeUserId AND userStatus IN (\'Active\',\'Suspended\',\'Inactive\')');
         $stmt->bindValue('email', $email, \PDO::PARAM_STR);
         $stmt->bindValue('excludeUserId', $excludeUserId, \PDO::PARAM_INT);
@@ -129,7 +129,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserByUsername($username) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE username = :username LIMIT 0,1');
         $stmt->bindValue('username', $username, \PDO::PARAM_STR);
         $stmt->execute();
@@ -142,7 +142,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserById($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE userId = :userId LIMIT 0,1');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->execute();
@@ -155,7 +155,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function addUser(array $user) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $user ['createdDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
         $user ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
         $conn->insert('dfl_users', $user);
@@ -168,7 +168,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function updateUser($userId, array $user) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $user ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
         $conn->update('dfl_users', $user, array(
             'userId' => $userId
@@ -181,7 +181,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getRolesByUserId($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT b.roleName FROM dfl_users_roles AS a
           INNER JOIN dfl_roles b ON (b.roleId = a.roleId)
@@ -203,7 +203,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserByAuthId($authId, $authProvider) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT u.* FROM dfl_users_auth AS a
           INNER JOIN dfl_users AS u ON (u.userId = a.userId)
@@ -223,7 +223,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserAuthProviderExists($authId, $authProvider) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT COUNT(*) FROM dfl_users_auth AS a
           INNER JOIN dfl_users AS u ON (u.userId = a.userId)
@@ -243,7 +243,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserAuthProfile($userId, $authProvider) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT a.* FROM dfl_users_auth AS a
           WHERE a.userId = :userId AND a.authProvider = :authProvider
@@ -261,7 +261,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getAuthProfilesByUserId($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT a.* FROM dfl_users_auth AS a
           WHERE a.userId = :userId
@@ -278,7 +278,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function updateUserAuthProfile($userId, $authProvider, array $auth) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $auth ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
         $conn->update('dfl_users_auth', $auth, [
             'userId' => $userId,
@@ -292,7 +292,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function addUserAuthProfile(array $auth) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->insert('dfl_users_auth', array(
             'userId' => $auth ['userId'],
             'authProvider' => $auth ['authProvider'],
@@ -320,7 +320,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function removeAuthProfile($userId, $authProvider) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->delete('dfl_users_auth', [
             'userId' => $userId,
             'authProvider' => $authProvider
@@ -335,7 +335,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function findUsersByUsername($username, $limit = 10, $start = 0) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT u.userId,u.username,u.email FROM dfl_users AS u
           WHERE u.username LIKE :username
@@ -356,7 +356,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function findAll($limit, $page = 1) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
           FROM dfl_users AS u
@@ -384,7 +384,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function findByFeature($feature, $limit, $page) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
           FROM dfl_users AS u
@@ -416,7 +416,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function findBySearch($search, $limit, $page) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate FROM dfl_users AS u
           WHERE u.username LIKE :wildcard1 OR email LIKE :wildcard1
@@ -453,7 +453,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserIdByField($field, $value) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT userId FROM dfl_users
             WHERE " . $field . " = :value
@@ -472,7 +472,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getAddressByUserId($userId, $limit = 1, $start = 0) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
       SELECT * FROM users_address AS a
       WHERE a.userId = :userId
@@ -490,7 +490,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function addAddress(array $address) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->insert('users_address',
             array(
                 'userId' => $address ['userId'],
@@ -522,7 +522,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function updateAddress(array $address) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $address ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
         $conn->update('users_address', $address, array('id' => $address['id']));
     }
@@ -534,7 +534,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserActiveBan($userId, $ipaddress = "") {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         if(empty($ipaddress)) {
             $stmt = $conn->prepare('
               SELECT
@@ -597,7 +597,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getBanById($banId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT
             b.id,
@@ -628,7 +628,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function updateBan(array $ban) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->update('bans', $ban, array(
             'id' => $ban ['id']
         ));
@@ -640,7 +640,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function insertBan(array $ban) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->insert('bans', $ban);
         return $conn->lastInsertId();
     }
@@ -651,7 +651,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function removeUserBan($userid) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           UPDATE bans
           SET endtimestamp = NOW()
@@ -724,7 +724,7 @@ class UserService extends Service {
         if (empty($userids))
             return $userids;
 
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           SELECT
             userId,
@@ -737,6 +737,10 @@ class UserService extends Service {
         ");
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    private function getRedis(){
+
     }
 
     /**
@@ -774,7 +778,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserIdsByUsernames(array $usernames) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->executeQuery("
           SELECT u.userId FROM `dfl_users` u
           WHERE u.username IN (?)
@@ -796,7 +800,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function isUserOldEnough($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           SELECT COUNT(*)
           FROM dfl_users AS u
@@ -816,7 +820,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getTwitchIDFromNick($nick) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           SELECT ua.authId
           FROM dfl_users_auth AS ua
@@ -851,7 +855,7 @@ class UserService extends Service {
         if (empty($data))
             return array();
 
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $batchsize = 100;
 
         $ids = array();
@@ -930,7 +934,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getActiveTwitchSubscriptions() {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           SELECT ua.authId
           FROM
@@ -958,7 +962,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function setMinecraftUUID($userid, $uuid) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           UPDATE dfl_users
           SET minecraftuuid = :uuid
@@ -980,7 +984,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function saveChatSettings($userId, $settings) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           UPDATE dfl_users SET `chatsettings` = :chatsettings
           WHERE userId = :userid LIMIT 1
@@ -997,7 +1001,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function fetchChatSettings($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT `chatsettings` FROM dfl_users
             WHERE `userId` = :userid
@@ -1015,7 +1019,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function deleteChatSettings($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           UPDATE dfl_users SET `chatsettings` = NULL
           WHERE userId = :userid LIMIT 1
@@ -1046,7 +1050,7 @@ class UserService extends Service {
      */
     public function getFeatures() {
         if ($this->features == null) {
-            $conn = Application::instance()->getConnection();
+            $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC');
             $stmt->execute();
             $this->features = array();
@@ -1079,7 +1083,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getFeaturesByUserId($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT DISTINCT b.featureName AS `id` FROM dfl_users_features AS a
             INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
@@ -1120,7 +1124,7 @@ class UserService extends Service {
      */
     public function addUserFeature($userId, $featureName) {
         $featureId = $this->getFeatureIdByName($featureName);
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->insert('dfl_users_features', array(
             'userId' => $userId,
             'featureId' => $featureId
@@ -1138,7 +1142,7 @@ class UserService extends Service {
      */
     public function removeUserFeature($userId, $featureName) {
         $featureId = $this->getFeatureIdByName($featureName);
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->delete('dfl_users_features', array(
             'userId' => $userId,
             'featureId' => $featureId
@@ -1152,7 +1156,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function removeAllUserFeatures($userId) {
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         $conn->delete('dfl_users_features', array(
             'userId' => $userId
         ));

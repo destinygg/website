@@ -7,7 +7,8 @@
 *, *::before, *::after { box-sizing: inherit; }
 html { box-sizing: border-box; }
 
-$chatfontfamily     : 'Roboto', Helvetica, "Trebuchet MS", Verdana, sans-serif;
+$chatchromefont     : 'Roboto', Helvetica, "Trebuchet MS", Verdana, sans-serif;
+$chatlinesfont      : Helvetica,Trebuchet MS,Verdana,sans-serif;
 $chatminwidth       : 300px;
 $menuwidthmax       : 320px;
 $menubottommax      : 90px;
@@ -18,7 +19,7 @@ $chat-line-height   : 20px;
 $chat-gutter-sm     : 6px;
 
 body, textarea, input, button {
-    font-family: $chatfontfamily;
+    font-family: $chatchromefont;
     font-size: 14px;
     line-height: 1.42857143;
     text-rendering: optimizeLegibility;
@@ -226,7 +227,7 @@ label small {
     height: 100%;
 }
 .chat-lines {
-    font-family: $chatfontfamily;
+    font-family: $chatlinesfont;
     font-size: $text-size-md;
     line-height: $chat-line-height;
     backface-visibility: hidden;

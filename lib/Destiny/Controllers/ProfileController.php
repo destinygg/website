@@ -199,7 +199,7 @@ class ProfileController {
             throw new Exception ( 'You have reached the maximum [5] allowed login keys.' );
         }
 
-        $conn = Application::instance()->getConnection();
+        $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
             $token = $apiAuthService->createAuthToken($userId);

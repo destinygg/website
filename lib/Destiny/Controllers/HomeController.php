@@ -24,7 +24,7 @@ class HomeController {
      * @return string
      */
     public function home(ViewModel $model) {
-        $cache = Application::instance ()->getCacheDriver ();
+        $cache = Application::instance ()->getCache ();
         $model->posts = $cache->fetch ( 'recentposts' );
         $model->articles = $cache->fetch ( 'recentblog' );
         $model->tweets = $cache->fetch ( 'twitter' );
@@ -51,7 +51,7 @@ class HomeController {
      * @return array|false|mixed
      */
     public function stream(Response $response) {
-        $cache = Application::instance()->getCacheDriver();
+        $cache = Application::instance()->getCache();
         $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : TwitchApiService::$STREAM_INFO;
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'private');
         $response->addHeader(Http::HEADER_PRAGMA, 'public');

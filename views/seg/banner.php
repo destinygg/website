@@ -5,7 +5,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Twitch\TwitchApiService;
 
-$cache = Application::instance()->getCacheDriver();
+$cache = Application::instance()->getCache();
 $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : TwitchApiService::$STREAM_INFO;
 ?>
 <section id="header-band">

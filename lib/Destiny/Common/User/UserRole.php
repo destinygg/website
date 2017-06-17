@@ -7,5 +7,6 @@ abstract class UserRole {
     const ADMIN = 'ADMIN';
     const FINANCE = 'FINANCE';
     const SUBSCRIBER = 'SUBSCRIBER';
+    const STREAMLABS = 'STREAMLABS';
 
 }

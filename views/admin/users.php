@@ -9,7 +9,6 @@ use Destiny\Common\Utils\Date;
     <title><?=Tpl::title($this->title)?></title>
     <?php include 'seg/meta.php' ?>
     <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
-    <link href="<?=Config::cdnv()?>/admin.css" rel="stylesheet" media="screen">
 </head>
 <body id="admin" class="no-contain">
   <div id="page-wrap">
