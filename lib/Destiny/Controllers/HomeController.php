@@ -112,4 +112,14 @@ class HomeController {
         return 'bigscreen';
     }
 
+    /**
+     * @Route ("/amazon")
+     *
+     * @return string
+     */
+    public function amazon() {
+        return 'redirect: https://blog.destiny.gg/current-streaming-set-up-october-2016/';
+    }
+
+
 }
