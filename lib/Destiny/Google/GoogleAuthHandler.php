@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Google;
 
 use Destiny\Common\Exception;
@@ -7,8 +6,9 @@ use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Config;
 use Destiny\Common\Session;
+use Destiny\Common\Utils\Http;
 use Doctrine\DBAL\DBALException;
-use OAuth2\Client;
+use GuzzleHttp\Client;
 
 class GoogleAuthHandler {
     
@@ -16,58 +16,56 @@ class GoogleAuthHandler {
      * @var string
      */
     protected $authProvider = 'google';
-    
+    protected $domain = 'https://accounts.google.com/o/oauth2';
+
     /**
      * @return string
      */
     public function getAuthenticationUrl() {
-        $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
-        $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
-        $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
-        $client->setAccessTokenType ( Client::ACCESS_TOKEN_BEARER );
-        return $client->getAuthenticationUrl ( 'https://accounts.google.com/o/oauth2/auth', $callback, array (
-            'scope' => 'openid email',
-            'state' => 'security_token=' . Session::getSessionId ()
-        ) );
+        $conf = Config::$a ['oauth_providers'] [$this->authProvider];
+        return "$this->domain/auth?" . http_build_query([
+                'response_type' => 'code',
+                'scope' => 'openid email',
+                'state' => 'security_token=' . Session::getSessionId(),
+                'client_id' => $conf ['client_id'],
+                'redirect_uri' => sprintf(Config::$a ['oauth_providers']['google']['redirect_uri'], $this->authProvider)
+            ], null, '&');
     }
 
     /**
      * @param array $params
      * @return string
-     * @throws Exception
-     *
      * @throws DBALException
-     * @throws \OAuth2\Exception
-     * @throws \OAuth2\InvalidArgumentException
+     * @throws Exception
      */
     public function authenticate(array $params) {
-        if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
-            throw new Exception ( 'Authentication failed, invalid or empty code.' );
+        if (!isset ($params['code']) || empty ($params['code'])) {
+            throw new Exception ('Authentication failed, invalid or empty code.');
         }
-        
-        $authConf = Config::$a ['oauth'] ['providers'] [$this->authProvider];
-        $callback = sprintf ( Config::$a ['oauth'] ['callback'], $this->authProvider );
-        $client = new Client ( $authConf ['clientId'], $authConf ['clientSecret'] );
-        $response = $client->getAccessToken ( 'https://accounts.google.com/o/oauth2/token', 'authorization_code', array (
-            'redirect_uri' => $callback,
-            'code' => $params ['code']
-        ) );
-        
-        if (empty ( $response ) || isset ( $response ['error'] ))
-            throw new Exception ( 'Invalid access_token response' );
-        
-        if (! isset ( $response ['result'] ) || empty ( $response ['result'] ) || ! isset ( $response ['result'] ['access_token'] ))
-            throw new Exception ( 'Failed request for access token' );
-        
-        $client->setAccessToken ( $response ['result'] ['access_token'] );
-        $response = $client->fetch ( 'https://www.googleapis.com/oauth2/v2/userinfo' );
-        
-        if (empty ( $response ['result'] ) || isset ( $response ['error'] ))
-            throw new Exception ( 'Invalid user details response' );
-        
-        $authCreds = $this->getAuthCredentials ( $params ['code'], $response ['result'] );
-        $authCredHandler = new AuthenticationRedirectionFilter ();
-        return $authCredHandler->execute ( $authCreds );
+        $conf = Config::$a ['oauth_providers'] [$this->authProvider];
+        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+        $response = $client->post("$this->domain/token", [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'form_params' => [
+                'grant_type' => 'authorization_code',
+                'client_id' => $conf['client_id'],
+                'client_secret' => $conf['client_secret'],
+                'redirect_uri' => $conf['redirect_uri'],
+                'code' => $params['code']
+            ]
+        ]);
+        if($response->getStatusCode() == Http::STATUS_OK) {
+            $data = json_decode((string) $response->getBody(), true);
+            if (empty($data) || isset($data['error']) || !isset($data['access_token']))
+                throw new Exception ('Invalid access_token response');
+            $info = $this->getUserInfo($data['access_token']);
+            if($info != null) {
+                $auth = $this->getAuthCredentials($params['code'], $info);
+                $authHandler = new AuthenticationRedirectionFilter ();
+                return $authHandler->execute($auth);
+            }
+        }
+        throw new Exception ( 'Bad response from oauth provider' );
     }
 
     /**
@@ -89,5 +87,23 @@ class GoogleAuthHandler {
         $arr ['username'] = (isset ( $data ['hd'] )) ? $data ['hd'] : '';
         $arr ['email'] = $data ['email'];
         return new AuthenticationCredentials ( $arr );
+    }
+
+    /**
+     * @param $access_token
+     * @return array|null
+     * @throws DBALException
+     * @throws Exception
+     */
+    private function getUserInfo($access_token){
+        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+        $response = $client->get('https://www.googleapis.com/oauth2/v2/userinfo', [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'query' => ['access_token' => $access_token]
+        ]);
+        if($response->getStatusCode() == Http::STATUS_OK) {
+            return json_decode((string) $response->getBody(), true);
+        }
+        return null;
     }
 }

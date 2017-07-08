@@ -7,7 +7,7 @@ use Destiny\Common\Routing\Router;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use InvalidArgumentException;
-use Psr\Log\LoggerInterface;
+use function GuzzleHttp\json_encode;
 
 /**
  * @method static Application instance()
@@ -168,7 +168,7 @@ class Application extends Service {
         if($body !== null && !is_string($body)) {
             Http::header(Http::HEADER_CONTENTTYPE, MimeType::JSON);
             try {
-                $body = \GuzzleHttp\json_encode($body);
+                $body = json_encode($body);
             } catch (InvalidArgumentException $e) {
                 $n = new Exception('Invalid response body.', $e);
                 Log::error($n);

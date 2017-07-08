@@ -467,7 +467,7 @@ class SubscriptionController {
             }
             $chatIntegrationService->sendBroadcast($broadcast);
             if(Config::$a['streamlabs']['alert_subscriptions']) {
-                $streamLabService = StreamLabsService::instance();
+                $streamLabService = StreamLabsService::withAuth();
                 $streamLabService->sendAlert([
                     'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
                     'message' => $message

@@ -15,7 +15,7 @@ use \Redis;
 class ChatIntegrationService extends Service {
 
     /**
-     * @return Redis
+     * @return Redis|null
      */
     public function getRedis() {
         return Application::instance()->getRedis();

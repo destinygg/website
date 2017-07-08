@@ -165,13 +165,13 @@ class DonationController {
                 $chatService = ChatIntegrationService::instance();
                 $chatService->sendBroadcast(sprintf("%s has donated %s! %s", $creds->getUsername(), $amount, $emote)); // todo $ currency symbol
                 if(Config::$a['streamlabs']['alert_donations']) {
-                    StreamLabsService::instance()->sendAlert([
+                    StreamLabsService::withAuth()->sendAlert([
                         'type' => StreamLabsAlertsType::ALERT_DONATION,
                         'message' => sprintf("*%s* has donated *%s*!", $creds->getUsername(), $amount)
                     ]);
                 }
                 if(Config::$a['streamlabs']['send_donations']) {
-                    StreamLabsService::instance()->sendDonation([
+                    StreamLabsService::withAuth()->sendDonation([
                         'name'          => $creds->getUsername(),
                         'message'       => $donation['message'],
                         'identifier'    => $creds->getUsername() .'#' . $creds->getUserId(),

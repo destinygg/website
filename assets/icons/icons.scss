@@ -1,5 +1,5 @@
-/* glue: 0.11.1 hash: 80266d4485 */
-.icon-tv,.icon-twitter,.icon-twitch,.icon-subscriber,.icon-status,.icon-reddit,.icon-info,.icon-google,.icon-flair9,.icon-flair8,.icon-flair6,.icon-flair5,.icon-flair4,.icon-flair3,.icon-flair2,.icon-flair13,.icon-flair12,.icon-flair11,.icon-flair10,.icon-flair1,.icon-eve,.icon-error,.icon-command,.icon-bot:hover,.icon-bot{
+/* glue: 0.11.1 hash: bd07435f77 */
+.icon-tv,.icon-twitter,.icon-twitch,.icon-subscriber,.icon-status,.icon-reddit,.icon-protected,.icon-moderator,.icon-info,.icon-google,.icon-flair9,.icon-flair8,.icon-flair6,.icon-flair5,.icon-flair4,.icon-flair3,.icon-flair2,.icon-flair13,.icon-flair12,.icon-flair11,.icon-flair10,.icon-flair1,.icon-eve,.icon-error,.icon-command,.icon-bot:hover,.icon-bot{
     display: inline-block;
     background-image:url('../../icons/icons.png');
     background-repeat:no-repeat;
@@ -47,135 +47,149 @@
     height:16px;
 }
 
-.icon-info{
+.icon-protected{
     display: inline-block;
     background-position:0 -35px;
     width:16px;
     height:16px;
 }
 
-.icon-google{
+.icon-moderator{
     display: inline-block;
     background-position:-16px -35px;
     width:16px;
     height:16px;
 }
 
-.icon-flair9{
+.icon-info{
     display: inline-block;
     background-position:-32px -35px;
     width:16px;
     height:16px;
 }
 
-.icon-flair8{
+.icon-google{
     display: inline-block;
     background-position:-62px 0;
     width:16px;
     height:16px;
 }
 
-.icon-flair6{
+.icon-flair9{
     display: inline-block;
     background-position:-62px -16px;
     width:16px;
     height:16px;
 }
 
-.icon-flair5{
+.icon-flair8{
     display: inline-block;
     background-position:-62px -32px;
     width:16px;
     height:16px;
 }
 
-.icon-flair4{
+.icon-flair6{
     display: inline-block;
     background-position:0 -51px;
     width:16px;
     height:16px;
 }
 
-.icon-flair3{
+.icon-flair5{
     display: inline-block;
     background-position:-16px -51px;
     width:16px;
     height:16px;
 }
 
-.icon-flair2{
+.icon-flair4{
     display: inline-block;
     background-position:-32px -51px;
     width:16px;
     height:16px;
 }
 
-.icon-flair13{
+.icon-flair3{
     display: inline-block;
     background-position:-48px -51px;
     width:16px;
     height:16px;
 }
 
-.icon-flair12{
+.icon-flair2{
     display: inline-block;
     background-position:-78px 0;
     width:16px;
     height:16px;
 }
 
-.icon-flair11{
+.icon-flair13{
     display: inline-block;
     background-position:-78px -16px;
     width:16px;
     height:16px;
 }
 
-.icon-flair10{
+.icon-flair12{
     display: inline-block;
     background-position:-78px -32px;
     width:16px;
     height:16px;
 }
 
-.icon-flair1{
+.icon-flair11{
     display: inline-block;
     background-position:-78px -48px;
     width:16px;
     height:16px;
 }
 
-.icon-eve{
+.icon-flair10{
     display: inline-block;
     background-position:0 -67px;
     width:16px;
     height:16px;
 }
 
-.icon-error{
+.icon-flair1{
     display: inline-block;
     background-position:-16px -67px;
     width:16px;
     height:16px;
 }
 
-.icon-command{
+.icon-eve{
     display: inline-block;
     background-position:-32px -67px;
     width:16px;
     height:16px;
 }
 
-.icon-bot:hover{
+.icon-error{
     display: inline-block;
     background-position:-48px -67px;
     width:16px;
     height:16px;
 }
 
-.icon-bot{
+.icon-command{
     display: inline-block;
     background-position:-64px -67px;
+    width:16px;
+    height:16px;
+}
+
+.icon-bot:hover{
+    display: inline-block;
+    background-position:-94px 0;
+    width:16px;
+    height:16px;
+}
+
+.icon-bot{
+    display: inline-block;
+    background-position:-94px -16px;
     width:16px;
     height:16px;
 }

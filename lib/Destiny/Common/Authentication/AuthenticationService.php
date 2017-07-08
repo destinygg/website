@@ -6,6 +6,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Application;
 use Destiny\Common\Crypto;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Service;
@@ -163,13 +164,13 @@ class AuthenticationService extends Service {
         if ($user['istwitchsubscriber'])
             $credentials->addFeatures(UserFeature::SUBSCRIBERT0);
         if (!empty($sub)) {
-            if ($sub ['subscriptionTier'] == 1)
+            if ($sub['subscriptionTier'] == 1)
                 $credentials->addFeatures(UserFeature::SUBSCRIBERT1);
-            else if ($sub ['subscriptionTier'] == 2)
+            else if ($sub['subscriptionTier'] == 2)
                 $credentials->addFeatures(UserFeature::SUBSCRIBERT2);
-            else if ($sub ['subscriptionTier'] == 3)
+            else if ($sub['subscriptionTier'] == 3)
                 $credentials->addFeatures(UserFeature::SUBSCRIBERT3);
-            else if ($sub ['subscriptionTier'] == 4)
+            else if ($sub['subscriptionTier'] == 4)
                 $credentials->addFeatures(UserFeature::SUBSCRIBERT4);
         }
         return $credentials;
@@ -338,6 +339,67 @@ class AuthenticationService extends Service {
         $cache = Application::instance ()->getCache ();
         $lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
         return !empty ($lastUpdated);
+    }
+
+    /**
+     * @param AuthenticationCredentials $authCreds
+     * @return string
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function get(AuthenticationCredentials $authCreds) {
+        $authService = AuthenticationService::instance();
+        $userService = UserService::instance();
+
+        // Make sure the creds are valid
+        if (!$authCreds->isValid()) {
+            Log::error('Error validating auth credentials {creds}', ['creds' => var_export($authCreds, true)]);
+            throw new Exception ('Invalid auth credentials');
+        }
+
+        $email = $authCreds->getEmail();
+        if (!empty($email))
+            $authService->validateEmail($authCreds->getEmail(), null, true);
+
+        // Account merge
+        if (Session::set('accountMerge') === '1') {
+            // Must be logged in to do a merge
+            if (!Session::hasRole(UserRole::USER)) {
+                throw new Exception ('Authentication required for account merge');
+            }
+            $authService->handleAuthAndMerge($authCreds);
+            return 'redirect: /profile/authentication';
+        }
+
+        // Follow url
+        $follow = Session::set('follow');
+        // Remember me checkbox on login form
+        $rememberme = Session::set('rememberme');
+
+        // If the user profile doesn't exist, go to the register page
+        if (!$userService->getUserAuthProviderExists($authCreds->getAuthId(), $authCreds->getAuthProvider())) {
+            Session::set('authSession', $authCreds);
+            $url = '/register?code=' . urlencode($authCreds->getAuthCode());
+            if (!empty($follow)) {
+                $url .= '&follow=' . urlencode($follow);
+            }
+            return 'redirect: ' . $url;
+        }
+
+        // User exists, handle the auth
+        $user = $authService->handleAuthCredentials($authCreds);
+        try {
+            if ($rememberme == true) {
+                $authService->setRememberMe($user);
+            }
+        } catch (\Exception $e) {
+            $n = new Exception('Failed to create remember me cookie.', $e);
+            Log::error($n);
+        }
+        if (!empty ($follow) && substr($follow, 0, 1) == '/') {
+            return 'redirect: ' . $follow;
+        }
+        return 'redirect: /profile';
     }
 
 }

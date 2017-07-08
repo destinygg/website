@@ -3,7 +3,7 @@ namespace Destiny\Common\Utils;
 
 use Destiny\Common\Config;
 use Destiny\Common\Log;
-use GuzzleHttp;
+use GuzzleHttp\Client;
 
 class ImageDownload {
 
@@ -50,7 +50,7 @@ class ImageDownload {
             $response = $final;
         } else {
             try {
-                $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5]);
+                $client = new Client(['timeout' => 15, 'connect_timeout' => 5]);
                 $r = $client->request('GET', $url, [
                     'headers' => ['User-Agent' => Config::userAgent()],
                     'sink' => $path . $final

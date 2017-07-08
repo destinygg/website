@@ -14,12 +14,12 @@ class ChatEmotes {
      */
     public static function get($type=null){
         if (self::$emotes == null) {
-            $cacheDriver = Application::instance()->getCache();
+            $cache = Application::instance()->getCache();
             $key = 'emotes_' . str_replace('.', '', Config::$a['version']);
-            $emotes = $cacheDriver->fetch($key);
+            $emotes = $cache->fetch($key);
             if (empty ($emotes)) {
                 $emotes = json_decode(file_get_contents(_BASEDIR . '/assets/emotes.json'), true);
-                $cacheDriver->save($key, $emotes, 86400);
+                $cache->save($key, $emotes, 86400);
             }
             if (is_array($emotes)) {
                 self::$emotes = $emotes;

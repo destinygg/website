@@ -18,7 +18,6 @@ use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\StreamLabs\StreamLabsService;
 use Doctrine\DBAL\DBALException;
 
 /**

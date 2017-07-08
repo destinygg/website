@@ -5,44 +5,13 @@ use Destiny\Common\Utils\Options;
 
 class Route {
 
-    /**
-     * @var string
-     */
     public $path;
-
-    /**
-     * @var string
-     */
     public $class;
-
-    /**
-     * @var string
-     */
     public $classMethod;
-
-    /**
-     * @var array
-     */
     public $httpMethod;
-
-    /**
-     * @var array
-     */
     public $secure;
-
-    /**
-     * @var array
-     */
     public $feature;
-
-    /**
-     * @var string
-     */
     public $url;
-
-    /**
-     * @var string
-     */
     public $responseBody;
 
     public function __construct(array $params = null) {

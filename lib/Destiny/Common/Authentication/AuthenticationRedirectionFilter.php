@@ -40,7 +40,7 @@ class AuthenticationRedirectionFilter {
             return 'redirect: /profile/authentication';
         }
 
-        // Follow url *notice the set, returning and clearing the var
+        // Follow url
         $follow = Session::set('follow');
         // Remember me checkbox on login form
         $rememberme = Session::set('rememberme');
@@ -63,7 +63,7 @@ class AuthenticationRedirectionFilter {
             }
         } catch (\Exception $e) {
             $n = new Exception('Failed to create remember me cookie.', $e);
-            Log::error($n); // swallowed error
+            Log::error($n);
         }
         if (!empty ($follow) && substr($follow, 0, 1) == '/') {
             return 'redirect: ' . $follow;

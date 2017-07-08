@@ -8,7 +8,8 @@ use Destiny\Common\Service;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp;
+use GuzzleHttp\Client;
+use function GuzzleHttp\json_decode;
 
 /**
  * @method static TwitchApiService instance()
@@ -31,6 +32,9 @@ class TwitchApiService extends Service {
     public static $HOST_UNCHANGED   = 0;
     public static $HOST_NOW_HOSTING = 1;
     public static $HOST_STOPPED     = 2;
+
+    private $apiBase = 'https://api.twitch.tv/kraken';
+    private $tmiBase = 'https://tmi.twitch.tv';
 
     /**
      * @param array $lasthosting
@@ -85,11 +89,11 @@ class TwitchApiService extends Service {
      * @throws Exception
      */
     public function getChannelHost($id){
-        $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
-        $response = $client->get('https://tmi.twitch.tv/hosts', [
+        $client = new Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get("$this->tmiBase/hosts", [
             'headers' => [
-                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
-                'User-Agent' => Config::userAgent()
+                'User-Agent' => Config::userAgent(),
+                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id']
             ],
             'query' => [
                 'include_logins' => '1',
@@ -98,7 +102,7 @@ class TwitchApiService extends Service {
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             try {
-                $json = GuzzleHttp\json_decode($response->getBody(), true);
+                $json = json_decode($response->getBody(), true);
                 if(!empty($json) && isset($json['hosts']))
                     return $json['hosts'][0];
                 return $json;
@@ -118,11 +122,12 @@ class TwitchApiService extends Service {
      * @throws Exception
      */
     public function getPastBroadcasts($limit = 4) {
-        $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
-        $response = $client->get('https://api.twitch.tv/kraken/channels/' . Config::$a ['twitch'] ['user'] . '/videos', [
+        $name = Config::$a['twitch']['user'];
+        $client = new Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get("$this->apiBase/channels/$name/videos", [
             'headers' => [
-                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
-                'User-Agent' => Config::userAgent()
+                'User-Agent' => Config::userAgent(),
+                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id']
             ],
             'query' => [
                 'broadcasts' => true,
@@ -131,7 +136,7 @@ class TwitchApiService extends Service {
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             try {
-                return GuzzleHttp\json_decode($response->getBody(), true);
+                return json_decode($response->getBody(), true);
             } catch (\InvalidArgumentException $e) {
                 $n = new Exception("Failed to parse past broadcasts", $e);
                 Log::error($n);
@@ -142,21 +147,21 @@ class TwitchApiService extends Service {
     }
 
     /**
+     * @param $name
      * @return array|null
-     *
      * @throws Exception
      */
-    public function getStream() {
-        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
-        $response = $client->get('https://api.twitch.tv/kraken/streams/' . Config::$a ['twitch'] ['user'], [
+    public function getStream($name) {
+        $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get("$this->apiBase/streams/$name", [
             'headers' => [
-                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
-                'User-Agent' => Config::userAgent()
+                'User-Agent' => Config::userAgent(),
+                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id']
             ]
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
             try {
-                return GuzzleHttp\json_decode($response->getBody(), true);
+                return json_decode($response->getBody(), true);
             } catch (\InvalidArgumentException $e) {
                 $n = new Exception("Failed to parse streams", $e);
                 Log::error($n);
@@ -173,16 +178,16 @@ class TwitchApiService extends Service {
      * @throws Exception
      */
     public function getChannel($name) {
-        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
-        $response = $client->get('https://api.twitch.tv/kraken/channels/' . $name, [
+        $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $response = $client->get("$this->apiBase/channels/$name", [
             'headers' => [
-                'Client-ID' => Config::$a['oauth']['providers']['twitch']['clientId'],
-                'User-Agent' => Config::userAgent()
+                'User-Agent' => Config::userAgent(),
+                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id']
             ]
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
             try {
-                return GuzzleHttp\json_decode($response->getBody(), true);
+                return json_decode($response->getBody(), true);
             } catch (\InvalidArgumentException $e) {
                 $n = new Exception("Failed to parse channel", $e);
                 Log::error($n);
@@ -201,7 +206,6 @@ class TwitchApiService extends Service {
     public function getStreamInfo($name) {
         $cache = Application::instance()->getCache();
         $streaminfo = self::$STREAM_INFO;
-
         $channel = $this->getChannel($name);
         if (!empty ( $channel )){
             $streaminfo['game'] = $channel ['game'];
@@ -209,7 +213,7 @@ class TwitchApiService extends Service {
         }
 
         // Stream object is an object when streamer is ONLINE, otherwise null
-        $stream = $this->getStream();
+        $stream = $this->getStream($name);
         $broadcasts = $this->getPastBroadcasts(1);
         if ((!empty($stream) && isset ($stream ['stream']) && !empty($stream ['stream'])) && !(isset ($stream ['status']) && $stream ['status'] == 503)) {
             $created = Date::getDateTime($stream ['stream']['created_at']);

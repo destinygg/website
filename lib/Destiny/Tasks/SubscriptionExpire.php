@@ -89,7 +89,7 @@ class SubscriptionExpire implements TaskInterface {
                 $message = sprintf("%s has resubscribed! Active for %s", $user['username'], $months);
                 $chatIntegrationService = ChatIntegrationService::instance();
                 $chatIntegrationService->sendBroadcast($message);
-                $streamLabService = StreamLabsService::instance();
+                $streamLabService = StreamLabsService::withAuth();
                 $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);
             } catch (\Exception $e) {
                 Log::critical('Could not send resubscribe broadcast', $subscription);

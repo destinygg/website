@@ -6,7 +6,8 @@ use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp;
+use GuzzleHttp\Client;
+use function GuzzleHttp\json_decode;
 
 /**
  * @method static RedditFeedService instance()
@@ -26,14 +27,14 @@ class RedditFeedService extends Service {
      * @throws Exception
      */
     public function getHotThreads() {
-        $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
         $response = $client->get(Config::$a['reddit']['threads'], [
             'headers' => ['User-Agent' => Config::userAgent()],
             'query' => ['limit' => 6, 'sort' => 'new']
         ]);
         try {
             if ($response->getStatusCode() == Http::STATUS_OK) {
-                $json = GuzzleHttp\json_decode($response->getBody(), true);
+                $json = json_decode($response->getBody(), true);
                 if (isset($json['data']) && !empty($json['data']) && isset($json['data']['children']) && !empty($json['data']['children'])) {
                     $data = [];
                     foreach ($json['data']['children'] as $child) {

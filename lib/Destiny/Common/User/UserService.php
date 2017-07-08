@@ -739,10 +739,6 @@ class UserService extends Service {
         return $stmt->fetchAll();
     }
 
-    private function getRedis(){
-
-    }
-
     /**
      * Loads the given redis script if needed and calls it with the $arguments param
      *
@@ -947,12 +943,7 @@ class UserService extends Service {
             u.istwitchsubscriber = 1
         ");
         $stmt->execute();
-
-        $ret = array();
-        while ($row = $stmt->fetch())
-            $ret[] = $row['authId'];
-
-        return $ret;
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     /**

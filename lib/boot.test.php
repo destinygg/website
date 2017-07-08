@@ -9,7 +9,7 @@ use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
 ini_set('date.timezone', 'UTC');
-define('_APP_VERSION', '2.0.77'); // auto-generated: 1497728712784
+define('_APP_VERSION', '2.0.78'); // auto-generated: 1499361006489
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';

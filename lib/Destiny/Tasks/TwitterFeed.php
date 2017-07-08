@@ -12,8 +12,7 @@ use Destiny\Twitter\TwitterApiService;
 class TwitterFeed implements TaskInterface {
 
     public function execute() {
-        $app = Application::instance ();
-        $cacheDriver = $app->getCache ();
+        $cacheDriver = Application::instance()->getCache ();
         $cacheDriver->save('twitter', TwitterApiService::instance()->getTweets());
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny;
 use Destiny\Commerce\PaymentStatus;
+use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
@@ -25,21 +26,32 @@ use Destiny\Commerce\SubscriptionStatus;
           <div class="content-dark clearfix">
               <div class="ds-block">
                   <h3><?= Tpl::out($this->user['username']) ?></h3>
-                  <span>Joined on <?=Tpl::moment(Date::getDateTime($this->user['createdDate']), 'jS F, Y H:i a', 'Do MMMM, YYYY h:m a')?></span>
-                  <hr style="width:250px;" />
-                  <?php if($this->user['istwitchsubscriber'] == 1): ?>
-                  <p>
-                      <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
-                  </p>
-                  <?php endif; ?>
-                  <?php if(empty($this->subscriptions)): ?>
-                  <p>
-                      No <?=Config::$a['subscriptionType']?> subscription? <a title="Subscribe" href="/subscribe">Try it out</a>
-                  </p>
-                  <?php endif; ?>
+                  <div style="display: inline-block;">
+                      <p>
+                          Signed in using <span class="label label-default"><?=Tpl::out($this->credentials['authProvider'])?></span>
+                          <br/>
+                          <span>Joined on <?=Tpl::moment(Date::getDateTime($this->user['createdDate']), 'jS F, Y H:i a', 'Do MMMM, YYYY h:m a')?></span>
+                      </p>
+                      <hr />
+                  </div>
+                  <div style="width: 100%; clear: both;">
+                      <a href="/logout" class="btn btn-danger btn-sm">Sign Out</a>
+                  </div>
               </div>
           </div>
       </section>
+
+      <?php if(empty($this->subscriptions)): ?>
+      <section class="container">
+          <div class="content-dark clearfix">
+              <div class="ds-block">
+                  <h4>No Subscriptions?</h4>
+                  <p>Show some love, Try out a brand new <strong><?=Config::$a['subscriptionType']?></strong> sub!</p>
+                  <p><button type="button" class="btn btn-primary btn-sm">Subscribe</button></p>
+              </div>
+          </div>
+      </section>
+      <?php endif; ?>
 
       <?php if(!empty($this->ban)): ?>
           <section class="container">
@@ -86,6 +98,15 @@ use Destiny\Commerce\SubscriptionStatus;
           <section class="container">
               <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>
               <div id="subscription-content" class="content collapse">
+
+                  <?php if($this->user['istwitchsubscriber'] == 1): ?>
+                  <div class="content-dark clearfix" style="margin-bottom:10px;">
+                      <div class="ds-block">
+                          <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
+                      </div>
+                  </div>
+                  <?php endif; ?>
+
                   <?php foreach($this->subscriptions as $subscription): ?>
                       <div class="content-dark clearfix" style="margin-bottom:10px;">
                           <div class="ds-block">

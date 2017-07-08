@@ -44,32 +44,28 @@ class ProfileController {
      * @throws Exception
      */
     public function profile(ViewModel $model) {
-      $userService = UserService::instance ();
-      $subscriptionsService = SubscriptionsService::instance ();
-      $userId = Session::getCredentials ()->getUserId ();
-      
-      $address = $userService->getAddressByUserId ( $userId );
-      if (empty ( $address )) {
-        $address = array ();
-        $address ['fullName'] = '';
-        $address ['line1'] = '';
-        $address ['line2'] = '';
-        $address ['city'] = '';
-        $address ['region'] = '';
-        $address ['zip'] = '';
-        $address ['country'] = '';
-      }
-
-      $subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions( $userId );
-      $gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus ( $userId, SubscriptionStatus::ACTIVE );
-
-      $model->ban = $userService->getUserActiveBan ( $userId );
-      $model->user = $userService->getUserById ( $userId );
-      $model->gifts = $gifts;
-      $model->subscriptions = $subscriptions;
-      $model->address = $address;
-      $model->title = 'Account';
-      return 'profile';
+        $userService = UserService::instance();
+        $subscriptionsService = SubscriptionsService::instance();
+        $userId = Session::getCredentials()->getUserId();
+        $address = $userService->getAddressByUserId($userId);
+        if (empty ($address)) {
+            $address = array();
+            $address ['fullName'] = '';
+            $address ['line1'] = '';
+            $address ['line2'] = '';
+            $address ['city'] = '';
+            $address ['region'] = '';
+            $address ['zip'] = '';
+            $address ['country'] = '';
+        }
+        $model->credentials = Session::instance()->getCredentials()->getData();
+        $model->ban = $userService->getUserActiveBan($userId);
+        $model->user = $userService->getUserById($userId);
+        $model->gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
+        $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
+        $model->address = $address;
+        $model->title = 'Account';
+        return 'profile';
     }
 
     /**

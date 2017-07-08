@@ -15,6 +15,7 @@ use Destiny\Common\ViewModel;
 use Destiny\StreamLabs\StreamLabsAlertsType;
 use Destiny\StreamLabs\StreamLabsService;
 use Doctrine\DBAL\DBALException;
+use function GuzzleHttp\json_decode;
 
 /**
  * @Controller
@@ -28,12 +29,12 @@ class StreamLabsController {
      * @return string
      */
     public function authorize() {
-        $handler = StreamLabsService::instance();
+        $handler = StreamLabsService::withAuth();
         return 'redirect: ' . $handler->getAuthenticationUrl();
     }
 
     /**
-     * @Route ("/streamlabs/oauth")
+     * @Route ("/auth/streamlabs")
      * @Secure ({"ADMIN","STREAMLABS"})
      * @HttpMethod ({"GET"})
      *
@@ -42,15 +43,13 @@ class StreamLabsController {
      *
      * @throws Exception
      * @throws DBALException
-     * @throws \OAuth2\Exception
-     * @throws \OAuth2\InvalidArgumentException
      */
     public function oauth(array $params) {
         if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
             throw new Exception ( 'Authentication failed, invalid or empty code.' );
         }
         $creds = Session::getCredentials ();
-        $streamLabsService = StreamLabsService::instance();
+        $streamLabsService = StreamLabsService::withAuth();
         $provider = $streamLabsService->authProvider;
         $auth = $streamLabsService->authenticate($params ['code']);
         $userService = UserService::instance();
@@ -99,11 +98,11 @@ class StreamLabsController {
      */
     public function alertTest(){
         try {
-            $response = StreamLabsService::instance()->sendAlert([
+            $response = StreamLabsService::withAuth()->sendAlert([
                 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
                 'message' => '*' . Config::$a['meta']['shortName'] . '* connected...'
             ]);
-            $b = \GuzzleHttp\json_decode($response->getBody(), true);
+            $b = json_decode($response->getBody(), true);
             if(isset($b['success']) && $b['success'] == true)
                 Session::setSuccessBag('StreamLabs test alert was successful');
             else

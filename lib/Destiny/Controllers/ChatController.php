@@ -17,7 +17,8 @@ use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatIntegrationService;
 use Doctrine\DBAL\DBALException;
-use GuzzleHttp;
+use GuzzleHttp\Client;
+use function GuzzleHttp\json_decode;
 
 /**
  * @Controller
@@ -43,8 +44,8 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     * @return array
      *
+     * @return array
      * @throws DBALException
      */
     public function getUser(){
@@ -81,14 +82,14 @@ class ChatController {
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
             $r = $client->get(Config::$a['overrustle']['stalk'] . urlencode($params['username']) . '.json', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => ['limit' => $limit]
             ]);
             if($r->getStatusCode() == Http::STATUS_OK) {
                 $response->setStatus(Http::STATUS_OK);
-                return GuzzleHttp\json_decode($r->getBody(), true);
+                return json_decode($r->getBody(), true);
             }
         } catch (\Exception $e) {
             Log::error("Failed to return valid response for chat stalk");
@@ -121,14 +122,14 @@ class ChatController {
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
             $r = $client->get(Config::$a['overrustle']['mentions'] . urlencode($params['username']) . '.json', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => ['limit' => $limit]
             ]);
             if($r->getStatusCode() == Http::STATUS_OK) {
                 $response->setStatus(Http::STATUS_OK);
-                return GuzzleHttp\json_decode($r->getBody(), true);
+                return json_decode($r->getBody(), true);
             }
         } catch (\Exception $e) {
             Log::error("Failed to return valid response for chat mentions");
@@ -143,7 +144,6 @@ class ChatController {
      * @HttpMethod ({"POST"})
      *
      * @param Request $request
-     *
      * @throws Exception
      * @throws DBALException
      */
@@ -189,7 +189,6 @@ class ChatController {
      *
      * @param Request $request
      * @return array|string
-     *
      * @throws DBALException
      */
     public function banInfo(Request $request){

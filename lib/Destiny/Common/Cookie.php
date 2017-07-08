@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Destiny\Common;
 
 use Destiny\Common\Utils\Options;
@@ -13,9 +13,9 @@ class Cookie {
     protected $httponly = true;
 
     public function __construct($name, array $params = null) {
-        $this->setName ( $name );
-        if (! empty ( $params )) {
-            Options::setOptions ( $this, $params );
+        $this->setName($name);
+        if (!empty ($params)) {
+            Options::setOptions($this, $params);
         }
     }
 
@@ -68,7 +68,7 @@ class Cookie {
     }
 
     public function getValue() {
-        if (isset ( $_COOKIE [$this->name] )) {
+        if (isset ($_COOKIE [$this->name])) {
             return $_COOKIE [$this->name];
         }
         return null;
@@ -76,14 +76,14 @@ class Cookie {
 
     public function setValue($value, $expiry) {
         $_COOKIE [$this->name] = $value;
-        setcookie ( $this->name, $value, $expiry, $this->getPath (), $this->getDomain (), $this->getSecure(), $this->getHttpOnly() );
+        setcookie($this->name, $value, $expiry, $this->getPath(), $this->getDomain(), $this->getSecure(), $this->getHttpOnly());
     }
-    
+
     public function clearCookie() {
-        if (isset ( $_COOKIE [$this->name] )) {
-            unset ( $_COOKIE [$this->name] );
+        if (isset ($_COOKIE [$this->name])) {
+            unset ($_COOKIE [$this->name]);
         }
-        setcookie ( $this->name, '', time () - 3600, $this->getPath (), $this->getDomain (), $this->getSecure(), $this->getHttpOnly() );
+        setcookie($this->name, '', time() - 3600, $this->getPath(), $this->getDomain(), $this->getSecure(), $this->getHttpOnly());
     }
 
 }

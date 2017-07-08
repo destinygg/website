@@ -9,8 +9,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
 use Doctrine\DBAL\DBALException;
-use OAuth2;
-use GuzzleHttp;
+use GuzzleHttp\Client;
 
 class StreamLabsService extends Service {
 
@@ -18,7 +17,7 @@ class StreamLabsService extends Service {
      * @var string
      */
     public $authProvider = 'streamlabs';
-    private $domain = 'https://streamlabs.com/api/v1.0';
+    private $apiBase = 'https://streamlabs.com/api/v1.0';
     private $auth = null;
     private $default = null;
 
@@ -42,34 +41,37 @@ class StreamLabsService extends Service {
     */
 
     /**
-     * @param array|null $auth
      * @return StreamLabsService
      */
-    public static function instance(array $auth = null) {
+    public static function withAuth() {
         /** @var StreamLabsService $instance */
         $instance = parent::instance();
-        if(empty($auth)) {
-            $auth = $instance->getDefaultAuth();
-        }
-        $instance->setAuth($auth);
+        $instance->setAuth($instance->default);
         return $instance;
     }
 
-    public function setAuth(array $auth) {
-        $this->auth = $auth;
-    }
-
+    /**
+     * @return array|null
+     */
     public function getDefaultAuth(){
-        if(empty($this->default)) {
-            try {
-                $userService = UserService::instance();
-                $this->default = $userService->getUserAuthProfile(Config::$a['streamlabs']['default_user'], 'streamlabs');
-            } catch (\Exception $e) {
-                $n = new Exception("Error getting default auth profile.", $e);
-                Log::error($n);
+        try {
+            if($this->default == null) {
+                $this->default = UserService::instance()->getUserAuthProfile(
+                    Config::$a['streamlabs']['default_user'],
+                    'streamlabs'
+                );
             }
+        } catch (\Exception $e) {
+            Log::error(new Exception("Error getting default auth profile.", $e));
         }
         return $this->default;
+    }
+
+    /**
+     * @param array $auth
+     */
+    public function setAuth(array $auth){
+        $this->auth = $auth;
     }
 
     /**
@@ -83,10 +85,10 @@ class StreamLabsService extends Service {
         if($auth === null) {
             $auth = $this->auth;
         }
-        $token = $this->getAlwaysValidToken($auth);
+        $token = $this->getFreshValidToken($auth);
         if (!empty($token)) {
-            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
-            return $client->post("$this->domain/alerts", [
+            $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+            return $client->post("$this->apiBase/alerts", [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'form_params' => array_merge($args, ['access_token'=> $token])]
             );
@@ -105,10 +107,10 @@ class StreamLabsService extends Service {
         if($auth === null) {
             $auth = $this->auth;
         }
-        $token = $this->getAlwaysValidToken($auth);
+        $token = $this->getFreshValidToken($auth);
         if (!empty($token)) {
-            $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
-            return $client->post("$this->domain/donations", [
+            $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+            return $client->post("$this->apiBase/donations", [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'form_params' => array_merge($args, ['access_token'=> $token])
             ]);
@@ -124,26 +126,28 @@ class StreamLabsService extends Service {
      */
     private function renewToken(array $auth){
         $token = $auth['authCode'];
+        $conf = Config::$a['oauth_providers'][$this->authProvider];
         $userService = UserService::instance();
-        $client = new GuzzleHttp\Client(['timeout' => 15, 'connect_timeout' => 10]);
-        $response = $client->post("$this->domain/token", [
+        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+        $response = $client->post("$this->apiBase/token", [
+            'headers' => ['User-Agent' => Config::userAgent()],
             'form_params' => [
                 'grant_type'    => 'refresh_token',
-                'client_id'     => Config::$a['streamlabs']['client_id'],
-                'client_secret' => Config::$a['streamlabs']['client_secret'],
-                'redirect_uri'  => Config::$a['streamlabs']['redirect_uri'],
+                'client_id'     => $conf['client_id'],
+                'client_secret' => $conf['client_secret'],
+                'redirect_uri'  => $conf['redirect_uri'],
                 'refresh_token' => $auth['refreshToken']
             ]
         ]);
-        $data = json_decode((string) $response->getBody(), true);
         if(!empty($response) && $response->getStatusCode() == Http::STATUS_OK){
-            $userService->updateUserAuthProfile($auth['userId'], "streamlabs", [
-                'refreshToken'  => $data ['refresh_token'],
-                'authCode'      => $data ['access_token'],
+            $data = json_decode((string) $response->getBody(), true);
+            $userService->updateUserAuthProfile($auth['userId'], $this->authProvider, [
+                'refreshToken'  => $data['refresh_token'],
+                'authCode'      => $data['access_token'],
                 'createdDate'   => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
                 'modifiedDate'  => Date::getDateTime('NOW')->format('Y-m-d H:i:s')
             ]);
-            $token = $data ['access_token'];
+            $token = $data['access_token'];
         }
         return $token;
     }
@@ -154,49 +158,51 @@ class StreamLabsService extends Service {
      *
      * @throws DBALException
      */
-    private function getAlwaysValidToken(array $auth){
-        $createdDate = Date::getDateTime($auth['createdDate']);
-        $token = $auth['authCode'];
-        if ($createdDate->getTimestamp() + 3600 < Date::getDateTime()->getTimestamp()) {
-            $token = $this->renewToken($auth);
-        }
-        return $token;
+    private function getFreshValidToken(array $auth){
+        return Date::getDateTime($auth['createdDate'])->getTimestamp() + 3600 < Date::getDateTime()->getTimestamp() ? $this->renewToken($auth) : $auth['authCode'];
     }
 
     /**
      * @return string
      */
     public function getAuthenticationUrl() {
-        $client = new OAuth2\Client ( Config::$a['streamlabs']['client_id'], Config::$a['streamlabs']['client_secret'] );
-        return $client->getAuthenticationUrl ( "$this->domain/authorize", Config::$a['streamlabs']['redirect_uri'], [
-            'scope' => 'alerts.create donations.create',
-        ]);
+        $conf = Config::$a['oauth_providers'][$this->authProvider];
+        return "$this->apiBase/authorize?" . http_build_query([
+                'response_type' => 'code',
+                'scope'         => 'alerts.create donations.create',
+                'client_id'     => $conf['client_id'],
+                'redirect_uri'  => $conf['redirect_uri']
+            ], null, '&');
     }
 
     /**
      * @param $code
      * @return array
-     *
      * @throws Exception
-     * @throws OAuth2\Exception
-     * @throws OAuth2\InvalidArgumentException
      */
     public function authenticate($code) {
-        $auth = null;
-        $client = new OAuth2\Client ( Config::$a['streamlabs']['client_id'], Config::$a['streamlabs']['client_secret'] );
-        $response = $client->getAccessToken ( "$this->domain/token", 'authorization_code', [
-            'redirect_uri' => Config::$a['streamlabs']['redirect_uri'],
-            'code' => $code
+        $conf = Config::$a['oauth_providers'][$this->authProvider];
+        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+        $response = $client->post("$this->apiBase/token", [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'form_params' => [
+                'grant_type' => 'authorization_code',
+                'client_id' => $conf['client_id'],
+                'client_secret' => $conf['client_secret'],
+                'redirect_uri' => $conf['redirect_uri'],
+                'code' => $code
+            ]
         ]);
-        if (is_array($response) && isset($response['result']) && is_array($response['result']) && isset($response['result']['access_token']) && isset($response['result']['refresh_token'])){
-            $auth = [
-                'access_token'  => $response['result']['access_token'],
-                'refresh_token' => $response['result']['refresh_token']
-            ];
-        } else {
-            throw new Exception ( 'Bad response from streamlabs' );
+        if($response->getStatusCode() == Http::STATUS_OK) {
+            $data = json_decode((string) $response->getBody(), true);
+            if (isset($data['access_token']) && isset($data['refresh_token'])){
+                return [
+                    'access_token'  => $data['access_token'],
+                    'refresh_token' => $data['refresh_token']
+                ];
+            }
         }
-        return $auth;
+        throw new Exception ( 'Bad response from streamlabs' );
     }
 
 }

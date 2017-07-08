@@ -6,7 +6,8 @@ use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp;
+use GuzzleHttp\Client;
+use function GuzzleHttp\json_decode;
 
 class GoogleRecaptchaHandler {
 
@@ -19,7 +20,7 @@ class GoogleRecaptchaHandler {
      */
     public function resolve($token, Request $request){
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 20, 'connect_timeout' => 10, 'http_errors' => false]);
+            $client = new Client(['timeout' => 20, 'connect_timeout' => 10, 'http_errors' => false]);
             $response = $client->get('https://www.google.com/recaptcha/api/siteverify', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => [
@@ -29,7 +30,7 @@ class GoogleRecaptchaHandler {
                 ]
             ]);
             if($response->getStatusCode() == Http::STATUS_OK){
-                $data = GuzzleHttp\json_decode($response->getBody(), true);
+                $data = json_decode($response->getBody(), true);
                 if(empty($data))
                     throw new Exception('Failed to resolve captcha.');
                 if(!$data['success']){

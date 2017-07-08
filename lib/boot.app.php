@@ -10,7 +10,7 @@ use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
 ini_set('date.timezone', 'UTC'); // This should be in the server config
-define('_APP_VERSION', '2.0.77'); // auto-generated: 1497728712755
+define('_APP_VERSION', '2.0.78'); // auto-generated: 1499361006420
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';

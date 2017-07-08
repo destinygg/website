@@ -14,9 +14,9 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
      * @throws DBALException
      */
     private function getService(){
-        $userService = UserService::instance();
-        $auth = $userService->getUserAuthProfile(Config::$a['streamlabs']['default_user'], 'streamlabs');
-        return StreamLabsService::instance($auth);
+        $service = StreamLabsService::instance();
+        $service->setAuth(UserService::instance()->getUserAuthProfile(Config::$a['streamlabs']['default_user'], 'streamlabs'));
+        return $service;
     }
 
     public function testOne() {

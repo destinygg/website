@@ -5,39 +5,12 @@ use Destiny\Common\Utils\Options;
 
 class AuthenticationCredentials {
 
-    /**
-     * @var string
-     */
     private $authProvider;
-
-    /**
-     * @var string
-     */
     private $authCode;
-
-    /**
-     * @var int
-     */
     private $authId;
-
-    /**
-     * @var string
-     */
     private $authDetail;
-
-    /**
-     * @var string
-     */
     private $refreshToken;
-
-    /**
-     * @var string
-     */
     private $username;
-
-    /**
-     * @var string
-     */
     private $email;
 
     public function __construct(array $options = null) {

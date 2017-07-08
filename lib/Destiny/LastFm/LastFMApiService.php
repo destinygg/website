@@ -6,8 +6,9 @@ use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp;
 use InvalidArgumentException;
+use GuzzleHttp\Client;
+use function GuzzleHttp\json_decode;
 
 /**
  * @method static LastFMApiService instance()
@@ -19,7 +20,7 @@ class LastFMApiService extends Service {
      */
     public function getLastPlayedTracks() {
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+            $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
             $response = $client->get('http://ws.audioscrobbler.com/2.0/', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => [
@@ -30,8 +31,8 @@ class LastFMApiService extends Service {
                     'format' => 'json'
                 ]
             ]);
-            if($response->getStatusCode() == Http::STATUS_OK) {
-                $json = GuzzleHttp\json_decode($response->getBody(), true);
+            if ($response->getStatusCode() == Http::STATUS_OK) {
+                $json = json_decode($response->getBody(), true);
                 return $this->parseFeedResponse('recenttracks', $json);
             }
         } catch (InvalidArgumentException $e) {
@@ -45,7 +46,7 @@ class LastFMApiService extends Service {
      */
     public function getTopTracks() {
         try {
-            $client = new GuzzleHttp\Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+            $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
             $response = $client->get('http://ws.audioscrobbler.com/2.0/', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => [
@@ -56,8 +57,8 @@ class LastFMApiService extends Service {
                     'format' => 'json'
                 ]
             ]);
-            if($response->getStatusCode() == Http::STATUS_OK) {
-                $json = GuzzleHttp\json_decode($response->getBody(), true);
+            if ($response->getStatusCode() == Http::STATUS_OK) {
+                $json = json_decode($response->getBody(), true);
                 return $this->parseFeedResponse('toptracks', $json);
             }
         } catch (InvalidArgumentException $e) {
@@ -72,15 +73,15 @@ class LastFMApiService extends Service {
      * @return array|null
      */
     private function parseFeedResponse($rootNode, array $json) {
-        if (! $json || isset ( $json ['error'] ) && $json ['error'] > 0 || count ( $json [$rootNode] ['track'] ) <= 0) {
+        if (!$json || isset ($json ['error']) && $json ['error'] > 0 || count($json [$rootNode] ['track']) <= 0) {
             return null;
         }
-        foreach ( $json [$rootNode] ['track'] as $i => $track ) {
+        foreach ($json [$rootNode] ['track'] as $i => $track) {
             // Timezone DST = -1
-            if (! isset ( $track ['@attr'] ) || (!isset($track ['@attr'] ['nowplaying']) ||$track ['@attr'] ['nowplaying'] != true)) {
-                if (! empty ( $track ['date'] )) {
+            if (!isset ($track ['@attr']) || (!isset($track ['@attr'] ['nowplaying']) || $track ['@attr'] ['nowplaying'] != true)) {
+                if (!empty ($track ['date'])) {
                     $json [$rootNode] ['track'] [$i] ['date'] ['uts]'] = $track ['date'] ['uts'];
-                    $json [$rootNode] ['track'] [$i] ['date_str'] = Date::getDateTime ( $track ['date'] ['uts'] )->format ( Date::FORMAT );
+                    $json [$rootNode] ['track'] [$i] ['date_str'] = Date::getDateTime($track ['date'] ['uts'])->format(Date::FORMAT);
                 }
             } else {
                 $json [$rootNode] ['track'] [$i] ['date_str'] = '';

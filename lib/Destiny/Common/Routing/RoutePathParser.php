@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common\Routing;
 
-abstract class RoutePathParser {
+class RoutePathParser {
 
     public static function search($pattern, $string) {
         $params = array ();
@@ -63,21 +63,13 @@ abstract class RoutePathParser {
     public static function getKeyValue($key, $value) {
         switch (self::getKeyType ( $key )) {
             case 'int' :
-                $value = self::getValueAsInt ( $value );
+                $value = intval($value);
                 break;
             default :
-                $value = self::getValueAsString ( $value );
+                $value = (string) $value;
                 break;
         }
         return $value;
-    }
-
-    public static function getValueAsInt($value) {
-        return intval ( $value );
-    }
-
-    public static function getValueAsString($value) {
-        return "$value";
     }
 
 }

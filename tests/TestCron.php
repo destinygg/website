@@ -1,4 +1,5 @@
 <?php
+
 use Destiny\Common\DirectoryClassIterator;
 use Destiny\Common\Log;
 use Destiny\Common\Scheduler;
