@@ -117,12 +117,10 @@ class HomeController {
     /**
      * @Route ("/amazon")
      *
-     * @param ViewModel $model
      * @return string
      */
-    public function amazon(ViewModel $model) {
-        $model->title = 'Amazon';
-        return 'amazon';
+    public function amazon() {
+        return 'redirect: https://blog.destiny.gg/current-streaming-set-up-october-2016/';
     }
 
 
