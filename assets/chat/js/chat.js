@@ -6,16 +6,14 @@ import moment from 'moment'
 import EventEmitter from './emitter'
 import ChatSource from './source'
 import ChatUser from './user'
-import {MessageTypes} from './messages'
-import {MobileMessageBuilder as MessageBuilder} from '../../../../app/chat/messages'
+import {MessageTypes, MobileMessageBuilder as MessageBuilder} from '../../../../app/chat/messages'
 //import {ChatMenu, ChatUserMenu, ChatWhisperUsers, ChatEmoteMenu, ChatSettingsMenu} from './menus'
-import ChatAutoComplete from './autocomplete'
+//import ChatAutoComplete from './autocomplete'
 import ChatInputHistory from './history'
 import ChatUserFocus from './focus'
 import ChatStore from './store'
 import UserFeatures from './features'
 import Settings from './settings'
-import {MobileWindow as ChatWindow} from '../../../../app/chat/window'
 
 const nickmessageregex = /(?:(?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g
 const nickregex = /^[a-zA-Z0-9_]{3,20}$/
@@ -210,7 +208,7 @@ class Chat {
         this.whispers        = new Map();
         this.windows         = new Map();
         this.settings        = new Map([...settingsdefault]);
-        this.autocomplete    = new ChatAutoComplete();
+        //this.autocomplete    = new ChatAutoComplete();
         this.menus           = new Map();
         this.taggednicks     = new Map();
         this.ignoring        = new Set();
@@ -764,7 +762,7 @@ class Chat {
                 users.push(this.addUser(data));
             if(data.hasOwnProperty('users'))
                 users = users.concat(data.users.map(d => this.addUser(d)));
-            users.forEach(u => this.autocomplete.add(u.nick, false, now));
+            //users.forEach(u => this.autocomplete.add(u.nick, false, now));
         }
     }
 
@@ -792,7 +790,7 @@ class Chat {
         const normalized = data.nick.toLowerCase();
         if (this.users.has(normalized)){
             this.users.delete(normalized);
-            this.autocomplete.remove(data.nick);
+            //this.autocomplete.remove(data.nick);
         }
     }
 
