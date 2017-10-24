@@ -219,7 +219,7 @@ class Chat {
 
         this.source.on('PING',             data => this.source.send('PONG', data));
         this.source.on('OPEN',             data => this.connected = true);
-        this.source.on('REFRESH',          data => window.location.reload(false));
+        //this.source.on('REFRESH',          data => window.location.reload(false));
         this.source.on('CONNECTING',       data => MessageBuilder.status('Connecting...').into(this));
         this.source.on('DISPATCH',         data => this.onDISPATCH(data));
         this.source.on('CLOSE',            data => this.onCLOSE(data));
