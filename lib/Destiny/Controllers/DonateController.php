@@ -80,15 +80,15 @@ class DonateController {
         FilterParams::required($params, 'username');
         FilterParams::declared($params, 'message');
         $conn = Application::getDbConn();
+
+        $amount = floatval($params['amount']);
+        $minimum = Config::$a['commerce']['minimum_donation'];
+        if ($amount < $minimum) {
+            Session::setErrorBag('Only donations of $5.00 and over can be accepted');
+            throw new Exception ('Minimum donation amount not met');
+        }
+
         try {
-
-            $amount = floatval($params['amount']);
-            $minimum = Config::$a['commerce']['minimum_donation'];
-            if ($amount < $minimum) {
-                Session::setErrorBag('Only donations of $5.00 and over can be accepted');
-                throw new Exception ('Minimum donation amount not met');
-            }
-
             AuthenticationService::instance()->validateUsername($params['username']);
             $userid = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUserId() : -1;
             $conn->beginTransaction();
@@ -113,7 +113,7 @@ class DonateController {
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (\Exception $e) {
             $conn->rollBack();
-            throw new Exception("Failed to create donation", $e);
+            throw new Exception($e);
         }
     }
 
