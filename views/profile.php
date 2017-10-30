@@ -160,7 +160,6 @@ use Destiny\Commerce\SubscriptionStatus;
           </section>
       <?php endif ?>
 
-
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#account-content">Account</h3>
           <div id="account-content" class="content content-dark clearfix collapse">
@@ -323,6 +322,7 @@ use Destiny\Commerce\SubscriptionStatus;
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#discord-content">Discord</h3>
           <div id="discord-content" class="content content-dark clearfix collapse">
+              <?php if(empty($this->discordAuthProfile)): ?>
               <form id="discordSaveForm" action="/profile/discord/update" method="post" role="form">
                   <div class="ds-block">
                       <div class="form-group">
@@ -331,11 +331,22 @@ use Destiny\Commerce\SubscriptionStatus;
                           </label>
                           <input class="form-control" type="text" name="discordname" value="<?=Tpl::out($this->user['discordname'])?>" placeholder="Discord username and id. e.g. Jimmy#999" />
                       </div>
+                      <div>Or <a href="/profile/connect/discord">connect to discord</a> directly!</div>
                   </div>
                   <div class="form-actions block-foot">
                       <button class="btn btn-primary" type="submit">Save details</button>
                   </div>
               </form>
+              <?php else: ?>
+              <div class="ds-block">
+                  <div class="form-group">
+                      <label>Discord username <span class="icon-required">read only</span>
+                          <br><small>Using discord authentication details.</small>
+                      </label>
+                      <input class="form-control" readonly="readonly" type="text" value="<?=Tpl::out($this->discordAuthProfile['authDetail'])?>" />
+                  </div>
+              </div>
+              <?php endif; ?>
           </div>
       </section>
 

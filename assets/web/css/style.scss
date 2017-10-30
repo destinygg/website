@@ -1486,63 +1486,72 @@ body.modal-open .modal {
 body.modal-open .modal .modal-dialog {
   margin: auto;
 }
-
 #loginmodal {
-  display: none;
-  form {
+    display: none;
+}
+#loginmodal form {
     border-radius: 5px;
     background-color: #1b1b1b;
     box-shadow: 0 1px 4px 1px rgba(black, 0.5);
+}
+#loginmodal , #loginform {
     .checkbox {
-      margin-top: 0;
+        margin-top: 0;
     }
     .btn {
-      cursor: pointer;
-      width: 100%;
-      color: #333;
-      background-color: #fff;
-      border-color: #ccc;
-      display: block;
-      margin: 10px 0;
-      padding-right: 20px;
+        cursor: pointer;
+        width: 100%;
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc;
+        display: block;
+        margin: 10px 0;
+        padding-right: 20px;
 
-      .fa {
-        margin-right: 10px;
-      }
+        .fa {
+            margin-right: 10px;
+        }
     }
     .btn-twitch {
-      background-color: #6441A4;
-      border-color: #6441A4;
-      color: white;
+        background-color: #6441A4;
+        border-color: #6441A4;
+        color: white;
     }
     .btn-twitch:hover {
-      background-color: lighten(#6441A4, 10);
+        background-color: lighten(#6441A4, 10);
     }
     .btn-reddit {
-      background-color: #CEE3F8;
-      border-color: #CEE3F8;
-      color: #212121;
+        background-color: #CEE3F8;
+        border-color: #CEE3F8;
+        color: #212121;
     }
     .btn-reddit:hover {
-      background-color: lighten(#CEE3F8, 10);
+        background-color: lighten(#CEE3F8, 10);
     }
     .btn-google {
-      background-color: #D0021B;
-      border-color: #D0021B;
-      color: white;
+        background-color: #D0021B;
+        border-color: #D0021B;
+        color: white;
     }
     .btn-google:hover {
-      background-color: lighten(#D0021B, 10);
+        background-color: lighten(#D0021B, 10);
     }
     .btn-twitter {
-      background-color: #1DA1F2;
-      border: 1px solid #1DA1F2;
-      color: white;
+        background-color: #1DA1F2;
+        border: 1px solid #1DA1F2;
+        color: white;
     }
     .btn-twitter:hover {
-      background-color: lighten(#1DA1F2, 10);
+        background-color: lighten(#1DA1F2, 10);
     }
-  }
+    .btn-discord {
+        background-color: #7289da;
+        border: 1px solid #7289da;
+        color: white;
+    }
+    .btn-discord:hover {
+        background-color: lighten(#7289da, 10);
+    }
 }
 #loginproviders .btn:last-child {
   margin-bottom: 0;
@@ -1612,17 +1621,4 @@ body.modal-open .modal .modal-dialog {
     .gift-giftee {
         color: white;
     }
-}
-
-#loginFormProviders {
-  .form-group i {
-    vertical-align: middle;
-  }
-  .form-group label {
-    display: block;
-    cursor: pointer;
-  }
-  .form-group label:hover {
-    color: white;
-  }
 }

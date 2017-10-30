@@ -15,6 +15,7 @@ use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
+use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Common\ViewModel;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -95,6 +96,10 @@ class AuthenticationController {
                 $authHandler = new RedditAuthHandler ();
                 return 'redirect: ' . $authHandler->getAuthenticationUrl();
 
+            case 'DISCORD' :
+                $authHandler = new DiscordAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
+
             default :
                 $model->title = 'Login error';
                 $model->rememberme = $rememberme;
@@ -140,6 +145,12 @@ class AuthenticationController {
             if (isset($params['userid'])) {
                 FilterParams::required($params, 'userid');
                 $userid = $params['userid'];
+            } else if (isset($params['discordid'])) {
+                FilterParams::required($params, 'discordid');
+                $userid = $userService->getUserIdByDiscordId($params['discordid']);
+            } else if (isset($params['discordusername'])) {
+                FilterParams::required($params, 'discordusername');
+                $userid = $userService->getUserIdByDiscordUsername($params['discordusername']);
             } else if (isset($params['discordname'])) {
                 FilterParams::required($params, 'discordname');
                 $userid = $userService->getUserIdByField('discordname', $params['discordname']);
@@ -158,7 +169,7 @@ class AuthenticationController {
             Log::error("Field error", $e);
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'fielderror';
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error("Internal error", $e);
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'server';
@@ -391,7 +402,6 @@ class AuthenticationController {
      * @param array $params
      * @param ViewModel $model
      * @return string
-     * @throws Exception
      */
     public function authTwitch(array $params, ViewModel $model) {
         try {
@@ -408,7 +418,6 @@ class AuthenticationController {
      * @param array $params
      * @param ViewModel $model
      * @return string
-     * @throws Exception
      */
     public function authTwitter(array $params, ViewModel $model) {
         try {
@@ -425,7 +434,6 @@ class AuthenticationController {
      * @param array $params
      * @param ViewModel $model
      * @return string
-     * @throws Exception
      */
     public function authGoogle(array $params, ViewModel $model) {
         try {
@@ -442,13 +450,28 @@ class AuthenticationController {
      * @param array $params
      * @param ViewModel $model
      * @return string
-     * @throws Exception
      */
     public function authReddit(array $params, ViewModel $model) {
         try {
             $authHandler = new RedditAuthHandler ();
             return $authHandler->authenticate ( $params );
         } catch ( \Exception $e ) {
+            return $this->handleAuthError($e, $model);
+        }
+    }
+
+    /**
+     * @Route ("/auth/discord")
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function authDiscord(array $params, ViewModel $model) {
+        try {
+            $authHandler = new DiscordAuthHandler();
+            return $authHandler->authenticate($params);
+        } catch (\Exception $e) {
             return $this->handleAuthError($e, $model);
         }
     }

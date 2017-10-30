@@ -20,6 +20,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Api\ApiAuthenticationService;
+use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -63,6 +64,7 @@ class ProfileController {
         $model->ban = $userService->getUserActiveBan($userId);
         $model->user = $userService->getUserById($userId);
         $model->gifts = $subscriptionsService->findByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
+        $model->discordAuthProfile = $userService->getUserAuthProfile($userId, 'discord');
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
         $model->address = $address;
         $model->title = 'Account';
@@ -280,6 +282,10 @@ class ProfileController {
         
         case 'REDDIT' :
           $authHandler = new RedditAuthHandler ();
+          return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+
+        case 'DISCORD' :
+          $authHandler = new DiscordAuthHandler ();
           return 'redirect: ' . $authHandler->getAuthenticationUrl ();
         
         default :
