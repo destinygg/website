@@ -15,7 +15,7 @@
         "guzzlehttp/oauth-subscriber": "0.3.*",
         "paypal/merchant-sdk-php" : "3.12.*",
         "monolog/monolog" : "1.12.0",
-        "doctrine/inflector": "1.2.x-dev",
+        "doctrine/inflector": "1.1.x-dev",
         "doctrine/collections": "1.4.0",
         "doctrine/cache": "1.6.x-dev",
         "doctrine/annotations": "1.4.0",
