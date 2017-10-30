@@ -85,8 +85,8 @@ class ProfileController {
         $userService = UserService::instance ();
         $authenticationService = AuthenticationService::instance ();
 
-        $userId = Session::getCredentials ()->getUserId ();
-        $user = $userService->getUserById ( $userId);
+        $userId = Session::getCredentials ()->getUserId();
+        $user = $userService->getUserById($userId);
 
         if (empty ( $user )) {
             throw new Exception ( 'Invalid user' );
@@ -424,8 +424,8 @@ class ProfileController {
      */
     function gifts(ViewModel $model) {
         $userId = Session::getCredentials ()->getUserId ();
-        $subscriptionsService = SubscriptionsService::instance();
-        $model->gifts = $subscriptionsService->findCompletedByGifterId($userId);
+        $model->gifts = SubscriptionsService::instance()->findCompletedByGifterId($userId);
+        $model->user = UserService::instance()->getUserById($userId);
         return 'profile/gifts';
     }
 
@@ -440,8 +440,8 @@ class ProfileController {
      */
     function donations(ViewModel $model) {
         $userId = Session::getCredentials ()->getUserId ();
-        $donationsService = DonationService::instance();
-        $model->donations = $donationsService->findCompletedByUserId($userId);
+        $model->donations = DonationService::instance()->findCompletedByUserId($userId);
+        $model->user = UserService::instance()->getUserById($userId);
         return 'profile/donations';
     }
 
@@ -456,8 +456,8 @@ class ProfileController {
      */
     function subscriptions(ViewModel $model) {
         $userId = Session::getCredentials ()->getUserId ();
-        $subscriptionsService = SubscriptionsService::instance();
-        $model->subscriptions = $subscriptionsService->findCompletedByUserId($userId);
+        $model->subscriptions = SubscriptionsService::instance()->findCompletedByUserId($userId);
+        $model->user = UserService::instance()->getUserById($userId);
         return 'profile/subscriptions';
     }
 

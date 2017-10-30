@@ -79,6 +79,14 @@ class DonateController {
         FilterParams::declared($params, 'message');
         $conn = Application::getDbConn();
         try {
+
+            $amount = floatval($params['amount']);
+            $minimum = Config::$a['commerce']['minimum_donation'];
+            if ($amount < $minimum) {
+                Session::setErrorBag('Only donations of $5.00 and over can be accepted');
+                throw new Exception ('Minimum donation amount not met');
+            }
+
             AuthenticationService::instance()->validateUsername($params['username']);
             $userid = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUserId() : -1;
             $conn->beginTransaction();
@@ -87,7 +95,7 @@ class DonateController {
                 'userid'    => $userid,
                 'username'  => $params['username'],
                 'currency'  => Config::$a ['commerce'] ['currency'],
-                'amount'    => floatval($params['amount']),
+                'amount'    => $amount,
                 'status'    => DonationStatus::PENDING,
                 'message'   => mb_substr($params['message'], 0, 200),
                 'timestamp' => Date::getDateTime ()->format ( 'Y-m-d H:i:s' )

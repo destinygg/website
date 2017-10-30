@@ -305,12 +305,12 @@ class PayPalApiService extends Service {
      * @return array
      */
     public function getCheckoutResponsePayments(DoExpressCheckoutPaymentResponseType $DoECResponse){
-        $payments = array();
+        $payments = [];
         if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
             $details = $DoECResponse->DoExpressCheckoutPaymentResponseDetails;
             if (isset ($details->PaymentInfo) && !empty($details->PaymentInfo)) {
                 foreach($details->PaymentInfo as $paymentInfo) {
-                    $payment = array ();
+                    $payment = [];
                     $payment ['amount'] = $paymentInfo->GrossAmount->value;
                     $payment ['currency'] = $paymentInfo->GrossAmount->currencyID;
                     $payment ['transactionId'] = $paymentInfo->TransactionID;

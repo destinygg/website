@@ -19,6 +19,7 @@ use Destiny\Common\Config;
         <?php include 'seg/nav.php' ?>
         <?php include 'seg/alerts.php' ?>
         <?php include 'menu.php' ?>
+        <?php include 'profile/userinfo.php' ?>
 
         <section class="container">
 

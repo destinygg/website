@@ -172,6 +172,7 @@ return [
     'commerce' => [
         'receiver_email' => '',
         'currency' => 'USD',
+        'minimum_donation' => 5,
         'subscriptions' => [
             '1-MONTH-SUB' => [
                 'id'                => '1-MONTH-SUB',

@@ -11,13 +11,14 @@ use Destiny\Common\Config;
     <?php include 'seg/meta.php' ?>
     <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
 </head>
-<body id="gifts" class="no-contain">
+<body id="donations" class="no-contain">
 <div id="page-wrap">
 
     <div id="alerts-container"></div>
     <?php include 'seg/nav.php' ?>
     <?php include 'seg/alerts.php' ?>
     <?php include 'menu.php' ?>
+    <?php include 'profile/userinfo.php' ?>
 
     <section class="container">
 
