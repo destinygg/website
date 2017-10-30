@@ -405,7 +405,7 @@ $(function(){
     if(subform.length > 0) {
         subform.on('submit', () => {
             subform.find('button').attr("disabled", "disabled")
-            window.setTimeout(() => subform.find('[type="submit"]').removeAttr("disabled"), 30000)
+            window.setTimeout(() => subform.find('[type="submit"]').removeAttr("disabled"), 3000)
         })
     }
 
@@ -413,7 +413,7 @@ $(function(){
     if(donateform.length > 0) {
         donateform.on('submit', () => {
             donateform.find('button').attr("disabled", "disabled")
-            window.setTimeout(() => donateform.find('[type="submit"]').removeAttr("disabled"), 30000)
+            window.setTimeout(() => donateform.find('[type="submit"]').removeAttr("disabled"), 3000)
         })
     }
 

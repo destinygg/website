@@ -114,7 +114,7 @@ return [
             'acct1.Password'            => '',
             'acct1.Signature'           => '',
             'acct1.CertPath'            => '',
-            'service.Endpoint.IPN'      => '',
+            'service.Endpoint.IPN'      => 'http://localhost/ipn/',
             'log.LogEnabled'            => true,
             'log.FileName'              => _BASEDIR . 'log/paypal.log',
             'log.LogLevel'              => 'ERROR',

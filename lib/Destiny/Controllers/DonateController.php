@@ -57,9 +57,11 @@ class DonateController {
      * @Route("/donate/error")
      * @HttpMethod({"GET"})
      *
+     * @param ViewModel $model
      * @return string
      */
-    public function donateError(){
+    public function donateError(ViewModel $model){
+        $model->username = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUsername() : "";
         return 'donate';
     }
 
@@ -110,9 +112,8 @@ class DonateController {
             $conn->commit();
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (\Exception $e) {
-            Log::critical(new Exception("Failed to create order", $e));
             $conn->rollBack();
-            return 'redirect: /donate/error';
+            throw new Exception("Failed to create donation", $e);
         }
     }
 
