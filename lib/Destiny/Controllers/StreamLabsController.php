@@ -29,7 +29,7 @@ class StreamLabsController {
      * @return string
      */
     public function authorize() {
-        $handler = StreamLabsService::withAuth();
+        $handler = StreamLabsService::instance();
         return 'redirect: ' . $handler->getAuthenticationUrl();
     }
 

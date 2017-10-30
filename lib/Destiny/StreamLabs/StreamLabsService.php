@@ -11,6 +11,9 @@ use Destiny\Common\Utils\Http;
 use Doctrine\DBAL\DBALException;
 use GuzzleHttp\Client;
 
+/**
+ * @method static StreamLabsService instance()
+ */
 class StreamLabsService extends Service {
 
     /**
@@ -44,8 +47,7 @@ class StreamLabsService extends Service {
      * @return StreamLabsService
      */
     public static function withAuth() {
-        /** @var StreamLabsService $instance */
-        $instance = parent::instance();
+        $instance = self::instance();
         $instance->setAuth($instance->getDefaultAuth());
         return $instance;
     }
