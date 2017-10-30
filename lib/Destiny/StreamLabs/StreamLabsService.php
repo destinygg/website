@@ -75,8 +75,8 @@ class StreamLabsService extends Service {
     /**
      * @param array $auth
      */
-    public function setAuth(array $auth){
-        $this->auth = $auth;
+    public function setAuth($auth){
+        $this->auth = is_array($auth) && !empty($auth) ? $auth : null;
     }
 
     /**
