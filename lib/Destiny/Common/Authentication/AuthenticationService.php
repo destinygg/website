@@ -79,7 +79,8 @@ class AuthenticationService extends Service {
                 throw new Exception ('The email you asked for is already being used');
         }
         $emailDomain = strtolower(substr($email, strpos($email, '@') + 1));
-        if (in_array($emailDomain, Config::$a ['domains_blacklist']))
+        $blacklist = array_merge([], include _BASEDIR . '/config/domains.blacklist.php');
+        if (in_array($emailDomain, $blacklist))
             throw new Exception ('email is blacklisted');
     }
 
