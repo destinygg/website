@@ -42,6 +42,7 @@ use Destiny\Common\Config;
     </div>
 
     <?php include 'seg/tracker.php' ?>
+    <?php include 'seg/login.php' ?>
     <script src="<?=Config::cdnv()?>/web.js"></script>
 
 </body>
