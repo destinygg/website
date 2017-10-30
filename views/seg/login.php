@@ -1,8 +1,11 @@
 <?php
 namespace Destiny;
 use Destiny\Common\Config;
-?>
+use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
 
+?>
+<?php if(!Session::hasRole(UserRole::USER)): ?>
 <div id="loginmodal" class="modal fade">
     <form class="modal-dialog" action="/login" method="post">
         <input type="hidden" name="follow" value="" />
@@ -26,3 +29,4 @@ use Destiny\Common\Config;
         </div>
     </form>
 </div>
+<?php endif; ?>
