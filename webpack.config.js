@@ -1,5 +1,5 @@
-const webpack = require('webpack');
-const path = require('path');
+require('webpack');
+
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
@@ -55,7 +55,7 @@ module.exports = {
                 options : {name: 'fonts/[name].[ext]'}
             },
             {
-                test    : /\.(png|jpg|gif)$/,
+                test    : /\.(png|jpg|gif|svg)$/,
                 loader  : 'file-loader',
                 options : {name: 'img/[name].[ext]'}
             }
