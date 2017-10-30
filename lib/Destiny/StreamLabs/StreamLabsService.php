@@ -53,13 +53,16 @@ class StreamLabsService extends Service {
     /**
      * @return array|null
      */
-    public function getDefaultAuth(){
+    public function getDefaultAuth() {
         try {
-            if($this->default == null) {
-                $this->default = UserService::instance()->getUserAuthProfile(
+            if ($this->default == null) {
+                $auth = UserService::instance()->getUserAuthProfile(
                     Config::$a['streamlabs']['default_user'],
                     'streamlabs'
                 );
+                if (!empty($auth)) {
+                    $this->default = $auth;
+                }
             }
         } catch (\Exception $e) {
             Log::error(new Exception("Error getting default auth profile.", $e));
