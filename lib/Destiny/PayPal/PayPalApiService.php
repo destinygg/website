@@ -216,7 +216,7 @@ class PayPalApiService extends Service {
         $item->Name = "$amount donation";
         $item->Amount = new BasicAmountType ($currency, $amount);
         $item->Quantity = 1;
-        $item->ItemCategory = 'Digital'; // or 'Physical'. TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
+        $item->ItemCategory = 'Physical'; // or 'Physical'. TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
         $item->Number = $donation['id'];
 
         $payment = new PaymentDetailsType ();
