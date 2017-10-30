@@ -465,6 +465,40 @@ class UserService extends Service {
     }
 
     /**
+     * @param $id
+     * @return bool|string
+     * @throws DBALException
+     */
+    public function getUserIdByDiscordId($id) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare("
+            SELECT a.userId FROM dfl_users_auth a
+            WHERE a.authId = :id AND a.authProvider = 'discord'
+            LIMIT 1
+        ");
+        $stmt->bindValue('id', $id, \PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * @param $username
+     * @return bool|string
+     * @throws DBALException
+     */
+    public function getUserIdByDiscordUsername($username) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare("
+            SELECT a.userId FROM dfl_users_auth a
+            WHERE a.authDetail = :username AND a.authProvider = 'discord'
+            LIMIT 1
+        ");
+        $stmt->bindValue('username', $username, \PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    /**
      * @param int $userId
      * @param int $limit
      * @param int $start
@@ -474,10 +508,10 @@ class UserService extends Service {
     public function getAddressByUserId($userId, $limit = 1, $start = 0) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
-      SELECT * FROM users_address AS a
-      WHERE a.userId = :userId
-      LIMIT :start,:limit
-    ');
+          SELECT * FROM users_address AS a
+          WHERE a.userId = :userId
+          LIMIT :start,:limit
+        ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_STR);
         $stmt->bindValue('start', $start, \PDO::PARAM_INT);
         $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);

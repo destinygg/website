@@ -441,12 +441,20 @@ $(function(){
         const form = $(this)
         form.on('submit', () => selectFollowUri(form))
         form.on('click', '#loginproviders .btn', function(){
-            return submitLogin(form, $(this).data('provider'));
+            return submitLogin(form, $(this).data('provider'))
         })
-        form.on('keyup', '#loginproviders .btn', function(e){
-            if(e.keyCode === 13){
-                return submitLogin(form, $(this).data('provider'))
-            }
+        form.on('keyup', '#loginproviders .btn', e => {
+            if(e.keyCode === 13) return submitLogin(form, $(this).data('provider'))
+        })
+    })
+
+    $('#loginform').each(function(){
+        const form = $(this)
+        form.on('click', '#loginproviders .btn', function(){
+            return submitLogin(form, $(this).data('provider'))
+        })
+        form.on('keyup', '#loginproviders .btn', e => {
+            if(e.keyCode === 13) return submitLogin(form, $(this).data('provider'))
         })
     })
 

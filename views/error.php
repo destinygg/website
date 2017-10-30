@@ -1,5 +1,6 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
@@ -40,7 +41,7 @@ use Destiny\Common\Config;
         </p>
 
         <?php $ini = @ini_get('display_errors') ?>
-        <?php if($ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>
+        <?php if($this->error instanceof Exception || $ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>
         <?php $msg = $this->error->getMessage() ?>
         <?php if($this->error && is_string($msg) && strlen($msg) > 0): ?>
         <p><code><?=Tpl::out(trim($this->error->getMessage()))?></code></p>

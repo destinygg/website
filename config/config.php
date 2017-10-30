@@ -55,7 +55,8 @@ return [
         'twitch',
         'google',
         'twitter',
-        'reddit'
+        'reddit',
+        'discord'
     ],
 
     'oauth_providers' => [
@@ -75,6 +76,11 @@ return [
             'redirect_uri' => ''
         ],
         'reddit' => [
+            'client_id' => '',
+            'client_secret' => '',
+            'redirect_uri' => ''
+        ],
+        'discord' => [
             'client_id' => '',
             'client_secret' => '',
             'redirect_uri' => ''
