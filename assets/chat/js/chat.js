@@ -1146,7 +1146,7 @@ class Chat {
                     const date = moment.utc(d[d.length-1].date*1000).local().format(DATE_FORMATS.FULL);
                     MessageBuilder.info(`Mentions for ${parts[0]} last seen ${date}`).into(this);
                     d.forEach(a => MessageBuilder.historical(a.text, new ChatUser(a.nick), a.date*1000).into(this))
-                    MessageBuilder.info(`End of stalk (https://dgg.overrustlelogs.net/${parts[0]})`).into(this);
+                    MessageBuilder.info(`End of stalk (https://dgg.overrustlelogs.net/mentions/${parts[0]})`).into(this);
                 }
             })
             .fail(() => MessageBuilder.error(`No mentions for ${parts[0]} received. Try again later`).into(this));
