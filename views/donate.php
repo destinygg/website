@@ -32,7 +32,7 @@ use Destiny\Common\Config;
         <?php include 'seg/alerts.php' ?>
 
         <div class="content content-dark clearfix">
-            <form id="donate-form" class="validate" action="/donate" method="post">
+            <form id="donateform" class="validate" action="/donate" method="post">
                 <div class="ds-block">
                     <div id="donation-username" class="form-group form-group-lg">
                         <input class="form-control required" id="username" name="username" placeholder="Enter a username ..." value="<?=Tpl::out($this->username)?>" autofocus />
