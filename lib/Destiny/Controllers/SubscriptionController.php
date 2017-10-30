@@ -85,7 +85,7 @@ class SubscriptionController {
         $userId = Session::getCredentials()->getUserId();
         $subscriptionId = $params['id'];
         $sub = $subscriptionsService->findById($subscriptionId);
-        if (empty ($sub) || $sub['userId'] !== $userId || $sub['status'] === SubscriptionStatus::ACTIVE) {
+        if (empty ($sub) || $sub['userId'] !== $userId || $sub['status'] !== SubscriptionStatus::ACTIVE) {
             throw new Exception ('Must have an active subscription');
         }
         $model->subscription = $sub;
