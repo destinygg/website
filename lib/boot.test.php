@@ -14,6 +14,7 @@ define('_BASEDIR', realpath(__DIR__ . '/../'));
 $loader = require _BASEDIR . '/vendor/autoload.php';
 Config::load(array_replace_recursive(
     require _BASEDIR . '/config/config.php',
+    require _BASEDIR . '/config/config.dgg.php',
     require _BASEDIR . '/config/config.local.php',
     ['domains_blacklist' => include _BASEDIR . '/config/domains.blacklist.php'],
     ['version' => _APP_VERSION]

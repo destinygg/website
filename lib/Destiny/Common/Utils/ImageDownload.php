@@ -27,24 +27,24 @@ class ImageDownload {
      *
      * @return string a RELATIVE path to the file, or an empty string if something went wrong
      */
-    public static function download($url, $overwrite = false, $path = null){
+    public static function download($url, $overwrite = false, $path = null) {
         $response = '';
         if (empty($url))
             return $response;
         if (empty($path))
             $path = Config::$a['images']['path'];
-        $uri = parse_url($url, PHP_URL_PATH);
-        $ext = strtolower(pathinfo($uri, PATHINFO_EXTENSION));
-        $name = md5($url);
-        $shard = (preg_match("/[a-z0-9]/i", $name, $match)) ? $match[0] : "0";
-        $final = $shard . self::$PATH_SEPARATOR . $name . "." . $ext;
-        Log::debug("Downloading ..." . $uri);
+        $urlpath = parse_url($url, PHP_URL_PATH);
+        $ext = strtolower(pathinfo($urlpath, PATHINFO_EXTENSION));
+        $hash = md5($url);
+        $shard = (preg_match("/[a-z0-9]/i", $hash, $match)) ? $match[0] : "0";
+        $final = $shard . self::$PATH_SEPARATOR . $hash . "." . $ext;
+        Log::debug("Downloading [$url]");
         if (strlen($shard) <= 0) {
             Log::error("Invalid shard." . $shard);
         } else if (!file_exists($path . $shard) && !mkdir($path . $shard)) {
             Log::error("Could not make shard sub-folder. " . $path . $shard);
         } else if (empty($ext) || !in_array($ext, self::$ALLOWED_EXT)) {
-            Log::error("File type not supported or invalid extension." . $uri);
+            Log::error("File type not supported or invalid extension." . $urlpath);
         } else if ($overwrite === false && file_exists($path . $final)) {
             Log::notice("Not downloading image, one already exists.");
             $response = $final;
@@ -58,6 +58,8 @@ class ImageDownload {
                 $code = $r->getStatusCode();
                 if ($code != Http::STATUS_OK) {
                     Log::error("Invalid http response code. [" . $code . "] " . $url);
+                } else {
+                    $response = $final;
                 }
             } catch (\Exception $e) {
                 Log::error($e->getMessage());
