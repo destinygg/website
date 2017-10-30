@@ -89,13 +89,20 @@ class DonateController {
         }
 
         try {
-            AuthenticationService::instance()->validateUsername($params['username']);
-            $userid = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUserId() : -1;
+            $userid = null;
+            $username = null;
+            if(Session::hasRole(UserRole::USER)) {
+                $userid = Session::getCredentials()->getUserId();
+                $username = Session::getCredentials()->getUsername();
+            } else {
+                AuthenticationService::instance()->validateUsername($params['username']);
+                $username = $params['username'];
+            }
             $conn->beginTransaction();
             $donationService = DonationService::instance();
             $donation = $donationService->addDonation([
                 'userid'    => $userid,
-                'username'  => $params['username'],
+                'username'  => $username,
                 'currency'  => Config::$a ['commerce'] ['currency'],
                 'amount'    => $amount,
                 'status'    => DonationStatus::PENDING,
