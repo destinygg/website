@@ -398,27 +398,6 @@ $(function(){
 
 })
 
-// Subscription, donate
-$(function(){
-
-    const subform = $('form#subscribe-form')
-    if(subform.length > 0) {
-        subform.on('submit', () => {
-            subform.find('button').attr("disabled", "disabled")
-            window.setTimeout(() => subform.find('[type="submit"]').removeAttr("disabled"), 3000)
-        })
-    }
-
-    const donateform = $('form#donate-form')
-    if(donateform.length > 0) {
-        donateform.on('submit', () => {
-            donateform.find('button').attr("disabled", "disabled")
-            window.setTimeout(() => donateform.find('[type="submit"]').removeAttr("disabled"), 3000)
-        })
-    }
-
-})
-
 $(function(){
 
     const selectFollowUri = form => {
