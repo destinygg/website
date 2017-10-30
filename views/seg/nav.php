@@ -29,14 +29,14 @@ use Destiny\Common\Session;
             <li class="hidden-xs">
                 <a href="/profile">
                     <span class="fa fa-user-circle"></span>
-                    <span class="sign-in-link visible-lg-inline visible-xs-inline">Account</span>
+                    <span class="visible-lg-inline visible-xs-inline">Account</span>
                 </a>
             </li>
             <?php else: ?>
             <li>
-                <a href="/login" rel="login">
+                <a data-toggle="modal" data-target="#loginmodal" rel="login">
                     <span class="fa fa-sign-in"></span>
-                    <span class="sign-in-link visible-lg-inline visible-xs-inline">Sign In</span>
+                    <span class="visible-lg-inline visible-xs-inline">Sign In</span>
                 </a>
             </li>
             <?php endif ?>
@@ -68,15 +68,13 @@ use Destiny\Common\Session;
                 <li><a title="youtube.com" href="/youtube">Youtube</a></li>
                 <li><a title="reddit.com" href="/reddit">Reddit</a></li>
                 <li><a title="facebook.com" href="/facebook">Facebook</a></li>
-                <li><a title="Amazon" href="/amazon">Amazon</a></li>
+                <li><a title="Donate" href="/donate">Donate</a></li>
 
                 <?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
-                <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own subscription"><span>Subscribe</span></a></li>
+                    <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own subscription"><span>Subscribe</span></a></li>
                 <?php else: ?>
-                <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
+                    <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
                 <?php endif ?>
-
-                <li><a href="/donate" title="Donate">Donate</a></li>
 
             </ul>
         </div>

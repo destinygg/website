@@ -16,6 +16,8 @@ use Destiny\Common\Config;
 
 <div id="chat" class="chat chat-icons">
 
+    <div id="chat-windows-select"></div>
+
     <div id="chat-output-frame" data-scroll-notify></div>
 
     <div id="chat-input-frame">
@@ -29,7 +31,7 @@ use Destiny\Common\Config;
             <a id="chat-whisper-btn" class="chat-tool-btn" title="Whispers">
                 <span class="fa fa-comments-o"></span>
             </a>
-            <div id="chat-windows-thumbnails"></div>
+            <div style="flex:1;"></div>
             <a id="chat-settings-btn" class="chat-tool-btn" title="Settings">
                 <span class="fa fa-cog"></span>
             </a>
@@ -66,14 +68,17 @@ use Destiny\Common\Config;
                             </label>
                         </div>
                         <div class="form-group checkbox">
-                            <label title="&lt;censored&gt; instead of removing messages">
-                                <input name="showremoved" type="checkbox" /> &lt;censored&gt;
-                            </label>
-                        </div>
-                        <div class="form-group checkbox">
                             <label title="Ignore messages that mention ignored users">
                                 <input name="ignorementions" type="checkbox" /> Harsh ignore
                             </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="showremoved">Banned messages</label>
+                            <select class="form-control" id="showremoved" name="showremoved">
+                                <option value="0">remove</option>
+                                <option value="1">&lt;censored&gt;</option>
+                                <option value="2">do nothing</option>
+                            </select>
                         </div>
 
                         <h4>Notifications</h4>
@@ -126,7 +131,7 @@ use Destiny\Common\Config;
 
                         <h4>Autocomplete</h4>
                         <div class="form-group checkbox">
-                            <label title="Show or hid the auto complete helper">
+                            <label title="Toggle the auto-complete suggestion tabs ...">
                                 <input name="autocompletehelper" type="checkbox" /> Auto-complete helper
                             </label>
                         </div>
@@ -159,7 +164,6 @@ use Destiny\Common\Config;
             <div class="scrollable nano">
                 <div class="content nano-content">
                     <div class="emote-group" id="destiny-emotes"></div>
-                    <hr/>
                     <div id="emote-subscribe-note">Twitch subscribers only</div>
                     <div class="emote-group" id="twitch-emotes"></div>
                 </div>

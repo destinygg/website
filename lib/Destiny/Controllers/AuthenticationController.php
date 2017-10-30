@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Api\ApiAuthenticationService;
+use Destiny\Chat\ChatIntegrationService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -34,6 +35,85 @@ class AuthenticationController {
 
     protected function checkPrivateKey(array $params, $type) {
         return isset($params['privatekey']) && Config::$a['privateKeys'][$type] === $params['privatekey'];
+    }
+
+    /**
+     * @Route ("/login")
+     * @HttpMethod ({"GET"})
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     */
+    public function login(array $params, ViewModel $model) {
+        Session::remove('accountMerge');
+        $model->title = 'Login';
+        $model->follow = (isset ($params ['follow'])) ? $params ['follow'] : '';
+        return 'login';
+    }
+
+    /**
+     * @Route ("/login")
+     * @HttpMethod ({"POST"})
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     *
+     * @throws Exception
+     */
+    public function loginPost(array $params, ViewModel $model) {
+        $authProvider = (isset ($params ['authProvider']) && !empty ($params['authProvider'])) ? $params ['authProvider'] : '';
+        $rememberme = (isset ($params ['rememberme']) && !empty ($params ['rememberme'])) ? true : false;
+        if (empty ($authProvider)) {
+            $model->title = 'Login error';
+            $model->rememberme = $rememberme;
+            $model->error = new Exception ('Please select a authentication provider');
+            return 'error';
+        }
+        Session::start();
+        if ($rememberme) {
+            Session::set('rememberme', 1);
+        }
+        if (isset ($params ['follow']) && !empty ($params ['follow'])) {
+            Session::set('follow', $params ['follow']);
+        }
+        switch (strtoupper($authProvider)) {
+            case 'TWITCH' :
+                $authHandler = new TwitchAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
+
+            case 'GOOGLE' :
+                $authHandler = new GoogleAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
+
+            case 'TWITTER' :
+                $authHandler = new TwitterAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
+
+            case 'REDDIT' :
+                $authHandler = new RedditAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
+
+            default :
+                $model->title = 'Login error';
+                $model->rememberme = $rememberme;
+                $model->error = new Exception ('Authentication type not supported');
+                return 'error';
+        }
+    }
+
+    /**
+     * @Route ("/logout")
+     *
+     * @return string
+     */
+    public function logout() {
+        if (Session::isStarted()) {
+            ChatIntegrationService::instance()->deleteChatSession(Session::getSessionId());
+            Session::destroy();
+        }
+        return 'redirect: /';
     }
 
     /**
@@ -385,7 +465,7 @@ class AuthenticationController {
         } else {
             $model->title = 'Login error';
             $model->error = $e;
-            return 'login';
+            return 'error';
         }
     }
 }

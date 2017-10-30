@@ -14,13 +14,12 @@ use Destiny\Common\Config;
   <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/banner.php' ?>
-    
+
     <section class="container">
     
       <h1 class="title">
-        <span>Sign In</span>
-        <small>...</small>
+        <span>Sign in</span>
+        <small>with your favourite platform</small>
       </h1>
       
       <?php if(!empty($this->error)): ?>
@@ -45,10 +44,6 @@ use Destiny\Common\Config;
               </div>
             </div>
             
-            <div class="form-group">
-              <h3>... With</h3>
-            </div>
-
             <div id="loginFormProviders">
               <?php if(in_array('twitch', Config::$a['authProfiles'])): ?>
               <div class="form-group">

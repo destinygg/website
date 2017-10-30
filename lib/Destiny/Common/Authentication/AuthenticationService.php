@@ -25,45 +25,40 @@ class AuthenticationService extends Service {
 
     /**
      * @param string $username
-     * @param array $user
      * @throws Exception
-     * @throws DBALException
      */
-    public function validateUsername($username, array $user = null) {
-        if (empty ( $username ))
-            throw new Exception ( 'Username required' );
+    public function validateUsername($username) {
+        if (empty ($username))
+            throw new Exception ('Username required');
 
-        if (preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $username ) == 0)
-            throw new Exception ( 'Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.' );
+        if (preg_match('/^[A-Za-z0-9_]{3,20}$/', $username) == 0)
+            throw new Exception ('Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.');
 
         // nick-to-emote similarity heuristics, not perfect sadly ;(
-        $normalizeduname = strtolower( $username );
-        $front = substr( $normalizeduname, 0, 2 );
-        foreach( ChatEmotes::get('destiny') as $emote ) {
-            $normalizedemote = strtolower( $emote );
-            if ( strpos( $normalizeduname, $normalizedemote ) === 0 )
-                throw new Exception ( 'Username too similar to an emote, try changing the first characters' );
+        $normalizeduname = strtolower($username);
+        $front = substr($normalizeduname, 0, 2);
+        foreach (ChatEmotes::get('destiny') as $emote) {
+            $normalizedemote = strtolower($emote);
+            if (strpos($normalizeduname, $normalizedemote) === 0)
+                throw new Exception ('Username too similar to an emote, try changing the first characters');
 
-            if ( $emote == 'LUL' )
+            if ($emote == 'LUL')
                 continue;
 
-            $shortuname = substr( $normalizeduname, 0, strlen( $emote ) );
-            $emotefront = substr( $normalizedemote, 0, 2 );
-            if ( $front == $emotefront and levenshtein( $normalizedemote, $shortuname ) <= 2 )
-                throw new Exception ( 'Username too similar to an emote, try changing the first characters' );
+            $shortuname = substr($normalizeduname, 0, strlen($emote));
+            $emotefront = substr($normalizedemote, 0, 2);
+            if ($front == $emotefront and levenshtein($normalizedemote, $shortuname) <= 2)
+                throw new Exception ('Username too similar to an emote, try changing the first characters');
         }
 
-        if (preg_match_all ( '/[0-9]{3}/', $username, $m ) > 0)
-            throw new Exception ( 'Too many numbers in a row in username' );
-        
-        if (preg_match_all ( '/[\_]{2}/', $username, $m ) > 0 || preg_match_all ( "/[_]+/", $username, $m ) > 2)
-            throw new Exception ( 'Too many underscores in username' );
-        
-        if (preg_match_all ( "/[0-9]/", $username, $m ) > round ( strlen ( $username ) / 2 ))
-            throw new Exception ( 'Number ratio is too high in username' );
-        
-        if (UserService::instance ()->getIsUsernameTaken ( $username, ((! empty ( $user )) ? $user ['userId'] : 0) ))
-            throw new Exception ( 'The username you asked for is already being used' );
+        if (preg_match_all('/[0-9]{3}/', $username, $m) > 0)
+            throw new Exception ('Too many numbers in a row in username');
+
+        if (preg_match_all('/[\_]{2}/', $username, $m) > 0 || preg_match_all("/[_]+/", $username, $m) > 2)
+            throw new Exception ('Too many underscores in username');
+
+        if (preg_match_all("/[0-9]/", $username, $m) > round(strlen($username) / 2))
+            throw new Exception ('Number ratio is too high in username');
     }
 
     /**
@@ -76,7 +71,6 @@ class AuthenticationService extends Service {
     public function validateEmail($email, array $user = null, $skipusercheck = null) {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))
             throw new Exception ('A valid email is required');
-
         if (!$skipusercheck and !empty ($user)) {
             if (UserService::instance()->getIsEmailTaken($email, $user ['userId']))
                 throw new Exception ('The email you asked for is already being used');
@@ -84,53 +78,51 @@ class AuthenticationService extends Service {
             if (UserService::instance()->getIsEmailTaken($email))
                 throw new Exception ('The email you asked for is already being used');
         }
-
         $emailDomain = strtolower(substr($email, strpos($email, '@') + 1));
-        if (isset(Config::$a ['blacklistedDomains'][$emailDomain]))
-            throw new Exception ('The email is blacklisted');
-
+        if (in_array($emailDomain, Config::$a ['domains_blacklist']))
+            throw new Exception ('email is blacklisted');
     }
 
     /**
      * Starts up the session, looks for remember me if there was no session
      * Also updates the session if the user is flagged for it.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function startSession() {
-        $chatIntegrationService = ChatIntegrationService::instance ();
+        $chatIntegrationService = ChatIntegrationService::instance();
         // If the session has a cookie, start it
         if (Session::hasSessionCookie() && Session::start() && Session::hasRole(UserRole::USER)) {
-            $sessionId = Session::getSessionId ();
-            if(!empty($sessionId)) {
+            $sessionId = Session::getSessionId();
+            if (!empty($sessionId)) {
                 $chatIntegrationService->renewChatSessionExpiration(Session::getSessionId());
             }
         }
 
         // Check the Remember me cookie if the session is invalid
-        if( !Session::hasRole ( UserRole::USER ) ){
-            $user = $this->getRememberMe ();
+        if (!Session::hasRole(UserRole::USER)) {
+            $user = $this->getRememberMe();
             if (!empty($user)) {
                 Session::start();
-                Session::updateCredentials ( $this->buildUserCredentials ( $user, 'rememberme' ) );
-                $this->setRememberMe ( $user );
+                Session::updateCredentials($this->buildUserCredentials($user, 'rememberme'));
+                $this->setRememberMe($user);
 
                 // flagUserForUpdate updates the credentials AGAIN, but since its low impact
                 // Instead of doing the logic in two places
-                $this->flagUserForUpdate ( $user['userId'] );
+                $this->flagUserForUpdate($user['userId']);
             }
         }
 
         // Update the user if they have been flagged for an update
-        if( Session::hasRole ( UserRole::USER ) ) {
-            $userId = Session::getCredentials ()->getUserId ();
-            if( !empty($userId) && $this->isUserFlaggedForUpdate ( $userId ) ){
-                $user = UserService::instance ()->getUserById ( $userId );
-                if ( !empty ( $user ) ) {
-                    $this->clearUserUpdateFlag ( $userId );
-                    Session::updateCredentials ( $this->buildUserCredentials ( $user, 'session' ) );
+        if (Session::hasRole(UserRole::USER)) {
+            $userId = Session::getCredentials()->getUserId();
+            if (!empty($userId) && $this->isUserFlaggedForUpdate($userId)) {
+                $user = UserService::instance()->getUserById($userId);
+                if (!empty ($user)) {
+                    $this->clearUserUpdateFlag($userId);
+                    Session::updateCredentials($this->buildUserCredentials($user, 'session'));
                     // the refreshChatSession differs from this call, because only here we have access to the session id.
-                    $chatIntegrationService->setChatSession ( Session::getCredentials(), Session::getSessionId () );
+                    $chatIntegrationService->setChatSession(Session::getCredentials(), Session::getSessionId());
                 }
             }
         }
@@ -313,12 +305,11 @@ class AuthenticationService extends Service {
      * @throws DBALException
      */
     public function flagUserForUpdate($user) {
-        if (!is_array($user)) {
+        if (!is_array($user))
             $user = UserService::instance()->getUserById($user);
-        }
         if (!empty($user)) {
             $cache = Application::instance()->getCache();
-            $cache->save(sprintf('refreshusersession-%s', $user['userId']), time(), intval(ini_get('session.gc_maxlifetime')));
+            $cache->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
             ChatIntegrationService::instance()->refreshChatUserSession($this->buildUserCredentials($user, 'session'));
         }
     }
@@ -327,8 +318,8 @@ class AuthenticationService extends Service {
      * @param $userId
      */
     protected function clearUserUpdateFlag($userId) {
-        $cache = Application::instance ()->getCache ();
-        $cache->delete ( sprintf ( 'refreshusersession-%s', $userId ));
+        $cache = Application::instance()->getCache();
+        $cache->delete('refreshusersession-' . $userId);
     }
 
     /**
@@ -336,8 +327,8 @@ class AuthenticationService extends Service {
      * @return bool
      */
     protected function isUserFlaggedForUpdate($userId) {
-        $cache = Application::instance ()->getCache ();
-        $lastUpdated = $cache->fetch ( sprintf ( 'refreshusersession-%s', $userId ) );
+        $cache = Application::instance()->getCache();
+        $lastUpdated = $cache->fetch('refreshusersession-' . $userId);
         return !empty ($lastUpdated);
     }
 
@@ -362,7 +353,7 @@ class AuthenticationService extends Service {
             $authService->validateEmail($authCreds->getEmail(), null, true);
 
         // Account merge
-        if (Session::set('accountMerge') === '1') {
+        if (Session::getAndRemove('accountMerge') === '1') {
             // Must be logged in to do a merge
             if (!Session::hasRole(UserRole::USER)) {
                 throw new Exception ('Authentication required for account merge');
@@ -372,9 +363,9 @@ class AuthenticationService extends Service {
         }
 
         // Follow url
-        $follow = Session::set('follow');
+        $follow = Session::getAndRemove('follow');
         // Remember me checkbox on login form
-        $rememberme = Session::set('rememberme');
+        $rememberme = Session::getAndRemove('rememberme');
 
         // If the user profile doesn't exist, go to the register page
         if (!$userService->getUserAuthProviderExists($authCreds->getAuthId(), $authCreds->getAuthProvider())) {

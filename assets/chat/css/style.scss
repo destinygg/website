@@ -2,13 +2,13 @@
 @import "../../anim";
 @import "../../emotes/emoticons";
 @import "../../icons/icons";
-@import url("https://fonts.googleapis.com/css?family=Roboto");
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,600,700");
 
 *, *::before, *::after { box-sizing: inherit; }
 html { box-sizing: border-box; }
 
-$chatchromefont     : 'Roboto', Helvetica, "Trebuchet MS", Verdana, sans-serif;
-$chatlinesfont      : Helvetica,Trebuchet MS,Verdana,sans-serif;
+$chatchromefont     : "Roboto", Helvetica, "Trebuchet MS", Verdana, sans-serif;
+$chatlinesfont      : "Roboto", Helvetica, "Trebuchet MS", Verdana, sans-serif;
 $chatminwidth       : 300px;
 $menuwidthmax       : 320px;
 $menubottommax      : 90px;
@@ -109,82 +109,69 @@ label small {
         margin-right: 20px;
     }
 }
-#chat-windows-thumbnails {
-    flex: 1;
+#chat-windows-select {
+    box-shadow: 0 2px 6px black;
+    background: $color-surface-dark4;
+    white-space: nowrap;
     display: flex;
-    justify-content: center;
-    .chat-tool-btn {
-        i {
-            transition: all 100ms ease-in-out;
-            position: absolute;
-            display: block;
-            font-size: 11px;
-            left: 10px;
-            top: 10px;
-            width: 10px;
-            height: 10px;
-            background-color: $color-surface-dark3;
-            vertical-align: middle;
-            text-align: center;
-            border-radius: 50%;
-        }
-        i:before {
-            display:none;
-        }
+    z-index: 100;
+    .tab {
+        min-width: 16px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        border-radius: 6px 6px 0 0;
+        color: $color-chat-text3;
+        user-select: none;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 32px;
+        padding: 0 10px;
+        margin-top: 5px;
     }
-    .chat-tool-btn.win-main i {
-        background-color: $color-surface-dark4;
+    .fa-close {
+        color: $color-chat-text3;
+        margin-left: 5px;
+        display: none;
     }
-    .chat-tool-btn.active {
-        &.tag-green i {
-            background-color: $color-green;
-            color: $color-green;
-        }
-        &.tag-yellow i {
-            background-color: $color-yellow;
-            color: $color-yellow;
-        }
-        &.tag-orange i {
-            background-color: $color-orange;
-            color: $color-orange;
-        }
-        &.tag-red i {
-            background-color: $color-red;
-            color: $color-red;
-        }
-        &.tag-purple i {
-            background-color: $color-purple;
-            color: $color-purple;
-        }
-        &.tag-blue i {
-            background-color: $color-blue;
-            color: $color-blue;
-        }
-        &.tag-sky i {
-            background-color: $color-sky;
-            color: $color-sky;
-        }
-        &.tag-lime i {
-            background-color: $color-lime;
-            color: $color-lime;
-        }
-        &.tag-pink i {
-            background-color: $color-pink;
-            color: $color-pink;
-        }
-        &.win-main i {
-            background-color: $color-alert-text;
-            color: $color-alert-text;
-        }
-        &.select i {
-            transform: scale(1.5);
-            background-color: transparent;
-        }
-        &.select i:before {
-            display: block;
-        }
+    .fa-close:hover {
+        color: $color-chat-text1;
+    }
+    .tab:hover,
+    .tab.unread {
+        color: $color-chat-text1;
+    }
+    .tab.active {
+        color: $color-chat-text1;
+        background: $color-surface-dark1;
+        margin-left: 0;
+        margin-right: 0;
+        overflow: visible;
+        text-overflow: unset;
+        min-width: auto;
+    }
+    .tab.active .fa-close {
+        display: inline-block;
+    }
+    .win-main .fa-close {
+        display: none !important;
+    }
+    .win-main span {
+        display: none;
+    }
+    .win-main {
+        min-width: 36px;
+    }
+    .dgg-icon {
+        margin-top: 5px;
+        background: url('../img/dgg-icon.svg');
+        background-size: contain;
+        display: block;
+        width: 18px;
+        height: 18px;
     }
 }
+
 #chat-whisper-unread-indicator {
     color: $color-light;
     font-size: $text-size-sm;
@@ -212,12 +199,10 @@ label small {
     box-sizing: border-box;
     display: block;
 }
-#chat-input-control:focus {
-    box-shadow: none;
-}
 #chat-input-control::placeholder {
     color: $color-chat-place;
 }
+
 .chat-autocomplete-in #chat-input-control  {
     border-radius: 0 0 3px 3px;
 }
@@ -256,34 +241,17 @@ label small {
     color: $color-chat-text1;
 }
 
-#chat-popout-btn {
-    padding: 5px;
-    color: rgba($text-color2, 0.75);
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    &:hover {
-        color: $text-color;
-    }
-    span {
-        display: block;
-        background: $color-surface-dark1;
-        border-radius: 3px;
-    }
-}
-
 /* Base ChatMessage */
 .msg-chat {
     clear: both;
     word-wrap: break-word;
-    padding: 3px 12px 3px 3px;
+    padding: 3px 12px 3px 6px;
     color: $color-chat-text2;
     hr {
         margin: 8px 0;
     }
     .user {
-        font-weight:bold;
+        font-weight: 500;
         cursor: pointer;
     }
     .chat-user {
@@ -402,6 +370,12 @@ a.flair12:hover {
     color: $color-broadcaster-alt;
 }
 
+/* Hidden Flairs */
+.flair.icon-protected,
+.flair.icon-moderator {
+    display: none !important;
+}
+
 /* Base ChatUserMessage */
 .msg-user {
     .features {
@@ -450,12 +424,6 @@ a.flair12:hover {
 .msg-error .text:before {
     @extend .icon-error;
 }
-.msg-status.msg-continue .text:before,
-.msg-command.msg-continue .text:before,
-.msg-info.msg-continue .text:before,
-.msg-error.msg-continue .text:before {
-    display: none;
-}
 
 /* Own messages */
 .msg-own {
@@ -495,6 +463,14 @@ a.flair12:hover {
     display: none;
 }
 
+.msg-status.msg-continue .text:before,
+.msg-command.msg-continue .text:before,
+.msg-info.msg-continue .text:before,
+.msg-error.msg-continue .text:before,
+.msg-broadcast.msg-continue .text:before {
+    content: '';
+}
+
 /* /ME message */
 .msg-me .text {
     font-style: italic;
@@ -503,11 +479,6 @@ a.flair12:hover {
 /* Whispers */
 .msg-whisper {
     background-color: $color-chat-emphasize;
-    margin: 1px 0;
-}
-.msg-whisper .text {
-    display: block;
-    padding: 12px 8px;
 }
 .msg-whisper a.user {
     background: $color-accent;
@@ -518,6 +489,8 @@ a.flair12:hover {
 }
 .msg-whisper a.user:hover {
     text-decoration: none;
+    color: $color-accent;
+    background: white;
 }
 
 /* Tagging */
@@ -590,18 +563,18 @@ a.flair12:hover {
     }
 }
 
-/* Whispers */
-.chat-open-whisper:hover,
-.chat-remove-whisper:hover {
-    cursor: pointer;
-    text-decoration: none;
-    color: $color-light;
-}
-
 /* Broadcasts */
 .msg-broadcast {
+    text-shadow: 1px 1px 3px rgba(0,0,0,1);
     background-color: $color-chat-emphasize;
-    color: $color-text-broadcast;
+    color: $color-text-broadcast !important;
+    font-size: 110%;
+    font-weight: 400;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    time {
+        margin-right: 5px;
+    }
 }
 
 /* Highlight */
@@ -716,7 +689,7 @@ a.flair12:hover {
         &.x30,
         &.x50 {
             animation: emote-greyout 3500ms 1;
-            background: transparent url("../img/blood-1.png") no-repeat center center;
+            background: transparent url("../img/emote-splat.png") no-repeat center center;
             background-size: 100% 100%;
             filter: grayscale(100%);
             .combo {
@@ -831,12 +804,12 @@ a.flair12:hover {
     top: 0;
     .toolbar {
         position: relative;
-        background: $color-surface-dark4;
-        border-bottom: 1px solid $color-surface-dark3;
+        border-bottom: 1px solid $color-surface-dark4;
         top: auto;
         left: auto;
         h5 {
-            font-size: $text-size-md;
+            font-size: 14px;
+            font-weight: normal;
             line-height: 35px;
             color: $text-color1;
             user-select: none;
@@ -864,7 +837,7 @@ a.flair12:hover {
         height: 100%;
         display: flex;
         flex-direction: column;
-        background-color: $color-surface-dark2;
+        background-color: $color-surface-dark3;
     }
     .scrollable {
         flex: 1;
@@ -877,6 +850,7 @@ a.flair12:hover {
         right: auto;
         .list-wrap {
             box-shadow: 2px -2px 12px 4px rgba(black,0.95);
+            border-bottom-right-radius: 2px;
         }
     }
     &.right {
@@ -884,6 +858,7 @@ a.flair12:hover {
         left: auto;
         .list-wrap {
             box-shadow: -2px 2px 12px 4px rgba(black,0.95);
+            border-bottom-left-radius: 2px;
         }
     }
 }
@@ -1007,7 +982,7 @@ a.flair12:hover {
         display: block;
     }
     input {
-        padding: 15px;
+        padding: 13px 15px;
         border: none;
         background: none;
         border-radius: 0;
@@ -1045,8 +1020,9 @@ a.flair12:hover {
         margin-top: 25px;
         margin-bottom: 10px;
         padding-left: 18px;
-        color: $text-color3;
+        color: $text-color-disabled;
         text-transform: uppercase;
+        font-weight: 600;
     }
     label {
         display: inline-block;
@@ -1069,6 +1045,12 @@ a.flair12:hover {
         line-height: normal;
         box-sizing: border-box;
         padding: 0;
+    }
+    select {
+        border-radius: 4px;
+        width: 100%;
+        display: block;
+        padding: 5px;
     }
 }
 

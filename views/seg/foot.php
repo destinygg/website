@@ -17,3 +17,5 @@
         </div>
     </div>
 </div>
+
+<?php include 'seg/login.php' ?>

@@ -63,7 +63,6 @@ use Destiny\Common\Config;
                     </div>
 
                     <div class="form-actions">
-                        <a class="pull-right powered-paypal" title="Powered by Paypal" href="https://www.paypal.com" target="_blank">Paypal</a>
                         <button type="submit" class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Continue</button>
                         <a href="/subscribe" class="btn btn-link">Cancel</a>
                         <p class="agreement">

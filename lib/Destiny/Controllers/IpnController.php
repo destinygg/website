@@ -97,7 +97,7 @@ class IpnController {
                     if (number_format($payment ['amount'], 2) != number_format($data ['mc_gross'], 2)) {
                         throw new Exception ('Amount for payment do not match');
                     }
-                    $subscription = $subscriptionsService->getSubscriptionById($payment ['subscriptionId']);
+                    $subscription = $subscriptionsService->findById($payment ['subscriptionId']);
                     try {
                         // Update the payment status and subscription paymentStatus to active (may have been pending)
                         $conn->beginTransaction();
@@ -205,7 +205,7 @@ class IpnController {
         $subscription = null;
         if (isset ($data ['recurring_payment_id']) && !empty ($data ['recurring_payment_id'])) {
             $subscriptionService = SubscriptionsService::instance();
-            $subscription = $subscriptionService->getSubscriptionByPaymentProfileId($data ['recurring_payment_id']);
+            $subscription = $subscriptionService->findByPaymentProfileId($data ['recurring_payment_id']);
         }
         if (empty($subscription)) {
             Log::critical('Could not load subscription using IPN', $data);

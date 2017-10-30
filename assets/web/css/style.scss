@@ -5,7 +5,7 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
 $xs-nav-height  : 31px;
-$nav-height     : 51px;
+$nav-height     : 41px;
 $chat-width     : 450px;
 
 textarea, input, button {
@@ -123,7 +123,11 @@ form.form-alt {
 
 .navbar {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  min-height: inherit;
   margin: 0;
+  a {
+    cursor: pointer;
+  }
   .navbar-nav > li {
     float: left;
   }
@@ -132,8 +136,8 @@ form.form-alt {
     margin: 0;
   }
   .navbar-nav > li > a {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
   #menubtn {
     display: none;
@@ -145,13 +149,10 @@ form.form-alt {
     display: inline-block;
     vertical-align: bottom;
   }
-
 }
 
 @media (max-width: $screen-xs-max) {
   .navbar {
-    min-height: 30px;
-
     #menubtn {
       display: inherit;
       a {
@@ -244,7 +245,7 @@ $hb-dark:  #30394A;
   background: -moz-linear-gradient(left,  $hb-light 0%, $hb-light 51%, $hb-dark 51%,$hb-dark 100%);
   background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
   background: linear-gradient(to right,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1 );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1);
 
   .shadow {
     box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
@@ -258,6 +259,7 @@ $hb-dark:  #30394A;
   }
 
   & > .container {
+    display: flex;
     padding: 0;
     background: -moz-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
     background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
@@ -272,8 +274,14 @@ $hb-dark:  #30394A;
   }
 }
 
+@media (max-width: $screen-sm-min) {
+  #header-band .container {
+    flex-direction: column;
+  }
+}
+
 #brand {
-  float: left;
+  flex: 1;
   margin: 30px;
   a, h1 {
     display: block;
@@ -283,7 +291,7 @@ $hb-dark:  #30394A;
   a {
     margin: 0;
     padding: 0;
-    background: url("../img/logo-banner.png") no-repeat center center;
+    background: url("../img/dgg-logo.svg") no-repeat center center;
     background-size: contain;
     height: 77px;
     width: 250px;
@@ -343,9 +351,9 @@ $hb-dark:  #30394A;
 
 body #main-nav .brand {
   text-indent: -999em;
-  background: url("../img/logo-brand.png") no-repeat center left;
+  background: url("../img/dgg-logo.svg") no-repeat center left;
   background-size: contain;
-  margin: 10px 0;
+  margin: 5px 0;
   width: 105px;
   height: 30px;
   display: none;
@@ -459,7 +467,7 @@ body.no-brand #main-nav .brand {
     min-height: 200px;
   }
   .thumbnails {
-     min-height: 132px;
+    min-height: 132px;
   }
   .media-body {
     display: block;
@@ -470,7 +478,7 @@ body.no-brand #main-nav .brand {
     font-size: 12px;
     color: $text-color2;
   }
-  .artist {
+  .artist, .details {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -1201,7 +1209,7 @@ table#inbox a {
         background-color: $color-surface-dark1;
     }
     .message-me {
-        opacity: 0.25;
+        opacity: 0.5;
         &:hover {
             opacity: 1;
         }
@@ -1338,14 +1346,13 @@ table#inbox a {
   margin: 20px 25px 15px 15px;
   padding: 15px;
   text-align: right; 
-  float: right;
+  display: flex;
 
   #stream-status-info-offline,
   #stream-status-info-online,
   #stream-status-info-host {
-    display: inline-block;
+    flex: 1;
     vertical-align: middle;
-
     h3 {
       margin: 0 0 5px 0;
     }
@@ -1363,7 +1370,6 @@ table#inbox a {
   }
 
   #stream-status-preview {
-    display: inline-block;
     vertical-align: middle;
     margin-left: 15px;
     height: 72px;
@@ -1406,10 +1412,12 @@ table#inbox a {
 
 @media (max-width: $screen-sm-min) {
   #stream-status {
-    float: left;
-    margin: 0 25px 20px 25px;
     text-align: left;
-    clear: both;
+  }
+}
+@media (max-width: $screen-xxs) {
+  #stream-status #stream-status-preview {
+    display: none;
   }
 }
 
@@ -1428,13 +1436,15 @@ h3[data-toggle="collapse"] {
   user-select: none;
   padding-bottom: 10px;
   &:before {
-    font-family: 'Glyphicons Halflings';
-    content: "\e114";
+    font-family: "FontAwesome", serif;
+    content: "\f078";
     font-size: 13px;
     margin-right: 5px;
+    display: inline-block;
+    width: 10px;
   }
   &.collapsed:before {
-    content: "\e080";
+    content: "\f054";
   }
   &.collapsed {
     border-bottom: 1px solid #222;
@@ -1459,27 +1469,83 @@ img.img_64x64 {
   height: 113px;
 }
 
-.powered-paypal {
-  background: url("../img/paypal-logo.png");
+.streamlabs-logo {
+  background: url("../img/sl-logo.png");
   background-size: contain;
   text-indent: -999em;
   display: inline-block;
-  width: 108px;
-  height: 30px;
+  width: 200px;
+  height: 35px;
 }
 
-#loginFormProviders {
-    label {
-        cursor: pointer;
-        margin: 0;
+body.modal-open .modal {
+  display: flex !important;
+  height: 100%;
+}
+
+body.modal-open .modal .modal-dialog {
+  margin: auto;
+}
+
+#loginmodal {
+  display: none;
+  form {
+    border-radius: 5px;
+    background-color: #1b1b1b;
+    box-shadow: 0 1px 4px 1px rgba(black, 0.5);
+    .checkbox {
+      margin-top: 0;
     }
-    label, i {
-        vertical-align: middle;
-        margin-right: 3px;
+    .btn {
+      cursor: pointer;
+      width: 100%;
+      color: #333;
+      background-color: #fff;
+      border-color: #ccc;
+      display: block;
+      margin: 10px 0;
+      padding-right: 20px;
+
+      .fa {
+        margin-right: 10px;
+      }
     }
-    label:hover {
-        color: white;
+    .btn-twitch {
+      background-color: #6441A4;
+      border-color: #6441A4;
+      color: white;
     }
+    .btn-twitch:hover {
+      background-color: lighten(#6441A4, 10);
+    }
+    .btn-reddit {
+      background-color: #CEE3F8;
+      border-color: #CEE3F8;
+      color: #212121;
+    }
+    .btn-reddit:hover {
+      background-color: lighten(#CEE3F8, 10);
+    }
+    .btn-google {
+      background-color: #D0021B;
+      border-color: #D0021B;
+      color: white;
+    }
+    .btn-google:hover {
+      background-color: lighten(#D0021B, 10);
+    }
+    .btn-twitter {
+      background-color: #1DA1F2;
+      border: 1px solid #1DA1F2;
+      color: white;
+    }
+    .btn-twitter:hover {
+      background-color: lighten(#1DA1F2, 10);
+    }
+  }
+}
+#loginproviders .btn:last-child {
+  margin-bottom: 0;
 }
 
 .no-wrap-title {
@@ -1524,4 +1590,39 @@ img.img_64x64 {
     position: absolute;
     z-index: 90;
     box-shadow: 0 2px 3px 1px rgba(black, 0.49);
+}
+
+#gift-content .ds-block {
+    .gift-sub {
+        display: flex;
+        border-bottom: 1px solid #232323;
+        margin: 15px 0;
+        padding-bottom: 15px;
+    }
+    .gift-sub:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .gift-sub-info {
+        flex: 1;
+    }
+    .gift-sub-change {
+        margin-top: 5px;
+    }
+    .gift-giftee {
+        color: white;
+    }
+}
+
+#loginFormProviders {
+  .form-group i {
+    vertical-align: middle;
+  }
+  .form-group label {
+    display: block;
+    cursor: pointer;
+  }
+  .form-group label:hover {
+    color: white;
+  }
 }

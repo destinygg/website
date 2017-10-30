@@ -16,6 +16,8 @@ import UserFeatures from './features'
 import Settings from './settings'
 import ChatWindow from './window'
 
+const regextime = /(\d+(?:\.\d*)?)([a-z]+)?/ig
+const regexsafe = /[\-\[\]\/{}()*+?.\\\^$|]/g
 const nickmessageregex = /(?:(?:^|\s)@?)([a-zA-Z0-9_]{3,20})(?=$|\s|[\.\?!,])/g
 const nickregex = /^[a-zA-Z0-9_]{3,20}$/
 const tagcolors = [
@@ -63,7 +65,7 @@ const hintstrings = new Map([
     ['bigscreen', `Bigscreen! Did you know you can have the chat on the left or right side of the stream by clicking the swap icon in the top left?`]
 ])
 const settingsdefault = new Map([
-    ['schemaversion', 1],
+    ['schemaversion', 2],
     ['showtime', false],
     ['hideflairicons', false],
     ['profilesettings', false],
@@ -75,7 +77,7 @@ const settingsdefault = new Map([
     ['customhighlight', []],
     ['highlightnicks', []],
     ['taggednicks', []],
-    ['showremoved', false],
+    ['showremoved', 0], // 0 = false (removes), 1 = true (censor), 2 = do nothing
     ['showhispersinchat', false],
     ['ignorenicks', []],
     ['focusmentioned', false],
@@ -85,74 +87,26 @@ const settingsdefault = new Map([
     ['taggedvisibility', false]
 ])
 const commandsinfo = new Map([
-    ['help', {
-        description: 'Helpful information.'
-    }],
-    ['emotes', {
-        description: 'A list of the chats emotes in text form.',
-    }],
-    ['me', {
-        description: 'A normal message, but emotive.',
-    }],
-    ['message', {
-        description: 'Whisper someone',
-        alias: ['msg', 'whisper', 'w', 'tell', 't', 'notify']
-    }],
-    ['ignore', {
-        description: 'No longer see user messages, without <nick> to list the nicks ignored'
-    }],
-    ['unignore', {
-        description: 'Remove a user from your ignore list'
-    }],
-    ['highlight', {
-        description: 'Highlights target nicks messages for easier visibility'
-    }],
-    ['unhighlight', {
-        description: 'Unhighlight target nick'
-    }],
-    ['maxlines', {
-        description: 'The maximum number of lines the chat will store'
-    }],
-    ['mute', {
-        description: 'The users messages will be blocked from everyone.',
-        admin: true
-    }],
-    ['unmute', {
-        description: 'Unmute the user.',
-        admin: true
-    }],
-    ['subonly', {
-        description: 'Subscribers only',
-        admin: true
-    }],
-    ['ban', {
-        description: 'User will no longer be able to connect to the chat.',
-        admin: true
-    }],
-    ['unban', {
-        description: 'Unban a user',
-        admin: true
-    }],
-    ['timestampformat', {
-        description: 'Set the time format of the chat.'
-    }],
-    ['stalk', {
-        description: 'Return a list of messages from <nick>',
-        alias: ['s']
-    }],
-    ['mentions', {
-        description: 'Return a list of messages where <nick> is mentioned',
-        alias: ['m']
-    }],
-    ['tag', {
-        description: 'Mark a users messages'
-    }],
-    ['untag', {
-        description: 'No longer mark the users messages'
-    }],
-    ['exit', {
-        description: 'Exit the conversation you are in.'
-    }]
+    ['help',            {desc: 'Helpful information.'}],
+    ['emotes',          {desc: 'A list of the chats emotes in text form.'}],
+    ['me',              {desc: 'A normal message, but emotive.'}],
+    ['message',         {desc: 'Whisper someone', alias: ['msg', 'whisper', 'w', 'tell', 't', 'notify']}],
+    ['ignore',          {desc: 'No longer see user messages, without <nick> to list the nicks ignored'}],
+    ['unignore',        {desc: 'Remove a user from your ignore list'}],
+    ['highlight',       {desc: 'Highlights target nicks messages for easier visibility'}],
+    ['unhighlight',     {desc: 'Unhighlight target nick'}],
+    ['maxlines',        {desc: 'The maximum number of lines the chat will store'}],
+    ['mute',            {desc: 'The users messages will be blocked from everyone.', admin: true}],
+    ['unmute',          {desc: 'Unmute the user.', admin: true}],
+    ['subonly',         {desc: 'Subscribers only', admin: true}],
+    ['ban',             {desc: 'User will no longer be able to connect to the chat.', admin: true}],
+    ['unban',           {desc: 'Unban a user', admin: true}],
+    ['timestampformat', {desc: 'Set the time format of the chat.'}],
+    ['stalk',           {desc: 'Return a list of messages from <nick>', alias: ['s']}],
+    ['mentions',        {desc: 'Return a list of messages where <nick> is mentioned', alias: ['m']}],
+    ['tag',             {desc: 'Mark a users messages'}],
+    ['untag',           {desc: 'No longer mark the users messages'}],
+    ['exit',            {desc: 'Exit the conversation you are in.'}]
 ])
 const banstruct = {
     id: 0,
@@ -166,27 +120,21 @@ const banstruct = {
     endtimestamp: ''
 }
 const debounceFocus = debounce(10, c => c.input.focus())
-const extractHostname = url => {
-    let hostname;
-    if (url.indexOf("://") > -1) {
-        hostname = url.split('/')[2];
-    } else {
-        hostname = url.split('/')[0];
-    }
-    hostname = hostname.split(':')[0];
-    hostname = hostname.split('?')[0];
-    return hostname;
-}
 const focusIfNothingSelected = chat => {
     if(window.getSelection().isCollapsed && !chat.input.is(':focus')) {
         debounceFocus(chat);
     }
 }
+const extractHostname = (url) => {
+    let hostname = url.indexOf("://") > -1? url.split('/')[2]: url.split('/')[0];
+    hostname = hostname.split(':')[0];
+    hostname = hostname.split('?')[0];
+    return hostname;
+}
 
 class Chat {
 
     constructor(){
-        this.uri             = '';
         /** @type JQuery */
         this.ui              = null;
         this.css             = null;
@@ -194,16 +142,12 @@ class Chat {
         this.input           = null;
         this.loginscrn       = null;
         this.loadingscrn     = null;
-        this.reconnect       = true;
-        this.connected       = false;
         this.showmotd        = true;
         this.authenticated   = false;
         this.backlogloading  = false;
         this.unresolved      = [];
         this.emoticons       = new Set();
         this.twitchemotes    = new Set();
-        this.control         = new EventEmitter(this);
-        this.source          = new ChatSource();
         this.user            = new ChatUser();
         this.users           = new Map();
         this.whispers        = new Map();
@@ -213,15 +157,23 @@ class Chat {
         this.menus           = new Map();
         this.taggednicks     = new Map();
         this.ignoring        = new Set();
+        this.mainwindow      = null;
 
         this.regexhighlightcustom = null;
         this.regexhighlightnicks = null;
         this.regexhighlightself = null;
 
+        // An interface to tell the chat to do things via chat commands, or via emit
+        // e.g. control.emit('CONNECT', 'ws://localhost:9001') is essentially chat.cmdCONNECT('ws://localhost:9001')
+        this.control = new EventEmitter(this);
+
+        // The websocket connection, emits events from the chat server
+        this.source = new ChatSource();
+
+        this.source.on('REFRESH',          () => window.location.reload(false));
         this.source.on('PING',             data => this.source.send('PONG', data));
-        this.source.on('OPEN',             data => this.connected = true);
-        this.source.on('REFRESH',          data => window.location.reload(false));
-        this.source.on('CONNECTING',       data => MessageBuilder.status('Connecting...').into(this));
+        this.source.on('CONNECTING',       data => this.onCONNECTING(data));
+        this.source.on('OPEN',             data => this.onOPEN(data));
         this.source.on('DISPATCH',         data => this.onDISPATCH(data));
         this.source.on('CLOSE',            data => this.onCLOSE(data));
         this.source.on('NAMES',            data => this.onNAMES(data));
@@ -232,8 +184,11 @@ class Chat {
         this.source.on('BAN',              data => this.onBAN(data));
         this.source.on('UNBAN',            data => this.onUNBAN(data));
         this.source.on('ERR',              data => this.onERR(data));
+        this.source.on('SOCKETERROR',      data => this.onSOCKETERROR(data));
         this.source.on('SUBONLY',          data => this.onSUBONLY(data));
         this.source.on('BROADCAST',        data => this.onBROADCAST(data));
+        this.source.on('PRIVMSGSENT',      data => this.onPRIVMSGSENT(data));
+        this.source.on('PRIVMSG',          data => this.onPRIVMSG(data));
 
         this.control.on('SEND',            data => this.cmdSEND(data));
         this.control.on('HINT',            data => this.cmdHINT(data));
@@ -257,10 +212,6 @@ class Chat {
         this.control.on('UNTAG',           data => this.cmdUNTAG(data));
         this.control.on('BANINFO',         data => this.cmdBANINFO(data));
         this.control.on('EXIT',            data => this.cmdEXIT(data));
-
-        this.source.on('PRIVMSGSENT',      data => this.onPRIVMSGSENT(data));
-        this.source.on('PRIVMSG',          data => this.onPRIVMSG(data));
-
         this.control.on('MESSAGE',         data => this.cmdWHISPER(data));
         this.control.on('MSG',             data => this.cmdWHISPER(data));
         this.control.on('WHISPER',         data => this.cmdWHISPER(data));
@@ -268,7 +219,6 @@ class Chat {
         this.control.on('TELL',            data => this.cmdWHISPER(data));
         this.control.on('T',               data => this.cmdWHISPER(data));
         this.control.on('NOTIFY',          data => this.cmdWHISPER(data));
-
         this.control.on('MENTIONS',        data => this.cmdMENTIONS(data));
         this.control.on('M',               data => this.cmdMENTIONS(data));
         this.control.on('STALK',           data => this.cmdSTALK(data));
@@ -309,51 +259,52 @@ class Chat {
     }
 
     withGui(){
-        this.ui             = $('#chat');
-        this.css            = $('#chat-styles')[0]['sheet'];
-        this.output         = this.ui.find('#chat-output-frame');
-        this.input          = this.ui.find('#chat-input-control');
-        this.loginscrn      = this.ui.find('#chat-login-screen');
-        this.loadingscrn    = this.ui.find('#chat-loading');
-        this.windowselect   = this.ui.find('#chat-windows-thumbnails');
-        this.inputhistory   = new ChatInputHistory(this);
-        this.userfocus      = new ChatUserFocus(this, this.css);
-        this.mainwindow     = new ChatWindow('main').into(this);
+        this.ui             = $('#chat')
+        this.css            = $('#chat-styles')[0]['sheet']
+        this.ishidden       = (document['visibilityState'] || 'visible') !== 'visible'
+        this.output         = this.ui.find('#chat-output-frame')
+        this.input          = this.ui.find('#chat-input-control')
+        this.loginscrn      = this.ui.find('#chat-login-screen')
+        this.loadingscrn    = this.ui.find('#chat-loading')
+        this.windowselect   = this.ui.find('#chat-windows-select')
+        this.inputhistory   = new ChatInputHistory(this)
+        this.userfocus      = new ChatUserFocus(this, this.css)
+        this.mainwindow     = new ChatWindow('main').into(this)
 
-        this.windowToFront('main');
+        this.windowToFront('main')
 
         this.menus.set('settings',
-            new ChatSettingsMenu(this.ui.find('#chat-settings'), this.ui.find('#chat-settings-btn'), this));
+            new ChatSettingsMenu(this.ui.find('#chat-settings'), this.ui.find('#chat-settings-btn'), this))
         this.menus.set('emotes',
-            new ChatEmoteMenu(this.ui.find('#chat-emote-list'), this.ui.find('#chat-emoticon-btn'), this));
+            new ChatEmoteMenu(this.ui.find('#chat-emote-list'), this.ui.find('#chat-emoticon-btn'), this))
         this.menus.set('users',
-            new ChatUserMenu(this.ui.find('#chat-user-list'), this.ui.find('#chat-users-btn'), this));
+            new ChatUserMenu(this.ui.find('#chat-user-list'), this.ui.find('#chat-users-btn'), this))
         this.menus.set('whisper-users',
-            new ChatWhisperUsers(this.ui.find('#chat-whisper-users'), this.ui.find('#chat-whisper-btn'), this));
+            new ChatWhisperUsers(this.ui.find('#chat-whisper-users'), this.ui.find('#chat-whisper-btn'), this))
 
         commandsinfo.forEach((a, k) => {
             this.autocomplete.add(`/${k}`);
-            (a['alias'] || []).forEach(k => this.autocomplete.add(`/${k}`));
+            (a['alias'] || []).forEach(k => this.autocomplete.add(`/${k}`))
         });
-        this.emoticons.forEach(e => this.autocomplete.add(e, true));
-        this.twitchemotes.forEach(e => this.autocomplete.add(e, true));
-        this.autocomplete.bind(this);
-        this.applySettings(false);
+        this.emoticons.forEach(e => this.autocomplete.add(e, true))
+        this.twitchemotes.forEach(e => this.autocomplete.add(e, true))
+        this.autocomplete.bind(this)
+        this.applySettings(false)
 
         // Chat input
         this.input.on('keypress', e => {
             if(isKeyCode(e, KEYCODES.ENTER) && !e.shiftKey && !e.ctrlKey) {
-                e.preventDefault();
-                e.stopPropagation();
+                e.preventDefault()
+                e.stopPropagation()
                 if(!this.authenticated) {
-                    this.loginscrn.show();
+                    this.loginscrn.show()
                 } else {
-                    this.control.emit('SEND', this.input.val().toString().trim());
-                    this.input.val('');
+                    this.control.emit('SEND', this.input.val().toString().trim())
+                    this.input.val('')
                 }
-                this.input.focus();
+                this.input.focus()
             }
-        });
+        })
 
         // Chat focus / menu close when clicking on some areas
         let downinoutput = false
@@ -372,54 +323,48 @@ class Chat {
 
         // ESC
         document.addEventListener('keydown', e => {
-            if(isKeyCode(e, KEYCODES.ESC)) ChatMenu.closeMenus(this); // ESC key
-        });
+            if(isKeyCode(e, KEYCODES.ESC)) ChatMenu.closeMenus(this) // ESC key
+        })
 
         // Visibility
         document.addEventListener('visibilitychange', debounce(100, () => {
-            const visibility = document['visibilityState'] || 'visible';
-            if(visibility === 'visible') {
-                focusIfNothingSelected(this);
-            } else {
-                ChatMenu.closeMenus(this);
-            }
-        }), true);
+            this.ishidden = (document['visibilityState'] || 'visible') !== 'visible'
+            if(!this.ishidden)
+                focusIfNothingSelected(this)
+            else
+                ChatMenu.closeMenus(this)
+        }), true)
 
         // Resize
-        let resizing = false;
+        let resizing = false
         const onresizecomplete = debounce(100, () => {
-            resizing = false;
-            this.getActiveWindow().unlock();
-            focusIfNothingSelected(this);
-        });
+            resizing = false
+            this.getActiveWindow().unlock()
+            focusIfNothingSelected(this)
+        })
         const onresize = () => {
             if(!resizing) {
-                resizing = true;
-                ChatMenu.closeMenus(this);
-                this.getActiveWindow().lock();
+                resizing = true
+                ChatMenu.closeMenus(this)
+                this.getActiveWindow().lock()
             }
-            onresizecomplete();
-        };
-        window.addEventListener('resize', onresize, false);
+            onresizecomplete()
+        }
+        window.addEventListener('resize', onresize, false)
 
-        // Chat window selectors
-        this.windowselect.on('click', '.chat-tool-btn', e => {
-            ChatMenu.closeMenus(this);
-            const el = $(e.currentTarget);
-            if(!el.hasClass('active')) {
-                this.windowToFront(e.target.getAttribute('data-name').toLowerCase());
-            } else {
-                if(!el.hasClass('win-main')) {
-                    if(!el.hasClass('select')) {
-                        el.addClass('select')
-                    } else {
-                        this.removeWindow(e.target.getAttribute('data-name').toLowerCase());
-                    }
-                }
-            }
-            this.input.focus();
-            return false;
-        });
+        // Chat user whisper tabs
+        this.windowselect.on('click', '.fa-close', e => {
+            ChatMenu.closeMenus(this)
+            this.removeWindow($(e.currentTarget).parent().data('name').toLowerCase())
+            this.input.focus()
+            return false
+        })
+        this.windowselect.on('click', '.tab', e => {
+            ChatMenu.closeMenus(this)
+            this.windowToFront($(e.currentTarget).data('name').toLowerCase())
+            this.input.focus()
+            return false
+        })
 
         // Censored
         this.output.on('click', '.censored', e => {
@@ -427,62 +372,33 @@ class Chat {
             this.getActiveWindow()
                 .getlines(`.censored[data-username="${nick}"]`)
                 .removeClass('censored')
-            return false;
-        });
+            return false
+        })
 
         // Login
         this.loginscrn.on('click', '#chat-btn-login', () => {
-            const uri = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-            try {
-                if(window.self !== window.top){
-                    window.parent.location.href = uri + '/login?follow=' + encodeURIComponent(window.parent.location.pathname);
-                    return;
-                }
-            } catch(ignored){}
-            window.location.href = uri + '/login?follow=' + encodeURIComponent(window.location.pathname);
-            this.loginscrn.hide();
-        });
-        this.loginscrn.on('click', '#chat-btn-cancel', () => this.loginscrn.hide());
-
-        // Whisper
-        this.output.on('click', '.chat-open-whisper', e => {
-            const msg = $(e.target).closest('.msg-chat'),
-                 nick = msg.data('username').toString().toLowerCase();
-            this.openConversation(nick);
-            return false;
-        })
-        this.output.on('click', '.chat-remove-whisper', e => {
-            const win = this.getActiveWindow();
-            win.lock();
-            const msg = $(e.target).closest('.msg-chat'),
-                   id = $(e.target).closest('.msg-chat').data('id').toString();
-            if(id !== null) {
-                $.ajax({url: `/api/messages/msg/${encodeURIComponent(id)}/open`, method:'post'});
-                this.menus.get('whisper-users').redraw();
-                msg.remove();
-            }
-            win.unlock();
-            return false;
-        })
-
-        // If we are in an iframe from a different host, add the popout button.
-        try {
-            const referrer = extractHostname(document.referrer);
-            if(window.self !== window.top && referrer.localeCompare(window.location.hostname) !== 0) {
-                $(`<div id="chat-popout-btn" class="chat-tool-btn" title="Popout">`+
-                      `<span class="fa fa-external-link-square"></span>`+
-                  `</div>`)
-                .on('click', () => {
-                    window.open('/embed/chat', '_blank', `height=500,width=420,scrollbars=0,toolbar=0,location=0,status:no,menubar:0,resizable:0,dependent:0`);
-                    MessageBuilder.info('Disconnecting... Good bye.').into(this);
-                    this.reconnect = false;
-                    this.source.disconnect();
+            this.loginscrn.hide()
+            try { window.top.showLoginModal() } catch(e){
+                const uri = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')
+                try {
+                    if(window.self === window.top){
+                        window.location.href = uri + '/login?follow=' + encodeURIComponent(window.location.pathname)
+                    } else {
+                        window.location.href = uri + '/login'
+                    }
                     return false;
-                }).appendTo(this.ui);
+                } catch(ignored) {}
+                window.location.href = uri + '/login'
             }
-        } catch (e) {
-            console.error(e);
-        }
+            return false
+        })
+
+        this.loginscrn.on('click', '#chat-btn-cancel', () => this.loginscrn.hide())
+        this.output.on('click mousedown', '.msg-whisper a.user', e => {
+            const msg = $(e.target).closest('.msg-chat')
+            this.openConversation(msg.data('username').toString().toLowerCase())
+            return false
+        })
 
         // Keep the website session alive.
         setInterval(() => $.ajax({url: '/ping'}), 10*60*1000)
@@ -490,7 +406,7 @@ class Chat {
         this.loadingscrn.fadeOut(250, () => this.loadingscrn.remove())
         this.mainwindow.updateAndPin()
         this.input.focus()
-        this.input.attr('placeholder', this.authenticated ? `Write something ${this.user.username} ...` : 'You need to be signed in to chat.')
+        this.input.focus().attr('placeholder', this.authenticated ? `Write something ${this.user.username} ...` : 'You need to be signed in to chat.')
         return this
     }
 
@@ -520,13 +436,12 @@ class Chat {
                     unread: e['unread'],
                     open: false
                 })))
-                .always(e => this.menus.get('whisper-users').redraw())
+                .always(() => this.menus.get('whisper-users').redraw())
         }
         return this
     }
 
     connect(uri) {
-        this.uri = uri;
         this.source.connect(uri);
         return this;
     }
@@ -581,49 +496,43 @@ class Chat {
     addUser(data){
         if(!data)
             return null;
-        const normalized = data.nick.toLowerCase();
-        let user = this.users.get(normalized);
+        const normalized = data.nick.toLowerCase()
+        let user = this.users.get(normalized)
         if (!user) {
             user = new ChatUser(data)
             this.users.set(normalized, user)
         } else if (data.hasOwnProperty('features') && !Chat.isArraysEqual(data.features, user.features)) {
-            user.features = data.features;
+            user.features = data.features
         }
-        return user;
+        return user
     }
 
     addMessage(message, win=null){
         // Dont add the gui if user is ignored
         if (message.type === MessageTypes.USER && this.ignored(message.user.nick, message.message))
-            return;
+            return
 
-        if(win === null) {
-            win = this.mainwindow;
-        }
-
-        win.lock();
+        if(win === null)
+            win = this.mainwindow
+        win.lock()
 
         // Break the current combo if this message is not an emote
         // We dont need to check what type the current message is, we just know that its a new message, so the combo is invalid.
         if(win.lastmessage && win.lastmessage.type === MessageTypes.EMOTE && win.lastmessage.emotecount > 1)
             win.lastmessage.completeCombo()
 
-        if(win.lastmessage && win.lastmessage.type === message.type && [MessageTypes.ERROR,MessageTypes.INFO,MessageTypes.COMMAND,MessageTypes.STATUS].indexOf(message.type)){
-            message.continued = true
-        }
-
         // Populate the tag, mentioned users and highlight for this $message.
         if(message.type === MessageTypes.USER){
             // strip off `/` if message starts with `//`
-            message.message = message.message.substring(0, 2) === '//' ? message.message.substring(1) : message.message;
+            message.message = message.message.substring(0, 2) === '//' ? message.message.substring(1) : message.message
             // check if message is `/me `
-            message.slashme = message.message.substring(0, 4).toLowerCase() === '/me ';
+            message.slashme = message.message.substring(0, 4).toLowerCase() === '/me '
             // check if this is the current users message
-            message.isown = message.user.username.toLowerCase() === this.user.username.toLowerCase();
+            message.isown = message.user.username.toLowerCase() === this.user.username.toLowerCase()
             // check if the last message was from the same user
-            message.continued = win.lastmessage && win.lastmessage.user && win.lastmessage.user.username.toLowerCase() === message.user.username.toLowerCase()
+            message.continued = win.lastmessage && !win.lastmessage.target && win.lastmessage.user && win.lastmessage.user.username.toLowerCase() === message.user.username.toLowerCase()
             // get mentions from message
-            message.mentioned = Chat.extractNicks(message.message).filter(a => this.users.has(a.toLowerCase()));
+            message.mentioned = Chat.extractNicks(message.message).filter(a => this.users.has(a.toLowerCase()))
             // set tagged state
             message.tag = this.taggednicks.get(message.user.nick.toLowerCase());
             // set highlighted state if this is not the current users message or a bot, as well as other highlight criteria
@@ -636,33 +545,42 @@ class Chat {
                 (this.regexhighlightcustom && this.regexhighlightcustom.test(message.user.username + ' ' + message.message))
             );
         }
+        // Only user messages can "continue"
+        /* else if(win.lastmessage && win.lastmessage.type === message.type && [MessageTypes.ERROR,MessageTypes.INFO,MessageTypes.COMMAND,MessageTypes.STATUS].indexOf(message.type)){
+            message.continued = true
+        }*/
 
         // The point where we actually add the message dom
         win.addMessage(this, message)
 
         // Show desktop notification
-        if(!this.backlogloading && message.highlighted && this.settings.get('notificationhighlight') && !this.input.is(':focus')) {
-            Chat.showNotification(`${message.user.username} said ...`, message.message, message.timestamp.valueOf(), this.settings.get('notificationtimeout'));
+        if(!this.backlogloading && message.highlighted && this.settings.get('notificationhighlight') && this.ishidden) {
+            Chat.showNotification(
+                `${message.user.username} said ...`,
+                message.message,
+                message.timestamp.valueOf(),
+                this.settings.get('notificationtimeout')
+            )
         }
 
-        win.unlock();
-        return message;
+        win.unlock()
+        return message
     }
 
     resolveMessage(nick, str){
         for(const message of this.unresolved){
             if(this.user.username.toLowerCase() === nick.toLowerCase() && message.message === str){
-                this.unresolved.splice(this.unresolved.indexOf(message), 1);
-                return true;
+                this.unresolved.splice(this.unresolved.indexOf(message), 1)
+                return true
             }
         }
-        return false;
+        return false
     }
 
     removeMessageByNick(nick){
-        this.mainwindow.lock();
-        this.mainwindow.removelines(`.msg-chat[data-username="${nick.toLowerCase()}"]`);
-        this.mainwindow.unlock();
+        this.mainwindow.lock()
+        this.mainwindow.removelines(`.msg-chat[data-username="${nick.toLowerCase()}"]`)
+        this.mainwindow.unlock()
     }
 
 
@@ -711,25 +629,39 @@ class Chat {
     }
 
     redrawWindowIndicators(){
-        this.windowselect.empty();
         if(this.windows.size > 1) {
+            this.windowselect.empty();
             this.windows.forEach(w => {
-                this.windowselect.append(
-                    `<span title="${w.label}" data-name="${w.name}" class="chat-tool-btn win-${w.name} tag-${w.tag} ${w.visible ? 'active' : ''}">\
-                        <i class="fa fa-times" data-name="${w.name}"></i>
-                     </span>`
-                )
+                if(w.name === 'main'){
+                    this.windowselect.append(`<span title="Destiny GG" data-name="main" class="tab win-main tag-${w.tag} ${w.visible? 'active' :''}"><i class="dgg-icon"></i></span>`)
+                } else {
+                    const conv = this.whispers.get(w.name)
+                    this.windowselect.append(`<span title="${w.label}" data-name="${w.name}" class="tab win-${w.name} tag-${w.tag} ${w.visible? 'active' :''} ${conv.unread>0? 'unread' :''}">${w.label} ${conv.unread>0? '('+conv.unread+')': ''} <i class="fa fa-close" title="Close" /></span>`)
+                }
             });
         }
+        // null check on main window, since main window calls this during initialization
+        if(this.mainwindow !== null)
+            this.mainwindow.lock()
+
+        this.windowselect.toggle(this.windows.size > 1)
+
+        if(this.mainwindow !== null)
+            this.mainwindow.unlock()
     }
 
     censor(nick){
         this.mainwindow.lock();
         const c = this.mainwindow.getlines(`.msg-chat[data-username="${nick.toLowerCase()}"]`);
-        if(this.settings.get('showremoved')) {
-            c.addClass('censored');
-        } else {
-            c.remove();
+        switch(this.settings.get('showremoved')) {
+            case 0: // remove
+                c.remove();
+                break;
+            case 1: // censor
+                c.addClass('censored');
+                break;
+            case 2: // do nothing
+                break;
         }
         this.mainwindow.unlock();
     }
@@ -762,25 +694,30 @@ class Chat {
             if(data.hasOwnProperty('nick'))
                 users.push(this.addUser(data));
             if(data.hasOwnProperty('users'))
-                users = users.concat(data.users.map(d => this.addUser(d)));
+                users = users.concat(Array.from(data.users).map(d => this.addUser(d)));
             users.forEach(u => this.autocomplete.add(u.nick, false, now));
         }
     }
 
-    onCLOSE(){
-        const wasconnected = this.connected;
-        this.connected = false;
-        if (this.reconnect){
-            const rand = ((wasconnected) ? Math.floor(Math.random() * (3000 - 501 + 1)) + 501 : Math.floor(Math.random() * (30000 - 5000 + 1)) + 5000);
-            setTimeout(() => {
-                if(!this.connected) this.connect(this.uri)
-            }, rand);
-            MessageBuilder.status(`Disconnected... reconnecting in ${Math.round(rand/1000)} seconds`).into(this);
-        }
+    onCLOSE({retryMilli}){
+        // https://www.iana.org/assignments/websocket/websocket.xml#close-code-number
+        // const code = e.event.code || 1006
+        if(retryMilli > 0)
+            MessageBuilder.error(`Disconnected, retry in ${Math.round(retryMilli/1000)} seconds ...`).into(this)
+        else
+            MessageBuilder.error(`Disconnected.`).into(this)
+    }
+
+    onCONNECTING(url){
+        MessageBuilder.status(`Connecting to ${extractHostname(url)} ...`).into(this)
+    }
+
+    onOPEN(){
+        MessageBuilder.status(`Connection established.`).into(this)
     }
 
     onNAMES(data){
-        MessageBuilder.status(`Connected. Server connections: ${data['connectioncount']}`).into(this);
+        MessageBuilder.info(`Currently serving ${data['connectioncount']||0} connections and ${data['users'].length} users.`).into(this);
         if(this.showmotd) {
             this.cmdHINT([Math.floor(Math.random() * hintstrings.size)]);
             this.showmotd = false;
@@ -796,82 +733,88 @@ class Chat {
     }
 
     onMSG(data){
-        let textonly = Chat.extractTextOnly(data.data);
-        const isemote = this.emoticons.has(textonly) || this.twitchemotes.has(textonly);
-        const win = this.mainwindow;
+        let textonly = Chat.extractTextOnly(data.data)
+        const isemote = this.emoticons.has(textonly) || this.twitchemotes.has(textonly)
+        const win = this.mainwindow
         if(isemote && win.lastmessage !== null && Chat.extractTextOnly(win.lastmessage.message) === textonly){
             if(win.lastmessage.type === MessageTypes.EMOTE) {
-                this.mainwindow.lock();
-                win.lastmessage.incEmoteCount();
-                this.mainwindow.unlock();
+                this.mainwindow.lock()
+                win.lastmessage.incEmoteCount()
+                this.mainwindow.unlock()
             } else {
-                win.lastmessage.ui.remove();
-                MessageBuilder.emote(textonly, data.timestamp, 2).into(this);
+                win.lastmessage.ui.remove()
+                MessageBuilder.emote(textonly, data.timestamp, 2).into(this)
             }
         } else if(!this.resolveMessage(data.nick, data.data)){
-            MessageBuilder.message(data.data, this.users.get(data.nick.toLowerCase()), data.timestamp).into(this);
+            MessageBuilder.message(data.data, this.users.get(data.nick.toLowerCase()), data.timestamp).into(this)
         }
     }
 
     onMUTE(data){
         // data.data is the nick which has been banned, no info about duration
-        this.censor(data.data);
+        this.censor(data.data)
         if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
-            MessageBuilder.command(`You have been muted by ${data.nick}.`, data.timestamp).into(this);
+            MessageBuilder.command(`You have been muted by ${data.nick}.`, data.timestamp).into(this)
         } else {
-            MessageBuilder.command(`${data.data} muted by ${data.nick}.`, data.timestamp).into(this);
+            MessageBuilder.command(`${data.data} muted by ${data.nick}.`, data.timestamp).into(this)
         }
     }
 
     onUNMUTE(data){
         if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
-            MessageBuilder.command(`You have been unmuted by ${data.nick}.`, data.timestamp).into(this);
+            MessageBuilder.command(`You have been unmuted by ${data.nick}.`, data.timestamp).into(this)
         } else {
-            MessageBuilder.command(`${data.data} unmuted by ${data.nick}.`, data.timestamp).into(this);
+            MessageBuilder.command(`${data.data} unmuted by ${data.nick}.`, data.timestamp).into(this)
         }
     }
 
     onBAN(data){
         // data.data is the nick which has been banned, no info about duration
         if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
-            MessageBuilder.command(`You have been banned by ${data.nick}. Check your profile for more information.`, data.timestamp).into(this);
+            MessageBuilder.command(`You have been banned by ${data.nick}. Check your profile for more information.`, data.timestamp).into(this)
             this.cmdBANINFO();
         } else {
-            MessageBuilder.command(`${data.data} banned by ${data.nick}.`, data.timestamp).into(this);
+            MessageBuilder.command(`${data.data} banned by ${data.nick}.`, data.timestamp).into(this)
         }
         this.censor(data.data);
     }
 
     onUNBAN(data){
         if(this.user.username.toLowerCase() === data.data.toLowerCase()) {
-            MessageBuilder.command(`You have been unbanned by ${data.nick}.`, data.timestamp).into(this);
+            MessageBuilder.command(`You have been unbanned by ${data.nick}.`, data.timestamp).into(this)
         } else {
-            MessageBuilder.command(`${data.data} unbanned by ${data.nick}.`, data.timestamp).into(this);
+            MessageBuilder.command(`${data.data} unbanned by ${data.nick}.`, data.timestamp).into(this)
         }
     }
 
+    // NOTE this is an event that the chat server sends `ERR "$error"`
+    // not to be confused with an error the chat.source may send onSOCKETERROR.
     onERR(data){
-        this.reconnect = data !== 'toomanyconnections' && data !== 'banned';
-        const errorString = errorstrings.has(data) ? errorstrings.get(data) : data;
-        const front = this.getActiveWindow();
-        MessageBuilder.error(errorString).into(this, front);
-        if(front !== this.mainwindow) {
-            MessageBuilder.error(errorString).into(this);
+        if(data === 'toomanyconnections' || data === 'banned') {
+            this.source.retryOnDisconnect = false
         }
+        MessageBuilder.error(errorstrings.get(data) || data).into(this, this.getActiveWindow())
+    }
+
+    onSOCKETERROR(e){
+        // There is no information on the Error event of the socket.
+        // We rely on the socket close event to tell us more about what happened.
+        // MessageBuilder.error(errorstrings.get('socketerror')).into(this, this.getActiveWindow())
+        // console.error(e)
     }
 
     onSUBONLY(data){
-        const submode = data.data === 'on' ? 'enabled': 'disabled';
-        MessageBuilder.command(`Subscriber only mode ${submode} by ${data.nick}`, data.timestamp).into(this);
+        const submode = data.data === 'on' ? 'enabled': 'disabled'
+        MessageBuilder.command(`Subscriber only mode ${submode} by ${data.nick}`, data.timestamp).into(this)
     }
 
     onBROADCAST(data){
-        MessageBuilder.broadcast(data.data, data.timestamp).into(this);
+        MessageBuilder.broadcast(data.data, data.timestamp).into(this)
     }
 
     onPRIVMSGSENT(){
         if(this.mainwindow.visible) {
-            MessageBuilder.info('Your message has been sent.').into(this);
+            MessageBuilder.info('Your message has been sent.').into(this)
         }
     }
 
@@ -887,7 +830,7 @@ class Chat {
 
             if(this.settings.get('showhispersinchat'))
                 MessageBuilder.whisper(data.data, user, this.user.username, data.timestamp, messageid).into(this)
-            if(this.settings.get('notificationwhisper') && !this.input.is(':focus'))
+            if(this.settings.get('notificationwhisper') && this.ishidden)
                 Chat.showNotification(`${data.nick} whispered ...`, data.data, data.timestamp, this.settings.get('notificationtimeout'))
 
             const win = this.getWindow(normalized)
@@ -898,6 +841,7 @@ class Chat {
             else
                 conv.unread++
             this.menus.get('whisper-users').redraw()
+            this.redrawWindowIndicators()
         }
     }
 
@@ -932,7 +876,7 @@ class Chat {
             // MESSAGE
             else {
                 const textonly = (isme ? str.substring(4) : str).trim()
-                if (this.connected && !this.emoticons.has(textonly) && !this.twitchemotes.has(textonly)){
+                if (this.source.isConnected() && !this.emoticons.has(textonly) && !this.twitchemotes.has(textonly)){
                     // We add the message to the gui immediately
                     // But we will also get the MSG event, so we need to make sure we dont add the message to the gui again.
                     // We do this by storing the message in the unresolved array
@@ -954,7 +898,7 @@ class Chat {
     cmdHELP(){
         let str = `Available commands: \r`;
         commandsinfo.forEach((a, k) => {
-            str += ` /${k} - ${a.description} \r`;
+            str += ` /${k} - ${a.desc} \r`;
         });
         MessageBuilder.info(str).into(this);
     }
@@ -1128,10 +1072,7 @@ class Chat {
     }
 
     cmdCONNECT(parts){
-        this.reconnect = false;
-        this.uri = parts[0];
-        this.source.disconnect();
-        this.source.connect(this.uri);
+        this.source.connect(parts[0]);
     }
 
     cmdSTALK(parts){
@@ -1169,7 +1110,7 @@ class Chat {
                     MessageBuilder.info(`End of stalk (https://dgg.overrustlelogs.net/${parts[0]})`).into(this);
                 }
             })
-            .fail(e => MessageBuilder.error(`No messages for ${parts[0]} received. Try again later`).into(this));
+            .fail(() => MessageBuilder.error(`No messages for ${parts[0]} received. Try again later`).into(this));
     }
 
     cmdMENTIONS(parts){
@@ -1208,7 +1149,7 @@ class Chat {
                     MessageBuilder.info(`End of stalk (https://dgg.overrustlelogs.net/${parts[0]})`).into(this);
                 }
             })
-            .fail(e => MessageBuilder.error(`No mentions for ${parts[0]} received. Try again later`).into(this));
+            .fail(() => MessageBuilder.error(`No mentions for ${parts[0]} received. Try again later`).into(this));
     }
 
     cmdTAG(parts){
@@ -1275,10 +1216,10 @@ class Chat {
                 const by = b.username ? b.username : 'Chat';
                 const start = moment(b.starttimestamp).format(DATE_FORMATS.FULL);
                 if(!b.endtimestamp){
-                    MessageBuilder.info(`Permanent ban by ${by} starting ${start}.`).into(this);
+                    MessageBuilder.info(`Permanent ban by ${by} started on ${start}.`).into(this);
                 } else {
                     const end = moment(b.endtimestamp).calendar();
-                    MessageBuilder.info(`Temporary ban by ${by} starting ${start} and ending ${end}`).into(this);
+                    MessageBuilder.info(`Temporary ban by ${by} started on ${start} and ending by ${end}`).into(this);
                 }
                 if(b.reason){
                     const m = MessageBuilder.message(b.reason, new ChatUser(by), b.starttimestamp)
@@ -1287,7 +1228,7 @@ class Chat {
                 }
                 MessageBuilder.info(`End of ban information`).into(this);
             })
-            .fail(e => MessageBuilder.error('Error loading ban info. Check your profile.').into(this));
+            .fail(() => MessageBuilder.error('Error loading ban info. Check your profile.').into(this));
     }
 
     cmdEXIT(){
@@ -1318,10 +1259,10 @@ class Chat {
             if(once) {
                 once = false
                 MessageBuilder.info(
-                    `Messages between you and ${nick}\r`+
+                    `Messages between you and ${nick}\r`/*+
                     `Enter /close to exit this conversation, click the round icons below and center of the chat input to toggle between them, \r`+
                     `or close them from the whispers menu.\r`+
-                    `Loading messages ...`
+                    `Loading messages ...`*/
                 ).into(this, win)
                 $.ajax({url: `/api/messages/usr/${encodeURIComponent(user.nick)}/inbox`})
                     .fail(() => MessageBuilder.error(`Failed to load messages :(`).into(this, win))
@@ -1334,19 +1275,16 @@ class Chat {
                                 MessageBuilder.historical(e.message, user, e.timestamp).into(this, win)
                             })
                         }
-                        MessageBuilder.info(`End of messages`).into(this, win)
                     })
             }
             conv.unread = 0
             conv.open = true
         })
-        win.on('hide', () => {
-            conv.open = false
-        })
+        win.on('hide', () => conv.open = false)
     }
 
     static extractTextOnly(msg){
-        return (msg.toLowerCase().substring(0, 4) === '/me ' ? msg.substring(4) : msg).trim();
+        return (msg.substring(0, 4).toLowerCase() === '/me ' ? msg.substring(4) : msg).trim();
     }
 
     static extractNicks(text){
@@ -1375,13 +1313,12 @@ class Chat {
                 icon : '/notifyicon.png',
                 dir  : 'auto'
             });
-            n.onclick = function(){}; // todo open chat at specific line
             if(timeout) setTimeout(() => n.close(), 8000);
         }
     }
 
     static makeSafeForRegex(str){
-        return str.trim().replace(/[\-\[\]\/{}()*+?.\\\^$|]/g, "\\$&");
+        return str.trim().replace(regexsafe, "\\$&");
     }
 
     static parseTimeInterval(str){
@@ -1402,7 +1339,7 @@ class Chat {
                 d: 86400000000000,
                 day: 86400000000000, days: 86400000000000
             };
-        str.replace(/(\d+(?:\.\d*)?)([a-z]+)?/ig, function($0, number, unit) {
+        str.replace(regextime, function($0, number, unit) {
             number *= (unit) ? units[unit.toLowerCase()] || units.s : units.s;
             nanoseconds += +number;
         });

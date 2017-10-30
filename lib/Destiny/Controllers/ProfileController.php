@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Commerce\DonationService;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Application;
 use Destiny\Common\Log;
@@ -49,7 +50,7 @@ class ProfileController {
         $userId = Session::getCredentials()->getUserId();
         $address = $userService->getAddressByUserId($userId);
         if (empty ($address)) {
-            $address = array();
+            $address = [];
             $address ['fullName'] = '';
             $address ['line1'] = '';
             $address ['line2'] = '';
@@ -61,7 +62,7 @@ class ProfileController {
         $model->credentials = Session::instance()->getCredentials()->getData();
         $model->ban = $userService->getUserActiveBan($userId);
         $model->user = $userService->getUserById($userId);
-        $model->gifts = $subscriptionsService->getSubscriptionsByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
+        $model->gifts = $subscriptionsService->findByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
         $model->address = $address;
         $model->title = 'Account';
@@ -97,8 +98,10 @@ class ProfileController {
         $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
 
         try {
-            $authenticationService->validateUsername ( $username, $user );
-            $authenticationService->validateEmail ( $email, $user );
+            $authenticationService->validateUsername($username);
+            if ($userService->getIsUsernameTaken($username, $user['userId']))
+                throw new Exception ( 'The username you asked for is already being used' );
+            $authenticationService->validateEmail($email, $user);
             if (! empty ( $country )) {
                 $countryArr = Country::getCountryByCode ( $country );
                 if (empty ( $countryArr )) {
@@ -112,22 +115,22 @@ class ProfileController {
         }
 
         // Date for update
-        $userData = array (
+        $userData = [
             'username' => $username,
             'country' => $country,
             'email' => $email,
             'allowGifting' => $allowGifting
-        );
+        ];
 
         // Is the user changing their name?
-        if (strcasecmp ( $username, $user ['username'] ) !== 0) {
-            $nameChangeCount = intval ( $user ['nameChangedCount'] );
+        if (strcasecmp($username, $user ['username']) !== 0) {
+            $nameChangedCount = intval($user ['nameChangedCount']);
             // have they hit their limit
-            if ($nameChangeCount >= Config::$a ['profile'] ['nameChangeLimit']) {
-                throw new Exception ( 'You have reached your name change limit' );
+            if ($nameChangedCount > 0) {
+                $userData ['nameChangedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
+                $userData ['nameChangedCount'] = $nameChangedCount - 1;
             } else {
-                $userData ['nameChangedDate'] = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );
-                $userData ['nameChangedCount'] = $nameChangeCount + 1;
+                throw new Exception ('You have reached your name change limit');
             }
         }
 
@@ -155,7 +158,7 @@ class ProfileController {
 
         // Build a list of profile types for UI purposes
         $authProfiles = $userService->getAuthProfilesByUserId($userId);
-        $authProfileTypes = array();
+        $authProfileTypes = [];
         if (!empty ($authProfiles)) {
             foreach ($authProfiles as $profile) {
                 $authProfileTypes [] = $profile ['authProvider'];
@@ -311,7 +314,7 @@ class ProfileController {
 
         $address = $userService->getAddressByUserId ( $userId );
         if (empty ( $address )) {
-            $address = array ();
+            $address = [];
             $address ['userId'] = $userId;
         }
 
@@ -409,5 +412,53 @@ class ProfileController {
         return 'redirect: /profile';
     }
 
+    /**
+     * @Route ("/profile/gifts")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     *
+     * @param ViewModel $model
+     * @return string
+     * @throws DBALException
+     * @throws Exception
+     */
+    function gifts(ViewModel $model) {
+        $userId = Session::getCredentials ()->getUserId ();
+        $subscriptionsService = SubscriptionsService::instance();
+        $model->gifts = $subscriptionsService->findCompletedByGifterId($userId);
+        return 'profile/gifts';
+    }
+
+    /**
+     * @Route ("/profile/donations")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     *
+     * @param ViewModel $model
+     * @return string
+     * @throws DBALException
+     */
+    function donations(ViewModel $model) {
+        $userId = Session::getCredentials ()->getUserId ();
+        $donationsService = DonationService::instance();
+        $model->donations = $donationsService->findCompletedByUserId($userId);
+        return 'profile/donations';
+    }
+
+    /**
+     * @Route ("/profile/subscriptions")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     *
+     * @param ViewModel $model
+     * @return string
+     * @throws DBALException
+     */
+    function subscriptions(ViewModel $model) {
+        $userId = Session::getCredentials ()->getUserId ();
+        $subscriptionsService = SubscriptionsService::instance();
+        $model->subscriptions = $subscriptionsService->findCompletedByUserId($userId);
+        return 'profile/subscriptions';
+    }
 
 }

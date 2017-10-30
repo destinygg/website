@@ -1,47 +1,16 @@
-<?php 
+<?php
 namespace Destiny\Common;
 
 class SessionCredentials {
 
-    /**
-     * @var string
-     */
+    protected $userId = null;
     protected $authProvider = '';
-
-    /**
-     * @var int
-     */
-    protected $userId = '';
-
-    /**
-     * @var string
-     */
     protected $username = '';
-
-    /**
-     * @var string
-     */
     protected $userStatus = '';
-
-    /**
-     * @var string
-     */
     protected $email = '';
-
-    /**
-     * @var string
-     */
     protected $country = '';
-
-    /**
-     * @var string[]
-     */
-    protected $roles = array ();
-
-    /**
-     * @var string[]
-    */
-    protected $features = array ();
+    protected $roles = [];
+    protected $features = [];
 
     /**
      * @var array
@@ -50,10 +19,10 @@ class SessionCredentials {
 
     /**
      * @param array $params
-    */
+     */
     public function __construct(array $params = null) {
-        if (! empty ( $params )) {
-            $this->setData ( $params );
+        if (!empty ($params)) {
+            $this->setData($params);
         }
     }
 
@@ -61,30 +30,30 @@ class SessionCredentials {
      * @param array $params
      */
     public function setData(array $params) {
-        if (! empty ( $params )) {
-            if (isset ( $params ['userId'] ) && ! empty ( $params ['userId'] )) {
-                $this->setUserId ( $params ['userId'] );
+        if (!empty ($params)) {
+            if (isset ($params ['userId']) && !empty ($params ['userId'])) {
+                $this->setUserId($params ['userId']);
             }
-            if (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) {
-                $this->setUsername ( $params ['username'] );
+            if (isset ($params ['username']) && !empty ($params ['username'])) {
+                $this->setUsername($params ['username']);
             }
-            if (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) {
-                $this->setEmail ( $params ['email'] );
+            if (isset ($params ['email']) && !empty ($params ['email'])) {
+                $this->setEmail($params ['email']);
             }
-            if (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) {
-                $this->setCountry ( $params ['country'] );
+            if (isset ($params ['country']) && !empty ($params ['country'])) {
+                $this->setCountry($params ['country']);
             }
-            if (isset ( $params ['authProvider'] ) && ! empty ( $params ['authProvider'] )) {
-                $this->setAuthProvider ( $params ['authProvider'] );
+            if (isset ($params ['authProvider']) && !empty ($params ['authProvider'])) {
+                $this->setAuthProvider($params ['authProvider']);
             }
-            if (isset ( $params ['userStatus'] ) && ! empty ( $params ['userStatus'] )) {
-                $this->setUserStatus ( $params ['userStatus'] );
+            if (isset ($params ['userStatus']) && !empty ($params ['userStatus'])) {
+                $this->setUserStatus($params ['userStatus']);
             }
-            if (isset ( $params ['features'] ) && ! empty ( $params ['features'] ) && is_array ( $params ['features'] )) {
-                $this->setFeatures ( array_unique ( $params ['features'] ) );
+            if (isset ($params ['features']) && !empty ($params ['features']) && is_array($params ['features'])) {
+                $this->setFeatures(array_unique($params ['features']));
             }
-            if (isset ( $params ['roles'] ) && ! empty ( $params ['roles'] ) && is_array ( $params ['roles'] )) {
-                $this->setRoles ( array_unique ( $params ['roles'] ) );
+            if (isset ($params ['roles']) && !empty ($params ['roles']) && is_array($params ['roles'])) {
+                $this->setRoles(array_unique($params ['roles']));
             }
         }
     }
@@ -93,17 +62,18 @@ class SessionCredentials {
      * @return array
      */
     public function getData() {
-        return array (
-            'email' => $this->getEmail (),
-            'username' => $this->getUsername (),
-            'userId' => $this->getUserId (),
-            'userStatus' => $this->getUserStatus (),
-            'country' => $this->getCountry (),
-            'roles' => $this->getRoles (),
-            'authProvider' => $this->getAuthProvider (),
-            'features' => $this->getFeatures (),
+        return [
+            'email' => $this->getEmail(),
+            'nick' => $this->getUsername(),
+            'username' => $this->getUsername(),
+            'userId' => $this->getUserId(),
+            'userStatus' => $this->getUserStatus(),
+            'country' => $this->getCountry(),
+            'roles' => $this->getRoles(),
+            'authProvider' => $this->getAuthProvider(),
+            'features' => $this->getFeatures(),
             'subscription' => $this->getSubscription()
-        );
+        ];
     }
 
     /**
@@ -113,14 +83,14 @@ class SessionCredentials {
      * @return boolean
      */
     public function isValid() {
-        $data = $this->getData ();
-        if (empty ( $data ['userId'] ) && intval ( $data ['userId'] ) > 0) {
+        $data = $this->getData();
+        if (empty ($data ['userId']) && intval($data ['userId']) > 0) {
             return false;
         }
-        if (empty ( $data ['username'] )) {
+        if (empty ($data ['username'])) {
             return false;
         }
-        if (empty ( $data ['userStatus'] )) {
+        if (empty ($data ['userStatus'])) {
             return false;
         }
         return true;
@@ -154,13 +124,13 @@ class SessionCredentials {
      * @param string[]|string $role
      */
     public function addRoles($role) {
-        if (is_array ( $role )) {
-            for($i = 0; $i < count ( $role ); ++ $i) {
-                if (! in_array ( $role [$i], $this->roles )) {
+        if (is_array($role)) {
+            for ($i = 0; $i < count($role); ++$i) {
+                if (!in_array($role [$i], $this->roles)) {
                     $this->roles [] = $role [$i];
                 }
             }
-        } elseif (! in_array ( $role, $this->roles )) {
+        } elseif (!in_array($role, $this->roles)) {
             $this->roles [] = $role;
         }
     }
@@ -169,9 +139,9 @@ class SessionCredentials {
      * @param string $role
      */
     public function removeRole($role) {
-        for($i = 0; $i < count ( $this->roles ); ++ $i) {
+        for ($i = 0; $i < count($this->roles); ++$i) {
             if ($this->roles [$i] == $role) {
-                unset ( $this->roles [$i] );
+                unset ($this->roles [$i]);
                 break;
             }
         }
@@ -182,8 +152,8 @@ class SessionCredentials {
      * @return bool
      */
     public function hasRole($roleId) {
-        foreach ( $this->roles as $role ) {
-            if (strcasecmp ( $role, $roleId ) === 0) {
+        foreach ($this->roles as $role) {
+            if (strcasecmp($role, $roleId) === 0) {
                 return true;
             }
         }
@@ -235,8 +205,8 @@ class SessionCredentials {
      * @return bool
      */
     public function hasFeature($featureName) {
-        foreach ( $this->features as $feature ) {
-            if (strcasecmp ( $feature, $featureName ) === 0) {
+        foreach ($this->features as $feature) {
+            if (strcasecmp($feature, $featureName) === 0) {
                 return true;
             }
         }
@@ -249,13 +219,13 @@ class SessionCredentials {
      * @param string[]|string $features
      */
     public function addFeatures($features) {
-        if (is_array ( $features )) {
-            for($i = 0; $i < count ( $features ); ++ $i) {
-                if (! in_array ( $features [$i], $this->features )) {
+        if (is_array($features)) {
+            for ($i = 0; $i < count($features); ++$i) {
+                if (!in_array($features [$i], $this->features)) {
                     $this->features [] = $features [$i];
                 }
             }
-        } elseif (! in_array ( $features, $this->features )) {
+        } elseif (!in_array($features, $this->features)) {
             $this->features [] = $features;
         }
     }
@@ -266,9 +236,9 @@ class SessionCredentials {
      * @param string $feature
      */
     public function removeFeature($feature) {
-        for($i = 0; $i < count ( $this->features ); ++ $i) {
+        for ($i = 0; $i < count($this->features); ++$i) {
             if ($this->features [$i] == $feature) {
-                unset ( $this->features [$i] );
+                unset ($this->features [$i]);
                 break;
             }
         }

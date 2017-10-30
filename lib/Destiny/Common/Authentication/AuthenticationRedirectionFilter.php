@@ -31,7 +31,7 @@ class AuthenticationRedirectionFilter {
             $authService->validateEmail($authCreds->getEmail(), null, true);
 
         // Account merge
-        if (Session::set('accountMerge') === '1') {
+        if (Session::getAndRemove('accountMerge') === '1') {
             // Must be logged in to do a merge
             if (!Session::hasRole(UserRole::USER)) {
                 throw new Exception ('Authentication required for account merge');
@@ -41,9 +41,9 @@ class AuthenticationRedirectionFilter {
         }
 
         // Follow url
-        $follow = Session::set('follow');
+        $follow = Session::getAndRemove('follow');
         // Remember me checkbox on login form
-        $rememberme = Session::set('rememberme');
+        $rememberme = Session::getAndRemove('rememberme');
 
         // If the user profile doesn't exist, go to the register page
         if (!$userService->getUserAuthProviderExists($authCreds->getAuthId(), $authCreds->getAuthProvider())) {

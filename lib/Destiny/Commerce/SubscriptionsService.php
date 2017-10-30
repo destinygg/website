@@ -16,6 +16,27 @@ class SubscriptionsService extends Service {
 
     /**
      * @param array $subscription
+     * @return string
+     * @throws DBALException
+     */
+    public function addSubscription(array $subscription) {
+        $conn = Application::getDbConn();
+        $conn->insert('dfl_users_subscriptions', $subscription);
+        return $conn->lastInsertId();
+    }
+
+    /**
+     * Update subscription
+     * @param array $subscription
+     * @throws DBALException
+     */
+    public function updateSubscription(array $subscription) {
+        $conn = Application::getDbConn();
+        $conn->update('dfl_users_subscriptions', $subscription, ['subscriptionId' => $subscription ['subscriptionId']]);
+    }
+
+    /**
+     * @param array $subscription
      * @param bool $cancel
      * @throws ConnectionException
      * @throws Exception
@@ -28,18 +49,18 @@ class SubscriptionsService extends Service {
             // Cancel subscription
             if ($cancel) {
                 $subscription['status'] = SubscriptionStatus::CANCELLED;
-                $this->updateSubscription(array(
+                $this->updateSubscription([
                     'subscriptionId' => $subscription ['subscriptionId'],
                     'status' => $subscription['status']
-                ));
+                ]);
             }
             // Update the subscription info
-            $this->updateSubscription(array(
+            $this->updateSubscription([
                 'subscriptionId' => $subscription['subscriptionId'],
                 'paymentStatus' => $subscription['paymentStatus'],
                 'recurring' => $subscription['recurring'],
                 'status' => $subscription['status']
-            ));
+            ]);
             // Cancel the payment profile
             if (!empty ($subscription ['paymentProfileId'])) {
                 if (strcasecmp($subscription ['paymentStatus'], PaymentStatus::ACTIVE) === 0) {
@@ -71,6 +92,23 @@ class SubscriptionsService extends Service {
     }
 
     /**
+     * @param int $subscriptionId
+     * @return array
+     * @throws DBALException
+     */
+    public function findById($subscriptionId) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+            SELECT * FROM dfl_users_subscriptions
+            WHERE subscriptionId = :subscriptionId
+            LIMIT 1
+        ');
+        $stmt->bindValue('subscriptionId', $subscriptionId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
      * Return recurring subscriptions that have a expired end date, but a active profile.
      *
      * @return array
@@ -80,7 +118,8 @@ class SubscriptionsService extends Service {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT s.* FROM dfl_users_subscriptions s
-            WHERE s.recurring = 1 AND s.paymentStatus = :paymentStatus AND s.endDate <= NOW() AND s.billingNextDate > NOW()
+            WHERE s.recurring = 1 AND s.paymentStatus = :paymentStatus 
+            AND s.endDate <= NOW() AND s.billingNextDate > NOW()
         ');
         $stmt->bindValue('paymentStatus', PaymentStatus::ACTIVE, \PDO::PARAM_STR);
         $stmt->execute();
@@ -119,7 +158,7 @@ class SubscriptionsService extends Service {
           LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
           WHERE s.userId = :userId AND s.status = :status 
           ORDER BY s.subscriptionTier DESC, s.createdDate DESC
-          LIMIT 0,1
+          LIMIT 1
         ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->bindValue('status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
@@ -159,7 +198,7 @@ class SubscriptionsService extends Service {
      * @return array
      * @throws DBALException
      */
-    public function getSubscriptionByIdAndUserIdAndStatus($subscriptionId, $userId, $status) {
+    public function findByIdAndUserIdAndStatus($subscriptionId, $userId, $status) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
@@ -175,46 +214,11 @@ class SubscriptionsService extends Service {
     }
 
     /**
-     * @param number $subscriptionId
-     * @param number $userId
-     * @return array
-     * @throws DBALException
-     */
-    public function getSubscriptionByIdAndUserId($subscriptionId, $userId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT s.*,gifter.username `gifterUsername` FROM dfl_users_subscriptions s
-          LEFT JOIN dfl_users gifter ON (gifter.userId = s.gifter)
-          WHERE s.userId = :userId AND s.subscriptionId = :subscriptionId
-          LIMIT 1
-        ');
-        $stmt->bindValue('subscriptionId', $subscriptionId, \PDO::PARAM_INT);
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param int $userId
-     * @param string $status
-     * @return array
-     * @throws DBALException
-     */
-    public function getSubscriptionByUserIdAndStatus($userId, $status) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM dfl_users_subscriptions WHERE userId = :userId AND status = :status ORDER BY createdDate DESC LIMIT 0,1');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('status', $status, \PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
      * @param int $tier
      * @return array <array>
      * @throws DBALException
      */
-    public function getSubscriptionsByTier($tier) {
+    public function findByTier($tier) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT
@@ -243,13 +247,66 @@ class SubscriptionsService extends Service {
     }
 
     /**
+     * @param int $userId
+     * @param string $status
+     * @return array
+     * @throws DBALException
+     */
+    public function findByUserIdAndStatus($userId, $status) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+          SELECT * FROM dfl_users_subscriptions 
+          WHERE userId = :userId AND status = :status 
+          ORDER BY createdDate DESC 
+          LIMIT 1
+        ');
+        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('status', $status, \PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
+     * @param int $gifterId
+     * @param int $limit
+     * @param int $start
+     * @return array <array>
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function findCompletedByGifterId($gifterId, $limit = 100, $start = 0) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+          SELECT s.*, u2.username, u.username `gifterUsername` 
+          FROM dfl_users_subscriptions s
+          LEFT JOIN dfl_users u ON (u.userId = s.gifter)
+          LEFT JOIN dfl_users u2 ON (u2.userId = s.userId)
+          WHERE s.gifter = :gifter AND (s.status = :active OR s.status = :cancelled OR s.status = :expired)
+          ORDER BY endDate DESC
+          LIMIT :start,:limit
+        ');
+        $stmt->bindValue('active', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
+        $stmt->bindValue('cancelled', SubscriptionStatus::CANCELLED, \PDO::PARAM_STR);
+        $stmt->bindValue('expired', SubscriptionStatus::EXPIRED, \PDO::PARAM_STR);
+        $stmt->bindValue('gifter', $gifterId, \PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->execute();
+        $gifts = $stmt->fetchAll();
+        for ($i = 0; $i < count($gifts); $i++) {
+            $gifts [$i]['type'] = $this->getSubscriptionType($gifts [$i]['subscriptionType']);
+        }
+        return $gifts;
+    }
+
+    /**
      * @param int $gifterId
      * @param string $status
      * @return array <array>
      * @throws Exception
      * @throws DBALException
      */
-    public function getSubscriptionsByGifterIdAndStatus($gifterId, $status) {
+    public function findByGifterIdAndStatus($gifterId, $status) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT s.*, u2.username, u.username `gifterUsername` 
@@ -270,60 +327,13 @@ class SubscriptionsService extends Service {
     }
 
     /**
-     * @param int $subscriptionId
-     * @param int $gifterId
-     * @param $status
-     * @return array <array>
-     * @throws DBALException
-     */
-    public function getSubscriptionByIdAndGifterIdAndStatus($subscriptionId, $gifterId, $status) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT s.*, u2.username, u.username `gifterUsername` 
-          FROM dfl_users_subscriptions s
-          LEFT JOIN dfl_users u ON (u.userId = s.gifter)
-          LEFT JOIN dfl_users u2 ON (u2.userId = s.userId)
-          WHERE s.gifter = :gifter AND s.subscriptionId = :subscriptionId AND s.status = :status
-          ORDER BY createdDate DESC
-          LIMIT 0,1
-        ');
-        $stmt->bindValue('gifter', $gifterId, \PDO::PARAM_INT);
-        $stmt->bindValue('subscriptionId', $subscriptionId, \PDO::PARAM_INT);
-        $stmt->bindValue('status', $status, \PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param array $subscription
-     * @return string
-     * @throws DBALException
-     */
-    public function addSubscription(array $subscription) {
-        $conn = Application::getDbConn();
-        $conn->insert('dfl_users_subscriptions', $subscription);
-        return $conn->lastInsertId();
-    }
-
-    /**
-     * Update subscription
-     * @param array $subscription
-     * @throws DBALException
-     */
-    public function updateSubscription(array $subscription) {
-        $conn = Application::getDbConn();
-        $conn->update('dfl_users_subscriptions', $subscription, array('subscriptionId' => $subscription ['subscriptionId']));
-    }
-
-    /**
      * @param number $userId
      * @param int $limit
      * @param int $start
      * @return array
-     * @throws Exception
      * @throws DBALException
      */
-    public function getSubscriptionsByUserId($userId, $limit = 100, $start = 0) {
+    public function findByUserId($userId, $limit = 100, $start = 0) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT * FROM dfl_users_subscriptions
@@ -338,30 +348,12 @@ class SubscriptionsService extends Service {
     }
 
     /**
-     * @param int $subscriptionId
-     * @return array
-     * @throws Exception
-     * @throws DBALException
-     */
-    public function getSubscriptionById($subscriptionId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT * FROM dfl_users_subscriptions
-            WHERE subscriptionId = :subscriptionId
-            LIMIT 1
-        ');
-        $stmt->bindValue('subscriptionId', $subscriptionId, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
      * @param number $gifter userId
      * @param number $giftee userId
      * @return boolean
      * @throws DBALException
      */
-    public function getCanUserReceiveGift($gifter, $giftee) {
+    public function canUserReceiveGift($gifter, $giftee) {
 
         if ($gifter == $giftee) {
             return false;
@@ -387,33 +379,11 @@ class SubscriptionsService extends Service {
     }
 
     /**
-     * @param number $gifterId
-     * @param int $limit
-     * @param int $start
-     * @return array
-     * @throws Exception
-     * @throws DBALException
-     */
-    public function getSubscriptionsByGifter($gifterId, $limit = 100, $start = 0) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT * FROM dfl_users_subscriptions
-          WHERE gifter = :gifter
-          ORDER BY createdDate DESC LIMIT :start,:limit
-        ');
-        $stmt->bindValue('gifter', $gifterId, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
-    /**
      * @param string $paymentProfileId
      * @return array
      * @throws DBALException
      */
-    public function getSubscriptionByPaymentProfileId($paymentProfileId) {
+    public function findByPaymentProfileId($paymentProfileId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT * FROM dfl_users_subscriptions
@@ -423,5 +393,30 @@ class SubscriptionsService extends Service {
         $stmt->bindValue('paymentProfileId', $paymentProfileId, \PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
+    }
+
+    /**
+     * @param number $userId
+     * @param int $limit
+     * @param int $start
+     * @return array
+     * @throws DBALException
+     */
+    public function findCompletedByUserId($userId, $limit = 100, $start = 0) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+          SELECT * FROM dfl_users_subscriptions s
+          WHERE s.`userId` = :userId AND (s.status = :active OR s.status = :cancelled OR s.status = :expired)
+          ORDER BY createdDate DESC 
+          LIMIT :start,:limit
+        ');
+        $stmt->bindValue('active', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
+        $stmt->bindValue('expired', SubscriptionStatus::EXPIRED, \PDO::PARAM_STR);
+        $stmt->bindValue('cancelled', SubscriptionStatus::CANCELLED, \PDO::PARAM_STR);
+        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 }

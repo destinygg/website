@@ -8,15 +8,17 @@ use Destiny\Commerce\DonationStatus;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Application;
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
+use Destiny\Common\ViewModel;
 use Destiny\PayPal\PayPalApiService;
 use Destiny\StreamLabs\StreamLabsAlertsType;
 use Destiny\StreamLabs\StreamLabsService;
@@ -25,32 +27,34 @@ use Doctrine\DBAL\DBALException;
 /**
  * @Controller
  */
-class DonationController {
+class DonateController {
 
     /**
      * @Route("/donate")
      * @HttpMethod({"GET"})
      *
+     * @param ViewModel $model
      * @return string
      */
-    public function donateGet(){
+    public function donateGet(ViewModel $model){
+        $model->username = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUsername() : "";
         return 'donate';
     }
 
     /**
      * @Route("/donate/complete")
-     * @Secure({"USER"})
      * @HttpMethod({"GET"})
      *
+     * @param ViewModel $model
      * @return string
      */
-    public function donateComplete(){
+    public function donateComplete(ViewModel $model){
+        $model->username = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUsername() : "";
         return 'donate';
     }
 
     /**
      * @Route("/donate/error")
-     * @Secure({"USER"})
      * @HttpMethod({"GET"})
      *
      * @return string
@@ -61,7 +65,6 @@ class DonationController {
 
     /**
      * @Route("/donate")
-     * @Secure({"USER"})
      * @HttpMethod({"POST"})
      *
      * @param array $params
@@ -72,18 +75,21 @@ class DonationController {
      */
     public function donatePost(array $params){
         FilterParams::required($params, 'amount');
+        FilterParams::required($params, 'username');
         FilterParams::declared($params, 'message');
-        $donationService = DonationService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
         $conn = Application::getDbConn();
         try {
+            AuthenticationService::instance()->validateUsername($params['username']);
+            $userid = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUserId() : -1;
             $conn->beginTransaction();
+            $donationService = DonationService::instance();
             $donation = $donationService->addDonation([
-                'userid'    => $userId,
+                'userid'    => $userid,
+                'username'  => $params['username'],
                 'currency'  => Config::$a ['commerce'] ['currency'],
                 'amount'    => floatval($params['amount']),
                 'status'    => DonationStatus::PENDING,
-                'message'   => mb_substr($params['message'], 0, 250),
+                'message'   => mb_substr($params['message'], 0, 200),
                 'timestamp' => Date::getDateTime ()->format ( 'Y-m-d H:i:s' )
             ]);
             $payPalApiService = PayPalApiService::instance();
@@ -104,7 +110,6 @@ class DonationController {
 
     /**
      * @Route("/donate/process")
-     * @Secure({"USER"})
      * @HttpMethod({"GET"})
      *
      * @param array $params
@@ -116,14 +121,15 @@ class DonationController {
         FilterParams::required($params, 'donationid');
         FilterParams::required($params, 'token');
         FilterParams::declared($params, 'success');
-        $creds = Session::getCredentials();
-        $donationService = DonationService::instance();
         try {
+            $donationService = DonationService::instance();
             $donation = $donationService->findById($params['donationid']);
             if (empty($donation) || $donation['status'] !== DonationStatus::PENDING) {
                 throw new Exception ('Invalid donation');
             }
-            if (intval($donation['userid']) !== intval($creds->getUserId ())) {
+            $username = $donation['username'];
+            $userid = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUserId() :  -1;
+            if (intval($donation['userid']) !== intval($userid)) {
                 throw new Exception ('Permission to donation denied');
             }
             if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {
@@ -154,27 +160,32 @@ class DonationController {
                 }
 
                 $donationService->updateDonation($params['donationid'], ['status' => DonationStatus::COMPLETED]);
-                Session::setSuccessBag('Donation successful! Thank you');
+                Session::setSuccessBag('Your donation was successful, thanks!');
             } catch (\Exception $e) {
                 $donationService->updateDonation($params['donationid'], ['status' => DonationStatus::ERROR]);
                 throw new Exception ('Invalid payment result', $e);
             }
             try {
-                $amount = $donation['currency'] . number_format($donation['amount'], 2);
+                $message = $donation['message'];
+                $symbol = $donation['currency'] === 'USD'? '$': $donation['currency']; // todo hokey currency symbol lookup
+                $amount = $symbol . number_format($donation['amount'], 2);
                 $emote = $randomEmote = ChatEmotes::random('destiny');
                 $chatService = ChatIntegrationService::instance();
-                $chatService->sendBroadcast(sprintf("%s has donated %s! %s", $creds->getUsername(), $amount, $emote)); // todo $ currency symbol
+                $chatService->sendBroadcast(sprintf("%s has donated %s! %s", $username, $amount, $emote));
+                if(!empty($message)) {
+                    $chatService->sendBroadcast("$username said... $message");
+                }
                 if(Config::$a['streamlabs']['alert_donations']) {
                     StreamLabsService::withAuth()->sendAlert([
                         'type' => StreamLabsAlertsType::ALERT_DONATION,
-                        'message' => sprintf("*%s* has donated *%s*!", $creds->getUsername(), $amount)
+                        'message' => sprintf("*%s* has donated *%s*!", $username, $amount)
                     ]);
                 }
                 if(Config::$a['streamlabs']['send_donations']) {
                     StreamLabsService::withAuth()->sendDonation([
-                        'name'          => $creds->getUsername(),
+                        'name'          => $username,
                         'message'       => $donation['message'],
-                        'identifier'    => $creds->getUsername() .'#' . $creds->getUserId(),
+                        'identifier'    => $username .'#' . $userid,
                         'amount'        => number_format($donation['amount'], 2),
                         'currency'      => $donation['currency']
                     ]);

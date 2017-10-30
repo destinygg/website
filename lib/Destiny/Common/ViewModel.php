@@ -26,7 +26,7 @@ class ViewModel extends \stdClass {
      * @throws \Exception
      */
     public function getContent($filename){
-        $path = Config::$a['tpl']['path'] . $filename;
+        $path = _BASEDIR . '/views/' . $filename;
         $contents = '';
         try {
             ob_start();

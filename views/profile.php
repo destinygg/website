@@ -28,30 +28,17 @@ use Destiny\Commerce\SubscriptionStatus;
                   <h3><?= Tpl::out($this->user['username']) ?></h3>
                   <div style="display: inline-block;">
                       <p>
-                          Signed in using <span class="label label-default"><?=Tpl::out($this->credentials['authProvider'])?></span>
-                          <br/>
-                          <span>Joined on <?=Tpl::moment(Date::getDateTime($this->user['createdDate']), 'jS F, Y H:i a', 'Do MMMM, YYYY h:m a')?></span>
+                          <span>Joined on <?=Tpl::moment(Date::getDateTime($this->user['createdDate']), 'jS F, Y H:i a', 'Do MMMM, YYYY h:m a')?></span><br />
+                          Check out your old <a href="/profile/subscriptions" title="Your Subscriptions">Subscriptions</a>, <a href="/profile/gifts" title="Your Gifts">Gifts</a> and <a href="/profile/donations" title="Your Donations">Donations</a>.
                       </p>
                       <hr />
                   </div>
                   <div style="width: 100%; clear: both;">
-                      <a href="/logout" class="btn btn-danger btn-sm">Sign Out</a>
+                      <a href="/logout" class="btn btn-danger">Sign Out</a>
                   </div>
               </div>
           </div>
       </section>
-
-      <?php if(empty($this->subscriptions)): ?>
-      <section class="container">
-          <div class="content-dark clearfix">
-              <div class="ds-block">
-                  <h4>No Subscriptions?</h4>
-                  <p>Show some love, Try out a brand new <strong><?=Config::$a['subscriptionType']?></strong> sub!</p>
-                  <p><button type="button" class="btn btn-primary btn-sm">Subscribe</button></p>
-              </div>
-          </div>
-      </section>
-      <?php endif; ?>
 
       <?php if(!empty($this->ban)): ?>
           <section class="container">
@@ -147,7 +134,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                       </p>
                                   <?php endif ?>
                                   <div style="margin-top:20px;">
-                                      <a class="btn btn-primary btn-sm" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Cancel subscription</a>
+                                      <a class="btn btn-warning" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Change</a>
                                   </div>
                               </div>
                           </div>
@@ -162,32 +149,34 @@ use Destiny\Commerce\SubscriptionStatus;
               <h3 class="collapsed" data-toggle="collapse" data-target="#gift-content">Gifts</h3>
               <div id="gift-content" class="content collapse">
 
-                  <?php foreach ($this->gifts as $gift): ?>
-                      <div class="content-dark clearfix">
-                          <div class="ds-block">
-                              <div>
-
-                                  <h3><?= Tpl::out( $gift['type']['tierLabel'] ) ?> <small>Gifted to <span class="label label-primary"><?= $gift['username'] ?></span></small></h3>
-                                  <p>
-                                      <span class="sub-amount">$<?=$gift['type']['amount']?></span>
-                                      <span>(<?=$gift['type']['billingFrequency']?> <?=strtolower($gift['type']['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif ?>)</span>
-                                      <small>started on <?=Tpl::moment(Date::getDateTime($gift['createdDate']), Date::FORMAT)?></small>
-                                  </p>
-
-                                  <?php if($gift['recurring'] == 1): ?>
-                                      <div style="margin-top:20px;">
-                                          <a class="btn btn-sm btn-danger cancel-gift" href="/subscription/gift/<?= $gift['subscriptionId'] ?>/cancel">Cancel</a>
-                                      </div>
-                                  <?php endif ?>
-
-                              </div>
-                          </div>
+                  <div class="content-dark clearfix">
+                      <div class="ds-block">
+                            <?php foreach ($this->gifts as $gift): ?>
+                            <div class="gift-sub">
+                                <div class="gift-sub-info">
+                                    <div>
+                                        <span class="sub-label"><?= Tpl::out( $gift['type']['tierLabel'] ) ?></span>
+                                        <span class="sub-amount">$<?=$gift['type']['amount']?></span>
+                                        <span class="sub-billing">(<?=$gift['type']['billingFrequency']?> <?=strtolower($gift['type']['billingPeriod'])?><?php if($gift['recurring'] == 1): ?> recurring<?php endif ?>)</span>
+                                    </div>
+                                    <div>
+                                        <span class="sub-gifted">Gifted to <span class="gift-giftee"><?= $gift['username'] ?></span> on <?=Tpl::moment(Date::getDateTime($gift['createdDate']), Date::FORMAT)?></span>
+                                    </div>
+                                </div>
+                                <?php if($gift['recurring'] == 1): ?>
+                                <div class="gift-sub-change">
+                                    <a class="btn btn-sm btn-warning cancel-gift" href="/subscription/gift/<?= $gift['subscriptionId'] ?>/cancel">Change</a>
+                                </div>
+                                <?php endif ?>
+                            </div>
+                            <?php endforeach; ?>
                       </div>
-                  <?php endforeach; ?>
+                  </div>
 
               </div>
           </section>
       <?php endif ?>
+
 
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#account-content">Account</h3>
@@ -196,17 +185,17 @@ use Destiny\Commerce\SubscriptionStatus;
               <form id="profileSaveForm" action="/profile/update" method="post" role="form">
 
                   <div class="ds-block">
-                      <?php if($this->user['nameChangedCount'] < Config::$a['profile']['nameChangeLimit']): ?>
+                      <?php if($this->user['nameChangedCount'] > 0): ?>
                           <div class="form-group">
                               <label>Username:
-                                  <br><small>(You have <?=Tpl::number(Config::$a['profile']['nameChangeLimit'] - $this->user['nameChangedCount'])?> name changes left)</small>
+                                  <br><small>(You have <?=Tpl::number($this->user['nameChangedCount'])?> name changes left)</small>
                               </label>
                               <input class="form-control" type="text" name="username" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username" />
                               <span class="help-block">A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters</span>
                           </div>
                       <?php endif ?>
 
-                      <?php if($this->user['nameChangedCount'] >= Config::$a['profile']['nameChangeLimit']): ?>
+                      <?php if($this->user['nameChangedCount'] <= 0): ?>
                           <div class="form-group">
                               <label>Username:
                                   <br><small>(You have no more name changes available)</small>
@@ -261,61 +250,60 @@ use Destiny\Commerce\SubscriptionStatus;
           </div>
       </section>
 
+      <!--
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#address-content">Address <small>(optional)</small></h3>
           <div id="address-content" class="content content-dark clearfix collapse">
-
               <div class="ds-block">
                   <small>Fields marked with <span class="icon-required">*</span> are required.</small>
               </div>
-
               <form id="addressSaveForm" action="/profile/address/update" method="post" class="validate">
                   <div class="ds-block">
                       <div class="form-group">
                           <label>Full Name <span class="icon-required">*</span>
                               <br><small>The name of the person for this address</small>
                           </label>
-                          <input class="form-control" type="text" name="fullName" value="<?=Tpl::out($this->address['fullName'])?>" placeholder="Full Name" required />
+                          <input class="form-control" type="text" name="fullName" value="<?/*=Tpl::out($this->address['fullName'])*/?>" placeholder="Full Name" required />
                       </div>
                       <div class="form-group">
                           <label>Address Line 1 <span class="icon-required">*</span>
                               <br><small>Street address, P.O box, company name, c/o</small>
                           </label>
-                          <input class="form-control" type="text" name="line1" value="<?=Tpl::out($this->address['line1'])?>" placeholder="Address Line 1" required />
+                          <input class="form-control" type="text" name="line1" value="<?/*=Tpl::out($this->address['line1'])*/?>" placeholder="Address Line 1" required />
                       </div>
                       <div class="form-group">
                           <label>Address Line 2
                               <br><small>Apartment, Suite, Building, Unit, Floor etc.</small>
                           </label>
-                          <input class="form-control" type="text" name="line2" value="<?=Tpl::out($this->address['line2'])?>" placeholder="Address Line 2" />
+                          <input class="form-control" type="text" name="line2" value="<?/*=Tpl::out($this->address['line2'])*/?>" placeholder="Address Line 2" />
                       </div>
 
                       <div class="form-group">
                           <label>City <span class="icon-required">*</span></label>
-                          <input class="form-control" type="text" name="city" value="<?=Tpl::out($this->address['city'])?>" placeholder="City" required />
+                          <input class="form-control" type="text" name="city" value="<?/*=Tpl::out($this->address['city'])*/?>" placeholder="City" required />
                       </div>
                       <div class="form-group">
                           <label>State/Province/Region <span class="icon-required">*</span></label>
-                          <input class="form-control" type="text" name="region" value="<?=Tpl::out($this->address['region'])?>" placeholder="Region" required />
+                          <input class="form-control" type="text" name="region" value="<?/*=Tpl::out($this->address['region'])*/?>" placeholder="Region" required />
                       </div>
                       <div class="form-group">
                           <label>ZIP/Postal Code <span class="icon-required">*</span></label>
-                          <input class="form-control" type="text" name="zip" value="<?=Tpl::out($this->address['zip'])?>" placeholder="Zip/Postal Code" required />
+                          <input class="form-control" type="text" name="zip" value="<?/*=Tpl::out($this->address['zip'])*/?>" placeholder="Zip/Postal Code" required />
                       </div>
                       <div class="form-group">
                           <label for="country">Country <span class="icon-required">*</span></label>
                           <select class="form-control" name="country" id="country" required>
                               <option value="">Select your country</option>
-                              <?$countries = Country::getCountries();?>
+                              <?/*$countries = Country::getCountries();*/?>
                               <option value="">&nbsp;</option>
-                              <option value="US" <?php if($this->address['country'] == 'US'): ?>
-                                  selected="selected" <?php endif ?>>United States</option>
-                              <option value="GB" <?php if($this->address['country'] == 'GB'): ?>
-                                  selected="selected" <?php endif ?>>United Kingdom</option>
+                              <option value="US" <?php /*if($this->address['country'] == 'US'): */?>
+                                  selected="selected" <?php /*endif */?>>United States</option>
+                              <option value="GB" <?php /*if($this->address['country'] == 'GB'): */?>
+                                  selected="selected" <?php /*endif */?>>United Kingdom</option>
                               <option value="">&nbsp;</option>
-                              <?php foreach($countries as $country): ?>
-                                  <option value="<?=$country['alpha-2']?>" <?php if($this->address['country'] != 'US' && $this->address['country'] != 'GB' && $this->address['country'] == $country['alpha-2']):?>selected="selected"<?php endif;?>><?=Tpl::out($country['name'])?></option>
-                              <?php endforeach; ?>
+                              <?php /*foreach($countries as $country): */?>
+                                  <option value="<?/*=$country['alpha-2']*/?>" <?php /*if($this->address['country'] != 'US' && $this->address['country'] != 'GB' && $this->address['country'] == $country['alpha-2']):*/?>selected="selected"<?php /*endif;*/?>><?/*=Tpl::out($country['name'])*/?></option>
+                              <?php /*endforeach; */?>
                           </select>
                       </div>
                   </div>
@@ -328,6 +316,7 @@ use Destiny\Commerce\SubscriptionStatus;
           </div>
       </section>
 
+
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#minecraft-content">Minecraft</h3>
           <div id="minecraft-content" class="content content-dark clearfix collapse">
@@ -337,7 +326,7 @@ use Destiny\Commerce\SubscriptionStatus;
                           <label>Minecraft name:
                               <br><small>For the minecraft server details, ask in chat. (Max 16 characters)</small>
                           </label>
-                          <input class="form-control" type="text" name="minecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name" maxlength="16" />
+                          <input class="form-control" type="text" name="minecraftname" value="<?/*=Tpl::out($this->user['minecraftname'])*/?>" placeholder="Minecraft name" maxlength="16" />
                       </div>
                   </div>
                   <div class="form-actions block-foot">
@@ -346,6 +335,7 @@ use Destiny\Commerce\SubscriptionStatus;
               </form>
           </div>
       </section>
+      -->
 
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#discord-content">Discord</h3>

@@ -13,17 +13,11 @@ const emotes = require('./emotes.json')
 const uri = `ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`
 
 $.when(
-    new Promise(res => $.getJSON({
-        url: '/api/chat/me',
-        timeout: 5000
-    }).done(res).fail(() => res(null))),
-    new Promise(res => $.getJSON({
-        url: '/api/chat/history',
-        timeout: 5000
-    }).done(res).fail(() => res(null)))
-).then((me, history) =>
+    new Promise(res => $.getJSON('/api/chat/me').done(res).fail(() => res(null))),
+    new Promise(res => $.getJSON('/api/chat/history').done(res).fail(() => res(null)))
+).then((userAndSettings, history) =>
     new Chat()
-      .withUserAndSettings(me)
+      .withUserAndSettings(userAndSettings)
       .withEmotes(emotes)
       .withGui()
       .withHistory(history)

@@ -9,18 +9,19 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-ini_set('date.timezone', 'UTC'); // This should be in the server config
-define('_APP_VERSION', '2.0.78'); // auto-generated: 1499361006420
+define('_APP_VERSION', '2.1.0'); // auto-generated: 1509356363220
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
 Config::load(array_replace_recursive(
     require _BASEDIR . '/config/config.php',
+    require _BASEDIR . '/config/config.dgg.php',
     require _BASEDIR . '/config/config.local.php',
+    ['domains_blacklist' => include _BASEDIR . '/config/domains.blacklist.php'],
     ['version' => _APP_VERSION]
 ));
 
-set_include_path(get_include_path() . PATH_SEPARATOR . Config::$a['tpl']['path']);
+set_include_path(get_include_path() . PATH_SEPARATOR . _BASEDIR . '/views/');
 
 // Required to auto-load custom annotations
 AnnotationRegistry::registerLoader([$loader, 'loadClass']);
@@ -31,7 +32,7 @@ $app->setLoader($loader);
 
 // Logging
 Log::$log = new Logger ('web');
-Log::$log->pushHandler(new StreamHandler (Config::$a['log']['path'] . 'web.log', Logger::ERROR));
+Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Logger::ERROR));
 Log::$log->pushProcessor(new PsrLogMessageProcessor());
 Log::$log->pushProcessor(new Monolog\Processor\WebProcessor());
 

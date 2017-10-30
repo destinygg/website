@@ -30,7 +30,7 @@ class DonationService extends Service {
      */
     public function addPayment(array $payment) {
         $conn = Application::getDbConn();
-        $conn->insert ( 'dfl_orders_payments', array (
+        $conn->insert ( 'dfl_orders_payments', [
             'donationId' => $payment ['donationId'],
             'amount' => $payment ['amount'],
             'currency' => $payment ['currency'],
@@ -41,7 +41,7 @@ class DonationService extends Service {
             'paymentStatus' => $payment ['paymentStatus'],
             'paymentDate' => $payment ['paymentDate'],
             'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
-        ) );
+        ]);
         return $conn->lastInsertId ();
     }
 
@@ -88,6 +88,29 @@ class DonationService extends Service {
         $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
+    }
+
+    /**
+     * @param int $userId
+     * @param int $limit
+     * @param int $start
+     * @return array <array>
+     * @throws DBALException
+     */
+    public function findCompletedByUserId($userId, $limit = 100, $start = 0) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+          SELECT * FROM `donations` d 
+          WHERE d.`userid` = :userid AND d.`status` = :status
+          ORDER BY d.`timestamp` DESC
+          LIMIT :start,:limit
+        ');
+        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('status', DonationStatus::COMPLETED, \PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
 

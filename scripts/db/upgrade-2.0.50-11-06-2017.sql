@@ -4,6 +4,7 @@ ALTER TABLE `dfl_orders_payments` ADD COLUMN `donationId` INT(14) NULL AFTER `pa
 CREATE TABLE `donations` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
   `userid` int(11) NOT NULL,
+  `username` varchar(255) NULL,
   `currency` varchar(4) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `message` blob NULL,

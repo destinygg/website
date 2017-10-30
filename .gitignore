@@ -21,3 +21,6 @@ config/config.local.php
 /.idea
 
 ./phpunit.phar
+/config/domains.blacklist.php
+/composer.phar
+/phpunit.phar

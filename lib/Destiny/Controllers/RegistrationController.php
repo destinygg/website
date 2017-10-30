@@ -110,6 +110,8 @@ class RegistrationController {
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
             $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
             $authService->validateUsername($username);
+            if ($userService->getIsUsernameTaken($username, -1))
+                throw new Exception ( 'The username you asked for is already being used' );
             $authService->validateEmail($email);
             if (!empty ($country)) {
                 $countryArr = Country::getCountryByCode($country);
@@ -147,7 +149,7 @@ class RegistrationController {
                 'refreshToken' => $authCreds->getRefreshToken()
             ]);
             $conn->commit();
-            Session::set('authSession');
+            Session::remove('authSession');
         } catch (DBALException $e) {
             $n = new Exception("Failed to insert user records", $e);
             Log::critical($n);

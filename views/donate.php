@@ -17,12 +17,16 @@ use Destiny\Common\Config;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/banner.php' ?>
 
     <section class="container">
 
-        <h1 class="title">
-            <span>Donate</span> <small>send a message too</small>
+        <h1 class="title" style="display: flex; align-items: center;">
+            <span>Donate</span>
+            <small>&nbsp;(send a message too)</small>
+            <span style="flex: 2; display: flex; justify-content: flex-end; align-items: center;">
+                <small style="font-size: 16px; font-weight: normal;">prefer? &nbsp;</small>
+                <a href="https://streamlabs.com/destiny" class="streamlabs-logo"></a>
+            </span>
         </h1>
 
         <?php include 'seg/alerts.php' ?>
@@ -30,19 +34,21 @@ use Destiny\Common\Config;
         <div class="content content-dark clearfix">
             <form id="donate-form" class="validate" action="/donate" method="post">
                 <div class="ds-block">
-                    <p>Donation amount</p>
+                    <div id="donation-username" class="form-group form-group-lg">
+                        <input class="form-control required" id="username" name="username" placeholder="Enter a username ..." value="<?=Tpl::out($this->username)?>" autofocus />
+                    </div>
+                </div>
+                <div class="ds-block">
                     <div id="donation-amount" class="form-group form-group-lg">
                         <label class="sr-only" for="amount">Amount (in dollars)</label>
-                        <input class="form-control required number" id="amount" name="amount" placeholder="Enter an amount ..." autofocus />
+                        <input class="form-control required number" id="amount" name="amount" placeholder="5.00" autofocus />
                         <div id="donation-amount-currency">$</div>
                     </div>
                 </div>
                 <div class="ds-block text-message">
-                    <div>Send a message with your donation (optional):</div>
-                    <textarea name="message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
+                    <textarea name="message" autocomplete="off" maxlength="200" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
                 </div>
                 <div class="form-actions">
-                    <a class="pull-right powered-paypal" title="Powered by Paypal" href="https://www.paypal.com" target="_blank">Paypal</a>
                     <button class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Continue</button>
                     <a href="/" class="btn btn-link">Cancel</a>
                     <p class="agreement">
@@ -54,7 +60,6 @@ use Destiny\Common\Config;
 
     </section>
 
-    <?php include 'seg/panel.ads.php' ?>
 </div>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>

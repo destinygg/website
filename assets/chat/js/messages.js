@@ -87,12 +87,6 @@ function buildTime(message){
     const label = message.timestamp.format(DATE_FORMATS.TIME);
     return `<time class="time" title="${datetime}">${label}</time>`;
 }
-function buildWhisperTools(){
-    return  '<span>'+
-                `<a class="chat-open-whisper"><i class="fa fa-envelope"></i> open</a> ` +
-                `<a class="chat-remove-whisper"><i class="fa fa-times" ></i> remove</a>`+
-            '</span>';
-}
 
 class MessageBuilder {
 
@@ -237,10 +231,8 @@ class ChatUserMessage extends ChatMessage {
 
         let ctrl = ': ';
         if(this.target)
-            ctrl = ` whispered you ... ` + buildWhisperTools();
-        else if(this.slashme)
-            ctrl = '';
-        else if(this.continued)
+            ctrl = ' whispered: ';
+        else if(this.slashme || this.continued)
             ctrl = '';
 
         const user = buildFeatures(this.user) + ` <a class="user ${this.user.features.join(' ')}">${this.user.username}</a>`;

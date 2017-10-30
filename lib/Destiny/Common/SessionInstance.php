@@ -155,7 +155,7 @@ class SessionInstance {
      * @param mixed $value
      * @return mixed|null
      */
-    public function set($name, $value = null) {
+    public function set($name, $value) {
         if ($value === null) {
             if (isset ( $_SESSION [$name] )) {
                 $value = $_SESSION [$name];

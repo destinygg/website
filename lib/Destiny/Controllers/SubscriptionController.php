@@ -47,21 +47,21 @@ class SubscriptionController {
      * @throws DBALException
      */
     public function subscribe(ViewModel $model) {
-        $subscriptionsService = SubscriptionsService::instance ();
-        
-        if(Session::hasRole(UserRole::USER)){
-            $userId = Session::getCredentials ()->getUserId ();
-            
+        $subscriptionsService = SubscriptionsService::instance();
+
+        if (Session::hasRole(UserRole::USER)) {
+            $userId = Session::getCredentials()->getUserId();
+
             // Pending subscription
-            $subscription = $subscriptionsService->getSubscriptionByUserIdAndStatus ( $userId, SubscriptionStatus::PENDING );
-            if (! empty ( $subscription )) {
-                throw new Exception ( 'You already have a subscription in the "pending" state.' );
+            $subscription = $subscriptionsService->findByUserIdAndStatus($userId, SubscriptionStatus::PENDING);
+            if (!empty ($subscription)) {
+                throw new Exception ('You already have a subscription in the "pending" state.');
             }
-            
+
             // Active subscription
-            $model->subscription = $subscriptionsService->getUserActiveSubscription ( $userId );
+            $model->subscription = $subscriptionsService->getUserActiveSubscription($userId);
         }
-        
+
         $model->title = 'Subscribe';
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         return 'subscribe';
@@ -81,17 +81,14 @@ class SubscriptionController {
      */
     public function subscriptionCancel(array $params, ViewModel $model) {
         FilterParams::required($params, 'id');
-
-        $subscriptionsService = SubscriptionsService::instance ();
-        $userId = Session::getCredentials ()->getUserId ();
+        $subscriptionsService = SubscriptionsService::instance();
+        $userId = Session::getCredentials()->getUserId();
         $subscriptionId = $params['id'];
-
-        $subscription = $subscriptionsService->getSubscriptionByIdAndUserIdAndStatus ( $subscriptionId, $userId, SubscriptionStatus::ACTIVE );
-        if (empty ( $subscription )) {
-            throw new Exception ( 'Must have an active subscription' );
+        $sub = $subscriptionsService->findById($subscriptionId);
+        if (empty ($sub) || $sub['userId'] !== $userId || $sub['status'] === SubscriptionStatus::ACTIVE) {
+            throw new Exception ('Must have an active subscription');
         }
-
-        $model->subscription = $subscription;
+        $model->subscription = $sub;
         $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
@@ -101,8 +98,8 @@ class SubscriptionController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params         
-     * @param ViewModel $model          
+     * @param array $params
+     * @param ViewModel $model
      * @return string
      *
      * @throws DBALException
@@ -110,20 +107,15 @@ class SubscriptionController {
      */
     public function subscriptionGiftCancel(array $params, ViewModel $model) {
         FilterParams::required($params, 'id');
-
-        $subscriptionsService = SubscriptionsService::instance ();
-        $userService = UserService::instance ();
-
-        $userId = Session::getCredentials ()->getUserId ();
-        $subscription = $subscriptionsService->getSubscriptionByIdAndGifterIdAndStatus ( $params['id'], $userId, SubscriptionStatus::ACTIVE );
-        $giftee = $userService->getUserById ( $subscription['userId'] );
-
-        if(empty($subscription)){
-            throw new Exception ( 'Invalid subscription' );
+        $subscriptionsService = SubscriptionsService::instance();
+        $userService = UserService::instance();
+        $userId = Session::getCredentials()->getUserId();
+        $sub = $subscriptionsService->findById($params['id']);
+        if (empty($sub) || $sub['gifter'] !== $userId || $sub['status'] !== SubscriptionStatus::ACTIVE) {
+            throw new Exception ('Invalid subscription');
         }
-
-        $model->subscription = $subscription;
-        $model->giftee = $giftee;
+        $model->subscription = $sub;
+        $model->giftee = $userService->getUserById($sub['userId']);
         $model->title = 'Cancel Subscription';
         return 'profile/cancelsubscription';
     }
@@ -148,7 +140,7 @@ class SubscriptionController {
         $authenticationService = AuthenticationService::instance();
         
         $userId = Session::getCredentials ()->getUserId ();
-        $subscription = $subscriptionsService->getSubscriptionById ( $params['subscriptionId'] );
+        $subscription = $subscriptionsService->findById ( $params['subscriptionId'] );
 
         $googleRecaptchaHandler = new GoogleRecaptchaHandler();
         $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
@@ -269,7 +261,7 @@ class SubscriptionController {
                 if ($userId == $giftReceiver['userId']){
                    throw new Exception ( 'Invalid giftee (cannot gift yourself)' );
                 }
-                if(!$subscriptionsService->getCanUserReceiveGift ( $userId, $giftReceiver['userId'] )){
+                if(!$subscriptionsService->canUserReceiveGift ( $userId, $giftReceiver['userId'] )){
                    throw new Exception ( 'Invalid giftee (user does not accept gifts)' );
                 }
             }
@@ -348,7 +340,7 @@ class SubscriptionController {
         $authenticationService = AuthenticationService::instance();
         $conn = Application::getDbConn();
 
-        $subscription = $subscriptionsService->getSubscriptionById($params ['subscriptionId']);
+        $subscription = $subscriptionsService->findById($params ['subscriptionId']);
         if (empty ($subscription) || strcasecmp($subscription ['status'], SubscriptionStatus::_NEW) !== 0) {
             throw new Exception ('Invalid subscription state');
         }
@@ -364,8 +356,8 @@ class SubscriptionController {
             }
 
             FilterParams::required($params, 'PayerID'); // if the order status is an error, the payerID is not returned
-            Session::set('subscriptionId');
-            Session::set('token');
+            Session::remove('subscriptionId');
+            Session::remove('token');
 
             // Create the payment profile
             try {
@@ -450,7 +442,7 @@ class SubscriptionController {
 
         // Broadcast
         try {
-            $subMessage = Session::set('subMessage');
+            $subMessage = Session::getAndRemove('subMessage');
             $randomEmote = ChatEmotes::random('destiny');
             if (!empty($subscription['gifter'])) {
                 $gifter = $userService->getUserById($subscription['gifter']);
@@ -460,12 +452,10 @@ class SubscriptionController {
                 $gifternick = $user['username'];
                 $message = sprintf("%s is now a %s subscriber!", $user['username'], $subscriptionType ['tierLabel']);
             }
-            $broadcast = $message . ' ' . $randomEmote;
-            if (!empty($subMessage)) {
-                $subMessage = trim(preg_replace('/\s\s+/', ' ', $subMessage));
-                $broadcast .= "\r" . $gifternick . " said... \r" . $subMessage;
+            $chatIntegrationService->sendBroadcast($message);
+            if(!empty($subMessage)) {
+                $chatIntegrationService->sendBroadcast("$gifternick said... $subMessage");
             }
-            $chatIntegrationService->sendBroadcast($broadcast);
             if(Config::$a['streamlabs']['alert_subscriptions']) {
                 $streamLabService = StreamLabsService::withAuth();
                 $streamLabService->sendAlert([
@@ -504,7 +494,7 @@ class SubscriptionController {
         $subscriptionsService = SubscriptionsService::instance ();
         $userService = UserService::instance ();
         $userId = Session::getCredentials ()->getUserId ();
-        $subscription = $subscriptionsService->getSubscriptionById ( $params ['subscriptionId'] );
+        $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
 
         if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) )
             throw new Exception ( 'Invalid subscription record' );
@@ -539,7 +529,7 @@ class SubscriptionController {
         $subscriptionsService = SubscriptionsService::instance ();
         $userId = Session::getCredentials ()->getUserId ();
 
-        $subscription = $subscriptionsService->getSubscriptionById ( $params ['subscriptionId'] );
+        $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
         if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) )
             throw new Exception ( 'Invalid subscription record' );
 
@@ -571,7 +561,7 @@ class SubscriptionController {
         ];
         $user = $userService->getUserByUsername($params ['s']);
         if (!empty($user)) {
-            $data['cangift'] = $subscriptionService->getCanUserReceiveGift($userId, $user['userId']);
+            $data['cangift'] = $subscriptionService->canUserReceiveGift($userId, $user['userId']);
             $data['valid'] = true;
         }
         return $data;

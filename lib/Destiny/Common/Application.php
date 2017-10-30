@@ -169,7 +169,7 @@ class Application extends Service {
             Http::header(Http::HEADER_CONTENTTYPE, MimeType::JSON);
             try {
                 $body = json_encode($body);
-            } catch (InvalidArgumentException $e) {
+            } catch (\Exception $e) {
                 $n = new Exception('Invalid response body.', $e);
                 Log::error($n);
             }

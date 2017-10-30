@@ -11,23 +11,19 @@ function buildEmote(emote){
     return `<div class="emote"><span title="${emote}" class="chat-emote chat-emote-${emote}">${emote}</span></div>`
 }
 function getSettingValue(e){
-    switch(e.getAttribute('type')){
-        case 'checkbox':
-            const val = $(e).is(':checked');
-            return Boolean(e.hasAttribute('data-opposite') ? !val : val);
-        case 'text':
-            return $(e).val();
+    if(e.getAttribute('type') === 'checkbox') {
+        const val = $(e).is(':checked');
+        return Boolean(e.hasAttribute('data-opposite') ? !val : val);
+    } else if(e.getAttribute('type') === 'text' || e.nodeName.toLocaleLowerCase() === 'select') {
+        return $(e).val()
     }
-    return undefined;
+    return undefined
 }
 function setSettingValue(e, val){
-    switch(e.getAttribute('type')){
-        case 'checkbox':
-            $(e).prop('checked', Boolean(e.hasAttribute('data-opposite') ? !val : val));
-            break;
-        case 'text':
-            $(e).val(val);
-            break;
+    if(e.getAttribute('type') === 'checkbox') {
+        $(e).prop('checked', Boolean(e.hasAttribute('data-opposite') ? !val : val))
+    } else if(e.getAttribute('type') === 'text' || e.nodeName.toLocaleLowerCase() === 'select') {
+        $(e).val(val)
     }
 }
 function userComparator(a, b){
@@ -68,16 +64,18 @@ function userComparator(a, b){
 class ChatMenu extends EventEmitter {
 
     constructor(ui, btn, chat){
-        super();
-        this.ui      = ui;
-        this.btn     = btn;
-        this.chat    = chat;
-        this.visible = false;
-        this.shown   = false;
-        this.ui.find('.scrollable').get().forEach(el => this.scrollplugin = new ChatScrollPlugin(chat, el));
-        this.ui.on('click', '.close,.menu-close', this.hide.bind(this));
+        super()
+        this.ui = ui
+        this.btn = btn
+        this.chat = chat
+        this.visible = false
+        this.shown = false
+        this.ui.find('.scrollable').each((i, e) => {
+            this.scrollplugin = new ChatScrollPlugin(chat, e)
+        })
+        this.ui.on('click', '.close,.menu-close', this.hide.bind(this))
         this.btn.on('click', e => {
-            if(this.visible)
+            if (this.visible)
                 chat.input.focus()
             this.toggle(e)
             return false
@@ -86,21 +84,21 @@ class ChatMenu extends EventEmitter {
 
     show(){
         if(!this.visible){
-            this.visible = true;
-            this.shown = true;
-            this.btn.addClass('active');
-            this.ui.addClass('active');
-            this.redraw();
-            this.emit('show');
+            this.visible = true
+            this.shown = true
+            this.btn.addClass('active')
+            this.ui.addClass('active')
+            this.redraw()
+            this.emit('show')
         }
     }
 
     hide(){
         if(this.visible){
-            this.visible = false;
-            this.btn.removeClass('active');
-            this.ui.removeClass('active');
-            this.emit('hide');
+            this.visible = false
+            this.btn.removeClass('active')
+            this.ui.removeClass('active')
+            this.emit('hide')
         }
     }
 
@@ -123,59 +121,55 @@ class ChatMenu extends EventEmitter {
 class ChatSettingsMenu extends ChatMenu {
 
     constructor(ui, btn, chat) {
-        super(ui, btn, chat);
-        this.notificationEl = this.ui.find('#chat-settings-notification-permissions');
-        this.ui.on('change', 'input[type="checkbox"]', e => this.onSettingsChange(e));
-        this.ui.on('keypress blur', 'textarea[name="customhighlight"]', e => this.onCustomHighlightChange(e));
+        super(ui, btn, chat)
+        this.notificationEl = this.ui.find('#chat-settings-notification-permissions')
+        this.ui.on('change', 'input[type="checkbox"],select', e => this.onSettingsChange(e))
+        this.ui.on('keypress blur', 'textarea[name="customhighlight"]', e => this.onCustomHighlightChange(e))
     }
 
     onCustomHighlightChange(e){
         if (!isKeyCode(e, KEYCODES.ENTER)) return; // not Enter
-        let data = $(e.target).val().toString().split(',').map(s => s.trim());
-        this.chat.settings.set('customhighlight', [...new Set(data)]);
-        this.chat.applySettings(false);
-        this.chat.commitSettings();
+        let data = $(e.target).val().toString().split(',').map(s => s.trim())
+        this.chat.settings.set('customhighlight', [...new Set(data)])
+        this.chat.applySettings(false)
+        this.chat.commitSettings()
     }
 
     onSettingsChange(e){
-        const val = getSettingValue(e.target);
-        const name = e.target.getAttribute('name');
+        const val = getSettingValue(e.target)
+        const name = e.target.getAttribute('name')
         if(val !== undefined) {
-
             switch(name){
                 case 'profilesettings':
-                    if(!val && this.chat.authenticated) {
-                        $.ajax({url: '/api/chat/me/settings', method:'delete'});
-                    }
+                    if(!val && this.chat.authenticated)
+                        $.ajax({url: '/api/chat/me/settings', method:'delete'})
                     break;
                 case 'notificationwhisper':
                 case 'notificationhighlight':
-                    if(val){
-                        this.notificationPermission().then(() => this.updateNotification());
-                    }
+                    if(val)
+                        this.notificationPermission().then(() => this.updateNotification())
                     break;
             }
-
-            this.chat.settings.set(name, val);
-            this.chat.applySettings(false);
-            this.chat.commitSettings();
+            this.chat.settings.set(name, val)
+            this.chat.applySettings(false)
+            this.chat.commitSettings()
         }
     }
 
     show(){
         if(!this.visible){
-            this.ui.find('input').get()
+            this.ui.find('input,select').get()
                 .filter(e => this.chat.settings.has(e.getAttribute('name')))
-                .forEach(e => setSettingValue(e, this.chat.settings.get(e.getAttribute('name'))));
-            this.ui.find('textarea[name="customhighlight"]').val(this.chat.settings.get('customhighlight') || '');
-            this.updateNotification();
+                .forEach(e => setSettingValue(e, this.chat.settings.get(e.getAttribute('name'))))
+            this.ui.find('textarea[name="customhighlight"]').val(this.chat.settings.get('customhighlight') || '')
+            this.updateNotification()
         }
-        super.show();
+        super.show()
     }
 
     updateNotification(){
-        const perm = Notification.permission === 'default' ? 'required' : Notification.permission;
-        this.notificationEl.text(`(Permission ${perm})`);
+        const perm = Notification.permission === 'default' ? 'required' : Notification.permission
+        this.notificationEl.text(`(Permission ${perm})`)
     }
 
     notificationPermission(){

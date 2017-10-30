@@ -46,7 +46,7 @@ class StreamLabsService extends Service {
     public static function withAuth() {
         /** @var StreamLabsService $instance */
         $instance = parent::instance();
-        $instance->setAuth($instance->default);
+        $instance->setAuth($instance->getDefaultAuth());
         return $instance;
     }
 

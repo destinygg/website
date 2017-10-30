@@ -16,19 +16,24 @@ use Destiny\Common\Config;
   <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/banner.php' ?>
 
     <section class="container">
-    
+
+        <h1 class="title">
+            <span>Subscribe</span>
+            <small>send a message too</small>
+        </h1>
+        <br />
+
       <?php if(Session::hasRole(UserRole::USER)): ?>
       <div id="giftSubscriptionSelect" class="alert alert-info" style="text-align: center;">
           Would you like to gift someone a subscription? 
-          <button class="btn btn-primary" data-toggle="modal" data-target="#userSearchModal">Yes, gift a subscription <span class="fa fa-gift"></span></button>
+          <button class="btn btn-primary" data-toggle="modal" data-target="#usersearchmodal">Yes, gift a subscription <span class="fa fa-gift"></span></button>
       </div>
 
       <div id="giftSubscriptionConfirm" class="alert alert-info hidden" style="text-align: center;">
           You are gifting your subscription to <strong id="subscriptionGiftUsername"></strong>!
-          <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#userSearchModal">Change <span class="fa fa-gift"></span></button>
+          <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#usersearchmodal">Change <span class="fa fa-gift"></span></button>
           <button class="btn btn-default" id="cancelGiftSubscription">Abort!</button>
       </div>
       <?php endif ?>
@@ -191,7 +196,7 @@ use Destiny\Common\Config;
         
     </section>
 
-    <div class="modal fade" id="userSearchModal" tabindex="-1" role="dialog" aria-labelledby="userSearchModalLabel" aria-hidden="true">
+    <div class="modal fade" id="usersearchmodal" tabindex="-1" role="dialog" aria-labelledby="userSearchModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">

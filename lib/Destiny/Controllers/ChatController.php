@@ -49,13 +49,11 @@ class ChatController {
      * @throws DBALException
      */
     public function getUser(){
-        $cred = Session::getCredentials ();
         $userService = UserService::instance();
-        return [
-            'nick'     => $cred->getUsername(),
-            'features' => $cred->getFeatures(),
-            'settings' => $userService->fetchChatSettings($cred->getUserId())
-        ];
+        $creds = Session::getCredentials ();
+        $data = $creds->getData();
+        $data['settings'] = $userService->fetchChatSettings($creds->getUserId());
+        return $data;
     }
 
     /**

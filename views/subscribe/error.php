@@ -56,7 +56,6 @@ use Destiny\Common\Config;
         </div>
 
         <div class="form-actions">
-          <a class="pull-right powered-paypal" title="Powered by Paypal" href="https://www.paypal.com" target="_blank">Paypal</a>
           <a href="/subscribe" class="btn btn-link">Subscriptions</a>
           <a href="/profile" class="btn btn-link">Back to profile</a>
         </div>

@@ -112,16 +112,4 @@ class HomeController {
         return 'bigscreen';
     }
 
-    /**
-     * @Route ("/amazon")
-     *
-     * @param ViewModel $model
-     * @return string
-     */
-    public function amazon(ViewModel $model) {
-        $model->title = 'Amazon';
-        return 'amazon';
-    }
-
-
 }

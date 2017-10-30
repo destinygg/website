@@ -102,10 +102,10 @@ class AdminController {
      */
     public function adminSubscribers(ViewModel $model) {
         $subService = SubscriptionsService::instance ();
-        $model->subscribersT4 = $subService->getSubscriptionsByTier ( 4 );
-        $model->subscribersT3 = $subService->getSubscriptionsByTier ( 3 );
-        $model->subscribersT2 = $subService->getSubscriptionsByTier ( 2 );
-        $model->subscribersT1 = $subService->getSubscriptionsByTier ( 1 );
+        $model->subscribersT4 = $subService->findByTier ( 4 );
+        $model->subscribersT3 = $subService->findByTier ( 3 );
+        $model->subscribersT2 = $subService->findByTier ( 2 );
+        $model->subscribersT1 = $subService->findByTier ( 1 );
         $model->title = 'Subscribers';
         return 'admin/subscribers';
     }
@@ -129,6 +129,7 @@ class AdminController {
     /**
      * @Route ("/admin/bans/purgeall")
      * @Secure ({"ADMIN"})
+     * @throws DBALException
      */
     public function adminPurgeBans() {
         $chatService = ChatIntegrationService::instance ();

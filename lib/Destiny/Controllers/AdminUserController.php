@@ -59,11 +59,11 @@ class AdminUserController {
         $model->ban = $userService->getUserActiveBan ( $user ['userId'] );
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
         $model->address = $userService->getAddressByUserId ( $user ['userId'] );
-        $model->subscriptions = $subscriptionsService->getSubscriptionsByUserId($user ['userId']);
-        $model->gifts = $subscriptionsService->getSubscriptionsByGifter($user ['userId']);
+        $model->subscriptions = $subscriptionsService->findByUserId($user ['userId']);
+        $model->gifts = $subscriptionsService->findCompletedByGifterId($user ['userId']);
 
-        $gifters = array();
-        $recipients = array();
+        $gifters = [];
+        $recipients = [];
 
         foreach ( $model->subscriptions as $subscription ){
             if(!empty($subscription['gifter'])){
@@ -157,7 +157,7 @@ class AdminUserController {
             return $redirect;
         }
 
-        $userData = array (
+        $userData = [
             'username' => $username,
             'country' => $country,
             'email' => $email,
@@ -167,7 +167,7 @@ class AdminUserController {
             'istwitchsubscriber' => $istwitchsubscriber,
             'discordname' => $discordname,
             'discorduuid' => $discorduuid
-        );
+        ];
 
         $conn = Application::getDbConn();
         try {
@@ -175,7 +175,7 @@ class AdminUserController {
             $userService->updateUser ( $user ['userId'], $userData );
             $user = $userService->getUserById ( $params ['id'] );
             if (! isset ( $params ['features'] ))
-                $params ['features'] = array ();
+                $params ['features'] = [];
             $userService->setUserFeatures ( $user ['userId'], $params ['features'] );
             $authService->flagUserForUpdate ( $user ['userId'] );
             $conn->commit();
@@ -208,14 +208,14 @@ class AdminUserController {
 
         $model->user = $userService->getUserById ( $params ['id'] );
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
-        $model->subscription = array (
+        $model->subscription = [
           'subscriptionType' => '',
           'createdDate' => gmdate('Y-m-d H:i:s'),
           'endDate' => gmdate('Y-m-d H:i:s'),
           'status' => 'Active',
           'gifter' => '',
           'recurring' => false
-        );
+        ];
         
         $authService = AuthenticationService::instance ();
         $authService->flagUserForUpdate ( $params ['id'] );
@@ -243,11 +243,11 @@ class AdminUserController {
         $userService = UserService::instance ();
         $ordersService = OrdersService::instance();
         
-        $subscription = array ();
-        $payments = array ();
+        $subscription = [];
+        $payments = [];
 
         if (! empty ( $params ['subscriptionId'] )) {
-            $subscription = $subscriptionsService->getSubscriptionById ( $params ['subscriptionId'] );
+            $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
             $payments = $ordersService->getPaymentsBySubscriptionId ( $subscription ['subscriptionId'] );
         }
         
@@ -282,7 +282,7 @@ class AdminUserController {
         $subscriptionsService = SubscriptionsService::instance ();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);
 
-        $subscription = array ();
+        $subscription = [];
         $subscription ['subscriptionType'] = $subscriptionType ['id'];
         $subscription ['subscriptionTier'] = $subscriptionType ['tier'];
         $subscription ['status'] = $params ['status'];
@@ -329,7 +329,6 @@ class AdminUserController {
      * @param array $params
      * @return string
      *
-     * @throws Exception
      * @throws DBALException
      */
     public function authProviderDelete(array $params) {
@@ -365,11 +364,11 @@ class AdminUserController {
 
         $model->user = $user;
         $time = Date::getDateTime ( 'NOW' );
-        $model->ban = array (
+        $model->ban = [
             'reason' => '',
             'starttimestamp' => $time->format ( 'Y-m-d H:i:s' ),
             'endtimestamp' => ''
-        );
+        ];
         return 'admin/userban';
     }
 
@@ -389,7 +388,7 @@ class AdminUserController {
             throw new Exception ( 'userId required' );
         }
 
-        $ban = array ();
+        $ban = [];
         $ban ['reason'] = $params ['reason'];
         $ban ['userid'] = Session::getCredentials ()->getUserId ();
         $ban ['ipaddress'] = '';
@@ -459,7 +458,7 @@ class AdminUserController {
         $authenticationService = AuthenticationService::instance ();
         $eBan = $userService->getBanById ( $params ['id'] );
 
-        $ban = array ();
+        $ban = [];
         $ban ['id'] = $eBan ['id'];
         $ban ['reason'] = $params ['reason'];
         $ban ['userid'] = $eBan ['userid'];

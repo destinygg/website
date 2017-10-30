@@ -1,5 +1,9 @@
 /* global $ */
 
+/**
+ * Handles the dimming of the chat when you click on a username
+ * within the chat GUI
+ */
 class ChatUserFocus {
 
     constructor(chat, css){

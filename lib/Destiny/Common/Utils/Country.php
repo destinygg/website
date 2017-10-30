@@ -14,7 +14,7 @@ abstract class Country {
      *
      * @var array
      */
-    public static $countries = array ();
+    public static $countries = [];
     
     /**
      * List of countries by code e.g.

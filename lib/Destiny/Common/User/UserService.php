@@ -779,10 +779,10 @@ class UserService extends Service {
           SELECT u.userId FROM `dfl_users` u
           WHERE u.username IN (?)
         ",
-            array($usernames),
-            array(Connection::PARAM_STR_ARRAY)
+            [$usernames],
+            [Connection::PARAM_STR_ARRAY]
         );
-        $ids = array();
+        $ids = [];
         $result = $stmt->fetchAll();
         foreach ($result as $item) {
             $ids[] = $item['userId'];

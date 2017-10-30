@@ -24,7 +24,7 @@ $(function(){
 
     $('.text-message textarea[maxlength]').each((i, e) => {
         const ta = $(e), max = ta.attr('maxlength')
-        const indicator = $(`<div class="max-length-indicator">250</div>`)
+        const indicator = $(`<div class="max-length-indicator">${max}</div>`)
         ta.on('keyup', () => indicator.text(max - ta.val().toString().length))
         ta.after(indicator)
     });
@@ -280,7 +280,7 @@ $(function(){
     const selectUser = function(username){
         usrSelectBtn.button('loading');
         checkUser(username, function(response){
-            if(response.valid && response.cangift){
+            if(response['valid'] && response['cangift']){
                 giftUsername = username;
                 if(giftMsgInput.val() === '')
                     giftMsgInput.focus();
@@ -288,9 +288,9 @@ $(function(){
                     usrSearchFrm.submit();
                 usrSelectBtn.button('reset').attr('disabled', false);
                 hasErrors = false;
-            }else if(!response.valid){
+            }else if(!response['valid']){
                 showLookupError('This user was not found. Try again.');
-            }else if(!response.cangift){
+            }else if(!response['cangift']){
                 showLookupError('This user is not eligible for a gift.');
             }
         });
@@ -316,11 +316,11 @@ $(function(){
         return false;
     });
 
-    usrSearch.on('shown.bs.modal', function (e) {
+    usrSearch.on('shown.bs.modal', function () {
         usrInput.focus();
     });
 
-    usrSearch.on('hidden.bs.modal', function (e) {
+    usrSearch.on('hidden.bs.modal', function () {
         if(hasErrors){
             hasErrors = false;
             giftUsername = '';
@@ -401,7 +401,7 @@ $(function(){
 // Subscription, donate
 $(function(){
 
-    let subform = $('form#subscribe-form')
+    const subform = $('form#subscribe-form')
     if(subform.length > 0) {
         subform.on('submit', () => {
             subform.find('button').attr("disabled", "disabled")
@@ -409,7 +409,7 @@ $(function(){
         })
     }
 
-    let donateform = $('form#donate-form')
+    const donateform = $('form#donate-form')
     if(donateform.length > 0) {
         donateform.on('submit', () => {
             donateform.find('button').attr("disabled", "disabled")
@@ -418,3 +418,38 @@ $(function(){
     }
 
 })
+
+$(function(){
+
+    const selectFollowUri = form => {
+        let follow = ''
+        try {
+            const a = document.createElement('a');
+            a.href = window.self !== window.top ? window.top.location.href.toString(): window.location.href.toString();
+            follow = a.pathname + a.hash + a.search
+        } catch (ignored) {}
+        form.find('input[name="follow"]').val(follow)
+    }
+
+    const submitLogin = (form, provider) => {
+        form.find('input[name="authProvider"]').val(provider)
+        form.trigger('submit')
+        return false
+    }
+
+    $('#loginmodal').find('form').each(function(){
+        const form = $(this)
+        form.on('submit', () => selectFollowUri(form))
+        form.on('click', '#loginproviders .btn', function(){
+            return submitLogin(form, $(this).data('provider'));
+        })
+        form.on('keyup', '#loginproviders .btn', function(e){
+            if(e.keyCode === 13){
+                return submitLogin(form, $(this).data('provider'))
+            }
+        })
+    })
+
+})
+
+window.showLoginModal = () => $('#loginmodal').modal("show")

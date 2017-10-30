@@ -8,17 +8,17 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-ini_set('date.timezone', 'UTC');
-define('_APP_VERSION', '2.0.78'); // auto-generated: 1499361006489
+define('_APP_VERSION', '2.1.0'); // auto-generated: 1509356363268
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
 Config::load(array_replace_recursive(
     require _BASEDIR . '/config/config.php',
     require _BASEDIR . '/config/config.local.php',
+    ['domains_blacklist' => include _BASEDIR . '/config/domains.blacklist.php'],
     ['version' => _APP_VERSION]
 ));
-set_include_path(get_include_path() . PATH_SEPARATOR . Config::$a['tpl']['path']);
+set_include_path(get_include_path() . PATH_SEPARATOR . _BASEDIR . '/views/');
 
 // Required to auto-load custom annotations
 AnnotationRegistry::registerLoader([$loader, 'loadClass']);

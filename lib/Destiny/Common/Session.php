@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Destiny\Common;
 
 abstract class Session {
@@ -7,15 +7,15 @@ abstract class Session {
      * @return SessionInstance
      */
     public static function instance() {
-        return Application::instance ()->getSession ();
+        return Application::instance()->getSession();
     }
 
     /**
      * @return boolean
      */
     public static function hasSessionCookie() {
-        $session = self::instance ();
-        $sid = $session->getSessionCookie ()->getValue ();
+        $session = self::instance();
+        $sid = $session->getSessionCookie()->getValue();
         return !empty($sid);
     }
 
@@ -25,49 +25,49 @@ abstract class Session {
      * @return boolean
      */
     public static function start() {
-        $session = self::instance ();
-        return (!$session->isStarted()) ? $session->start () : true;
+        $session = self::instance();
+        return (!$session->isStarted()) ? $session->start() : true;
     }
 
     /**
      * @return boolean
      */
     public static function isStarted() {
-        return self::instance ()->isStarted ();
+        return self::instance()->isStarted();
     }
 
     /**
      * @return string
      */
     public static function getSessionId() {
-        return self::instance ()->getSessionId ();
+        return self::instance()->getSessionId();
     }
 
     /**
      * @param SessionCredentials $credentials
      */
     public static function updateCredentials(SessionCredentials $credentials) {
-        $session = self::instance ();
-        $params = $credentials->getData ();
-        foreach ( $params as $name => $value ) {
-            $session->set ( $name, $value );
+        $session = self::instance();
+        $params = $credentials->getData();
+        foreach ($params as $name => $value) {
+            $session->set($name, $value);
         }
-        $session->setCredentials ( $credentials );
+        $session->setCredentials($credentials);
     }
 
     /**
      * @return SessionCredentials
      */
     public static function getCredentials() {
-        return self::instance ()->getCredentials ();
+        return self::instance()->getCredentials();
     }
 
     /**
      * @return void
      */
     public static function destroy() {
-        $session = self::instance ();
-        $session->destroy ();
+        $session = self::instance();
+        $session->destroy();
     }
 
     /**
@@ -75,7 +75,17 @@ abstract class Session {
      * @return mixed
      */
     public static function get($name) {
-        return self::instance ()->get ( $name );
+        return self::instance()->get($name);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public static function getAndRemove($name) {
+        $v = self::instance()->get($name);
+        self::instance()->set($name, null);
+        return $v;
     }
 
     /**
@@ -86,8 +96,17 @@ abstract class Session {
      * @param string $value
      * @return mixed
      */
-    public static function set($name, $value = null) {
-        return self::instance ()->set ( $name, $value );
+    public static function set($name, $value) {
+        return self::instance()->set($name, $value);
+    }
+
+    /**
+     * Remove a session variable if it exists
+     *
+     * @param string $name
+     */
+    public static function remove($name) {
+        self::instance()->set($name, null);
     }
 
     /**
@@ -95,7 +114,7 @@ abstract class Session {
      * @return boolean
      */
     public static function has($name) {
-        return self::instance ()->has ( $name );
+        return self::instance()->has($name);
     }
 
     /**
@@ -126,22 +145,22 @@ abstract class Session {
         return false;
     }
 
-    public static function applyBags(ViewModel $model){
+    public static function applyBags(ViewModel $model) {
         if (self::has('modelSuccess')) {
             $model->success = self::get('modelSuccess');
-            self::set('modelSuccess');
+            self::remove('modelSuccess');
         }
         if (self::has('modelError')) {
             $model->error = self::get('modelError');
-            self::set('modelError');
+            self::remove('modelError');
         }
     }
 
-    public static function setSuccessBag($message){
+    public static function setSuccessBag($message) {
         self::set('modelSuccess', $message);
     }
 
-    public static function setErrorBag($message){
+    public static function setErrorBag($message) {
         self::set('modelError', $message);
     }
 
