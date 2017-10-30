@@ -1,5 +1,7 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Session;
+use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>
@@ -33,11 +35,19 @@ use Destiny\Common\Config;
 
         <div class="content content-dark clearfix">
             <form id="donateform" class="validate" action="/donate" method="post">
-                <div class="ds-block">
-                    <div id="donation-username" class="form-group form-group-lg">
-                        <input class="form-control required" id="username" name="username" placeholder="Enter a username ..." value="<?=Tpl::out($this->username)?>" autofocus />
+                <?php if(!Session::hasRole(UserRole::USER)): ?>
+                    <div class="ds-block">
+                        <div id="donation-username" class="form-group form-group-lg">
+                            <input class="form-control required" id="username" name="username" placeholder="Enter a username ..." value="<?=Tpl::out($this->username)?>" autofocus />
+                        </div>
                     </div>
-                </div>
+                <?php else: ?>
+                    <div class="ds-block">
+                        <div id="donation-username" class="form-group form-group-lg">
+                            <input readonly="readonly" class="form-control" value="<?=Tpl::out($this->username)?>" autofocus />
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <div class="ds-block">
                     <div id="donation-amount" class="form-group form-group-lg">
                         <label class="sr-only" for="amount">Amount (in dollars)</label>
