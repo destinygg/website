@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 
 class ChatEmotes {
 
-    private static $emotes = array ();
+    private static $emotes = [];
 
     /**
      * @param string $type twitch|destiny
