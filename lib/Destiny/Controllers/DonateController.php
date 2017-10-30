@@ -77,7 +77,6 @@ class DonateController {
      */
     public function donatePost(array $params){
         FilterParams::required($params, 'amount');
-        FilterParams::required($params, 'username');
         FilterParams::declared($params, 'message');
         $conn = Application::getDbConn();
 
@@ -95,6 +94,7 @@ class DonateController {
                 $userid = Session::getCredentials()->getUserId();
                 $username = Session::getCredentials()->getUsername();
             } else {
+                FilterParams::required($params, 'username');
                 AuthenticationService::instance()->validateUsername($params['username']);
                 $username = $params['username'];
             }
