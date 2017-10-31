@@ -25,7 +25,9 @@ class TwitterAuthHandler {
         $client = $service->getOAuth1Client($conf);
         $response = $client->post("$service->oauthBase/request_token", [
             'headers' => ['User-Agent' => Config::userAgent()],
-            'form_params' => ['oauth_callback' => $conf['redirect_uri']]
+            'form_params' => [
+                'oauth_callback' => $conf['redirect_uri']
+            ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             $params = $service->extract_params((string)$response->getBody());
@@ -53,7 +55,10 @@ class TwitterAuthHandler {
         $client = $service->getOAuth1Client($conf);
         $response = $client->post("$service->oauthBase/access_token", [
             'headers' => ['User-Agent' => Config::userAgent()],
-            'form_params' => ['oauth_verifier' => trim($params ['oauth_verifier'])]
+            'form_params' => [
+                'oauth_token' => trim($params ['oauth_token']),
+                'oauth_verifier' => trim($params ['oauth_verifier']),
+            ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             $data = $service->extract_params((string)$response->getBody());
@@ -74,7 +79,7 @@ class TwitterAuthHandler {
         if (empty ($data) || !isset ($data['user_id']) || empty ($data['user_id'])) {
             throw new Exception ('Authorization failed, invalid user data');
         }
-        $arr = array();
+        $arr = [];
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;
         $arr ['authId'] = $data ['user_id'];
