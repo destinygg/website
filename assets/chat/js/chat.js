@@ -892,7 +892,7 @@ class Chat {
     }
 
     cmdEMOTES(){
-        MessageBuilder.info(`Available emoticons: ${this.emoticons.join(', ')} (www.destiny.gg/emotes)`).into(this);
+        MessageBuilder.info(`Available emoticons: ${[...this.emoticons].join(', ')} (www.destiny.gg/emotes)`).into(this);
     }
 
     cmdHELP(){
