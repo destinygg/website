@@ -1,15 +1,7 @@
-/* global $, window */
+require('dgg-chat-gui/assets/chat')
 
-require('core-js/es6')
-require('jquery')
-require('moment')
-require('normalize.css')
-require('font-awesome/scss/font-awesome.scss')
-require('./chat/js/notification')
-require('./chat/css/style.scss')
-
-const Chat = require('./chat/js/chat.js')['default']
-const emotes = require('./emotes.json')
+const Chat = require('dgg-chat-gui/assets/chat/js/chat')['default']
+const emotes = require('dgg-chat-gui/assets/emotes.json')
 const uri = `ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`
 
 $.when(
@@ -17,10 +9,10 @@ $.when(
     new Promise(res => $.getJSON('/api/chat/history').done(res).fail(() => res(null)))
 ).then((userAndSettings, history) =>
     new Chat()
-      .withUserAndSettings(userAndSettings)
-      .withEmotes(emotes)
-      .withGui()
-      .withHistory(history)
-      .withWhispers()
-      .connect(uri)
+        .withUserAndSettings(userAndSettings)
+        .withEmotes(emotes)
+        .withGui()
+        .withHistory(history)
+        .withWhispers()
+        .connect(uri)
 )

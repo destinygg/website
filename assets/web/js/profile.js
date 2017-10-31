@@ -1,6 +1,6 @@
 // Message composition UI
-const chatformatters = require('../../chat/js/formatters')
-const chatemotes = require('../../emotes.json')
+const chatformatters = require('dgg-chat-gui/assets/chat/js/formatters')
+const chatemotes = require('dgg-chat-gui/assets/emotes.json')
 const ctx = {emoticons: chatemotes.destiny, twitchemotes:chatemotes.twitch}
 const formatters = [new chatformatters.HtmlTextFormatter(),new chatformatters.UrlFormatter(),new chatformatters.EmoteFormatter()]
 

@@ -1,13 +1,13 @@
 {
-  "name": "Destiny",
-  "version": "2.1.4",
+  "name": "dgg-website",
+  "version": "2.3.0",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
     "tld": "node scripts/tasks/tld.js",
     "glue": "node scripts/tasks/glue.js",
     "ini": "node scripts/tasks/ini.js",
-    "build": "npm run tld && npm run glue && npm run ini && webpack -p",
+    "build": "npm run tld && npm run ini && webpack -p",
     "watch": "webpack -w"
   },
   "repository": {
@@ -32,6 +32,7 @@
     "static": "./static"
   },
   "devDependencies": {
+    "dgg-chat-gui": "git://github.com/destinygg/chat-gui.git#master",
     "babel-core": "~6.26.0",
     "babel-loader": "~7.1.2",
     "babel-preset-es2015": "~6.24.1",
