@@ -161,6 +161,8 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
+     *
+     * @throws DBALException
      */
     public function getChatSettings(){
         $userService = UserService::instance();
@@ -172,6 +174,7 @@ class ChatController {
      * @Route ("/api/chat/me/settings")
      * @Secure ({"USER"})
      * @HttpMethod ({"DELETE"})
+     * @throws DBALException
      */
     public function clearChatSettings(){
         $userService = UserService::instance();

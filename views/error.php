@@ -41,10 +41,10 @@ use Destiny\Common\Config;
         </p>
 
         <?php $ini = @ini_get('display_errors') ?>
-        <?php if($this->error  && $this->error instanceof Exception || $ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>
+        <?php if($this->error && $this->error instanceof Exception || $ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>
         <?php $msg = $this->error->getMessage() ?>
-        <?php if(is_string($msg) && strlen($msg) > 0): ?>
-        <p><code><?=Tpl::out(trim($this->error->getMessage()))?></code></p>
+        <?php if(is_string($msg) && strlen(trim($msg)) > 0): ?>
+        <p><code><?=Tpl::out($msg)?></code></p>
         <?php endif; ?>
         <?php endif; ?>
 
