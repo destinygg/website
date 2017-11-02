@@ -23,6 +23,10 @@ use Doctrine\DBAL\DBALException;
  */
 class ChatApiController {
 
+    const MSG_FMT_TWITCH_SUB = "%s is now a Twitch subscriber!";
+    const MSG_FMT_TWITCH_RESUB = "%s has resubscribed on Twitch!";
+    const MSG_FMT_TWITCH_RESUB_MONTHS = "%s has resubscribed on Twitch! active for %s";
+
     /**
      * Check the private against the local configuration
      *
@@ -30,7 +34,7 @@ class ChatApiController {
      * @return boolean
      */
     protected function checkPrivateKey($privatekey){
-        return (Config::$a['privateKeys']['chat'] === $privatekey);
+        return Config::$a['privateKeys']['chat'] === $privatekey;
     }
 
     /**
@@ -89,22 +93,22 @@ class ChatApiController {
             if(empty($user))
                 throw new Exception ('notfound');
 
-            $message = array(
+            $message = [
                 'userid' => $params['userid'],
                 'targetuserid' => $params['targetuserid'],
                 'message' => $params['message'],
                 'isread' => 0
-            );
+            ];
 
             $message['id'] = $privateMessageService->addMessage( $message );
-            $chatIntegrationService->publishPrivateMessage(array(
+            $chatIntegrationService->publishPrivateMessage([
                 'messageid' => $message['id'],
                 'message' => $message['message'],
                 'username' => $user['username'],
                 'userid' => $user['userId'],
                 'targetusername' => $targetuser['username'],
                 'targetuserid' => $targetuser['userId']
-            ));
+            ]);
             $response->setStatus(Http::STATUS_NO_CONTENT);
             return [];
         } catch (Exception $e) {
@@ -146,34 +150,13 @@ class ChatApiController {
      * @HttpMethod ({"POST"})
      * @ResponseBody
      *
-     * Expects the following REQUEST params:
-     *     privatekey=XXXXXXXX
-     *
-     * Expects the following body structure:
-     *     [{"123":1},{"456":0}]
-     *
      * @param array $params
      * @param Response $response
      * @param Request $request
      * @return array
-     *
-     * @throws DBALException
      */
     public function postSubscription(array $params, Response $response, Request $request) {
-        try {
-            FilterParams::required($params, 'privatekey');
-            if(!$this->checkPrivateKey($params['privatekey']))
-                throw new Exception ('Invalid shared private key.');
-            $subs = json_decode($request->getBody(), true);
-            if(is_array($subs) && count($subs) > 0) {
-                $this->updateSubsAndBroadcast($subs, "%s is now a Twitch subscriber!");
-            }
-            $response->setStatus(Http::STATUS_NO_CONTENT);
-        } catch (Exception $e) {
-            $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-        return null;
+        return $this->postSubscribe($params, $response, $request, self::MSG_FMT_TWITCH_SUB);
     }
 
     /**
@@ -181,6 +164,16 @@ class ChatApiController {
      * @HttpMethod ({"POST"})
      * @ResponseBody
      *
+     * @param array $params
+     * @param Response $response
+     * @param Request $request
+     * @return array|null
+     */
+    public function postReSubscription(array $params, Response $response, Request $request) {
+        return $this->postSubscribe($params, $response, $request, self::MSG_FMT_TWITCH_RESUB);
+    }
+
+    /**
      * Expects the following REQUEST params:
      *     privatekey=XXXXXXXX
      *
@@ -190,23 +183,20 @@ class ChatApiController {
      * @param array $params
      * @param Response $response
      * @param Request $request
-     * @return array
-     *
-     * @throws DBALException
+     * @param $message
+     * @return array|null
      */
-    public function postReSubscription(array $params, Response $response, Request $request) {
+    private function postSubscribe(array $params, Response $response, Request $request, $message){
         try {
             FilterParams::required($params, 'privatekey');
-            if(!$this->checkPrivateKey($params['privatekey']))
+            if (!$this->checkPrivateKey($params['privatekey']))
                 throw new Exception ('Invalid shared private key.');
-
-            $subs = json_decode( $request->getBody(), true );
-            if(is_array($subs) && count($subs) > 0) {
-                $this->updateSubsAndBroadcast($subs, "%s has resubscribed on Twitch!");
+            $subs = json_decode($request->getBody(), true);
+            if (is_array($subs) && count($subs) > 0) {
+                $this->updateSubsAndBroadcast($subs, $message);
             }
-
             $response->setStatus(Http::STATUS_NO_CONTENT);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }
@@ -277,5 +267,59 @@ class ChatApiController {
                 $chatIntegrationService->sendBroadcast(sprintf($fmt, $user['username']));
             }
         }
+    }
+
+    /**
+     * Newer way of posting a subscribe event, twitch pubsub golang project sends a http post to this endpoint
+     * when it receives an event from the twitch pubsub websocket.
+     * https://dev.twitch.tv/docs/pubsub#example-channel-subscriptions-event-message
+     *
+     * @Route ("/api/twitch/subscribe")
+     * @HttpMethod ({"POST"})
+     * @ResponseBody
+     *
+     * @param array $params
+     * @param Response $response
+     * @param Request $request
+     * @return array
+     */
+    public function twitchSubscribe(array $params, Response $response, Request $request) {
+        try {
+            FilterParams::required($params, 'privatekey');
+            if (!$this->checkPrivateKey($params['privatekey']))
+                throw new Exception ('Invalid shared private key.');
+
+            $data = json_decode($request->getBody(), true);
+            FilterParams::required($data, 'user_id');
+            FilterParams::declared($data, 'months');
+
+            $userService = UserService::instance();
+            $user = $userService->getUserByAuthId($data['user_id'], 'twitch');
+
+            if (!empty($user)) {
+                $username = $user['username'];
+                $message = !empty($data['sub_message']) ? $data['sub_message']['message'] : '';
+                if ($user['istwitchsubscriber'] == 0) {
+                    $userService->updateUser($user['userId'], ['istwitchsubscriber' => 1]);
+                    $authService = AuthenticationService::instance();
+                    $authService->flagUserForUpdate($user['userId']);
+                }
+                $chatService = ChatIntegrationService::instance();
+                if (!empty($data['months']) && intval($data['months']) > 0) {
+                    $chatService->sendBroadcast(sprintf(self::MSG_FMT_TWITCH_RESUB_MONTHS, $username, $data['months']));
+                } else {
+                    $chatService->sendBroadcast(sprintf(self::MSG_FMT_TWITCH_SUB, $username));
+                }
+                if(!empty($message)) {
+                    $chatService->sendBroadcast("$username said... $message");
+                }
+            }
+
+            $response->setStatus(Http::STATUS_NO_CONTENT);
+        } catch (\Exception $e) {
+            $response->setStatus(Http::STATUS_BAD_REQUEST);
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+        return null;
     }
 }

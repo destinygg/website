@@ -48,20 +48,6 @@ use Destiny\Commerce\SubscriptionStatus;
               </div>
             </div>
 
-            <div class="form-group">
-              <label class="control-label" for="inputEmail">Minecraft name</label>
-              <div class="controls">
-                <input type="text" class="form-control" name="minecraftname" id="inputMinecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="control-label" for="inputEmail">Minecraft UUID</label>
-              <div class="controls">
-                <input type="text" class="form-control" name="minecraftuuid" id="inputMinecraftuuid" value="<?=Tpl::out($this->user['minecraftuuid'])?>" placeholder="Minecraft UUID">
-              </div>
-            </div>
-
               <div class="form-group">
                   <label class="control-label" for="inputEmail">Discord name</label>
                   <div class="controls">

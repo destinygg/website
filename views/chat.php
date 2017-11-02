@@ -72,6 +72,11 @@ use Destiny\Common\Config;
                                 <input name="ignorementions" type="checkbox" /> Harsh ignore
                             </label>
                         </div>
+                        <div class="form-group checkbox">
+                            <label title="Hide messages that contain links to NSFL / NSFW links">
+                                <input name="hidensfw" type="checkbox" /> Hide messages with nsfl, nsfw
+                            </label>
+                        </div>
                         <div class="form-group">
                             <label for="showremoved">Banned messages</label>
                             <select class="form-control" id="showremoved" name="showremoved">

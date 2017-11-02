@@ -110,20 +110,8 @@ class AdminUserController {
         $country = (isset ($params ['country']) && !empty ($params ['country'])) ? $params ['country'] : $user ['country'];
         $allowGifting = (isset ($params ['allowGifting'])) ? $params ['allowGifting'] : $user ['allowGifting'];
         $istwitchsubscriber = (isset ($params ['istwitchsubscriber'])) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
-        $minecraftname = (isset ($params ['minecraftname'])) ? $params ['minecraftname'] : $user ['minecraftname'];
-        $minecraftuuid = (isset ($params ['minecraftuuid'])) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
         $discordname = (isset ($params ['discordname'])) ? $params ['discordname'] : $user ['discordname'];
         $discorduuid = (isset ($params ['discorduuid'])) ? $params ['discorduuid'] : $user ['discorduuid'];
-
-        if (empty($minecraftname))
-            $minecraftname = null;
-        else if (mb_strlen($minecraftname) > 16)
-            $minecraftname = mb_substr($minecraftname, 0, 16);
-
-        if (empty($minecraftuuid))
-            $minecraftuuid = null;
-        else if (mb_strlen($minecraftuuid) > 36)
-            $minecraftuuid = mb_substr($minecraftuuid, 0, 36);
 
         if (empty($discordname))
             $discordname = null;
@@ -151,18 +139,10 @@ class AdminUserController {
             return $redirect;
         }
 
-        $mUid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
-        if($minecraftname != null && !empty($mUid) && intval($mUid) !== intval($user ['userId'])) {
-            Session::setErrorBag('Minecraft name already in use #');
-            return $redirect;
-        }
-
         $userData = [
             'username' => $username,
             'country' => $country,
             'email' => $email,
-            'minecraftname' => $minecraftname,
-            'minecraftuuid' => $minecraftuuid,
             'allowGifting' => $allowGifting,
             'istwitchsubscriber' => $istwitchsubscriber,
             'discordname' => $discordname,
