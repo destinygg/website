@@ -25,7 +25,7 @@ class ChatApiController {
 
     const MSG_FMT_TWITCH_SUB = "%s is now a Twitch subscriber!";
     const MSG_FMT_TWITCH_RESUB = "%s has resubscribed on Twitch!";
-    const MSG_FMT_TWITCH_RESUB_MONTHS = "%s has resubscribed on Twitch! active for %s";
+    const MSG_FMT_TWITCH_RESUB_MONTHS = "%s has resubscribed on Twitch! active for %s months";
 
     /**
      * Check the private against the local configuration
