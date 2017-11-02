@@ -26,6 +26,7 @@ class ChatApiController {
     const MSG_FMT_TWITCH_SUB = "%s is now a Twitch subscriber!";
     const MSG_FMT_TWITCH_RESUB = "%s has resubscribed on Twitch!";
     const MSG_FMT_TWITCH_RESUB_MONTHS = "%s has resubscribed on Twitch! active for %s months";
+    const MSG_FMT_TWITCH_RESUB_MONTH = "%s has resubscribed on Twitch! active for %s month";
 
     /**
      * Check the private against the local configuration
@@ -305,12 +306,16 @@ class ChatApiController {
                     $authService->flagUserForUpdate($user['userId']);
                 }
                 $chatService = ChatIntegrationService::instance();
+                $broadcast = sprintf(self::MSG_FMT_TWITCH_SUB, $username);
                 if (!empty($data['months']) && intval($data['months']) > 0) {
-                    $chatService->sendBroadcast(sprintf(self::MSG_FMT_TWITCH_RESUB_MONTHS, $username, $data['months']));
-                } else {
-                    $chatService->sendBroadcast(sprintf(self::MSG_FMT_TWITCH_SUB, $username));
+                    if (intval($data['months']) > 1) {
+                        $broadcast = sprintf(self::MSG_FMT_TWITCH_RESUB_MONTHS, $username, $data['months']);
+                    } else {
+                        $broadcast = sprintf(self::MSG_FMT_TWITCH_RESUB_MONTH, $username, $data['months']);
+                    }
                 }
-                if(!empty($message)) {
+                $chatService->sendBroadcast($broadcast);
+                if (!empty($message)) {
                     $chatService->sendBroadcast("$username said... $message");
                 }
             }
