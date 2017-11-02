@@ -63,19 +63,6 @@ or
 webpack
 ```
 
-#### Additional scripts
-
-Compiles single images from multiple and outputs a css file. Does this for `./assets/emotes` and `./assets/icons`
-```shell
-npm run glue
-```
-
-Pulls the latest list of TLD and outputs a json file `./assets/tld.json`
-```shell
-npm run tld
-```
-
-
 ## Cron job
 
 The retrieval of 3rd party data (e.g. twitter feed) is run through a php script that is polled at a set interval.

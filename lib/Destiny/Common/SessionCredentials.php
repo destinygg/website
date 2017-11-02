@@ -1,6 +1,8 @@
 <?php
 namespace Destiny\Common;
 
+use Destiny\Common\Utils\Date;
+
 class SessionCredentials {
 
     protected $userId = null;
@@ -9,6 +11,7 @@ class SessionCredentials {
     protected $userStatus = '';
     protected $email = '';
     protected $country = '';
+    protected $createdDate;
     protected $roles = [];
     protected $features = [];
 
@@ -49,6 +52,9 @@ class SessionCredentials {
             if (isset ($params ['userStatus']) && !empty ($params ['userStatus'])) {
                 $this->setUserStatus($params ['userStatus']);
             }
+            if (isset ($params ['createdDate']) && !empty ($params ['createdDate'])) {
+                $this->setCreatedDate(Date::getDateTime($params ['createdDate'])->format(Date::FORMAT));
+            }
             if (isset ($params ['features']) && !empty ($params ['features']) && is_array($params ['features'])) {
                 $this->setFeatures(array_unique($params ['features']));
             }
@@ -68,6 +74,7 @@ class SessionCredentials {
             'username' => $this->getUsername(),
             'userId' => $this->getUserId(),
             'userStatus' => $this->getUserStatus(),
+            'createdDate' => $this->getCreatedDate(),
             'country' => $this->getCountry(),
             'roles' => $this->getRoles(),
             'authProvider' => $this->getAuthProvider(),
@@ -198,6 +205,14 @@ class SessionCredentials {
 
     public function setFeatures(array $features) {
         $this->features = $features;
+    }
+
+    public function getCreatedDate() {
+        return $this->createdDate;
+    }
+
+    public function setCreatedDate($createdDate) {
+        $this->createdDate = $createdDate;
     }
 
     /**
