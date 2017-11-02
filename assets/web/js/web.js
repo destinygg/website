@@ -238,10 +238,10 @@ $(function(){
 // Gifting / user search
 $(function(){
 
-    let usrSearch    = $('#userSearchModal'),
+    let usrSearch    = $('#usersearchmodal'),
         usrInput     = usrSearch.find('input#userSearchInput'),
         usrSelectBtn = usrSearch.find('button#userSearchSelect'),
-        usrSearchFrm = usrSearch.find('form#userSearchForm'),
+        usrSearchForm = usrSearch.find('form#userSearchForm'),
         giftMsgInput = usrSearch.find('textarea#giftmessage'),
         hasErrors    = false,
         giftUsername = '';
@@ -285,7 +285,7 @@ $(function(){
                 if(giftMsgInput.val() === '')
                     giftMsgInput.focus();
                 else
-                    usrSearchFrm.submit();
+                    usrSearchForm.submit();
                 usrSelectBtn.button('reset').attr('disabled', false);
                 hasErrors = false;
             }else if(!response['valid']){
@@ -301,7 +301,7 @@ $(function(){
         usrSearch.find('label.error').addClass('hidden');
     });
 
-    usrSearchFrm.on('submit', function(){
+    usrSearchForm.on('submit', function(){
         usrSearch.find('label.error').addClass('hidden');
         if(giftUsername !== usrInput.val()) {
             selectUser(usrInput.val());
@@ -335,6 +335,7 @@ $(function(){
         cancelUserSelect();
         return false;
     });
+
 })
 
 // Stream status

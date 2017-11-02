@@ -203,7 +203,7 @@ use Destiny\Common\Config;
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <form id="userSearchForm" class="form-alt">
             
-              <div id="usrFrmGrp" class="form-group">
+              <div class="form-group">
                 <label>Who do you want to gift?</label>
                 <input tabindex="1" type="text" id="userSearchInput" class="form-control" placeholder="E.g. Destiny" />
                 <label class="error hidden"></label>

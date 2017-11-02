@@ -297,26 +297,6 @@ use Destiny\Commerce\SubscriptionStatus;
               </form>
           </div>
       </section>
-
-
-      <section class="container">
-          <h3 class="collapsed" data-toggle="collapse" data-target="#minecraft-content">Minecraft</h3>
-          <div id="minecraft-content" class="content content-dark clearfix collapse">
-              <form id="minecraftSaveForm" action="/profile/minecraft/update" method="post" role="form">
-                  <div class="ds-block">
-                      <div class="form-group">
-                          <label>Minecraft name:
-                              <br><small>For the minecraft server details, ask in chat. (Max 16 characters)</small>
-                          </label>
-                          <input class="form-control" type="text" name="minecraftname" value="<?/*=Tpl::out($this->user['minecraftname'])*/?>" placeholder="Minecraft name" maxlength="16" />
-                      </div>
-                  </div>
-                  <div class="form-actions block-foot">
-                      <button class="btn btn-primary" type="submit">Save details</button>
-                  </div>
-              </form>
-          </div>
-      </section>
       -->
 
       <section class="container">

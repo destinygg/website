@@ -35,7 +35,6 @@ return [
 
     'privateKeys' => [
         'chat' => '',
-        'minecraft' => '',
         'api' => '',
     ],
 

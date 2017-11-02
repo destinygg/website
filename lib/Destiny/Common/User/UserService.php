@@ -69,16 +69,17 @@ class UserService extends Service {
     /**
      * @param int $userId
      * @param string $roleName
-     * @return int
+     * @return string
+     *
      * @throws DBALException
      */
     public function addUserRole($userId, $roleName) {
         $roleId = $this->getRoleIdByName($roleName);
         $conn = Application::getDbConn();
-        $conn->insert('dfl_users_roles', array(
+        $conn->insert('dfl_users_roles', [
             'userId' => $userId,
             'roleId' => $roleId
-        ));
+        ]);
         return $conn->lastInsertId();
     }
 
@@ -88,9 +89,9 @@ class UserService extends Service {
      */
     public function removeAllUserRoles($userId) {
         $conn = Application::getDbConn();
-        $conn->delete('dfl_users_roles', array(
+        $conn->delete('dfl_users_roles', [
             'userId' => $userId
-        ));
+        ]);
     }
 
     /**
@@ -170,9 +171,9 @@ class UserService extends Service {
     public function updateUser($userId, array $user) {
         $conn = Application::getDbConn();
         $user ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
-        $conn->update('dfl_users', $user, array(
+        $conn->update('dfl_users', $user, [
             'userId' => $userId
-        ));
+        ]);
     }
 
     /**
@@ -189,7 +190,7 @@ class UserService extends Service {
         ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->execute();
-        $roles = array();
+        $roles = [];
         while ($role = $stmt->fetchColumn()) {
             $roles [] = $role;
         }
@@ -233,7 +234,7 @@ class UserService extends Service {
         $stmt->bindValue('authId', $authId, \PDO::PARAM_STR);
         $stmt->bindValue('authProvider', $authProvider, \PDO::PARAM_STR);
         $stmt->execute();
-        return ($stmt->fetchColumn() > 0) ? true : false;
+        return $stmt->fetchColumn() > 0 ? true : false;
     }
 
     /**
@@ -293,7 +294,7 @@ class UserService extends Service {
      */
     public function addUserAuthProfile(array $auth) {
         $conn = Application::getDbConn();
-        $conn->insert('dfl_users_auth', array(
+        $conn->insert('dfl_users_auth', [
             'userId' => $auth ['userId'],
             'authProvider' => $auth ['authProvider'],
             'authId' => $auth ['authId'],
@@ -302,7 +303,7 @@ class UserService extends Service {
             'refreshToken' => $auth ['refreshToken'],
             'createdDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
             'modifiedDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s')
-        ), array(
+        ], [
             \PDO::PARAM_INT,
             \PDO::PARAM_STR,
             \PDO::PARAM_INT,
@@ -311,7 +312,7 @@ class UserService extends Service {
             \PDO::PARAM_STR,
             \PDO::PARAM_STR,
             \PDO::PARAM_STR
-        ));
+        ]);
     }
 
     /**
@@ -366,7 +367,7 @@ class UserService extends Service {
         $stmt->bindValue('start', ($page - 1) * $limit, \PDO::PARAM_INT);
         $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
-        $pagination = array();
+        $pagination = [];
         $pagination ['list'] = $stmt->fetchAll();
         $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
         $pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
@@ -398,7 +399,7 @@ class UserService extends Service {
         $stmt->bindValue('start', ($page - 1) * $limit, \PDO::PARAM_INT);
         $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
-        $pagination = array();
+        $pagination = [];
         $pagination ['list'] = $stmt->fetchAll();
         $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
         $pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
@@ -436,7 +437,7 @@ class UserService extends Service {
         $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
 
-        $pagination = array();
+        $pagination = [];
         $pagination ['list'] = $stmt->fetchAll();
         $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
         $pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
@@ -525,8 +526,7 @@ class UserService extends Service {
      */
     public function addAddress(array $address) {
         $conn = Application::getDbConn();
-        $conn->insert('users_address',
-            array(
+        $conn->insert('users_address', [
                 'userId' => $address ['userId'],
                 'fullName' => $address ['fullName'],
                 'line1' => $address ['line1'],
@@ -537,7 +537,7 @@ class UserService extends Service {
                 'country' => $address ['country'],
                 'createdDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
                 'modifiedDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s')
-            ), array(
+            ], [
                 \PDO::PARAM_INT,
                 \PDO::PARAM_STR,
                 \PDO::PARAM_STR,
@@ -548,7 +548,7 @@ class UserService extends Service {
                 \PDO::PARAM_STR,
                 \PDO::PARAM_STR,
                 \PDO::PARAM_STR
-            ));
+        ]);
     }
 
     /**
@@ -558,7 +558,7 @@ class UserService extends Service {
     public function updateAddress(array $address) {
         $conn = Application::getDbConn();
         $address ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
-        $conn->update('users_address', $address, array('id' => $address['id']));
+        $conn->update('users_address', $address, ['id' => $address['id']]);
     }
 
     /**
@@ -663,9 +663,7 @@ class UserService extends Service {
      */
     public function updateBan(array $ban) {
         $conn = Application::getDbConn();
-        $conn->update('bans', $ban, array(
-            'id' => $ban ['id']
-        ));
+        $conn->update('bans', $ban, ['id' => $ban ['id']]);
     }
 
     /**
@@ -708,7 +706,7 @@ class UserService extends Service {
      * @throws Exception
      */
     public function findSameIPUsers($userid) {
-        $keys = $this->callRedisScript('check-sameip-users', array($userid));
+        $keys = $this->callRedisScript('check-sameip-users', [$userid]);
         return $this->getUsersFromRedisKeys('CHAT:userips-', $keys);
     }
 
@@ -719,7 +717,7 @@ class UserService extends Service {
      * @throws Exception
      */
     public function findUsersWithIP($ipaddress) {
-        $keys = $this->callRedisScript('check-ip', array($ipaddress));
+        $keys = $this->callRedisScript('check-ip', [$ipaddress]);
         return $this->getUsersFromRedisKeys('CHAT:userips-', $keys);
     }
 
@@ -745,7 +743,7 @@ class UserService extends Service {
      * @throws DBALException
      */
     private function getUsersFromRedisKeys($keyprefix, $keys) {
-        $userids = array();
+        $userids = [];
 
         foreach ($keys as $key) {
             $id = intval(substr($key, strlen($keyprefix)));
@@ -883,12 +881,12 @@ class UserService extends Service {
      */
     public function updateTwitchSubscriptions(array $data) {
         if (empty($data))
-            return array();
+            return [];
 
         $conn = Application::getDbConn();
         $batchsize = 100;
 
-        $ids = array();
+        $ids = [];
         foreach ($data as $authid => $subscriber) {
             if (!ctype_alnum($authid))
                 throw new Exception("Non alpha-numeric authid found: $authid");
@@ -899,7 +897,7 @@ class UserService extends Service {
         // we get the users connected to the twitch authids so that later we can
         // update the users in batches efficiently and return the subs with
         // the required information to the caller
-        $idToUser = array();
+        $idToUser = [];
         $infosql = "
           SELECT
             u.username,
@@ -926,7 +924,7 @@ class UserService extends Service {
         unset($ids);
 
         if (empty($idToUser))
-            return array();
+            return [];
 
         $changed = $subs = $nonsubs = [];
         foreach ($idToUser as $authid => $user) {
@@ -978,28 +976,6 @@ class UserService extends Service {
         ");
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
-    }
-
-    /**
-     * @param $userid
-     * @param $uuid
-     * @return bool
-     * @throws DBALException
-     */
-    public function setMinecraftUUID($userid, $uuid) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-          UPDATE dfl_users
-          SET minecraftuuid = :uuid
-          WHERE
-            userId = :userid AND
-            (minecraftuuid IS NULL OR minecraftuuid = '')
-          LIMIT 1
-        ");
-        $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
-        $stmt->bindValue('uuid', $uuid, \PDO::PARAM_STR);
-        $stmt->execute();
-        return (bool)$stmt->rowCount();
     }
 
     /**
@@ -1078,7 +1054,7 @@ class UserService extends Service {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC');
             $stmt->execute();
-            $this->features = array();
+            $this->features = [];
             while ($a = $stmt->fetch()) {
                 $this->features [$a ['featureName']] = $a;
             }
@@ -1116,7 +1092,7 @@ class UserService extends Service {
             ORDER BY a.featureId ASC');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->execute();
-        $features = array();
+        $features = [];
         while ($feature = $stmt->fetchColumn()) {
             $features [] = $feature;
         }
@@ -1143,17 +1119,17 @@ class UserService extends Service {
      *
      * @param int $userId
      * @param string $featureName
-     * @return int
+     * @return string
      * @throws DBALException
      * @throws Exception
      */
     public function addUserFeature($userId, $featureName) {
         $featureId = $this->getFeatureIdByName($featureName);
         $conn = Application::getDbConn();
-        $conn->insert('dfl_users_features', array(
+        $conn->insert('dfl_users_features', [
             'userId' => $userId,
             'featureId' => $featureId
-        ));
+        ]);
         return $conn->lastInsertId();
     }
 
@@ -1168,10 +1144,10 @@ class UserService extends Service {
     public function removeUserFeature($userId, $featureName) {
         $featureId = $this->getFeatureIdByName($featureName);
         $conn = Application::getDbConn();
-        $conn->delete('dfl_users_features', array(
+        $conn->delete('dfl_users_features', [
             'userId' => $userId,
             'featureId' => $featureId
-        ));
+        ]);
     }
 
     /**
@@ -1182,8 +1158,6 @@ class UserService extends Service {
      */
     public function removeAllUserFeatures($userId) {
         $conn = Application::getDbConn();
-        $conn->delete('dfl_users_features', array(
-            'userId' => $userId
-        ));
+        $conn->delete('dfl_users_features', ['userId' => $userId]);
     }
 }
