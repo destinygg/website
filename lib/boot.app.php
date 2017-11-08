@@ -9,7 +9,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.3.5'); // auto-generated: 1510089664449
+define('_APP_VERSION', '2.3.6'); // auto-generated: 1510166064572
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
