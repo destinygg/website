@@ -24,7 +24,6 @@ class ChatAdminController {
      * @HttpMethod ({"GET"})
      *
      * @param ViewModel $model
-     * @throws Exception
      * @return string
      */
     public function adminChat(ViewModel $model) {
