@@ -1,9 +1,7 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Config;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
-
 ?>
 <?php if(!Session::hasRole(UserRole::USER)): ?>
 <div id="loginmodal" class="modal fade">
@@ -20,11 +18,21 @@ use Destiny\Common\User\UserRole;
                 </div>
             </div>
             <div id="loginproviders">
-                <?php foreach (Config::$a['authProfiles'] as $i => $id): ?>
-                <a class="btn btn-lg btn-<?=$id?>" tabindex="<?=$i+1?>" data-provider="<?=$id?>">
-                    <i class="fa fa-<?=$id?>"></i> <?=ucwords($id)?>
+                <a class="btn btn-lg btn-twitch" tabindex="1" data-provider="twitch">
+                    <i class="fa fa-twitch"></i> Twitch
                 </a>
-                <?php endforeach; ?>
+                <a class="btn btn-lg btn-google" tabindex="2" data-provider="google">
+                    <i class="fa fa-google"></i> Google
+                </a>
+                <a class="btn btn-lg btn-twitter" tabindex="2" data-provider="twitter">
+                    <i class="fa fa-twitter"></i> Twitter
+                </a>
+                <a class="btn btn-lg btn-reddit" tabindex="2" data-provider="reddit">
+                    <i class="fa fa-reddit"></i> Reddit
+                </a>
+                <a class="btn btn-lg btn-discord" tabindex="2" data-provider="discord">
+                    <i class="fa fa-discord"></i> Discord
+                </a>
             </div>
         </div>
     </form>

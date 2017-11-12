@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Secure;
