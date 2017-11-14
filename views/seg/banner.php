@@ -34,7 +34,7 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
                     <i data-toggle="dropdown" class="dropdown-toggle fa fa-clone fa-flip-horizontal"></i>
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li><a target="_blank" class="popup" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Chat</a></li>
-                        <li><a target="_blank" class="popup" href="//www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Stream</a></li>
+                        <li><a target="_blank" class="popup" href="https://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Stream</a></li>
                     </ul>
                 </div>
             </div>

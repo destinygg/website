@@ -23,7 +23,7 @@ return [
         'mentions' => ''
     ],
 
-    'cdn' => ['domain' => ''],
+    'cdn' => ['domain' => '','protocol' => 'https://'],
     'blog' => ['feed' => ''],
     'reddit' => ['threads' => ''],
     'android' => ['app' => ''],

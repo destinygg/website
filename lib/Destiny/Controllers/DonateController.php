@@ -83,7 +83,7 @@ class DonateController {
         $amount = floatval($params['amount']);
         $minimum = Config::$a['commerce']['minimum_donation'];
         if ($amount < $minimum) {
-            Session::setErrorBag('Only donations of $5.00 and over can be accepted');
+            Session::setErrorBag('Only donations of $5.00 more more are accepted');
             throw new Exception ('Minimum donation amount not met');
         }
 
@@ -145,7 +145,7 @@ class DonateController {
             }
             $username = $donation['username'];
             $userid = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUserId() :  -1;
-            if (intval($donation['userid']) !== intval($userid)) {
+            if (!empty($donation['userid']) && intval($donation['userid']) !== intval($userid)) {
                 throw new Exception ('Permission to donation denied');
             }
             if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {

@@ -90,7 +90,7 @@ class ChatController {
                 return json_decode($r->getBody(), true);
             }
         } catch (\Exception $e) {
-            Log::error("Failed to return valid response for chat stalk");
+            Log::warn("Failed to return valid response for chat stalk");
         }
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';
@@ -130,7 +130,7 @@ class ChatController {
                 return json_decode($r->getBody(), true);
             }
         } catch (\Exception $e) {
-            Log::error("Failed to return valid response for chat mentions");
+            Log::warn("Failed to return valid response for chat mentions");
         }
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';
@@ -147,7 +147,7 @@ class ChatController {
      */
     public function saveChatSettings(Request $request){
         $data = $request->getBody();
-        if(strlen($data) <= 65535) {
+        if(mb_strlen($data) <= 65535) {
             $userService = UserService::instance();
             $userId = Session::getCredentials ()->getUserId();
             $userService->saveChatSettings($userId, $request->getBody());

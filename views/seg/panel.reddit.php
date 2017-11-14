@@ -17,7 +17,7 @@ use Destiny\Common\Utils\Date;
                     <div class="media">
                         <div class="media-body">
                             <div class="media-heading">
-                                <a target="_blank" href="//twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>">
+                                <a target="_blank" href="https://twitter.com/<?=$tweet['user']['screen_name']?>/status/<?=$tweet['id_str']?>">
                                     <span class="fa fa-share"></span>
                                 </a>
                                 <?=$tweet['html']?>
