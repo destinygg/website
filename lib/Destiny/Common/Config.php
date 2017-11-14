@@ -2,11 +2,11 @@
 namespace Destiny\Common;
 
 abstract class Config {
-    
+
     /**
      * @var array
      */
-    public static $a = array ();
+    public static $a = [];
 
     /**
      * @param array $config
@@ -16,29 +16,27 @@ abstract class Config {
     }
 
     /**
-     * @param string $protocol
      * @return string
      */
-    public static function cdn($protocol = '//') {
+    public static function cdn() {
         $domain = self::$a ['cdn'] ['domain'];
-        $port = (isset(self::$a ['cdn'] ['port'])) ? ':'.self::$a ['cdn'] ['port'] : '';
-        return (! empty ( $domain )) ? $protocol . $domain . $port : '';
+        $protocol = self::$a ['cdn'] ['protocol'];
+        $port = (isset(self::$a ['cdn'] ['port'])) ? ':' . self::$a ['cdn'] ['port'] : '';
+        return (!empty ($domain)) ? $protocol . $domain . $port : '';
     }
 
     /**
-     * @param string $protocol
      * @return string
      */
-    public static function cdnv($protocol = '//') {
-        return self::cdn ( $protocol ) . '/' . Config::version ();
+    public static function cdnv() {
+        return self::cdn() . '/' . Config::version();
     }
 
     /**
-     * @param string $protocol
      * @return string
      */
-    public static function cdni($protocol = '//'){
-        return self::cdn($protocol) . self::$a['images']['uri'];
+    public static function cdni() {
+        return self::cdn() . self::$a['images']['uri'];
     }
 
     /**
