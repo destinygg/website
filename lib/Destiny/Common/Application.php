@@ -6,7 +6,6 @@ use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
-use InvalidArgumentException;
 use function GuzzleHttp\json_encode;
 
 /**

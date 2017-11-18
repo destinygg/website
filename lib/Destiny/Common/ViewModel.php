@@ -6,7 +6,7 @@ class ViewModel extends \stdClass {
     /**
      * @var array
      */
-    protected $vars = array ();
+    protected $vars = [];
 
     /**
      * ViewModel constructor.

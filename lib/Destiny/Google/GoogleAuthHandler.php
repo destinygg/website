@@ -79,7 +79,7 @@ class GoogleAuthHandler {
         if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
             throw new Exception ( 'Authorization failed, invalid user data' );
         }
-        $arr = array ();
+        $arr = [];
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;
         $arr ['authId'] = $data ['id'];
@@ -92,8 +92,6 @@ class GoogleAuthHandler {
     /**
      * @param $access_token
      * @return array|null
-     * @throws DBALException
-     * @throws Exception
      */
     private function getUserInfo($access_token){
         $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);

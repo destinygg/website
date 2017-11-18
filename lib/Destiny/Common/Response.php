@@ -8,7 +8,7 @@ class Response {
     /**
      * @var array
      */
-    private $headers = array ();
+    private $headers = [];
 
     /**
      * @var int
@@ -39,7 +39,7 @@ class Response {
     }
 
     public function addHeader($name, $value) {
-        $this->headers [] = array ($name,$value);
+        $this->headers [] = [$name,$value];
     }
 
     public function getStatus() {

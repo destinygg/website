@@ -36,11 +36,11 @@ class ApiAuthenticationService extends Service {
      */
     public function addAuthToken($userId, $authToken) {
         $conn = Application::getDbConn();
-        $conn->insert ( 'dfl_users_auth_token', array (
+        $conn->insert ( 'dfl_users_auth_token', [
             'userId' => $userId,
             'authToken' => $authToken,
-            'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
-        ) );
+            'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
+        ]);
     }
 
     /**
@@ -49,9 +49,9 @@ class ApiAuthenticationService extends Service {
      */
     public function removeAuthToken($id) {
         $conn = Application::getDbConn();
-        $conn->delete ( 'dfl_users_auth_token', array (
-            'authTokenId' => $id 
-        ) );
+        $conn->delete ( 'dfl_users_auth_token', [
+            'authTokenId' => $id
+        ]);
     }
 
     /**
@@ -131,10 +131,10 @@ class ApiAuthenticationService extends Service {
      */
     public function deleteAuthProfileByUserId($userId, $authProfile) {
         $conn = Application::getDbConn();
-        $conn->delete ( 'dfl_users_auth', array (
+        $conn->delete ( 'dfl_users_auth', [
             'userId' => $userId,
             'authProvider' => $authProfile,
-        ) );
+        ]);
     }
 
 }

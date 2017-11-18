@@ -2,7 +2,6 @@
 namespace Destiny\Reddit;
 
 use Destiny\Common\Config;
-use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Http;
@@ -24,7 +23,6 @@ class RedditFeedService extends Service {
 
     /**
      * @return null|array
-     * @throws Exception
      */
     public function getHotThreads() {
         $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
@@ -61,9 +59,8 @@ class RedditFeedService extends Service {
                     return $data;
                 }
             }
-        } catch (\InvalidArgumentException $e) {
-            $n = new Exception("Failed to parse reddit threads", $e);
-            Log::error($n);
+        } catch (\Exception $e) {
+            Log::error("Failed to parse reddit threads. " . $e->getMessage());
         }
         return null;
     }

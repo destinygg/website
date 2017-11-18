@@ -78,7 +78,7 @@ class SessionInstance {
         $this->getRememberMeCookie ()->clearCookie ();
         if ($this->isStarted ()) {
             session_destroy ();
-            $_SESSION = array ();
+            $_SESSION = [];
             session_regenerate_id ( false );
         }
     }

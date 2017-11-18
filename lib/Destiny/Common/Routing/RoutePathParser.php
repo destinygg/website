@@ -4,7 +4,7 @@ namespace Destiny\Common\Routing;
 class RoutePathParser {
 
     public static function search($pattern, $string) {
-        $params = array ();
+        $params = [];
         if (self::match ( $pattern, $string )) {
             $keys = self::getKeys ( $pattern );
             $values = self::getValues ( $pattern, $string );
@@ -23,9 +23,9 @@ class RoutePathParser {
     }
 
     protected static function getSearchString($pattern) {
-        $find = array ('/{[^}]*}/');
-        $replace = array ('([A-z0-9\_\-\|\.]+)');
-        $subject = str_replace ( array ('/', '.'), array ('\\/', '\\.'), $pattern );
+        $find = ['/{[^}]*}/'];
+        $replace = ['([A-z0-9\_\-\|\.]+)'];
+        $subject = str_replace ( ['/', '.'], ['\\/', '\\.'], $pattern );
         return '/^' . preg_replace ( $find, $replace, $subject ) . '$/i';
     }
 

@@ -11,7 +11,6 @@ use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Request;
-use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
@@ -228,69 +227,106 @@ class ProfileController {
      * @throws Exception
      */
     public function profileAuthTokenDelete(array $params) {
-        FilterParams::required ( $params, 'authToken' );
-
-        $userId = Session::getCredentials ()->getUserId ();
-        $apiAuthService = ApiAuthenticationService::instance ();
-        $authToken = $apiAuthService->getAuthToken ( $params ['authToken'] );
-        if (empty ( $authToken )) {
-            throw new Exception ( 'Auth token not found' );
+        FilterParams::required($params, 'authToken');
+        $userId = Session::getCredentials()->getUserId();
+        $apiAuthService = ApiAuthenticationService::instance();
+        $authToken = $apiAuthService->getAuthToken($params ['authToken']);
+        if (empty ($authToken)) {
+            throw new Exception ('Auth token not found');
         }
         if ($authToken ['userId'] != $userId) {
-            throw new Exception ( 'Auth token not owned by user' );
+            throw new Exception ('Auth token not owned by user');
         }
-        $apiAuthService->removeAuthToken ( $authToken ['authTokenId'] );
+        $apiAuthService->removeAuthToken($authToken ['authTokenId']);
         Session::setSuccessBag('Auth token removed!');
         return 'redirect: /profile/authentication';
     }
 
-  /**
-   * @Route ("/profile/connect/{provider}")
-   * @Secure ({"USER"})
-   *
-   * @param array $params
-   * @return string
-   *
-   * @throws Exception
-   */
+    /**
+     * @Route ("/profile/connect/{provider}")
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     *
+     * @throws Exception
+     */
     public function profileConnect(array $params) {
-      FilterParams::required ( $params, 'provider' );
-      $authProvider = $params ['provider'];
-      
-      // check if the auth provider you are trying to login with is not the same as the current
-      $currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
-      if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
-        throw new Exception ( 'Provider already authenticated' );
-      }
+        FilterParams::required ( $params, 'provider' );
+        $authProvider = $params ['provider'];
 
-      // Set a session var that is picked up in the AuthenticationService
-      // in the GET method, this variable is unset
-      Session::set ( 'accountMerge', '1' );
-      
-      switch (strtoupper ( $authProvider )) {
-        case 'TWITCH' :
-          $authHandler = new TwitchAuthHandler ();
-          return 'redirect: ' . $authHandler->getAuthenticationUrl ();
-        
-        case 'GOOGLE' :
-          $authHandler = new GoogleAuthHandler ();
-          return 'redirect: ' . $authHandler->getAuthenticationUrl ();
-        
-        case 'TWITTER' :
-          $authHandler = new TwitterAuthHandler ();
-          return 'redirect: ' . $authHandler->getAuthenticationUrl ();
-        
-        case 'REDDIT' :
-          $authHandler = new RedditAuthHandler ();
-          return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+        // check if the auth provider you are trying to login with is not the same as the current
+        $currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
+        if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
+            throw new Exception ( 'Provider already authenticated' );
+        }
 
-        case 'DISCORD' :
-          $authHandler = new DiscordAuthHandler ();
-          return 'redirect: ' . $authHandler->getAuthenticationUrl ();
-        
-        default :
-          throw new Exception ( 'Authentication type not supported' );
-      }
+        // Set a session var that is picked up in the AuthenticationService
+        // in the GET method, this variable is unset
+        Session::set ( 'accountMerge', '1' );
+
+        switch (strtoupper ( $authProvider )) {
+            case 'TWITCH' :
+                $authHandler = new TwitchAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+
+            case 'GOOGLE' :
+                $authHandler = new GoogleAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+
+            case 'TWITTER' :
+                $authHandler = new TwitterAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+
+            case 'REDDIT' :
+                $authHandler = new RedditAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+
+            case 'DISCORD' :
+                $authHandler = new DiscordAuthHandler ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+
+            default :
+                throw new Exception ( 'Authentication type not supported' );
+        }
+    }
+
+    /**
+     * @Route ("/profile/remove/{provider}")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
+     */
+    public function profileRemove(array $params) {
+        FilterParams::required($params, 'provider');
+        $userId = Session::getCredentials()->getUserId();
+        $userService = UserService::instance();
+        $authProfile = $userService->getUserAuthProfile($userId, $params ['provider']);
+        if (empty($authProfile)) {
+            Session::setErrorBag('Invalid provider');
+            return 'redirect: /profile/authentication';
+        }
+        $authProfiles = $userService->getAuthProfilesByUserId($userId);
+        if (!empty($authProfiles)) {
+            $key = array_search('streamlabs', array_column($authProfiles, 'authProvider'));
+            if ($key >= 0) {
+                unset($authProfiles[$key]);
+            }
+            if (count($authProfiles) == 1) {
+                Session::setErrorBag('You require at least one login provider');
+                return 'redirect: /profile/authentication';
+            }
+            $userService->removeAuthProfile($userId, $params ['provider']);
+            Session::setSuccessBag('Auth token removed');
+            return 'redirect: /profile/authentication';
+        }
+        Session::setErrorBag('No auth profiles to remove.');
+        return 'redirect: /profile/authentication';
     }
 
     /**

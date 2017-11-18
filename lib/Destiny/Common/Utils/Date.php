@@ -50,7 +50,7 @@ abstract class Date {
             $end = self::getDateTime ( $end );
         }
         $interval = $end->diff ( $start );
-        $format = array ();
+        $format = [];
         if ($interval->y !== 0) {
             $format [] = "%y " . self::getIntervalPlural ( $interval->y, "year" );
         }

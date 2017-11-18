@@ -83,7 +83,7 @@ class TwitchAuthHandler{
         if (!isset($data['email']) || empty($data['email']) || !$data['email']) {
             throw new Exception ('You must have a verified email address for your registration to complete successfully.');
         }
-        $arr = array();
+        $arr = [];
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;
         $arr ['authId'] = $data ['_id'];
@@ -96,8 +96,6 @@ class TwitchAuthHandler{
     /**
      * @param $access_token
      * @return array|null
-     * @throws DBALException
-     * @throws Exception
      */
     private function getUserInfo($access_token){
         $conf = Config::$a ['oauth_providers'] [$this->authProvider];

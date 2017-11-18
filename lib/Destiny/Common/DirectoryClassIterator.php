@@ -21,7 +21,7 @@ class DirectoryClassIterator implements Iterator {
     /**
      * @var ReflectionClass[]
      */
-    private $array = array ();
+    private $array = [];
     
     /**
      * @var string
@@ -53,7 +53,7 @@ class DirectoryClassIterator implements Iterator {
      */
     private function getClasses() {
         $files = self::getFiles ();
-        $classes = array ();
+        $classes = [];
         // Run through all the public classes, that have Action annotations, check for Route annotations
         foreach ( $files as $file ) {
             // PSR-0 format namespace / folder / filename
@@ -81,7 +81,7 @@ class DirectoryClassIterator implements Iterator {
         $directory = new RecursiveDirectoryIterator ( $this->base . $this->path );
         $iterator = new RecursiveIteratorIterator ( $directory, RecursiveIteratorIterator::SELF_FIRST );
         $regex = new RegexIterator ( $iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH );
-        $files = array ();
+        $files = [];
         foreach ( $regex as $file ) {
             $filename = $file [0];
             $files [] = new \SplFileInfo ( $filename );

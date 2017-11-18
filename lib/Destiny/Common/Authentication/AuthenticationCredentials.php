@@ -18,15 +18,15 @@ class AuthenticationCredentials {
     }
 
     function __sleep() {
-        return array (
+        return [
             'authProvider',
             'authCode',
             'authId',
             'authDetail',
             'refreshToken',
             'username',
-            'email' 
-        );
+            'email'
+        ];
     }
 
     public function isValid() {

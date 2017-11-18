@@ -3,6 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Session;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\FilterParams;
@@ -74,7 +75,7 @@ class PrivateMessageController {
                 throw new Exception('Cannot send messages to yourself.');
 
             // Remove the user if its in the list
-            $recipients = array_diff($recipients, array($username));
+            $recipients = array_diff($recipients, [$username]);
 
             $ban = $userService->getUserActiveBan ( $userId );
             if (!empty($ban))
@@ -108,21 +109,21 @@ class PrivateMessageController {
                         throw new Exception ("You have sent too many messages, throttled.");
 
                     $targetuser = $userService->getUserById ( $recipientId );
-                    $message = array(
+                    $message = [
                         'userid' => $userId,
                         'targetuserid' => $recipientId,
                         'message' => $params['message'],
                         'isread' => 0
-                    );
+                    ];
                     $message['id'] = $privateMessageService->addMessage( $message );
-                    $chatIntegrationService->publishPrivateMessage(array(
+                    $chatIntegrationService->publishPrivateMessage([
                         'messageid' => $message['id'],
                         'message' => $message['message'],
                         'username' => $sessionCredentials->getUsername(), // non-lowercase
                         'userid' => $userId,
                         'targetusername' => $targetuser['username'],
                         'targetuserid' => $targetuser['userId']
-                    ));
+                    ]);
                 }
             }
 
@@ -172,7 +173,12 @@ class PrivateMessageController {
     public function messagesOpen() {
         $userId = Session::getCredentials()->getUserId();
         $privateMessageService = PrivateMessageService::instance();
-        $privateMessageService->markAllMessagesRead($userId);
+        try {
+            $privateMessageService->markAllMessagesRead($userId);
+        } catch (DBALException $e) {
+            Log::warn($e->getMessage());
+            return ['false' => true];
+        }
         return ['success' => true];
     }
 
@@ -203,7 +209,12 @@ class PrivateMessageController {
     public function messagesUnread(){
         $userId = Session::getCredentials ()->getUserId ();
         $privateMessageService = PrivateMessageService::instance();
-        return $privateMessageService->getUnreadConversations($userId, 50);
+        try {
+            return $privateMessageService->getUnreadConversations($userId, 50);
+        } catch (DBALException $e) {
+            Log::error($e->getMessage());
+        }
+        return null;
     }
 
     /**

@@ -35,6 +35,7 @@ use Destiny\Common\Config;
 
         <div class="ds-block">
           <p>Almost there... since not all authentication providers support nick names, you get to choose your own.
+          <br>This site uses cookies to identify you when you are logged in. Please keep them safe.
           <br>Your email address is never shown publicly and no emails will be sent to you without your permission.
           </p>
         </div>

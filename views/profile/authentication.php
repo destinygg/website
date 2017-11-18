@@ -40,8 +40,7 @@ use Destiny\Common\Config;
                 <td><?=ucwords($id)?></td>
                 <td>
                   <?php if(in_array($id, $this->authProfileTypes)): ?>
-                    <?php $this->requireConnections = true; ?>
-                    <span class="fa fa-check"></span> Connected
+                    <a href="/profile/remove/<?=$id?>" class="btn btn-danger btn-xs btn-post">Remove</a>
                   <?php else: ?>
                     <a href="/profile/connect/<?=$id?>" class="btn btn-primary btn-xs btn-post">Connect</a>
                   <?php endif ?>
@@ -106,7 +105,6 @@ use Destiny\Common\Config;
   <?php include 'seg/foot.php' ?>
   <?php include 'seg/tracker.php' ?>
   <script src="<?=Config::cdnv()?>/web.js"></script>
-
   <script src="https://www.google.com/recaptcha/api.js"></script>
   <script>
   $('.btn-post').on('click', function(){

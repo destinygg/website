@@ -10,24 +10,24 @@ class Scheduler {
     /**
      * @var array
      */
-    public $schedule = array();
+    public $schedule = [];
 
     /**
      * @var array
      */
-    private $struct = array(
+    private $struct = [
         'class' => '',
         'action' => '',
         'lastExecuted' => '',
         'frequency' => '',
         'period' => '',
         'executeCount' => 0
-    );
+    ];
 
     /**
      * @param array $args
      */
-    public function __construct(array $args = array()) {
+    public function __construct(array $args = []) {
         Options::setOptions($this, $args);
     }
 
@@ -56,23 +56,21 @@ class Scheduler {
                 $nextExecute = $task['lastExecuted'] == '' ? Date::getDateTime() : Date::getDateTime($task['lastExecuted']);
                 $nextExecute->modify('+' . $task['frequency'] . ' ' . $task['period']);
                 if (time() > $nextExecute->getTimestamp()) {
-                    $task['executeCount'] = intval($task['executeCount']) + 1;
-                    $task['lastExecuted'] = date(\DateTime::ATOM);
-                    $this->updateTask($task);
-                    Log::info('Execute start {action}', $task);
                     try {
+                        $task['executeCount'] = intval($task['executeCount']) + 1;
+                        $task['lastExecuted'] = date(\DateTime::ATOM);
+                        $this->updateTask($task);
+                        Log::info('Execute start {action}', $task);
                         $this->getTaskClass($task)->execute();
                     } catch (\Exception $e) {
-                        Log::error(new Exception("Error executing task: ", $e));
+                        Log::error("Error executing task: " . $e->getMessage());
                     }
                     Log::info('Execute end {action}', $task);
                 }
             }
             Log::info('Schedule complete');
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
         } catch (\Exception $e) {
-            Log::critical($e->getMessage());
+            Log::critical("Error executing tasks: " . $e->getMessage());
         }
         Log::info('Completed in ' . (microtime(true) - $startTime) . ' seconds');
     }
@@ -109,16 +107,16 @@ class Scheduler {
      */
     protected function updateTask(array $task) {
         $conn = Application::getDbConn();
-        $conn->update('dfl_scheduled_tasks', array(
+        $conn->update('dfl_scheduled_tasks', [
             'lastExecuted' => $task ['lastExecuted'],
             'executeCount' => $task ['executeCount']
-        ), array(
+        ], [
             'action' => $task ['action']
-        ), array(
+        ], [
             \PDO::PARAM_INT,
             \PDO::PARAM_STR,
             \PDO::PARAM_STR
-        ));
+        ]);
     }
 
     /**
@@ -128,20 +126,20 @@ class Scheduler {
      */
     protected function insertTask(array $task) {
         $conn = Application::getDbConn();
-        $conn->insert('dfl_scheduled_tasks', array(
+        $conn->insert('dfl_scheduled_tasks', [
             'action' => $task ['action'],
             'lastExecuted' => $task ['lastExecuted'],
             'frequency' => $task ['frequency'],
             'period' => $task ['period'],
             'executeCount' => $task ['executeCount']
-        ), array(
+        ], [
             \PDO::PARAM_STR,
             \PDO::PARAM_STR,
             \PDO::PARAM_INT,
             \PDO::PARAM_STR,
             \PDO::PARAM_INT,
             \PDO::PARAM_INT
-        ));
+        ]);
     }
 
     /**

@@ -11,6 +11,9 @@ use Destiny\Reddit\RedditFeedService;
  */
 class RedditFeed implements TaskInterface {
 
+    /**
+     * @return mixed|void
+     */
     public function execute() {
         $redditService = RedditFeedService::instance();
         $posts = $redditService->getHotThreads();

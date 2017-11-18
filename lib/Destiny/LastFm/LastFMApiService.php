@@ -8,7 +8,6 @@ use Destiny\Common\Config;
 use Destiny\Common\Utils\Http;
 use InvalidArgumentException;
 use GuzzleHttp\Client;
-use function GuzzleHttp\json_decode;
 
 /**
  * @method static LastFMApiService instance()
@@ -32,7 +31,7 @@ class LastFMApiService extends Service {
                 ]
             ]);
             if ($response->getStatusCode() == Http::STATUS_OK) {
-                $json = json_decode($response->getBody(), true);
+                $json = \GuzzleHttp\json_decode($response->getBody(), true);
                 return $this->parseFeedResponse('recenttracks', $json);
             }
         } catch (InvalidArgumentException $e) {
@@ -58,7 +57,7 @@ class LastFMApiService extends Service {
                 ]
             ]);
             if ($response->getStatusCode() == Http::STATUS_OK) {
-                $json = json_decode($response->getBody(), true);
+                $json = \GuzzleHttp\json_decode($response->getBody(), true);
                 return $this->parseFeedResponse('toptracks', $json);
             }
         } catch (InvalidArgumentException $e) {

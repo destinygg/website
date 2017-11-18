@@ -1,10 +1,9 @@
 {
   "name": "dgg-website",
-  "version": "2.3.10",
+  "version": "2.3.11",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
-    "glue": "node scripts/tasks/glue.js",
     "ini": "node scripts/tasks/ini.js",
     "build": "npm run ini && webpack -p",
     "watch": "webpack -w"
