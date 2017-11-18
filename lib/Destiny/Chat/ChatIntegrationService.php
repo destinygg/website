@@ -145,16 +145,16 @@ class ChatIntegrationService extends Service {
      * @return int
      */
     public function publishPrivateMessage(array $data) {
-        $data = array(
+        $data = [
             'messageid' => $data['messageid'],
             'message' => $data['message'],
             'username' => $data['username'],
             'userid' => $data['userid'],
             'targetusername' => $data['targetusername'],
             'targetuserid' => $data['targetuserid']
-        );
+        ];
         $redis = $this->getRedis();
-        return $redis->publish ( sprintf ( 'privmsg-%s', Config::$a ['redis'] ['database'] ), json_encode($data) );
+        return $redis->publish(sprintf('privmsg-%s', Config::$a ['redis'] ['database']), json_encode($data));
     }
 
     /**

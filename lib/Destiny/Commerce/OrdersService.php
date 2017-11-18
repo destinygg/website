@@ -18,12 +18,12 @@ class OrdersService extends Service {
      */
     public function addIpnRecord(array $ipn) {
         $conn = Application::getDbConn();
-        $conn->insert ( 'dfl_orders_ipn', array (
+        $conn->insert ( 'dfl_orders_ipn', [
             'ipnTrackId' => $ipn ['ipnTrackId'],
             'ipnTransactionId' => $ipn ['ipnTransactionId'],
             'ipnTransactionType' => $ipn ['ipnTransactionType'],
             'ipnData' => $ipn ['ipnData']
-        ) );
+        ]);
     }
 
     /**
@@ -33,7 +33,7 @@ class OrdersService extends Service {
      */
     public function updatePayment(array $payment) {
         $conn = Application::getDbConn();
-        $conn->update ( 'dfl_orders_payments', $payment, array ('paymentId' => $payment['paymentId']) );
+        $conn->update ( 'dfl_orders_payments', $payment, ['paymentId' => $payment['paymentId']]);
     }
 
     /**
@@ -84,7 +84,7 @@ class OrdersService extends Service {
      */
     public function addPayment(array $payment) {
         $conn = Application::getDbConn();
-        $conn->insert ( 'dfl_orders_payments', array (
+        $conn->insert ( 'dfl_orders_payments', [
             'subscriptionId' => $payment ['subscriptionId'],
             'amount' => $payment ['amount'],
             'currency' => $payment ['currency'],
@@ -94,8 +94,8 @@ class OrdersService extends Service {
             'payerId' => $payment ['payerId'],
             'paymentStatus' => $payment ['paymentStatus'],
             'paymentDate' => $payment ['paymentDate'],
-            'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) 
-        ) );
+            'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
+        ]);
         return $conn->lastInsertId ();
     }
 

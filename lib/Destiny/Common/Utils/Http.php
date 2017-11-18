@@ -29,7 +29,7 @@ abstract class Http {
     const STATUS_OK = 200;
     const STATUS_NO_CONTENT = 204;
     
-    public static $HEADER_STATUSES = array (
+    public static $HEADER_STATUSES = [
         301 => 'Moved Permanently',
         500 => 'Error',
         404 => 'Not Found',
@@ -39,8 +39,8 @@ abstract class Http {
         200 => 'OK',
         204 => 'No Content',
         403 => 'Forbidden',
-        503 => 'Service Unavailable' 
-    );
+        503 => 'Service Unavailable'
+    ];
 
     /**
      * @param string $name

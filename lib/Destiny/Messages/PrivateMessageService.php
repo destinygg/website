@@ -100,19 +100,19 @@ class PrivateMessageService extends Service {
      */
     public function addMessage(array $data){
         $conn = Application::getDbConn();
-        $conn->insert ( 'privatemessages', array (
+        $conn->insert ( 'privatemessages', [
             'userid' => $data['userid'],
             'targetuserid' => $data['targetuserid'],
             'message' => $data['message'],
             'timestamp' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) ,
             'isread' => 0
-        ), array (
+        ], [
             \PDO::PARAM_INT,
             \PDO::PARAM_INT,
             \PDO::PARAM_STR,
             \PDO::PARAM_STR,
             \PDO::PARAM_INT
-        ));
+        ]);
         return $conn->lastInsertId ();
     }
 
@@ -123,11 +123,11 @@ class PrivateMessageService extends Service {
      */
     public function openMessageById($id){
         $conn = Application::getDbConn();
-        $conn->update( 'privatemessages', array (
+        $conn->update( 'privatemessages', [
             'isread' => 1
-        ), array(
+        ], [
             'id' => $id
-        ));
+        ]);
     }
 
     /**
@@ -294,8 +294,7 @@ class PrivateMessageService extends Service {
      * @throws DBALException
      */
     public function batchAddMessage($userId, $message, array $recipients){
-
-        $groups = array();
+        $groups = [];
         foreach ($recipients as $recipient) {
             switch ($recipient) {
                 case 't1 subscribers':
@@ -338,8 +337,8 @@ class PrivateMessageService extends Service {
             WHERE u.username IN (?) OR s.subscriptionTier IN (?)
             GROUP BY u.userId
         ", 
-            array($userId, $message, $recipients, $groups), 
-            array(\PDO::PARAM_INT, \PDO::PARAM_STR, Connection::PARAM_STR_ARRAY, Connection::PARAM_STR_ARRAY)
+            [$userId, $message, $recipients, $groups],
+            [\PDO::PARAM_INT, \PDO::PARAM_STR, Connection::PARAM_STR_ARRAY, Connection::PARAM_STR_ARRAY]
         );
         $rowCount = $stmt->rowCount();
         $stmt = $conn->prepare("

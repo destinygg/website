@@ -134,14 +134,14 @@ class RegistrationController {
         $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
-            $user = array();
-            $user ['username'] = $username;
-            $user ['email'] = $email;
-            $user ['userStatus'] = 'Active';
-            $user ['country'] = $country;
-            $user ['userId'] = $userService->addUser($user);
+            $userId = $userService->addUser([
+                'username' => $username,
+                'email' => $email,
+                'userStatus' => 'Active',
+                'country' => $country
+            ]);
             $userService->addUserAuthProfile([
-                'userId' => $user ['userId'],
+                'userId' => $userId,
                 'authProvider' => $authCreds->getAuthProvider(),
                 'authId' => $authCreds->getAuthId(),
                 'authCode' => $authCreds->getAuthCode(),

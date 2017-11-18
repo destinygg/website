@@ -21,7 +21,7 @@ class Route {
     }
 
     function __sleep() {
-        return array (
+        return [
             'path',
             'class',
             'classMethod',
@@ -30,7 +30,7 @@ class Route {
             'feature',
             'url',
             'responseBody'
-        );
+        ];
     }
 
     public function getPath() {

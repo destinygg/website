@@ -13,6 +13,9 @@ use Destiny\Twitch\TwitchApiService;
  */
 class BroadcastsFeed  implements TaskInterface {
 
+    /**
+     * @return mixed|void
+     */
     public function execute() {
         $broadcasts = TwitchApiService::instance ()->getPastBroadcasts ();
         if (! empty ( $broadcasts )){

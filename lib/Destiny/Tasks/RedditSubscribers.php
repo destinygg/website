@@ -15,10 +15,14 @@ class RedditSubscribers implements TaskInterface {
     
     public $output;
     
-    public function __construct(array $options = array()) {
+    public function __construct(array $options = []) {
         Options::setOptions ( $this, $options );
     }
 
+    /**
+     * @return mixed|void
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function execute() {
         if (empty ( $this->output ))
             return;
@@ -51,23 +55,23 @@ class RedditSubscribers implements TaskInterface {
         $stmt->execute ();
         
         $records = $stmt->fetchAll ();
-        $json = array ();
+        $json = [];
         foreach ( $records as $record ) {
-            $json [] = array (
+            $json [] = [
                     'id' => $record ['userId'],
                     'username' => $record ['username'],
-                    'subscription' => array (
+                    'subscription' => [
                             'startDate' => $record ['createdDate'],
                             'endDate' => $record ['endDate'],
                             'recurring' => ($record ['recurring']) ? true : false,
                             'tier' => $record ['subscriptionTier'],
-                            'type' => $record ['subscriptionType'] 
-                    ),
-                    'reddit' => array (
+                            'type' => $record ['subscriptionType']
+                    ],
+                    'reddit' => [
                             'username' => $record ['authDetail'],
-                            'id' => $record ['authId'] 
-                    ) 
-            );
+                            'id' => $record ['authId']
+                    ]
+            ];
         }
         
         $tmpFilename = $this->output . '.' . time ();

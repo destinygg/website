@@ -2,7 +2,6 @@
 namespace Destiny\Common\Authentication;
 
 use Destiny\Chat\ChatEmotes;
-use Destiny\Common\Config;
 use Destiny\Common\Application;
 use Destiny\Common\Crypto;
 use Destiny\Common\Exception;
@@ -187,10 +186,10 @@ class AuthenticationService extends Service {
         // Update the auth profile for this provider
         $authProfile = $userService->getUserAuthProfile($user ['userId'], $authCreds->getAuthProvider());
         if (!empty ($authProfile)) {
-            $userService->updateUserAuthProfile($user ['userId'], $authCreds->getAuthProvider(), array(
+            $userService->updateUserAuthProfile($user ['userId'], $authCreds->getAuthProvider(), [
                 'authCode' => $authCreds->getAuthCode(),
                 'authDetail' => $authCreds->getAuthDetail()
-            ));
+            ]);
         }
 
         // Renew the session upon successful login, makes it slightly harder to hijack
@@ -217,7 +216,7 @@ class AuthenticationService extends Service {
         $sessAuth = Session::getCredentials ()->getData ();
         // We need to merge the accounts if one exists
         if (! empty ( $user )) {
-            // If the profile userId is the same as the current one, the profiles are connceted, they shouldnt be here
+            // If the profile userId is the same as the current one, the profiles are connceted, they shouldn't be here
             if ($user ['userId'] == $sessAuth ['userId']) {
                 throw new Exception ( 'These account are already connected' );
             }

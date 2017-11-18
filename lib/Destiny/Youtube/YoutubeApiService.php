@@ -5,10 +5,8 @@ use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
-use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use GuzzleHttp\Client;
-use function GuzzleHttp\json_decode;
 use InvalidArgumentException;
 
 /**
@@ -20,7 +18,7 @@ class YoutubeApiService extends Service {
      * @param array $params
      * @return array|null
      */
-    public function getYoutubePlaylist(array $params = array()) {
+    public function getYoutubePlaylist(array $params = []) {
         // Get the channel ID's from a specific person
         // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=Destiny&key={1}
         // GET https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={0}&key={1}
@@ -39,7 +37,7 @@ class YoutubeApiService extends Service {
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             try {
-                $json = json_decode($response->getBody(), true);
+                $json = \GuzzleHttp\json_decode($response->getBody(), true);
                 if (is_array($json ['items'])) {
                     foreach ($json ['items'] as $i => $item) {
                         $item ['snippet'] ['publishedAt'] = Date::getDateTime($item ['snippet'] ['publishedAt']);
@@ -47,8 +45,7 @@ class YoutubeApiService extends Service {
                     return $json;
                 }
             } catch (InvalidArgumentException $e) {
-                $n = new Exception("Failed to parse youtube playlist", $e);
-                Log::error($n);
+                Log::error("Failed to parse youtube playlist. " . $e->getMessage());
             }
         }
         return null;

@@ -85,7 +85,7 @@ class TwitterApiService extends Service {
      */
     public function extract_params($body) {
         $kvs = explode('&', $body);
-        $decoded = array();
+        $decoded = [];
         foreach ($kvs as $kv) {
             $kv = explode('=', $kv, 2);
             $kv[0] = $this->safe_decode($kv[0]);
@@ -104,7 +104,7 @@ class TwitterApiService extends Service {
      */
     public function safe_decode($data) {
         if (is_array($data)) {
-            return array_map(array($this, 'safe_decode'), $data);
+            return array_map([$this, 'safe_decode'], $data);
         } else if (is_scalar($data)) {
             return rawurldecode($data);
         } else {

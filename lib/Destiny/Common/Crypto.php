@@ -36,10 +36,10 @@ class Crypto {
         $key = substr( $key, 0, $keylen );
         mcrypt_generic_init( $cryptmod, $key, $iv );
 
-        return array(
+        return [
             'mod' => $cryptmod,
             'iv'  => $iv,
-        );
+        ];
 
     }
 

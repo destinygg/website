@@ -14,6 +14,10 @@ use Destiny\Twitch\TwitchApiService;
  */
 class StreamInfo implements TaskInterface {
 
+    /**
+     * @return mixed|void
+     * @throws \Destiny\Common\Exception
+     */
     public function execute() {
         $cache = Application::instance()->getCache();
         $twitchApiService = TwitchApiService::instance();

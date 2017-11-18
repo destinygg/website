@@ -6,7 +6,7 @@ abstract class Service {
     /**
      * @var Service[]
      */
-    protected static $_instances = array();
+    protected static $_instances = [];
 
     public static function instance() {
         $class = \get_called_class();

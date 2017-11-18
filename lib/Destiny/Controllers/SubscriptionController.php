@@ -162,11 +162,7 @@ class SubscriptionController {
             Log::critical("Error cancelling subscription {id}", $subscription);
             throw $e;
         }
-        try {
-            $authenticationService->flagUserForUpdate($subscription ['userId']);
-        } catch (Exception $e) {
-            Log::error("Error updating user session {id}", $subscription);
-        }
+        $authenticationService->flagUserForUpdate($subscription ['userId']);
         $model->subscription = $subscription;
         $model->subscriptionCancelled = true;
         $model->title = 'Cancel Subscription';
@@ -277,7 +273,7 @@ class SubscriptionController {
         $end = Date::getDateTime ();
         $end->modify ( '+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower ( $subscriptionType ['billingPeriod'] ) );
 
-        $subscription = array (
+        $subscription = [
             'userId'             => $userId,
             'subscriptionSource' => Config::$a ['subscriptionType'],
             'subscriptionType'   => $subscriptionType ['id'],
@@ -286,7 +282,7 @@ class SubscriptionController {
             'endDate'            => $end->format ( 'Y-m-d H:i:s' ),
             'recurring'          => ($recurring) ? 1:0,
             'status'             => SubscriptionStatus::_NEW
-        );
+        ];
 
         // If this is a gift, change the user and the gifter
         if(!empty($giftReceiver)){
@@ -447,13 +443,13 @@ class SubscriptionController {
             if (!empty($subscription['gifter'])) {
                 $gifter = $userService->getUserById($subscription['gifter']);
                 $gifternick = $gifter['username'];
-                $message = sprintf("%s gifted %s a %s subscription!", $gifter['username'], $user['username'], $subscriptionType ['tierLabel']);
+                $message = sprintf("%s gifted %s a %s subscription! %s", $gifter['username'], $user['username'], $subscriptionType ['tierLabel'], $randomEmote);
             } else {
                 $gifternick = $user['username'];
-                $message = sprintf("%s is now a %s subscriber!", $user['username'], $subscriptionType ['tierLabel']);
+                $message = sprintf("%s is now a %s subscriber! %s", $user['username'], $subscriptionType ['tierLabel'], $randomEmote);
             }
             $chatIntegrationService->sendBroadcast($message);
-            if(!empty($subMessage)) {
+            if (!empty($subMessage)) {
                 $chatIntegrationService->sendBroadcast("$gifternick said... $subMessage");
             }
             if(Config::$a['streamlabs']['alert_subscriptions']) {

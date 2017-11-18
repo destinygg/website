@@ -52,12 +52,12 @@ class IpnController {
             try {
                 Log::info('Got a valid IPN [txn_id: {txn_id}, txn_type: {txn_type}]', $data);
                 $orderService = OrdersService::instance();
-                $orderService->addIpnRecord(array(
+                $orderService->addIpnRecord([
                     'ipnTrackId' => $data ['ipn_track_id'],
                     'ipnTransactionId' => $data ['txn_id'],
                     'ipnTransactionType' => $data ['txn_type'],
                     'ipnData' => json_encode($data, JSON_UNESCAPED_UNICODE)
-                ));
+                ]);
             } catch (\Exception $e) {
                 Log::critical('Could not save IPN Record');
                 throw $e;
@@ -132,12 +132,12 @@ class IpnController {
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
                 try {
                     $conn->beginTransaction();
-                    $subscriptionsService->updateSubscription(array(
+                    $subscriptionsService->updateSubscription([
                         'subscriptionId' => $subscription['subscriptionId'],
                         'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s'),
                         'paymentStatus' => PaymentStatus::ACTIVE
-                    ));
-                    $orderService->addPayment(array(
+                    ]);
+                    $orderService->addPayment([
                         'subscriptionId' => $subscription ['subscriptionId'],
                         'payerId' => $data ['payer_id'],
                         'amount' => $data ['mc_gross'],
@@ -147,7 +147,7 @@ class IpnController {
                         'paymentType' => $data ['payment_type'],
                         'paymentStatus' => $data ['payment_status'],
                         'paymentDate' => Date::getDateTime($data ['payment_date'])->format('Y-m-d H:i:s'),
-                    ));
+                    ]);
                     $conn->commit();
                 } catch (DBALException $e) {
                     $conn->rollBack();
@@ -158,38 +158,38 @@ class IpnController {
 
             case 'RECURRING_PAYMENT_SKIPPED':
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
-                $subscriptionsService->updateSubscription(array(
+                $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::SKIPPED
-                ));
+                ]);
                 Log::debug('Payment skipped {recurring_payment_id}', $data);
                 break;
 
             case 'RECURRING_PAYMENT_PROFILE_CANCEL' :
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
-                $subscriptionsService->updateSubscription(array(
+                $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::CANCELLED
-                ));
+                ]);
                 Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
                 break;
 
             case 'RECURRING_PAYMENT_FAILED' :
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
-                $subscriptionsService->updateSubscription(array(
+                $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::FAILED
-                ));
+                ]);
                 Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
                 break;
 
             // Sent on first post-back when the user subscribes
             case 'RECURRING_PAYMENT_PROFILE_CREATED' :
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
-                $subscriptionsService->updateSubscription(array(
+                $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::ACTIVE
-                ));
+                ]);
                 Log::debug('Updated payment profile {recurring_payment_id} status {profile_status}', $data);
                 break;
         }
