@@ -1,16 +1,29 @@
-'use strict';
-
 (function($){
 
-    var moment = require('moment');
-    var Chart = require('chart.js');
+    const moment = require('moment')
+    const Chart = require('chart.js')
+    const currDate = moment()
+    const dates = $('#income-dates')
+    const datesin = dates.find('span.date')
+    const months = 12
+    const days = 14
+
+    dates
+        .on('click', '.fa-arrow-left', () => {
+            currDate.subtract(1, 'months')
+            datesin.text(currDate.format('MMMM YYYY'))
+            dates.triggerHandler('date', currDate)
+        })
+        .on('click', '.fa-arrow-right', () => {
+            currDate.add(1, 'months')
+            datesin.text(currDate.format('MMMM YYYY'))
+            dates.triggerHandler('date', currDate)
+        })
+    datesin.text(currDate.format('MMMM YYYY'));
 
     $('#graph4').each(function(){
-        var graph = $(this);
-        var currDate = moment();
-        var title = $(graph).find('h4');
-        var ctx = $(graph).find('canvas').get(0).getContext("2d");
-        var currChart = new Chart(ctx, {
+        const graph = $(this)
+        const currChart = new Chart(graph.find('canvas').get(0).getContext('2d'), {
             type: 'bar',
             data: {
                 labels: [],
@@ -33,41 +46,29 @@
             }
         });
 
-        title
-            .on('click', '.fa-arrow-left', function(){
-                currDate.subtract(1, 'months');
-                updateGraph(currDate);
-            })
-            .on('click', '.fa-arrow-right', function(){
-                currDate.add(1, 'months');
-                updateGraph(currDate);
-            });
-
-        var updateGraph = function(selectedDate){
-            var fromDate = moment(selectedDate.format('YYYY-MM-DD')).startOf('month'),
+        const updateGraph4 = function(selectedDate){
+            const fromDate = moment(selectedDate.format('YYYY-MM-DD')).startOf('month'),
                 toDate = moment(selectedDate.format('YYYY-MM-DD')).endOf('month');
-
-            title.html("Subscriptions <a href='#'><i class='fa fa-arrow-left'></i></a> " + toDate.format('MMMM YYYY') + " <a href='#'><i class='fa fa-arrow-right'></i></a>");
             $.ajax({
                 url: '/admin/chart/NewTieredSubscribersLastXDays.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
                 success: function(data){
-                    var dataSet1 = [],
+                    const dataSet1 = [],
                         dataSet2 = [],
                         dataSet3 = [],
                         dataSet4 = [],
                         dataLabels = [],
                         dates = [];
-                    for (var m = fromDate; m.isBefore(toDate) || m.isSame(toDate); m.add(1, 'days')) {
+                    for (let m = fromDate; m.isBefore(toDate) || m.isSame(toDate); m.add(1, 'days')) {
                         dates.push(m.format('YYYY-MM-DD'));
-                        dataLabels.push(m.format('MM/D'));
+                        dataLabels.push(m.format('D'));
                         dataSet1.push(0);
                         dataSet2.push(0);
                         dataSet3.push(0);
                         dataSet4.push(0);
                     }
-                    for(var i=0; i<data.length; ++i){
-                        var x = dates.indexOf(data[i].date);
-                        if(x != -1){
+                    for(let i=0; i<data.length; ++i){
+                        const x = dates.indexOf(data[i].date);
+                        if(x !== -1){
                             switch(data[i]['subscriptionTier']){
                                 case "1":
                                     dataSet1[x] = parseInt(data[i]['total']);
@@ -129,21 +130,18 @@
             });
         };
 
-        updateGraph(currDate);
+        dates.on('date', () => updateGraph4(currDate))
+        updateGraph4(currDate);
     });
 
-
     $('#graph1').each(function(){
-        var days = 14,
-            graph = $(this),
+        const graph = $(this),
             label = "Revenue Last "+ days +" Days";
-        $(graph).find('h4').text(label);
         $.ajax({
             url: '/admin/chart/RevenueLastXDays.json?days='+days,
             success: function(data){
                 data = GraphUtil.prepareGraphData(data, 'sum', days, 'days');
-                var ctx = $(graph).find('canvas').get(0).getContext("2d");
-                new Chart(ctx, {
+                new Chart(graph.find('canvas').get(0).getContext("2d"), {
                     type: 'line',
                     data: {
                         labels: data.labels,
@@ -182,16 +180,13 @@
     });
 
     $('#graph2').each(function(){
-        var months = 12,
-            graph = $(this),
+        const graph = $(this),
             label = "Revenue Last "+ months +" Months";
-        $(graph).find('h4').text(label);
         $.ajax({
             url: '/admin/chart/RevenueLastXMonths.json?months='+months,
             success: function(data){
                 data = GraphUtil.prepareGraphData(data, 'sum', months, 'months');
-                var ctx = $(graph).find('canvas').get(0).getContext("2d");
-                new Chart(ctx, {
+                new Chart(graph.find('canvas').get(0).getContext("2d"), {
                     type: 'line',
                     data: {
                         labels: data.labels,
@@ -230,16 +225,14 @@
     });
 
     $('#graph3').each(function(){
-        var years = 5,
+        const years = 5,
             graph = $(this),
             label = "Revenue Last "+ years +" Years";
-        $(graph).find('h4').text(label);
         $.ajax({
             url: '/admin/chart/RevenueLastXYears.json?years='+years,
             success: function(data){
                 data = GraphUtil.prepareGraphData(data, 'sum', years, 'years');
-                var ctx = $(graph).find('canvas').get(0).getContext("2d");
-                new Chart(ctx, {
+                new Chart(graph.find('canvas').get(0).getContext("2d"), {
                     type: 'line',
                     data: {
                         labels: data.labels,
@@ -277,4 +270,70 @@
         })
     });
 
-})(jQuery);
+    $('#graph5').each(function(){
+        const graph = $(this)
+        const currChart = new Chart(graph.find('canvas').get(0).getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    callbacks: {
+                        label: function(t) {
+                            return GraphUtil.formatCurrency(t['yLabel']);
+                        }
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            callback: GraphUtil.formatCurrency
+                        }
+                    }]
+                }
+            }
+        });
+        const updateGraph5 = function(selectedDate) {
+            const fromDate = moment(selectedDate.format('YYYY-MM-DD')).startOf('month'),
+                toDate = moment(selectedDate.format('YYYY-MM-DD')).endOf('month');
+            $.ajax({
+                url: '/admin/chart/NewDonationsLastXDays.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
+                success: function (data) {
+                    const label = "Donations "+ currDate.format('MMMM YYYY');
+                    const dataSet = [],
+                        dataLabels = [],
+                        dates = [];
+                    for (let m = fromDate; m.isBefore(toDate) || m.isSame(toDate); m.add(1, 'days')) {
+                        dates.push(m.format('YYYY-MM-DD'));
+                        dataLabels.push(m.format('D'));
+                        dataSet.push(0);
+                    }
+                    for(let i=0; i<data.length; ++i) {
+                        const x = dates.indexOf(data[i].date);
+                        dataSet[x] = parseInt(data[i]['total'])
+                    }
+                    currChart.label = label;
+                    currChart.data.labels = dataLabels;
+                    currChart.data.datasets = [{
+                        label: label,
+                        borderWidth: 0.4,
+                        backgroundColor: "rgba(220,220,220,0.2)",
+                        borderColor: "rgba(220,220,220,1)",
+                        pointBorderColor: "rgba(220,220,220,1)",
+                        pointBackgroundColor: "#fff",
+                        pointBorderWidth: 1,
+                        data: dataSet
+                    }];
+                    currChart.update();
+                }
+            })
+        }
+        dates.on('date', () => updateGraph5(currDate))
+        updateGraph5(currDate);
+    })
+
+})(jQuery)

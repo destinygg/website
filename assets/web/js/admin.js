@@ -1,11 +1,10 @@
 (function () {
 
-    var moment = require('moment');
-
-    var GraphUtil = {};
+    const moment = require('moment');
+    const GraphUtil = {};
 
     GraphUtil.prepareGraphData = function prepareGraphData(data, property, timeRange, timeUnit) {
-        var graphData = {};
+        let graphData = {};
         switch (timeUnit.toUpperCase()) {
             case 'DAYS':
                 graphData = GraphUtil.fillGraphDates(data, property, timeRange, timeUnit, 'YYYY-MM-DD', 'MM/D', '');
@@ -21,19 +20,19 @@
     };
 
     GraphUtil.fillGraphDates = function fillGraphDates(data, property, timeRange, timeUnit, format1, format2, addon) {
-        var dataSet = [],
+        const dataSet = [],
             dataLabels = [],
             dates = [],
             a = moment({hour: 1}).subtract(timeRange, timeUnit),
             b = moment({hour: 1});
-        for (var m = a; m.isBefore(b) || m.isSame(b); m.add(1, timeUnit)) {
+        for (let m = a; m.isBefore(b) || m.isSame(b); m.add(1, timeUnit)) {
             dates.push(m.format(format1) + addon);
             dataLabels.push(m.format(format2));
             dataSet.push(0);
         }
-        for (var i = 0; i < data.length; ++i) {
-            var x = dates.indexOf(data[i].date);
-            if (x != -1)
+        for (let i = 0; i < data.length; ++i) {
+            let x = dates.indexOf(data[i].date);
+            if (x !== -1)
                 dataSet[x] = data[i][property];
         }
         return {
@@ -48,13 +47,10 @@
 
     window.GraphUtil = GraphUtil;
 
-})();
-
-(function () {
 
     $('#userlist').each(function () {
 
-        var usrlist = $(this),
+        let usrlist = $(this),
             userSearchForm = $('#userSearchForm'),
             page = usrlist.data('page'),
             size = usrlist.data('size'),
