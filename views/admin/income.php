@@ -17,12 +17,23 @@ use Destiny\Common\Config;
         <?php include 'seg/admin.nav.php' ?>
 
         <section class="container">
+            <h3 id="income-dates">
+                <span id="date-selector">
+                    <a href='#'><i class='fa fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fa fa-arrow-right'></i></a>
+                </span>
+            </h3>
             <div class="row">
-                <div class="col-md-12 col-sm-12 card">
+                <div class="col-md-6 col-sm-12 card">
                     <div id="graph4" class="card-inner">
-                        <h4></h4>
                         <div class="graph-outer">
-                            <canvas height="400"></canvas>
+                            <canvas height="350"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 card">
+                    <div id="graph5" class="card-inner">
+                        <div class="graph-outer">
+                            <canvas height="350"></canvas>
                         </div>
                     </div>
                 </div>

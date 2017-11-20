@@ -139,7 +139,7 @@ class AdminController {
 
     /**
      * @Route ("/admin/chart/{type}")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"ADMIN","FINANCE"})
      * @ResponseBody
      *
      * @param array $params
@@ -149,16 +149,17 @@ class AdminController {
      */
     public function chartData(array $params){
         FilterParams::required($params, 'type');
+        $graphType = strtoupper($params['type']);
         $statisticsService = StatisticsService::instance();
-        $cacheDriver = Application::instance()->getCache ();
+        $cacheDriver = Application::instance()->getCache();
         $data = [];
         try {
-            switch(strtoupper($params['type'])){
+            switch ($graphType) {
                 case 'REVENUELASTXDAYS':
                     FilterParams::required($params, 'days');
-                    $key = 'RevenueLastXDays '. intval($params['days']);
-                    if(!$cacheDriver->contains($key)){
-                        $data = $statisticsService->getRevenueLastXDays( intval($params['days']) );
+                    $key = $graphType . intval($params['days']);
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getRevenueLastXDays(intval($params['days']));
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -166,9 +167,9 @@ class AdminController {
                     break;
                 case 'REVENUELASTXMONTHS':
                     FilterParams::required($params, 'months');
-                    $key = 'RevenueLastXMonths '. intval($params['months']);
-                    if(!$cacheDriver->contains($key)){
-                        $data = $statisticsService->getRevenueLastXMonths( intval($params['months']) );
+                    $key = $graphType . intval($params['months']);
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getRevenueLastXMonths(intval($params['months']));
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -176,9 +177,9 @@ class AdminController {
                     break;
                 case 'REVENUELASTXYEARS':
                     FilterParams::required($params, 'years');
-                    $key = 'RevenueLastXYears '. intval($params['years']);
-                    if(!$cacheDriver->contains($key)){
-                        $data = $statisticsService->getRevenueLastXYears( intval($params['years']) );
+                    $key = $graphType . intval($params['years']);
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getRevenueLastXYears(intval($params['years']));
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -186,9 +187,9 @@ class AdminController {
                     break;
                 case 'NEWSUBSCRIBERSLASTXDAYS':
                     FilterParams::required($params, 'days');
-                    $key = 'NewSubscribersLastXDays '. intval($params['days']);
-                    if(!$cacheDriver->contains($key)){
-                        $data = $statisticsService->getNewSubscribersLastXDays( intval($params['days']) );
+                    $key = $graphType . intval($params['days']);
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewSubscribersLastXDays(intval($params['days']));
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -196,9 +197,9 @@ class AdminController {
                     break;
                 case 'NEWSUBSCRIBERSLASTXMONTHS':
                     FilterParams::required($params, 'months');
-                    $key = 'NewSubscribersLastXMonths '. intval($params['months']);
-                    if(!$cacheDriver->contains($key)){
-                        $data = $statisticsService->getNewSubscribersLastXMonths( intval($params['months']) );
+                    $key = $graphType . intval($params['months']);
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewSubscribersLastXMonths(intval($params['months']));
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -206,9 +207,9 @@ class AdminController {
                     break;
                 case 'NEWSUBSCRIBERSLASTXYEARS':
                     FilterParams::required($params, 'years');
-                    $key = 'NewSubscribersLastXYears '. intval($params['years']);
-                    if(!$cacheDriver->contains($key)){
-                        $data = $statisticsService->getNewSubscribersLastXYears( intval($params['years']) );
+                    $key = $graphType . intval($params['years']);
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewSubscribersLastXYears(intval($params['years']));
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -220,9 +221,23 @@ class AdminController {
                     $fromDate = Date::getDateTime($params['fromDate']);
                     $toDate = Date::getDateTime($params['toDate']);
                     $toDate->setTime(23, 59, 59);
-                    $key = 'NewTieredSubscribersLastXDays'. $fromDate->format('Ymdhis'). $toDate->format('Ymdhis');
-                    if(!$cacheDriver->contains($key)){
-                        $data = $statisticsService->getNewTieredSubscribersLastXDays( $fromDate, $toDate );
+                    $key = $graphType . $fromDate->format('Ymdhis') . $toDate->format('Ymdhis');
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewTieredSubscribersLastXDays($fromDate, $toDate);
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWDONATIONSLASTXDAYS':
+                    FilterParams::required($params, 'fromDate');
+                    FilterParams::required($params, 'toDate');
+                    $fromDate = Date::getDateTime($params['fromDate']);
+                    $toDate = Date::getDateTime($params['toDate']);
+                    $toDate->setTime(23, 59, 59);
+                    $key = $graphType . $fromDate->format('Ymdhis') . $toDate->format('Ymdhis');
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewDonationsLastXDays($fromDate, $toDate);
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -230,9 +245,7 @@ class AdminController {
                     break;
             }
         } catch (\Exception $e) {
-            $n = new Exception('Error loading graph data.', $e);
-            Log::error($n);
-            // swallowed
+            Log::error('Error loading graph data. ' . $e->getMessage());
         }
         return $data;
     }
