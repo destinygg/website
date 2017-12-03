@@ -384,7 +384,7 @@ class UserService extends Service {
      * @return array
      * @throws DBALException
      */
-    public function findByFeature($feature, $limit, $page) {
+    public function findByFeature($feature, $limit, $page=0) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
@@ -445,6 +445,46 @@ class UserService extends Service {
         $pagination ['page'] = $page;
         $pagination ['limit'] = $limit;
         return $pagination;
+    }
+
+    /**
+     * @return array
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function findByNewBDay() {
+        $conn = Application::getDbConn();
+        $featureId = $this->getFeatureIdByName(UserFeature::DGGBDAY);
+        $stmt = $conn->prepare("
+            SELECT DISTINCT u.userId, u.createdDate, TIMESTAMPDIFF(YEAR, u.createdDate, CURDATE())+1 `years` FROM dfl_users u 
+            LEFT JOIN dfl_users_features uf ON (uf.userId = u.userId AND uf.featureId = :featureId)
+            WHERE DATE_FORMAT(u.createdDate,'%m-%d') = DATE_FORMAT(CURDATE(),'%m-%d')
+            AND u.userStatus = 'Active'
+            AND TIMESTAMPDIFF(YEAR, u.createdDate, CURDATE()) > 0
+            AND uf.featureId IS NULL
+         ");
+        $stmt->bindValue('featureId', $featureId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * @return array
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function findByExpiredBDay() {
+        $conn = Application::getDbConn();
+        $featureId = $this->getFeatureIdByName(UserFeature::DGGBDAY);
+        $stmt = $conn->prepare("
+            SELECT DISTINCT u.userId FROM dfl_users u 
+            INNER JOIN dfl_users_features uf ON (uf.userId = u.userId AND uf.featureId = :featureId)
+            WHERE DATE_FORMAT(u.createdDate,'%m-%d') <> DATE_FORMAT(CURDATE(),'%m-%d')
+            AND u.userStatus = 'Active'
+         ");
+        $stmt->bindValue('featureId', $featureId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     /**

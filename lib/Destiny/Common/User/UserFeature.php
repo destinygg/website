@@ -22,6 +22,7 @@ abstract class UserFeature {
     const COMPCHALLENGE = 'flair6';
     const EVE = 'flair7';
     const SC2 = 'flair10';
+    const DGGBDAY = 'flair15';
 
     public static $FEATURE_MAP = [
         'PROTECTED'     => self::PROTECT,
@@ -42,7 +43,8 @@ abstract class UserFeature {
         'CONTRIBUTOR'   => self::CONTRIBUTOR,
         'COMPCHALLENGE' => self::COMPCHALLENGE,
         'EVE'           => self::EVE,
-        'SC2'           => self::SC2
+        'SC2'           => self::SC2,
+        'DGGBDAY'       => self::DGGBDAY
     ];
 
     public static $FEATURES = [
@@ -65,15 +67,6 @@ abstract class UserFeature {
         self::COMPCHALLENGE,
         self::EVE,
         self::SC2
-    ];
-
-    public static $PSEUDO_FEATURES = [
-        self::SUBSCRIBER,
-        self::SUBSCRIBERT0,
-        self::SUBSCRIBERT1,
-        self::SUBSCRIBERT2,
-        self::SUBSCRIBERT3,
-        self::SUBSCRIBERT4
     ];
 
     public static $NON_PSEUDO_FEATURES = [
