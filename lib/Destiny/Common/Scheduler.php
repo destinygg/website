@@ -53,19 +53,26 @@ class Scheduler {
         try {
             Log::info('Schedule starting');
             foreach ($this->schedule as &$task) {
-                $nextExecute = $task['lastExecuted'] == '' ? Date::getDateTime() : Date::getDateTime($task['lastExecuted']);
+                $taskNeverRun = $task['lastExecuted'] == '';
+                $nextExecute = $taskNeverRun ? Date::getDateTime() : Date::getDateTime($task['lastExecuted']);
                 $nextExecute->modify('+' . $task['frequency'] . ' ' . $task['period']);
-                if (time() > $nextExecute->getTimestamp()) {
+                if ($taskNeverRun || time() > $nextExecute->getTimestamp()) {
                     try {
                         $task['executeCount'] = intval($task['executeCount']) + 1;
                         $task['lastExecuted'] = date(\DateTime::ATOM);
-                        $this->updateTask($task);
+                        if($taskNeverRun) {
+                            $this->insertTask($task);
+                        } else {
+                            $this->updateTask($task);
+                        }
                         Log::info('Execute start {action}', $task);
                         $this->getTaskClass($task)->execute();
                     } catch (\Exception $e) {
                         Log::error("Error executing task: " . $e->getMessage());
                     }
                     Log::info('Execute end {action}', $task);
+                } else {
+                    Log::info('Not executed. ' . $task['action'] . ' next: ' . $nextExecute->format('Y-m-d H:i:s'));
                 }
             }
             Log::info('Schedule complete');
@@ -90,6 +97,7 @@ class Scheduler {
                 $task = array_merge($task, $data);
             }
         }
+        Log::info('Schedule loaded ['. join(',', array_keys($this->schedule)) .']');
     }
 
     /**

@@ -1,7 +1,6 @@
 <?php
 namespace Destiny;
 use Destiny\Commerce\PaymentStatus;
-use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
@@ -232,7 +231,7 @@ use Destiny\Commerce\SubscriptionStatus;
           </div>
       </section>
 
-      <!--
+      <?php /*
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#address-content">Address <small>(optional)</small></h3>
           <div id="address-content" class="content content-dark clearfix collapse">
@@ -245,47 +244,47 @@ use Destiny\Commerce\SubscriptionStatus;
                           <label>Full Name <span class="icon-required">*</span>
                               <br><small>The name of the person for this address</small>
                           </label>
-                          <input class="form-control" type="text" name="fullName" value="<?/*=Tpl::out($this->address['fullName'])*/?>" placeholder="Full Name" required />
+                          <input class="form-control" type="text" name="fullName" value="<?=Tpl::out($this->address['fullName'])?>" placeholder="Full Name" required />
                       </div>
                       <div class="form-group">
                           <label>Address Line 1 <span class="icon-required">*</span>
                               <br><small>Street address, P.O box, company name, c/o</small>
                           </label>
-                          <input class="form-control" type="text" name="line1" value="<?/*=Tpl::out($this->address['line1'])*/?>" placeholder="Address Line 1" required />
+                          <input class="form-control" type="text" name="line1" value="<?=Tpl::out($this->address['line1'])?>" placeholder="Address Line 1" required />
                       </div>
                       <div class="form-group">
                           <label>Address Line 2
                               <br><small>Apartment, Suite, Building, Unit, Floor etc.</small>
                           </label>
-                          <input class="form-control" type="text" name="line2" value="<?/*=Tpl::out($this->address['line2'])*/?>" placeholder="Address Line 2" />
+                          <input class="form-control" type="text" name="line2" value="<?=Tpl::out($this->address['line2'])?>" placeholder="Address Line 2" />
                       </div>
 
                       <div class="form-group">
                           <label>City <span class="icon-required">*</span></label>
-                          <input class="form-control" type="text" name="city" value="<?/*=Tpl::out($this->address['city'])*/?>" placeholder="City" required />
+                          <input class="form-control" type="text" name="city" value="<?=Tpl::out($this->address['city'])?>" placeholder="City" required />
                       </div>
                       <div class="form-group">
                           <label>State/Province/Region <span class="icon-required">*</span></label>
-                          <input class="form-control" type="text" name="region" value="<?/*=Tpl::out($this->address['region'])*/?>" placeholder="Region" required />
+                          <input class="form-control" type="text" name="region" value="<?=Tpl::out($this->address['region'])?>" placeholder="Region" required />
                       </div>
                       <div class="form-group">
                           <label>ZIP/Postal Code <span class="icon-required">*</span></label>
-                          <input class="form-control" type="text" name="zip" value="<?/*=Tpl::out($this->address['zip'])*/?>" placeholder="Zip/Postal Code" required />
+                          <input class="form-control" type="text" name="zip" value="<?=Tpl::out($this->address['zip'])?>" placeholder="Zip/Postal Code" required />
                       </div>
                       <div class="form-group">
                           <label for="country">Country <span class="icon-required">*</span></label>
                           <select class="form-control" name="country" id="country" required>
                               <option value="">Select your country</option>
-                              <?/*$countries = Country::getCountries();*/?>
+                              <?$countries = Country::getCountries();?>
                               <option value="">&nbsp;</option>
-                              <option value="US" <?php /*if($this->address['country'] == 'US'): */?>
-                                  selected="selected" <?php /*endif */?>>United States</option>
-                              <option value="GB" <?php /*if($this->address['country'] == 'GB'): */?>
-                                  selected="selected" <?php /*endif */?>>United Kingdom</option>
+                              <option value="US" <?php if($this->address['country'] == 'US'):?>
+                                  selected="selected" <?php endif ?>>United States</option>
+                              <option value="GB" <?php if($this->address['country'] == 'GB'):?>
+                                  selected="selected" <?php endif ?>>United Kingdom</option>
                               <option value="">&nbsp;</option>
-                              <?php /*foreach($countries as $country): */?>
-                                  <option value="<?/*=$country['alpha-2']*/?>" <?php /*if($this->address['country'] != 'US' && $this->address['country'] != 'GB' && $this->address['country'] == $country['alpha-2']):*/?>selected="selected"<?php /*endif;*/?>><?/*=Tpl::out($country['name'])*/?></option>
-                              <?php /*endforeach; */?>
+                              <?php foreach($countries as $country): ?>
+                                  <option value="<?=$country['alpha-2']?>" <?php if($this->address['country'] != 'US' && $this->address['country'] != 'GB' && $this->address['country'] == $country['alpha-2']):?>selected="selected"<?php endif; ?>><?=Tpl::out($country['name'])?></option>
+                              <?php endforeach; ?>
                           </select>
                       </div>
                   </div>
@@ -297,7 +296,7 @@ use Destiny\Commerce\SubscriptionStatus;
               </form>
           </div>
       </section>
-      -->
+      */ ?>
 
       <section class="container">
           <h3 class="collapsed" data-toggle="collapse" data-target="#discord-content">Discord</h3>
