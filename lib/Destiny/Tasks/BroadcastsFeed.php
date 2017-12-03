@@ -11,7 +11,7 @@ use Destiny\Twitch\TwitchApiService;
 /**
  * @Schedule(frequency=30,period="minute")
  */
-class BroadcastsFeed  implements TaskInterface {
+class BroadcastsFeed implements TaskInterface {
 
     /**
      * @return mixed|void
