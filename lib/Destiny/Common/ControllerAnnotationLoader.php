@@ -39,6 +39,8 @@ class ControllerAnnotationLoader {
      * @param DirectoryClassIterator $classIterator
      * @param Reader $reader
      * @param Router $router
+     *
+     * @throws \ReflectionException
      */
     public function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
         $this->controllerRef = new ReflectionClass(new Annotation\Controller());

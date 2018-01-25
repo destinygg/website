@@ -6,5 +6,6 @@
         <li><a href="/admin/subscribers">Subscribers</a></li>
         <li><a href="/admin/bans">Bans</a></li>
         <li><a href="/admin/streamlabs">StreamLabs</a></li>
+        <li><a href="/admin/twitch">Twitch</a></li>
     </ol>
 </section>
