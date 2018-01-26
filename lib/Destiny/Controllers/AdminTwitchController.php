@@ -82,7 +82,7 @@ class AdminTwitchController {
                     'Client-ID' => $conf['client_id']
                 ],
                 'form_params' => [
-                    'grant_type' => 'client_credentials',
+                    'grant_type' => 'authorization_code',
                     'client_id' => $conf['client_id'],
                     'client_secret' => $conf['client_secret'],
                     'redirect_uri' => $conf['redirect_uri'],
