@@ -94,7 +94,7 @@ class AdminTwitchController {
                 $data = json_decode((string)$response->getBody(), true);
                 if (empty ($data) || isset ($data['error']) || !isset ($data['access_token']))
                     throw new Exception ('Invalid access_token response');
-                Session::setSuccessBag("Access token granted: ". $data['access_token']);
+                Session::setSuccessBag("Access Token: ". $data['access_token'] ." Refresh Token: ". $data['refresh_token']);
                 return "redirect: /admin/twitch";
             }
             throw new Exception ( 'Bad response from oauth provider' );
