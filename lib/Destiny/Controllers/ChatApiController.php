@@ -6,6 +6,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
@@ -157,91 +158,22 @@ class ChatApiController {
      * @return array
      */
     public function postSubscription(array $params, Response $response, Request $request) {
-        return $this->postSubscribe($params, $response, $request, self::MSG_FMT_TWITCH_SUB);
-    }
-
-    /**
-     * @Route ("/api/twitchresubscription")
-     * @HttpMethod ({"POST"})
-     * @ResponseBody
-     *
-     * @param array $params
-     * @param Response $response
-     * @param Request $request
-     * @return array|null
-     */
-    public function postReSubscription(array $params, Response $response, Request $request) {
-        return $this->postSubscribe($params, $response, $request, self::MSG_FMT_TWITCH_RESUB);
-    }
-
-    /**
-     * Expects the following REQUEST params:
-     *     privatekey=XXXXXXXX
-     *
-     * Expects the following body structure:
-     *     [{"123":1},{"456":0}]
-     *
-     * @param array $params
-     * @param Response $response
-     * @param Request $request
-     * @param $message
-     * @return array|null
-     */
-    private function postSubscribe(array $params, Response $response, Request $request, $message){
         try {
             FilterParams::required($params, 'privatekey');
-            if (!$this->checkPrivateKey($params['privatekey']))
+            if (!$this->checkPrivateKey($params['privatekey'])) {
                 throw new Exception ('Invalid shared private key.');
+            }
             $subs = json_decode($request->getBody(), true);
             if (is_array($subs) && count($subs) > 0) {
-                $this->updateSubsAndBroadcast($subs, $message);
+                $this->updateSubsAndBroadcast($subs, self::MSG_FMT_TWITCH_SUB);
             }
             $response->setStatus(Http::STATUS_NO_CONTENT);
         } catch (\Exception $e) {
+            Log::error('Error posting subscriptions.', $e->getMessage());
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }
         return null;
-    }
-
-    /**
-     * @Route ("/api/addtwitchsubscription")
-     * @HttpMethod ({"POST"})
-     * @ResponseBody
-     *
-     * Expects the following REQUEST params:
-     *     privatekey=XXXXXXXX
-     *
-     * Expects the following body structure:
-     *     {"nick":"username"}
-     *
-     * @param Response $response
-     * @param array $params
-     * @param Request $request
-     * @return array
-     *
-     * @throws DBALException
-     */
-    public function addSubscription(Response $response, array $params, Request $request) {
-        $userService = UserService::instance();
-        try {
-            FilterParams::required($params, 'privatekey');
-            if(!$this->checkPrivateKey($params['privatekey']))
-                throw new Exception ('Invalid shared private key.');
-            $data = json_decode( $request->getBody(), true );
-            FilterParams::required($data, 'nick');
-            $authid = $userService->getTwitchIDFromNick( $data['nick'] );
-            $response->setStatus(Http::STATUS_OK);
-            if ($authid !== false) {
-                $this->updateSubsAndBroadcast([$authid => 1], "%s has resubscribed on Twitch!");
-                return ['id' => $authid];
-            } else {
-                return ['id' => ''];
-            }
-        } catch (Exception $e) {
-            $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
     }
 
     /**

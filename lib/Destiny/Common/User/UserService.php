@@ -928,9 +928,9 @@ class UserService extends Service {
 
         $ids = [];
         foreach ($data as $authid => $subscriber) {
-            if (!ctype_alnum($authid))
+            if (!ctype_alnum($authid)) {
                 throw new Exception("Non alpha-numeric authid found: $authid");
-
+            }
             $ids[] = $authid;
         }
 
@@ -957,14 +957,15 @@ class UserService extends Service {
         foreach (array_chunk($ids, $batchsize) as $chunk) {
             $stmt = $conn->prepare(sprintf($infosql, implode("', '", $chunk)));
             $stmt->execute();
-
-            while ($row = $stmt->fetch())
+            while ($row = $stmt->fetch()) {
                 $idToUser[$row['authId']] = $row;
+            }
         }
         unset($ids);
 
-        if (empty($idToUser))
+        if (empty($idToUser)) {
             return [];
+        }
 
         $changed = $subs = $nonsubs = [];
         foreach ($idToUser as $authid => $user) {
@@ -979,11 +980,7 @@ class UserService extends Service {
             }
         }
 
-        $subsql = "
-          UPDATE dfl_users AS u
-          SET u.istwitchsubscriber = '%s'
-          WHERE u.userId IN('%s')
-        ";
+        $subsql = "UPDATE dfl_users AS u SET u.istwitchsubscriber = '%s' WHERE u.userId IN('%s')";
 
         // update the subs first
         foreach (array_chunk($subs, $batchsize) as $chunk) {
