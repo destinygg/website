@@ -199,6 +199,15 @@ form.form-alt {
   }
 }
 
+@media (min-width: $screen-xlg-min) {
+  .container {
+    width: 1960px;
+  }
+  .navbar .container-fluid {
+    max-width: 1960px;
+  }
+}
+
 .ds-block {
   margin: 20px;
 }
