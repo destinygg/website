@@ -1,6 +1,6 @@
 {
   "name": "dgg-website",
-  "version": "2.3.18",
+  "version": "2.3.20",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
@@ -38,7 +38,7 @@
     "chart.js": "~2.7.1",
     "clean-webpack-plugin": "^0.1.18",
     "core-js": "~2.5.3",
-    "css-loader": "^0.28.9",
+    "css-loader": "^0.28.10",
     "del": "~3.0.0",
     "dgg-chat-gui": "git://github.com/destinygg/chat-gui.git#master",
     "extract-text-webpack-plugin": "~3.0.2",
