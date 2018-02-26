@@ -313,14 +313,6 @@ class ProfileController {
         }
         $authProfiles = $userService->getAuthProfilesByUserId($userId);
         if (!empty($authProfiles)) {
-            $key = array_search('streamlabs', array_column($authProfiles, 'authProvider'));
-            if ($key >= 0) {
-                unset($authProfiles[$key]);
-            }
-            if (count($authProfiles) == 1) {
-                Session::setErrorBag('You require at least one login provider');
-                return 'redirect: /profile/authentication';
-            }
             $userService->removeAuthProfile($userId, $params ['provider']);
             Session::setSuccessBag('Auth token removed');
             return 'redirect: /profile/authentication';
