@@ -2,7 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Api\ApiAuthenticationService;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -112,7 +112,7 @@ class AuthenticationController {
      */
     public function logout() {
         if (Session::isStarted()) {
-            ChatIntegrationService::instance()->deleteChatSession(Session::getSessionId());
+            ChatRedisService::instance()->removeChatSession(Session::getSessionId());
             Session::destroy();
         }
         return 'redirect: /';

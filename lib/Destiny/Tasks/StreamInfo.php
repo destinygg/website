@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Tasks;
 
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
@@ -21,7 +21,7 @@ class StreamInfo implements TaskInterface {
     public function execute() {
         $cache = Application::instance()->getCache();
         $twitchApiService = TwitchApiService::instance();
-        $chatIntegration = ChatIntegrationService::instance();
+        $chatIntegration = ChatRedisService::instance();
 
         // STREAM STATUS
         $streaminfo = $twitchApiService->getStreamInfo(Config::$a ['twitch']['user']);

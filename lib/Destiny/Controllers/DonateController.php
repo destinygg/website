@@ -2,7 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatEmotes;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\DonationStatus;
 use Destiny\Common\Annotation\Controller;
@@ -186,7 +186,7 @@ class DonateController {
                 $symbol = $donation['currency'] === 'USD'? '$': $donation['currency']; // todo hokey currency symbol lookup
                 $amount = $symbol . number_format($donation['amount'], 2);
                 $emote = $randomEmote = ChatEmotes::random('destiny');
-                $chatService = ChatIntegrationService::instance();
+                $chatService = ChatRedisService::instance();
                 $chatService->sendBroadcast(sprintf("%s has donated %s! %s", $username, $amount, $emote));
                 if(!empty($message)) {
                     $chatService->sendBroadcast("$username said... $message");

@@ -1,21 +1,19 @@
 @import "../../common";
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
-$xs-nav-height  : 31px;
-$nav-height     : 41px;
-$chat-width     : 450px;
-
 textarea, input, button {
-    font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 html, body {
-    height: 100%;
-    position: relative;
-    color: $text-color1;
-    background: $color-dark url("../img/body-bg.png") repeat top center;
-    margin: 0;
-    padding: 0;
+  height: 100%;
+  position: relative;
+  color: $text-color1;
+  background: $body-bg-color;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
 }
 a {
     color: $color-accent;
@@ -26,7 +24,7 @@ a:hover, a:focus {
     text-decoration: underline;
 }
 section {
-    margin-top: 15px;
+    margin-top: 20px;
 }
 hr {
     border: 0;
@@ -61,48 +59,6 @@ label small {
   }
 }
 
-.form-control {
-  background-color: #1B1B1B;
-  border-color: #303030;
-  color: #C0C0C0;
-  box-shadow: inset 1px 1px 10px rgb(21, 21, 21);
-  border-top-color: black;
-  border-left-color: black;
-}
-.form-control:focus {
-  background-color: white;
-  border: 1px solid #CCCCCC;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-  color: #555;
-}
-.form-control[disabled],
-.form-control[readonly],
-fieldset[disabled] .form-control {
-  background-color: #1B1B1B;
-  opacity: 1;
-}
-.form-control::placeholder {
-    color: $color-chat-disabled;
-}
-.form-control:focus::placeholder {
-    color: $text-color1;
-}
-
-form.form-alt {
-  .form-control,
-  .form-control:focus {
-    background-color: white;
-    border: 1px solid #CCCCCC;
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-    color: #555;
-  }
-  .form-control[disabled],
-  .form-control[readonly],
-  fieldset[disabled] .form-control {
-    background-color: white;
-  }
-}
-
 .overlay {
   position: absolute;
   top: 0;
@@ -113,13 +69,14 @@ form.form-alt {
   z-index: 49;
 }
 
-
 .nav, .nav a, .nav li {
   outline: none;
 }
 
 .navbar {
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  background: $body-bg-color;
+  box-shadow: none;
+  border: none;
   min-height: inherit;
   margin: 0;
   a {
@@ -190,7 +147,6 @@ form.form-alt {
       padding-bottom: 5px;
     }
   }
-
 }
 
 @media (min-width: $screen-lg-min) {
@@ -207,12 +163,50 @@ form.form-alt {
     max-width: 1960px;
   }
 }
+.form-control {
+  background-color: #1B1B1B;
+  border-color: #303030;
+  color: #C0C0C0;
+  box-shadow: inset 1px 1px 10px rgb(21, 21, 21);
+  border-top-color: black;
+  border-left-color: black;
+}
+.form-control:focus {
+  background-color: white;
+  border: 1px solid #CCCCCC;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  color: #555;
+}
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  background-color: #1B1B1B;
+  opacity: 1;
+}
+.form-control::placeholder {
+  color: $color-chat-disabled;
+}
+.form-control:focus::placeholder {
+  color: $text-color1;
+}
+
+form.form-alt {
+  .form-control,
+  .form-control:focus {
+    background-color: white;
+    border: 1px solid #CCCCCC;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    color: #555;
+  }
+  .form-control[disabled],
+  .form-control[readonly],
+  fieldset[disabled] .form-control {
+    background-color: white;
+  }
+}
 
 .ds-block {
   margin: 20px;
-}
-.ds-block-reduced {
-  margin:10px 20px;
 }
 
 .breadcrumb {
@@ -242,35 +236,15 @@ form.form-alt {
 /**
  * Header band
  **/
-$hb-light: #849EB5;
-$hb-dark:  #30394A;
+
 #header-band {
+  @extend .bg-grad-main;
   padding: 0;
   margin: 0;
   position: relative;
-  background: -moz-linear-gradient(left,  $hb-light 0%, $hb-light 51%, $hb-dark 51%,$hb-dark 100%);
-  background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
-  background: linear-gradient(to right,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1);
-
-  .shadow {
-    box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events:none;
-  }
-
   & > .container {
     display: flex;
     padding: 0;
-    background: -moz-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
-    background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
-    background: linear-gradient(to right,  $hb-light 0%,$hb-dark 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1 );
   }
 }
 
@@ -309,9 +283,6 @@ $hb-dark:  #30394A;
  * Top navigation
  */
 #main-nav {
-  .navbar-inner {
-    border-bottom: 1px solid black;
-  }
   .subscribe > a > span {
     padding: 1px 4px;
     border-radius: 8px;
@@ -320,7 +291,6 @@ $hb-dark:  #30394A;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
   }
   .subscribe > a:hover > span {
-    color: $text-color;
     background-color: $color-alert-bg;
   }
 
@@ -336,6 +306,37 @@ $hb-dark:  #30394A;
     background-color: $color-surface-dark3;
     color: white;
   }
+  .brand {
+    text-indent: -999em;
+    background: url("../img/dgg-logo.svg") no-repeat center left;
+    background-size: contain;
+    margin: 5px 0;
+    width: 105px;
+    height: 30px;
+    display: none;
+  }
+}
+
+body.no-brand #main-nav .brand {
+  display: none !important;
+}
+
+body#home #main-nav {
+  @extend .bg-grad-main;
+}
+
+body.no-brand .navbar {
+  .navbar-nav > li > a {
+    color: $color-light;
+    text-shadow: 0 0 1px black;
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+body.no-contain:not(#bigscreen) #main-nav {
+  margin: 10px 0;
 }
 
 .dropdown-menu {
@@ -355,25 +356,12 @@ $hb-dark:  #30394A;
   color: $text-color;
 }
 
-body #main-nav .brand {
-  text-indent: -999em;
-  background: url("../img/dgg-logo.svg") no-repeat center left;
-  background-size: contain;
-  margin: 5px 0;
-  width: 105px;
-  height: 30px;
-  display: none;
-}
-body.no-brand #main-nav .brand {
-  display: none !important;
-}
-
 .content-dark {
   border-radius: 5px;
   background-color: $color-surface-dark1;
 
   .title {
-    font-size: 22px;
+    font-size: 1.8em;
     font-weight: normal;
     color: $text-color;
     margin: 15px 20px;
@@ -445,14 +433,14 @@ body.no-brand #main-nav .brand {
   }
   .title {
     border-bottom: 1px solid black;
-    padding-top: 10px;
-    padding-bottom: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
     padding-left: 20px;
     margin: 0;
     min-height: 42px;
   }
   .title a {
-    font-size: 14px;
+    font-size: 0.8em;
     text-decoration: none;
   }
   .media {
@@ -481,7 +469,7 @@ body.no-brand #main-nav .brand {
   }
   .media-body time,
   .media-body small {
-    font-size: 12px;
+    font-size: 0.9em;
     color: $text-color2;
   }
   .artist, .details {
@@ -498,7 +486,6 @@ body.no-brand #main-nav .brand {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 14px;
     line-height: 1.428571429;
   }
   .empty {
@@ -539,11 +526,6 @@ body.no-brand #main-nav .brand {
   }
 }
 
-#stream-lastfm .cover-image {
-  width: 74px;
-  height: 64px;
-}
-
 #gmg-block > a {
   display: block;
 }
@@ -552,12 +534,6 @@ body.no-brand #main-nav .brand {
   background: url("../img/ad-gmg.png");
 }
 
-#dc-donate-xs {
-  text-align: center;
-}
-#dc-donate-xs p {
-  font-size: 18px;
-}
 #dc-donate {
 
   .dc-donate-blk {
@@ -620,20 +596,18 @@ body.no-contain #footer-inner {
 
 #footer {
   color: $text-color2;
-  font-size: 12px;
   line-height: 18px;
   position: relative;
   text-shadow: 1px 1px 1px black;
-  background-color: rgba($color-surface-dark1,0.5);
+  background-color: $color-surface-dark1;
   border-top: 1px solid $color-surface-dark3;
   padding: 0;
   margin-top: 15px;
   height: 130px;
 
-  h3 {
+  h4 {
     color: $text-color2;
     line-height: 18px;
-    font-size: 20px;
     margin-top: 0;
   }
   a {
@@ -680,24 +654,18 @@ body.no-contain #footer-inner {
   color: #333;
 }
 
-.nav.navbar-inverse > li > a:hover {
-  color: $text-color;
-  text-decoration: none;
-  border-color: #444 #222 #222 #444;
-}
-
 .subscription {
   .sub-label {
     color: white;
   }
   .sub-amount {
     color: $text-color;
-    font-size: 18px;
+    font-size: 1.6em;
     font-weight: bold;
   }
   .tier-label {
     color: $text-color2;
-    font-size:20px;
+    font-size: 1.8rem;
     font-weight: bold;
   }
   .sub-billing {
@@ -745,13 +713,13 @@ body.no-contain #footer-inner {
   text-overflow: ellipsis;
 }
 .subfeature-info {
-  font-size:18px;
+  font-size: 1.4em;
   float: left;
 }
 .subfeature-price {
   margin-right: 10px;
   float: left;
-  font-size:48px;
+  font-size: 2.6em;
   line-height:70px;
   color: $text-color;
   text-shadow: 1px 2px 1px rgba(0,0,0,0.5);
@@ -781,7 +749,7 @@ body.no-contain #footer-inner {
         border-bottom-right-radius: 6px;
     }
     ul li a {
-        font-size: 16px;
+        font-size: 1.2em;
         color: $text-color;
         text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
         line-height: 60px;
@@ -835,7 +803,7 @@ table.grid {
   thead td {
     color: #444;
     line-height: 35px;
-    font-size: 18px;
+    font-size: 1.4em;
     font-weight: normal;
     text-shadow: none;
   }
@@ -916,7 +884,7 @@ body#bigscreen {
     line-height:30px;
     z-index: 6;
     color: #444;
-    font-size:12px;
+    font-size: 0.9em;
     text-shadow:1px 1px 0 black;
   }
   #chat-panel-resize-bar {
@@ -1033,7 +1001,6 @@ body#bigscreen.nochat #stream-panel {
 
 body#bigscreen {
     #chat-panel-tools a {
-        font-size: 14px;
         display: inline-block;
         text-align: center;
         width: 30px;
@@ -1115,7 +1082,7 @@ body.error #error-container {
 body#messages section h4,
 body#message section h4 {
   color: $text-color2;
-  font-size: 16px;
+  font-size: 1.2em;
   font-weight: normal;
 }
 table.messages {
@@ -1158,7 +1125,7 @@ table.messages {
   .message span {
     font-family: Helvetica,"Trebuchet MS",Verdana,sans-serif;
     color: $color-chat-disabled;
-    font-size: 13px;
+    font-size: 1.2em;
     display: block;
     white-space: nowrap;
     overflow: hidden;
@@ -1225,7 +1192,7 @@ table#inbox a {
         word-break: break-all;
     }
     .message-date {
-        font-size: 90%;
+        font-size: 0.9em;
         color: $text-color2;
     }
     .message-list-item-status.read:before {
@@ -1270,7 +1237,7 @@ table#inbox a {
   }
   .modal-header h4 {
     font-weight: normal;
-    font-size: 14px;
+    font-size: 1em;
   }
   .modal-recipients {
     padding: 10px 15px 10px 15px;
@@ -1305,7 +1272,7 @@ table#inbox a {
     margin-left: 10px;
   }
   .modal-recipients .recipient {
-    font-size: 13px;
+    font-size: 0.9em;
     vertical-align: top;
     display: inline-block;
     background-color: $color-surface-light2;
@@ -1326,7 +1293,7 @@ table#inbox a {
     color: #222;
   }
   .remove-recipient {
-    font-size: 9px;
+    font-size: 0.8em;
     cursor: pointer;
   }
   .remove-recipient:hover {
@@ -1340,10 +1307,6 @@ table#inbox a {
     padding:0;
     font-weight: normal;
   }
-}
-
-#message-alerts .alert-info {
-  margin-bottom: 0;
 }
 
 #stream-status {
@@ -1428,7 +1391,7 @@ table#inbox a {
 }
 
 .form-actions .agreement {
-  font-size: 12px;
+  font-size: 0.9em;
   margin: 15px 0 0 0;
   color: $text-color2;
 }
@@ -1436,24 +1399,29 @@ table#inbox a {
 h3[data-toggle="collapse"] {
   cursor: pointer;
   margin-bottom: 0;
-  margin-top: 10px;
-  font-size: 20px;
+  margin-top: 0;
+  font-size: 1.4em;
   color: $text-color;
   user-select: none;
   padding-bottom: 10px;
+  padding-top: 10px;
+  background-color: $color-surface-dark1;
+  border-radius: 4px 4px 0 0;
   &:before {
     font-family: "FontAwesome", serif;
     content: "\f078";
-    font-size: 13px;
+    font-size: 0.8em;
+    width: 1.75em;
     margin-right: 5px;
     display: inline-block;
-    width: 10px;
+    vertical-align: middle;
+    padding-left: 0.75em;
   }
   &.collapsed:before {
     content: "\f054";
   }
   &.collapsed {
-    border-bottom: 1px solid #222;
+    border-radius: 5px;
   }
 }
 
@@ -1500,7 +1468,7 @@ body.modal-open .modal .modal-dialog {
     background-color: #1b1b1b;
     box-shadow: 0 1px 4px 1px rgba(black, 0.5);
 }
-#loginmodal , #loginform {
+#loginmodal, #loginform {
     .checkbox {
         margin-top: 0;
     }
@@ -1572,7 +1540,7 @@ body.modal-open .modal .modal-dialog {
 
 .max-length-indicator {
     line-height: 20px;
-    font-size: 13px;
+    font-size: 0.9em;
     display: block;
     position: absolute;
     bottom:5px;
@@ -1596,7 +1564,7 @@ body.modal-open .modal .modal-dialog {
         height: 46px;
         line-height: 46px;
         padding: 0 15px;
-        font-size: 24px;
+        font-size: 2em;
         font-family: 'Roboto', sans-serif;
         opacity: 0.5;
     }

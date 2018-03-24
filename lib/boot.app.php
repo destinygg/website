@@ -36,7 +36,12 @@ Log::$log->pushProcessor(new PsrLogMessageProcessor());
 Log::$log->pushProcessor(new Monolog\Processor\WebProcessor());
 
 // Database
-$app->setDbal(DriverManager::getConnection(Config::$a['db']));
+try {
+    $app->setDbal(DriverManager::getConnection(Config::$a['db']));
+} catch (\Exception $e) {
+    Log::error("Could not setup DB connection. " . $e->getMessage());
+    exit(1);
+}
 
 // Global Redis instance
 $redis1 = new Redis();
@@ -49,6 +54,7 @@ $app->setRedis($redis1);
 $redis2 = new Redis();
 $redis2->connect(Config::$a['redis']['host'], Config::$a['redis']['port']);
 $redis2->select(Config::$a['redis']['database']);
+
 $cache = new RedisCache();
 $cache->setRedis($redis2);
 $cache->setNamespace(Config::$a['cacheNamespace']);

@@ -17,8 +17,9 @@ class RedditFeed implements TaskInterface {
     public function execute() {
         $redditService = RedditFeedService::instance();
         $posts = $redditService->getHotThreads();
-        if (! empty ( $posts ))
-            Application::instance ()->getCache ()->save( 'recentposts', $posts );
+        if (!empty ($posts)) {
+            Application::instance()->getCache()->save('recentposts', $posts);
+        }
     }
 
 }

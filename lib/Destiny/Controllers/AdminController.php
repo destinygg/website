@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Commerce\StatisticsService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
@@ -16,7 +17,7 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Application;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Utils\FilterParams;
 use Doctrine\DBAL\DBALException;
 
@@ -120,8 +121,7 @@ class AdminController {
      * @throws DBALException
      */
     public function adminBans(ViewModel $model) {
-        $chatService = ChatIntegrationService::instance ();
-        $model->activeBans = $chatService->getActiveBans();
+        $model->activeBans = ChatBanService::instance()->getActiveBans();
         $model->title = 'Active Bans';
         return 'admin/bans';
     }
@@ -132,8 +132,8 @@ class AdminController {
      * @throws DBALException
      */
     public function adminPurgeBans() {
-        $chatService = ChatIntegrationService::instance ();
-        $chatService->purgeBans();
+        ChatRedisService::instance()->sendPurgeBans();
+        ChatBanService::instance()->purgeBans();
         return 'redirect: /admin/bans';
     }
 

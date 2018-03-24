@@ -50,7 +50,7 @@ use Destiny\Common\Config;
             </tbody>
           </table>
         </form>
-        
+        <br />
       </div>
     </section>
     

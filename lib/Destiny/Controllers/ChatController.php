@@ -15,7 +15,7 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
 use GuzzleHttp\Client;
 use function GuzzleHttp\json_decode;
@@ -34,7 +34,7 @@ class ChatController {
      * @return array
      */
     public function getBacklog(Response $response){
-        $chatIntegrationService = ChatIntegrationService::instance();
+        $chatIntegrationService = ChatRedisService::instance();
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'no-cache, max-age=0, must-revalidate, no-store');
         return $chatIntegrationService->getChatLog();
     }

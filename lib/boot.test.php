@@ -25,10 +25,15 @@ AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
 $app = Application::instance();
 $app->setLoader($loader);
+$app->setCache(new Doctrine\Common\Cache\ArrayCache());
 
 Log::$log = new Logger('web');
 Log::$log->pushProcessor(new PsrLogMessageProcessor());
 Log::$log->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 
-$app->setDbal(DriverManager::getConnection(Config::$a ['db']));
-$app->setCache(new Doctrine\Common\Cache\ArrayCache());
+try {
+    $app->setDbal(DriverManager::getConnection(Config::$a ['db']));
+} catch (\Exception $e) {
+    Log::error("Could not setup DB connection. " . $e->getMessage());
+    exit(1);
+}

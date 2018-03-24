@@ -19,7 +19,7 @@ use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\FilterParams;
@@ -332,7 +332,7 @@ class SubscriptionController {
         $ordersService = OrdersService::instance();
         $subscriptionsService = SubscriptionsService::instance();
         $payPalApiService = PayPalApiService::instance();
-        $chatIntegrationService = ChatIntegrationService::instance();
+        $chatIntegrationService = ChatRedisService::instance();
         $authenticationService = AuthenticationService::instance();
         $conn = Application::getDbConn();
 

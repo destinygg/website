@@ -26,7 +26,7 @@ use Destiny\Common\Config;
             <span>Donate</span>
             <small>&nbsp;(send a message too)</small>
             <span style="flex: 2; display: flex; justify-content: flex-end; align-items: center;">
-                <small style="font-size: 16px; font-weight: normal;">prefer? &nbsp;</small>
+                <small>prefer? &nbsp;</small>
                 <a href="https://streamlabs.com/destiny" class="streamlabs-logo"></a>
             </span>
         </h1>

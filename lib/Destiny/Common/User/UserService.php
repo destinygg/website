@@ -5,7 +5,6 @@ namespace Destiny\Common\User;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
@@ -740,104 +739,22 @@ class UserService extends Service {
     }
 
     /**
-     * @param int $userid
-     * @return array $users The users found
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function findSameIPUsers($userid) {
-        $keys = $this->callRedisScript('check-sameip-users', [$userid]);
-        return $this->getUsersFromRedisKeys('CHAT:userips-', $keys);
-    }
-
-    /**
-     * @param string $ipaddress
-     * @return array $users The users found
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function findUsersWithIP($ipaddress) {
-        $keys = $this->callRedisScript('check-ip', [$ipaddress]);
-        return $this->getUsersFromRedisKeys('CHAT:userips-', $keys);
-    }
-
-    /**
-     * @param int $userid
-     * @return array $ipaddresses The addresses found
-     */
-    public function getIPByUserId($userid) {
-        $redis = Application::instance()->getRedis();
-        return $redis->zRange('CHAT:userips-' . $userid, 0, -1);
-    }
-
-    /**
      * Get the users from the given redis keys, strip off the beginning of the keys
      * and parse the remaining string into an int, CHAT:userips-123 will be
      * transformed into (int)123 and than later users with the given ids
      * queried from the database ordered by username in ascending order
      *
-     * @param string $keyprefix
-     * @param array $keys
+     * @param array $userids
      * @return array $users The users found
-     * @throws Exception
      * @throws DBALException
      */
-    private function getUsersFromRedisKeys($keyprefix, $keys) {
-        $userids = [];
-
-        foreach ($keys as $key) {
-            $id = intval(substr($key, strlen($keyprefix)));
-            if (!$id)
-                throw new Exception("Invalid id: $id from key: $key");
-
-            $userids[] = $id;
+    public function getUsersByUserIds($userids) {
+        if (!empty($userids)) {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery("SELECT userId, username, email, createdDate FROM dfl_users WHERE userId IN (?) ORDER BY username", [$userids], [Connection::PARAM_STR_ARRAY]);
+            return $stmt->fetchAll();
         }
-
-        if (empty($userids))
-            return $userids;
-
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-          SELECT
-            userId,
-            username,
-            email,
-            createdDate
-          FROM dfl_users
-          WHERE userId IN('" . implode("', '", $userids) . "')
-          ORDER BY username
-        ");
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
-    /**
-     * Loads the given redis script if needed and calls it with the $arguments param
-     *
-     * @param string $scriptname
-     * @param array $argument
-     * @return array $users The users found
-     * @throws Exception
-     */
-    private function callRedisScript($scriptname, $argument) {
-        $redis = Application::instance()->getRedis();
-
-        $dir = Config::$a ['redis'] ['scriptdir'];
-        $hash = @file_get_contents($dir . $scriptname . '.hash');
-
-        if ($hash) {
-            $ret = $redis->evalSha($hash, $argument);
-            if ($ret) return $ret;
-        }
-
-        $hash = $redis->script('load', file_get_contents($dir . $scriptname . '.lua'));
-        if (!$hash)
-            throw new Exception('Unable to load script');
-
-        if (!file_put_contents($dir . $scriptname . '.hash', $hash))
-            throw new Exception('Unable to save hash');
-
-        return $redis->evalSha($hash, $argument);
+        return [];
     }
 
     /**
@@ -846,20 +763,12 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserIdsByUsernames(array $usernames) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->executeQuery("
-          SELECT u.userId FROM `dfl_users` u
-          WHERE u.username IN (?)
-        ",
-            [$usernames],
-            [Connection::PARAM_STR_ARRAY]
-        );
-        $ids = [];
-        $result = $stmt->fetchAll();
-        foreach ($result as $item) {
-            $ids[] = $item['userId'];
+        if (!empty($usernames)) {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery("SELECT u.userId `userId` FROM `dfl_users` u WHERE u.username IN (?)", [$usernames], [Connection::PARAM_STR_ARRAY]);
+            return $stmt->fetchAll();
         }
-        return $ids;
+        return [];
     }
 
     /**
@@ -872,9 +781,7 @@ class UserService extends Service {
         $stmt = $conn->prepare("
           SELECT COUNT(*)
           FROM dfl_users AS u
-          WHERE
-            u.userId = :userId AND
-            DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW()
+          WHERE u.userId = :userId AND DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW()
           LIMIT 1
         ");
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);

@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Tasks;
 
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
@@ -95,7 +95,7 @@ class SubscriptionExpire implements TaskInterface {
                 $months = max(1, Date::getDateTime($subscription['createdDate'])->diff(Date::getDateTime($subscription['endDate']))->m);
                 $months = $months > 1 ? $months . " months" : $months . " month";
                 $message = sprintf("%s has resubscribed! active for %s", $user['username'], $months);
-                $chatIntegrationService = ChatIntegrationService::instance();
+                $chatIntegrationService = ChatRedisService::instance();
                 $chatIntegrationService->sendBroadcast($message);
                 $streamLabService = StreamLabsService::withAuth();
                 $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);

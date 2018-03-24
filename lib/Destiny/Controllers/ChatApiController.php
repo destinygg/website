@@ -13,7 +13,7 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Config;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Messages\PrivateMessageService;
 use Destiny\Common\SessionCredentials;
 use Destiny\Common\Authentication\AuthenticationService;
@@ -58,7 +58,7 @@ class ChatApiController {
      */
     public function sendMessage(Response $response, array $params) {
         $privateMessageService = PrivateMessageService::instance();
-        $chatIntegrationService = ChatIntegrationService::instance();
+        $chatIntegrationService = ChatRedisService::instance();
         $userService = UserService::instance();
         try {
             FilterParams::required($params, 'privatekey');
@@ -191,7 +191,7 @@ class ChatApiController {
      * @throws DBALException
      */
     private function updateSubsAndBroadcast(array $subs, $fmt) {
-        $chatIntegrationService = ChatIntegrationService::instance();
+        $chatIntegrationService = ChatRedisService::instance();
         $authenticationService = AuthenticationService::instance();
         $users = UserService::instance()->updateTwitchSubscriptions($subs);
         foreach ($users as $user) {
@@ -237,7 +237,7 @@ class ChatApiController {
                     $authService = AuthenticationService::instance();
                     $authService->flagUserForUpdate($user['userId']);
                 }
-                $chatService = ChatIntegrationService::instance();
+                $chatService = ChatRedisService::instance();
                 $broadcast = sprintf(self::MSG_FMT_TWITCH_SUB, $username);
                 if (!empty($data['months']) && intval($data['months']) > 0) {
                     if (intval($data['months']) > 1) {

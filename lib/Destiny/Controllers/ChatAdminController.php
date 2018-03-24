@@ -10,7 +10,7 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Session;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -43,10 +43,8 @@ class ChatAdminController {
     public function adminChatBroadcast(array $params, ViewModel $model){
         $model->title = 'Chat';
         FilterParams::required($params, 'message');
-        
-        $chatIntegrationService = ChatIntegrationService::instance ();
-        $chatIntegrationService->sendBroadcast ( $params ['message'] );
-
+        $chatIntegrationService = ChatRedisService::instance();
+        $chatIntegrationService->sendBroadcast($params ['message']);
         Session::setSuccessBag(sprintf('Sent broadcast: %s', $params ['message']));
         return 'redirect: /admin/chat';
     }
@@ -64,12 +62,10 @@ class ChatAdminController {
      */
     public function adminChatIp(array $params, ViewModel $model){
         $model->title = 'Chat';
-        FilterParams::required ( $params, 'ip' );
-        
-        $userService = UserService::instance ();
-        $model->usersByIp = $userService->findUsersWithIP ( $params ['ip'] );
+        FilterParams::required($params, 'ip');
+        $ids = ChatRedisService::instance()->findUserIdsByIP($params['ip']);
+        $model->usersByIp = UserService::instance()->getUsersByUserIds($ids);
         $model->searchIp = $params ['ip'];
-        
         return 'admin/chat';
     }
 

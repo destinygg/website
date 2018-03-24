@@ -1,4 +1,8 @@
 /* Dimensions */
+$xs-nav-height:         30px;
+$nav-height:            40px;
+$chat-width:            450px;
+
 $screen-xxs:            650px;
 $screen-xs-max:         829px;
 $screen-sm-min:         830px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
@@ -6,6 +10,8 @@ $screen-md-max:         991px;
 $screen-lg-min:         1200px;
 $screen-xlg-min:        2560px;
 
+
+$body-bg-color:         #272727;
 $color-light:           #FFF7F9;
 $color-dark:            #201F1E;
 $color-accent:          #4A8ECC;
@@ -79,4 +85,20 @@ $color-blue:            #0079BF;
 $color-sky:             #00C2E0;
 $color-lime:            #51E898;
 $color-pink:            #FF80CE;
-$color-black:           #4d4d4d;
+$color-black:           #4D4D4D;
+
+$hb-light:              #849EB5;
+$hb-dark:               #30394A;
+
+.bg-grad-main {
+  background: -moz-linear-gradient(left,  $hb-light 0%, $hb-light 51%, $hb-dark 51%,$hb-dark 100%);
+  background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
+  background: linear-gradient(to right,  $hb-light 0%,$hb-light 51%,$hb-dark 51%,$hb-dark 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1);
+  & > .container, & > .container-fluid {
+    background: -moz-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
+    background: -webkit-linear-gradient(left,  $hb-light 0%,$hb-dark 100%);
+    background: linear-gradient(to right,  $hb-light 0%,$hb-dark 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$hb-light', endColorstr='$hb-dark',GradientType=1 );
+  }
+}

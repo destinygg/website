@@ -42,6 +42,18 @@ class ControllerAnnotationLoader {
      *
      * @throws \ReflectionException
      */
+    public static function factory(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
+        $ins = new self();
+        $ins->loadClasses($classIterator, $reader, $router);
+    }
+
+    /**
+     * @param DirectoryClassIterator $classIterator
+     * @param Reader $reader
+     * @param Router $router
+     *
+     * @throws \ReflectionException
+     */
     public function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
         $this->controllerRef = new ReflectionClass(new Annotation\Controller());
         $this->responseBodyRef = new ReflectionClass(new Annotation\ResponseBody());

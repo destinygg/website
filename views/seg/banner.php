@@ -41,5 +41,4 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
         </div>
 
     </div>
-    <div class="shadow"></div>
 </section>

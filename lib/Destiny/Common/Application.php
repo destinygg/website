@@ -13,6 +13,8 @@ use function GuzzleHttp\json_encode;
  */
 class Application extends Service {
 
+    private static $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
     /**
      * @var CacheProvider
      */
@@ -146,8 +148,6 @@ class Application extends Service {
         return join('', $str);
     }
 
-    private static $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
     /**
      * @param Response $response
      * @return void
@@ -196,9 +196,9 @@ class Application extends Service {
         $classMethod = $route->getClassMethod();
         $classReflection = new \ReflectionClass ($className);
         $classInstance = $classReflection->newInstance();
-        $args = [];
         $methodReflection = $classReflection->getMethod($classMethod);
         $methodParams = $methodReflection->getParameters();
+        $args = [];
         foreach ($methodParams as $methodParam) {
             $paramType = $methodParam->getClass();
             if ($methodParam->isArray()) {

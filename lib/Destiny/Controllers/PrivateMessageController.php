@@ -14,7 +14,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\SessionCredentials;
 use Doctrine\DBAL\DBALException;
 
@@ -53,7 +53,7 @@ class PrivateMessageController {
      */
     public function profileSend(array $params) {
         $privateMessageService = PrivateMessageService::instance();
-        $chatIntegrationService = ChatIntegrationService::instance();
+        $chatIntegrationService = ChatRedisService::instance();
         $userService = UserService::instance();
         $result = ['success' => false, 'message' => ''];
 

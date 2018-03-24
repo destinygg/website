@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Application;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
@@ -44,21 +45,22 @@ class AdminUserController {
         if (empty ( $user )) {
             throw new Exception ( 'User was not found' );
         }
-        
-        $userService = UserService::instance ();
-        $apiAuthenticationService = ApiAuthenticationService::instance ();
+
+        $userService = UserService::instance();
+        $chatRedisService = ChatRedisService::instance();
+        $apiAuthenticationService = ApiAuthenticationService::instance();
         $subscriptionsService = SubscriptionsService::instance();
-        
-        $user ['roles'] = $userService->getRolesByUserId ( $user ['userId'] );
-        $user ['features'] = $userService->getFeaturesByUserId ( $user ['userId'] );
-        $user ['ips'] = $userService->getIPByUserId( $user ['userId'] );
+
+        $user ['roles'] = $userService->getRolesByUserId($user ['userId']);
+        $user ['features'] = $userService->getFeaturesByUserId($user ['userId']);
+        $user ['ips'] = $chatRedisService->getIPByUserId($user ['userId']);
 
         $model->user = $user;
-        $model->smurfs = $userService->findSameIPUsers( $user ['userId'] );
-        $model->features = $userService->getNonPseudoFeatures ();
-        $model->ban = $userService->getUserActiveBan ( $user ['userId'] );
-        $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId ( $user ['userId'] );
-        $model->address = $userService->getAddressByUserId ( $user ['userId'] );
+        $model->smurfs = $userService->getUsersByUserIds($chatRedisService->findUserIdsByUsersIp($user ['userId']));
+        $model->features = $userService->getNonPseudoFeatures();
+        $model->ban = $userService->getUserActiveBan($user ['userId']);
+        $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId($user ['userId']);
+        $model->address = $userService->getAddressByUserId($user ['userId']);
         $model->subscriptions = $subscriptionsService->findByUserId($user ['userId']);
         $model->gifts = $subscriptionsService->findCompletedByGifterId($user ['userId']);
 

@@ -7,7 +7,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Doctrine\DBAL\DBALException;
@@ -51,7 +51,7 @@ class ImpersonateController {
         $credentials = $authService->buildUserCredentials ( $user, 'impersonating' );
         Session::start ();
         Session::updateCredentials ( $credentials );
-        ChatIntegrationService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
+        ChatRedisService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
         $follow = $params['follow'];
         if (!empty ($follow) && substr($follow, 0, 1) == '/') {
             return 'redirect: ' . $follow;

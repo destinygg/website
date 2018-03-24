@@ -14,7 +14,7 @@ use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
-use Destiny\Chat\ChatIntegrationService;
+use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -90,7 +90,7 @@ class AuthenticationService extends Service {
      * @throws \Exception
      */
     public function startSession() {
-        $chatIntegrationService = ChatIntegrationService::instance();
+        $chatIntegrationService = ChatRedisService::instance();
         // If the session has a cookie, start it
         if (Session::hasSessionCookie() && Session::start() && Session::hasRole(UserRole::USER)) {
             $sessionId = Session::getSessionId();
@@ -198,7 +198,7 @@ class AuthenticationService extends Service {
 
         $credentials = $this->buildUserCredentials($user, $authCreds->getAuthProvider());
         Session::updateCredentials($credentials);
-        ChatIntegrationService::instance()->setChatSession($credentials, Session::getSessionId());
+        ChatRedisService::instance()->setChatSession($credentials, Session::getSessionId());
         return $user;
     }
 
@@ -310,7 +310,7 @@ class AuthenticationService extends Service {
         if (!empty($user)) {
             $cache = Application::instance()->getCache();
             $cache->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
-            ChatIntegrationService::instance()->refreshChatUserSession($this->buildUserCredentials($user, 'session'));
+            ChatRedisService::instance()->sendRefreshUser($this->buildUserCredentials($user, 'session'));
         }
     }
 
