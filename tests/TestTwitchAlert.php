@@ -19,6 +19,9 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
         return $service;
     }
 
+    /**
+     * @throws DBALException
+     */
     public function testOne() {
         $r = $this->getService()->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
@@ -28,6 +31,9 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
         $this->assertArrayHasKey('success', json_decode($r->getBody(), true));
     }
 
+    /**
+     * @throws DBALException
+     */
     public function testTwo() {
         $r = $this->getService()->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_DONATION,
@@ -37,6 +43,9 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
         $this->assertArrayHasKey('success', json_decode($r->getBody(), true));
     }
 
+    /**
+     * @throws DBALException
+     */
     public function testThree() {
         $emote = ChatEmotes::random('twitch');
         $r = $this->getService()->sendDonation([

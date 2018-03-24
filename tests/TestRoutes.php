@@ -7,6 +7,10 @@ use Doctrine\Common\Annotations\AnnotationReader;
 
 class RoutesTest extends PHPUnit\Framework\TestCase {
 
+    /**
+     * @throws ReflectionException
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     */
     public function testRoutes() {
         $router = new Router();
         $annotationLoader = new ControllerAnnotationLoader();

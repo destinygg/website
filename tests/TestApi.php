@@ -96,6 +96,9 @@ class TestApi extends PHPUnit\Framework\TestCase {
         $this->assertTrue($json != null);
     }
 
+    /**
+     * @throws \Destiny\Common\Exception
+     */
     public function testTwitterAuth() {
         $authHandler = new TwitterAuthHandler();
         $url = $authHandler->getAuthenticationUrl();

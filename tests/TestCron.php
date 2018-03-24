@@ -8,6 +8,11 @@ use Doctrine\Common\Annotations\AnnotationReader;
 
 class TestCron extends PHPUnit\Framework\TestCase {
 
+    /**
+     * @throws \Destiny\Common\Exception
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function testCronTasks(){
         $scheduler = new Scheduler ();
         TaskAnnotationLoader::loadClasses(
