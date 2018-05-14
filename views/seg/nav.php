@@ -64,7 +64,6 @@ use Destiny\Common\Session;
                 <?php endif ?>
 
                 <li><a title="Blog" href="/blog">Blog</a></li>
-                <li><a title="twitter.com" href="/twitter">Twitter</a></li>
                 <li><a title="youtube.com" href="/youtube">Youtube</a></li>
                 <li><a title="reddit.com" href="/reddit">Reddit</a></li>
                 <li><a title="facebook.com" href="/facebook">Facebook</a></li>

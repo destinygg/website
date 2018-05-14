@@ -60,15 +60,6 @@ class HomeController {
     }
 
     /**
-     * @Route ("/embed/stream")
-     *
-     * @return string
-     */
-    public function embedStream(){
-        return 'redirect: ' . Config::$a['embed']['stream'];
-    }
-
-    /**
      * @Route ("/embed/chat")
      *
      * @param ViewModel $model
@@ -111,15 +102,5 @@ class HomeController {
         $model->title = 'Bigscreen';
         return 'bigscreen';
     }
-
-    /**
-     * @Route ("/amazon")
-     *
-     * @return string
-     */
-    public function amazon() {
-        return 'redirect: https://blog.destiny.gg/current-streaming-set-up-october-2016/';
-    }
-
 
 }

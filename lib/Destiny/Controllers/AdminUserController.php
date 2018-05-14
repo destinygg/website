@@ -41,22 +41,22 @@ class AdminUserController {
      */
     public function adminUserEdit(array $params, ViewModel $model) {
         FilterParams::required($params, 'id');
-        $user = UserService::instance ()->getUserById ( $params ['id'] );
-        if (empty ( $user )) {
-            throw new Exception ( 'User was not found' );
+        $user = UserService::instance()->getUserById($params ['id']);
+        if (empty ($user)) {
+            throw new Exception ('User was not found');
         }
 
         $userService = UserService::instance();
-        $chatRedisService = ChatRedisService::instance();
+        $redisService = ChatRedisService::instance();
         $apiAuthenticationService = ApiAuthenticationService::instance();
         $subscriptionsService = SubscriptionsService::instance();
 
         $user ['roles'] = $userService->getRolesByUserId($user ['userId']);
         $user ['features'] = $userService->getFeaturesByUserId($user ['userId']);
-        $user ['ips'] = $chatRedisService->getIPByUserId($user ['userId']);
+        $user ['ips'] = $redisService->getIPByUserId($user ['userId']);
 
         $model->user = $user;
-        $model->smurfs = $userService->getUsersByUserIds($chatRedisService->findUserIdsByUsersIp($user ['userId']));
+        $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($user ['userId']));
         $model->features = $userService->getNonPseudoFeatures();
         $model->ban = $userService->getUserActiveBan($user ['userId']);
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId($user ['userId']);
@@ -67,12 +67,12 @@ class AdminUserController {
         $gifters = [];
         $recipients = [];
 
-        foreach ( $model->subscriptions as $subscription ){
-            if(!empty($subscription['gifter'])){
+        foreach ($model->subscriptions as $subscription) {
+            if (!empty($subscription['gifter'])) {
                 $gifters[$subscription['gifter']] = $userService->getUserById($subscription['gifter']);
             }
         }
-        foreach ( $model->gifts as $subscription ){
+        foreach ($model->gifts as $subscription) {
             $recipients[$subscription['userId']] = $userService->getUserById($subscription['userId']);
         }
 
@@ -96,17 +96,17 @@ class AdminUserController {
      */
     public function adminUserEditProcess(array $params, ViewModel $model) {
         $model->title = 'User';
-        
+
         FilterParams::required($params, 'id');
-        
-        $authService = AuthenticationService::instance ();
-        $userService = UserService::instance ();
-        $user = $userService->getUserById ( $params ['id'] );
-        if (empty ( $user )) {
-            throw new Exception ( 'User was not found' );
+
+        $authService = AuthenticationService::instance();
+        $userService = UserService::instance();
+        $user = $userService->getUserById($params ['id']);
+        if (empty ($user)) {
+            throw new Exception ('User was not found');
         }
 
-        $redirect = 'redirect: /admin/user/'.$user ['userId'].'/edit';
+        $redirect = 'redirect: /admin/user/' . $user ['userId'] . '/edit';
         $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : $user ['username'];
         $email = (isset ($params ['email']) && !empty ($params ['email'])) ? $params ['email'] : $user ['email'];
         $country = (isset ($params ['country']) && !empty ($params ['country'])) ? $params ['country'] : $user ['country'];
@@ -119,24 +119,24 @@ class AdminUserController {
             $discordname = null;
         else if (mb_strlen($discordname) > 36)
             $discordname = mb_substr($discordname, 0, 36);
-        
+
         if (empty($discorduuid))
             $discorduuid = null;
         else if (mb_strlen($discorduuid) > 36)
             $discorduuid = mb_substr($discorduuid, 0, 36);
 
-        $authService->validateEmail ( $email, $user );
+        $authService->validateEmail($email, $user);
 
-        if (! empty ( $country )) {
-            $countryArr = Country::getCountryByCode ( $country );
-            if (empty ( $countryArr )) {
-               throw new Exception ( 'Invalid country' );
+        if (!empty ($country)) {
+            $countryArr = Country::getCountryByCode($country);
+            if (empty ($countryArr)) {
+                throw new Exception ('Invalid country');
             }
             $country = $countryArr ['alpha-2'];
         }
 
         $dUid = $userService->getUserIdByField('discordname', $params['discordname']);
-        if($discordname != null && !empty($dUid) &&intval($dUid) !== intval($user ['userId'])) {
+        if ($discordname != null && !empty($dUid) && intval($dUid) !== intval($user ['userId'])) {
             Session::setErrorBag('Discord name already in use #' . $dUid);
             return $redirect;
         }
@@ -154,14 +154,14 @@ class AdminUserController {
         $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
-            $userService->updateUser ( $user ['userId'], $userData );
-            $user = $userService->getUserById ( $params ['id'] );
-            if (! isset ( $params ['features'] ))
+            $userService->updateUser($user ['userId'], $userData);
+            $user = $userService->getUserById($params ['id']);
+            if (!isset ($params ['features']))
                 $params ['features'] = [];
-            $userService->setUserFeatures ( $user ['userId'], $params ['features'] );
-            $authService->flagUserForUpdate ( $user ['userId'] );
+            $userService->setUserFeatures($user ['userId'], $params ['features']);
+            $authService->flagUserForUpdate($user ['userId']);
             $conn->commit();
-        } catch (DBALException $e){
+        } catch (DBALException $e) {
             Log::critical("Error updating user", $user);
             $conn->rollBack();
             throw $e;
@@ -184,23 +184,20 @@ class AdminUserController {
      * @throws DBALException
      */
     public function subscriptionAdd(array $params, ViewModel $model) {
-        FilterParams::required ( $params, 'id');
-        
-        $userService = UserService::instance ();
-
-        $model->user = $userService->getUserById ( $params ['id'] );
+        FilterParams::required($params, 'id');
+        $userService = UserService::instance();
+        $model->user = $userService->getUserById($params ['id']);
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         $model->subscription = [
-          'subscriptionType' => '',
-          'createdDate' => gmdate('Y-m-d H:i:s'),
-          'endDate' => gmdate('Y-m-d H:i:s'),
-          'status' => 'Active',
-          'gifter' => '',
-          'recurring' => false
+            'subscriptionType' => '',
+            'createdDate' => gmdate('Y-m-d H:i:s'),
+            'endDate' => gmdate('Y-m-d H:i:s'),
+            'status' => 'Active',
+            'gifter' => '',
+            'recurring' => false
         ];
-        
-        $authService = AuthenticationService::instance ();
-        $authService->flagUserForUpdate ( $params ['id'] );
+        $authService = AuthenticationService::instance();
+        $authService->flagUserForUpdate($params ['id']);
         $model->title = 'Subscription';
         return "admin/subscription";
     }
@@ -218,22 +215,22 @@ class AdminUserController {
      * @throws DBALException
      */
     public function subscriptionEdit(array $params, ViewModel $model) {
-        FilterParams::required ( $params, 'id' );
-        FilterParams::required ( $params, 'subscriptionId' );
-        
-        $subscriptionsService = SubscriptionsService::instance ();
-        $userService = UserService::instance ();
+        FilterParams::required($params, 'id');
+        FilterParams::required($params, 'subscriptionId');
+
+        $subscriptionsService = SubscriptionsService::instance();
+        $userService = UserService::instance();
         $ordersService = OrdersService::instance();
-        
+
         $subscription = [];
         $payments = [];
 
-        if (! empty ( $params ['subscriptionId'] )) {
-            $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
-            $payments = $ordersService->getPaymentsBySubscriptionId ( $subscription ['subscriptionId'] );
+        if (!empty ($params ['subscriptionId'])) {
+            $subscription = $subscriptionsService->findById($params ['subscriptionId']);
+            $payments = $ordersService->getPaymentsBySubscriptionId($subscription ['subscriptionId']);
         }
-        
-        $model->user = $userService->getUserById ( $params ['id'] );
+
+        $model->user = $userService->getUserById($params ['id']);
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         $model->subscription = $subscription;
         $model->payments = $payments;
@@ -254,14 +251,14 @@ class AdminUserController {
      * @throws DBALException
      */
     public function subscriptionSave(array $params) {
-        FilterParams::required ( $params, 'subscriptionType' );
-        FilterParams::required ( $params, 'status' );
-        FilterParams::required ( $params, 'createdDate' );
-        FilterParams::required ( $params, 'endDate' );
-        FilterParams::declared ( $params, 'gifter' );
+        FilterParams::required($params, 'subscriptionType');
+        FilterParams::required($params, 'status');
+        FilterParams::required($params, 'createdDate');
+        FilterParams::required($params, 'endDate');
+        FilterParams::declared($params, 'gifter');
 
-        $userService = UserService::instance ();
-        $subscriptionsService = SubscriptionsService::instance ();
+        $userService = UserService::instance();
+        $subscriptionsService = SubscriptionsService::instance();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);
 
         $subscription = [];
@@ -271,7 +268,7 @@ class AdminUserController {
         $subscription ['createdDate'] = $params ['createdDate'];
         $subscription ['endDate'] = $params ['endDate'];
         $subscription ['userId'] = $params ['id'];
-        $subscription ['subscriptionSource'] = (isset ( $params ['subscriptionSource'] ) && ! empty ( $params ['subscriptionSource'] )) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
+        $subscription ['subscriptionSource'] = (isset ($params ['subscriptionSource']) && !empty ($params ['subscriptionSource'])) ? $params ['subscriptionSource'] : Config::$a ['subscriptionType'];
 
         if (!empty($params ['gifter'])) {
             if (!is_numeric($params ['gifter'])) {
@@ -295,12 +292,12 @@ class AdminUserController {
             $subscriptionId = $subscriptionsService->addSubscription($subscription);
             Session::setSuccessBag('Subscription created!');
         }
-        
-        
-        $authService = AuthenticationService::instance ();
-        $authService->flagUserForUpdate ( $params ['id'] );
-        
-        return 'redirect: /admin/user/'. urlencode($params['id']) .'/subscription/'. urlencode($subscriptionId) .'/edit';
+
+
+        $authService = AuthenticationService::instance();
+        $authService->flagUserForUpdate($params ['id']);
+
+        return 'redirect: /admin/user/' . urlencode($params['id']) . '/subscription/' . urlencode($subscriptionId) . '/edit';
     }
 
     /**
@@ -334,21 +331,21 @@ class AdminUserController {
      */
     public function addBan(array $params, ViewModel $model) {
         $model->title = 'New Ban';
-        if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-            throw new Exception ( 'userId required' );
+        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
+            throw new Exception ('userId required');
         }
 
-        $userService = UserService::instance ();
-        $user = $userService->getUserById ( $params ['userId'] );
-        if (empty ( $user )) {
-            throw new Exception ( 'User was not found' );
+        $userService = UserService::instance();
+        $user = $userService->getUserById($params ['userId']);
+        if (empty ($user)) {
+            throw new Exception ('User was not found');
         }
 
         $model->user = $user;
-        $time = Date::getDateTime ( 'NOW' );
+        $time = Date::getDateTime('NOW');
         $model->ban = [
             'reason' => '',
-            'starttimestamp' => $time->format ( 'Y-m-d H:i:s' ),
+            'starttimestamp' => $time->format('Y-m-d H:i:s'),
             'endtimestamp' => ''
         ];
         return 'admin/userban';
@@ -366,22 +363,21 @@ class AdminUserController {
      * @throws DBALException
      */
     public function insertBan(array $params) {
-        if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-            throw new Exception ( 'userId required' );
+        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
+            throw new Exception ('userId required');
         }
-
         $ban = [];
         $ban ['reason'] = $params ['reason'];
-        $ban ['userid'] = Session::getCredentials ()->getUserId ();
+        $ban ['userid'] = Session::getCredentials()->getUserId();
         $ban ['ipaddress'] = '';
         $ban ['targetuserid'] = $params ['userId'];
-        $ban ['starttimestamp'] = Date::getDateTime ( $params ['starttimestamp'] )->format ( 'Y-m-d H:i:s' );
-        if (! empty ( $params ['endtimestamp'] )) {
-            $ban ['endtimestamp'] = Date::getDateTime ( $params ['endtimestamp'] )->format ( 'Y-m-d H:i:s' );
+        $ban ['starttimestamp'] = Date::getDateTime($params ['starttimestamp'])->format('Y-m-d H:i:s');
+        if (!empty ($params ['endtimestamp'])) {
+            $ban ['endtimestamp'] = Date::getDateTime($params ['endtimestamp'])->format('Y-m-d H:i:s');
         }
-        $userService = UserService::instance ();
-        $ban ['id'] = $userService->insertBan ( $ban );
-        AuthenticationService::instance ()->flagUserForUpdate ( $ban ['targetuserid'] );
+        $userService = UserService::instance();
+        $ban ['id'] = $userService->insertBan($ban);
+        AuthenticationService::instance()->flagUserForUpdate($ban ['targetuserid']);
         return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $ban ['id'] . '/edit';
     }
 
@@ -399,21 +395,21 @@ class AdminUserController {
      */
     public function editBan(array $params, ViewModel $model) {
         $model->title = 'Update Ban';
-        if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-            throw new Exception ( 'id required' );
+        if (!isset ($params ['id']) || empty ($params ['id'])) {
+            throw new Exception ('id required');
         }
-        if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-            throw new Exception ( 'userId required' );
+        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
+            throw new Exception ('userId required');
         }
 
-        $userService = UserService::instance ();
-        $user = $userService->getUserById ( $params ['userId'] );
-        if (empty ( $user )) {
-            throw new Exception ( 'User was not found' );
+        $userService = UserService::instance();
+        $user = $userService->getUserById($params ['userId']);
+        if (empty ($user)) {
+            throw new Exception ('User was not found');
         }
 
         $model->user = $user;
-        $model->ban = $userService->getBanById ( $params ['id'] );
+        $model->ban = $userService->getBanById($params ['id']);
         return 'admin/userban';
     }
 
@@ -429,16 +425,16 @@ class AdminUserController {
      * @throws DBALException
      */
     public function updateBan(array $params) {
-        if (! isset ( $params ['id'] ) || empty ( $params ['id'] )) {
-            throw new Exception ( 'id required' );
+        if (!isset ($params ['id']) || empty ($params ['id'])) {
+            throw new Exception ('id required');
         }
-        if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-            throw new Exception ( 'userId required' );
+        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
+            throw new Exception ('userId required');
         }
 
-        $userService = UserService::instance ();
-        $authenticationService = AuthenticationService::instance ();
-        $eBan = $userService->getBanById ( $params ['id'] );
+        $userService = UserService::instance();
+        $authService = AuthenticationService::instance();
+        $eBan = $userService->getBanById($params ['id']);
 
         $ban = [];
         $ban ['id'] = $eBan ['id'];
@@ -446,13 +442,13 @@ class AdminUserController {
         $ban ['userid'] = $eBan ['userid'];
         $ban ['ipaddress'] = $eBan ['ipaddress'];
         $ban ['targetuserid'] = $eBan ['targetuserid'];
-        $ban ['starttimestamp'] = Date::getDateTime ( $params ['starttimestamp'] )->format ( 'Y-m-d H:i:s' );
+        $ban ['starttimestamp'] = Date::getDateTime($params ['starttimestamp'])->format('Y-m-d H:i:s');
         $ban ['endtimestamp'] = '';
-        if (! empty ( $params ['endtimestamp'] )) {
-            $ban ['endtimestamp'] = Date::getDateTime ( $params ['endtimestamp'] )->format ( 'Y-m-d H:i:s' );
+        if (!empty ($params ['endtimestamp'])) {
+            $ban ['endtimestamp'] = Date::getDateTime($params ['endtimestamp'])->format('Y-m-d H:i:s');
         }
-        $userService->updateBan ( $ban );
-        $authenticationService->flagUserForUpdate ( $ban ['targetuserid'] );
+        $userService->updateBan($ban);
+        $authService->flagUserForUpdate($ban ['targetuserid']);
 
         return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit';
     }
@@ -468,19 +464,19 @@ class AdminUserController {
      * @throws DBALException
      */
     public function removeBan(array $params) {
-        if (! isset ( $params ['userId'] ) || empty ( $params ['userId'] )) {
-            throw new Exception ( 'userId required' );
+        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
+            throw new Exception ('userId required');
         }
 
-        $userService = UserService::instance ();
-        $authenticationService = AuthenticationService::instance ();
+        $userService = UserService::instance();
+        $authService = AuthenticationService::instance();
 
         // if there were rows modified there were bans removed, so an update is
         // required, removeUserBan returns the number of rows modified
-        if ( $userService->removeUserBan ( $params ['userId'] ) )
-            $authenticationService->flagUserForUpdate ( $params ['userId'] );
+        if ($userService->removeUserBan($params ['userId']))
+            $authService->flagUserForUpdate($params ['userId']);
 
-        if ( isset( $params['follow'] ) and substr( $params['follow'], 0, 1 ) == '/' )
+        if (isset($params['follow']) and substr($params['follow'], 0, 1) == '/')
             return 'redirect: ' . $params['follow'];
 
         return 'redirect: /admin/user/' . $params ['userId'] . '/edit';

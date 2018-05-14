@@ -25,7 +25,7 @@ class SubscriptionExpire implements TaskInterface {
      * @throws DBALException
      */
     public function execute() {
-        $authenticationService = AuthenticationService::instance();
+        $authService = AuthenticationService::instance();
         $subscriptionService = SubscriptionsService::instance();
         $users = [];
 
@@ -69,7 +69,7 @@ class SubscriptionExpire implements TaskInterface {
         // Update users
         $users = array_unique($users);
         foreach ($users as $id) {
-            $authenticationService->flagUserForUpdate($id);
+            $authService->flagUserForUpdate($id);
         }
 
         // Clean-up old unfinished subscriptions (where users have aborted the process)
@@ -95,8 +95,8 @@ class SubscriptionExpire implements TaskInterface {
                 $months = max(1, Date::getDateTime($subscription['createdDate'])->diff(Date::getDateTime($subscription['endDate']))->m);
                 $months = $months > 1 ? $months . " months" : $months . " month";
                 $message = sprintf("%s has resubscribed! active for %s", $user['username'], $months);
-                $chatIntegrationService = ChatRedisService::instance();
-                $chatIntegrationService->sendBroadcast($message);
+                $redisService = ChatRedisService::instance();
+                $redisService->sendBroadcast($message);
                 $streamLabService = StreamLabsService::withAuth();
                 $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);
             } catch (\Exception $e) {

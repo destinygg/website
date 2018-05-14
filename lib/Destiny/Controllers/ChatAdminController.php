@@ -43,8 +43,7 @@ class ChatAdminController {
     public function adminChatBroadcast(array $params, ViewModel $model){
         $model->title = 'Chat';
         FilterParams::required($params, 'message');
-        $chatIntegrationService = ChatRedisService::instance();
-        $chatIntegrationService->sendBroadcast($params ['message']);
+        ChatRedisService::instance()->sendBroadcast($params ['message']);
         Session::setSuccessBag(sprintf('Sent broadcast: %s', $params ['message']));
         return 'redirect: /admin/chat';
     }

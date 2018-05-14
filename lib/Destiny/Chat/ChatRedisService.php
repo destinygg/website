@@ -88,9 +88,7 @@ class ChatRedisService extends Service {
      * @param string $sessionId         
      */
     public function setChatSession(SessionCredentials $credentials, $sessionId) {
-        $json = json_encode($credentials->getData());
-        $this->redis->set("CHAT:session-$sessionId", $json, $this->maxlife);
-        $this->redis->publish("refreshuser-$this->redisdb", $json);
+        $this->redis->set("CHAT:session-$sessionId", json_encode($credentials->getData()), $this->maxlife);
     }
 
     /**

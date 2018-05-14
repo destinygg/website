@@ -16,12 +16,11 @@ class StreamInfo implements TaskInterface {
 
     /**
      * @return mixed|void
-     * @throws \Destiny\Common\Exception
      */
     public function execute() {
         $cache = Application::instance()->getCache();
         $twitchApiService = TwitchApiService::instance();
-        $chatIntegration = ChatRedisService::instance();
+        $redisService = ChatRedisService::instance();
 
         // STREAM STATUS
         $streaminfo = $twitchApiService->getStreamInfo(Config::$a ['twitch']['user']);
@@ -38,7 +37,7 @@ class StreamInfo implements TaskInterface {
         $lasthost = $cache->contains('streamhostinfo') ? $cache->fetch('streamhostinfo') : [];
         $currhost = $twitchApiService->getChannelHostWithInfo(Config::$a['twitch']['id']);
         if(TwitchApiService::checkForHostingChange($lasthost, $currhost) == TwitchApiService::$HOST_NOW_HOSTING){
-            $chatIntegration->sendBroadcast(sprintf(
+            $redisService->sendBroadcast(sprintf(
                 '%s is now hosting %s at %s',
                 Config::$a['meta']['shortName'],
                 $currhost['display_name'],
@@ -49,7 +48,7 @@ class StreamInfo implements TaskInterface {
         // STEAM GO-LIVE ANNOUNCEMENT
         $waslive = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
         if($waslive !== null && $streaminfo !== null && (isset($waslive['live']) && $waslive['live'] == false && $streaminfo['live'] == true)){
-            $chatIntegration->sendBroadcast(sprintf(
+            $redisService->sendBroadcast(sprintf(
                 '%s is now live!',
                 Config::$a['meta']['shortName'])
             );

@@ -186,10 +186,10 @@ class DonateController {
                 $symbol = $donation['currency'] === 'USD'? '$': $donation['currency']; // todo hokey currency symbol lookup
                 $amount = $symbol . number_format($donation['amount'], 2);
                 $emote = $randomEmote = ChatEmotes::random('destiny');
-                $chatService = ChatRedisService::instance();
-                $chatService->sendBroadcast(sprintf("%s has donated %s! %s", $username, $amount, $emote));
+                $redisService = ChatRedisService::instance();
+                $redisService->sendBroadcast(sprintf("%s has donated %s! %s", $username, $amount, $emote));
                 if(!empty($message)) {
-                    $chatService->sendBroadcast("$username said... $message");
+                    $redisService->sendBroadcast("$username said... $message");
                 }
                 if(Config::$a['streamlabs']['alert_donations']) {
                     StreamLabsService::withAuth()->sendAlert([

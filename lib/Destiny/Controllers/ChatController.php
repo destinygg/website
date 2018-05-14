@@ -34,9 +34,9 @@ class ChatController {
      * @return array
      */
     public function getBacklog(Response $response){
-        $chatIntegrationService = ChatRedisService::instance();
+        $redisService = ChatRedisService::instance();
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'no-cache, max-age=0, must-revalidate, no-store');
-        return $chatIntegrationService->getChatLog();
+        return $redisService->getChatLog();
     }
 
     /**

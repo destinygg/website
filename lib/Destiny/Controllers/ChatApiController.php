@@ -58,7 +58,7 @@ class ChatApiController {
      */
     public function sendMessage(Response $response, array $params) {
         $privateMessageService = PrivateMessageService::instance();
-        $chatIntegrationService = ChatRedisService::instance();
+        $redisService = ChatRedisService::instance();
         $userService = UserService::instance();
         try {
             FilterParams::required($params, 'privatekey');
@@ -103,7 +103,7 @@ class ChatApiController {
             ];
 
             $message['id'] = $privateMessageService->addMessage( $message );
-            $chatIntegrationService->publishPrivateMessage([
+            $redisService->publishPrivateMessage([
                 'messageid' => $message['id'],
                 'message' => $message['message'],
                 'username' => $user['username'],
@@ -191,13 +191,13 @@ class ChatApiController {
      * @throws DBALException
      */
     private function updateSubsAndBroadcast(array $subs, $fmt) {
-        $chatIntegrationService = ChatRedisService::instance();
-        $authenticationService = AuthenticationService::instance();
+        $redisService = ChatRedisService::instance();
+        $authService = AuthenticationService::instance();
         $users = UserService::instance()->updateTwitchSubscriptions($subs);
         foreach ($users as $user) {
-            $authenticationService->flagUserForUpdate($user['userId']);
+            $authService->flagUserForUpdate($user['userId']);
             if ($user['istwitchsubscriber']) {
-                $chatIntegrationService->sendBroadcast(sprintf($fmt, $user['username']));
+                $redisService->sendBroadcast(sprintf($fmt, $user['username']));
             }
         }
     }
@@ -237,7 +237,6 @@ class ChatApiController {
                     $authService = AuthenticationService::instance();
                     $authService->flagUserForUpdate($user['userId']);
                 }
-                $chatService = ChatRedisService::instance();
                 $broadcast = sprintf(self::MSG_FMT_TWITCH_SUB, $username);
                 if (!empty($data['months']) && intval($data['months']) > 0) {
                     if (intval($data['months']) > 1) {
@@ -246,9 +245,10 @@ class ChatApiController {
                         $broadcast = sprintf(self::MSG_FMT_TWITCH_RESUB_MONTH, $username, $data['months']);
                     }
                 }
-                $chatService->sendBroadcast($broadcast);
+                $redisService = ChatRedisService::instance();
+                $redisService->sendBroadcast($broadcast);
                 if (!empty($message)) {
-                    $chatService->sendBroadcast("$username said... $message");
+                    $redisService->sendBroadcast("$username said... $message");
                 }
             }
 

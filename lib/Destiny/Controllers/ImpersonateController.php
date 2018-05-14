@@ -51,11 +51,10 @@ class ImpersonateController {
         $credentials = $authService->buildUserCredentials ( $user, 'impersonating' );
         Session::start ();
         Session::updateCredentials ( $credentials );
-        ChatRedisService::instance ()->setChatSession ( $credentials, Session::getSessionId () );
-        $follow = $params['follow'];
-        if (!empty ($follow) && substr($follow, 0, 1) == '/') {
-            return 'redirect: ' . $follow;
-        }
+
+        $redisService = ChatRedisService::instance();
+        $redisService->setChatSession($credentials, Session::getSessionId());
+        $redisService->sendRefreshUser($credentials);
         return 'redirect: /';
     }
 

@@ -137,7 +137,7 @@ class SubscriptionController {
         FilterParams::required($params, 'subscriptionId');
 
         $subscriptionsService = SubscriptionsService::instance();
-        $authenticationService = AuthenticationService::instance();
+        $authService = AuthenticationService::instance();
         
         $userId = Session::getCredentials ()->getUserId ();
         $subscription = $subscriptionsService->findById ( $params['subscriptionId'] );
@@ -162,7 +162,7 @@ class SubscriptionController {
             Log::critical("Error cancelling subscription {id}", $subscription);
             throw $e;
         }
-        $authenticationService->flagUserForUpdate($subscription ['userId']);
+        $authService->flagUserForUpdate($subscription ['userId']);
         $model->subscription = $subscription;
         $model->subscriptionCancelled = true;
         $model->title = 'Cancel Subscription';
@@ -332,8 +332,8 @@ class SubscriptionController {
         $ordersService = OrdersService::instance();
         $subscriptionsService = SubscriptionsService::instance();
         $payPalApiService = PayPalApiService::instance();
-        $chatIntegrationService = ChatRedisService::instance();
-        $authenticationService = AuthenticationService::instance();
+        $redisService = ChatRedisService::instance();
+        $authService = AuthenticationService::instance();
         $conn = Application::getDbConn();
 
         $subscription = $subscriptionsService->findById($params ['subscriptionId']);
@@ -429,7 +429,7 @@ class SubscriptionController {
         try {
             $ban = $userService->getUserActiveBan($user['userId']);
             if (empty ($ban) or (!empty($ban ['endtimestamp']) or $subscriptionType['tier'] >= 2)) {
-                $chatIntegrationService->sendUnban($user['userId']);
+                $redisService->sendUnban($user['userId']);
             }
         } catch (DBALException $e) {
             $n = new Exception("Could not unban user {userId}", $e);
@@ -448,9 +448,9 @@ class SubscriptionController {
                 $gifternick = $user['username'];
                 $message = sprintf("%s is now a %s subscriber! %s", $user['username'], $subscriptionType ['tierLabel'], $randomEmote);
             }
-            $chatIntegrationService->sendBroadcast($message);
+            $redisService->sendBroadcast($message);
             if (!empty($subMessage)) {
-                $chatIntegrationService->sendBroadcast("$gifternick said... $subMessage");
+                $redisService->sendBroadcast("$gifternick said... $subMessage");
             }
             if(Config::$a['streamlabs']['alert_subscriptions']) {
                 $streamLabService = StreamLabsService::withAuth();
@@ -465,7 +465,7 @@ class SubscriptionController {
         }
         // Update the user
         try {
-            $authenticationService->flagUserForUpdate($user);
+            $authService->flagUserForUpdate($user);
         } catch (\Exception $e) {
             Log::error($e);
         }
