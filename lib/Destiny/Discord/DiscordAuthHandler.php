@@ -3,13 +3,14 @@ namespace Destiny\Discord;
 
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
+use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Doctrine\DBAL\DBALException;
 use GuzzleHttp\Client;
 
-class DiscordAuthHandler {
+class DiscordAuthHandler implements AuthHandlerInterface {
 
     /**
      * @var string

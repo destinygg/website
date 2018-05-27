@@ -90,12 +90,12 @@ class AuthenticationService extends Service {
      * @throws \Exception
      */
     public function startSession() {
-        $chatIntegrationService = ChatRedisService::instance();
+        $redisService = ChatRedisService::instance();
         // If the session has a cookie, start it
         if (Session::hasSessionCookie() && Session::start() && Session::hasRole(UserRole::USER)) {
             $sessionId = Session::getSessionId();
             if (!empty($sessionId)) {
-                $chatIntegrationService->renewChatSessionExpiration(Session::getSessionId());
+                $redisService->renewChatSessionExpiration(Session::getSessionId());
             }
         }
 
@@ -121,8 +121,10 @@ class AuthenticationService extends Service {
                 if (!empty ($user)) {
                     $this->clearUserUpdateFlag($userId);
                     Session::updateCredentials($this->buildUserCredentials($user, 'session'));
+
                     // the refreshChatSession differs from this call, because only here we have access to the session id.
-                    $chatIntegrationService->setChatSession(Session::getCredentials(), Session::getSessionId());
+                    $redisService->setChatSession(Session::getCredentials(), Session::getSessionId());
+                    $redisService->sendRefreshUser(Session::getCredentials());
                 }
             }
         }
@@ -198,7 +200,10 @@ class AuthenticationService extends Service {
 
         $credentials = $this->buildUserCredentials($user, $authCreds->getAuthProvider());
         Session::updateCredentials($credentials);
-        ChatRedisService::instance()->setChatSession($credentials, Session::getSessionId());
+
+        $redisService = ChatRedisService::instance();
+        $redisService->setChatSession($credentials, Session::getSessionId());
+        $redisService->sendRefreshUser($credentials);
         return $user;
     }
 
@@ -308,8 +313,7 @@ class AuthenticationService extends Service {
         if (!is_array($user))
             $user = UserService::instance()->getUserById($user);
         if (!empty($user)) {
-            $cache = Application::instance()->getCache();
-            $cache->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
+            Application::instance()->getCache()->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
             ChatRedisService::instance()->sendRefreshUser($this->buildUserCredentials($user, 'session'));
         }
     }
@@ -330,67 +334,6 @@ class AuthenticationService extends Service {
         $cache = Application::instance()->getCache();
         $lastUpdated = $cache->fetch('refreshusersession-' . $userId);
         return !empty ($lastUpdated);
-    }
-
-    /**
-     * @param AuthenticationCredentials $authCreds
-     * @return string
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function get(AuthenticationCredentials $authCreds) {
-        $authService = AuthenticationService::instance();
-        $userService = UserService::instance();
-
-        // Make sure the creds are valid
-        if (!$authCreds->isValid()) {
-            Log::error('Error validating auth credentials {creds}', ['creds' => var_export($authCreds, true)]);
-            throw new Exception ('Invalid auth credentials');
-        }
-
-        $email = $authCreds->getEmail();
-        if (!empty($email))
-            $authService->validateEmail($authCreds->getEmail(), null, true);
-
-        // Account merge
-        if (Session::getAndRemove('accountMerge') === '1') {
-            // Must be logged in to do a merge
-            if (!Session::hasRole(UserRole::USER)) {
-                throw new Exception ('Authentication required for account merge');
-            }
-            $authService->handleAuthAndMerge($authCreds);
-            return 'redirect: /profile/authentication';
-        }
-
-        // Follow url
-        $follow = Session::getAndRemove('follow');
-        // Remember me checkbox on login form
-        $rememberme = Session::getAndRemove('rememberme');
-
-        // If the user profile doesn't exist, go to the register page
-        if (!$userService->getUserAuthProviderExists($authCreds->getAuthId(), $authCreds->getAuthProvider())) {
-            Session::set('authSession', $authCreds);
-            $url = '/register?code=' . urlencode($authCreds->getAuthCode());
-            if (!empty($follow)) {
-                $url .= '&follow=' . urlencode($follow);
-            }
-            return 'redirect: ' . $url;
-        }
-
-        // User exists, handle the auth
-        $user = $authService->handleAuthCredentials($authCreds);
-        try {
-            if ($rememberme == true) {
-                $authService->setRememberMe($user);
-            }
-        } catch (\Exception $e) {
-            $n = new Exception('Failed to create remember me cookie.', $e);
-            Log::error($n);
-        }
-        if (!empty ($follow) && substr($follow, 0, 1) == '/') {
-            return 'redirect: ' . $follow;
-        }
-        return 'redirect: /profile';
     }
 
 }

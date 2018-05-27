@@ -79,8 +79,6 @@ class OrdersService extends Service {
     /**
      * @param array $payment
      * @return int paymentId
-     *
-     * @throws DBALException
      */
     public function addPayment(array $payment) {
         $conn = Application::getDbConn();

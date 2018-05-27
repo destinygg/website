@@ -31,19 +31,19 @@ class RegistrationController {
      * @return AuthenticationCredentials
      */
     private function getSessionAuthenticationCredentials(array $params) {
-        if (! isset ( $params ['code'] ) || empty ( $params ['code'] )) {
-            throw new Exception ( 'Invalid code' );
+        if (!isset ($params ['code']) || empty ($params ['code'])) {
+            throw new Exception ('Invalid code');
         }
-        $authSession = Session::get ( 'authSession' );
+        $authSession = Session::get('authSession');
         if ($authSession instanceof AuthenticationCredentials) {
-            if (empty ( $authSession ) || ($authSession->getAuthCode () != $params ['code'])) {
-                throw new Exception ( 'Invalid authentication code' );
+            if (empty ($authSession) || ($authSession->getAuthCode() != $params ['code'])) {
+                throw new Exception ('Invalid authentication code');
             }
-            if (! $authSession->isValid ()) {
-                throw new Exception ( 'Invalid authentication information' );
+            if (!$authSession->isValid()) {
+                throw new Exception ('Invalid authentication information');
             }
         } else {
-            throw new Exception ( 'Could not retrieve session data. Possibly due to cookies not being enabled.' );
+            throw new Exception ('Could not retrieve session data. Possibly due to cookies not being enabled.');
         }
         return $authSession;
     }
@@ -60,19 +60,19 @@ class RegistrationController {
      * @throws Exception
      */
     public function register(array $params, ViewModel $model) {
-        $authCreds = $this->getSessionAuthenticationCredentials ( $params );
-        $email = $authCreds->getEmail ();
-        $username = $authCreds->getUsername ();
-        if (! empty ( $username ) && empty ( $email )) {
+        $authCreds = $this->getSessionAuthenticationCredentials($params);
+        $email = $authCreds->getEmail();
+        $username = $authCreds->getUsername();
+        if (!empty ($username) && empty ($email)) {
             $email = $username . '@destiny.gg';
         }
         $model->title = 'Register';
         $model->username = $username;
         $model->email = $email;
-        $model->follow = (isset($params['follow'])) ? $params['follow']:'';
-        $model->authProvider = $authCreds->getAuthProvider ();
-        $model->code = $authCreds->getAuthCode ();
-        $model->rememberme = Session::get ( 'rememberme' );
+        $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
+        $model->authProvider = $authCreds->getAuthProvider();
+        $model->code = $authCreds->getAuthCode();
+        $model->rememberme = Session::get('rememberme');
         return 'register';
     }
 
@@ -89,20 +89,16 @@ class RegistrationController {
      * @throws Exception
      */
     public function registerProcess(array $params, ViewModel $model, Request $request) {
-        $userService = UserService::instance ();
-        $authService = AuthenticationService::instance ();
-        $authCreds = $this->getSessionAuthenticationCredentials ( $params );
-        
-        $username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : '';
-        $email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : '';
-        $country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : '';
-        $rememberme = (isset ( $params ['rememberme'] ) && ! empty ( $params ['rememberme'] )) ? true : false;
-        
-        $authCreds->setUsername ( $username );
-        $authCreds->setEmail ( $email );
+        $userService = UserService::instance();
+        $authService = AuthenticationService::instance();
+        $authCreds = $this->getSessionAuthenticationCredentials($params);
 
-        if ($rememberme)
-            Session::set ( 'rememberme', 1 );
+        $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : '';
+        $email = (isset ($params ['email']) && !empty ($params ['email'])) ? $params ['email'] : '';
+        $country = (isset ($params ['country']) && !empty ($params ['country'])) ? $params ['country'] : '';
+
+        $authCreds->setUsername($username);
+        $authCreds->setEmail($email);
 
         try {
             if (!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
@@ -111,7 +107,7 @@ class RegistrationController {
             $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
             $authService->validateUsername($username);
             if ($userService->getIsUsernameTaken($username, -1))
-                throw new Exception ( 'The username you asked for is already being used' );
+                throw new Exception ('The username you asked for is already being used');
             $authService->validateEmail($email);
             if (!empty ($country)) {
                 $countryArr = Country::getCountryByCode($country);
@@ -120,13 +116,13 @@ class RegistrationController {
                 }
                 $country = $countryArr ['alpha-2'];
             }
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             $model->title = 'Register Error';
             $model->username = $username;
             $model->email = $email;
-            $model->follow = (isset($params['follow'])) ? $params['follow']:'';
-            $model->authProvider = $authCreds->getAuthProvider ();
-            $model->code = $authCreds->getAuthCode ();
+            $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
+            $model->authProvider = $authCreds->getAuthProvider();
+            $model->code = $authCreds->getAuthCode();
             $model->error = $e;
             return 'register';
         }
@@ -157,9 +153,15 @@ class RegistrationController {
             throw $n;
         }
 
-        $authCredHandler = new AuthenticationRedirectionFilter ();
-        return $authCredHandler->execute ( $authCreds );
+        if (isset ($params ['rememberme']) && !empty ($params ['rememberme'])) {
+            Session::set('rememberme', $params ['rememberme']);
+        }
+        if (isset ($params ['follow']) && !empty ($params ['follow'])) {
+            Session::set('follow', $params ['follow']);
+        }
 
+        $authCredHandler = new AuthenticationRedirectionFilter ();
+        return $authCredHandler->execute($authCreds);
     }
 
 }

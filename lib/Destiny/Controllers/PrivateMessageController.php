@@ -53,78 +53,67 @@ class PrivateMessageController {
      */
     public function profileSend(array $params) {
         $privateMessageService = PrivateMessageService::instance();
-        $chatIntegrationService = ChatRedisService::instance();
+        $redisService = ChatRedisService::instance();
         $userService = UserService::instance();
         $result = ['success' => false, 'message' => ''];
-
         try {
 
             FilterParams::required($params, 'message');
             FilterParams::isarray($params, 'recipients');
 
-            $sessionCredentials = Session::getCredentials ();
-            $userId = $sessionCredentials->getUserId ();
+            $sessionCredentials = Session::getCredentials();
+            $userId = $sessionCredentials->getUserId();
             $username = strtolower($sessionCredentials->getUsername());
-            $user = $userService->getUserById ( $userId );
+            $user = $userService->getUserById($userId);
             $recipients = array_unique(array_map('strtolower', $params['recipients']));
 
-            if(empty($recipients))
+            if (empty($recipients))
                 throw new Exception('Invalid recipients list');
 
-            if(count($recipients) === 1 && $recipients[0] == $username)
+            if (count($recipients) === 1 && $recipients[0] == $username)
                 throw new Exception('Cannot send messages to yourself.');
 
             // Remove the user if its in the list
             $recipients = array_diff($recipients, [$username]);
 
-            $ban = $userService->getUserActiveBan ( $userId );
+            $ban = $userService->getUserActiveBan($userId);
             if (!empty($ban))
                 throw new Exception ("You cannot send messages while you are banned.");
 
-            $oldEnough = $userService->isUserOldEnough ( $userId );
+            $oldEnough = $userService->isUserOldEnough($userId);
             if (!$oldEnough)
                 throw new Exception ("Your account is not old enough to send messages.");
 
-            // Because batch sending makes it difficult to run checks on each recipient
-            // we only use the batch sending for admins e.g. sending to tiers etc.
-            if(Session::hasRole(UserRole::ADMIN)){
+            $recipients = $userService->getUserIdsByUsernames($recipients);
 
-                $messages = $privateMessageService->batchAddMessage( $userId, $params['message'], $recipients );
-                $chatIntegrationService->publishPrivateMessages($messages);
+            if (empty($recipients))
+                throw new Exception('Invalid recipient value(s)');
 
-            }else{
+            if (count($recipients) > 20)
+                throw new Exception('You may only send to maximum 20 users.');
 
-                $recipients = $userService->getUserIdsByUsernames( $params['recipients'] );
+            $credentials = new SessionCredentials ($user);
+            foreach ($recipients as $recipientId) {
+                $canSend = $privateMessageService->canSend($credentials, $recipientId);
+                if (!$canSend)
+                    throw new Exception ("You have sent too many messages, throttled.");
 
-                if(empty($recipients))
-                    throw new Exception('Invalid recipient value(s)');
-
-                if(count($recipients) > 20)
-                    throw new Exception('You may only send to maximum 20 users.');
-
-                $credentials = new SessionCredentials ( $user );
-                foreach ($recipients as $recipientId) {
-                    $canSend = $privateMessageService->canSend( $credentials, $recipientId );
-                    if (! $canSend)
-                        throw new Exception ("You have sent too many messages, throttled.");
-
-                    $targetuser = $userService->getUserById ( $recipientId );
-                    $message = [
-                        'userid' => $userId,
-                        'targetuserid' => $recipientId,
-                        'message' => $params['message'],
-                        'isread' => 0
-                    ];
-                    $message['id'] = $privateMessageService->addMessage( $message );
-                    $chatIntegrationService->publishPrivateMessage([
-                        'messageid' => $message['id'],
-                        'message' => $message['message'],
-                        'username' => $sessionCredentials->getUsername(), // non-lowercase
-                        'userid' => $userId,
-                        'targetusername' => $targetuser['username'],
-                        'targetuserid' => $targetuser['userId']
-                    ]);
-                }
+                $targetuser = $userService->getUserById($recipientId);
+                $message = [
+                    'userid' => $userId,
+                    'targetuserid' => $recipientId,
+                    'message' => $params['message'],
+                    'isread' => 0
+                ];
+                $message['id'] = $privateMessageService->addMessage($message);
+                $redisService->publishPrivateMessage([
+                    'messageid' => $message['id'],
+                    'message' => $message['message'],
+                    'username' => $sessionCredentials->getUsername(), // non-lowercase
+                    'userid' => $userId,
+                    'targetusername' => $targetuser['username'],
+                    'targetuserid' => $targetuser['userId']
+                ]);
             }
 
             $result['message'] = 'Message sent';
@@ -134,7 +123,6 @@ class PrivateMessageController {
             $result['success'] = false;
             $result['message'] = $e->getMessage();
         }
-
         return $result;
     }
 

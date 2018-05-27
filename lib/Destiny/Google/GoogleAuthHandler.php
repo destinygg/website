@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Google;
 
+use AuthHandlerInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
@@ -10,7 +11,7 @@ use Destiny\Common\Utils\Http;
 use Doctrine\DBAL\DBALException;
 use GuzzleHttp\Client;
 
-class GoogleAuthHandler {
+class GoogleAuthHandler implements AuthHandlerInterface {
     
     /**
      * @var string

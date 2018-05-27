@@ -3,6 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\SubscriptionStatus;
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Application;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
@@ -84,7 +85,7 @@ class ProfileController {
     public function profileSave(array $params) {
         // Get user
         $userService = UserService::instance ();
-        $authenticationService = AuthenticationService::instance ();
+        $authService = AuthenticationService::instance ();
 
         $userId = Session::getCredentials ()->getUserId();
         $user = $userService->getUserById($userId);
@@ -99,10 +100,10 @@ class ProfileController {
         $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
 
         try {
-            $authenticationService->validateUsername($username);
+            $authService->validateUsername($username);
             if ($userService->getIsUsernameTaken($username, $user['userId']))
                 throw new Exception ( 'The username you asked for is already being used' );
-            $authenticationService->validateEmail($email, $user);
+            $authService->validateEmail($email, $user);
             if (! empty ( $country )) {
                 $countryArr = Country::getCountryByCode ( $country );
                 if (empty ( $countryArr )) {
@@ -136,7 +137,7 @@ class ProfileController {
         }
 
         $userService->updateUser ( $user ['userId'], $userData );
-        $authenticationService->flagUserForUpdate ( $user ['userId'] );
+        $authService->flagUserForUpdate ( $user ['userId'] );
 
         Session::setSuccessBag('Your profile has been updated' );
         return 'redirect: /profile';

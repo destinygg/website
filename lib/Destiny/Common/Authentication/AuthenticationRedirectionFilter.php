@@ -28,7 +28,7 @@ class AuthenticationRedirectionFilter {
 
         $email = $authCreds->getEmail();
         if (!empty($email))
-            $authService->validateEmail($authCreds->getEmail(), null, true);
+            $authService->validateEmail($email, null, true);
 
         // Account merge
         if (Session::getAndRemove('accountMerge') === '1') {
@@ -40,9 +40,7 @@ class AuthenticationRedirectionFilter {
             return 'redirect: /profile/authentication';
         }
 
-        // Follow url
         $follow = Session::getAndRemove('follow');
-        // Remember me checkbox on login form
         $rememberme = Session::getAndRemove('rememberme');
 
         // If the user profile doesn't exist, go to the register page
@@ -52,21 +50,21 @@ class AuthenticationRedirectionFilter {
             if (!empty($follow)) {
                 $url .= '&follow=' . urlencode($follow);
             }
-            return 'redirect: ' . $url;
+            return "redirect: $url";
         }
 
-        // User exists, handle the auth
         $user = $authService->handleAuthCredentials($authCreds);
-        try {
-            if ($rememberme == true) {
+
+        if ($rememberme) {
+            try {
                 $authService->setRememberMe($user);
+            } catch (\Exception $e) {
+                Log::error(new Exception('Failed to create remember me cookie.', $e));
             }
-        } catch (\Exception $e) {
-            $n = new Exception('Failed to create remember me cookie.', $e);
-            Log::error($n);
         }
+
         if (!empty ($follow) && substr($follow, 0, 1) == '/') {
-            return 'redirect: ' . $follow;
+            return "redirect: $follow";
         }
         return 'redirect: /profile';
     }
