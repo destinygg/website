@@ -64,7 +64,6 @@ use Destiny\Common\Session;
                 <?php endif ?>
 
                 <li><a title="Blog" href="/blog">Blog</a></li>
-                <li><a title="twitter.com" href="/twitter">Twitter</a></li>
                 <li><a title="youtube.com" href="/youtube">Youtube</a></li>
                 <li><a title="reddit.com" href="/reddit">Reddit</a></li>
                 <li><a title="facebook.com" href="/facebook">Facebook</a></li>
@@ -75,6 +74,13 @@ use Destiny\Common\Session;
                 <?php else: ?>
                     <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
                 <?php endif ?>
+
+                <li>
+                    <a title="Blog" href="/amazon">
+                        <span>Shirts</span>
+                        <span class="fa fa-fw fa-amazon" aria-hidden="true"></span>
+                    </a>
+                </li>
 
             </ul>
         </div>
