@@ -76,7 +76,7 @@ use Destiny\Common\Session;
                 <?php endif ?>
 
                 <li>
-                    <a title="Blog" href="/amazon">
+                    <a title="Shirts @ Amazon" href="/amazon">
                         <span>Shirts</span>
                         <span class="fa fa-fw fa-amazon" aria-hidden="true"></span>
                     </a>
