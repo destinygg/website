@@ -20,7 +20,7 @@ class Feature {
 const features = {
     PROTECTED     : new Feature( 'protected',    'PROTECTED',        'Protected'            ),
     SUBSCRIBER    : new Feature( 'subscriber',   'SUBSCRIBER',       'Subscriber'           ),
-    SUBSCRIBERT0  : new Feature( 'flair9',       'SUBSCRIBERT0',     'Twitch subscriber'    ),
+    SUBSCRIBERT0  : new Feature( 'flair9',       'SUBSCRIBERT0',     'Twitch Subscriber'    ),
     SUBSCRIBERT1  : new Feature( 'flair13',      'SUBSCRIBERT1',     'Subscriber (T1)'      ),
     SUBSCRIBERT2  : new Feature( 'flair1',       'SUBSCRIBERT2',     'Subscriber (T2)'      ),
     SUBSCRIBERT3  : new Feature( 'flair3',       'SUBSCRIBERT3',     'Subscriber (T3)'      ),
@@ -34,9 +34,11 @@ const features = {
     NOTABLE       : new Feature( 'flair2',       'NOTABLE',          'Notable'              ),
     TRUSTED       : new Feature( 'flair4',       'TRUSTED',          'Trusted'              ),
     CONTRIBUTOR   : new Feature( 'flair5',       'CONTRIBUTOR',      'Contributor'          ),
-    COMPCHALLENGE : new Feature( 'flair6',       'COMPCHALLENGE',    'Composition winner'   ),
+    COMPCHALLENGE : new Feature( 'flair6',       'COMPCHALLENGE',    'Composition Winner'   ),
     EVE           : new Feature( 'flair7',       'EVE',              'EVE'                  ),
-    SC2           : new Feature( 'flair10',      'SC2',              'Starcraft 2'          )
+    SC2           : new Feature( 'flair10',      'SC2',              'Starcraft 2'          ),
+    DGGBDAY       : new Feature( 'flair15',      'DGGBDAY',          'DGG Bday'             ),
+    SHIRT1        : new Feature( 'flair19',      'SHIRT1',           'DGG Shirt Designer'   ),
 };
 
 const mapping = new Map([
@@ -58,7 +60,9 @@ const mapping = new Map([
     ['flair5', features.CONTRIBUTOR],
     ['flair6', features.COMPCHALLENGE],
     ['flair7', features.EVE],
-    ['flair10', features.SC2]
+    ['flair10', features.SC2],
+    ['flair15', features.DGGBDAY],
+    ['flair19', features.SHIRT1]
 ]);
 
 features.valueOf = function(str){
