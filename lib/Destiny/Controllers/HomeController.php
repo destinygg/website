@@ -61,6 +61,7 @@ class HomeController {
 
     /**
      * @Route ("/embed/chat")
+     * @Route ("/chat")
      *
      * @param ViewModel $model
      * @return string
