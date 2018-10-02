@@ -9,6 +9,7 @@ return [
     'support_email' => 'steven.bonnell.ii@gmail.com',
     'calendar'      => 'i54j4cu9pl4270asok3mqgdrhk@group.calendar.google.com',
     'commerce'      => ['receiver_email' => 'Steven.Bonnell.II@GMail.com'],
+    'embed'         => ['stream' => 'https://player.twitch.tv/?channel=destiny'],
     'reddit'        => ['threads' => 'https://www.reddit.com/r/destiny/hot.json'],
     'blog'          => ['feed' => 'https://blog.destiny.gg/feed/json'],
     'twitter'       => ['user' => 'OmniDestiny'],
@@ -39,7 +40,7 @@ return [
         '/ting'     => 'https://ting.7eer.net/c/72409/87559/2020',
         '/eve'      => 'https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy',
         '/schedule' => 'https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com',
-        '/shirt'    => 'https://teespring.com/twitch/desteeny',
+        '/shirt'    => 'https://www.amazon.com/shop/destiny?listId=1U7DVEENMW4U&ref=idea_share_inf',
         '/forge'    => 'https://bit.ly/ForgeDestiny',
         '/facebook' => 'https://www.facebook.com/OmniDestiny',
         '/youtube'  => 'https://www.youtube.com/user/Destiny',
@@ -52,9 +53,8 @@ return [
         '/loot'     => 'https://loots.com/destiny',
         '/loots'    => 'https://loots.com/destiny',
         '/chair'    => 'http://www.4gamergear.com#oid=1027_1',
-        '/amazon'   => 'https://www.amazon.com/s/ref=mh_bl_sl_s_ap_mw_7141123011?ie=UTF8&node=7141123011&field-brandtextbin=destiny.gg',
+        '/amazon'   => 'https://www.amazon.com/shop/destiny?listId=1U7DVEENMW4U&ref=idea_share_inf',
         '/gmg'      => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979',
-        '/greenmangaming' => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979',
-        '/embed/stream' => 'https://player.twitch.tv/?channel=destiny'
+        '/greenmangaming' => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979'
     ]
 ];
