@@ -29,4 +29,5 @@ INSERT  INTO `dfl_features`(`featureId`,`featureName`,`featureLabel`) VALUES
   (16, 'flair10', 'StarCraft 2'),
   (17, 'flair11', 'Bot 2'),
   (18, 'flair12', 'Broadcaster'),
-  (18, 'flair15', 'DGG Bday');
+  (19, 'flair15', 'DGG Bday'),
+  (20, 'flair19', 'DGG Shirt Designer');

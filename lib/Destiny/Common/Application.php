@@ -155,6 +155,7 @@ class Application extends Service {
     private function handleResponse(Response $response){
         $location = $response->getLocation();
         if (!empty ($location)) {
+            Http::status(Http::STATUS_MOVED_TEMPORARY);
             Http::header(Http::HEADER_LOCATION, $location);
             exit;
         }

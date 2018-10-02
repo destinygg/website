@@ -19,6 +19,7 @@ abstract class Http {
     const HEADER_AUTH_TOKEN = 'AuthToken';
 
     const STATUS_MOVED_PERMANENTLY = 301;
+    const STATUS_MOVED_TEMPORARY = 303;
     const STATUS_NOT_MODIFIED = 304;
     const STATUS_FORBIDDEN = 403;
     const STATUS_NOT_FOUND = 404;

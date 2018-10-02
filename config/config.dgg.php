@@ -41,8 +41,7 @@ return [
         '/schedule' => 'https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com',
         '/shirt'    => 'https://teespring.com/twitch/desteeny',
         '/forge'    => 'https://bit.ly/ForgeDestiny',
-        '/twitter'  => 'https://twitter.com/OmniDestiny',
-        '/facebook' => 'https://www.facebook.com/Steven.Bonnell.II',
+        '/facebook' => 'https://www.facebook.com/OmniDestiny',
         '/youtube'  => 'https://www.youtube.com/user/Destiny',
         '/reddit'   => 'https://www.reddit.com/r/Destiny',
         '/github'   => 'https://github.com/destinygg',
@@ -53,7 +52,7 @@ return [
         '/loot'     => 'https://loots.com/destiny',
         '/loots'    => 'https://loots.com/destiny',
         '/chair'    => 'http://www.4gamergear.com#oid=1027_1',
-        '/amazon'   => 'https://blog.destiny.gg/current-streaming-set-up-october-2016/',
+        '/amazon'   => 'https://www.amazon.com/s/ref=mh_bl_sl_s_ap_mw_7141123011?ie=UTF8&node=7141123011&field-brandtextbin=destiny.gg',
         '/gmg'      => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979',
         '/greenmangaming' => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979',
         '/embed/stream' => 'https://player.twitch.tv/?channel=destiny'

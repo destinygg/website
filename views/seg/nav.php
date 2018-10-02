@@ -75,6 +75,13 @@ use Destiny\Common\Session;
                     <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
                 <?php endif ?>
 
+                <li>
+                    <a title="Shirts @ Amazon" href="/amazon">
+                        <span>Shirts</span>
+                        <span class="fa fa-fw fa-amazon" aria-hidden="true"></span>
+                    </a>
+                </li>
+
             </ul>
         </div>
     </div>
