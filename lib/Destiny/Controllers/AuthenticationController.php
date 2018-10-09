@@ -6,6 +6,7 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\AuthHandlerInterface;
+use Destiny\Common\Request;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\ViewModel;
@@ -88,11 +89,13 @@ class AuthenticationController {
      *
      * @param array $params
      * @param ViewModel $model
+     * @param Request $request
      * @return string
      */
-    public function authType(array $params, ViewModel $model) {
+    public function authType(array $params, ViewModel $model, Request $request) {
         try {
-            return $this->getAuthHandlerByType($params["type"])->authenticate($params);
+            $type = substr($request->path(), strlen("/auth/"));
+            return $this->getAuthHandlerByType($type)->authenticate($params);
         } catch (\Exception $e) {
             return $this->handleAuthError($e, $model);
         }

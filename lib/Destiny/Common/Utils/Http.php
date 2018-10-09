@@ -37,6 +37,7 @@ abstract class Http {
         401 => 'Unauthorized',
         400 => 'Bad Request',
         304 => 'Not Modified',
+        303 => 'Moved Temporary',
         200 => 'OK',
         204 => 'No Content',
         403 => 'Forbidden',

@@ -74,12 +74,12 @@ class SessionInstance {
      * @return void
      */
     public function destroy() {
-        $this->getSessionCookie ()->clearCookie ();
-        $this->getRememberMeCookie ()->clearCookie ();
-        if ($this->isStarted ()) {
-            session_destroy ();
+        $this->getSessionCookie()->clearCookie();
+        $this->getRememberMeCookie()->clearCookie();
+        if ($this->isStarted()) {
             $_SESSION = [];
-            session_regenerate_id ( false );
+            session_regenerate_id(false);
+            session_destroy();
         }
     }
 
