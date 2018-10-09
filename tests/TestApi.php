@@ -82,13 +82,6 @@ class TestApi extends PHPUnit\Framework\TestCase {
         $this->assertTrue($json != null);
     }
 
-    public function testTwitterApi() {
-        $apiService = TwitterApiService::instance();
-        $json = $apiService->getTweets();
-        //print json_encode($json, JSON_PRETTY_PRINT);
-        $this->assertTrue($json != null);
-    }
-
     public function testRedditThreads() {
         $apiService = RedditFeedService::instance();
         $json = $apiService->getHotThreads();

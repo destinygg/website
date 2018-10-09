@@ -80,7 +80,11 @@ class AuthenticationController {
     }
 
     /**
-     * @Route ("/auth/{type}")
+     * @Route ("/auth/twitch")
+     * @Route ("/auth/twitter")
+     * @Route ("/auth/google")
+     * @Route ("/auth/reddit")
+     * @Route ("/auth/discord")
      *
      * @param array $params
      * @param ViewModel $model

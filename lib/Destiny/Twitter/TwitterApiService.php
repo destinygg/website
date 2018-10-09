@@ -38,46 +38,6 @@ class TwitterApiService extends Service {
     }
 
     /**
-     * @return array
-     */
-    public function getTweets(){
-        $conf = Config::$a['oauth_providers']['twitter'];
-        $twitterApiService = TwitterApiService::instance();
-        $client = $twitterApiService->getOAuth1Client($conf);
-        $response = $client->get("$this->apiBase/statuses/user_timeline.json", [
-            'headers' => ['User-Agent' => Config::userAgent()],
-            'query' => [
-                'screen_name' => Config::$a['twitter']['user'],
-                'trim_user' => true,
-                'count' => 4
-            ]
-        ]);
-        $tweets = [];
-        if ($response->getStatusCode() == Http::STATUS_OK) {
-            $data = json_decode((string)$response->getBody(), true);
-            foreach ($data as $tweet) {
-                $html = $tweet['text'];
-                if (isset ($tweet['entities']['user_mentions'])) {
-                    foreach ($tweet['entities']['user_mentions'] as $mention) {
-                        $l = '<a href="http://twitter.com/' . $mention['screen_name'] . '">' . $mention['name'] . '</a>';
-                        $html = str_replace('@' . $mention['screen_name'], $l, $html);
-                    }
-                }
-                if (isset ($tweet['entities']) && isset ($tweet['entities']['urls'])) {
-                    foreach ($tweet['entities']['urls'] as $url) {
-                        $l = '<a href="' . $url['url'] . '" rev="' . $url['expanded_url'] . '">' . $url['display_url'] . '</a>';
-                        $html = str_replace($url['url'], $l, $html);
-                    }
-                }
-                $tweet ['user']['screen_name'] = Config::$a['twitter']['user'];
-                $tweet ['html'] = $html;
-                $tweets [] = $tweet;
-            }
-        }
-        return $tweets;
-    }
-
-    /**
      * Extracts and decodes OAuth parameters from the passed string
      *
      * @param string $body the response body from an OAuth flow method

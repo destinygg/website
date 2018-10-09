@@ -63,10 +63,11 @@ use Destiny\Common\Session;
                     <li class="divider-vertical visible-xs"></li>
                 <?php endif ?>
 
+                <li><a title="Youtube" href="/youtube">Youtube</a></li>
+                <li><a title="Instagram" href="/instagram">Instagram</a></li>
+                <li><a title="Reddit" href="/reddit">Reddit</a></li>
+                <li><a title="Facebook" href="/facebook">Facebook</a></li>
                 <li><a title="Blog" href="/blog">Blog</a></li>
-                <li><a title="youtube.com" href="/youtube">Youtube</a></li>
-                <li><a title="reddit.com" href="/reddit">Reddit</a></li>
-                <li><a title="facebook.com" href="/facebook">Facebook</a></li>
                 <li><a title="Donate" href="/donate">Donate</a></li>
 
                 <?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>

@@ -123,12 +123,8 @@ label small {
             width: 16px;
           }
         }
-        &.collapsed .menuicon:before {
-          border-color: #999;
-        }
       }
     }
-
     .navbar-collapse {
       &.collapse {
         display: none !important;
