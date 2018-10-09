@@ -5,7 +5,6 @@ use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\User\UserRole;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -95,8 +94,6 @@ class PrivateMessageService extends Service {
     /**
      * @param array $data
      * @return int last_insert_id()
-     *
-     * @throws DBALException
      */
     public function addMessage(array $data){
         $conn = Application::getDbConn();
@@ -118,8 +115,6 @@ class PrivateMessageService extends Service {
 
     /**
      * @param int $id
-     *
-     * @throws DBALException
      */
     public function openMessageById($id){
         $conn = Application::getDbConn();

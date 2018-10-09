@@ -1,10 +1,10 @@
 <?php
 namespace Destiny\Google;
 
-use AuthHandlerInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
+use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Config;
 use Destiny\Common\Session;
 use Destiny\Common\Utils\Http;

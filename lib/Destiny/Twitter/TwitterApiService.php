@@ -1,9 +1,7 @@
 <?php
 namespace Destiny\Twitter;
 
-use Destiny\Common\Config;
 use Destiny\Common\Service;
-use Destiny\Common\Utils\Http;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;

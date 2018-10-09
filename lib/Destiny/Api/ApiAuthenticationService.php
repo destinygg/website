@@ -32,7 +32,6 @@ class ApiAuthenticationService extends Service {
     /**
      * @param int $userId
      * @param string $authToken
-     * @throws DBALException
      */
     public function addAuthToken($userId, $authToken) {
         $conn = Application::getDbConn();

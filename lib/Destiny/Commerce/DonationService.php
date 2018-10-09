@@ -13,7 +13,6 @@ class DonationService extends Service {
     /**
      * @param array $donation
      * @return array
-     * @throws DBALException
      */
     public function addDonation(array $donation){
         $conn = Application::getDbConn();
@@ -25,8 +24,6 @@ class DonationService extends Service {
     /**
      * @param array $payment
      * @return int paymentId
-     *
-     * @throws DBALException
      */
     public function addPayment(array $payment) {
         $conn = Application::getDbConn();
@@ -57,7 +54,6 @@ class DonationService extends Service {
     /**
      * @param $id
      * @param array $donation
-     * @throws DBALException
      */
     public function updateDonation($id, array $donation){
         $conn = Application::getDbConn();

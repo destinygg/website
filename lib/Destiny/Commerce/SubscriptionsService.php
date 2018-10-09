@@ -17,7 +17,6 @@ class SubscriptionsService extends Service {
     /**
      * @param array $subscription
      * @return string
-     * @throws DBALException
      */
     public function addSubscription(array $subscription) {
         $conn = Application::getDbConn();
@@ -28,7 +27,6 @@ class SubscriptionsService extends Service {
     /**
      * Update subscription
      * @param array $subscription
-     * @throws DBALException
      */
     public function updateSubscription(array $subscription) {
         $conn = Application::getDbConn();

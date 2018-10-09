@@ -37,6 +37,7 @@ class DirectoryClassIterator implements Iterator {
      *
      * @param string $base
      * @param string $path
+     * @throws \ReflectionException
      */
     public function __construct($base, $path) {
         $this->base = $base;
@@ -50,6 +51,7 @@ class DirectoryClassIterator implements Iterator {
      * Load all files in a folder
      *
      * @return ReflectionClass[]
+     * @throws \ReflectionException
      */
     private function getClasses() {
         $files = self::getFiles ();
@@ -64,7 +66,7 @@ class DirectoryClassIterator implements Iterator {
             if (! $class) continue;
             
             // Make sure the class is not abstract
-            $refl = new ReflectionClass ( $class );
+            $refl = new \ReflectionClass ( $class );
             if ($refl->isAbstract ()) continue;
             
             $classes [] = $refl;

@@ -7,6 +7,12 @@ use \ReflectionClass;
 
 abstract class TaskAnnotationLoader {
 
+    /**
+     * @param DirectoryClassIterator $classIterator
+     * @param Reader $reader
+     * @param Scheduler $scheduler
+     * @throws \ReflectionException
+     */
     public static function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Scheduler $scheduler) {
         $annot = new ReflectionClass(new Annotation\Schedule());
         foreach ($classIterator as $refl) {

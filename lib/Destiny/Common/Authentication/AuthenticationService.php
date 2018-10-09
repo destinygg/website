@@ -5,7 +5,6 @@ use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Application;
 use Destiny\Common\Crypto;
 use Destiny\Common\Exception;
-use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Service;

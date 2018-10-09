@@ -13,7 +13,6 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\User\UserService;
-use Destiny\Common\User\UserRole;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Common\SessionCredentials;
 use Doctrine\DBAL\DBALException;

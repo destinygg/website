@@ -18,9 +18,14 @@ namespace Destiny\Common;
  */
 class Crypto {
 
-    // initCrypt initializes the mcrypt module and generates
-    // a random Initialization Vector if not provided
-    static protected function initCrypt( $iv = null ) {
+    /**
+     * initCrypt initializes the mcrypt module and generates
+     * a random Initialization Vector if not provided
+     * @param null $iv
+     * @return array
+     * @throws \Exception
+     */
+    static protected function initCrypt($iv = null ) {
         $cryptmod = mcrypt_module_open( MCRYPT_RIJNDAEL_256, null, 'ctr', null );
         $keylen   = mcrypt_enc_get_key_size( $cryptmod );
         $key      = Config::$a['crypto']['key'];
@@ -43,12 +48,17 @@ class Crypto {
 
     }
 
-    // encrypt produces message in the form of:
-    // |encrypted payload|32bytes of IV|32bytes of hmac|
-    // we always generate a separate random IV for every single message
-    // when providing the data, try to avoid using something easily guessable
-    // so maybe include something random
-    static public function encrypt( $data ) {
+    /**
+     * encrypt produces message in the form of:
+     * |encrypted payload|32bytes of IV|32bytes of hmac|
+     * we always generate a separate random IV for every single message
+     * when providing the data, try to avoid using something easily guessable
+     * so maybe include something random
+     * @param $data
+     * @return string
+     * @throws \Exception
+     */
+    static public function encrypt($data ) {
         // initialize the mcrypt module with a random IV
         $crypt        = self::initCrypt();
         // encrypt the data
@@ -65,7 +75,12 @@ class Crypto {
         return $ret;
     }
 
-    static public function decrypt( $data ) {
+    /**
+     * @param $data
+     * @return string
+     * @throws \Exception
+     */
+    static public function decrypt($data ) {
         $crypteddata = base64_decode( $data );
         // HMAC is the last 32 bytes
         $givenhmac   = substr( $crypteddata, -32 );

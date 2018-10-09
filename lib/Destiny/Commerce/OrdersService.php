@@ -13,8 +13,6 @@ class OrdersService extends Service {
 
     /**
      * @param array $ipn
-     *
-     * @throws DBALException
      */
     public function addIpnRecord(array $ipn) {
         $conn = Application::getDbConn();
@@ -28,8 +26,6 @@ class OrdersService extends Service {
 
     /**
      * @param array $payment
-     *
-     * @throws DBALException
      */
     public function updatePayment(array $payment) {
         $conn = Application::getDbConn();

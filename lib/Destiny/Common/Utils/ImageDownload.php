@@ -4,6 +4,7 @@ namespace Destiny\Common\Utils;
 use Destiny\Common\Config;
 use Destiny\Common\Log;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ImageDownload {
 
@@ -62,6 +63,8 @@ class ImageDownload {
                     $response = $final;
                 }
             } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            } catch (GuzzleException $e) {
                 Log::error($e->getMessage());
             }
         }

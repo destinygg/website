@@ -3,7 +3,6 @@ namespace Destiny\Controllers;
 
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\SubscriptionStatus;
-use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Application;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;

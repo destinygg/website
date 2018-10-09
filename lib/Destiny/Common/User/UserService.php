@@ -152,7 +152,6 @@ class UserService extends Service {
     /**
      * @param array $user
      * @return string
-     * @throws DBALException
      */
     public function addUser(array $user) {
         $conn = Application::getDbConn();
@@ -165,7 +164,6 @@ class UserService extends Service {
     /**
      * @param int $userId
      * @param array $user
-     * @throws DBALException
      */
     public function updateUser($userId, array $user) {
         $conn = Application::getDbConn();
@@ -275,7 +273,6 @@ class UserService extends Service {
      * @param number $userId
      * @param string $authProvider
      * @param array $auth
-     * @throws DBALException
      */
     public function updateUserAuthProfile($userId, $authProvider, array $auth) {
         $conn = Application::getDbConn();
@@ -289,7 +286,6 @@ class UserService extends Service {
     /**
      * @param array $auth
      * @return void
-     * @throws DBALException
      */
     public function addUserAuthProfile(array $auth) {
         $conn = Application::getDbConn();
@@ -561,7 +557,6 @@ class UserService extends Service {
 
     /**
      * @param array $address
-     * @throws DBALException
      */
     public function addAddress(array $address) {
         $conn = Application::getDbConn();
@@ -592,7 +587,6 @@ class UserService extends Service {
 
     /**
      * @param array $address
-     * @throws DBALException
      */
     public function updateAddress(array $address) {
         $conn = Application::getDbConn();
@@ -698,7 +692,6 @@ class UserService extends Service {
     /**
      * update an existing ban
      * @param array $ban
-     * @throws DBALException
      */
     public function updateBan(array $ban) {
         $conn = Application::getDbConn();
@@ -708,7 +701,6 @@ class UserService extends Service {
     /**
      * @param array $ban
      * @return string
-     * @throws DBALException
      */
     public function insertBan(array $ban) {
         $conn = Application::getDbConn();
