@@ -20,7 +20,7 @@ class ChatAdminController {
     
     /**
      * @Route ("/admin/chat")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
      * @param ViewModel $model
@@ -33,7 +33,7 @@ class ChatAdminController {
     
     /**
      * @Route ("/admin/chat/broadcast")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      *
      * @param array $params         
      * @param ViewModel $model          
@@ -50,7 +50,7 @@ class ChatAdminController {
 
     /**
      * @Route ("/admin/chat/ip")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      *
      * @param array $params
      * @param ViewModel $model

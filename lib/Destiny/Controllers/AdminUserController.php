@@ -4,6 +4,7 @@ namespace Destiny\Controllers;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Application;
 use Destiny\Common\Log;
+use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 use Destiny\Common\ViewModel;
@@ -26,6 +27,20 @@ use Doctrine\DBAL\DBALException;
  * @Controller
  */
 class AdminUserController {
+
+    /**
+     * Get only roles that your security level allows for you to
+     * apply to other users.
+     * @throws DBALException
+     */
+    private function getAllowedRoles() {
+        $userService = UserService::instance();
+        $roles = $userService->getAllRoles();
+        $exclude = ['USER','SUBSCRIBER'];
+        return array_filter($roles, function($v) use ($exclude) {
+            return !in_array($v['roleName'], $exclude);
+        });
+    }
 
     /**
      * @Route ("/admin/user/{id}/edit")
@@ -58,7 +73,7 @@ class AdminUserController {
         $model->user = $user;
         $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($user ['userId']));
         $model->features = $userService->getAllFeatures();
-        $model->roles = $userService->getAllRoles();
+        $model->roles = $this->getAllowedRoles();
         $model->ban = $userService->getUserActiveBan($user ['userId']);
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId($user ['userId']);
         $model->address = $userService->getAddressByUserId($user ['userId']);
@@ -194,7 +209,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{id}/toggle/role")
-     * @Secure ({"MODERATOR"})
+     * @Secure ({"ADMIN"})
      * @HttpMethod ({"POST"})
      *
      * @param array $params

@@ -128,26 +128,27 @@ use Destiny\Commerce\SubscriptionStatus;
         </div>
     </section>
 
+    <?php if(Session::hasRole(UserRole::ADMIN)): ?>
     <section class="container">
         <h3 class="collapsed" data-toggle="collapse" data-target="#roles-content">Roles</h3>
         <div id="roles-content" class="content content-dark clearfix collapse">
             <div class="ds-block">
                 <div id="roles-selection" data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
                     <?php foreach($this->roles as $role): ?>
-                        <?php if(!in_array($role['roleName'], ['USER','SUBSCRIBER'])): ?>
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="roles[]" value="<?=$role['roleName']?>" <?=(in_array($role['roleName'], $this->user['roles']))?'checked="checked"':''?>>
                                 <?=Tpl::out($role['roleLabel'])?>
                             </label>
                         </div>
-                    <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if(Session::hasRole(UserRole::ADMIN)): ?>
     <section class="container">
         <h3 class="collapsed" data-toggle="collapse" data-target="#address-content">Address</h3>
         <div id="address-content" class="content content-dark clearfix collapse">
@@ -181,6 +182,7 @@ use Destiny\Commerce\SubscriptionStatus;
             <?php endif ?>
         </div>
     </section>
+    <?php endif; ?>
 
     <section class="container">
         <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscriptions</h3>

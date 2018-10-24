@@ -24,7 +24,7 @@ class StreamLabsController {
 
     /**
      * @Route ("/streamlabs/authorize")
-     * @Secure ({"ADMIN","STREAMLABS"})
+     * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET"})
      * @return string
      */
@@ -35,7 +35,7 @@ class StreamLabsController {
 
     /**
      * @Route ("/auth/streamlabs")
-     * @Secure ({"ADMIN","STREAMLABS"})
+     * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET"})
      *
      * @param array $params
@@ -78,7 +78,7 @@ class StreamLabsController {
 
     /**
      * @Route ("/admin/streamlabs")
-     * @Secure ({"ADMIN","STREAMLABS"})
+     * @Secure ({"ADMIN"})
      *
      * @param ViewModel $model
      * @return string
@@ -93,7 +93,7 @@ class StreamLabsController {
 
     /**
      * @Route ("/streamlabs/alert/test")
-     * @Secure ({"ADMIN","STREAMLABS"})
+     * @Secure ({"ADMIN"})
      * @return string
      */
     public function alertTest(){

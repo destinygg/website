@@ -26,7 +26,6 @@ use Doctrine\DBAL\DBALException;
  */
 class AdminController {
 
-
     /**
      * @Route ("/admin")
      * @HttpMethod ({"GET","POST"})
@@ -42,8 +41,23 @@ class AdminController {
             return 'redirect: /admin/emotes';
         else if (Session::hasRole(UserRole::FLAIRS))
             return 'redirect: /admin/flairs';
+        else if (Session::hasRole(UserRole::ADMIN))
+            return 'redirect: /admin/dashboard';
         else
             return 'redirect: /'; // need an admin dashboard
+    }
+
+    /**
+     * @Route ("/admin/dashboard")
+     * @Secure ({"ADMIN"})
+     * @HttpMethod ({"GET"})
+     *
+     * @param ViewModel $model
+     * @return string
+     */
+    public function dashboard(ViewModel $model) {
+        $model->title = 'Dashboard';
+        return 'admin/dashboard';
     }
 
     /**
@@ -51,10 +65,11 @@ class AdminController {
      * @Secure ({"FINANCE"})
      * @HttpMethod ({"GET","POST"})
      *
+     * @param ViewModel $model
      * @return string
-     * @internal param ViewModel $model
      */
-    public function income() {
+    public function income(ViewModel $model) {
+        $model->title = 'Income';
         return 'admin/income';
     }
 

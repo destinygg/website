@@ -12,13 +12,4 @@ abstract class UserRole {
     const EMOTES = 'EMOTES';         // can add, update, remove emotes
     const FLAIRS = 'FLAIRS';         // can add, update, remove flairs
 
-    public static $ASSIGNABLE = [
-        self::ADMIN,
-        self::MODERATOR,
-        self::FINANCE,
-        self::STREAMLABS,
-        self::EMOTES,
-        self::FLAIRS
-    ];
-
 }

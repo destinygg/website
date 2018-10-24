@@ -11,6 +11,7 @@ use Destiny\Common\User\UserRole;
         <?php if(Session::hasRole(UserRole::MODERATOR)): ?>
             <li><a href="/admin/users">Users</a></li>
             <li><a href="/admin/bans">Bans</a></li>
+            <li><a href="/admin/chat">Chat</a></li>
         <?php endif; ?>
 
         <?php if(Session::hasRole(UserRole::FINANCE)): ?>
@@ -18,7 +19,6 @@ use Destiny\Common\User\UserRole;
         <?php endif; ?>
 
         <?php if(Session::hasRole(UserRole::ADMIN)): ?>
-            <li><a href="/admin/chat">Chat</a></li>
             <li><a href="/admin/streamlabs">StreamLabs</a></li>
             <li><a href="/admin/twitch">Twitch</a></li>
         <?php endif; ?>
