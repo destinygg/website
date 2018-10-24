@@ -1,4 +1,5 @@
 <?php
+
 use Destiny\Common\Application;
 use Destiny\Common\ControllerAnnotationLoader;
 use Destiny\Common\DirectoryClassIterator;

@@ -142,8 +142,8 @@ class StreamLabsService extends Service {
             $userService->updateUserAuthProfile($auth['userId'], $this->authProvider, [
                 'refreshToken'  => $data['refresh_token'],
                 'authCode'      => $data['access_token'],
-                'createdDate'   => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
-                'modifiedDate'  => Date::getDateTime('NOW')->format('Y-m-d H:i:s')
+                'createdDate'   => Date::getSqlDateTime(),
+                'modifiedDate'  => Date::getSqlDateTime()
             ]);
             $token = $data['access_token'];
         }

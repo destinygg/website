@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
@@ -439,14 +438,13 @@ class SubscriptionController {
         // Broadcast
         try {
             $subMessage = Session::getAndRemove('subMessage');
-            $randomEmote = ChatEmotes::random('destiny');
             if (!empty($subscription['gifter'])) {
                 $gifter = $userService->getUserById($subscription['gifter']);
                 $gifternick = $gifter['username'];
-                $message = sprintf("%s gifted %s a %s subscription! %s", $gifter['username'], $user['username'], $subscriptionType ['tierLabel'], $randomEmote);
+                $message = sprintf("%s gifted %s a %s subscription!", $gifter['username'], $user['username'], $subscriptionType ['tierLabel']);
             } else {
                 $gifternick = $user['username'];
-                $message = sprintf("%s is now a %s subscriber! %s", $user['username'], $subscriptionType ['tierLabel'], $randomEmote);
+                $message = sprintf("%s is now a %s subscriber!", $user['username'], $subscriptionType ['tierLabel']);
             }
             $redisService->sendBroadcast($message);
             if (!empty($subMessage)) {

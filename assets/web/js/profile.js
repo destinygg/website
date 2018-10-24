@@ -1,8 +1,8 @@
 // Message composition UI
+// TODO re-implement emotes in private messages
 const chatformatters = require('dgg-chat-gui/assets/chat/js/formatters')
-const chatemotes = require('dgg-chat-gui/assets/emotes.json')
-const ctx = {emoticons: chatemotes.destiny, twitchemotes:chatemotes.twitch}
-const formatters = [new chatformatters.HtmlTextFormatter(),new chatformatters.UrlFormatter(),new chatformatters.EmoteFormatter()]
+const formatters = [new chatformatters.HtmlTextFormatter(),new chatformatters.UrlFormatter()/*,new chatformatters.EmoteFormatter()*/]
+const ctx = {}
 
 // COMPOSE
 $(function(){

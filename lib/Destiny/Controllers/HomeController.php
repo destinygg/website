@@ -61,13 +61,14 @@ class HomeController {
 
     /**
      * @Route ("/embed/chat")
-     * @Route ("/chat")
      *
      * @param ViewModel $model
      * @return string
      */
     public function embedChat(ViewModel $model) {
+        $cache = Application::instance()->getCache();
         $model->title = 'Chat';
+        $model->cacheKey = $cache->fetch('chatCacheKey');
         return 'chat';
     }
 
@@ -78,7 +79,9 @@ class HomeController {
      * @return string
      */
     public function chatstreamed(ViewModel $model) {
+        $cache = Application::instance()->getCache();
         $model->title = 'Chat';
+        $model->cacheKey = $cache->fetch('chatCacheKey');
         return 'chatstreamed';
     }
 

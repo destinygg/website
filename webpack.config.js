@@ -16,7 +16,7 @@ module.exports = {
         filename : '[name].js'
     },
     plugins: [
-        new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache']}),
+        new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache','flairs','emotes']}),
         new ExtractTextPlugin({filename: '[name].css'})
     ],
     watchOptions: {

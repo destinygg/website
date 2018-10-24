@@ -18,8 +18,8 @@ use Destiny\Common\Config;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <h3>Stream labs</h3>
-        <div class="content content-dark clearfix">
+        <h3 class="in" data-toggle="collapse" data-target="#details-content">StreamLabs</h3>
+        <div id="details-content" class="content content-dark clearfix collapse in">
             <div class="ds-block">
                 <div class="form-group">
                     Attached profile: <a><?=Tpl::out($this->user['username'])?></a>

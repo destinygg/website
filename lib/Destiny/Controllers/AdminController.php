@@ -26,9 +26,9 @@ use Doctrine\DBAL\DBALException;
  */
 class AdminController {
 
+
     /**
      * @Route ("/admin")
-     * @Secure ({"ADMIN"})
      * @HttpMethod ({"GET","POST"})
      *
      * @return string
@@ -36,13 +36,19 @@ class AdminController {
     public function admin() {
         if (Session::hasRole(UserRole::FINANCE))
             return 'redirect: /admin/income';
-        else
+        else if (Session::hasRole(UserRole::MODERATOR))
             return 'redirect: /admin/users';
+        else if (Session::hasRole(UserRole::EMOTES))
+            return 'redirect: /admin/emotes';
+        else if (Session::hasRole(UserRole::FLAIRS))
+            return 'redirect: /admin/flairs';
+        else
+            return 'redirect: /'; // need an admin dashboard
     }
 
     /**
      * @Route ("/admin/income")
-     * @Secure ({"ADMIN","FINANCE"})
+     * @Secure ({"FINANCE"})
      * @HttpMethod ({"GET","POST"})
      *
      * @return string
@@ -53,48 +59,8 @@ class AdminController {
     }
 
     /**
-     * @Route ("/admin/users")
-     * @Secure ({"ADMIN"})
-     * @HttpMethod ({"GET","POST"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
-     * @throws DBALException
-     */
-    public function users(array $params, ViewModel $model) {
-        if (empty ( $params ['page'] ))
-            $params ['page'] = 1;
-        if (empty ( $params ['size'] ))
-            $params ['size'] = 20;
-        if (empty ( $params ['search'] ))
-            $params ['search'] = '';
-        if (empty ( $params ['feature'] ))
-            $params ['feature'] = '';
-
-        $model->title = 'Administration';
-        $model->user = Session::getCredentials ()->getData ();
-
-        if (!empty($params ['feature']))
-            $model->users = UserService::instance()->findByFeature($params ['feature'], intval($params ['size']), intval($params ['page']));
-        else if (!empty($params ['search']))
-            $model->users = UserService::instance()->findBySearch($params ['search'], intval($params ['size']), intval($params ['page']));
-        else
-            $model->users = UserService::instance()->findAll(intval($params ['size']), intval($params ['page']));
-
-        $model->size = $params ['size'];
-        $model->page = $params ['page'];
-        $model->search = $params ['search'];
-        $model->feature = $params ['feature'];
-        $model->features = UserService::instance()->getNonPseudoFeatures ();
-        $model->title = 'Admin';
-        return 'admin/users';
-    }
-
-    /**
      * @Route ("/admin/subscribers")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"FINANCE"})
      *
      * @param ViewModel $model
      * @return string
@@ -112,8 +78,48 @@ class AdminController {
     }
 
     /**
+     * @Route ("/admin/users")
+     * @Secure ({"MODERATOR"})
+     * @HttpMethod ({"GET","POST"})
+     *
+     * @param array $params
+     * @param ViewModel $model
+     * @return string
+     *
+     * @throws DBALException
+     */
+    public function users(array $params, ViewModel $model) {
+        if (empty ($params ['page']))
+            $params ['page'] = 1;
+        if (empty ($params ['size']))
+            $params ['size'] = 20;
+        if (empty ($params ['search']))
+            $params ['search'] = '';
+        if (empty ($params ['feature']))
+            $params ['feature'] = '';
+
+        $model->user = Session::getCredentials()->getData();
+        $userService = UserService::instance();
+
+        if (!empty($params ['feature']))
+            $model->users = $userService->findByFeature($params ['feature'], intval($params ['size']), intval($params ['page']));
+        else if (!empty($params ['search']))
+            $model->users = $userService->findBySearch($params ['search'], intval($params ['size']), intval($params ['page']));
+        else
+            $model->users = $userService->findAll(intval($params ['size']), intval($params ['page']));
+
+        $model->size = $params ['size'];
+        $model->page = $params ['page'];
+        $model->search = $params ['search'];
+        $model->feature = $params ['feature'];
+        $model->features = $userService->getAllFeatures();
+        $model->title = 'Users';
+        return 'admin/users';
+    }
+
+    /**
      * @Route ("/admin/bans")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      *
      * @param ViewModel $model
      * @return string
@@ -128,7 +134,7 @@ class AdminController {
 
     /**
      * @Route ("/admin/bans/purgeall")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @throws DBALException
      */
     public function adminPurgeBans() {
@@ -139,7 +145,7 @@ class AdminController {
 
     /**
      * @Route ("/admin/chart/{type}")
-     * @Secure ({"ADMIN","FINANCE"})
+     * @Secure ({"FINANCE"})
      * @ResponseBody
      *
      * @param array $params

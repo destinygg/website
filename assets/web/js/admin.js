@@ -107,4 +107,46 @@
 
     });
 
+    $('#flairs-selection').each(function(){
+        const userId = parseInt(this.getAttribute('data-user'));
+        $(this).on('click', 'input[type="checkbox"]', (e) => {
+            e.target.setAttribute('disabled', 'disabled');
+            $.ajax({
+                type: 'post',
+                url: `/admin/user/${userId}/toggle/flair`,
+                data: {
+                    'userId': userId,
+                    'name': e.target.getAttribute('value'),
+                    'value': e.target.checked ? 1:0
+                }
+            })
+            .always(() => {
+                e.target.removeAttribute('disabled');
+            })
+            /*.fail(() => { todo error handle })*/;
+        });
+    });
+    $('#roles-selection').each(function(){
+        const userId = parseInt(this.getAttribute('data-user'));
+        $(this).on('click', 'input[type="checkbox"]', (e) => {
+            e.target.setAttribute('disabled', 'disabled');
+            $.ajax({
+                type: 'post',
+                url: `/admin/user/${userId}/toggle/role`,
+                data: {
+                    'userId': userId,
+                    'name': e.target.getAttribute('value'),
+                    'value': e.target.checked ? 1:0
+                }
+            })
+            .always(() => {
+                e.target.removeAttribute('disabled');
+            })
+            /*.fail(() => { todo error handle })*/;
+        });
+    });
+
+
+
+
 })();

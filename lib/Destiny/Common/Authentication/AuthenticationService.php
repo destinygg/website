@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common\Authentication;
 
-use Destiny\Chat\ChatEmotes;
+use Destiny\Chat\EmoteService;
 use Destiny\Common\Application;
 use Destiny\Common\Crypto;
 use Destiny\Common\Exception;
@@ -24,6 +24,7 @@ class AuthenticationService extends Service {
     /**
      * @param string $username
      * @throws Exception
+     * @throws DBALException
      */
     public function validateUsername($username) {
         if (empty ($username))
@@ -35,18 +36,23 @@ class AuthenticationService extends Service {
         // nick-to-emote similarity heuristics, not perfect sadly ;(
         $normalizeduname = strtolower($username);
         $front = substr($normalizeduname, 0, 2);
-        foreach (ChatEmotes::get('destiny') as $emote) {
+
+        $emoteService = EmoteService::instance();
+        $emotes = array_map(function($v){ return $v['prefix']; }, $emoteService->findAllEmotes());
+
+        foreach ($emotes as $emote) {
             $normalizedemote = strtolower($emote);
-            if (strpos($normalizeduname, $normalizedemote) === 0)
+            if (strpos($normalizeduname, $normalizedemote) === 0) {
                 throw new Exception ('Username too similar to an emote, try changing the first characters');
-
-            if ($emote == 'LUL')
+            }
+            if ($emote == 'LUL') {
                 continue;
-
+            }
             $shortuname = substr($normalizeduname, 0, strlen($emote));
             $emotefront = substr($normalizedemote, 0, 2);
-            if ($front == $emotefront and levenshtein($normalizedemote, $shortuname) <= 2)
+            if ($front == $emotefront and levenshtein($normalizedemote, $shortuname) <= 2) {
                 throw new Exception ('Username too similar to an emote, try changing the first characters');
+            }
         }
 
         if (preg_match_all('/[0-9]{3}/', $username, $m) > 0)
@@ -155,7 +161,7 @@ class AuthenticationService extends Service {
             $credentials->addFeatures(UserFeature::SUBSCRIBER);
         }
         if ($user['istwitchsubscriber'])
-            $credentials->addFeatures(UserFeature::SUBSCRIBERT0);
+            $credentials->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
         if (!empty($sub)) {
             if ($sub['subscriptionTier'] == 1)
                 $credentials->addFeatures(UserFeature::SUBSCRIBERT1);

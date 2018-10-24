@@ -5,8 +5,7 @@ abstract class Http {
 
     const HEADER_ETAG = 'Etag';
     const HEADER_STATUS = 'Status';
-    const HEADER_CONTENTLENGTH = 'Content-Length';
-    const HEADER_CONTENTTYPE = 'Content-Type';
+    const HEADER_CONTENT_LENGTH = 'Content-Length';
     const HEADER_LAST_MODIFIED = 'Last-Modified';
     const HEADER_CACHE_CONTROL = 'Cache-Control';
     const HEADER_IF_MODIFIED_SINCE = 'If-Modified-Since';

@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Chat\ChatEmotes;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\DonationStatus;
@@ -79,6 +78,7 @@ class DonateController {
         FilterParams::required($params, 'amount');
         FilterParams::declared($params, 'message');
         $conn = Application::getDbConn();
+        $authService = AuthenticationService::instance();
 
         $amount = floatval($params['amount']);
         $minimum = Config::$a['commerce']['minimum_donation'];
@@ -95,7 +95,7 @@ class DonateController {
                 $username = Session::getCredentials()->getUsername();
             } else {
                 FilterParams::required($params, 'username');
-                AuthenticationService::instance()->validateUsername($params['username']);
+                $authService->validateUsername($params['username']);
                 $username = $params['username'];
             }
             $conn->beginTransaction();
@@ -185,9 +185,8 @@ class DonateController {
                 $message = $donation['message'];
                 $symbol = $donation['currency'] === 'USD'? '$': $donation['currency']; // todo hokey currency symbol lookup
                 $amount = $symbol . number_format($donation['amount'], 2);
-                $emote = $randomEmote = ChatEmotes::random('destiny');
                 $redisService = ChatRedisService::instance();
-                $redisService->sendBroadcast(sprintf("%s has donated %s! %s", $username, $amount, $emote));
+                $redisService->sendBroadcast(sprintf("%s has donated %s!", $username, $amount));
                 if(!empty($message)) {
                     $redisService->sendBroadcast("$username said... $message");
                 }

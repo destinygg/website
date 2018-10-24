@@ -1,6 +1,5 @@
 <?php
 
-use Destiny\Chat\ChatEmotes;
 use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Destiny\StreamLabs\StreamLabsService;
@@ -47,10 +46,9 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
      * @throws DBALException
      */
     public function testThree() {
-        $emote = ChatEmotes::random('twitch');
         $r = $this->getService()->sendDonation([
             'name' => 'PersonX',
-            'message' => 'This is a test message from testThree ' . $emote,
+            'message' => 'This is a test message from testThree',
             'identifier' => 'PersonY#23',
             'amount' => '20',
             'currency' => 'USD'

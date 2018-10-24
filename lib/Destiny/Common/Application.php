@@ -165,8 +165,8 @@ class Application extends Service {
             Http::header($header [0], $header [1]);
         }
         $body = $response->getBody();
-        if($body !== null && !is_string($body)) {
-            Http::header(Http::HEADER_CONTENTTYPE, MimeType::JSON);
+        if ($body !== null && !is_string($body)) {
+            Http::header(Http::HEADER_CONTENT_TYPE, MimeType::JSON);
             try {
                 $body = json_encode($body);
             } catch (\Exception $e) {
@@ -174,7 +174,7 @@ class Application extends Service {
                 Log::error($n);
             }
         }
-        if($body !== null || $body !== ''){
+        if ($body !== null || $body !== '') {
             echo $body;
         }
         exit;

@@ -1,12 +1,15 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\EmoteService;
+use Destiny\Chat\FlairService;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
+use Destiny\Common\MimeType;
 use Destiny\Common\Request;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserService;

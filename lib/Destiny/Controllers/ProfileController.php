@@ -100,8 +100,9 @@ class ProfileController {
 
         try {
             $authService->validateUsername($username);
-            if ($userService->getIsUsernameTaken($username, $user['userId']))
+            if ($userService->getIsUsernameTaken($username, $user['userId'])) {
                 throw new Exception ( 'The username you asked for is already being used' );
+            }
             $authService->validateEmail($email, $user);
             if (! empty ( $country )) {
                 $countryArr = Country::getCountryByCode ( $country );
@@ -128,7 +129,7 @@ class ProfileController {
             $nameChangedCount = intval($user ['nameChangedCount']);
             // have they hit their limit
             if ($nameChangedCount > 0) {
-                $userData ['nameChangedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
+                $userData ['nameChangedDate'] = Date::getSqlDateTime();
                 $userData ['nameChangedCount'] = $nameChangedCount - 1;
             } else {
                 throw new Exception ('You have reached your name change limit');

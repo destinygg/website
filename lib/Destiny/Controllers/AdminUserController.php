@@ -29,7 +29,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{id}/edit")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
      * @param array $params
@@ -57,7 +57,8 @@ class AdminUserController {
 
         $model->user = $user;
         $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($user ['userId']));
-        $model->features = $userService->getNonPseudoFeatures();
+        $model->features = $userService->getAllFeatures();
+        $model->roles = $userService->getAllRoles();
         $model->ban = $userService->getUserActiveBan($user ['userId']);
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId($user ['userId']);
         $model->address = $userService->getAddressByUserId($user ['userId']);
@@ -84,23 +85,20 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{id}/edit")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
      *
      * @param array $params
-     * @param ViewModel $model
      * @return string
      *
      * @throws DBALException
      * @throws Exception
      */
-    public function adminUserEditProcess(array $params, ViewModel $model) {
-        $model->title = 'User';
-
+    public function adminUserEditProcess(array $params) {
         FilterParams::required($params, 'id');
-
         $authService = AuthenticationService::instance();
         $userService = UserService::instance();
+
         $user = $userService->getUserById($params ['id']);
         if (empty ($user)) {
             throw new Exception ('User was not found');
@@ -156,9 +154,6 @@ class AdminUserController {
             $conn->beginTransaction();
             $userService->updateUser($user ['userId'], $userData);
             $user = $userService->getUserById($params ['id']);
-            if (!isset ($params ['features']))
-                $params ['features'] = [];
-            $userService->setUserFeatures($user ['userId'], $params ['features']);
             $authService->flagUserForUpdate($user ['userId']);
             $conn->commit();
         } catch (DBALException $e) {
@@ -172,8 +167,60 @@ class AdminUserController {
     }
 
     /**
+     * @Route ("/admin/user/{id}/toggle/flair")
+     * @Secure ({"MODERATOR"})
+     * @HttpMethod ({"POST"})
+     *
+     * @param array $params
+     *
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function toggleUserFlair(array $params) {
+        FilterParams::required($params, 'userId');
+        FilterParams::declared($params, 'value');
+        FilterParams::required($params, 'name');
+        $userService = UserService::instance();
+        $user = $userService->getUserById($params ['userId']);
+        if (empty ($user)) {
+            throw new Exception ('User was not found');
+        }
+        $userService->removeUserFeature($user['userId'], $params['name']);
+        if (intval($params['value']) == 1) {
+            $userService->addUserFeature($user['userId'], $params['name']);
+        }
+        AuthenticationService::instance()->flagUserForUpdate($user ['userId']);
+    }
+
+    /**
+     * @Route ("/admin/user/{id}/toggle/role")
+     * @Secure ({"MODERATOR"})
+     * @HttpMethod ({"POST"})
+     *
+     * @param array $params
+     *
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function toggleUserRole(array $params) {
+        FilterParams::required($params, 'userId');
+        FilterParams::declared($params, 'value');
+        FilterParams::required($params, 'name');
+        $userService = UserService::instance();
+        $user = $userService->getUserById($params['userId']);
+        if (empty ($user)) {
+            throw new Exception ('User was not found');
+        }
+        $userService->removeUserRole($user['userId'], $params['name']);
+        if (intval($params['value']) == 1) {
+            $userService->addUserRole($user['userId'], $params['name']);
+        }
+        AuthenticationService::instance()->flagUserForUpdate($user['userId']);
+    }
+
+    /**
      * @Route ("/admin/user/{id}/subscription/add")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
      * @param array $params
@@ -204,7 +251,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{id}/subscription/{subscriptionId}/edit")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
      * @param array $params
@@ -241,7 +288,7 @@ class AdminUserController {
     /**
      * @Route ("/admin/user/{id}/subscription/{subscriptionId}/save")
      * @Route ("/admin/user/{id}/subscription/save")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
      *
      * @param array $params
@@ -302,7 +349,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{id}/auth/{provider}/delete")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
      *
      * @param array $params
@@ -319,7 +366,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{userId}/ban")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
      * @param array $params
@@ -353,7 +400,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{userId}/ban")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
      *
      * @param array $params
@@ -383,7 +430,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{userId}/ban/{id}/edit")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
      * @param array $params
@@ -415,7 +462,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{userId}/ban/{id}/update")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
      *
      * @param array $params
@@ -455,7 +502,7 @@ class AdminUserController {
 
     /**
      * @Route ("/admin/user/{userId}/ban/remove")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      *
      * @param array $params
      * @return string

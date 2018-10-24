@@ -19,7 +19,12 @@ use Destiny\Common\Config;
 </div>
 
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/streamchat.js"></script>
+<script
+    id="chat-include"
+    data-cache-key="<?=Tpl::out($this->cacheKey)?>"
+    data-cdn="<?=Tpl::out(Config::cdnv())?>"
+    src="<?=Config::cdnv()?>/streamchat.js"
+></script>
 
 </body>
 </html>

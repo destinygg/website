@@ -8,6 +8,7 @@ $screen-xs-max:         829px;
 $screen-sm-min:         830px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
 $screen-md-max:         991px;
 $screen-lg-min:         1200px;
+$screen-llg-min:        1620px;
 $screen-xlg-min:        2560px;
 
 
@@ -89,6 +90,8 @@ $color-black:           #4D4D4D;
 
 $hb-light:              #849EB5;
 $hb-dark:               #30394A;
+
+$twitch-purple:         #6441a5;
 
 .bg-grad-main {
   background: -moz-linear-gradient(left,  $hb-light 0%, $hb-light 51%, $hb-dark 51%,$hb-dark 100%);

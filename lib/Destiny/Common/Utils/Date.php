@@ -30,6 +30,14 @@ abstract class Date {
     }
 
     /**
+     * @param string $time
+     * @return string
+     */
+    public static function getSqlDateTime($time = "NOW") {
+        return self::getDateTime($time)->format('Y-m-d H:i:s');
+    }
+
+    /**
      * A sweet interval formatting, will use the two biggest interval parts.
      * On small intervals, you get minutes and seconds.
      * On big intervals, you get months and days.

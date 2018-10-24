@@ -13,24 +13,19 @@ CREATE TABLE `bans` (
   `starttimestamp` datetime NOT NULL,
   `endtimestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `chatlog` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `userid` int(10) unsigned NOT NULL,
-  `targetuserid` int(10) unsigned DEFAULT NULL,
-  `event` varchar(15) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-  `data` text,
-  `timestamp` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `dfl_features` (
-  `featureId` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `featureName` VARCHAR(100) NOT NULL,
-  `featureLabel` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`featureId`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+  `featureId` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `featureName` varchar(100) NOT NULL,
+  `featureLabel` varchar(100) NOT NULL,
+  `imageId` int(14) DEFAULT NULL,
+  `locked` tinyint(1) NOT NULL,
+  `createdDate` datetime NOT NULL,
+  `modifiedDate` datetime NOT NULL,
+  PRIMARY KEY (`featureId`),
+  UNIQUE KEY `featureName` (`featureName`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `dfl_orders_ipn` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
@@ -60,7 +55,8 @@ CREATE TABLE `dfl_orders_payments` (
 
 CREATE TABLE `dfl_roles` (
   `roleId` int(14) NOT NULL,
-  `roleName` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `roleName` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
+  `roleLabel` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL,
   PRIMARY KEY (`roleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -189,3 +185,31 @@ CREATE TABLE `privatemessages` (
   KEY `targetuserid` (`targetuserid`),
   KEY `userid` (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `emotes` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `prefix` varchar(180) DEFAULT NULL,
+  `imageId` int(14) NOT NULL,
+  `twitch` tinyint(1) NOT NULL,
+  `draft` tinyint(1) NOT NULL,
+  `createdDate` datetime NOT NULL,
+  `modifiedDate` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `prefix` (`prefix`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `images` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `label` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `hash` varchar(130) NOT NULL,
+  `type` varchar(130) NOT NULL,
+  `size` bigint(20) NOT NULL,
+  `width` int(6) NOT NULL,
+  `height` int(6) NOT NULL,
+  `tag` varchar(100) NOT NULL,
+  `createdDate` datetime NOT NULL,
+  `modifiedDate` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hash` (`hash`)
+) ENGINE=InnoDB AUTO_INCREMENT=195 DEFAULT CHARSET=utf8mb4;

@@ -17,7 +17,7 @@ class UserService extends Service {
     /**
      * @var array
      */
-    protected $roles;
+    protected $roles = null;
 
     /**
      * @var array
@@ -25,44 +25,69 @@ class UserService extends Service {
     protected $features = null;
 
     /**
-     * @param int $userId
-     * @param array $roles
-     * @throws DBALException
-     */
-    public function setUserRoles($userId, array $roles) {
-        $this->removeAllUserRoles($userId);
-        foreach ($roles as $role) {
-            $this->addUserRole($userId, $role);
-        }
-    }
-
-    /**
      * @return array
      * @throws DBALException
      */
-    public function getUserRoles() {
-        if (!$this->roles) {
+    public function getAllRoles() {
+        if ($this->roles == null) {
             $conn = Application::getDbConn();
-            $stmt = $conn->prepare('SELECT * FROM `dfl_roles`');
+            $stmt = $conn->prepare('SELECT roleId, roleName, roleLabel FROM `dfl_roles` ORDER BY roleId ASC');
             $stmt->execute();
-            $this->roles = $stmt->fetchAll();
+            $this->roles = [];
+            while ($a = $stmt->fetch()) {
+                $this->roles [$a ['roleName']] = $a;
+            }
         }
         return $this->roles;
     }
 
     /**
-     * @param string $roleName
-     * @return array
+     * @return array <featureName, []>
      * @throws DBALException
      */
-    public function getRoleIdByName($roleName) {
-        $roles = $this->getUserRoles();
-        foreach ($roles as $role) {
-            if (strcasecmp($role ['roleName'], $roleName) === 0) {
-                return $role ['roleId'];
+    public function getAllFeatures() {
+        if ($this->features == null) {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC');
+            $stmt->execute();
+            $this->features = [];
+            while ($a = $stmt->fetch()) {
+                $this->features [$a ['featureName']] = $a;
             }
         }
-        return null;
+        return $this->features;
+    }
+
+    /**
+     * @param string $roleName
+     * @return array
+     *
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function getRoleIdByName($roleName) {
+        $roles = $this->getAllRoles();
+        if (!isset ($roles [$roleName])) {
+            throw new Exception (sprintf('Invalid role name %s', $roleName));
+        }
+        return $roles [$roleName]['roleId'];
+    }
+
+    /**
+     * Remove a role from a user
+     *
+     * @param int $userId
+     * @param string $roleName
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function removeUserRole($userId, $roleName) {
+        $roleId = $this->getRoleIdByName($roleName);
+        $conn = Application::getDbConn();
+        $conn->delete('dfl_users_roles', [
+            'userId' => $userId,
+            'roleId' => $roleId
+        ]);
     }
 
     /**
@@ -71,6 +96,7 @@ class UserService extends Service {
      * @return string
      *
      * @throws DBALException
+     * @throws Exception
      */
     public function addUserRole($userId, $roleName) {
         $roleId = $this->getRoleIdByName($roleName);
@@ -83,13 +109,75 @@ class UserService extends Service {
     }
 
     /**
+     * @param string $featureName
+     * @return array
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function getFeatureIdByName($featureName) {
+        $features = $this->getAllFeatures();
+        if (!isset ($features [$featureName])) {
+            throw new Exception (sprintf('Invalid feature name %s', $featureName));
+        }
+        return $features [$featureName]['featureId'];
+    }
+
+    /**
+     * Get a list of user features
+     *
      * @param int $userId
+     * @return array
      * @throws DBALException
      */
-    public function removeAllUserRoles($userId) {
+    public function getFeaturesByUserId($userId) {
         $conn = Application::getDbConn();
-        $conn->delete('dfl_users_roles', [
-            'userId' => $userId
+        $stmt = $conn->prepare('
+            SELECT DISTINCT b.featureName AS `id` FROM dfl_users_features AS a
+            INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
+            WHERE userId = :userId
+            ORDER BY a.featureId ASC');
+        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
+        $features = [];
+        while ($feature = $stmt->fetchColumn()) {
+            $features [] = $feature;
+        }
+        return $features;
+    }
+
+    /**
+     * Add a feature to a user
+     *
+     * @param int $userId
+     * @param string $featureName
+     * @return string
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function addUserFeature($userId, $featureName) {
+        $featureId = $this->getFeatureIdByName($featureName);
+        $conn = Application::getDbConn();
+        $conn->insert('dfl_users_features', [
+            'userId' => $userId,
+            'featureId' => $featureId
+        ]);
+        return $conn->lastInsertId();
+    }
+
+    /**
+     * Remove a feature from a user
+     *
+     * @param int $userId
+     * @param string $featureName
+     * @throws DBALException
+     * @throws Exception
+     */
+    public function removeUserFeature($userId, $featureName) {
+        $featureId = $this->getFeatureIdByName($featureName);
+        $conn = Application::getDbConn();
+        $conn->delete('dfl_users_features', [
+            'userId' => $userId,
+            'featureId' => $featureId
         ]);
     }
 
@@ -101,7 +189,7 @@ class UserService extends Service {
      */
     public function getIsUsernameTaken($username, $excludeUserId = 0) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId AND userStatus IN (\'Active\',\'Suspended\',\'Inactive\')');
+        $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId');
         $stmt->bindValue('username', $username, \PDO::PARAM_STR);
         $stmt->bindValue('excludeUserId', $excludeUserId, \PDO::PARAM_INT);
         $stmt->execute();
@@ -116,7 +204,7 @@ class UserService extends Service {
      */
     public function getIsEmailTaken($email, $excludeUserId = 0) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE email = :email AND userId != :excludeUserId AND userStatus IN (\'Active\',\'Suspended\',\'Inactive\')');
+        $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE email = :email AND userId != :excludeUserId');
         $stmt->bindValue('email', $email, \PDO::PARAM_STR);
         $stmt->bindValue('excludeUserId', $excludeUserId, \PDO::PARAM_INT);
         $stmt->execute();
@@ -155,8 +243,8 @@ class UserService extends Service {
      */
     public function addUser(array $user) {
         $conn = Application::getDbConn();
-        $user ['createdDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
-        $user ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
+        $user ['createdDate'] = Date::getSqlDateTime();
+        $user ['modifiedDate'] = Date::getSqlDateTime();
         $conn->insert('dfl_users', $user);
         return $conn->lastInsertId();
     }
@@ -167,7 +255,7 @@ class UserService extends Service {
      */
     public function updateUser($userId, array $user) {
         $conn = Application::getDbConn();
-        $user ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
+        $user ['modifiedDate'] = Date::getSqlDateTime();
         $conn->update('dfl_users', $user, [
             'userId' => $userId
         ]);
@@ -276,7 +364,7 @@ class UserService extends Service {
      */
     public function updateUserAuthProfile($userId, $authProvider, array $auth) {
         $conn = Application::getDbConn();
-        $auth ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
+        $auth ['modifiedDate'] = Date::getSqlDateTime();
         $conn->update('dfl_users_auth', $auth, [
             'userId' => $userId,
             'authProvider' => $authProvider
@@ -296,8 +384,8 @@ class UserService extends Service {
             'authCode' => $auth ['authCode'],
             'authDetail' => $auth ['authDetail'],
             'refreshToken' => $auth ['refreshToken'],
-            'createdDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
-            'modifiedDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s')
+            'createdDate' => Date::getSqlDateTime(),
+            'modifiedDate' => Date::getSqlDateTime()
         ], [
             \PDO::PARAM_INT,
             \PDO::PARAM_STR,
@@ -569,8 +657,8 @@ class UserService extends Service {
                 'region' => $address ['region'],
                 'zip' => $address ['zip'],
                 'country' => $address ['country'],
-                'createdDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
-                'modifiedDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s')
+                'createdDate' => Date::getSqlDateTime(),
+                'modifiedDate' => Date::getSqlDateTime()
             ], [
                 \PDO::PARAM_INT,
                 \PDO::PARAM_STR,
@@ -590,7 +678,7 @@ class UserService extends Service {
      */
     public function updateAddress(array $address) {
         $conn = Application::getDbConn();
-        $address ['modifiedDate'] = Date::getDateTime('NOW')->format('Y-m-d H:i:s');
+        $address ['modifiedDate'] = Date::getSqlDateTime();
         $conn->update('users_address', $address, ['id' => $address['id']]);
     }
 
@@ -941,8 +1029,7 @@ class UserService extends Service {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT `chatsettings` FROM dfl_users
-            WHERE `userId` = :userid
-            LIMIT 1
+            WHERE `userId` = :userid LIMIT 1
         ");
         $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
         $stmt->execute();
@@ -964,136 +1051,5 @@ class UserService extends Service {
         $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
         $stmt->execute();
         return (bool)$stmt->rowCount();
-    }
-
-    /**
-     * @return array <featureName, []>
-     * @throws DBALException
-     */
-    public function getNonPseudoFeatures() {
-        $features = $this->getFeatures();
-        $filtered = [];
-        foreach (UserFeature::$NON_PSEUDO_FEATURES as $featureName) {
-            if (isset($features[$featureName])) {
-                $filtered[$featureName] = $features[$featureName];
-            }
-        }
-        return $filtered;
-    }
-
-    /**
-     * @return array <featureName, []>
-     * @throws DBALException
-     */
-    public function getFeatures() {
-        if ($this->features == null) {
-            $conn = Application::getDbConn();
-            $stmt = $conn->prepare('SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC');
-            $stmt->execute();
-            $this->features = [];
-            while ($a = $stmt->fetch()) {
-                $this->features [$a ['featureName']] = $a;
-            }
-        }
-        return $this->features;
-    }
-
-    /**
-     * @param string $featureName
-     * @return array
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function getFeatureIdByName($featureName) {
-        $features = $this->getFeatures();
-        if (!isset ($features [$featureName])) {
-            throw new Exception (sprintf('Invalid feature name %s', $featureName));
-        }
-        return $features [$featureName]['featureId'];
-    }
-
-    /**
-     * Get a list of user features
-     *
-     * @param int $userId
-     * @return array
-     * @throws DBALException
-     */
-    public function getFeaturesByUserId($userId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT DISTINCT b.featureName AS `id` FROM dfl_users_features AS a
-            INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
-            WHERE userId = :userId
-            ORDER BY a.featureId ASC');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->execute();
-        $features = [];
-        while ($feature = $stmt->fetchColumn()) {
-            $features [] = $feature;
-        }
-        return $features;
-    }
-
-    /**
-     * Set a list of user features
-     *
-     * @param int $userId
-     * @param array $features
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function setUserFeatures($userId, array $features) {
-        $this->removeAllUserFeatures($userId);
-        foreach ($features as $feature) {
-            $this->addUserFeature($userId, $feature);
-        }
-    }
-
-    /**
-     * Add a feature to a user
-     *
-     * @param int $userId
-     * @param string $featureName
-     * @return string
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function addUserFeature($userId, $featureName) {
-        $featureId = $this->getFeatureIdByName($featureName);
-        $conn = Application::getDbConn();
-        $conn->insert('dfl_users_features', [
-            'userId' => $userId,
-            'featureId' => $featureId
-        ]);
-        return $conn->lastInsertId();
-    }
-
-    /**
-     * Remove a feature from a user
-     *
-     * @param int $userId
-     * @param string $featureName
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function removeUserFeature($userId, $featureName) {
-        $featureId = $this->getFeatureIdByName($featureName);
-        $conn = Application::getDbConn();
-        $conn->delete('dfl_users_features', [
-            'userId' => $userId,
-            'featureId' => $featureId
-        ]);
-    }
-
-    /**
-     * Remove a feature from a user
-     *
-     * @param int $userId
-     * @throws DBALException
-     */
-    public function removeAllUserFeatures($userId) {
-        $conn = Application::getDbConn();
-        $conn->delete('dfl_users_features', ['userId' => $userId]);
     }
 }

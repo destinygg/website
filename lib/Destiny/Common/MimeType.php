@@ -7,5 +7,6 @@ abstract class MimeType {
     const JAVASCRIPT = 'application/javascript';
     const TEXT = 'text/plain';
     const HTML = 'text/html';
+    const CSS = 'text/css';
 
 }

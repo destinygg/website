@@ -18,8 +18,8 @@ use Destiny\Common\Utils\Date;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <h3>Broadcast</h3>
-        <div class="content content-dark clearfix">
+        <h3 class="in" data-toggle="collapse" data-target="#broadcast-content">Broadcast</h3>
+        <div id="broadcast-content" class="content content-dark collapse in clearfix">
             <form class="form" action="/admin/chat/broadcast" role="form">
                 <div class="ds-block">
                     <div class="form-group">
@@ -35,8 +35,8 @@ use Destiny\Common\Utils\Date;
     </section>
 
     <section class="container">
-        <h3>Search users by IP</h3>
-        <div class="content content-dark clearfix">
+        <h3 class="in" data-toggle="collapse" data-target="#search-content">Search</h3>
+        <div id="search-content" class="content content-dark collapse in clearfix">
             <form class="form-search" action="/admin/chat/ip">
                 <div class="ds-block">
                     <div class="form-group">
