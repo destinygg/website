@@ -38,4 +38,4 @@ ALTER TABLE `dfl_features`
   ADD COLUMN `modifiedDate` DATETIME NOT NULL AFTER `createdDate`,
   ADD UNIQUE INDEX (`featureName`);
 
-UPDATE `dfl_features` SET createdDate = NOW(), modifiedDate = NOW(), locked = 1;
+UPDATE `dfl_features` SET createdDate = NOW(), modifiedDate = NOW();

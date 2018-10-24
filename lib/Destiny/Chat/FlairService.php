@@ -149,6 +149,31 @@ class FlairService extends Service {
     }
 
     /**
+     * @param $name
+     * @return mixed
+     * @throws DBALException
+     */
+    function findFlairByName($name) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+            SELECT 
+              f.*, 
+              i.name as `imageName`, 
+              i.label as `imageLabel`, 
+              i.size, 
+              i.width, 
+              i.height 
+             FROM dfl_features f 
+             LEFT JOIN images i ON i.id = f.imageId
+             WHERE f.featureName = :name
+             LIMIT 0,1
+         ');
+        $stmt->bindValue('name', $name, \PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
      * @return array
      * @throws DBALException
      */

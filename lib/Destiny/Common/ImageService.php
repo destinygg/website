@@ -53,6 +53,19 @@ class ImageService extends Service {
     }
 
     /**
+     * @param $name
+     * @return mixed
+     * @throws DBALException
+     */
+    function findImageByName($name) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('SELECT * FROM `images` WHERE `name` = :name LIMIT 0,1');
+        $stmt->bindValue('name', $name, \PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
      * @param $id
      * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
      */

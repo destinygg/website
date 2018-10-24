@@ -113,7 +113,7 @@ use Destiny\Commerce\SubscriptionStatus;
         <div id="flairs-content" class="content content-dark clearfix collapse">
             <div class="ds-block">
                 <div id="flairs-selection" data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
-                    <?php foreach($this->features as $featureName=>$f): ?>
+                    <?php foreach($this->features as $featureName => $f): ?>
                         <?php if(!in_array($f['featureName'], UserFeature::$UNASSIGNABLE)): ?>
                             <div class="checkbox">
                                 <label>
@@ -133,14 +133,15 @@ use Destiny\Commerce\SubscriptionStatus;
         <div id="roles-content" class="content content-dark clearfix collapse">
             <div class="ds-block">
                 <div id="roles-selection" data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
-                    <label>Roles</label>
                     <?php foreach($this->roles as $role): ?>
+                        <?php if(!in_array($role['roleName'], ['USER','SUBSCRIBER'])): ?>
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="roles[]" value="<?=$role['roleName']?>" <?=(in_array($role['roleName'], $this->user['roles']))?'checked="checked"':''?>>
                                 <?=Tpl::out($role['roleLabel'])?>
                             </label>
                         </div>
+                    <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </div>
