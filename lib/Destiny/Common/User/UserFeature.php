@@ -10,6 +10,7 @@ abstract class UserFeature {
     const SUBSCRIBERT3 = 'flair3';
     const SUBSCRIBERT4 = 'flair8';
     const DGGBDAY = 'flair15';
+    const MINECRAFTVIP = 'flair14';
 
     public static $UNASSIGNABLE = [
         self::SUBSCRIBER,

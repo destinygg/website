@@ -194,7 +194,7 @@ class FlairService extends Service {
         $this->saveStaticJson();
 
         $cache = Application::instance()->getCache();
-        $cache->save('chatCacheKey', md5_file(self::FLAIRS_DIR . 'flairs.css'));
+        $cache->save('chatCacheKey', microtime() . "." . rand(1000,9999));
     }
 
     private function saveStaticCss() {

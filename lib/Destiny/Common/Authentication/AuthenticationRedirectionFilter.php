@@ -36,8 +36,9 @@ class AuthenticationRedirectionFilter {
             if (!Session::hasRole(UserRole::USER)) {
                 throw new Exception ('Authentication required for account merge');
             }
+            Session::setSuccessBag('Authorization successful!');
             $authService->handleAuthAndMerge($authCreds);
-            return 'redirect: /profile/authentication';
+            return 'redirect: /profile';
         }
 
         $follow = Session::getAndRemove('follow');

@@ -458,4 +458,38 @@ class ProfileController {
         return 'profile/subscriptions';
     }
 
+    /**
+     * Minecraft update
+     *
+     * @Route ("/profile/minecraft/update")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
+     */
+    public function updateMinecraft(array $params){
+        $userService = UserService::instance();
+        $userId = Session::getCredentials ()->getUserId ();
+        FilterParams::declared ( $params, 'minecraftname' );
+        $data = ['minecraftname' => $params['minecraftname']];
+        if(trim($data['minecraftname']) == '')
+            $data['minecraftname'] = null;
+        if (mb_strlen($data['minecraftname']) > 16) {
+            Session::setErrorBag('Minecraft name too long.');
+            return 'redirect: /profile';
+        }
+        $uId = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
+        if ($data['minecraftname'] == null || empty($uId) || intval($uId) === intval($userId)) {
+            $userService->updateUser($userId, $data);
+            Session::setSuccessBag('Minecraft name has been updated');
+        } else {
+            Session::setErrorBag('Minecraft name already in use');
+        }
+        return 'redirect: /profile';
+    }
+
 }

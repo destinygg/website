@@ -34,6 +34,7 @@ return [
     'calendar' => '',
 
     'privateKeys' => [
+        'minecraft' => '',
         'chat' => '',
         'api' => '',
     ],

@@ -169,7 +169,7 @@ class EmoteService extends Service {
         $this->saveStaticJson();
 
         $cache = Application::instance()->getCache();
-        $cache->save('chatCacheKey', md5_file(self::EMOTES_DIR . 'emotes.css'));
+        $cache->save('chatCacheKey', microtime() . "." . rand(1000,9999));
     }
 
     private function saveStaticCss() {
@@ -186,7 +186,6 @@ class EmoteService extends Service {
                 return $s;
             }, $emotes));
             $css.= PHP_EOL;
-
             $file = fopen(self::EMOTES_DIR . 'emotes.css', 'w+');
             if (flock($file, LOCK_EX)) {
                 fwrite($file, $css);

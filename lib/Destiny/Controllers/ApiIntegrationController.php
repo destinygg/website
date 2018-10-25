@@ -58,6 +58,9 @@ class ApiIntegrationController {
             } else if (isset($params['discordname'])) {
                 FilterParams::required($params, 'discordname');
                 $userid = $userService->getUserIdByField('discordname', $params['discordname']);
+            } else if (isset($params['minecraftname'])) {
+                FilterParams::required($params, 'minecraftname');
+                $userid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
             } else if (isset($params['username'])) {
                 FilterParams::required($params, 'username');
                 $userid = $userService->getUserIdByField('username', $params['username']);
