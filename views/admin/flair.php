@@ -82,6 +82,30 @@ use Destiny\Common\Config;
                     </div>
                     <?php endif; ?>
 
+                    <div class="form-group">
+                        <label>Hide Icon</label>
+                        <select class="form-control" name="hidden">
+                            <option value="1"<?php if($this->flair['hidden'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                            <option value="0"<?php if($this->flair['hidden'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                        </select>
+                        <span class="help-block">If YES, this flair <strong>icon</strong> is not displayed in the chat.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <input autocomplete="off" type="text" class="form-control" name="priority" id="inputPriorityLabel" value="<?=Tpl::out($this->flair['priority'])?>" placeholder="Priority">
+                        <span class="help-block">Which flair gets displayed in what order.</span>
+                    </div>
+
+                    <div class="form-group color-group">
+                        <label>Color</label>
+                        <div class="input-group color-select">
+                            <div style="background-color: <?=Tpl::out($this->flair['color'])?>; border-color: <?=Tpl::out($this->flair['color'])?>;" class="input-group-addon">&nbsp;</div>
+                            <input style="font-weight: 600;" autocomplete="off" type="text" class="form-control" name="color" id="inputColor" value="<?=Tpl::out($this->flair['color'])?>" placeholder="Color hex e.g. #FF0000">
+                        </div>
+                        <span class="help-block">The color applied to the username in chat.</span>
+                    </div>
+
                 </div>
 
                 <div class="form-actions">
@@ -104,6 +128,5 @@ use Destiny\Common\Config;
 <?php include 'seg/tracker.php' ?>
 <script src="<?=Config::cdnv()?>/web.js"></script>
 <script src="<?=Config::cdnv()?>/admin.js"></script>
-
 </body>
 </html>

@@ -28,6 +28,7 @@ class EmoteService extends Service {
             'prefix' => $emote['prefix'],
             'twitch' => $emote['twitch'],
             'draft' => $emote['draft'],
+            'styles' => $emote['styles'],
             'modifiedDate' => Date::getSqlDateTime()
         ], ['id' => $id]);
     }
@@ -43,6 +44,7 @@ class EmoteService extends Service {
             'prefix' => $emote['prefix'],
             'twitch' => $emote['twitch'],
             'draft' => $emote['draft'],
+            'styles' => $emote['styles'],
             'createdDate' => Date::getSqlDateTime(),
             'modifiedDate' => Date::getSqlDateTime()
         ]);
@@ -139,6 +141,7 @@ class EmoteService extends Service {
             SELECT 
               e.prefix, 
               e.twitch, 
+              e.styles,
               i.name as `image`, 
               i.type as `mime`, 
               i.width, 
@@ -146,13 +149,14 @@ class EmoteService extends Service {
              FROM emotes e 
              LEFT JOIN images i ON i.id = e.imageId
              WHERE e.draft = 0
-             ORDER BY e.twitch ASC, e.prefix ASC, e.id DESC
+             ORDER BY e.id DESC
          ');
         $stmt->execute();
         return array_map(function($v) {
             return [
                 'prefix' => $v['prefix'],
                 'twitch' => boolval($v['twitch']),
+                'styles' => $v['styles'],
                 'image' => [[
                     'url' => Config::cdnv() . '/emotes/' . $v['image'],
                     'name' => $v['image'],
@@ -164,54 +168,80 @@ class EmoteService extends Service {
         }, $stmt->fetchAll());
     }
 
+    /**
+     * Save the css and json files
+     * set the cache key.
+     */
     public function saveStaticFiles() {
         $this->saveStaticCss();
         $this->saveStaticJson();
 
         $cache = Application::instance()->getCache();
-        $cache->save('chatCacheKey', microtime() . "." . rand(1000,9999));
+        $cache->save('chatCacheKey', microtime() . "." . rand(1000, 9999));
     }
 
+    /**
+     * Save the static css file
+     */
     private function saveStaticCss() {
         try {
             $emotes = $this->getPublicEmotes();
             $css = PHP_EOL;
-            $css.= join(PHP_EOL, array_map(function($v){
-                $s = '.emote.' . $v['prefix'] .' { ' . PHP_EOL;
-                $s.= "\t". 'background-image: url("'. $v['image'][0]['name'] .'");' . PHP_EOL;
-                $s.= "\t". 'width: '. $v['image'][0]['width'] .'px;' . PHP_EOL;
-                $s.= "\t". 'height: '. $v['image'][0]['height'] .'px;' . PHP_EOL;
-                $s.= "\t". 'margin-top: -'. $v['image'][0]['height'] .'px;' . PHP_EOL;
-                $s.= '}' . PHP_EOL;
+            $css .= join(PHP_EOL, array_map(function($v) {
+                $s = '';
+                if (!empty($v['prefix'])) {
+                    $s .= <<<EOT
+.emote.{$v['prefix']} {
+    background-image: url("{$v['image'][0]['name']}");
+    margin-top: -{$v['image'][0]['height']}px;
+    height: {$v['image'][0]['height']}px;
+    width: {$v['image'][0]['width']}px;
+}
+
+EOT;
+                }
+                if (!empty($v['styles'])) {
+                    $s .= str_replace('{PREFIX}', $v['prefix'], $v['styles']);
+                    $s .= PHP_EOL;
+                }
+                $s .= PHP_EOL;
                 return $s;
             }, $emotes));
-            $css.= PHP_EOL;
-            $file = fopen(self::EMOTES_DIR . 'emotes.css', 'w+');
-            if (flock($file, LOCK_EX)) {
-                fwrite($file, $css);
-                flock($file, LOCK_UN);
-            } else {
-                throw new Exception('Error locking file!');
-            }
-            fclose($file);
+            $css .= PHP_EOL;
+            $this->saveFileWithLock(self::EMOTES_DIR . 'emotes.css', $css);
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
     }
 
+    /**
+     * Save the static json file
+     */
     private function saveStaticJson() {
         try {
-            $flairs = $this->getPublicEmotes();
-            $file = fopen(self::EMOTES_DIR . 'emotes.json','w+');
-            if (flock($file,LOCK_EX)) {
-                fwrite($file,json_encode($flairs));
-                flock($file,LOCK_UN);
-            } else {
-                throw new Exception('Error locking file!');
-            }
-            fclose($file);
+            $flairs = array_map(function($v){
+                unset($v['styles']);
+                return $v;
+            }, $this->getPublicEmotes());
+            $this->saveFileWithLock(self::EMOTES_DIR . 'emotes.json', json_encode($flairs));
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
+    }
+
+    /**
+     * @param $file
+     * @param $data
+     * @throws Exception
+     */
+    private function saveFileWithLock($file, $data) {
+        $file = fopen($file,'w+');
+        if (flock($file,LOCK_EX)) {
+            fwrite($file, $data);
+            flock($file,LOCK_UN);
+        } else {
+            throw new Exception('Error locking file!');
+        }
+        fclose($file);
     }
 }

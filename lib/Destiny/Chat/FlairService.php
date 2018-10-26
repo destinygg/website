@@ -25,8 +25,11 @@ class FlairService extends Service {
     public function updateFlair($id, array $flair) {
         $conn = Application::getDbConn();
         $conn->update('dfl_features', [
-            'imageId' => $flair['imageId'],
             'featureLabel' => $flair['featureLabel'],
+            'imageId' => $flair['imageId'],
+            'hidden' => $flair['hidden'],
+            'color' => $flair['color'],
+            'priority' => $flair['priority'],
             'modifiedDate' => Date::getSqlDateTime()
         ], ['featureId' => $id]);
     }
@@ -38,10 +41,13 @@ class FlairService extends Service {
     public function insertFlair(array $flair) {
         $conn = Application::getDbConn();
         $conn->insert('dfl_features', [
-            'imageId' => $flair['imageId'],
             'featureLabel' => $flair['featureLabel'],
             'featureName' => $flair['featureName'],
+            'imageId' => $flair['imageId'],
             'locked' => $flair['locked'],
+            'hidden' => $flair['hidden'],
+            'color' => $flair['color'],
+            'priority' => $flair['priority'],
             'createdDate' => Date::getSqlDateTime(),
             'modifiedDate' => Date::getSqlDateTime()
         ]);
@@ -57,19 +63,25 @@ class FlairService extends Service {
             SELECT 
               f.featureLabel as `label`, 
               f.featureName as `name`, 
+              f.priority as `priority`, 
+              f.hidden as `hidden`, 
+              f.color as `color`, 
               i.type as `mime`, 
               i.name as `image`, 
               i.width, 
               i.height 
              FROM dfl_features f 
              LEFT JOIN images i ON i.id = f.imageId
-             ORDER BY f.locked DESC, f.featureId DESC
+             ORDER BY f.priority ASC, f.featureId DESC
          ');
         $stmt->execute();
         return array_map(function($v) {
             return [
                 'label' => $v['label'],
                 'name' => $v['name'],
+                'hidden' => boolval($v['hidden']),
+                'priority' => intval($v['priority']),
+                'color' => $v['color'],
                 'image' => [[
                     'url' => Config::cdnv() . '/flairs/' . $v['image'],
                     'name' => $v['image'],
@@ -117,7 +129,7 @@ class FlairService extends Service {
               i.height 
              FROM dfl_features f 
              LEFT JOIN images i ON i.id = f.imageId
-             ORDER BY f.locked DESC, f.featureId DESC
+             ORDER BY f.priority ASC, f.featureLabel ASC
          ');
         $stmt->execute();
         return $stmt->fetchAll();
@@ -189,6 +201,10 @@ class FlairService extends Service {
         return $presets;
     }
 
+    /**
+     * Save the css and json files
+     * set the cache key.
+     */
     public function saveStaticFiles() {
         $this->saveStaticCss();
         $this->saveStaticJson();
@@ -197,46 +213,74 @@ class FlairService extends Service {
         $cache->save('chatCacheKey', microtime() . "." . rand(1000,9999));
     }
 
+    /**
+     * Save the static css file
+     */
     private function saveStaticCss() {
         try {
             $flairs = $this->getPublicFlairs();
             $css = PHP_EOL;
             $css .= join(PHP_EOL, array_map(function($v) {
-                $s = '.flair.' . $v['name'] . ' { ' . PHP_EOL;
-                $s .= "\t" . 'background-image: url("' . $v['image'][0]['name'] . '");' . PHP_EOL;
-                $s .= "\t" . 'width: ' . $v['image'][0]['width'] . 'px;' . PHP_EOL;
-                $s .= "\t" . 'height: ' . $v['image'][0]['height'] . 'px;' . PHP_EOL;
-                $s .= '}' . PHP_EOL;
-                return $s;
-            }, $flairs));
-            $css .= PHP_EOL;
+                $s = '';
+                if ($v['hidden'] == 1) {
+                    $s .= <<<EOT
+.flair.{$v['name']} {
+    display: none !important;
+}
 
-            $file = fopen(self::FLAIRS_DIR . 'flairs.css', 'w+');
-            if (flock($file, LOCK_EX)) {
-                fwrite($file, $css);
-                flock($file, LOCK_UN);
-            } else {
-                throw new Exception('Error locking file!');
-            }
-            fclose($file);
+EOT;
+                } else {
+                    $s .= <<<EOT
+.flair.{$v['name']} {
+    background-image: url("{$v['image'][0]['name']}");
+    height: {$v['image'][0]['height']}px;
+    width: {$v['image'][0]['width']}px;
+    order: {$v['priority']};
+}
+
+EOT;
+                }
+                if (!empty($v['color'])) {
+                    $s .= <<<EOT
+.user.{$v['name']} {
+    color: {$v['color']};
+}
+
+EOT;
+                }
+                $s .= PHP_EOL;
+                return $s;
+            }, array_reverse($flairs)));
+            $this->saveFileWithLock(self::FLAIRS_DIR . 'flairs.css', $css);
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
     }
 
+    /**
+     * Save the static json file
+     */
     private function saveStaticJson() {
         try {
-            $flairs = $this->getPublicFlairs();
-            $file = fopen(self::FLAIRS_DIR . 'flairs.json','w+');
-            if (flock($file,LOCK_EX)) {
-                fwrite($file,json_encode($flairs));
-                flock($file,LOCK_UN);
-            } else {
-                throw new Exception('Error locking file!');
-            }
-            fclose($file);
+            $this->saveFileWithLock(self::FLAIRS_DIR . 'flairs.json', json_encode($this->getPublicFlairs()));
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
+    }
+
+    /**
+     * @param $file
+     * @param $data
+     * @throws Exception
+     */
+    private function saveFileWithLock($file, $data) {
+        $file = fopen($file,'w+');
+        if (flock($file,LOCK_EX)) {
+            fwrite($file, $data);
+            flock($file,LOCK_UN);
+        } else {
+            throw new Exception('Error locking file!');
+        }
+        fclose($file);
     }
 }

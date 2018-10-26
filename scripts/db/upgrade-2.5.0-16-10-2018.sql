@@ -39,3 +39,11 @@ ALTER TABLE `dfl_features`
   ADD UNIQUE INDEX (`featureName`);
 
 UPDATE `dfl_features` SET createdDate = NOW(), modifiedDate = NOW();
+
+ALTER TABLE `emotes`
+  ADD COLUMN `styles` TEXT NULL AFTER `draft`;
+
+ALTER TABLE `dfl_features`
+  ADD COLUMN `hidden` TINYINT(1) NOT NULL AFTER `locked`,
+  ADD COLUMN `color` VARCHAR(16) NOT NULL AFTER `hidden`,
+  ADD COLUMN `priority` TINYINT(2) NOT NULL AFTER `color`;

@@ -71,7 +71,16 @@ use Destiny\Common\Config;
                             <option value="1"<?php if($this->emote['draft'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
                             <option value="0"<?php if($this->emote['draft'] == 0):?> selected="selected"<?php endif;?>>No</option>
                         </select>
-                        <span class="help-block">If YES, this emote will be hidden.</span>
+                        <span class="help-block">If YES, this emote will not be public.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputStyles">Styles</label>
+                        <div class="controls">
+                            <textarea style="min-height: 10em; min-width: 100%; max-width: 100%; font-family: monospace;" autocomplete="off" class="form-control" name="styles" id="inputStyles" placeholder="Styles ..."><?=Tpl::out($this->emote['styles'])?></textarea>
+                            <span class="help-block">Custom CSS that will be applied to the emote.<br />
+                            keyword <label>{PREFIX}</label> can be used as a placeholder for the emote prefix.</span>
+                        </div>
                     </div>
                 </div>
 

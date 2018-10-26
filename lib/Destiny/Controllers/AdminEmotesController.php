@@ -100,6 +100,7 @@ class AdminEmotesController {
             'draft' => 1,
             'twitch' => 0,
             'prefix' => '',
+            'styles' => '',
         ];
         $model->action = '/admin/emotes/new';
         return 'admin/emote';
@@ -117,12 +118,14 @@ class AdminEmotesController {
     public function newEmotePost(array $params) {
         FilterParams::required($params, 'imageId');
         FilterParams::required($params, 'prefix');
+        FilterParams::declared($params, 'styles');
         FilterParams::declared($params, 'twitch');
         FilterParams::declared($params, 'draft');
         $emoteService = EmoteService::instance();
         $emoteService->insertEmote([
             'imageId' => $params['imageId'],
             'prefix' => $params['prefix'],
+            'styles' => $params['styles'],
             'twitch' => $params['twitch'],
             'draft' => $params['draft'],
         ]);
@@ -145,6 +148,7 @@ class AdminEmotesController {
         FilterParams::required($params, 'id');
         FilterParams::required($params, 'imageId');
         FilterParams::required($params, 'prefix');
+        FilterParams::declared($params, 'styles');
         FilterParams::declared($params, 'twitch');
         FilterParams::declared($params, 'draft');
         $emoteService = EmoteService::instance();
@@ -155,6 +159,7 @@ class AdminEmotesController {
         $emoteService->updateEmote($params['id'], [
             'imageId' => $params['imageId'],
             'prefix' => $params['prefix'],
+            'styles' => $params['styles'],
             'twitch' => $params['twitch'],
             'draft' => $params['draft'],
         ]);

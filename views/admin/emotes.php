@@ -20,26 +20,22 @@ use Destiny\Common\Config;
         <div class="content content-dark clearfix">
             <div class="ds-block" style="display: flex;">
                 <a href="/admin/emotes/new" class="btn btn-primary">New Emote <i class="fa fa-fw fa-plus"></i></a>
-                <!--<input style="margin-left: 1rem;" id="emote-search" type="text" class="form-control" placeholder="Search ..." />-->
+                <input style="margin-left: 1rem;" id="emote-search" type="text" class="form-control" placeholder="Search ..." />
             </div>
         </div>
     </section>
 
     <section class="container">
-        <div id="uploaded-container" class="image-grid">
+        <div id="emote-grid" class="image-grid">
             <?php foreach ($this->emotes as $emote): ?>
-                <a href="/admin/emotes/<?=Tpl::out($emote['id'])?>/edit" class="image-grid-item <?=($emote['twitch'] == 1)?" twitch":""?> <?=($emote['draft'] == 1)?" draft":""?>" data-id="<?=Tpl::out($emote['id'])?>" data-imageId="<?=Tpl::out($emote['imageId'])?>">
+                <div data-prefix="<?=Tpl::out($emote['prefix'])?>" class="image-grid-item <?=($emote['twitch'] == 1)?" twitch":""?> <?=($emote['draft'] == 1)?" draft":""?>" data-id="<?=Tpl::out($emote['id'])?>" data-imageId="<?=Tpl::out($emote['imageId'])?>">
                     <div class="image-view">
                         <img width="<?=Tpl::out($emote['width'])?>" height="<?=Tpl::out($emote['height'])?>" src="<?=Config::cdnv()?>/emotes/<?=Tpl::out($emote['imageName'])?>" />
                     </div>
-                    <div class="image-info">
-                        <?php if(!empty($emote['prefix'])): ?>
-                            <label><?=Tpl::out($emote['prefix'])?></label>
-                        <?php else: ?>
-                            <label class="not-set">NOT SET</label>
-                        <?php endif; ?>
-                    </div>
-                </a>
+                    <a href="/admin/emotes/<?=Tpl::out($emote['id'])?>/edit" class="image-info">
+                        <label><?=Tpl::out($emote['prefix'])?></label>
+                    </a>
+                </div>
             <?php endforeach; ?>
         </div>
     </section>

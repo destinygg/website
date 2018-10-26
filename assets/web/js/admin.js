@@ -1,3 +1,5 @@
+import debounce from 'throttle-debounce/debounce'
+
 (function () {
 
     const moment = require('moment');
@@ -126,6 +128,7 @@
             /*.fail(() => { todo error handle })*/;
         });
     });
+
     $('#roles-selection').each(function(){
         const userId = parseInt(this.getAttribute('data-user'));
         $(this).on('click', 'input[type="checkbox"]', (e) => {
@@ -146,7 +149,47 @@
         });
     });
 
+    $('.color-select').on('change keyup', 'input[type="text"]', function(){
+        $(this).prev().css({
+            'background-color': this.value,
+            'border-color': this.value,
+        });
+    });
 
+
+    $('#emote-search').each(function(){
+        const emoteSearch = $(this),
+            emoteGrid = $('#emote-grid'),
+            emotes = emoteGrid.find('.image-grid-item');
+        const debounced = debounce(50, false, () => {
+            const search = emoteSearch.val();
+            if (search != null && search.trim() !== '') {
+                emotes.each((i, v) => {
+                    $(v).toggleClass('hidden', !(v.getAttribute('data-prefix').toLowerCase().indexOf(search.toLowerCase()) > -1))
+                });
+            } else {
+                emotes.removeClass('hidden');
+            }
+        })
+        emoteSearch.on('keydown', e => debounced(e))
+    });
+
+    $('#flair-search').each(function(){
+        const emoteSearch = $(this),
+            emoteGrid = $('#flair-grid'),
+            emotes = emoteGrid.find('.image-grid-item');
+        const debounced = debounce(50, false, () => {
+            const search = emoteSearch.val();
+            if (search != null && search.trim() !== '') {
+                emotes.each((i, v) => {
+                    $(v).toggleClass('hidden', !(v.getAttribute('data-name').toLowerCase().indexOf(search.toLowerCase()) > -1))
+                });
+            } else {
+                emotes.removeClass('hidden');
+            }
+        })
+        emoteSearch.on('keydown', e => debounced(e))
+    });
 
 
 })();

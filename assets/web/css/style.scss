@@ -1667,6 +1667,12 @@ body.modal-open .modal .modal-dialog {
     align-items: center;
     padding: 0.25em;
     position: relative;
+    i {
+      color: $text-color3;
+    }
+    .emote {
+      margin-top: 0;
+    }
   }
 
   .image-info {
@@ -1680,50 +1686,23 @@ body.modal-open .modal .modal-dialog {
       text-overflow: ellipsis;
       width: 100%;
       text-align: center;
-      padding: 0.5em 0 0.25em 0;
+      padding: 0.5em 0 0.333em 0;
       margin: 0;
       color: $text-color1;
       cursor: pointer;
     }
-    label.not-set {
-      font-weight: normal;
-      opacity: 0.25;
+    label:hover {
+      color: $text-color;
     }
   }
   .image-grid-item:hover {
-    .image-view {
-      background-color: lighten($color-surface-dark1, 5%);
-    }
     .image-info {
       background-color: lighten($color-surface-dark2, 5%);
     }
   }
-  .image-grid-item:hover {
-    .image-info {
-      border-color: $color-accent;
-    }
-  }
   .image-grid-item {
     .image-info {
-      border-bottom: 0.25em solid rgba($color-accent, 0.75);
-      padding-bottom: 0;
-    }
-  }
-  .image-grid-item.twitch {
-    .image-info {
-      border-bottom: 0.25em solid $twitch-purple;
-      padding-bottom: 0;
-    }
-  }
-  .image-grid-item.draft {
-    .image-info {
-      border-bottom: 0.25em solid $text-color2;
-      padding-bottom: 0;
-    }
-  }
-  .image-grid-item.locked {
-    .image-info {
-      border-bottom: 0.25em solid $color-alert-text;
+      border-bottom: 0.25em solid rgba($color-surface-dark1, 0.75);
       padding-bottom: 0;
     }
   }

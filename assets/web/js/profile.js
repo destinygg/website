@@ -249,7 +249,6 @@ $(function(){
     const messagelist = $('#message-list'),
                userid = messagelist.data('userid'),
              username = messagelist.data('username'),
-             messages = messagelist.find('.message'),
             container = messagelist.find('#message-container'),
               loading = messagelist.find('#message-list-loading'),
              showmore = messagelist.find('#message-list-more')

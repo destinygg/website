@@ -1,4 +1,3 @@
-/* Dimensions */
 $xs-nav-height:         30px;
 $nav-height:            40px;
 $chat-width:            450px;
@@ -10,7 +9,6 @@ $screen-md-max:         991px;
 $screen-lg-min:         1200px;
 $screen-llg-min:        1620px;
 $screen-xlg-min:        2560px;
-
 
 $body-bg-color:         #272727;
 $color-light:           #FFF7F9;
@@ -39,54 +37,8 @@ $color-surface-dark2:   #111111;
 $color-surface-dark3:   #222222;
 $color-surface-dark4:   #333333;
 
-/* Chat */
-$color-chat-text1:      #DEDEDE;
-$color-chat-text2:      #9E9E9E;
 $color-chat-text3:      #838383;
 $color-chat-disabled:   #414141;
-$color-chat-place:      #404040;
-
-$color-chat-tagged:     #232323;
-$color-chat-highlight:  #06263E;
-$color-chat-emphasize:  #151515;
-$color-chat-bg:         #080808;
-
-$color-label-user:      #CACACA;
-$color-label-user-alt:  #FAFAFA;
-$color-label-sub:       #488CE7;
-$color-label-sub-alt:   #6AA7F9;
-$color-label-sub2:      #0060FF;
-$color-label-sub2-alt:  #6AA7F9;
-$color-label-sub3:      #A427D6;
-$color-label-sub3-alt:  #E564F4;
-$color-label-vip:       #4DB524;
-$color-label-vip-alt:   #4DB524;
-$color-label-bot:       #E79015;
-$color-label-bot-alt:   #E79015;
-$color-label-bot2:      #929292;
-$color-label-bot2-alt:  #CACACA;
-$color-label-admin:     #B91010;
-$color-label-admin-alt: #FF0000;
-$color-broadcaster:     #00E5FF;
-$color-broadcaster-alt: #4FF7FF;
-$color-green-text:      #6CA528;
-$color-link:            #02C2FF;
-$color-link-hover:      #0088CC;
-$color-link-visited:    #A66BE5;
-$color-text-broadcast:  #EDEA12;
-$color-underline-nsfl:  #FFF000;
-$color-underline-nsfw:  #FF0000;
-
-$color-green:           #61BD4F;
-$color-yellow:          #F2D600;
-$color-orange:          #FFAB4A;
-$color-red:             #EB5A46;
-$color-purple:          #C377E0;
-$color-blue:            #0079BF;
-$color-sky:             #00C2E0;
-$color-lime:            #51E898;
-$color-pink:            #FF80CE;
-$color-black:           #4D4D4D;
 
 $hb-light:              #849EB5;
 $hb-dark:               #30394A;
