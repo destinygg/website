@@ -46,7 +46,7 @@ class ChatRedisService extends Service {
         $keys = RedisUtils::callScript('check-sameip-users', [$userid]);
         return array_filter(array_map(function($n) {
             return intval(substr($n, strlen('CHAT:userips-')));
-        }, array_keys($keys)), function($n){
+        }, $keys), function($n){
             return $n != null && $n > 0;
         });
     }
@@ -60,7 +60,7 @@ class ChatRedisService extends Service {
         $keys = RedisUtils::callScript('check-ip', [$ipaddress]);
         return array_filter(array_map(function($n) {
             return intval(substr($n, strlen('CHAT:userips-')));
-        }, array_keys($keys)), function($n){
+        }, $keys), function($n){
             return $n != null && $n > 0;
         });
     }
