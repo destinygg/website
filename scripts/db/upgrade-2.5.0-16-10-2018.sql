@@ -41,7 +41,7 @@ ALTER TABLE `dfl_features`
 UPDATE `dfl_features` SET createdDate = NOW(), modifiedDate = NOW();
 
 ALTER TABLE `emotes`
-  ADD COLUMN `styles` TEXT NULL AFTER `draft`;
+  ADD COLUMN `styles` BLOB NULL AFTER `draft`;
 
 ALTER TABLE `dfl_features`
   ADD COLUMN `hidden` TINYINT(1) NOT NULL AFTER `locked`,

@@ -24,3 +24,4 @@ config/config.local.php
 /config/domains.blacklist.php
 /composer.phar
 /phpunit.phar
+/package-lock.json

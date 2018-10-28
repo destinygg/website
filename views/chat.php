@@ -56,6 +56,17 @@ use Destiny\Common\Config;
                             </label>
                         </div>
 
+                        <div class="form-group">
+                            <label for="fontscale">Font Scaling</label>
+                            <select class="form-control" id="fontscale" name="fontscale">
+                                <option value="auto">Auto Scale</option>
+                                <option value="none">No Scale</option>
+                                <option value="small">Size Small</option>
+                                <option value="medium">Size Medium</option>
+                                <option value="large">Size Large</option>
+                            </select>
+                        </div>
+
                         <h4>Messages</h4>
                         <div class="form-group checkbox">
                             <label title="Show all user flair icons">
