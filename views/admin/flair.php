@@ -27,21 +27,20 @@ use Destiny\Common\Config;
                 <small>(<?=Tpl::out($this->flair['featureId'])?>)</small>
             <?php endif; ?>
         </h3>
-        <div id="flair-content" data-id="<?=Tpl::out($this->flair['featureId'])?>" data-upload="/admin/flairs/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>" class="content content-dark emote-form clearfix collapse in">
+        <div id="flair-content" data-id="<?=Tpl::out($this->flair['featureId'])?>" class="content content-dark emote-form clearfix collapse in">
             <form id="emote-form" action="<?=$this->action?>" method="post">
-                <input name="imageId" type="hidden" value="<?=$this->flair['imageId']?>" />
 
                 <div class="ds-block">
 
                     <div class="image-view-group">
-                        <div class="image-view image-view-primary">
+                        <div class="image-view image-view-primary" data-upload="/admin/flairs/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/flairs/">
                             <?php if(!empty($this->flair['imageName'])): ?>
                                 <img width="<?=Tpl::out($this->flair['width'])?>" height="<?=Tpl::out($this->flair['height'])?>" src="<?=Config::cdnv()?>/flairs/<?=Tpl::out($this->flair['imageName'])?>" />
+                            <?php else: ?>
+                                <i class="fa fa-fw fa-upload fa-3x"></i>
                             <?php endif; ?>
-                        </div>
-                        <div class="image-view image-view-add">
-                            <i class="fa fa-fw fa-upload fa-3x"></i>
                             <i class="fa fa-fw fa-cog fa-spin fa-3x"></i>
+                            <input name="imageId" type="hidden" value="<?=$this->flair['imageId']?>" />
                         </div>
                     </div>
 
@@ -112,7 +111,7 @@ use Destiny\Common\Config;
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a href="/admin/flairs" class="btn">Cancel</a>
                     <?php if(!empty($this->flair['featureId']) && $this->flair['locked'] == 0): ?>
-                        <a class="btn btn-danger pull-right delete-emote">Delete</a>
+                        <a class="btn btn-danger pull-right delete-item">Delete</a>
                     <?php endif; ?>
                 </div>
             </form>

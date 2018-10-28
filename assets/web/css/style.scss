@@ -1619,31 +1619,42 @@ body.modal-open .modal .modal-dialog {
       width: auto;
       height: auto;
     }
-  }
-  .image-view-add {
-    color: $text-color-disabled;
-    cursor: pointer;
-  }
-  .image-view-add:hover {
-    border-color: rgba(255,255,255,0.5);
-    color: $text-color;
-  }
-  .image-view-add {
-    .fa-upload {
-      display: block;
+    .fa {
+      color: $text-color-disabled;
+    }
+    &:hover {
+      cursor: pointer;
+      border-color: rgba(255,255,255,0.5);
+      color: $text-color;
+      .fa {
+        color: $text-color;
+      }
     }
     .fa-cog {
       display: none;
     }
-  }
-  .image-view-add.busy {
-    .fa-upload {
-      display: none;
+    &.busy {
+      .fa-upload {
+        display: none;
+      }
+      .fa-cog {
+        color: $text-color-disabled;
+        display: block;
+      }
+      img {
+        display: none;
+      }
     }
-    .fa-cog {
-      display: block;
+    &.success {
+      .fa-upload, .fa-cog {
+        display: none;
+      }
     }
   }
+}
+
+body.drag-over .image-view {
+  border-color: $color-accent;
 }
 
 .image-grid {
@@ -1702,7 +1713,7 @@ body.modal-open .modal .modal-dialog {
   }
   .image-grid-item {
     .image-info {
-      border-bottom: 0.25em solid rgba($color-surface-dark1, 0.75);
+      border-bottom: 0.25em solid transparent;
       padding-bottom: 0;
     }
   }
@@ -1711,6 +1722,13 @@ body.modal-open .modal .modal-dialog {
     max-width: 100%;
     width: auto;
     height: auto;
+  }
+  .emote {
+    color: $text-color1;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    text-indent: -999em;
   }
 }
 

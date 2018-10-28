@@ -210,7 +210,7 @@ class FlairService extends Service {
         $this->saveStaticJson();
 
         $cache = Application::instance()->getCache();
-        $cache->save('chatCacheKey', microtime() . "." . rand(1000,9999));
+        $cache->save('chatCacheKey', round(microtime(true) * 1000) . "." . rand(1000,9999));
     }
 
     /**

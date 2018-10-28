@@ -27,20 +27,19 @@ use Destiny\Common\Config;
                 <small>(<?=Tpl::out($this->emote['id'])?>)</small>
             <?php endif; ?>
         </h3>
-        <div id="emote-content" data-id="<?=Tpl::out($this->emote['id'])?>" data-upload="/admin/emotes/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>" class="content content-dark emote-form clearfix collapse in">
+        <div id="emote-content" data-id="<?=Tpl::out($this->emote['id'])?>" class="content content-dark emote-form clearfix collapse in">
             <form id="emote-form" action="<?=$this->action?>" method="post">
-                <input name="imageId" type="hidden" value="<?=$this->emote['imageId']?>" />
 
                 <div class="ds-block">
                     <div class="image-view-group">
-                        <div class="image-view image-view-primary">
+                        <div class="image-view image-view-primary" data-upload="/admin/emotes/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/emotes/">
                             <?php if(!empty($this->emote['imageName'])): ?>
                                 <img width="<?=Tpl::out($this->emote['width'])?>" height="<?=Tpl::out($this->emote['height'])?>" src="<?=Config::cdnv()?>/emotes/<?=Tpl::out($this->emote['imageName'])?>" />
+                            <?php else: ?>
+                                <i class="fa fa-fw fa-upload fa-3x"></i>
                             <?php endif; ?>
-                        </div>
-                        <div class="image-view image-view-add">
-                            <i class="fa fa-fw fa-upload fa-3x"></i>
                             <i class="fa fa-fw fa-cog fa-spin fa-3x"></i>
+                            <input name="imageId" type="hidden" value="<?=$this->emote['imageId']?>" />
                         </div>
                     </div>
 
@@ -88,7 +87,7 @@ use Destiny\Common\Config;
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a href="/admin/emotes" class="btn">Cancel</a>
                     <?php if(!empty($this->emote['id'])): ?>
-                        <a class="btn btn-danger pull-right delete-emote">Delete</a>
+                        <a class="btn btn-danger pull-right delete-item">Delete</a>
                     <?php endif; ?>
                 </div>
             </form>

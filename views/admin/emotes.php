@@ -8,6 +8,7 @@ use Destiny\Common\Config;
     <title><?=Tpl::title($this->title)?></title>
     <?php include 'seg/meta.php' ?>
     <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <link href="<?=Config::cdnv()?>/emotes/emotes.css?_=<?=Tpl::out($this->cacheKey)?>" rel="stylesheet" media="screen">
 </head>
 <body id="admin" class="no-contain">
 <div id="page-wrap">
@@ -28,9 +29,9 @@ use Destiny\Common\Config;
     <section class="container">
         <div id="emote-grid" class="image-grid">
             <?php foreach ($this->emotes as $emote): ?>
-                <div data-prefix="<?=Tpl::out($emote['prefix'])?>" class="image-grid-item <?=($emote['twitch'] == 1)?" twitch":""?> <?=($emote['draft'] == 1)?" draft":""?>" data-id="<?=Tpl::out($emote['id'])?>" data-imageId="<?=Tpl::out($emote['imageId'])?>">
+                <div data-prefix="<?=Tpl::out($emote['prefix'])?>" class="image-grid-item <?=($emote['twitch'] == 1)?"twitch":""?> <?=($emote['draft'] == 1)?" draft":""?>" data-id="<?=Tpl::out($emote['id'])?>" data-imageId="<?=Tpl::out($emote['imageId'])?>">
                     <div class="image-view">
-                        <img width="<?=Tpl::out($emote['width'])?>" height="<?=Tpl::out($emote['height'])?>" src="<?=Config::cdnv()?>/emotes/<?=Tpl::out($emote['imageName'])?>" />
+                        <a href="/admin/emotes/<?=Tpl::out($emote['id'])?>/edit" title="<?=Tpl::out($emote['prefix'])?>" class="emote <?=Tpl::out($emote['prefix'])?>"></a>
                     </div>
                     <a href="/admin/emotes/<?=Tpl::out($emote['id'])?>/edit" class="image-info">
                         <label><?=Tpl::out($emote['prefix'])?></label>

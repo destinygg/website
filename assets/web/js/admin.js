@@ -191,5 +191,89 @@ import debounce from 'throttle-debounce/debounce'
         emoteSearch.on('keydown', e => debounced(e))
     });
 
+    $(document)
+        .on('dragover', () => { $('body').addClass('drag-over') })
+        .on('dragleave drop', () => { ('body').removeClass('drag-over') });
+
 
 })();
+
+$(function(){
+    const fileInput = $('#file-input');
+    const imageViews = $('.image-view');
+
+    function uploadImage(imageView, data, success, failure) {
+        const uploadaction = imageView.data('upload');
+        const uploadurl = imageView.data('cdn');
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', uploadaction, true);
+        xhr.addEventListener('error', err => failure(err));
+        xhr.addEventListener('abort', () => failure('aborted'));
+        xhr.addEventListener('load', () => {
+            try {
+                const res = JSON.parse(xhr.responseText)[0];
+                if (res['error']) {
+                    return failure(res['error']);
+                }
+                const img = imageView.find('img')[0] || $('<img />')[0];
+                img.setAttribute('width', res['width']);
+                img.setAttribute('height', res['height']);
+                img.setAttribute('src', uploadurl + res['name']);
+                imageView.find('input[name="imageId"]').val(res['id']);
+                imageView.prepend(img);
+                success(res);
+            } catch (e) {
+                failure(e);
+            }
+        });
+        xhr.send(data);
+    }
+
+    function beginUpload(imageView, file) {
+        const data = new FormData();
+        data.append('files[]', file);
+        imageView.removeClass('success error').addClass('busy');
+        uploadImage(imageView, data,
+            () => { imageView.addClass('success').removeClass('busy') },
+            () => { imageView.addClass('error').removeClass('busy') }
+        );
+        fileInput.value = '';
+    }
+
+    function dropHandler(ev) {
+        const data = ev.originalEvent.dataTransfer,
+            target = $(ev.currentTarget);
+        let file = null;
+        if (data.items) {
+            if (data.items.length > 0 && data.items[0].kind === 'file') {
+                file = data.items[0].getAsFile();
+            }
+        } else if (data.files.length > 0) {
+            file = data.files[0];
+        }
+        if (file !== null) {
+            beginUpload(target, file);
+        }
+    }
+
+    let imageTarget = null;
+    imageViews
+        .on('click', e => {
+            e.preventDefault();
+            imageTarget = $(e.currentTarget);
+            fileInput.trigger('click');
+        })
+        .on('dragover', e => {
+            e.preventDefault();
+        })
+        .on('drop', e => {
+            e.preventDefault();
+            dropHandler(e);
+        });
+
+    fileInput.on('change', e => {
+        e.preventDefault();
+        beginUpload(imageTarget, fileInput[0].files[0]);
+        imageTarget = null;
+    });
+});

@@ -7,6 +7,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Application;
 use Destiny\Common\ImageService;
 use Destiny\Common\Session;
 use Destiny\Common\Utils\FilterParams;
@@ -33,8 +34,10 @@ class AdminEmotesController {
      */
     public function emotes(ViewModel $model) {
         $emoteService = EmoteService::instance();
+        $cache = Application::instance()->getCache();
         $model->title = 'Emotes';
         $model->emotes = $emoteService->findAllEmotes();
+        $model->cacheKey = $cache->fetch('chatCacheKey');
         return 'admin/emotes';
     }
 
