@@ -25,26 +25,21 @@ use Destiny\Common\Config;
             <textarea id="chat-input-control" placeholder="Getting things ready ..." autocomplete="off" tabindex="1" autofocus spellcheck></textarea>
         </div>
         <div id="chat-tools-wrap">
-            <a id="chat-emoticon-btn" class="chat-tool-btn" title="Emotes">
-                <span class="fa fa-smile-o"></span>
-            </a>
-            <a id="chat-whisper-btn" class="chat-tool-btn" title="Whispers">
-                <span class="fa fa-comments-o"></span>
-            </a>
-            <div style="flex:1;"></div>
-            <a id="chat-settings-btn" class="chat-tool-btn" title="Settings">
-                <span class="fa fa-cog"></span>
-            </a>
-            <a id="chat-users-btn" class="chat-tool-btn" title="Users">
-                <span class="fa fa-user"></span>
-            </a>
+            <div class="chat-tools-group">
+                <a id="chat-emoticon-btn" class="chat-tool-btn" title="Emotes"></a>
+                <a id="chat-whisper-btn" class="chat-tool-btn" title="Whispers"></a>
+            </div>
+            <div class="chat-tools-group">
+                <a id="chat-settings-btn" class="chat-tool-btn" title="Settings"></a>
+                <a id="chat-users-btn" class="chat-tool-btn" title="Users"></a>
+            </div>
         </div>
     </div>
 
     <div id="chat-settings" class="chat-menu right">
         <div class="list-wrap">
             <div class="toolbar">
-                <h5><span>Settings</span> <i class="fa fa-chevron-circle-right menu-close"></i></h5>
+                <h5><span>Settings</span> <i class="chat-menu-close"></i></h5>
             </div>
             <div class="scrollable nano">
                 <div class="content nano-content">
@@ -161,7 +156,7 @@ use Destiny\Common\Config;
     <div id="chat-user-list" class="chat-menu right">
         <div class="list-wrap">
             <div class="toolbar">
-                <h5><span>Users</span> <i class="fa fa-chevron-circle-right menu-close"></i></h5>
+                <h5><span>Users</span> <i class="chat-menu-close"></i></h5>
             </div>
             <div class="scrollable nano">
                 <div class="content nano-content"></div>
@@ -175,7 +170,7 @@ use Destiny\Common\Config;
     <div id="chat-emote-list" class="chat-menu left">
         <div class="list-wrap">
             <div class="toolbar">
-                <h5><span>Emotes</span> <i class="fa fa-chevron-circle-left menu-close"></i></h5>
+                <h5><span>Emotes</span> <i class="chat-menu-close"></i></h5>
             </div>
             <div class="scrollable nano">
                 <div class="content nano-content">
@@ -190,7 +185,7 @@ use Destiny\Common\Config;
     <div id="chat-whisper-users" class="chat-menu left">
         <div class="list-wrap">
             <div class="toolbar">
-                <h5><span>Whispers</span> <i class="fa fa-chevron-circle-left menu-close"></i></h5>
+                <h5><span>Whispers</span> <i class="chat-menu-close"></i></h5>
             </div>
             <div class="scrollable nano">
                 <div class="content nano-content">
@@ -211,8 +206,7 @@ use Destiny\Common\Config;
 
     <div id="chat-loading">
         <div>
-            <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
-            <span class="sr-only">Loading...</span>
+            <i class="chat-loading-icon"></i>
         </div>
     </div>
 
