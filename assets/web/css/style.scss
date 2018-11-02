@@ -1308,25 +1308,31 @@ table#inbox a {
   }
 }
 
+#discord-status,
 #stream-status {
   border-radius:5px;
   background: rgba(0,0,0,0.5);
-  margin: 20px 25px 15px 15px;
+  margin: 15px;
   padding: 15px;
-  text-align: right; 
+  text-align: right;
   display: flex;
+  h3 {
+    margin: 0 0 5px 0;
+    white-space: nowrap;
+  }
+  p {
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+#stream-status {
 
   #stream-status-info-offline,
   #stream-status-info-online,
   #stream-status-info-host {
     flex: 1;
     vertical-align: middle;
-    h3 {
-      margin: 0 0 5px 0;
-    }
-    p {
-      margin: 0;
-    }
   }
 
   .critical {
@@ -1379,7 +1385,8 @@ table#inbox a {
 }
 
 @media (max-width: $screen-sm-min) {
-  #stream-status {
+  #stream-status,
+  #discord-status {
     text-align: left;
   }
 }
@@ -1681,9 +1688,6 @@ body.drag-over .image-view {
     i {
       color: $text-color3;
     }
-    .emote {
-      margin-top: 0;
-    }
   }
 
   .image-info {
@@ -1751,4 +1755,12 @@ body.drag-over .image-view {
   .image-grid .image-grid-item {
     width: 10%;
   }
+}
+
+.discord-logo {
+  background: transparent url("../img/discord-icon.svg") no-repeat center center;
+  background-size: contain;
+  display: inline-block;
+  width: 65px;
+  height: 65px;
 }

@@ -32,7 +32,7 @@ use Destiny\Common\Config;
 
                 <div class="ds-block">
                     <div class="image-view-group">
-                        <div class="image-view image-view-primary" data-upload="/admin/emotes/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/emotes/">
+                        <div class="image-view image-view-upload" data-upload="/admin/emotes/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/emotes/">
                             <?php if(!empty($this->emote['imageName'])): ?>
                                 <img width="<?=Tpl::out($this->emote['width'])?>" height="<?=Tpl::out($this->emote['height'])?>" src="<?=Config::cdnv()?>/emotes/<?=Tpl::out($this->emote['imageName'])?>" />
                             <?php else: ?>

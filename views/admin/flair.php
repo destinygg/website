@@ -33,7 +33,7 @@ use Destiny\Common\Config;
                 <div class="ds-block">
 
                     <div class="image-view-group">
-                        <div class="image-view image-view-primary" data-upload="/admin/flairs/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/flairs/">
+                        <div class="image-view image-view-upload" data-upload="/admin/flairs/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/flairs/">
                             <?php if(!empty($this->flair['imageName'])): ?>
                                 <img width="<?=Tpl::out($this->flair['width'])?>" height="<?=Tpl::out($this->flair['height'])?>" src="<?=Config::cdnv()?>/flairs/<?=Tpl::out($this->flair['imageName'])?>" />
                             <?php else: ?>

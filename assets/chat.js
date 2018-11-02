@@ -23,3 +23,6 @@ $.when(
     )
     .then(chat => chat.connect(chatUri))
     .then(chat => chat.withWhispers())
+
+// Keep the website session alive.
+setInterval(() => $.ajax({url: `/ping`}), 10*60*1000)

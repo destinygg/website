@@ -193,14 +193,14 @@ import debounce from 'throttle-debounce/debounce'
 
     $(document)
         .on('dragover', () => { $('body').addClass('drag-over') })
-        .on('dragleave drop', () => { ('body').removeClass('drag-over') });
+        .on('dragleave drop', () => { $('body').removeClass('drag-over') });
 
 
 })();
 
 $(function(){
     const fileInput = $('#file-input');
-    const imageViews = $('.image-view');
+    const imageViews = $('.image-view.image-view-upload');
 
     function uploadImage(imageView, data, success, failure) {
         const uploadaction = imageView.data('upload');

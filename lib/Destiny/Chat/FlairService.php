@@ -206,52 +206,48 @@ class FlairService extends Service {
      * set the cache key.
      */
     public function saveStaticFiles() {
-        $this->saveStaticCss();
-        $this->saveStaticJson();
-
         $cache = Application::instance()->getCache();
-        $cache->save('chatCacheKey', round(microtime(true) * 1000) . "." . rand(1000,9999));
+        $cacheKey = round(microtime(true) * 1000) . "." . rand(1000,9999);
+        $this->saveStaticCss($cacheKey);
+        $this->saveStaticJson($cacheKey);
+        $cache->save('chatCacheKey', $cacheKey);
     }
 
     /**
      * Save the static css file
+     * @param $cacheKey
      */
-    private function saveStaticCss() {
+    private function saveStaticCss($cacheKey) {
         try {
-            $flairs = $this->getPublicFlairs();
-            $css = PHP_EOL;
-            $css .= join(PHP_EOL, array_map(function($v) {
-                $s = '';
+            $filename = self::FLAIRS_DIR . 'flairs.css.' . $cacheKey;
+            $file = fopen($filename,'w+');
+            $flairs = array_reverse($this->getPublicFlairs());
+            foreach ($flairs as $v) {
+                $name = $v['name'];
+                $img = $v['image'][0];
+                $c = '';
                 if ($v['hidden'] == 1) {
-                    $s .= <<<EOT
-.flair.{$v['name']} {
-    display: none !important;
-}
-
-EOT;
+                    $c .= ".flair.$name {\n";
+                    $c .= "  display: none !important;\n";
+                    $c .= "}\n";
                 } else {
-                    $s .= <<<EOT
-.flair.{$v['name']} {
-    background-image: url("{$v['image'][0]['name']}");
-    height: {$v['image'][0]['height']}px;
-    width: {$v['image'][0]['width']}px;
-    order: {$v['priority']};
-}
-
-EOT;
+                    $c .= ".flair.$name {\n";
+                    $c .= "  background-image: url(\"{$img['name']}\");\n";
+                    $c .= "  height: {$img['height']}px;\n";
+                    $c .= "  width: {$img['width']}px;\n";
+                    $c .= "  order: {$v['priority']};\n";
+                    $c .= "}\n";
                 }
                 if (!empty($v['color'])) {
-                    $s .= <<<EOT
-.user.{$v['name']} {
-    color: {$v['color']};
-}
-
-EOT;
+                    $c .= ".user.$name {\n";
+                    $c .= "  color: {$v['color']};\n";
+                    $c .= "}\n";
                 }
-                $s .= PHP_EOL;
-                return $s;
-            }, array_reverse($flairs)));
-            $this->saveFileWithLock(self::FLAIRS_DIR . 'flairs.css', $css);
+                $c .= PHP_EOL;
+                fwrite($file, $c);
+            }
+            fclose($file);
+            rename($filename, self::FLAIRS_DIR . 'flairs.css');
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
@@ -259,28 +255,17 @@ EOT;
 
     /**
      * Save the static json file
+     * @param $cacheKey
      */
-    private function saveStaticJson() {
+    private function saveStaticJson($cacheKey) {
         try {
-            $this->saveFileWithLock(self::FLAIRS_DIR . 'flairs.json', json_encode($this->getPublicFlairs()));
+            $filename = self::FLAIRS_DIR . 'flairs.json.' . $cacheKey;
+            $file = fopen($filename,'w+');
+            fwrite($file, json_encode($this->getPublicFlairs()));
+            fclose($file);
+            rename($filename, self::FLAIRS_DIR . 'flairs.json');
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
-    }
-
-    /**
-     * @param $file
-     * @param $data
-     * @throws Exception
-     */
-    private function saveFileWithLock($file, $data) {
-        $file = fopen($file,'w+');
-        if (flock($file,LOCK_EX)) {
-            fwrite($file, $data);
-            flock($file,LOCK_UN);
-        } else {
-            throw new Exception('Error locking file!');
-        }
-        fclose($file);
     }
 }

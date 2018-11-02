@@ -173,42 +173,55 @@ class EmoteService extends Service {
      * set the cache key.
      */
     public function saveStaticFiles() {
-        $this->saveStaticCss();
-        $this->saveStaticJson();
-
         $cache = Application::instance()->getCache();
-        $cache->save('chatCacheKey', round(microtime(true) * 1000) . "." . rand(1000,9999));
+        $cacheKey = round(microtime(true) * 1000) . "." . rand(1000,9999);
+        $this->saveStaticCss($cacheKey);
+        $this->saveStaticJson($cacheKey);
+        $cache->save('chatCacheKey', $cacheKey);
     }
 
     /**
      * Save the static css file
+     * @param $cacheKey
      */
-    private function saveStaticCss() {
+    private function saveStaticCss($cacheKey) {
         try {
-            $emotes = $this->getPublicEmotes();
-            $css = PHP_EOL;
-            $css .= join(PHP_EOL, array_map(function($v) {
-                $s = '';
-                if (!empty($v['prefix'])) {
-                    $s .= <<<EOT
-.emote.{$v['prefix']} {
-    background-image: url("{$v['image'][0]['name']}");
-    margin-top: -{$v['image'][0]['height']}px;
-    height: {$v['image'][0]['height']}px;
-    width: {$v['image'][0]['width']}px;
-}
+            $filename = self::EMOTES_DIR . 'emotes.css.' . $cacheKey;
+            $file = fopen($filename,'w+');
 
-EOT;
-                }
-                if (!empty($v['styles'])) {
-                    $s .= str_replace('{PREFIX}', $v['prefix'], $v['styles']);
-                    $s .= PHP_EOL;
-                }
-                $s .= PHP_EOL;
-                return $s;
-            }, $emotes));
-            $css .= PHP_EOL;
-            $this->saveFileWithLock(self::EMOTES_DIR . 'emotes.css', $css);
+            $emotes = array_filter($this->getPublicEmotes(), function($v) {
+                return !empty($v['prefix']);
+            });
+            $styles = array_filter($emotes, function($v) {
+                return !empty($v['styles']);
+            });
+
+            // Emote
+            foreach ($emotes as $v) {
+                $name = $v['prefix'];
+                $img = $v['image'][0];
+                $marginTop = -intval($img['height']);
+                $offsetTop = intval($img['height']) * 0.25;
+                $c = ".emote.$name {\n";
+                $c .= "  background-image: url(\"{$img['name']}\");\n";
+                $c .= "  height: {$img['height']}px;\n";
+                $c .= "  width: {$img['width']}px;\n";
+                $c .= "}\n";
+                $c .= ".msg-chat .emote.$name {\n";
+                $c .= "  margin-top: {$marginTop}px;\n";
+                $c .= "  top: {$offsetTop}px;\n";
+                $c .= "}\n";
+                fwrite($file, $c);
+            }
+
+            // Styles
+            foreach ($styles as $v) {
+                $c = str_replace('{PREFIX}', $v['prefix'], $v['styles']) . PHP_EOL;
+                fwrite($file, $c);
+            }
+
+            fclose($file);
+            rename($filename, self::EMOTES_DIR . 'emotes.css');
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
@@ -216,32 +229,20 @@ EOT;
 
     /**
      * Save the static json file
+     * @param $cacheKey
      */
-    private function saveStaticJson() {
+    private function saveStaticJson($cacheKey) {
         try {
-            $flairs = array_map(function($v){
+            $filename = self::EMOTES_DIR . 'emotes.json.' . $cacheKey;
+            $file = fopen($filename,'w+');
+            fwrite($file, json_encode(array_map(function($v){
                 unset($v['styles']);
                 return $v;
-            }, $this->getPublicEmotes());
-            $this->saveFileWithLock(self::EMOTES_DIR . 'emotes.json', json_encode($flairs));
+            }, $this->getPublicEmotes())));
+            fclose($file);
+            rename($filename, self::EMOTES_DIR . 'emotes.json');
         } catch (\Exception $e) {
             Log::critical($e->getMessage());
         }
-    }
-
-    /**
-     * @param $file
-     * @param $data
-     * @throws Exception
-     */
-    private function saveFileWithLock($file, $data) {
-        $file = fopen($file,'w+');
-        if (flock($file,LOCK_EX)) {
-            fwrite($file, $data);
-            flock($file,LOCK_UN);
-        } else {
-            throw new Exception('Error locking file!');
-        }
-        fclose($file);
     }
 }

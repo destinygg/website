@@ -15,6 +15,16 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
             <h1><a href="/"><?=Config::$a['meta']['title']?></a></h1>
         </header>
 
+        <div id="discord-status">
+            <div style="margin-right: 0.75em; display: flex; align-items: center;">
+                <a href="https://discordapp.com/invite/destiny" class="discord-logo"></a>
+            </div>
+            <div>
+                <h3>Debate me</h3>
+                <p>Join the <a href="https://discordapp.com/invite/destiny">discord</a>. <br/>You're welcome!</p>
+            </div>
+        </div>
+
         <div id="stream-status" class=" <?= (!empty($streaminfo['host'])) ? 'hosting': (($streaminfo['live']) ? 'online':'offline') ?>">
             <div id="stream-status-info-offline">
                 <h3>Stream offline</h3>
