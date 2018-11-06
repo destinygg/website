@@ -24,11 +24,6 @@ use Doctrine\DBAL\DBALException;
  */
 class ChatApiController {
 
-    const MSG_FMT_TWITCH_SUB = "%s is now a Twitch subscriber!";
-    const MSG_FMT_TWITCH_RESUB = "%s has resubscribed on Twitch!";
-    const MSG_FMT_TWITCH_RESUB_MONTHS = "%s has resubscribed on Twitch! active for %s months";
-    const MSG_FMT_TWITCH_RESUB_MONTH = "%s has resubscribed on Twitch! active for %s month";
-
     /**
      * Check the private against the local configuration
      *
@@ -164,8 +159,17 @@ class ChatApiController {
                 throw new Exception ('Invalid shared private key.');
             }
             $subs = json_decode($request->getBody(), true);
+            $redisService = ChatRedisService::instance();
+            $authService = AuthenticationService::instance();
+            $userService = UserService::instance();
             if (is_array($subs) && count($subs) > 0) {
-                $this->updateSubsAndBroadcast($subs, self::MSG_FMT_TWITCH_SUB);
+                $users = $userService->updateTwitchSubscriptions($subs);
+                foreach ($users as $user) {
+                    $authService->flagUserForUpdate($user['userId']);
+                    if ($user['istwitchsubscriber']) {
+                        $redisService->sendBroadcast(sprintf("%s is now a Twitch subscriber!", $user['username']));
+                    }
+                }
             }
             $response->setStatus(Http::STATUS_NO_CONTENT);
         } catch (\Exception $e) {
@@ -177,35 +181,10 @@ class ChatApiController {
     }
 
     /**
-     * Expects the following body structure:
-     *     [{"123":1},{"456":0}]
-     *
-     *  Where the key is the twitch user id (auth.authDetail) and the value is whether
-     *  the user is a subscriber or not
-     *
-     * @param array $subs
-     * @param string $fmt
-     * @return void
-     *
-     * @throws Exception
-     * @throws DBALException
-     */
-    private function updateSubsAndBroadcast(array $subs, $fmt) {
-        $redisService = ChatRedisService::instance();
-        $authService = AuthenticationService::instance();
-        $users = UserService::instance()->updateTwitchSubscriptions($subs);
-        foreach ($users as $user) {
-            $authService->flagUserForUpdate($user['userId']);
-            if ($user['istwitchsubscriber']) {
-                $redisService->sendBroadcast(sprintf($fmt, $user['username']));
-            }
-        }
-    }
-
-    /**
      * Newer way of posting a subscribe event, twitch pubsub golang project sends a http post to this endpoint
      * when it receives an event from the twitch pubsub websocket.
      * https://dev.twitch.tv/docs/pubsub#example-channel-subscriptions-event-message
+     * TODO currently only listen for `channel-subscribe-events-v1` events
      *
      * @Route ("/api/twitch/subscribe")
      * @HttpMethod ({"POST"})
@@ -223,40 +202,78 @@ class ChatApiController {
                 throw new Exception ('Invalid shared private key.');
 
             $data = json_decode($request->getBody(), true);
+            FilterParams::required($data, 'context');
             FilterParams::required($data, 'user_id');
-            FilterParams::declared($data, 'months');
 
-            $userService = UserService::instance();
-            $user = $userService->getUserByAuthId($data['user_id'], 'twitch');
+            $redisService = ChatRedisService::instance();
+            $submessage = isset($data['sub_message']) && !empty($data['sub_message']) ? $data['sub_message']['message'] : '';
+            $months = isset($data['months']) && !empty($data['months']) && $data['months'] > 0 ? ($data['months'] > 1 ? ' active for ' . $data['months'] . ' months' : ' active for ' . $data['months'] . ' month') : '';
+            $user = $this->getTwitchUserByAuthId($data['user_id']);
 
-            if (!empty($user)) {
-                $username = $user['username'];
-                $message = !empty($data['sub_message']) ? $data['sub_message']['message'] : '';
-                if ($user['istwitchsubscriber'] == 0) {
-                    $userService->updateUser($user['userId'], ['istwitchsubscriber' => 1]);
-                    $authService = AuthenticationService::instance();
-                    $authService->flagUserForUpdate($user['userId']);
-                }
-                $broadcast = sprintf(self::MSG_FMT_TWITCH_SUB, $username);
-                if (!empty($data['months']) && intval($data['months']) > 0) {
-                    if (intval($data['months']) > 1) {
-                        $broadcast = sprintf(self::MSG_FMT_TWITCH_RESUB_MONTHS, $username, $data['months']);
-                    } else {
-                        $broadcast = sprintf(self::MSG_FMT_TWITCH_RESUB_MONTH, $username, $data['months']);
+            switch (strtoupper($data['context'])) {
+
+                case 'SUB':
+                    $this->updateUserTwitchSub($user);
+                    $redisService->sendBroadcast($user['username'] . " has subscribed on Twitch!");
+                    if (!empty($submessage)) {
+                        $redisService->sendBroadcast($user['username'] . " said... $submessage");
                     }
-                }
-                $redisService = ChatRedisService::instance();
-                $redisService->sendBroadcast($broadcast);
-                if (!empty($message)) {
-                    $redisService->sendBroadcast("$username said... $message");
-                }
-            }
+                    break;
 
+                case 'RESUB':
+                    $this->updateUserTwitchSub($user);
+                    $redisService->sendBroadcast($user['username'] . " has resubscribed on Twitch!$months");
+                    if (!empty($submessage)) {
+                        $redisService->sendBroadcast($user['username'] . " said... $submessage");
+                    }
+                    break;
+
+                case 'SUBGIFT':
+                    FilterParams::required($data, 'recipient_id');
+                    $recipient = $this->getTwitchUserByAuthId($data['recipient_id']);
+                    $this->updateUserTwitchSub($recipient);
+                    $redisService->sendBroadcast($user['username'] . " has gifted ". $recipient['username'] ." a Twitch subscription!$months");
+                    if (!empty($submessage)) {
+                        $redisService->sendBroadcast($user['username'] . " said... $submessage");
+                    }
+                    break;
+
+            }
             $response->setStatus(Http::STATUS_NO_CONTENT);
         } catch (\Exception $e) {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }
         return null;
+    }
+
+    /**
+     * Set a users twitch flag to 1 and "flag" user for update.
+     *
+     * @param array $user
+     * @throws DBALException
+     */
+    private function updateUserTwitchSub(array $user) {
+        $userService = UserService::instance();
+        $authService = AuthenticationService::instance();
+        $userService->updateUser($user['userId'], ['istwitchsubscriber' => 1]);
+        $authService->flagUserForUpdate($user['userId']);
+    }
+
+    /**
+     * Get a user by twitch auth id (twitch user id)
+     * If one is not found, throw an exception
+     * @param $authId
+     * @return array
+     * @throws DBALException
+     * @throws Exception
+     */
+    private function getTwitchUserByAuthId($authId) {
+        $userService = UserService::instance();
+        $user = $userService->getUserByAuthId($authId, 'twitch');
+        if (empty($user)) {
+            throw new Exception('Invalid user');
+        }
+        return $user;
     }
 }
