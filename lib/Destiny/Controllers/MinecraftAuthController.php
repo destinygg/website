@@ -120,6 +120,11 @@ class MinecraftAuthController {
      */
     public function authMinecraftPOST(Response $response, array $params) {
         Log::info("Minecraft auth [POST]", $params);
+        // TODO remove this
+        if (isset($params['username']) && !isset($params['name'])) {
+            $params['name'] = $params['username'];
+        }
+        //
         if (!$this->checkPrivateKey($params, 'minecraft')) {
             Log::info("Bad key check");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
@@ -181,7 +186,6 @@ class MinecraftAuthController {
         }
         try {
             $success = $minecraftService->setMinecraftUUID($userid, $params['uuid']);
-            Log::info("uuidAlreadySet");
             if (!$success) {
                 $existingUserId = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
                 // only fail if the already set uuid is not the same
