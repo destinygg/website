@@ -90,6 +90,7 @@ class DonateController {
         try {
             $userid = null;
             $username = null;
+            $conn->beginTransaction();
             if(Session::hasRole(UserRole::USER)) {
                 $userid = Session::getCredentials()->getUserId();
                 $username = Session::getCredentials()->getUsername();
@@ -98,7 +99,6 @@ class DonateController {
                 $authService->validateUsername($params['username']);
                 $username = $params['username'];
             }
-            $conn->beginTransaction();
             $donationService = DonationService::instance();
             $donation = $donationService->addDonation([
                 'userid'    => $userid,

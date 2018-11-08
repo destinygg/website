@@ -91,6 +91,23 @@ class MinecraftAuthController {
     }
 
     /**
+     * @Route ("/auth/minecraft/update")
+     * @HttpMethod ({"GET"})
+     * @ResponseBody
+     *
+     * @param Response $response
+     * @param array $params
+     * @return array|string
+     *
+     * @throws DBALException
+     * TODO remove this, minecraft plugin having issues sending post requests.
+     */
+    public function authMinecraftProcess(Response $response, array $params) {
+        Log::info("Minecraft auth [GET => POST]", $params);
+        return $this->authMinecraftPOST($response, $params);
+    }
+
+    /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"POST"})
      * @ResponseBody
