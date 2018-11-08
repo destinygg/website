@@ -126,7 +126,19 @@ class AdminUserController {
         $allowGifting = (isset ($params ['allowGifting'])) ? $params ['allowGifting'] : $user ['allowGifting'];
         $istwitchsubscriber = (isset ($params ['istwitchsubscriber'])) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
         $discordname = (isset ($params ['discordname'])) ? $params ['discordname'] : $user ['discordname'];
-        $discorduuid = (isset ($params ['discorduuid'])) ? $params ['discorduuid'] : $user ['discorduuid'];
+        $discorduuid = (isset ($params ['discorduuid'])) ? $params ['discorduuid'] : $user ['discorduuid'];;
+        $minecraftname = (isset ($params ['minecraftname'])) ? $params ['minecraftname'] : $user ['minecraftname'];
+        $minecraftuuid = (isset ($params ['minecraftuuid'])) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
+
+        if (empty($minecraftname))
+            $minecraftname = null;
+        else if (mb_strlen($minecraftname) > 16)
+            $minecraftname = mb_substr($minecraftname, 0, 16);
+
+        if (empty($minecraftuuid))
+            $minecraftuuid = null;
+        else if (mb_strlen($minecraftuuid) > 36)
+            $minecraftuuid = mb_substr($minecraftuuid, 0, 36);
 
         if (empty($discordname))
             $discordname = null;
@@ -148,6 +160,12 @@ class AdminUserController {
             $country = $countryArr ['alpha-2'];
         }
 
+        $mUid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
+        if($minecraftname != null && !empty($mUid) && intval($mUid) !== intval($user ['userId'])) {
+            Session::setErrorBag('Minecraft name already in use #');
+            return $redirect;
+        }
+
         $dUid = $userService->getUserIdByField('discordname', $params['discordname']);
         if ($discordname != null && !empty($dUid) && intval($dUid) !== intval($user ['userId'])) {
             Session::setErrorBag('Discord name already in use #' . $dUid);
@@ -161,7 +179,9 @@ class AdminUserController {
             'allowGifting' => $allowGifting,
             'istwitchsubscriber' => $istwitchsubscriber,
             'discordname' => $discordname,
-            'discorduuid' => $discorduuid
+            'discorduuid' => $discorduuid,
+            'minecraftname' => $minecraftname,
+            'minecraftuuid' => $minecraftuuid,
         ];
 
         $conn = Application::getDbConn();

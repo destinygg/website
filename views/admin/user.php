@@ -24,10 +24,9 @@ use Destiny\Commerce\SubscriptionStatus;
 
     <section class="container">
 
-        <h3 class="collapsed" data-toggle="collapse" data-target="#details-content">
-            <span class="pull-right"><button class="btn btn-link btn-show-all" style="outline: none;">Show all</button></span>
-            Details
-            <small>(<?=Tpl::out($this->user['username'])?>)</small>
+        <h3 class="collapsed" data-toggle="collapse" data-target="#details-content" style="display:flex; align-items: center;">
+            <span style="flex: 1;">Details <small>(<?=Tpl::out($this->user['username'])?>)</small></span>
+            <a class="btn-show-all" style="font-size: 1rem; margin: 0.5em 1em;">Show all</a>
         </h3>
         <div id="details-content" class="content content-dark clearfix collapse">
 
@@ -47,20 +46,6 @@ use Destiny\Commerce\SubscriptionStatus;
                         <label class="control-label" for="inputEmail">Email</label>
                         <div class="controls">
                             <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->user['email'])?>" placeholder="Email">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label" for="inputEmail">Discord name</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="discordname" id="inputDiscordname" value="<?=Tpl::out($this->user['discordname'])?>" placeholder="Discord name">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label" for="inputEmail">Discord UUID</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="discorduuid" id="inputDiscorduuid" value="<?=Tpl::out($this->user['discorduuid'])?>" placeholder="Discord UUID">
                         </div>
                     </div>
 
@@ -95,6 +80,41 @@ use Destiny\Commerce\SubscriptionStatus;
                             <option value="1"<?php if($this->user['allowGifting'] == 1):?> selected="selected"<?php endif;?>>Yes, accept gifts</option>
                             <option value="0"<?php if($this->user['allowGifting'] == 0):?> selected="selected"<?php endif;?>>No, do not accept gifts</option>
                         </select>
+                    </div>
+
+
+                    <h4 style="margin: 2em 0 0 0;">Discord</h4>
+                    <hr style="margin-top: 0.3em;" />
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputEmail">Discord name</label>
+                        <div class="controls">
+                            <input type="text" class="form-control" name="discordname" id="inputDiscordname" value="<?=Tpl::out($this->user['discordname'])?>" placeholder="Discord name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputEmail">Discord UUID</label>
+                        <div class="controls">
+                            <input type="text" class="form-control" name="discorduuid" id="inputDiscorduuid" value="<?=Tpl::out($this->user['discorduuid'])?>" placeholder="Discord UUID">
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 2em 0 0 0;">Minecraft</h4>
+                    <hr style="margin-top: 0.3em;" />
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputEmail">Minecraft name</label>
+                        <div class="controls">
+                            <input type="text" class="form-control" name="minecraftname" id="inputMinecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputEmail">Minecraft UUID</label>
+                        <div class="controls">
+                            <input type="text" class="form-control" name="minecraftuuid" id="inputMinecraftuuid" value="<?=Tpl::out($this->user['minecraftuuid'])?>" placeholder="Minecraft UUID">
+                        </div>
                     </div>
 
                 </div>
@@ -423,6 +443,7 @@ use Destiny\Commerce\SubscriptionStatus;
             </section>
         </form>
     <?php endif ?>
+
 
 </div>
 
