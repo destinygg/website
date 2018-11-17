@@ -77,9 +77,10 @@ class SessionCredentials implements \JsonSerializable {
      */
     public function jsonSerialize() {
         return [
+            'id' => $this->getUserId(),
             'nick' => $this->getUsername(),
             'username' => $this->getUsername(),
-            'userStatus' => $this->getUserStatus(),
+            'status' => $this->getUserStatus(),
             'createdDate' => $this->getCreatedDate(),
             'country' => $this->getCountry(),
             'roles' => $this->getRoles(),
