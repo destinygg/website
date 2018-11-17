@@ -47,7 +47,7 @@ class ImageDownload {
         } else if (empty($ext) || !in_array($ext, self::$ALLOWED_EXT)) {
             Log::error("File type not supported or invalid extension." . $urlpath);
         } else if ($overwrite === false && file_exists($path . $final)) {
-            Log::notice("Not downloading image, one already exists.");
+            Log::notice("Not downloading image, one already exists ($url).");
             $response = $final;
         } else {
             try {

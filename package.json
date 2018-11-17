@@ -1,6 +1,6 @@
 {
   "name": "dgg-website",
-  "version": "2.5.9",
+  "version": "2.5.10",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
@@ -49,7 +49,7 @@
     "json-loader": "~0.5.7",
     "moment": "~2.20.1",
     "node-sass": "~4.7.2",
-    "normalize.css": "~8.0.0",
+    "normalize.css": "^8.0.1",
     "postcss-loader": "^2.1.6",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",

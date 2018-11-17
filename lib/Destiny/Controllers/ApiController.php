@@ -29,6 +29,7 @@ class ApiController {
      * - discordusername
      * - discordname
      * - redditname
+     * - redditid
      * - minecraftname
      *
      * Requires the 'privatekey' parameter
