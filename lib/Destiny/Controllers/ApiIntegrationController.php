@@ -54,7 +54,7 @@ class ApiIntegrationController {
                 $userid = $userService->getUserIdByDiscordId($params['discordid']);
             } else if (isset($params['discordusername'])) {
                 FilterParams::required($params, 'discordusername');
-                $userid = $userService->getUserIdByDiscordUsername($params['discordusername']);
+                $userid = $userService->getUserIdByAuthDetail($params['discordusername'], 'discord');
             } else if (isset($params['discordname'])) {
                 FilterParams::required($params, 'discordname');
                 $userid = $userService->getUserIdByField('discordname', $params['discordname']);
@@ -64,6 +64,9 @@ class ApiIntegrationController {
             } else if (isset($params['username'])) {
                 FilterParams::required($params, 'username');
                 $userid = $userService->getUserIdByField('username', $params['username']);
+            } else if (isset($params['redditname'])) {
+                FilterParams::required($params, 'redditname');
+                $userid = $userService->getUserIdByAuthDetail($params['redditname'], 'reddit');
             } else {
                 Log::info("No identification field");
                 $response->setStatus(Http::STATUS_BAD_REQUEST);

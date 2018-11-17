@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Application;
 use Destiny\Common\Log;
@@ -62,6 +63,7 @@ class AdminUserController {
         }
 
         $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $redisService = ChatRedisService::instance();
         $apiAuthenticationService = ApiAuthenticationService::instance();
         $subscriptionsService = SubscriptionsService::instance();
@@ -74,7 +76,7 @@ class AdminUserController {
         $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($user ['userId']));
         $model->features = $userService->getAllFeatures();
         $model->roles = $this->getAllowedRoles();
-        $model->ban = $userService->getUserActiveBan($user ['userId']);
+        $model->ban = $chatBanService->getUserActiveBan($user ['userId']);
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId($user ['userId']);
         $model->address = $userService->getAddressByUserId($user ['userId']);
         $model->subscriptions = $subscriptionsService->findByUserId($user ['userId']);
@@ -457,8 +459,8 @@ class AdminUserController {
         if (!empty ($params ['endtimestamp'])) {
             $ban ['endtimestamp'] = Date::getDateTime($params ['endtimestamp'])->format('Y-m-d H:i:s');
         }
-        $userService = UserService::instance();
-        $ban ['id'] = $userService->insertBan($ban);
+        $chatBanService = ChatBanService::instance();
+        $ban ['id'] = $chatBanService->insertBan($ban);
         AuthenticationService::instance()->flagUserForUpdate($ban ['targetuserid']);
         return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $ban ['id'] . '/edit';
     }
@@ -485,13 +487,14 @@ class AdminUserController {
         }
 
         $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $user = $userService->getUserById($params ['userId']);
         if (empty ($user)) {
             throw new Exception ('User was not found');
         }
 
         $model->user = $user;
-        $model->ban = $userService->getBanById($params ['id']);
+        $model->ban = $chatBanService->getBanById($params ['id']);
         return 'admin/userban';
     }
 
@@ -514,9 +517,9 @@ class AdminUserController {
             throw new Exception ('userId required');
         }
 
-        $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $authService = AuthenticationService::instance();
-        $eBan = $userService->getBanById($params ['id']);
+        $eBan = $chatBanService->getBanById($params ['id']);
 
         $ban = [];
         $ban ['id'] = $eBan ['id'];
@@ -529,7 +532,7 @@ class AdminUserController {
         if (!empty ($params ['endtimestamp'])) {
             $ban ['endtimestamp'] = Date::getDateTime($params ['endtimestamp'])->format('Y-m-d H:i:s');
         }
-        $userService->updateBan($ban);
+        $chatBanService->updateBan($ban);
         $authService->flagUserForUpdate($ban ['targetuserid']);
 
         return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit';
@@ -550,12 +553,12 @@ class AdminUserController {
             throw new Exception ('userId required');
         }
 
-        $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $authService = AuthenticationService::instance();
 
         // if there were rows modified there were bans removed, so an update is
         // required, removeUserBan returns the number of rows modified
-        if ($userService->removeUserBan($params ['userId']))
+        if ($chatBanService->removeUserBan($params ['userId']))
             $authService->flagUserForUpdate($params ['userId']);
 
         if (isset($params['follow']) and substr($params['follow'], 0, 1) == '/')

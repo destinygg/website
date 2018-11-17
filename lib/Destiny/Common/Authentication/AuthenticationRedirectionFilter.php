@@ -45,7 +45,7 @@ class AuthenticationRedirectionFilter {
         $rememberme = Session::getAndRemove('rememberme');
 
         // If the user profile doesn't exist, go to the register page
-        if (!$userService->getUserAuthProviderExists($authCreds->getAuthId(), $authCreds->getAuthProvider())) {
+        if (!$userService->getAuthExistsByAuthIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider())) {
             Session::set('authSession', $authCreds);
             $url = '/register?code=' . urlencode($authCreds->getAuthCode());
             if (!empty($follow)) {

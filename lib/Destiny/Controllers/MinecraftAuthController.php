@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
@@ -54,6 +55,7 @@ class MinecraftAuthController {
             return 'uuid';
         }
         $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $subscriptionService = SubscriptionsService::instance();
         $userid = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
 
@@ -62,7 +64,7 @@ class MinecraftAuthController {
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'userNotFound';
         }
-        $ban = $userService->getUserActiveBan($userid, @$params ['ipaddress']);
+        $ban = $chatBanService->getUserActiveBan($userid, @$params ['ipaddress']);
         if (!empty($ban)) {
             Log::info('User banned');
             $response->setStatus(Http::STATUS_FORBIDDEN);
@@ -91,23 +93,6 @@ class MinecraftAuthController {
     }
 
     /**
-     * @Route ("/auth/minecraft/update")
-     * @HttpMethod ({"GET"})
-     * @ResponseBody
-     *
-     * @param Response $response
-     * @param array $params
-     * @return array|string
-     *
-     * @throws DBALException
-     * TODO remove this, minecraft plugin having issues sending post requests.
-     */
-    public function authMinecraftProcess(Response $response, array $params) {
-        Log::info("Minecraft auth [GET => POST]", $params);
-        return $this->authMinecraftPOST($response, $params);
-    }
-
-    /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"POST"})
      * @ResponseBody
@@ -120,11 +105,10 @@ class MinecraftAuthController {
      */
     public function authMinecraftPOST(Response $response, array $params) {
         Log::info("Minecraft auth [POST]", $params);
-        // TODO remove this
+        // TODO new MC plugin was having issues with &n which is apparently unavoidable
         if (isset($params['username']) && !isset($params['name'])) {
             $params['name'] = $params['username'];
         }
-        //
         if (!$this->checkPrivateKey($params, 'minecraft')) {
             Log::info("Bad key check");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
@@ -147,6 +131,7 @@ class MinecraftAuthController {
         }
 
         $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $subscriptionService = SubscriptionsService::instance();
         $minecraftService = MineCraftService::instance();
 
@@ -156,7 +141,7 @@ class MinecraftAuthController {
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'nameNotFound';
         }
-        $ban = $userService->getUserActiveBan($userid, @$params ['ipaddress']);
+        $ban = $chatBanService->getUserActiveBan($userid, @$params ['ipaddress']);
         if (!empty($ban)) {
             Log::info("user banned");
             $response->setStatus(Http::STATUS_FORBIDDEN);
@@ -189,7 +174,7 @@ class MinecraftAuthController {
             if (!$success) {
                 $existingUserId = $userService->getUserIdByField('minecraftuuid', $params ['uuid']);
                 // only fail if the already set uuid is not the same
-                if (!$existingUserId or $existingUserId != $userid) {
+                if (empty($existingUserId) || $existingUserId != $userid) {
                     Log::info("uuidAlreadySet");
                     $response->setStatus(Http::STATUS_FORBIDDEN);
                     return 'uuidAlreadySet';
@@ -206,5 +191,22 @@ class MinecraftAuthController {
             'nick' => $user['username'],
             'end' => strtotime($sub['endDate']) * 1000,
         ];
+    }
+
+    /**
+     * @Route ("/auth/minecraft/update")
+     * @HttpMethod ({"GET"})
+     * @ResponseBody
+     *
+     * @param Response $response
+     * @param array $params
+     * @return array|string
+     *
+     * @throws DBALException
+     * TODO remove this, minecraft plugin having issues sending post requests.
+     */
+    public function authMinecraftProcess(Response $response, array $params) {
+        Log::info("Minecraft auth [GET => POST]", $params);
+        return $this->authMinecraftPOST($response, $params);
     }
 }

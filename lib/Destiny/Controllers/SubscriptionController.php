@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
@@ -327,6 +328,7 @@ class SubscriptionController {
         FilterParams::declared($params, 'success');
 
         $userId = Session::getCredentials()->getUserId();
+        $chatBanService = ChatBanService::instance();
         $userService = UserService::instance();
         $ordersService = OrdersService::instance();
         $subscriptionsService = SubscriptionsService::instance();
@@ -426,7 +428,7 @@ class SubscriptionController {
         // only unban the user if the ban is non-permanent or the tier of the subscription is >= 2
         // we unban the user if no ban is found because it also unmute's
         try {
-            $ban = $userService->getUserActiveBan($user['userId']);
+            $ban = $chatBanService->getUserActiveBan($user['userId']);
             if (empty ($ban) or (!empty($ban ['endtimestamp']) or $subscriptionType['tier'] >= 2)) {
                 $redisService->sendUnban($user['userId']);
             }

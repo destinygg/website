@@ -218,7 +218,7 @@ class UserService extends Service {
      */
     public function getUserByUsername($username) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE username = :username LIMIT 0,1');
+        $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE username = :username LIMIT 1');
         $stmt->bindValue('username', $username, \PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
@@ -231,7 +231,7 @@ class UserService extends Service {
      */
     public function getUserById($userId) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE userId = :userId LIMIT 0,1');
+        $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE userId = :userId LIMIT 1');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
@@ -288,7 +288,7 @@ class UserService extends Service {
      * @return array
      * @throws DBALException
      */
-    public function getUserByAuthId($authId, $authProvider) {
+    public function getAuthByIdAndProvider($authId, $authProvider) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT u.* FROM dfl_users_auth AS a
@@ -308,7 +308,7 @@ class UserService extends Service {
      * @return bool
      * @throws DBALException
      */
-    public function getUserAuthProviderExists($authId, $authProvider) {
+    public function getAuthExistsByAuthIdAndProvider($authId, $authProvider) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT COUNT(*) FROM dfl_users_auth AS a
@@ -328,7 +328,7 @@ class UserService extends Service {
      * @return array
      * @throws DBALException
      */
-    public function getUserAuthProfile($userId, $authProvider) {
+    public function getAuthByUserAndProvider($userId, $authProvider) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT a.* FROM dfl_users_auth AS a
@@ -346,7 +346,7 @@ class UserService extends Service {
      * @return array
      * @throws DBALException
      */
-    public function getAuthProfilesByUserId($userId) {
+    public function getAuthByUserId($userId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT a.* FROM dfl_users_auth AS a
@@ -594,30 +594,43 @@ class UserService extends Service {
      * @throws DBALException
      */
     public function getUserIdByDiscordId($id) {
+        return $this->getUserIdByAuthId($id, 'discord');
+    }
+
+    /**
+     * @param $detail
+     * @param $provider
+     * @return bool|string
+     * @throws DBALException
+     */
+    public function getUserIdByAuthDetail($detail, $provider) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT a.userId FROM dfl_users_auth a
-            WHERE a.authId = :id AND a.authProvider = 'discord'
+            WHERE a.authDetail = :detail AND a.authProvider = :provider
             LIMIT 1
         ");
-        $stmt->bindValue('id', $id, \PDO::PARAM_STR);
+        $stmt->bindValue('detail', $detail, \PDO::PARAM_STR);
+        $stmt->bindValue('provider', $provider, \PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
 
     /**
-     * @param $username
+     * @param $id
+     * @param $provider
      * @return bool|string
      * @throws DBALException
      */
-    public function getUserIdByDiscordUsername($username) {
+    public function getUserIdByAuthId($id, $provider) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT a.userId FROM dfl_users_auth a
-            WHERE a.authDetail = :username AND a.authProvider = 'discord'
+            WHERE a.authId = :id AND a.authProvider = :provider
             LIMIT 1
         ");
-        $stmt->bindValue('username', $username, \PDO::PARAM_STR);
+        $stmt->bindValue('id', $id, \PDO::PARAM_STR);
+        $stmt->bindValue('provider', $provider, \PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
@@ -683,142 +696,6 @@ class UserService extends Service {
     }
 
     /**
-     * @param int $userId
-     * @param string $ipaddress
-     * @return array
-     * @throws DBALException
-     */
-    public function getUserActiveBan($userId, $ipaddress = "") {
-        $conn = Application::getDbConn();
-        if(empty($ipaddress)) {
-            $stmt = $conn->prepare('
-              SELECT
-                b.id,
-                b.userid,
-                u.username,
-                b.targetuserid,
-                u2.username AS targetusername,
-                b.ipaddress,
-                b.reason,
-                b.starttimestamp,
-                b.endtimestamp
-              FROM
-                bans AS b
-                INNER JOIN dfl_users AS u ON u.userId = b.userid
-                INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
-              WHERE 
-                b.starttimestamp < NOW() AND 
-                b.targetuserid = :userId AND
-                (b.endtimestamp > NOW() OR b.endtimestamp IS NULL)
-              GROUP BY b.targetuserid
-              ORDER BY b.id DESC
-              LIMIT 0,1
-            ');
-            $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        } else {
-            $stmt = $conn->prepare('
-              SELECT
-                b.id,
-                b.userid,
-                u.username,
-                b.targetuserid,
-                u2.username AS targetusername,
-                b.ipaddress,
-                b.reason,
-                b.starttimestamp,
-                b.endtimestamp
-              FROM
-                bans AS b
-                INNER JOIN dfl_users AS u ON u.userId = b.userid
-                INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
-              WHERE 
-                b.starttimestamp < NOW() AND 
-                (b.targetuserid = :userId OR b.ipaddress = :ipaddress) AND
-                (b.endtimestamp > NOW() OR b.endtimestamp IS NULL)
-              GROUP BY b.targetuserid
-              ORDER BY b.id DESC
-              LIMIT 0,1
-            ');
-            $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-            $stmt->bindValue('ipaddress', $ipaddress, \PDO::PARAM_STR);
-        }
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param int $banId
-     * @return array
-     * @throws DBALException
-     */
-    public function getBanById($banId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT
-            b.id,
-            b.userid,
-            u.username,
-            b.targetuserid,
-            u2.username AS targetusername,
-            b.ipaddress,
-            b.reason,
-            b.starttimestamp,
-            b.endtimestamp
-          FROM
-            bans AS b
-            INNER JOIN dfl_users AS u ON u.userId = b.userid
-            INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
-          WHERE b.id = :id
-          ORDER BY b.id DESC
-          LIMIT 0,1
-        ');
-        $stmt->bindValue('id', $banId, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * update an existing ban
-     * @param array $ban
-     */
-    public function updateBan(array $ban) {
-        $conn = Application::getDbConn();
-        $conn->update('bans', $ban, ['id' => $ban ['id']]);
-    }
-
-    /**
-     * @param array $ban
-     * @return string
-     */
-    public function insertBan(array $ban) {
-        $conn = Application::getDbConn();
-        $conn->insert('bans', $ban);
-        return $conn->lastInsertId();
-    }
-
-    /**
-     * @param $userid
-     * @return int $count The number of rows modified
-     * @throws DBALException
-     */
-    public function removeUserBan($userid) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-          UPDATE bans
-          SET endtimestamp = NOW()
-          WHERE
-            targetuserid = :targetuserid AND
-            (
-              endtimestamp IS NULL OR
-              endtimestamp >= NOW()
-            )
-        ");
-        $stmt->bindValue('targetuserid', $userid, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->rowCount();
-    }
-
-    /**
      * Get the users from the given redis keys, strip off the beginning of the keys
      * and parse the remaining string into an int, CHAT:userips-123 will be
      * transformed into (int)123 and than later users with the given ids
@@ -859,34 +736,13 @@ class UserService extends Service {
     public function isUserOldEnough($userId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
-          SELECT COUNT(*)
-          FROM dfl_users AS u
+          SELECT COUNT(*) FROM dfl_users AS u
           WHERE u.userId = :userId AND DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW()
           LIMIT 1
         ");
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->execute();
         return !!$stmt->fetchColumn();
-    }
-
-    /**
-     * @param $nick
-     * @return bool|string
-     * @throws DBALException
-     */
-    public function getTwitchIDFromNick($nick) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-          SELECT ua.authId
-          FROM dfl_users_auth AS ua
-          WHERE
-            ua.authProvider = 'twitch' AND
-            ua.authDetail   = :nick
-          LIMIT 1
-        ");
-        $stmt->bindValue('nick', $nick, \PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetchColumn();
     }
 
     /**

@@ -14,7 +14,7 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
      */
     private function getService(){
         $service = StreamLabsService::instance();
-        $service->setAuth(UserService::instance()->getUserAuthProfile(Config::$a['streamlabs']['default_user'], 'streamlabs'));
+        $service->setAuth(UserService::instance()->getAuthByUserAndProvider(Config::$a['streamlabs']['default_user'], 'streamlabs'));
         return $service;
     }
 

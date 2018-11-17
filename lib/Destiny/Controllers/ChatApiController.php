@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Controller;
@@ -53,6 +54,7 @@ class ChatApiController {
      */
     public function sendMessage(Response $response, array $params) {
         $privateMessageService = PrivateMessageService::instance();
+        $chatBanService = ChatBanService::instance();
         $redisService = ChatRedisService::instance();
         $userService = UserService::instance();
         try {
@@ -67,7 +69,7 @@ class ChatApiController {
             if($params['userid'] == $params['targetuserid'])
                 throw new Exception ('Cannot send messages to yourself.');
 
-            $ban = $userService->getUserActiveBan ( $params['userid'] );
+            $ban = $chatBanService->getUserActiveBan ( $params['userid'] );
             if (! empty ( $ban ))
                 throw new Exception ('privmsgbanned');
 
@@ -270,7 +272,7 @@ class ChatApiController {
      */
     private function getTwitchUserByAuthId($authId) {
         $userService = UserService::instance();
-        $user = $userService->getUserByAuthId($authId, 'twitch');
+        $user = $userService->getAuthByIdAndProvider($authId, 'twitch');
         if (empty($user)) {
             throw new Exception('Invalid user');
         }

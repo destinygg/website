@@ -53,7 +53,7 @@ class StreamLabsController {
         $provider = $streamLabsService->authProvider;
         $auth = $streamLabsService->authenticate($params ['code']);
         $userService = UserService::instance();
-        $authProfile = $userService->getUserAuthProfile($creds->getUserId(), $provider);
+        $authProfile = $userService->getAuthByUserAndProvider($creds->getUserId(), $provider);
         if(empty($authProfile)){
             $userService->addUserAuthProfile([
                 'userId'       => $creds->getUserId(),
@@ -87,7 +87,7 @@ class StreamLabsController {
     public function streamlabs(ViewModel $model){
         $userService = UserService::instance();
         $model->user = $userService->getUserById(Config::$a['streamlabs']['default_user']);
-        $model->auth = $userService->getUserAuthProfile(Config::$a['streamlabs']['default_user'], 'streamlabs');
+        $model->auth = $userService->getAuthByUserAndProvider(Config::$a['streamlabs']['default_user'], 'streamlabs');
         return 'admin/streamlabs';
     }
 

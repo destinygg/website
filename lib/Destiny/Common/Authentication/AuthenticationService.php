@@ -183,7 +183,7 @@ class AuthenticationService extends Service {
      */
     public function handleAuthCredentials(AuthenticationCredentials $authCreds) {
         $userService = UserService::instance();
-        $user = $userService->getUserByAuthId($authCreds->getAuthId(), $authCreds->getAuthProvider());
+        $user = $userService->getAuthByIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider());
 
         if (empty ($user)) {
             throw new Exception ('Invalid auth user');
@@ -191,7 +191,7 @@ class AuthenticationService extends Service {
 
         // The user has register before...
         // Update the auth profile for this provider
-        $authProfile = $userService->getUserAuthProfile($user ['userId'], $authCreds->getAuthProvider());
+        $authProfile = $userService->getAuthByUserAndProvider($user ['userId'], $authCreds->getAuthProvider());
         if (!empty ($authProfile)) {
             $userService->updateUserAuthProfile($user ['userId'], $authCreds->getAuthProvider(), [
                 'authCode' => $authCreds->getAuthCode(),
@@ -222,7 +222,7 @@ class AuthenticationService extends Service {
      */
     public function handleAuthAndMerge(AuthenticationCredentials $authCreds) {
         $userService = UserService::instance ();
-        $user = $userService->getUserByAuthId ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
+        $user = $userService->getAuthByIdAndProvider ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
         $sessAuth = Session::getCredentials ()->getData ();
         // We need to merge the accounts if one exists
         if (! empty ( $user )) {

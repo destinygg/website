@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
@@ -53,6 +54,7 @@ class PrivateMessageController {
     public function profileSend(array $params) {
         $privateMessageService = PrivateMessageService::instance();
         $redisService = ChatRedisService::instance();
+        $chatBanService = ChatBanService::instance();
         $userService = UserService::instance();
         $result = ['success' => false, 'message' => ''];
         try {
@@ -75,7 +77,7 @@ class PrivateMessageController {
             // Remove the user if its in the list
             $recipients = array_diff($recipients, [$username]);
 
-            $ban = $userService->getUserActiveBan($userId);
+            $ban = $chatBanService->getUserActiveBan($userId);
             if (!empty($ban))
                 throw new Exception ("You cannot send messages while you are banned.");
 

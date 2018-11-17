@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Application;
@@ -46,6 +47,7 @@ class ProfileController {
      */
     public function profile(ViewModel $model) {
         $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $subscriptionsService = SubscriptionsService::instance();
         $userId = Session::getCredentials()->getUserId();
         $address = $userService->getAddressByUserId($userId);
@@ -60,10 +62,10 @@ class ProfileController {
             $address ['country'] = '';
         }
         $model->credentials = Session::instance()->getCredentials()->getData();
-        $model->ban = $userService->getUserActiveBan($userId);
+        $model->ban = $chatBanService->getUserActiveBan($userId);
         $model->user = $userService->getUserById($userId);
         $model->gifts = $subscriptionsService->findByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
-        $model->discordAuthProfile = $userService->getUserAuthProfile($userId, 'discord');
+        $model->discordAuthProfile = $userService->getAuthByUserAndProvider($userId, 'discord');
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
         $model->address = $address;
         $model->title = 'Account';
@@ -159,7 +161,7 @@ class ProfileController {
         $model->user = $userService->getUserById($userId);
 
         // Build a list of profile types for UI purposes
-        $authProfiles = $userService->getAuthProfilesByUserId($userId);
+        $authProfiles = $userService->getAuthByUserId($userId);
         $authProfileTypes = [];
         if (!empty ($authProfiles)) {
             foreach ($authProfiles as $profile) {
@@ -307,12 +309,12 @@ class ProfileController {
         FilterParams::required($params, 'provider');
         $userId = Session::getCredentials()->getUserId();
         $userService = UserService::instance();
-        $authProfile = $userService->getUserAuthProfile($userId, $params ['provider']);
+        $authProfile = $userService->getAuthByUserAndProvider($userId, $params ['provider']);
         if (empty($authProfile)) {
             Session::setErrorBag('Invalid provider');
             return 'redirect: /profile/authentication';
         }
-        $authProfiles = $userService->getAuthProfilesByUserId($userId);
+        $authProfiles = $userService->getAuthByUserId($userId);
         if (!empty($authProfiles)) {
             $userService->removeAuthProfile($userId, $params ['provider']);
             Session::setSuccessBag('Auth token removed');

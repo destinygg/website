@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Chat\EmoteService;
 use Destiny\Chat\FlairService;
 use Destiny\Common\Annotation\HttpMethod;
@@ -196,9 +197,9 @@ class ChatController {
      * @throws DBALException
      */
     public function banInfo(Request $request){
-        $userService = UserService::instance();
+        $chatBanService = ChatBanService::instance();
         $userId = Session::getCredentials ()->getUserId();
-        $ban = $userService->getUserActiveBan($userId, $request->address());
+        $ban = $chatBanService->getUserActiveBan($userId, $request->address());
         return empty($ban) ? 'bannotfound' : $ban;
     }
 

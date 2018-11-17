@@ -57,7 +57,7 @@ class StreamLabsService extends Service {
     public function getDefaultAuth() {
         try {
             if ($this->default == null) {
-                $auth = UserService::instance()->getUserAuthProfile(
+                $auth = UserService::instance()->getAuthByUserAndProvider(
                     Config::$a['streamlabs']['default_user'],
                     'streamlabs'
                 );

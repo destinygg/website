@@ -11,6 +11,142 @@ use Doctrine\DBAL\DBALException;
 class ChatBanService extends Service {
 
     /**
+     * @param int $userId
+     * @param string $ipaddress
+     * @return array
+     * @throws DBALException
+     */
+    public function getUserActiveBan($userId, $ipaddress = "") {
+        $conn = Application::getDbConn();
+        if(empty($ipaddress)) {
+            $stmt = $conn->prepare('
+              SELECT
+                b.id,
+                b.userid,
+                u.username,
+                b.targetuserid,
+                u2.username AS targetusername,
+                b.ipaddress,
+                b.reason,
+                b.starttimestamp,
+                b.endtimestamp
+              FROM
+                bans AS b
+                INNER JOIN dfl_users AS u ON u.userId = b.userid
+                INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
+              WHERE 
+                b.starttimestamp < NOW() AND 
+                b.targetuserid = :userId AND
+                (b.endtimestamp > NOW() OR b.endtimestamp IS NULL)
+              GROUP BY b.targetuserid
+              ORDER BY b.id DESC
+              LIMIT 0,1
+            ');
+            $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        } else {
+            $stmt = $conn->prepare('
+              SELECT
+                b.id,
+                b.userid,
+                u.username,
+                b.targetuserid,
+                u2.username AS targetusername,
+                b.ipaddress,
+                b.reason,
+                b.starttimestamp,
+                b.endtimestamp
+              FROM
+                bans AS b
+                INNER JOIN dfl_users AS u ON u.userId = b.userid
+                INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
+              WHERE 
+                b.starttimestamp < NOW() AND 
+                (b.targetuserid = :userId OR b.ipaddress = :ipaddress) AND
+                (b.endtimestamp > NOW() OR b.endtimestamp IS NULL)
+              GROUP BY b.targetuserid
+              ORDER BY b.id DESC
+              LIMIT 0,1
+            ');
+            $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+            $stmt->bindValue('ipaddress', $ipaddress, \PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
+     * @param $userid
+     * @return int $count The number of rows modified
+     * @throws DBALException
+     */
+    public function removeUserBan($userid) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare("
+          UPDATE bans
+          SET endtimestamp = NOW()
+          WHERE
+            targetuserid = :targetuserid AND
+            (
+              endtimestamp IS NULL OR
+              endtimestamp >= NOW()
+            )
+        ");
+        $stmt->bindValue('targetuserid', $userid, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
+
+    /**
+     * @param array $ban
+     * @return string
+     */
+    public function insertBan(array $ban) {
+        $conn = Application::getDbConn();
+        $conn->insert('bans', $ban);
+        return $conn->lastInsertId();
+    }
+
+    /**
+     * update an existing ban
+     * @param array $ban
+     */
+    public function updateBan(array $ban) {
+        $conn = Application::getDbConn();
+        $conn->update('bans', $ban, ['id' => $ban ['id']]);
+    }
+
+    /**
+     * @param int $banId
+     * @return array
+     * @throws DBALException
+     */
+    public function getBanById($banId) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+          SELECT
+            b.id,
+            b.userid,
+            u.username,
+            b.targetuserid,
+            u2.username AS targetusername,
+            b.ipaddress,
+            b.reason,
+            b.starttimestamp,
+            b.endtimestamp
+          FROM
+            bans AS b
+            INNER JOIN dfl_users AS u ON u.userId = b.userid
+            INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
+          WHERE b.id = :id
+          ORDER BY b.id DESC
+          LIMIT 0,1
+        ');
+        $stmt->bindValue('id', $banId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
      * @return array
      * @throws DBALException
      */
