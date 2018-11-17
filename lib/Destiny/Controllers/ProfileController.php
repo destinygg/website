@@ -4,8 +4,6 @@ namespace Destiny\Controllers;
 use Destiny\Chat\ChatBanService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\SubscriptionStatus;
-use Destiny\Common\Application;
-use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
@@ -175,6 +173,7 @@ class ProfileController {
      *
      * @throws DBALException
      * @throws Exception
+     * @throws \Exception
      */
     public function profileAuthTokenCreate(array $params, Request $request) {
         if (!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))

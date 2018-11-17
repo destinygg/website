@@ -2,27 +2,19 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
-use Destiny\Chat\EmoteService;
-use Destiny\Chat\FlairService;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Config;
 use Destiny\Common\Exception;
-use Destiny\Common\Log;
-use Destiny\Common\MimeType;
 use Destiny\Common\Request;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserService;
-use Destiny\Common\Utils\Date;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
-use GuzzleHttp\Client;
-use function GuzzleHttp\json_decode;
 
 /**
  * @Controller
