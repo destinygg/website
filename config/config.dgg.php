@@ -20,11 +20,6 @@ return [
         'user'  => 'destiny'
     ],
 
-    'overrustle' => [
-        'mentions'  => 'https://overrustlelogs.net/api/v1/mentions/Destinygg/',
-        'stalk'     => 'https://overrustlelogs.net/api/v1/stalk/Destinygg/'
-    ],
-
     'meta' => [
         'shortName'      => 'Destiny',
         'title'          => 'Destiny - Steven Bonnell II',

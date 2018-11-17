@@ -18,11 +18,6 @@ return [
         'chat' => '/embed/chat'
     ],
 
-    'overrustle' => [
-        'stalk' => '',
-        'mentions' => ''
-    ],
-
     'cdn' => ['domain' => '','protocol' => 'https://'],
     'blog' => ['feed' => ''],
     'reddit' => ['threads' => ''],
