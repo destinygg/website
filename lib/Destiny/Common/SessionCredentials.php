@@ -2,8 +2,9 @@
 namespace Destiny\Common;
 
 use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\FilterParams;
 
-class SessionCredentials {
+class SessionCredentials implements \JsonSerializable {
 
     protected $userId = null;
     protected $authProvider = '';
@@ -34,34 +35,57 @@ class SessionCredentials {
      */
     public function setData(array $params) {
         if (!empty ($params)) {
-            if (isset ($params ['userId']) && !empty ($params ['userId'])) {
+            if (!FilterParams::isEmpty($params, 'userId')) {
                 $this->setUserId($params ['userId']);
             }
-            if (isset ($params ['username']) && !empty ($params ['username'])) {
+            if (!FilterParams::isEmpty($params, 'username')) {
                 $this->setUsername($params ['username']);
             }
-            if (isset ($params ['email']) && !empty ($params ['email'])) {
+            if (!FilterParams::isEmpty($params, 'email')) {
                 $this->setEmail($params ['email']);
             }
-            if (isset ($params ['country']) && !empty ($params ['country'])) {
+            if (!FilterParams::isEmpty($params, 'country')) {
                 $this->setCountry($params ['country']);
             }
-            if (isset ($params ['authProvider']) && !empty ($params ['authProvider'])) {
+            if (!FilterParams::isEmpty($params, 'authProvider')) {
                 $this->setAuthProvider($params ['authProvider']);
             }
-            if (isset ($params ['userStatus']) && !empty ($params ['userStatus'])) {
+            if (!FilterParams::isEmpty($params, 'userStatus')) {
                 $this->setUserStatus($params ['userStatus']);
             }
-            if (isset ($params ['createdDate']) && !empty ($params ['createdDate'])) {
+            if (!FilterParams::isEmpty($params, 'createdDate')) {
                 $this->setCreatedDate(Date::getDateTime($params ['createdDate'])->format(Date::FORMAT));
             }
-            if (isset ($params ['features']) && !empty ($params ['features']) && is_array($params ['features'])) {
+            if (FilterParams::isArray($params, 'features')) {
                 $this->setFeatures(array_unique($params ['features']));
             }
-            if (isset ($params ['roles']) && !empty ($params ['roles']) && is_array($params ['roles'])) {
+            if (FilterParams::isArray($params, 'roles')) {
                 $this->setRoles(array_unique($params ['roles']));
             }
         }
+    }
+
+    /**
+     * I use this to strip out sensitive information when using this object
+     * as an API response
+     *
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize() {
+        return [
+            'nick' => $this->getUsername(),
+            'username' => $this->getUsername(),
+            'userStatus' => $this->getUserStatus(),
+            'createdDate' => $this->getCreatedDate(),
+            'country' => $this->getCountry(),
+            'roles' => $this->getRoles(),
+            'features' => $this->getFeatures(),
+            'subscription' => $this->getSubscription()
+        ];
     }
 
     /**
@@ -272,5 +296,4 @@ class SessionCredentials {
     public function setSubscription($subscription) {
         $this->subscription = $subscription;
     }
-
 }

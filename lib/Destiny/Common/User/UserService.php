@@ -294,7 +294,7 @@ class UserService extends Service {
           SELECT u.* FROM dfl_users_auth AS a
           INNER JOIN dfl_users AS u ON (u.userId = a.userId)
           WHERE a.authId = :authId AND a.authProvider = :authProvider
-          LIMIT 0,1
+          LIMIT 1
         ');
         $stmt->bindValue('authId', $authId, \PDO::PARAM_STR);
         $stmt->bindValue('authProvider', $authProvider, \PDO::PARAM_STR);
@@ -333,7 +333,7 @@ class UserService extends Service {
         $stmt = $conn->prepare('
           SELECT a.* FROM dfl_users_auth AS a
           WHERE a.userId = :userId AND a.authProvider = :authProvider
-          LIMIT 0,1
+          LIMIT 1
         ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->bindValue('authProvider', $authProvider, \PDO::PARAM_STR);
@@ -351,6 +351,7 @@ class UserService extends Service {
         $stmt = $conn->prepare('
           SELECT a.* FROM dfl_users_auth AS a
           WHERE a.userId = :userId
+          ORDER BY a.createdDate DESC
         ');
         $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
         $stmt->execute();
@@ -848,4 +849,6 @@ class UserService extends Service {
         $stmt->execute();
         return (bool)$stmt->rowCount();
     }
+
+
 }

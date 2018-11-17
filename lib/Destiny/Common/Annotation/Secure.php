@@ -3,7 +3,7 @@ namespace Destiny\Common\Annotation;
 
 /**
  * @Annotation
- * @Target({"CLASS","METHOD"})
+ * @Target({"METHOD"})
  */
 class Secure {
 

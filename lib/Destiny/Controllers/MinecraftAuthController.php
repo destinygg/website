@@ -5,9 +5,9 @@ use Destiny\Chat\ChatBanService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Annotation\PrivateKey;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Common\Response;
 use Destiny\Common\User\UserFeature;
@@ -22,13 +22,10 @@ use Doctrine\DBAL\DBALException;
  */
 class MinecraftAuthController {
 
-    protected function checkPrivateKey(array $params, $type) {
-        return isset($params['privatekey']) && Config::$a['privateKeys'][$type] === $params['privatekey'];
-    }
-
     /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"GET"})
+     * @PrivateKey ({"minecraft"})
      * @ResponseBody
      *
      * @param Response $response
@@ -39,11 +36,6 @@ class MinecraftAuthController {
      */
     public function authMinecraftGET(Response $response, array $params) {
         Log::info('Minecraft auth [GET]', $params);
-        if (!$this->checkPrivateKey($params, 'minecraft')) {
-            Log::info('Bad key check');
-            $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return 'privatekey';
-        }
         if (empty ($params ['uuid']) || strlen($params ['uuid']) > 36) {
             Log::info('Bad uuid format');
             $response->setStatus(Http::STATUS_BAD_REQUEST);
@@ -95,6 +87,7 @@ class MinecraftAuthController {
     /**
      * @Route ("/auth/minecraft")
      * @HttpMethod ({"POST"})
+     * @PrivateKey ({"minecraft"})
      * @ResponseBody
      *
      * @param Response $response
@@ -108,11 +101,6 @@ class MinecraftAuthController {
         // TODO new MC plugin was having issues with &n which is apparently unavoidable
         if (isset($params['username']) && !isset($params['name'])) {
             $params['name'] = $params['username'];
-        }
-        if (!$this->checkPrivateKey($params, 'minecraft')) {
-            Log::info("Bad key check");
-            $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return 'privatekey';
         }
         if (empty ($params ['uuid']) || strlen($params ['uuid']) > 36) {
             Log::info("Bad uuid format");
@@ -196,6 +184,7 @@ class MinecraftAuthController {
     /**
      * @Route ("/auth/minecraft/update")
      * @HttpMethod ({"GET"})
+     * @PrivateKey ({"minecraft"})
      * @ResponseBody
      *
      * @param Response $response

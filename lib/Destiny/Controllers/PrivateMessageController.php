@@ -60,7 +60,7 @@ class PrivateMessageController {
         try {
 
             FilterParams::required($params, 'message');
-            FilterParams::isarray($params, 'recipients');
+            FilterParams::requireArray($params, 'recipients');
 
             $sessionCredentials = Session::getCredentials();
             $userId = $sessionCredentials->getUserId();

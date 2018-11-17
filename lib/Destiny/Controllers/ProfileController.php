@@ -177,31 +177,22 @@ class ProfileController {
      * @throws Exception
      */
     public function profileAuthTokenCreate(array $params, Request $request) {
-        if(!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
-            throw new Exception ( 'You must solve the recaptcha.' );
+        if (!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
+            throw new Exception ('You must solve the recaptcha.');
 
         $googleRecaptchaHandler = new GoogleRecaptchaHandler();
         $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
 
-        $apiAuthService = ApiAuthenticationService::instance ();
-        $userId = Session::getCredentials ()->getUserId ();
-        $tokens = $apiAuthService->getAuthTokensByUserId ( $userId );
-        if (count ( $tokens ) >= 5) {
-            throw new Exception ( 'You have reached the maximum [5] allowed login keys.' );
+        $apiAuthService = ApiAuthenticationService::instance();
+        $userId = Session::getCredentials()->getUserId();
+
+        $user = UserService::instance()->getUserById($userId);
+        $tokens = $apiAuthService->getAuthTokensByUserId($userId);
+        if (count($tokens) >= 5) {
+            throw new Exception ('You have reached the maximum [5] allowed login keys.');
         }
 
-        $conn = Application::getDbConn();
-        try {
-            $conn->beginTransaction();
-            $token = $apiAuthService->createAuthToken($userId);
-            $apiAuthService->addAuthToken($userId, $token);
-            $conn->commit();
-        } catch (DBALException $e) {
-            $n = new Exception("Error creating auth token", $e);
-            Log::critical($n);
-            $conn->rollBack();
-            throw $n;
-        }
+        $apiAuthService->createAuthToken($user);
         Session::setSuccessBag('Auth token created!');
         return 'redirect: /profile/authentication';
     }
@@ -221,7 +212,7 @@ class ProfileController {
         FilterParams::required($params, 'authToken');
         $userId = Session::getCredentials()->getUserId();
         $apiAuthService = ApiAuthenticationService::instance();
-        $authToken = $apiAuthService->getAuthToken($params ['authToken']);
+        $authToken = $apiAuthService->getAuthTokenById($params ['authToken']);
         if (empty ($authToken)) {
             throw new Exception ('Auth token not found');
         }

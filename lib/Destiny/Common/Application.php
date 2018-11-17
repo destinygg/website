@@ -79,7 +79,7 @@ class Application extends Service {
                 $response->setBody($this->errorTemplate($model, $useResponseAsBody));
                 $this->handleResponse($response);
             }
-            if (!$this->hasRouteSecurity($route, $creds)) {
+            if (!$this->hasRouteSecurity($route, $creds, $request)) {
                 $model->code = Http::STATUS_FORBIDDEN;
                 $model->error = new Exception('forbidden');
                 $response->setStatus(Http::STATUS_FORBIDDEN);
@@ -223,26 +223,43 @@ class Application extends Service {
     /**
      * @param Route $route
      * @param SessionCredentials $credentials
+     * @param Request $request
      * @return bool
      */
-    private function hasRouteSecurity(Route $route, SessionCredentials $credentials) {
-        $secure = $route->getSecure ();
-        if (! empty ( $secure )) {
-            foreach ( $secure as $role ) {
-                if (! $credentials->hasRole ( $role )) {
-                    return false;
-                }
+    private function hasRouteSecurity(Route $route, SessionCredentials $credentials, Request $request) {
+        // has ANY role
+        $secure = $route->getSecure();
+        if (!empty ($secure)) {
+            if (!in_array(true, array_map(function($role) use ($credentials) { return $credentials->hasRole($role); }, $secure))) {
+                return false;
             }
         }
-        $features = $route->getFeature ();
-        if (! empty ( $features )) {
-            foreach ( $features as $feature ) {
-                if (! $credentials->hasFeature ( $feature )) {
-                    return false;
-                }
+        // has ANY feature
+        $features = $route->getFeature();
+        if (!empty ($features)) {
+            if (!in_array(true, array_map(function($feature) use ($credentials) { return $credentials->hasFeature($feature); }, $features))) {
+                return false;
+            }
+        }
+        // has ANY private keys
+        $keyNames = $route->getPrivateKeys();
+        if (!empty($keyNames)) {
+            $keyValue = $this->getPrivateKeyRequestParameter($request);
+            if (empty($keyValue) || !in_array(true, array_map(function($keyName) use ($keyValue) { return strcmp(Config::$a['privateKeys'][$keyName], $keyValue) === 0; }, $keyNames))) {
+                return false;
             }
         }
         return true;
+    }
+
+    /**
+     * @param Request $request
+     * @return null|string
+     */
+    private function getPrivateKeyRequestParameter(Request $request) {
+        $gets = $request->get();
+        $posts = $request->post();
+        return isset($gets['privatekey']) ? $gets['privatekey'] : (isset($posts['privatekey']) ? $posts['privatekey'] : null);
     }
 
     /**
@@ -260,15 +277,11 @@ class Application extends Service {
     /**
      * @param ViewModel $model
      * @param bool $useResponseAsBody
-     * @return \Exception|string
+     * @return \Exception|string|array
      */
-    protected function errorTemplate(ViewModel $model, $useResponseAsBody=false) {
+    protected function errorTemplate(ViewModel $model, $useResponseAsBody = false) {
         try {
-            if($useResponseAsBody) {
-                return $model;
-            } else {
-                return $model->getContent('error.php');
-            }
+            return $useResponseAsBody ? $model : $model->getContent('error.php');
         } catch (\Exception $e) {
             return $e;
         }

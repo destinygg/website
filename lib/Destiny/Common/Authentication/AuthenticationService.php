@@ -45,7 +45,7 @@ class AuthenticationService extends Service {
             if (strpos($normalizeduname, $normalizedemote) === 0) {
                 throw new Exception ('Username too similar to an emote, try changing the first characters');
             }
-            if ($emote == 'LUL') {
+            if ($emote == 'LUL') { // TODO remove this static reference
                 continue;
             }
             $shortuname = substr($normalizeduname, 0, strlen($emote));
@@ -109,7 +109,7 @@ class AuthenticationService extends Service {
             $user = $this->getRememberMe();
             if (!empty($user)) {
                 Session::start();
-                Session::updateCredentials($this->buildUserCredentials($user, 'rememberme'));
+                Session::updateCredentials($this->buildUserCredentials($user));
                 $this->setRememberMe($user);
 
                 // flagUserForUpdate updates the credentials AGAIN, but since its low impact
@@ -125,7 +125,7 @@ class AuthenticationService extends Service {
                 $user = UserService::instance()->getUserById($userId);
                 if (!empty ($user)) {
                     $this->clearUserUpdateFlag($userId);
-                    Session::updateCredentials($this->buildUserCredentials($user, 'session'));
+                    Session::updateCredentials($this->buildUserCredentials($user));
 
                     // the refreshChatSession differs from this call, because only here we have access to the session id.
                     $redisService->setChatSession(Session::getCredentials(), Session::getSessionId());
@@ -141,38 +141,52 @@ class AuthenticationService extends Service {
      * @return SessionCredentials
      * @throws DBALException
      */
-    public function buildUserCredentials(array $user, $authProvider) {
+    public function buildUserCredentials(array $user, $authProvider = null) {
         $userService = UserService::instance();
-        $credentials = new SessionCredentials ($user);
-        $credentials->setAuthProvider($authProvider);
-        $credentials->addRoles(UserRole::USER);
-        $credentials->addFeatures($userService->getFeaturesByUserId($user ['userId']));
-        $credentials->addRoles($userService->getRolesByUserId($user ['userId']));
-
-        $sub = SubscriptionsService::instance()->getUserActiveSubscription($user ['userId']);
+        $subscriptionService = SubscriptionsService::instance();
+        $creds = new SessionCredentials ($user);
+        $creds->setAuthProvider($authProvider);
+        $creds->addRoles(UserRole::USER);
+        $creds->addFeatures($userService->getFeaturesByUserId($user ['userId']));
+        $creds->addRoles($userService->getRolesByUserId($user ['userId']));
+        $sub = $subscriptionService->getUserActiveSubscription($user ['userId']);
         if (!empty ($sub)) {
-            $credentials->setSubscription([
+            $creds->addRoles(UserRole::SUBSCRIBER);
+            $creds->addFeatures(UserFeature::SUBSCRIBER);
+            switch ($sub['subscriptionTier']) {
+                case 1:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT1);
+                    break;
+                case 2:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT2);
+                    break;
+                case 3:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT3);
+                    break;
+                case 4:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT4);
+                    break;
+            }
+            $creds->setSubscription([
+                'tier' => $sub['subscriptionTier'],
+                'source' => $sub['subscriptionSource'],
+                'type' => $sub['subscriptionType'],
                 'start' => Date::getDateTime($sub['createdDate'])->format(Date::FORMAT),
                 'end' => Date::getDateTime($sub['endDate'])->format(Date::FORMAT)
             ]);
+        } else if ($user['istwitchsubscriber']) {
+            $creds->addRoles(UserRole::SUBSCRIBER);
+            $creds->addFeatures(UserFeature::SUBSCRIBER);
+            $creds->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
+            $creds->setSubscription([
+                'tier' => 1,
+                'source' => 'twitch.tv',
+                'type' => null,
+                'start' => null,
+                'end' => null
+            ]);
         }
-        if (!empty ($sub) or $user ['istwitchsubscriber']) {
-            $credentials->addRoles(UserRole::SUBSCRIBER);
-            $credentials->addFeatures(UserFeature::SUBSCRIBER);
-        }
-        if ($user['istwitchsubscriber'])
-            $credentials->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
-        if (!empty($sub)) {
-            if ($sub['subscriptionTier'] == 1)
-                $credentials->addFeatures(UserFeature::SUBSCRIBERT1);
-            else if ($sub['subscriptionTier'] == 2)
-                $credentials->addFeatures(UserFeature::SUBSCRIBERT2);
-            else if ($sub['subscriptionTier'] == 3)
-                $credentials->addFeatures(UserFeature::SUBSCRIBERT3);
-            else if ($sub['subscriptionTier'] == 4)
-                $credentials->addFeatures(UserFeature::SUBSCRIBERT4);
-        }
-        return $credentials;
+        return $creds;
     }
 
     /**
@@ -259,15 +273,16 @@ class AuthenticationService extends Service {
     public function setRememberMe(array $user) {
         $cookie = Session::instance()->getRememberMeCookie();
         $rawData = $cookie->getValue();
-        if (! empty ( $rawData ))
+        if (!empty ($rawData)) {
             $cookie->clearCookie();
-        $expires = Date::getDateTime (time() + mt_rand(0,2419200)); // 0-28 days
+        }
+        $expires = Date::getDateTime(time() + mt_rand(0, 2419200)); // 0-28 days
         $expires->add(new \DateInterval('P1M'));
         $data = Crypto::encrypt(serialize([
             'userId' => $user['userId'],
             'expires' => $expires->getTimestamp()
         ]));
-        $cookie->setValue ( $data, Date::getDateTime ('NOW + 2 MONTHS')->getTimestamp() );
+        $cookie->setValue($data, Date::getDateTime('NOW + 2 MONTHS')->getTimestamp());
     }
 
     /**
@@ -319,7 +334,7 @@ class AuthenticationService extends Service {
             $user = UserService::instance()->getUserById($user);
         if (!empty($user)) {
             Application::instance()->getCache()->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
-            ChatRedisService::instance()->sendRefreshUser($this->buildUserCredentials($user, 'session'));
+            ChatRedisService::instance()->sendRefreshUser($this->buildUserCredentials($user));
         }
     }
 

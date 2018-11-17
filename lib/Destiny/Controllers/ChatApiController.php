@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
+use Destiny\Common\Annotation\PrivateKey;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Annotation\Controller;
@@ -11,7 +12,6 @@ use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
-use Destiny\Common\Config;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatRedisService;
@@ -26,19 +26,12 @@ use Doctrine\DBAL\DBALException;
 class ChatApiController {
 
     /**
-     * Check the private against the local configuration
+     * Chat server uses this when a user does the /whisper command
      *
-     * @param string $privatekey
-     * @return boolean
-     */
-    protected function checkPrivateKey($privatekey){
-        return Config::$a['privateKeys']['chat'] === $privatekey;
-    }
-
-    /**
      * @Route ("/api/messages/send")
      * @HttpMethod ({"POST"})
      * @ResponseBody
+     * @PrivateKey ({"chat"})
      *
      * Expects the following REQUEST params:
      *     privatekey=XXXXXXXX
@@ -62,9 +55,6 @@ class ChatApiController {
             FilterParams::required($params, 'message');
             FilterParams::required($params, 'userid');
             FilterParams::required($params, 'targetuserid');
-
-            if(! $this->checkPrivateKey($params['privatekey']))
-                throw new Exception ('Invalid shared private key.');
 
             if($params['userid'] == $params['targetuserid'])
                 throw new Exception ('Cannot send messages to yourself.');
@@ -120,46 +110,34 @@ class ChatApiController {
      * @Route ("/api/twitchsubscriptions")
      * @HttpMethod ({"GET"})
      * @ResponseBody
+     * @PrivateKey ({"chat"})
      *
      * Expects the following REQUEST params:
      *     privatekey=XXXXXXXX
      *
      * @param Response $response
-     * @param array $params
      * @return array
      *
      * @throws DBALException
      */
-    public function getSubscription(Response $response, array $params) {
+    public function getSubscription(Response $response) {
         $userService = UserService::instance();
-        try {
-            FilterParams::required($params, 'privatekey');
-            if(!$this->checkPrivateKey($params['privatekey']))
-                throw new Exception ('Invalid shared private key.');
-            $response->setStatus(Http::STATUS_OK);
-            return ['authids' => $userService->getActiveTwitchSubscriptions()];
-        } catch (Exception $e) {
-            $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        $response->setStatus(Http::STATUS_OK);
+        return ['authids' => $userService->getActiveTwitchSubscriptions()];
     }
 
     /**
      * @Route ("/api/twitchsubscriptions")
      * @HttpMethod ({"POST"})
      * @ResponseBody
+     * @PrivateKey ({"chat"})
      *
-     * @param array $params
      * @param Response $response
      * @param Request $request
      * @return array
      */
-    public function postSubscription(array $params, Response $response, Request $request) {
+    public function postSubscription(Response $response, Request $request) {
         try {
-            FilterParams::required($params, 'privatekey');
-            if (!$this->checkPrivateKey($params['privatekey'])) {
-                throw new Exception ('Invalid shared private key.');
-            }
             $subs = json_decode($request->getBody(), true);
             $redisService = ChatRedisService::instance();
             $authService = AuthenticationService::instance();
@@ -191,18 +169,14 @@ class ChatApiController {
      * @Route ("/api/twitch/subscribe")
      * @HttpMethod ({"POST"})
      * @ResponseBody
+     * @PrivateKey ({"chat"})
      *
-     * @param array $params
      * @param Response $response
      * @param Request $request
      * @return array
      */
-    public function twitchSubscribe(array $params, Response $response, Request $request) {
+    public function twitchSubscribe(Response $response, Request $request) {
         try {
-            FilterParams::required($params, 'privatekey');
-            if (!$this->checkPrivateKey($params['privatekey']))
-                throw new Exception ('Invalid shared private key.');
-
             $data = json_decode($request->getBody(), true);
             FilterParams::required($data, 'context');
             FilterParams::required($data, 'user_id');
@@ -242,11 +216,11 @@ class ChatApiController {
 
             }
             $response->setStatus(Http::STATUS_NO_CONTENT);
+            return null;
         } catch (\Exception $e) {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }
-        return null;
     }
 
     /**

@@ -65,7 +65,6 @@ class AdminUserController {
         $userService = UserService::instance();
         $chatBanService = ChatBanService::instance();
         $redisService = ChatRedisService::instance();
-        $apiAuthenticationService = ApiAuthenticationService::instance();
         $subscriptionsService = SubscriptionsService::instance();
 
         $user ['roles'] = $userService->getRolesByUserId($user ['userId']);
@@ -77,7 +76,7 @@ class AdminUserController {
         $model->features = $userService->getAllFeatures();
         $model->roles = $this->getAllowedRoles();
         $model->ban = $chatBanService->getUserActiveBan($user ['userId']);
-        $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId($user ['userId']);
+        $model->authSessions = $userService->getAuthByUserId($user ['userId']);
         $model->subscriptions = $subscriptionsService->findByUserId($user ['userId']);
         $model->gifts = $subscriptionsService->findCompletedByGifterId($user ['userId']);
 
@@ -394,8 +393,8 @@ class AdminUserController {
      * @throws DBALException
      */
     public function authProviderDelete(array $params) {
-        $apiAuthService = ApiAuthenticationService::instance();
-        $apiAuthService->deleteAuthProfileByUserId($params['id'], $params['provider']);
+        $userService = UserService::instance();
+        $userService->removeAuthProfile($params['id'], $params['provider']);
         Session::setSuccessBag('Authentication profile removed!');
         return 'redirect: /admin/user/' . urlencode($params['id']) . '/edit';
     }

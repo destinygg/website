@@ -5,26 +5,27 @@ namespace Destiny\Common\Annotation;
  * @Annotation
  * @Target({"METHOD"})
  */
-class Schedule {
+class PrivateKey {
 
     /**
-     * @var int
+     * @var string[]
      */
-    public $frequency;
-
-    /**
-     * @var string
-     */
-    public $period;
+    public $names;
 
     /**
      * @param array $params
      */
     public function __construct(array $params = null) {
         if(!empty($params)) {
-            $this->frequency = $params ['frequency'];
-            $this->period = $params ['period'];
+            $this->names = $params ['value'];
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getNames(){
+        return $this->names;
     }
 
 }

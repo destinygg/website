@@ -63,6 +63,7 @@ class IpnController {
                 throw $e;
             }
             // Handle the IPN
+            // TODO should be handled asynchronously
             $this->handleIPNTransaction($data);
             //
         } catch (Exception $e) {

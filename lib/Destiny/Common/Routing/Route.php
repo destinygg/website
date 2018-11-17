@@ -13,6 +13,7 @@ class Route {
     public $feature;
     public $url;
     public $responseBody;
+    public $privateKeys;
 
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
@@ -29,6 +30,7 @@ class Route {
             'secure',
             'feature',
             'url',
+            'privateKeys',
             'responseBody'
         ];
     }
@@ -74,7 +76,7 @@ class Route {
     }
 
     public function isSecure() {
-        return !empty($this->secure) || !empty($this->feature);
+        return !empty($this->secure) || !empty($this->feature) || !empty($this->privateKeys);
     }
 
     public function getFeature() {
@@ -99,6 +101,14 @@ class Route {
 
     public function setResponseBody($responseBody) {
         $this->responseBody = $responseBody;
+    }
+
+    public function getPrivateKeys() {
+        return $this->privateKeys;
+    }
+
+    public function setPrivateKeys($privateKeys) {
+        $this->privateKeys = $privateKeys;
     }
 
 }

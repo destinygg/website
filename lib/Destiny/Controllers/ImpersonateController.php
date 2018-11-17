@@ -47,10 +47,10 @@ class ImpersonateController {
         if (empty ($user)) {
             throw new Exception ('User not found. Try a different userId or username');
         }
-        
-        $credentials = $authService->buildUserCredentials ( $user, 'impersonating' );
-        Session::start ();
-        Session::updateCredentials ( $credentials );
+
+        $credentials = $authService->buildUserCredentials($user);
+        Session::start();
+        Session::updateCredentials($credentials);
 
         $redisService = ChatRedisService::instance();
         $redisService->setChatSession($credentials, Session::getSessionId());

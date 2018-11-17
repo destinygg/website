@@ -4,41 +4,44 @@ namespace Destiny\Api;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Service;
+use Destiny\Common\Utils\RandomStringGenerator;
 use Doctrine\DBAL\DBALException;
 
-/**
- * @method static ApiAuthenticationService instance()
- */
 class ApiAuthenticationService extends Service {
-    
-    /**
-     * @var string
-     */
-    protected $authTokenSalt = '_r52Ax_';
 
     /**
-     * @param int $userId
-     * @return string
-     * @throws DBALException
+     * @var RandomStringGenerator
      */
-    public function createAuthToken($userId) {
-        $token = md5 ( $this->authTokenSalt . microtime ( true ) . $userId );
-        if ($this->getAuthTokenExists ( $token )) {
-            $token = $this->createAuthToken ( $userId );
-        }
-        return $token;
+    public $generator;
+
+    /**
+     * @return ApiAuthenticationService
+     */
+    public static function instance() {
+        $instance = parent::instance();
+        $instance->generator = new RandomStringGenerator();
+        return $instance;
+    }
+
+    /**
+     * @param array $user
+     * @return string
+     * @throws \Exception
+     */
+    public function createAuthToken(array $user) {
+        return $this->addAuthToken($user['userId'], $this->generator->generate(32));
     }
 
     /**
      * @param int $userId
-     * @param string $authToken
+     * @param string $token
      */
-    public function addAuthToken($userId, $authToken) {
+    public function addAuthToken($userId, $token) {
         $conn = Application::getDbConn();
-        $conn->insert ( 'dfl_users_auth_token', [
+        $conn->insert('dfl_users_auth_token', [
             'userId' => $userId,
-            'authToken' => $authToken,
-            'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
+            'authToken' => $token,
+            'createdDate' => Date::getDateTime('NOW')->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -48,9 +51,7 @@ class ApiAuthenticationService extends Service {
      */
     public function removeAuthToken($id) {
         $conn = Application::getDbConn();
-        $conn->delete ( 'dfl_users_auth_token', [
-            'authTokenId' => $id
-        ]);
+        $conn->delete('dfl_users_auth_token', ['authTokenId' => $id]);
     }
 
     /**
@@ -62,16 +63,29 @@ class ApiAuthenticationService extends Service {
      */
     public function getAuthTokensByUserId($userId, $limit = 5, $start = 0) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( '
+        $stmt = $conn->prepare('
             SELECT * FROM dfl_users_auth_token WHERE userId = :userId
             ORDER BY createdDate DESC
             LIMIT :start,:limit
-        ' );
-        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
+        ');
+        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * @param int $authTokenId
+     * @return array
+     * @throws DBALException
+     */
+    public function getAuthTokenById($authTokenId) {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('SELECT * FROM dfl_users_auth_token WHERE authTokenId = :authTokenId LIMIT 1');
+        $stmt->bindValue('authTokenId', $authTokenId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
     }
 
     /**
@@ -79,61 +93,12 @@ class ApiAuthenticationService extends Service {
      * @return array
      * @throws DBALException
      */
-    public function getAuthToken($authToken) {
+    public function getAuthTokenByToken($authToken) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( 'SELECT * FROM dfl_users_auth_token WHERE authToken = :authToken LIMIT 0,1' );
-        $stmt->bindValue ( 'authToken', $authToken, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetch ();
-    }
-
-    /**
-     * Check if an auth token exists
-     *
-     * @param string $authToken
-     * @return boolean
-     * @throws DBALException
-     */
-    public function getAuthTokenExists($authToken) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( 'SELECT COUNT(*) FROM dfl_users_auth_token WHERE authToken = :authToken LIMIT 0,1' );
-        $stmt->bindValue ( 'authToken', $authToken, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return ($stmt->fetchColumn () == 1) ? true : false;
-    }
-
-    /**
-     * @param int $userId
-     * @param int $limit
-     * @param int $start
-     * @return array
-     * @throws DBALException
-     */
-    public function getAuthSessionsByUserId($userId, $limit = 5, $start = 0) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( '
-            SELECT * FROM dfl_users_auth WHERE userId = :userId
-            ORDER BY createdDate DESC
-            LIMIT :start,:limit
-        ' );
-        $stmt->bindValue ( 'userId', $userId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
-    }
-
-    /**
-     * @param int $userId
-     * @param string $authProfile
-     * @throws DBALException
-     */
-    public function deleteAuthProfileByUserId($userId, $authProfile) {
-        $conn = Application::getDbConn();
-        $conn->delete ( 'dfl_users_auth', [
-            'userId' => $userId,
-            'authProvider' => $authProfile,
-        ]);
+        $stmt = $conn->prepare('SELECT * FROM dfl_users_auth_token WHERE authToken = :authToken LIMIT 1');
+        $stmt->bindValue('authToken', $authToken, \PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch();
     }
 
 }

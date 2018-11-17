@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Api\ApiAuthenticationService;
+use Destiny\Common\Annotation\PrivateKey;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
@@ -12,23 +13,38 @@ use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\Config;
 use Destiny\Common\User\UserService;
 use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
  */
-class ApiIntegrationController {
-
-    protected function checkPrivateKey(array $params, $type) {
-        return isset($params['privatekey']) && Config::$a['privateKeys'][$type] === $params['privatekey'];
-    }
+class ApiController {
 
     /**
+     * Returns JSON profile information for ANY user based on various criteria
+     * - userid
+     * - username
+     * - discordid
+     * - discordusername
+     * - discordname
+     * - redditname
+     * - minecraftname
+     *
+     * Requires the 'privatekey' parameter
+     * If no profile is found, returns a Http 500 error, with a string error code as the body
+     * If the privatekey is invalid returns Http 400 bad request
+     *
+     * Error codes
+     *  - fielderror    = invalid parameter
+     *  - usernotfound  = no user found
+     *  - server        = server error
+     *
+     *
      * @Route ("/api/info/profile")
      * @Route ("/auth/info")
      * @HttpMethod ({"GET"})
+     * @PrivateKey ({"api","chat","reddit"})
      * @ResponseBody
      *
      * @param Response $response
@@ -37,12 +53,7 @@ class ApiIntegrationController {
      *
      * @throws DBALException
      */
-    public function profileInfo(Response $response, array $params) {
-        if (!$this->checkPrivateKey($params, 'api')) {
-            Log::warn('Profile info requested with bad key');
-            $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return 'privatekey';
-        }
+    public function userByField(Response $response, array $params) {
         $userid = null;
         try {
             $userService = UserService::instance();
@@ -67,38 +78,47 @@ class ApiIntegrationController {
             } else if (isset($params['redditname'])) {
                 FilterParams::required($params, 'redditname');
                 $userid = $userService->getUserIdByAuthDetail($params['redditname'], 'reddit');
+            } else if (isset($params['redditid'])) {
+                FilterParams::required($params, 'redditid');
+                $userid = $userService->getUserIdByAuthId($params['redditid'], 'reddit');
             } else {
-                Log::info("No identification field");
                 $response->setStatus(Http::STATUS_BAD_REQUEST);
-                return 'fielderror';
+                return ['message' => 'No field specified', 'error' => 'fielderror', 'code' => Http::STATUS_BAD_REQUEST];
             }
         } catch (FilterParamsException $e) {
-            Log::error("Field error", $e);
             $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return 'fielderror';
+            return ['message' => $e->getMessage(), 'error' => 'fielderror', 'code' => Http::STATUS_BAD_REQUEST];
         } catch (\Exception $e) {
-            Log::error("Internal error", $e);
+            Log::error("Internal error $e");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return 'server';
+            return ['message' => 'Server error', 'error' => 'server', 'code' => Http::STATUS_BAD_REQUEST];
         }
 
         if (!empty($userid)) {
             $user = $userService->getUserById($userid);
             if (!empty($user)) {
                 $authService = AuthenticationService::instance();
-                $creds = $authService->buildUserCredentials($user, 'request');
+                $creds = $authService->buildUserCredentials($user);
                 $response->setStatus(Http::STATUS_OK);
-                return $creds->getData();
+                return $creds;
             }
         }
 
         $response->setStatus(Http::STATUS_ERROR);
-        return 'usernotfound';
+        return ['message' => 'User not found', 'error' => 'usernotfound', 'code' => Http::STATUS_NOT_FOUND];
     }
 
     /**
+     * Get user information using the privatekey and authtoken
+     * This is used by chat server
+     *  - authtoken
+     *  - privatekey
+     *
+     * NOTE: this may be used by other people
+     *
      * @Route ("/api/auth")
      * @ResponseBody
+     * @PrivateKey ({"api","chat","reddit"})
      *
      * @param Response $response
      * @param array $params
@@ -106,23 +126,23 @@ class ApiIntegrationController {
      *
      * @throws DBALException
      */
-    public function authApi(Response $response, array $params) {
+    public function userByAuthToken(Response $response, array $params) {
         if (!isset ($params ['authtoken']) || empty ($params ['authtoken'])) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
-            return 'Invalid or empty authToken';
+            return ['message' => 'Invalid or empty authToken', 'error' => 'fielderror', 'code' => Http::STATUS_FORBIDDEN];
         }
-        $authToken = ApiAuthenticationService::instance()->getAuthToken($params ['authtoken']);
+        $authToken = ApiAuthenticationService::instance()->getAuthTokenByToken($params ['authtoken']);
         if (empty ($authToken)) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
-            return 'Auth token not found';
+            return ['message' => 'Auth token not found', 'error' => 'invalidtoken', 'code' => Http::STATUS_FORBIDDEN];
         }
         $user = UserService::instance()->getUserById($authToken ['userId']);
         if (empty ($user)) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
-            return 'User not found';
+            return ['message' => 'User not found', 'error' => 'usernotfound', 'code' => Http::STATUS_FORBIDDEN];
         }
-        $authenticationService = AuthenticationService::instance();
-        $credentials = $authenticationService->buildUserCredentials($user, 'API');
-        return $credentials->getData();
+        $authService = AuthenticationService::instance();
+        $credentials = $authService->buildUserCredentials($user);
+        return $credentials;
     }
 }

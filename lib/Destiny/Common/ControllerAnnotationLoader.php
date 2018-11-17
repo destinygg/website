@@ -36,6 +36,11 @@ class ControllerAnnotationLoader {
     private $routeRef;
 
     /**
+     * @var ReflectionClass
+     */
+    private $privateKeyRef;
+
+    /**
      * @param DirectoryClassIterator $classIterator
      * @param Reader $reader
      * @param Router $router
@@ -58,6 +63,7 @@ class ControllerAnnotationLoader {
         $this->controllerRef = new ReflectionClass(new Annotation\Controller());
         $this->responseBodyRef = new ReflectionClass(new Annotation\ResponseBody());
         $this->httpMethodRef = new ReflectionClass(new Annotation\HttpMethod());
+        $this->privateKeyRef = new ReflectionClass(new Annotation\PrivateKey());
         $this->secureRef = new ReflectionClass(new Annotation\Secure());
         $this->routeRef = new ReflectionClass(new Annotation\Route());
         foreach ($classIterator as $refl) {
@@ -76,29 +82,54 @@ class ControllerAnnotationLoader {
     public function loadClass(ReflectionClass $classRef, Reader $reader, Router $router) {
         $methods = $classRef->getMethods(ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
-            /** @var Route[] $routes */
-            $routes = [];
-            $annotations = $reader->getMethodAnnotations($method);
-            for ($i = 0; $i < count($annotations); ++$i) {
-                if ($this->routeRef->isInstance($annotations[$i])) {
-                    $routes[] = $annotations[$i];
-                }
-            }
-            if (count($routes) > 0) {
-                $responseBody = $reader->getMethodAnnotation($method, $this->responseBodyRef->getName());
-                $httpMethod = $reader->getMethodAnnotation($method, $this->httpMethodRef->getName());
-                $secure = $reader->getMethodAnnotation($method, $this->secureRef->getName());
-                for ($i = 0; $i < count($routes); ++$i) {
-                    $router->addRoute(new Route([
-                        'path' => $routes[$i]->path,
-                        'classMethod' => $method->name,
-                        'responseBody' => !!$responseBody,
-                        'class' => $classRef->name,
-                        'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
-                        'secure' => ($secure) ? $secure->roles : null
-                    ]));
-                }
+            $this->loadClassMethod($classRef, $method, $reader, $router);
+        }
+    }
+
+    /**
+     * @param ReflectionClass $classRef
+     * @param ReflectionMethod $method
+     * @param Reader $reader
+     * @param Router $router
+     */
+    public function loadClassMethod(ReflectionClass $classRef, ReflectionMethod $method, Reader $reader, Router $router) {
+        $routes = $this->getMethodRoutes($reader, $method);
+        if (count($routes) > 0) {
+            /** @var Annotation\ResponseBody $responseBody */
+            $responseBody = $reader->getMethodAnnotation($method, $this->responseBodyRef->getName());
+            /** @var Annotation\HttpMethod $httpMethod */
+            $httpMethod = $reader->getMethodAnnotation($method, $this->httpMethodRef->getName());
+            /** @var Annotation\PrivateKey $privateKey */
+            $privateKey = $reader->getMethodAnnotation($method, $this->privateKeyRef->getName());
+            /** @var Annotation\Secure $secure */
+            $secure = $reader->getMethodAnnotation($method, $this->secureRef->getName());
+            for ($i = 0; $i < count($routes); ++$i) {
+                $router->addRoute(new Route([
+                    'path' => $routes[$i]->path,
+                    'class' => $classRef->name,
+                    'classMethod' => $method->name,
+                    'responseBody' => !!$responseBody,
+                    'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
+                    'privateKeys' => ($privateKey) ? $privateKey->names : null,
+                    'secure' => ($secure) ? $secure->roles : null
+                ]));
             }
         }
+    }
+
+    /**
+     * @param Reader $reader
+     * @param ReflectionMethod $method
+     * @return Route[]
+     */
+    public function getMethodRoutes(Reader $reader, ReflectionMethod $method) {
+        $routes = [];
+        $annotations = $reader->getMethodAnnotations($method);
+        for ($i = 0; $i < count($annotations); ++$i) {
+            if ($this->routeRef->isInstance($annotations[$i])) {
+                $routes[] = $annotations[$i];
+            }
+        }
+        return $routes;
     }
 }
