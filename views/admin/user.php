@@ -168,42 +168,6 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
     <?php endif; ?>
 
-    <?php if(Session::hasRole(UserRole::ADMIN)): ?>
-    <section class="container">
-        <h3 class="collapsed" data-toggle="collapse" data-target="#address-content">Address</h3>
-        <div id="address-content" class="content content-dark clearfix collapse">
-
-            <?php if(!empty($this->address)): ?>
-                <div class="vcard ds-block">
-                    <div class="fn"><?=Tpl::out($this->address['fullName'])?></div>
-                    <br />
-                    <div class="adr">
-                        <div class="street-address">
-                            <?=Tpl::out($this->address['line1'])?>, <?=Tpl::out($this->address['line2'])?>
-                        </div>
-                        <div>
-                            <span class="city"><?=Tpl::out($this->address['city'])?></span>,
-                            <span class="region"><?=Tpl::out($this->address['region'])?></span>,
-                            <span class="postal-code"><?=Tpl::out($this->address['zip'])?></span>
-                            <?php
-                            $country = Country::getCountryByCode ( $this->address['country'] );
-                            if(!empty($country)):
-                                ?>
-                                <br />
-                                <abbr class="country"><?=Tpl::out($country['name'])?> <small>(<?=Tpl::out($country['alpha-2'])?>)</small></abbr>
-                            <?php endif ?>
-                        </div>
-                    </div>
-                </div>
-            <?php else: ?>
-                <div class="ds-block">
-                    <p>No address available</p>
-                </div>
-            <?php endif ?>
-        </div>
-    </section>
-    <?php endif; ?>
-
     <section class="container">
         <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscriptions</h3>
         <div id="subscription-content" class="content content-dark clearfix collapse">

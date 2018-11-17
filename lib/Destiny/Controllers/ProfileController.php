@@ -50,24 +50,12 @@ class ProfileController {
         $chatBanService = ChatBanService::instance();
         $subscriptionsService = SubscriptionsService::instance();
         $userId = Session::getCredentials()->getUserId();
-        $address = $userService->getAddressByUserId($userId);
-        if (empty ($address)) {
-            $address = [];
-            $address ['fullName'] = '';
-            $address ['line1'] = '';
-            $address ['line2'] = '';
-            $address ['city'] = '';
-            $address ['region'] = '';
-            $address ['zip'] = '';
-            $address ['country'] = '';
-        }
         $model->credentials = Session::instance()->getCredentials()->getData();
         $model->ban = $chatBanService->getUserActiveBan($userId);
         $model->user = $userService->getUserById($userId);
         $model->gifts = $subscriptionsService->findByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
         $model->discordAuthProfile = $userService->getAuthByUserAndProvider($userId, 'discord');
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
-        $model->address = $address;
         $model->title = 'Account';
         return 'profile';
     }
@@ -322,55 +310,6 @@ class ProfileController {
         }
         Session::setErrorBag('No auth profiles to remove.');
         return 'redirect: /profile/authentication';
-    }
-
-    /**
-     * Update/add a address
-     *
-     * @Route ("/profile/address/update")
-     * @HttpMethod ({"POST"})
-     * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @return string
-     *
-     * @throws Exception
-     * @throws DBALException
-     */
-    public function updateAddress(array $params){
-        FilterParams::required ( $params, 'fullName' );
-        FilterParams::required ( $params, 'line1' );
-        FilterParams::declared ( $params, 'line2' );
-        FilterParams::required ( $params, 'city' );
-        FilterParams::required ( $params, 'region' );
-        FilterParams::required ( $params, 'zip' );
-        FilterParams::required ( $params, 'country' );
-
-        $userService = UserService::instance ();
-        $userId = Session::getCredentials ()->getUserId ();
-
-        $address = $userService->getAddressByUserId ( $userId );
-        if (empty ( $address )) {
-            $address = [];
-            $address ['userId'] = $userId;
-        }
-
-        $address ['fullName'] = $params ['fullName'];
-        $address ['line1'] = $params ['line1'];
-        $address ['line2'] = $params ['line2'];
-        $address ['city'] = $params ['city'];
-        $address ['region'] = $params ['region'];
-        $address ['zip'] = $params ['zip'];
-        $address ['country'] = $params ['country'];
-
-        if (! isset ( $address ['id'] ) || empty ( $address ['id'] )) {
-            $userService->addAddress ( $address );
-        } else {
-            $userService->updateAddress ( $address );
-        }
-
-        Session::setSuccessBag('Your address has been updated');
-        return 'redirect: /profile';
     }
 
     /**

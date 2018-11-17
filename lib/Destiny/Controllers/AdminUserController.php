@@ -78,7 +78,6 @@ class AdminUserController {
         $model->roles = $this->getAllowedRoles();
         $model->ban = $chatBanService->getUserActiveBan($user ['userId']);
         $model->authSessions = $apiAuthenticationService->getAuthSessionsByUserId($user ['userId']);
-        $model->address = $userService->getAddressByUserId($user ['userId']);
         $model->subscriptions = $subscriptionsService->findByUserId($user ['userId']);
         $model->gifts = $subscriptionsService->findCompletedByGifterId($user ['userId']);
 

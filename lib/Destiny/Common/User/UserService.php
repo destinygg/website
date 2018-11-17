@@ -636,66 +636,6 @@ class UserService extends Service {
     }
 
     /**
-     * @param int $userId
-     * @param int $limit
-     * @param int $start
-     * @return mixed
-     * @throws DBALException
-     */
-    public function getAddressByUserId($userId, $limit = 1, $start = 0) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT * FROM users_address AS a
-          WHERE a.userId = :userId
-          LIMIT :start,:limit
-        ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_STR);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param array $address
-     */
-    public function addAddress(array $address) {
-        $conn = Application::getDbConn();
-        $conn->insert('users_address', [
-                'userId' => $address ['userId'],
-                'fullName' => $address ['fullName'],
-                'line1' => $address ['line1'],
-                'line2' => $address ['line2'],
-                'city' => $address ['city'],
-                'region' => $address ['region'],
-                'zip' => $address ['zip'],
-                'country' => $address ['country'],
-                'createdDate' => Date::getSqlDateTime(),
-                'modifiedDate' => Date::getSqlDateTime()
-            ], [
-                \PDO::PARAM_INT,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR,
-                \PDO::PARAM_STR
-        ]);
-    }
-
-    /**
-     * @param array $address
-     */
-    public function updateAddress(array $address) {
-        $conn = Application::getDbConn();
-        $address ['modifiedDate'] = Date::getSqlDateTime();
-        $conn->update('users_address', $address, ['id' => $address['id']]);
-    }
-
-    /**
      * Get the users from the given redis keys, strip off the beginning of the keys
      * and parse the remaining string into an int, CHAT:userips-123 will be
      * transformed into (int)123 and than later users with the given ids
