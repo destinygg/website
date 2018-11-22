@@ -1,28 +1,22 @@
-require('dgg-chat-gui/assets/chat')
+import {fetch} from 'whatwg-fetch'
+import 'normalize.css'
+import 'dgg-chat-gui/assets/chat/css/style.scss'
+import Chat from 'dgg-chat-gui/assets/chat/js/chat'
 
-const Chat = require('dgg-chat-gui/assets/chat/js/chat')['default']
-const chatUri = `ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`
 const script = document.getElementById('chat-include')
-const cacheKey = script.getAttribute('data-cache-key')
-const cdnUrl = script.getAttribute('data-cdn')
+const chat = new Chat({
+    url: `ws${location.protocol === 'https:' ? 's' : ''}://${location.host}/ws`,
+    api: {base: `${location.protocol}//${location.host}`},
+    cdn: {base: script.getAttribute('data-cdn')},
+    cacheKey: script.getAttribute('data-cache-key')
+});
 
-const chat = new Chat().withGui().withSettings()
-$.when(
-    new Promise(res => $.getJSON('/api/chat/me').done(res).fail(() => res(null))),
-    new Promise(res => $.getJSON('/api/chat/history').done(res).fail(() => res(null))),
-    new Promise(res => $.getJSON(`${cdnUrl}/flairs/flairs.json?_=${cacheKey}`).done(res).fail(() => res(null))),
-    new Promise(res => $.getJSON(`${cdnUrl}/emotes/emotes.json?_=${cacheKey}`).done(res).fail(() => res(null))),
-    new Promise(res => res(Chat.loadCss(`${cdnUrl}/flairs/flairs.css?_=${cacheKey}`))),
-    new Promise(res => res(Chat.loadCss(`${cdnUrl}/emotes/emotes.css?_=${cacheKey}`))),
-)
-    .then((settings, history, flairs, emotes) =>
-        chat.withUserAndSettings(settings)
-            .withEmotes(emotes)
-            .withFlairs(flairs)
-            .withHistory(history)
-    )
-    .then(chat => chat.connect(chatUri))
-    .then(chat => chat.withWhispers())
+chat.withGui(require('dgg-chat-gui/assets/views/embed.html'))
+    .then(() => chat.loadUserAndSettings())
+    .then(() => chat.loadEmotesAndFlairs())
+    .then(() => chat.loadHistory())
+    .then(() => chat.loadWhispers())
+    .then(() => chat.connect())
 
 // Keep the website session alive.
-setInterval(() => $.ajax({url: `/ping`}), 10*60*1000)
+setInterval(() => fetch(`${chat.config.api.base}/ping`).catch(console.warn), 10*60*1000)

@@ -5,26 +5,21 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title($this->title)?></title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" charset="utf-8">
-<meta name="referrer" content="no-referrer">
-<?php include 'seg/meta.php' ?>
-<link href="<?=Config::cdnv()?>/streamchat.css" rel="stylesheet" media="screen">
-<style id="chat-styles" type="text/css"></style>
+    <?=Tpl::title($this->title)?>
+    <?php include 'seg/meta.php' ?>
+    <meta name="referrer" content="no-referrer">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('chat.vendor.css')?>
 </head>
-<body class="embed onstream">
-
-<div id="chat" class="chat chat-icons chat-onstream">
-    <div id="chat-output-frame"></div>
-</div>
-
+<body>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('chat.vendor.js')?>
+<?=Tpl::manifestScript('streamchat.js', [
+    'id' => "chat-include",
+    'data-cache-key' => $this->cacheKey,
+    'data-cdn' => Config::cdnv()
+])?>
 <?php include 'seg/tracker.php' ?>
-<script
-    id="chat-include"
-    data-cache-key="<?=Tpl::out($this->cacheKey)?>"
-    data-cdn="<?=Tpl::out(Config::cdnv())?>"
-    src="<?=Config::cdnv()?>/streamchat.js"
-></script>
-
 </body>
 </html>

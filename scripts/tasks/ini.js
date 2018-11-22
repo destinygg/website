@@ -11,5 +11,5 @@ function replaceAppVersion(file){
     console.log('Update _APP_VERSION ['+pkg.version+']['+ file +']')
 }
 
-replaceAppVersion('lib/boot.app.php');
-replaceAppVersion('lib/boot.test.php');
+replaceAppVersion('lib/boot.app.php')
+replaceAppVersion('lib/boot.test.php')

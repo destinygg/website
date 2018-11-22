@@ -1,7 +1,9 @@
+import jQuery from 'jquery'
+import moment from 'moment'
+import Chart from 'chart.js'
+
 (function($){
 
-    const moment = require('moment')
-    const Chart = require('chart.js')
     const currDate = moment()
     const dates = $('#income-dates')
     const datesin = dates.find('span.date')

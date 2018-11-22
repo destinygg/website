@@ -6,9 +6,10 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="authentication" class="no-contain">
 <div id="page-wrap">
@@ -60,25 +61,25 @@ use Destiny\Common\Config;
             <form id="authtoken-form" action="/profile/authtoken/create" method="post">
 
                 <?php if(!empty($this->authTokens)): ?>
-                <table class="grid" style="width:100%">
-                    <thead>
-                    <tr>
-                        <td style="width:100%;">Token</td>
-                        <td>Created</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach($this->authTokens as $authToken): ?>
+                    <table class="grid" style="width:100%">
+                        <thead>
                         <tr>
-                            <td>
-                                <a href="/profile/authtoken/<?=$authToken['authTokenId']?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a>
-                                <span><?=$authToken['authToken']?></span>
-                            </td>
-                            <td><?=Date::getDateTime($authToken['createdDate'])->format(Date::STRING_FORMAT)?></td>
+                            <td style="width:100%;">Token</td>
+                            <td>Created</td>
                         </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        <?php foreach($this->authTokens as $authToken): ?>
+                            <tr>
+                                <td>
+                                    <a href="/profile/authtoken/<?=$authToken['authTokenId']?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a>
+                                    <span><?=$authToken['authToken']?></span>
+                                </td>
+                                <td><?=Date::getDateTime($authToken['createdDate'])->format(Date::STRING_FORMAT)?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 <?php endif ?>
 
                 <div id="recaptcha" class="form-group ds-block hidden">
@@ -99,25 +100,10 @@ use Destiny\Common\Config;
 
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
 <script src="https://www.google.com/recaptcha/api.js"></script>
-<script>
-    $('.btn-post').on('click', function(){
-        var a = $(this), form = $(this).closest('form');
-        form.attr("action", a.attr("href"));
-        form.trigger('submit');
-        return false;
-    });
-    $('#btn-create-key').on('click', function(){
-        var recaptcha = $('#recaptcha'), form = $(this).closest('form');
-        if(recaptcha.hasClass('hidden')){
-            recaptcha.removeClass('hidden')
-        }else{
-            form.submit()
-        }
-        return false;
-    });
-</script>
 
 </body>
 </html>

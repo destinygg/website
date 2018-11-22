@@ -4,15 +4,15 @@ use Destiny\Commerce\PaymentStatus;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
 use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="account" class="no-contain">
 <div id="page-wrap">
@@ -280,7 +280,10 @@ use Destiny\Commerce\SubscriptionStatus;
 
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('profile.js')?>
 
 </body>
 </html>

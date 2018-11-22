@@ -16,16 +16,33 @@ abstract class Date {
      */
     public static function getDateTime($time = 'NOW') {
         try {
-            if (! is_numeric ( $time )) {
-                $date = new \DateTime ( $time );
+            if (!is_numeric($time)) {
+                $date = new \DateTime($time);
             } else {
-                $date = new \DateTime ();
-                $date->setTimestamp ( $time );
+                $date = new \DateTime();
+                $date->setTimestamp($time);
             }
-        } catch ( \Exception $e ) {
-            $date = new \DateTime ();
+        } catch (\Exception $e) {
+            try {
+                $date = new \DateTime();
+            } catch (\Exception $e2) {
+                $date = null;
+            }
         }
-        $date->setTimezone ( new \DateTimeZone ( ini_get ( 'date.timezone' ) ) );
+        if ($date != null) {
+            $date->setTimezone(new \DateTimeZone(ini_get('date.timezone')));
+        }
+        return $date;
+    }
+
+    /**
+     * @param string $time
+     * @param int $seconds
+     * @return \DateTime
+     */
+    public static function getDateTimePlusSeconds($time = 'NOW', $seconds = 0) {
+        $date = Date::getDateTime($time);
+        try { $date->add(new \DateInterval("PT". $seconds ."S")); } catch (\Exception $e) {/* IGNORED */}
         return $date;
     }
 

@@ -1,13 +1,13 @@
 <?php
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
 <div id="page-wrap">
@@ -23,7 +23,7 @@ use Destiny\Common\Config;
                 <div class="form-group">
                     <p>
                         <span style="display: block;">Attached profile: <a><?=Tpl::out($this->user['username'])?></a></span>
-                        <p class="text-muted">Clicking the authorize button will attempt to grant special permissions.<br />This is for broadcasters only.</p>
+                    <p class="text-muted">Clicking the authorize button will attempt to grant special permissions.<br />This is for broadcasters only.</p>
                     </p>
                     <div>
                         <a href="/admin/twitch/authorize" class="btn btn-primary" role="button">Authorize</a>
@@ -37,8 +37,10 @@ use Destiny\Common\Config;
 
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
-<script src="<?=Config::cdnv()?>/admin.js"></script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('admin.js')?>
 
 </body>
 </html>

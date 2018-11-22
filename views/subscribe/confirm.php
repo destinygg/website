@@ -1,14 +1,14 @@
 <?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="subscription-confirm" class="no-brand">
 <div id="page-wrap">
@@ -25,11 +25,11 @@ use Destiny\Common\Config;
         <div class="content content-dark clearfix">
 
             <?php if(!empty($this->warning)): ?>
-            <div class="alert alert-danger alert-dismissable" style="margin: 15px 15px 0 15px;">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-                <strong><span class="fa fa-warning"></span> Warning!</strong>
-                <?=Tpl::out($this->warning->getMessage())?>
-            </div>
+                <div class="alert alert-danger alert-dismissable" style="margin: 15px 15px 0 15px;">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+                    <strong><span class="fa fa-warning"></span> Warning!</strong>
+                    <?=Tpl::out($this->warning->getMessage())?>
+                </div>
             <?php endif ?>
 
             <div style="width: 100%;" class="clearfix stream">
@@ -77,7 +77,9 @@ use Destiny\Common\Config;
 </div>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
 
 </body>
 </html>

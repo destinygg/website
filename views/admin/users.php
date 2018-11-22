@@ -1,14 +1,14 @@
 <?php
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
 <div id="page-wrap">
@@ -102,8 +102,10 @@ use Destiny\Common\Utils\Date;
 
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
-<script src="<?=Config::cdnv()?>/admin.js"></script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('admin.js')?>
 
 </body>
 </html>

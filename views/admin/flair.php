@@ -5,9 +5,10 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
 <div id="page-wrap">
@@ -59,26 +60,26 @@ use Destiny\Common\Config;
                         <label class="control-label" for="inputFeatureName">Identifier</label>
                         <div class="controls">
                             <?php if(empty($this->flair['featureName'])): ?>
-                            <select class="form-control" name="featureName" <?=($this->flair['locked'] == 1)?'disabled="disabled"':''?>>
-                                <?php foreach($this->presets as $preset): ?>
-                                <option value="<?=$preset?>"<?php if($this->flair['featureName'] == $preset):?> selected="selected"<?php endif;?>><?=$preset?></option>
-                                <?php endforeach; ?>
-                            </select>
+                                <select class="form-control" name="featureName" <?=($this->flair['locked'] == 1)?'disabled="disabled"':''?>>
+                                    <?php foreach($this->presets as $preset): ?>
+                                        <option value="<?=$preset?>"<?php if($this->flair['featureName'] == $preset):?> selected="selected"<?php endif;?>><?=$preset?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             <?php else: ?>
-                            <input autocomplete="off" type="text" class="form-control" name="featureName" id="inputFeatureName" value="<?=Tpl::out($this->flair['featureName'])?>" placeholder="Prefix" disabled="disabled">
+                                <input autocomplete="off" type="text" class="form-control" name="featureName" id="inputFeatureName" value="<?=Tpl::out($this->flair['featureName'])?>" placeholder="Prefix" disabled="disabled">
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <?php if(empty($this->flair['featureId'])): ?>
-                    <div class="form-group">
-                        <label>Locked</label>
-                        <select class="form-control" name="locked" <?=($this->flair['locked'] == 1)?'disabled="disabled"':''?>>
-                            <option value="1"<?php if($this->flair['locked'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
-                            <option value="0"<?php if($this->flair['locked'] == 0):?> selected="selected"<?php endif;?>>No</option>
-                        </select>
-                        <span class="help-block">If YES, this flair cannot be deleted.</span>
-                    </div>
+                        <div class="form-group">
+                            <label>Locked</label>
+                            <select class="form-control" name="locked" <?=($this->flair['locked'] == 1)?'disabled="disabled"':''?>>
+                                <option value="1"<?php if($this->flair['locked'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                                <option value="0"<?php if($this->flair['locked'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                            </select>
+                            <span class="help-block">If YES, this flair cannot be deleted.</span>
+                        </div>
                     <?php endif; ?>
 
                     <div class="form-group">
@@ -125,7 +126,9 @@ use Destiny\Common\Config;
 
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
-<script src="<?=Config::cdnv()?>/admin.js"></script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('admin.js')?>
 </body>
 </html>

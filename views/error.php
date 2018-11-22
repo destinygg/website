@@ -3,14 +3,14 @@ namespace Destiny;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title><?=Tpl::title(empty($this->code) ? $this->title : Http::$HEADER_STATUSES [$this->code])?></title>
-<?php include 'seg/meta.php' ?>
-<link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <title><?=Tpl::title(empty($this->code) ? $this->title : Http::$HEADER_STATUSES [$this->code])?></title>
+    <?php include 'seg/meta.php' ?>
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="error" class="error no-brand">
 <div id="page-wrap">
@@ -22,36 +22,38 @@ use Destiny\Common\Config;
 
         <p>
             <?php if($this->code === Http::STATUS_UNAUTHORIZED): ?>
-            You must be authenticated to view this page. Go to the <a href="/login">sign in</a> page
+                You must be authenticated to view this page. Go to the <a href="/login">sign in</a> page
             <?php elseif($this->code === Http::STATUS_FORBIDDEN): ?>
-            This request has been forbidden.
+                This request has been forbidden.
             <?php elseif($this->code === Http::STATUS_NOT_FOUND): ?>
-            We could'nt find the page you were looking for.
+                We could'nt find the page you were looking for.
             <?php elseif($this->code === Http::STATUS_ERROR): ?>
-            A application error occurred :(
+                A application error occurred :(
             <?php elseif($this->code === Http::STATUS_SERVICE_UNAVAILABLE): ?>
-            We are doing some work on the site. We will be back shortly.
+                We are doing some work on the site. We will be back shortly.
             <?php else: ?>
-            Something went really bad, call help...
+                Something went really bad, call help...
             <?php endif; ?>
             <br />
             <?php if(!empty($this->id)): ?>
-            Include this ID in your support query <label class="label label-danger"><?=Tpl::out($this->id)?></label>
+                Include this ID in your support query <label class="label label-danger"><?=Tpl::out($this->id)?></label>
             <?php endif; ?>
         </p>
 
         <?php $ini = @ini_get('display_errors') ?>
         <?php if($this->error && $this->error instanceof Exception || $ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>
-        <?php $msg = $this->error->getMessage() ?>
-        <?php if(is_string($msg) && strlen(trim($msg)) > 0): ?>
-        <p><code><?=Tpl::out($msg)?></code></p>
-        <?php endif; ?>
+            <?php $msg = $this->error->getMessage() ?>
+            <?php if(is_string($msg) && strlen(trim($msg)) > 0): ?>
+                <p><code><?=Tpl::out($msg)?></code></p>
+            <?php endif; ?>
         <?php endif; ?>
 
     </section>
 </div>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
 </body>
 </html>

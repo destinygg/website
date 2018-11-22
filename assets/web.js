@@ -1,8 +1,7 @@
-require('core-js/es6')
-require('jquery')
-require('jquery-validation')
-require('bootstrap/dist/js/bootstrap.js')
-require('bootstrap/dist/css/bootstrap.css')
-require('font-awesome/scss/font-awesome.scss')
-require('./web/css/style.scss')
-require('./web/js/web.js')
+import 'jquery'
+import 'jquery-validation'
+import 'bootstrap/dist/js/bootstrap.js'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'font-awesome/scss/font-awesome.scss'
+import './web/css/style.scss'
+import './web/js/web.js'

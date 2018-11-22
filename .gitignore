@@ -25,3 +25,4 @@ config/config.local.php
 /composer.phar
 /phpunit.phar
 /package-lock.json
+/config/cert.pem

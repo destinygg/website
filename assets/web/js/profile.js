@@ -1,7 +1,9 @@
 // Message composition UI
 // TODO re-implement emotes in private messages
-const chatformatters = require('dgg-chat-gui/assets/chat/js/formatters')
-const formatters = [new chatformatters.HtmlTextFormatter(),new chatformatters.UrlFormatter()/*,new chatformatters.EmoteFormatter()*/]
+import $ from 'jquery'
+import {HtmlTextFormatter,UrlFormatter,EmoteFormatter} from 'dgg-chat-gui/assets/chat/js/formatters'
+
+const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatter()]
 const ctx = {}
 
 // COMPOSE
@@ -208,8 +210,9 @@ $(function(){
         let start = 0
         const messagemore = $('#inbox-show-more'),
                inboxempty = $('#inbox-empty'),
-             inboxloading = $('#inbox-loading')
-        function displayInbox(data){
+             inboxloading = $('#inbox-loading');
+
+        const displayInbox = function(data){
             start += 25
             inboxloading.fadeOut()
             const container = inboxtable.find('tbody')
@@ -231,7 +234,7 @@ $(function(){
             inboxtable.toggle(out.length > 0)
             inboxempty.toggle(out.length === 0)
         }
-        function loadInbox(){
+        const loadInbox = function(){
             inboxloading.fadeIn()
             return $.ajax({url: '/api/messages/inbox', data: {s: start}})
                     .done(displayInbox)
@@ -255,7 +258,7 @@ $(function(){
 
     if(messagelist.length > 0) {
         let start = 0
-        function displayMessages(data){
+        const displayMessages = function(data){
             start += 10
             loading.fadeOut()
             showmore.show()
@@ -280,7 +283,7 @@ $(function(){
             })
             container.prepend(out.join('') + (out.length? `<hr />`: ``))
         }
-        function loadMessages(){
+        const loadMessages = function(){
             loading.fadeIn()
             return $.ajax({url:`/api/messages/usr/${encodeURIComponent(username.toLowerCase())}/inbox`, data: {s: start}})
                     .always(displayMessages)

@@ -4,16 +4,16 @@ use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
-use Destiny\Common\Config;
 use Destiny\Common\User\UserRole;
 use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
 <div id="page-wrap">
@@ -149,23 +149,23 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
 
     <?php if(Session::hasRole(UserRole::ADMIN)): ?>
-    <section class="container">
-        <h3 class="collapsed" data-toggle="collapse" data-target="#roles-content">Roles</h3>
-        <div id="roles-content" class="content content-dark clearfix collapse">
-            <div class="ds-block">
-                <div id="roles-selection" data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
-                    <?php foreach($this->roles as $role): ?>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="roles[]" value="<?=$role['roleName']?>" <?=(in_array($role['roleName'], $this->user['roles']))?'checked="checked"':''?>>
-                                <?=Tpl::out($role['roleLabel'])?>
-                            </label>
-                        </div>
-                    <?php endforeach; ?>
+        <section class="container">
+            <h3 class="collapsed" data-toggle="collapse" data-target="#roles-content">Roles</h3>
+            <div id="roles-content" class="content content-dark clearfix collapse">
+                <div class="ds-block">
+                    <div id="roles-selection" data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
+                        <?php foreach($this->roles as $role): ?>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="roles[]" value="<?=$role['roleName']?>" <?=(in_array($role['roleName'], $this->user['roles']))?'checked="checked"':''?>>
+                                    <?=Tpl::out($role['roleLabel'])?>
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
     <?php endif; ?>
 
     <section class="container">
@@ -413,16 +413,10 @@ use Destiny\Commerce\SubscriptionStatus;
 
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
-<script src="<?=Config::cdnv()?>/admin.js"></script>
-<script>
-    $('.btn-post').on('click', function(){
-        var a = $(this), form = $(this).closest('form');
-        form.attr("action", a.attr("href"));
-        form.trigger('submit');
-        return false;
-    });
-</script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('admin.js')?>
 
 </body>
 </html>

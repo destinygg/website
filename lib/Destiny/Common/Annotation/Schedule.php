@@ -3,7 +3,7 @@ namespace Destiny\Common\Annotation;
 
 /**
  * @Annotation
- * @Target({"METHOD"})
+ * @Target({"CLASS","METHOD"})
  */
 class Schedule {
 

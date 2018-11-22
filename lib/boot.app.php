@@ -9,7 +9,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.5.10'); // auto-generated: 1542488407309
+define('_APP_VERSION', '2.5.11'); // auto-generated: 1542965085696
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
@@ -17,9 +17,9 @@ Config::load(array_replace_recursive(
     require _BASEDIR . '/config/config.php',
     require _BASEDIR . '/config/config.dgg.php',
     require _BASEDIR . '/config/config.local.php',
+    ['manifest' => require _BASEDIR . '/config/manifest.php'],
     ['version' => _APP_VERSION]
 ));
-
 set_include_path(get_include_path() . PATH_SEPARATOR . _BASEDIR . '/views/');
 
 // Required to auto-load custom annotations

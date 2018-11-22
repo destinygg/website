@@ -4,6 +4,9 @@ use Destiny\Common\Utils\Date;
 
 class CryptoTest extends PHPUnit\Framework\TestCase {
 
+    /**
+     * @throws Exception
+     */
     public function testCrypto() {
         $data = serialize(['userId'=>10, 'expiry'=>Date::getDateTime ( 'NOW' )->getTimestamp()]);
         $this->assertTrue($data === Crypto::decrypt(Crypto::encrypt($data)));

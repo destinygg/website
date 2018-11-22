@@ -12,6 +12,7 @@ class TestCron extends PHPUnit\Framework\TestCase {
      * @throws \Destiny\Common\Exception
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \Doctrine\DBAL\DBALException
+     * @throws ReflectionException
      */
     public function testCronTasks(){
         $scheduler = new Scheduler ();

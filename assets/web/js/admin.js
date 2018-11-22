@@ -1,4 +1,5 @@
-import debounce from 'throttle-debounce/debounce'
+import $ from 'jquery'
+import {debounce} from 'throttle-debounce'
 
 (function () {
 
@@ -275,5 +276,83 @@ $(function(){
         e.preventDefault();
         beginUpload(imageTarget, fileInput[0].files[0]);
         imageTarget = null;
+    });
+});
+
+$(function(){
+    $('#admin-form-auth-sessions').each(function(){
+        $('.btn-post').on('click', function(){
+            let a = $(this), form = $(this).closest('form');
+            form.attr("action", a.attr("href"));
+            form.trigger('submit');
+            return false;
+        });
+    });
+    $('#authBtn').on('click', function(){
+        window.location.href = '/streamlabs/authorize';
+    });
+    $('#testBtn').on('click', function(){
+        window.location.href = '/streamlabs/alert/test';
+    });
+})
+
+$(function(){
+
+    $('#emote-content').each(function(){
+
+        const emoteid = $(this).data('id');
+
+        $('.delete-item').on('click', () => {
+            if (confirm('This cannot be undone. Are you sure?')) {
+                $('#delete-form').submit();
+            }
+        });
+
+        let mustCheckPrefix = true;
+        const inputPrefix = $('#inputPrefix'),
+            emoteForm = $('#emote-form');
+
+        function validateEmote() {
+            const prefixGroup = inputPrefix.closest('.form-group');
+            prefixGroup.removeClass('has-error');
+            $.ajax({
+                url: '/admin/emotes/prefix',
+                data: {id: emoteid, prefix: inputPrefix.val()},
+                method: 'post',
+                success: res => {
+                    if (res['error']) {
+                        mustCheckPrefix = true;
+                        prefixGroup.addClass('has-error');
+                    } else {
+                        mustCheckPrefix = false;
+                        emoteForm.submit();
+                    }
+                },
+                error: () => {
+                    mustCheckPrefix = true;
+                    prefixGroup.addClass('has-error');
+                }
+            });
+        }
+
+        inputPrefix.on('change', () => { mustCheckPrefix = true; })
+
+        emoteForm.on('submit', e => {
+            if (mustCheckPrefix) {
+                e.preventDefault();
+                validateEmote();
+            }
+        });
+
+    });
+
+    $('#flair-content').each(function(){
+
+        $('.delete-item').on('click', () => {
+            if (confirm('This cannot be undone. Are you sure?')) {
+                $('#delete-form').submit();
+            }
+        });
+
     });
 });

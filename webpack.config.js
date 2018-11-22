@@ -1,23 +1,64 @@
-require('webpack');
+const webpack = require('webpack')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const ManifestPlugin = require('webpack-manifest-plugin')
+const fs = require('fs')
 
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const entries = {
+    web: './assets/web.js',
+    admin: './assets/admin.js',
+    profile: './assets/profile.js',
+    chat: './assets/chat.js',
+    streamchat: './assets/streamchat.js'
+}
+
+const entryPoints = Object.keys(entries).reduce((p, v) => {
+    p[v] = entries[v];
+    return p
+}, {})
+
+const cacheGroups = Object.keys(entries).reduce((p, key) => {
+    p[`${key}Styles`] = {
+        name: key,
+        test: (m, c, entry = key) => m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
+        chunks: 'initial',
+        enforce: true
+    }
+    return p
+}, {
+    commonVendor: {
+        chunks: 'all',
+        name: 'common.vendor',
+        test: /[\\/]node_modules[\\/](jquery|moment|normalize.css)[\\/]/,
+        reuseExistingChunk: true,
+        enforce: true
+    },
+    chatVendor: {
+        chunks: 'all',
+        name: 'chat.vendor',
+        test: /[\\/]node_modules[\\/](dgg-chat-gui)[\\/]/,
+        reuseExistingChunk: true,
+        enforce: true
+    },
+})
 
 module.exports = {
-    entry: {
-        web       : './assets/web.js',
-        admin     : './assets/admin.js',
-        profile   : './assets/profile.js',
-        chat      : './assets/chat.js',
-        streamchat: './assets/streamchat.js'
+    optimization: {
+        minimize: true,
+        runtimeChunk: 'single',
+        splitChunks: { cacheGroups },
     },
+    entry: entryPoints,
     output: {
-        path     : __dirname + '/static',
-        filename : '[name].js'
+        path: __dirname + '/static',
+        filename: '[name].[contenthash].js',
     },
     plugins: [
-        new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache','flairs','emotes']}),
-        new ExtractTextPlugin({filename: '[name].css'})
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache', 'flairs', 'emotes']}),
+        new MiniCssExtractPlugin({filename: '[name].[contenthash].css'}),
+        new ManifestPlugin(),
+        { apply: c => c.hooks.afterEmit.tap('webpackManifestPlugin', covertManifestJsonToPhp) }
     ],
     watchOptions: {
         ignored: /node_modules/
@@ -25,47 +66,58 @@ module.exports = {
     module: {
         rules: [
             {
-                test    : /\.(ts|tsx)$/,
-                loader  : 'ts-loader'
+                test: /\.m?js$/,
+                exclude: /(node_modules|)/,
+                loader: 'babel-loader',
+                options: {presets: ['@babel/preset-env']}
             },
             {
-                test    : /\.json$/,
-                loader  : 'json-loader'
+                test: /\.(sa|sc|c)ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'postcss-loader',
+                    'sass-loader',
+                ],
             },
             {
-                test    : /\.js$/,
-                loader  : 'babel-loader',
-                options : {presets: ['es2015']}
+                test: /(-webfont|glyphicons-halflings-regular)\.(eot|svg|ttf|woff2?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'file-loader',
+                options: {name: 'fonts/[name].[ext]'}
             },
             {
-                test    : /\.(scss|css)$/,
-                loader  : ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [
-                        {loader: 'css-loader'},
-                        {loader: 'sass-loader'},
-                        {loader: 'postcss-loader'},
-                    ]
-                })
+                test: /\.(png|jpg|gif|svg)$/,
+                loader: 'file-loader',
+                options: {name: 'img/[name].[ext]'}
             },
             {
-                test    : /(-webfont|glyphicons-halflings-regular)\.(eot|svg|ttf|woff2?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader  : 'file-loader',
-                options : {name: 'fonts/[name].[ext]'}
-            },
-            {
-                test    : /\.(png|jpg|gif|svg)$/,
-                loader  : 'file-loader',
-                options : {name: 'img/[name].[ext]'}
+                test: /\.(html)$/,
+                loader: 'html-loader',
+                options: {minimize: true}
             }
         ]
     },
     resolve: {
-        alias: {
-            jquery: 'jquery/src/jquery'
-        },
-        extensions: ['.ts','.tsx','.js']
+        alias: { jquery: 'jquery/src/jquery' },
+        extensions: ['.js']
     },
     context: __dirname,
     devtool: false
 };
+
+function covertManifestJsonToPhp() {
+    const json = JSON.parse(fs.readFileSync(__dirname + '/static/manifest.json').toString('utf-8'))
+    const data = `<?php\r\n// auto-generated: ${new Date().getTime()}\r\nreturn [\r\n` + Object.keys(json).map(v => `\t"${v}" => "` + json[v] + `"`).join(',\r\n') + `\r\n];`
+    fs.writeFileSync(__dirname + '/config/manifest.php', data, 'utf8')
+    fs.unlinkSync(__dirname + '/static/manifest.json')
+}
+
+function recursiveIssuer(m) {
+    if (m.issuer) {
+        return recursiveIssuer(m.issuer);
+    } else if (m.name) {
+        return m.name;
+    } else {
+        return false;
+    }
+}

@@ -1,3 +1,1 @@
-/* global $ */
-
-require('./web/js/profile.js');
+import './web/js/profile.js'

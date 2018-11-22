@@ -1,6 +1,5 @@
-/* global $ */
-
-import moment from 'moment';
+import $ from 'jquery'
+import moment from 'moment'
 
 // Generic popup defaults
 const popupDefaults = {
@@ -15,7 +14,7 @@ const popupDefaults = {
     dependent  :0
 };
 const getOptionsString = function(options){
-    options = (!options) ? popupDefaults : $.extend({}, popupDefaults, options);
+    options = (!options) ? popupDefaults : Object.assign({}, popupDefaults, options);
     return Object.keys(options).map(k => `${k}=${options[k]}`).join(',');
 };
 
@@ -439,5 +438,40 @@ $(function(){
     })
 
 })
+
+$(function(){
+    // Subscription page
+    $('body#subscription').each(function(){
+        $('button#cancelSubscriptionBtn').on('click', function(){
+            $('input[name="cancelSubscription"]').val('1');
+            $(this).closest('form').submit();
+        });
+        $('button#stopRecurringBtn').on('click', function(){
+            $('input[name="cancelSubscription"]').val('0');
+            $(this).closest('form').submit();
+        });
+    });
+
+    // Authentication
+    $('body#authentication').each(function(){
+        $('.btn-post').on('click', function(){
+            const a = $(this), form = $(this).closest('form');
+            form.attr("action", a.attr("href"));
+            form.trigger('submit');
+            return false;
+        });
+        $('#btn-create-key').on('click', function(){
+            const recaptcha = $('#recaptcha'), form = $(this).closest('form');
+            if(recaptcha.hasClass('hidden')){
+                recaptcha.removeClass('hidden')
+            }else{
+                form.submit()
+            }
+            return false;
+        });
+    });
+});
+
+
 
 window.showLoginModal = () => $('#loginmodal').modal("show")

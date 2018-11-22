@@ -6,9 +6,10 @@ use Destiny\Common\Config;
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title($this->title)?></title>
+    <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <link href="<?=Config::cdnv()?>/web.css" rel="stylesheet" media="screen">
+    <?=Tpl::manifestLink('common.vendor.css')?>
+    <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
 <div id="page-wrap">
@@ -24,10 +25,10 @@ use Destiny\Common\Config;
                 <div class="form-group">
                     Attached profile: <a><?=Tpl::out($this->user['username'])?></a>
                     <?php if(!empty($this->auth)): ?>
-                    <span class="label label-default">Authorized</span>
-                    <p>Next auth code renew <?= Tpl::fromNow(Date::getDateTime($this->auth['createdDate'])->add(new DateInterval('PT3600S'))) ?></p>
+                        <span class="label label-default">Authorized</span>
+                        <p>Next auth code renew <?= Tpl::fromNow(Date::getDateTimePlusSeconds($this->auth['createdDate'], 3600)) ?></p>
                     <?php else: ?>
-                    <span class="label label-danger">Unauthorized</span>
+                        <span class="label label-danger">Unauthorized</span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -67,19 +68,10 @@ use Destiny\Common\Config;
 
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
-<script src="<?=Config::cdnv()?>/web.js"></script>
-<script src="<?=Config::cdnv()?>/admin.js"></script>
-<script>
-$(function(){
-
-    $('#authBtn').on('click', function(){
-        window.location.href = '/streamlabs/authorize';
-    })
-    $('#testBtn').on('click', function(){
-        window.location.href = '/streamlabs/alert/test';
-    })
-})
-</script>
+<?=Tpl::manifestScript('runtime.js')?>
+<?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('admin.js')?>
 
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use DateInterval;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
@@ -83,6 +84,7 @@ class StreamLabsController {
      * @param ViewModel $model
      * @return string
      * @throws DBALException
+     * @throws \Exception
      */
     public function streamlabs(ViewModel $model){
         $userService = UserService::instance();
