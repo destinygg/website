@@ -100,9 +100,9 @@ class Application extends Service {
                 // Use result as response body
                 $response->setBody($result);
             } else if (is_string($result)) {
-                if (substr($result, 0, 10) === 'redirect: ') {
+                if (substr($result, 0, 9) === 'redirect:') {
                     // Redirect response
-                    $redirect = substr($result, 10);
+                    $redirect = trim(substr($result, 9));
                     $response->setStatus(Http::STATUS_OK);
                     $response->setLocation($redirect);
                 } else {
