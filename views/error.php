@@ -7,7 +7,7 @@ use Destiny\Common\Utils\Tpl;
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=Tpl::title(empty($this->code) ? $this->title : Http::$HEADER_STATUSES [$this->code])?></title>
+    <?=Tpl::title(empty($this->code) ? $this->title : Http::$HEADER_STATUSES [$this->code])?>
     <?php include 'seg/meta.php' ?>
     <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
@@ -17,28 +17,29 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/nav.php' ?>
     <?php include 'seg/banner.php' ?>
     <section id="error-container" class="container">
-        <a title="Rick and Morty" href="http://www.adultswim.com/videos/rick-and-morty/" target="_blank" id="mortyface"></a>
-        <h1>Aw geez, Rick!</h1>
 
-        <p>
-            <?php if($this->code === Http::STATUS_UNAUTHORIZED): ?>
-                You must be authenticated to view this page. Go to the <a href="/login">sign in</a> page
-            <?php elseif($this->code === Http::STATUS_FORBIDDEN): ?>
-                This request has been forbidden.
-            <?php elseif($this->code === Http::STATUS_NOT_FOUND): ?>
-                We could'nt find the page you were looking for.
-            <?php elseif($this->code === Http::STATUS_ERROR): ?>
-                A application error occurred :(
-            <?php elseif($this->code === Http::STATUS_SERVICE_UNAVAILABLE): ?>
-                We are doing some work on the site. We will be back shortly.
-            <?php else: ?>
-                Something went really bad, call help...
-            <?php endif; ?>
-            <br />
-            <?php if(!empty($this->id)): ?>
-                Include this ID in your support query <label class="label label-danger"><?=Tpl::out($this->id)?></label>
-            <?php endif; ?>
-        </p>
+        <?php if($this->code === Http::STATUS_UNAUTHORIZED): ?>
+            <h1>Access denied</h1>
+            <p>You must be authenticated to view this page. Go to the <a href="/login">sign in</a> page</p>
+        <?php elseif($this->code === Http::STATUS_FORBIDDEN): ?>
+            <h1>Access denied</h1>
+            <p>This request has been forbidden.</p>
+        <?php elseif($this->code === Http::STATUS_NOT_FOUND): ?>
+            <h1>Page not found</h1>
+            <p>We could'nt find the page you were looking for.</p>
+        <?php elseif($this->code === Http::STATUS_ERROR): ?>
+            <h1>Application Error</h1>
+            <p>A application error occurred :(</p>
+        <?php elseif($this->code === Http::STATUS_SERVICE_UNAVAILABLE): ?>
+            <h1>Application Error</h1>
+            <p>We are doing some work on the site. We will be back shortly.</p>
+        <?php else: ?>
+            <h1>Application Error</h1>
+            <p>Something went really bad, call help...</p>
+        <?php endif; ?>
+        <?php if(!empty($this->id)): ?>
+            <p>Include this ID in your support query <label class="label label-danger"><?=Tpl::out($this->id)?></label></p>
+        <?php endif; ?>
 
         <?php $ini = @ini_get('display_errors') ?>
         <?php if($this->error && $this->error instanceof Exception || $ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>

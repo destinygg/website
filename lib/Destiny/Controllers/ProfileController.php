@@ -4,10 +4,13 @@ namespace Destiny\Controllers;
 use Destiny\Chat\ChatBanService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\SubscriptionStatus;
+use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Authentication\OAuthService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
+use Destiny\Common\Utils\RandomString;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Request;
 use Destiny\Common\Annotation\Controller;
@@ -17,7 +20,6 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
-use Destiny\Api\ApiAuthenticationService;
 use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
@@ -88,15 +90,10 @@ class ProfileController {
 
         try {
             $authService->validateUsername($username);
-            if ($userService->getIsUsernameTaken($username, $user['userId'])) {
-                throw new Exception ( 'The username you asked for is already being used' );
-            }
+            $userService->checkUsernameTaken($username, $user['userId']);
             $authService->validateEmail($email, $user);
             if (! empty ( $country )) {
                 $countryArr = Country::getCountryByCode ( $country );
-                if (empty ( $countryArr )) {
-                    throw new Exception ( 'Invalid country' );
-                }
                 $country = $countryArr ['alpha-2'];
             }
         } catch ( Exception $e ) {
@@ -132,6 +129,26 @@ class ProfileController {
     }
 
     /**
+     * @Route("/profile/developer")
+     * @Secure ({"USER"})
+     *
+     * @param ViewModel $model
+     * @return string
+     *
+     * @throws DBALException
+     */
+    public function profileDeveloper(ViewModel $model) {
+        $userId = Session::getCredentials()->getUserId();
+        $oauthService = OAuthService::instance();
+        $userService = UserService::instance();
+        $model->title = 'Developer';
+        $model->user = $userService->getUserById($userId);
+        $model->oauthClients = $oauthService->getAuthClientsByUserId($userId);
+        $model->accessTokens = $oauthService->getAccessTokensByUserId($userId);
+        return 'profile/developer';
+    }
+
+    /**
      * @Route ("/profile/authentication")
      * @Secure ({"USER"})
      *
@@ -143,23 +160,150 @@ class ProfileController {
     public function profileAuthentication(ViewModel $model) {
         $userService = UserService::instance();
         $userId = Session::getCredentials()->getUserId();
-        $model->title = 'Authentication';
-        $model->user = $userService->getUserById($userId);
-
-        // Build a list of profile types for UI purposes
         $authProfiles = $userService->getAuthByUserId($userId);
-        $authProfileTypes = [];
-        if (!empty ($authProfiles)) {
-            foreach ($authProfiles as $profile) {
-                $authProfileTypes [] = $profile ['authProvider'];
-            }
-            $model->authProfiles = $authProfiles;
-        }
-        $model->authProfileTypes = $authProfileTypes;
-
-        $model->authTokens = ApiAuthenticationService::instance()->getAuthTokensByUserId($userId);
         $model->title = 'Authentication';
+        $model->authProfileTypes = array_map(function($v){ return $v['authProvider']; }, $authProfiles);
+        $model->authProfiles = $authProfiles;
+        $model->user = $userService->getUserById($userId);
         return 'profile/authentication';
+    }
+
+    /**
+     * @Route ("/profile/app/secret")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     * @ResponseBody
+     *
+     * @param array $params
+     * @return array
+     *
+     * @throws DBALException
+     */
+    public function appSecretUpdate(array $params) {
+        try {
+            FilterParams::required($params, 'id');
+            $userId = Session::getCredentials()->getUserId();
+            $oauthService = OAuthService::instance();
+            $client = $oauthService->getAuthClientById($params['id']);
+            if (empty($client)) {
+                throw new Exception('Invalid client_id');
+            }
+            if ($client['ownerId'] != $userId) {
+                throw new Exception('You are not the owner of this client.');
+            }
+            $clientSecret = RandomString::make(64);
+            $oauthService->updateAuthClient($params['id'], ['clientSecret' => hash('sha256', $clientSecret)]);
+            return ['secret' => $clientSecret];
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * @Route ("/profile/app/create")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @param Request $request
+     * @return string
+     * @throws DBALException
+     */
+    public function appCreate(array $params, Request $request) {
+        try {
+            FilterParams::required($params, 'name');
+            $userId = Session::getCredentials()->getUserId();
+            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+            $googleRecaptchaHandler->resolveWithRequest($request);
+            $oauthService = OAuthService::instance();
+            // Validate the application name
+            $name = trim($params['name']);
+            if (preg_match('/^[A-Za-z0-9 ]{3,64}$/', $name) == 0) {
+                throw new Exception ('Name may only contain A-z 0-9 or spaces and must be over 3 characters and under 64 characters in length.');
+            }
+            // only allow 1 max application
+            if (count($oauthService->getAuthClientsByUserId($userId)) >= 1) {
+                throw new Exception ('You have reached the maximum [1] allowed applications.');
+            }
+            $oauthService->addAuthClient([
+                'clientCode' => RandomString::makeUrlSafe(32),
+                'clientSecret' => RandomString::make(64),
+                'clientName' => $name,
+                'ownerId' => $userId
+            ]);
+            Session::setSuccessBag('Application created!');
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+        }
+        return 'redirect: /profile/developer';
+    }
+
+    /**
+     * @Route ("/profile/app/update")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     *
+     * @throws DBALException
+     */
+    public function appUpdate(array $params) {
+        try {
+            FilterParams::required($params, 'id');
+            FilterParams::required($params, 'name');
+            $name = trim($params['name']);
+            $userId = Session::getCredentials()->getUserId();
+            $oauthService = OAuthService::instance();
+            $client = $oauthService->getAuthClientById($params['id']);
+            if (empty($client)) {
+                throw new Exception('Invalid client_id');
+            }
+            if ($client['ownerId'] != $userId) {
+                throw new Exception('You are not the owner of this client.');
+            }
+            if (preg_match('/^[A-Za-z0-9 ]{3,64}$/', $name) == 0) {
+                throw new Exception ('Name may only contain A-z 0-9 or spaces and must be over 3 characters and under 64 characters in length.');
+            }
+            $oauthService->updateAuthClient($params['id'], ['clientName' => $name]);
+            Session::setSuccessBag('Application updated!');
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+        }
+        return 'redirect: /profile/developer';
+    }
+
+    /**
+     * @Route ("/profile/app/{id}/remove")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
+     */
+    public function appDelete(array $params) {
+        FilterParams::required($params, 'id');
+        $userId = Session::getCredentials()->getUserId();
+        $oauthService = OAuthService::instance();
+        $client = $oauthService->getAuthClientById($params['id']);
+        if (empty($client)) {
+            throw new Exception('Invalid client_id');
+        }
+        if ($client['ownerId'] != $userId) {
+            throw new Exception('You are not the owner of this client.');
+        }
+        // Remove all associated access tokens
+        $accessTokens = $oauthService->getAccessTokensByClientId($params['id']);
+        foreach ($accessTokens as $token) {
+            $oauthService->removeAccessToken($token['tokenId']);
+        }
+        // Remove the client
+        $oauthService->removeAuthClient($params['id']);
+        Session::setSuccessBag('Application removed');
+        return 'redirect: /profile/developer';
     }
 
     /**
@@ -167,37 +311,45 @@ class ProfileController {
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      *
-     * @param array $params
      * @param Request $request
      * @return string
      *
      * @throws DBALException
-     * @throws Exception
-     * @throws \Exception
      */
-    public function profileAuthTokenCreate(array $params, Request $request) {
-        if (!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
-            throw new Exception ('You must solve the recaptcha.');
+    public function accessTokenCreate(Request $request) {
+        try {
+            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+            $googleRecaptchaHandler->resolveWithRequest($request);
 
-        $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-        $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
+            $oauthService = OAuthService::instance();
+            $userId = Session::getCredentials()->getUserId();
 
-        $apiAuthService = ApiAuthenticationService::instance();
-        $userId = Session::getCredentials()->getUserId();
+            // Users are only allowed 5 max login keys
+            // We deem an access token a "login key" when it has no client
+            // Typically it also is none expiring
+            $accessTokens = $oauthService->getAccessTokensByUserId($userId);
+            if (count(array_filter($accessTokens, function($v){ return $v['clientId'] == 0; })) >= 5) {
+                throw new Exception ('You have reached the maximum [5] allowed login keys.');
+            }
 
-        $user = UserService::instance()->getUserById($userId);
-        $tokens = $apiAuthService->getAuthTokensByUserId($userId);
-        if (count($tokens) >= 5) {
-            throw new Exception ('You have reached the maximum [5] allowed login keys.');
+            $accessToken = RandomString::makeUrlSafe(64);
+            $oauthService->addAccessToken([
+                'clientId' => null,
+                'userId' => $userId,
+                'token' => $accessToken,
+                'refresh' => null,
+                'scope' => 'identify',
+                'expireIn' => null,
+            ]);
+            Session::setSuccessBag('Login key created!');
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
         }
-
-        $apiAuthService->createAuthToken($user);
-        Session::setSuccessBag('Auth token created!');
-        return 'redirect: /profile/authentication';
+        return 'redirect: /profile/developer';
     }
 
     /**
-     * @Route ("/profile/authtoken/{authToken}/delete")
+     * @Route ("/profile/authtoken/{tokenId}/delete")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      *
@@ -207,20 +359,20 @@ class ProfileController {
      * @throws DBALException
      * @throws Exception
      */
-    public function profileAuthTokenDelete(array $params) {
-        FilterParams::required($params, 'authToken');
+    public function accessTokenDelete(array $params) {
+        FilterParams::required($params, 'tokenId');
+        $oauthService = OAuthService::instance();
         $userId = Session::getCredentials()->getUserId();
-        $apiAuthService = ApiAuthenticationService::instance();
-        $authToken = $apiAuthService->getAuthTokenById($params ['authToken']);
-        if (empty ($authToken)) {
-            throw new Exception ('Auth token not found');
+        $accessToken = $oauthService->getAccessTokenById($params['tokenId']);
+        if (empty($accessToken)) {
+            throw new Exception ('Invalid access token');
         }
-        if ($authToken ['userId'] != $userId) {
-            throw new Exception ('Auth token not owned by user');
+        if ($accessToken['userId'] != $userId) {
+            throw new Exception ('Access token not owned by user');
         }
-        $apiAuthService->removeAuthToken($authToken ['authTokenId']);
-        Session::setSuccessBag('Auth token removed!');
-        return 'redirect: /profile/authentication';
+        $oauthService->removeAccessToken($params['tokenId']);
+        Session::setSuccessBag('Access token removed!');
+        return 'redirect: /profile/developer';
     }
 
     /**
@@ -232,7 +384,7 @@ class ProfileController {
      *
      * @throws Exception
      */
-    public function profileConnect(array $params) {
+    public function authProfileConnect(array $params) {
         FilterParams::required ( $params, 'provider' );
         $authProvider = $params ['provider'];
 
@@ -283,7 +435,7 @@ class ProfileController {
      * @throws Exception
      * @throws DBALException
      */
-    public function profileRemove(array $params) {
+    public function authProfileRemove(array $params) {
         FilterParams::required($params, 'provider');
         $userId = Session::getCredentials()->getUserId();
         $userService = UserService::instance();
@@ -295,49 +447,11 @@ class ProfileController {
         $authProfiles = $userService->getAuthByUserId($userId);
         if (!empty($authProfiles)) {
             $userService->removeAuthProfile($userId, $params ['provider']);
-            Session::setSuccessBag('Auth token removed');
+            Session::setSuccessBag('Login provider removed');
             return 'redirect: /profile/authentication';
         }
-        Session::setErrorBag('No auth profiles to remove.');
+        Session::setErrorBag('No login provider to remove.');
         return 'redirect: /profile/authentication';
-    }
-
-    /**
-     * Discord update
-     *
-     * @Route ("/profile/discord/update")
-     * @HttpMethod ({"POST"})
-     * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @return string
-     *
-     * @throws Exception
-     * @throws DBALException
-     */
-    public function updateDiscord(array $params){
-        $userService = UserService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        FilterParams::declared ( $params, 'discordname' );
-        $data = ['discordname' => $params['discordname']];
-
-        if(trim($data['discordname']) == '')
-            $data['discordname'] = null;
-
-        if (mb_strlen($data['discordname']) > 36) {
-            Session::setErrorBag('Discord username too long.');
-            return 'redirect: /profile';
-        }
-
-        $uId = $userService->getUserIdByField('discordname', $params['discordname']);
-        if ($data['discordname'] == null || empty($uId) || intval($uId) === intval($userId)) {
-            $userService->updateUser($userId, $data);
-            Session::setSuccessBag('Discord info has been updated');
-        } else {
-            Session::setErrorBag('Discord name already in use');
-        }
-
-        return 'redirect: /profile';
     }
 
     /**
@@ -390,8 +504,38 @@ class ProfileController {
     }
 
     /**
-     * Minecraft update
+     * @Route ("/profile/discord/update")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
      *
+     * @param array $params
+     * @return string
+     *
+     * @throws Exception
+     * @throws DBALException
+     */
+    public function updateDiscord(array $params) {
+        $userService = UserService::instance();
+        $userId = Session::getCredentials()->getUserId();
+        FilterParams::declared($params, 'discordname');
+        $data = ['discordname' => $params['discordname']];
+        if (trim($data['discordname']) == '')
+            $data['discordname'] = null;
+        if (mb_strlen($data['discordname']) > 36) {
+            Session::setErrorBag('Discord username too long.');
+            return 'redirect: /profile';
+        }
+        $uId = $userService->getUserIdByField('discordname', $params['discordname']);
+        if ($data['discordname'] == null || empty($uId) || intval($uId) === intval($userId)) {
+            $userService->updateUser($userId, $data);
+            Session::setSuccessBag('Discord info has been updated');
+        } else {
+            Session::setErrorBag('Discord name already in use');
+        }
+        return 'redirect: /profile';
+    }
+
+    /**
      * @Route ("/profile/minecraft/update")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
@@ -402,12 +546,12 @@ class ProfileController {
      * @throws Exception
      * @throws DBALException
      */
-    public function updateMinecraft(array $params){
+    public function updateMinecraft(array $params) {
         $userService = UserService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        FilterParams::declared ( $params, 'minecraftname' );
+        $userId = Session::getCredentials()->getUserId();
+        FilterParams::declared($params, 'minecraftname');
         $data = ['minecraftname' => $params['minecraftname']];
-        if(trim($data['minecraftname']) == '')
+        if (trim($data['minecraftname']) == '')
             $data['minecraftname'] = null;
         if (mb_strlen($data['minecraftname']) > 16) {
             Session::setErrorBag('Minecraft name too long.');

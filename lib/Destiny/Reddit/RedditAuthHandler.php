@@ -64,8 +64,8 @@ class RedditAuthHandler implements AuthHandlerInterface {
                 throw new Exception('Invalid access_token response');
             $info = $this->getUserInfo($data['access_token']);
             $authCreds = $this->getAuthCredentials($params['code'], $info);
-            $authCredHandler = new AuthenticationRedirectionFilter ();
-            return $authCredHandler->execute($authCreds);
+            $authHandler = new AuthenticationRedirectionFilter($authCreds);
+            return $authHandler->execute();
         }
         throw new Exception ( "Bad response from oauth provider: {$response->getStatusCode()}" );
     }

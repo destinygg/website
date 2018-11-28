@@ -64,8 +64,8 @@ class TwitterAuthHandler implements AuthHandlerInterface {
         if ($response->getStatusCode() == Http::STATUS_OK) {
             $data = $service->extract_params((string)$response->getBody());
             $authCreds = $this->getAuthCredentials($data ['oauth_token'], $data);
-            $authCredHandler = new AuthenticationRedirectionFilter();
-            return $authCredHandler->execute($authCreds);
+            $authHandler = new AuthenticationRedirectionFilter($authCreds);
+            return $authHandler->execute();
         }
         throw new Exception ('Failed to retrieve user data');
     }

@@ -64,11 +64,11 @@ class TwitchAuthHandler implements AuthHandlerInterface {
             $info = $this->getUserInfo($data['access_token']);
             if($info != null) {
                 $auth = $this->getAuthCredentials($params['code'], $info);
-                $authHandler = new AuthenticationRedirectionFilter ();
-                return $authHandler->execute($auth);
+                $authHandler = new AuthenticationRedirectionFilter($auth);
+                return $authHandler->execute();
             }
         }
-        throw new Exception ( 'Bad response from oauth provider' );
+        throw new Exception ("Bad response from oauth provider: {$response->getStatusCode()}");
     }
 
     /**

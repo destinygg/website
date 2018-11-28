@@ -18,12 +18,13 @@ class Tpl {
     }
 
     public static function title($title) {
-        if (empty ($title)) {
+        $title = trim("$title");
+        if (!empty($title)) {
             $str = sprintf('%s - %s', $title, Config::$a['meta']['shortName']);
         } else {
             $str = Config::$a['meta']['title'];
         }
-        return "<title>$str</title>";
+        return "<title>$str</title>\r\n";
     }
 
     public static function moment(\DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
@@ -36,9 +37,7 @@ class Tpl {
 
     public static function manifestScript($name, array $attr = []) {
         $url = Config::cdn() . '/' . Config::$a['manifest'][$name];
-        $attribs = join(" ", array_map(function($v, $p) {
-            return "$v=\"$p\"";
-        }, array_keys($attr), $attr));
+        $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
         $str = !empty($attribs) ? " $attribs" : "";
         return "<script$str src=\"$url\" crossorigin=\"anonymous\"></script>\r\n";
     }
@@ -46,9 +45,7 @@ class Tpl {
     public static function manifestLink($name, array $attr = []) {
         $url = Config::cdn() . '/' . Config::$a['manifest'][$name];
         $attr = array_merge(['rel' => 'stylesheet', 'media' => 'screen'], $attr);
-        $attribs = join(" ", array_map(function($v, $p) {
-            return "$v=\"$p\"";
-        }, array_keys($attr), $attr));
+        $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
         $str = !empty($attribs) ? " $attribs" : "";
         return "<link$str href=\"$url\" crossorigin=\"anonymous\">\r\n";
     }

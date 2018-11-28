@@ -21,6 +21,7 @@ class ViewModel extends \stdClass implements \JsonSerializable {
     }
 
     /**
+     * TODO figure a way to remove this
      * @param $filename
      * @return string
      * @throws \Exception

@@ -182,18 +182,23 @@ class UserService extends Service {
     }
 
     /**
+     * Throws an exception if username is taken
+     *
      * @param string $username
      * @param int $excludeUserId
-     * @return bool
+     * @param string $msg
      * @throws DBALException
+     * @throws Exception
      */
-    public function getIsUsernameTaken($username, $excludeUserId = 0) {
+    public function checkUsernameTaken($username, $excludeUserId = 0, $msg = 'The username you asked for is already being used') {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId');
         $stmt->bindValue('username', $username, \PDO::PARAM_STR);
         $stmt->bindValue('excludeUserId', $excludeUserId, \PDO::PARAM_INT);
         $stmt->execute();
-        return ($stmt->fetchColumn() > 0) ? true : false;
+        if ($stmt->fetchColumn() > 0) {
+            throw new Exception ($msg);
+        }
     }
 
     /**

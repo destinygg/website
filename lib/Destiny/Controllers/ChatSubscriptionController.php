@@ -23,7 +23,7 @@ use Doctrine\DBAL\DBALException;
 /**
  * @Controller
  */
-class ChatApiController {
+class ChatSubscriptionController {
 
     /**
      * Chat server uses this when a user does the /whisper command
@@ -153,7 +153,7 @@ class ChatApiController {
             }
             $response->setStatus(Http::STATUS_NO_CONTENT);
         } catch (\Exception $e) {
-            Log::error('Error posting subscriptions.', $e->getMessage());
+            Log::error('Error posting subscriptions. ' . $e->getMessage());
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }

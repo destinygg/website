@@ -75,4 +75,8 @@ class Request {
         return isset($this->headers[$name]) ? $this->headers[$name] : null;
     }
 
+    public function param($name) {
+        return isset($this->get[$name]) ? $this->get[$name] : isset($this->post[$name]) ? $this->post[$name] : null;
+    }
+
 }

@@ -24,26 +24,24 @@ use Destiny\Common\Utils\Tpl;
     </section>
 
     <section class="container">
-        <h3 data-toggle="collapse" data-target="#inbox-content">Inbox <i id="inbox-loading" class="fa fa-cog fa-spin"  style="display: none;"></i></h3>
-        <div id="inbox-content" class="content collapse in">
-            <div class="content-dark">
-                <table id="inbox" class="grid messages">
-                    <colgroup>
-                        <col class="c2">
-                        <col class="c3">
-                        <col class="c4">
-                    </colgroup>
-                    <tbody>
-                    </tbody>
-                </table>
-                <table id="inbox-empty" class="grid messages" style="display: none;">
-                    <tbody>
-                    <tr>
-                        <td>You have no messages</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+        <h3 data-toggle="collapse" data-target="#inbox-content">Inbox <i id="inbox-loading" class="fa fa-cog fa-spin" style="display: none;"></i></h3>
+        <div id="inbox-content" class="content content-dark collapse in clearfix">
+            <table id="inbox" class="grid messages">
+                <colgroup>
+                    <col class="c2">
+                    <col class="c3">
+                    <col class="c4">
+                </colgroup>
+                <tbody>
+                </tbody>
+            </table>
+            <table id="inbox-empty" class="grid messages" style="display: none;">
+                <tbody>
+                <tr>
+                    <td>You have no messages</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 

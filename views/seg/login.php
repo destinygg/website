@@ -7,6 +7,7 @@ use Destiny\Common\User\UserRole;
 <div id="loginmodal" class="modal fade">
     <form class="modal-dialog" action="/login" method="post">
         <input type="hidden" name="follow" value="" />
+        <input type="hidden" name="grant" value="" />
         <input type="hidden" name="authProvider" class="hidden" />
         <div class="modal-body">
             <div class="form-group">

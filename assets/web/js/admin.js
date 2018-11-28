@@ -280,14 +280,6 @@ $(function(){
 });
 
 $(function(){
-    $('#admin-form-auth-sessions').each(function(){
-        $('.btn-post').on('click', function(){
-            let a = $(this), form = $(this).closest('form');
-            form.attr("action", a.attr("href"));
-            form.trigger('submit');
-            return false;
-        });
-    });
     $('#authBtn').on('click', function(){
         window.location.href = '/streamlabs/authorize';
     });

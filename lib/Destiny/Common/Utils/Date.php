@@ -55,7 +55,7 @@ abstract class Date {
     }
 
     /**
-     * A sweet interval formatting, will use the two biggest interval parts.
+     * Interval formatting, will use the two biggest interval parts.
      * On small intervals, you get minutes and seconds.
      * On big intervals, you get months and days.
      * Only the two biggest parts are used.

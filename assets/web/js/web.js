@@ -440,38 +440,75 @@ $(function(){
 })
 
 $(function(){
+    $('.btn-post').on('click', function () {
+        const a = $(this), form = $(this).closest('form');
+        form.attr('action', a.attr('href'));
+        form.trigger('submit');
+        return false;
+    });
+});
+
+$(function(){
     // Subscription page
-    $('body#subscription').each(function(){
-        $('button#cancelSubscriptionBtn').on('click', function(){
+    $('body#subscription').each(function () {
+        $(this).find('button#cancelSubscriptionBtn').on('click', function () {
             $('input[name="cancelSubscription"]').val('1');
             $(this).closest('form').submit();
         });
-        $('button#stopRecurringBtn').on('click', function(){
+        $(this).find('button#stopRecurringBtn').on('click', function () {
             $('input[name="cancelSubscription"]').val('0');
             $(this).closest('form').submit();
         });
     });
 
-    // Authentication
-    $('body#authentication').each(function(){
-        $('.btn-post').on('click', function(){
-            const a = $(this), form = $(this).closest('form');
-            form.attr("action", a.attr("href"));
-            form.trigger('submit');
-            return false;
-        });
-        $('#btn-create-key').on('click', function(){
-            const recaptcha = $('#recaptcha'), form = $(this).closest('form');
-            if(recaptcha.hasClass('hidden')){
+    // Developer
+    $('body#developer').each(function () {
+        let $body = $(this);
+        $body.find('#btn-create-app').on('click', function () {
+            const recaptcha = $('#recaptcha1'), form = $(this).closest('form');
+            if (recaptcha.hasClass('hidden')) {
                 recaptcha.removeClass('hidden')
-            }else{
+            } else {
                 form.submit()
             }
             return false;
         });
+        $body.find('#btn-create-key').on('click', function () {
+            const recaptcha = $('#recaptcha2'), form = $(this).closest('form');
+            if (recaptcha.hasClass('hidden')) {
+                recaptcha.removeClass('hidden')
+            } else {
+                form.submit()
+            }
+            return false;
+        });
+        $body.find('form#app-form').each(function(){
+            const $form = $(this);
+            $form.on('click', '#app-form-secret-create', function(e){
+                if (confirm('Are you sure? This will invalidate the previous secret.')) {
+                    const id = $(this).data('id');
+                    const $secret = $form.find('input[name="secret"]');
+                    $.ajax({
+                        url: '/profile/app/secret',
+                        data: {id: id},
+                        type: 'POST',
+                        success: function(data){
+                            $secret.val(data['secret'])
+                        }
+                    });
+                }
+                e.preventDefault();
+                return false;
+            });
+        });
+    });
+
+    $(document).on('click', '[data-toggle="show"]', function(){
+        const elem = $(this);
+        const target = $(elem.attr('href'));
+        target.show();
+        elem.hide();
     });
 });
-
-
 
 window.showLoginModal = () => $('#loginmodal').modal("show")

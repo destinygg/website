@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Controllers;
 
-use DateInterval;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;

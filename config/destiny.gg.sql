@@ -101,16 +101,6 @@ CREATE TABLE `dfl_users_auth` (
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `dfl_users_auth_token` (
-  `authTokenId` INT(14) NOT NULL AUTO_INCREMENT,
-  `userId` INT(11) DEFAULT NULL,
-  `authToken` VARCHAR(32) CHARACTER SET utf8 DEFAULT NULL,
-  `createdDate` DATETIME DEFAULT NULL,
-  PRIMARY KEY (`authTokenId`),
-  KEY `userId` (`userId`),
-  KEY `authToken` (`authToken`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `dfl_users_features` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `userId` int(10) unsigned NOT NULL,
@@ -197,3 +187,32 @@ CREATE TABLE `images` (
   PRIMARY KEY (`id`),
   KEY `hash` (`hash`)
 ) ENGINE=InnoDB AUTO_INCREMENT=195 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `oauth_access_tokens` (
+   `tokenId` int(14) NOT NULL AUTO_INCREMENT,
+   `clientId` int(14) NOT NULL,
+   `userId` int(14) NOT NULL,
+   `scope` varchar(100) NOT NULL,
+   `token` varchar(64) NOT NULL,
+   `refresh` varchar(64) DEFAULT NULL,
+   `expireIn` int(11) DEFAULT NULL,
+   `createdDate` datetime DEFAULT NULL,
+   PRIMARY KEY (`tokenId`),
+   KEY `IDX_TOKEN` (`token`),
+   KEY `IDX_REFRESH` (`clientId`,`refresh`),
+   KEY `IDX_USER` (`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `oauth_client_details` (
+  `clientId` int(14) NOT NULL AUTO_INCREMENT,
+  `ownerId` int(14) NOT NULL,
+  `clientCode` varchar(32) DEFAULT NULL,
+  `clientSecret` varchar(64) DEFAULT NULL,
+  `clientName` varchar(100) DEFAULT NULL,
+  `redirectUrl` varchar(255) DEFAULT NULL,
+  `createdDate` datetime DEFAULT NULL,
+  `modifiedDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`clientId`),
+  UNIQUE KEY `UQ_CODE` (`clientCode`),
+  KEY `IDX_OWNER` (`ownerId`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;

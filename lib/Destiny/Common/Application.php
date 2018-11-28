@@ -4,6 +4,7 @@ namespace Destiny\Common;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
+use Destiny\Common\Utils\RandomString;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use function GuzzleHttp\json_encode;
@@ -12,8 +13,6 @@ use function GuzzleHttp\json_encode;
  * @method static Application instance()
  */
 class Application extends Service {
-
-    private static $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     /**
      * @var CacheProvider
@@ -112,11 +111,11 @@ class Application extends Service {
                     $response->setBody($this->template($result . '.php', $model));
                 }
             } else if($result !== null) {
-                Log::critical($result);
+                Log::critical("Invalid response " . var_export($result, true));
                 throw new Exception('invalidresponse');
             }
         } catch (Exception $e) {
-            $id = self::randomString(12);
+            $id = RandomString::makeUrlSafe(12);
             Log::error("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
             $model->code = Http::STATUS_ERROR;
             $model->error = $e;
@@ -124,7 +123,7 @@ class Application extends Service {
             $response->setStatus(Http::STATUS_ERROR);
             $response->setBody($this->errorTemplate($model, $useResponseAsBody));
         } catch (\Exception $e) {
-            $id = self::randomString(12);
+            $id = RandomString::makeUrlSafe(12);
             Log::critical("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
             $model->code = Http::STATUS_ERROR;
             $model->error = new Exception ('Application error', $e);
@@ -134,18 +133,6 @@ class Application extends Service {
         }
 
         $this->handleResponse($response);
-    }
-
-    /**
-     * @param int $length
-     * @return string
-     */
-    private static function randomString($length = 10) {
-        $str = [];
-        for ($i = 0; $i < $length; $i++) {
-            $str[] = self::$characters[rand(0, strlen(self::$characters) - 1)];
-        }
-        return join('', $str);
     }
 
     /**
@@ -244,22 +231,12 @@ class Application extends Service {
         // has ANY private keys
         $keyNames = $route->getPrivateKeys();
         if (!empty($keyNames)) {
-            $keyValue = $this->getPrivateKeyRequestParameter($request);
+            $keyValue = self::getPrivateKeyValueFromRequest($request);
             if (empty($keyValue) || !in_array(true, array_map(function($keyName) use ($keyValue) { return strcmp(Config::$a['privateKeys'][$keyName], $keyValue) === 0; }, $keyNames))) {
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * @param Request $request
-     * @return null|string
-     */
-    private function getPrivateKeyRequestParameter(Request $request) {
-        $gets = $request->get();
-        $posts = $request->post();
-        return isset($gets['privatekey']) ? $gets['privatekey'] : (isset($posts['privatekey']) ? $posts['privatekey'] : null);
     }
 
     /**
@@ -285,6 +262,30 @@ class Application extends Service {
         } catch (\Exception $e) {
             return $e;
         }
+    }
+
+    /**
+     * @param Request $request
+     * @return null|string
+     */
+    public static function getPrivateKeyValueFromRequest(Request $request) {
+        $gets = $request->get();
+        $posts = $request->post();
+        return isset($gets['privatekey']) ? $gets['privatekey'] : (isset($posts['privatekey']) ? $posts['privatekey'] : null);
+    }
+
+    /**
+     * @param Request $request
+     * @return string|null
+     */
+    public static function getPrivateKeyNameFromRequest(Request $request){
+        $keyValue = self::getPrivateKeyValueFromRequest($request);
+        foreach (Config::$a['privateKeys'] as $key => $value) {
+            if ($value == $keyValue) {
+                return $key;
+            }
+        }
+        return null;
     }
 
     public function getDbal() {

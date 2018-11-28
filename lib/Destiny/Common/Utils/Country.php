@@ -2,6 +2,7 @@
 namespace Destiny\Common\Utils;
 
 use Destiny\Common\Application;
+use Destiny\Common\Exception;
 
 /**
  * This class is weird
@@ -49,10 +50,18 @@ abstract class Country {
         return self::$countries;
     }
 
+    /**
+     * Return a country by code, if none exists throw an exception
+     * @param $code
+     * @return mixed|null
+     * @throws Exception
+     */
     public static function getCountryByCode($code) {
-        $code = strtolower ( $code );
-        $countries = self::getCountries ();
-        return (isset ( self::$codeIndex [$code] )) ? $countries [self::$codeIndex [$code]] : null;
+        $code = strtolower($code);
+        if (!isset (self::$codeIndex [$code])) {
+            throw new Exception ('Invalid country');
+        }
+        return self::getCountries()[self::$codeIndex[$code]];
     }
 
 }

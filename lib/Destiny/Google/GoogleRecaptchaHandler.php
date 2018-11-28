@@ -12,6 +12,20 @@ use function GuzzleHttp\json_decode;
 class GoogleRecaptchaHandler {
 
     /**
+     * @param Request $request
+     * @param string $name
+     * @return bool
+     * @throws Exception
+     */
+    public function resolveWithRequest(Request $request, $name = 'g-recaptcha-response') {
+        $value = $request->param($name);
+        if (empty($value)) {
+            throw new Exception ('You must solve the recaptcha.');
+        }
+        return $this->resolve($value, $request);
+    }
+
+    /**
      * @param string $token The user response token provided by the reCAPTCHA to the user and provided to your site on.
      * @param Request $request The request
      * @return bool
@@ -52,8 +66,10 @@ class GoogleRecaptchaHandler {
                     }
                 }
             }
+        } catch (Exception $e) {
+            throw $e;
         } catch (\Exception $e) {
-            $n = new Exception("Unknown error.", $e);
+            $n = new Exception("Error resolving captcha", $e);
             Log::error($n);
             throw $n;
         }

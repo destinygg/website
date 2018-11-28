@@ -152,9 +152,6 @@ class AdminUserController {
 
         if (!empty ($country)) {
             $countryArr = Country::getCountryByCode($country);
-            if (empty ($countryArr)) {
-                throw new Exception ('Invalid country');
-            }
             $country = $countryArr ['alpha-2'];
         }
 

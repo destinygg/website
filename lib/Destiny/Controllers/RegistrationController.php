@@ -3,7 +3,6 @@ namespace Destiny\Controllers;
 
 use Destiny\Common\Application;
 use Destiny\Common\Log;
-use Destiny\Common\Utils\Country;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session;
 use Destiny\Common\Exception;
@@ -25,6 +24,7 @@ class RegistrationController {
 
     /**
      * Make sure we have a valid session
+     * TODO clean this up
      *
      * @param array $params
      * @throws Exception
@@ -61,18 +61,15 @@ class RegistrationController {
      */
     public function register(array $params, ViewModel $model) {
         $authCreds = $this->getSessionAuthenticationCredentials($params);
-        $email = $authCreds->getEmail();
         $username = $authCreds->getUsername();
-        if (!empty ($username) && empty ($email)) {
-            $email = $username . '@destiny.gg';
-        }
         $model->title = 'Register';
         $model->username = $username;
-        $model->email = $email;
+        $model->rememberme = (isset($params['rememberme'])) ? $params['rememberme'] : 0;
         $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
+        $model->grant = (isset($params['grant'])) ? $params['grant'] : '';
+        $model->uuid = (isset($params['uuid'])) ? $params['uuid'] : '';
         $model->authProvider = $authCreds->getAuthProvider();
         $model->code = $authCreds->getAuthCode();
-        $model->rememberme = Session::get('rememberme');
         return 'register';
     }
 
@@ -92,36 +89,20 @@ class RegistrationController {
         $userService = UserService::instance();
         $authService = AuthenticationService::instance();
         $authCreds = $this->getSessionAuthenticationCredentials($params);
-
         $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : '';
-        $email = (isset ($params ['email']) && !empty ($params ['email'])) ? $params ['email'] : '';
-        $country = (isset ($params ['country']) && !empty ($params ['country'])) ? $params ['country'] : '';
-
-        $authCreds->setUsername($username);
-        $authCreds->setEmail($email);
 
         try {
-            if (!isset($params['g-recaptcha-response']) || empty($params['g-recaptcha-response']))
-                throw new Exception ('You must solve the recaptcha.');
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-            $googleRecaptchaHandler->resolve($params['g-recaptcha-response'], $request);
+            $googleRecaptchaHandler->resolveWithRequest($request);
             $authService->validateUsername($username);
-            if ($userService->getIsUsernameTaken($username, -1)) {
-                throw new Exception ('The username you asked for is already being used');
-            }
-            $authService->validateEmail($email);
-            if (!empty ($country)) {
-                $countryArr = Country::getCountryByCode($country);
-                if (empty ($countryArr)) {
-                    throw new Exception ('Invalid country');
-                }
-                $country = $countryArr ['alpha-2'];
-            }
+            $userService->checkUsernameTaken($username, -1);
+            $authCreds->setUsername($username);
         } catch (Exception $e) {
             $model->title = 'Register Error';
             $model->username = $username;
-            $model->email = $email;
             $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
+            $model->grant = (isset($params['grant'])) ? $params['grant'] : '';
+            $model->uuid = (isset($params['uuid'])) ? $params['uuid'] : '';
             $model->authProvider = $authCreds->getAuthProvider();
             $model->code = $authCreds->getAuthCode();
             $model->error = $e;
@@ -133,9 +114,7 @@ class RegistrationController {
             $conn->beginTransaction();
             $userId = $userService->addUser([
                 'username' => $username,
-                'email' => $email,
-                'userStatus' => 'Active',
-                'country' => $country
+                'userStatus' => 'Active'
             ]);
             $userService->addUserAuthProfile([
                 'userId' => $userId,
@@ -160,9 +139,15 @@ class RegistrationController {
         if (isset ($params ['follow']) && !empty ($params ['follow'])) {
             Session::set('follow', $params ['follow']);
         }
+        if (isset ($params ['grant']) && !empty ($params ['grant'])) {
+            Session::set('grant', $params ['grant']);
+        }
+        if (isset ($params ['uuid']) && !empty ($params ['uuid'])) {
+            Session::set('uuid', $params ['uuid']);
+        }
 
-        $authCredHandler = new AuthenticationRedirectionFilter ();
-        return $authCredHandler->execute($authCreds);
+        $authHandler = new AuthenticationRedirectionFilter($authCreds);
+        return $authHandler->execute();
     }
 
 }

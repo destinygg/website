@@ -6,7 +6,7 @@ namespace Destiny\Common\Annotation;
  * @Target({"METHOD"})
  */
 class Route {
-    
+
     /**
      * @var string
      */
@@ -16,15 +16,15 @@ class Route {
      * @param array $params
      */
     public function __construct(array $params = null) {
-        if(!empty($params)) {
+        if (!empty($params)) {
             $this->path = $params ['value'];
         }
     }
-    
+
     /**
      * @return string
      */
-    public function getPath(){
+    public function getPath() {
         return $this->path;
     }
 

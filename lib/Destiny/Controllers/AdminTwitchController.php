@@ -97,7 +97,7 @@ class AdminTwitchController {
                 Session::setSuccessBag("Access Token: ". $data['access_token'] ." Refresh Token: ". $data['refresh_token']);
                 return "redirect: /admin/twitch";
             }
-            throw new Exception ( 'Bad response from oauth provider' );
+            throw new Exception ("Bad response from oauth provider: {$response->getStatusCode()}");
         } catch (\Exception $e) {
             Session::setErrorBag($e->getMessage());
             return "redirect: /admin/twitch";

@@ -5,7 +5,9 @@ use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
+use Destiny\Common\Authentication\OAuthService;
 use Destiny\Common\AuthHandlerInterface;
+use Destiny\Common\Exception;
 use Destiny\Common\Request;
 use Destiny\Common\Session;
 use Destiny\Common\User\UserRole;
@@ -15,17 +17,16 @@ use Destiny\Google\GoogleAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
-use Exception;
 
 /**
  * @Controller
  */
-class AuthenticationController {
+class LoginController {
 
     /**
      * @param $type String
      * @return AuthHandlerInterface
-     * @throws Exception
+     * @throws \Exception
      */
     private function getAuthHandlerByType($type) {
         $authHandler = null;
@@ -46,7 +47,7 @@ class AuthenticationController {
                 $authHandler = new DiscordAuthHandler();
                 break;
             default:
-                throw new Exception('No handler found.');
+                throw new Exception('No authentication handler found.');
         }
         return $authHandler;
     }
@@ -58,11 +59,28 @@ class AuthenticationController {
      * @param array $params
      * @param ViewModel $model
      * @return string
+     * @throws Exception
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function login(array $params, ViewModel $model) {
         Session::remove('accountMerge');
+        $grant = isset($params['grant']) ? $params['grant'] : null;
+        $follow = (isset($params ['follow'])) ? $params ['follow'] : '';
+        $uuid = (isset($params ['uuid'])) ? $params ['uuid'] : '';
+
+        if (!empty($uuid)) {
+            $oauthService = OAuthService::instance();
+            $auth = $oauthService->getFlashStore($uuid, 'uuid');
+            $app = $oauthService->getAuthClientByCode($auth['client_id']);
+        } else {
+            $app = [];
+        }
+
         $model->title = 'Login';
-        $model->follow = (isset ($params ['follow'])) ? $params ['follow'] : '';
+        $model->follow = $follow;
+        $model->grant = $grant;
+        $model->uuid = $uuid;
+        $model->app = $app;
         return 'login';
     }
 
@@ -97,7 +115,13 @@ class AuthenticationController {
             $type = substr($request->path(), strlen("/auth/"));
             return $this->getAuthHandlerByType($type)->authenticate($params);
         } catch (\Exception $e) {
-            return $this->handleAuthError($e, $model);
+            if (Session::hasRole(UserRole::USER)) {
+                Session::setErrorBag($e->getMessage());
+                return 'redirect: /profile/authentication';
+            }
+            $model->title = 'Login error';
+            $model->error = $e;
+            return 'error';
         }
     }
 
@@ -106,49 +130,24 @@ class AuthenticationController {
      * @HttpMethod ({"POST"})
      *
      * @param array $params
-     * @param ViewModel $model
      * @return string
-     *
-     * @throws Exception
+     * @throws \Exception
      */
-    public function loginPost(array $params, ViewModel $model) {
-        $authProvider = (isset ($params ['authProvider']) && !empty ($params['authProvider'])) ? $params ['authProvider'] : '';
-        $rememberme = (isset ($params ['rememberme']) && !empty ($params ['rememberme'])) ? true : false;
-        if (empty ($authProvider)) {
-            $model->title = 'Login error';
-            $model->rememberme = $rememberme;
-            $model->error = new Exception ('Please select a authentication provider');
-            return 'error';
-        }
-        Session::start();
-        if ($rememberme) {
-            Session::set('rememberme', 1);
-        }
-        if (isset ($params ['follow']) && !empty ($params ['follow'])) {
-            Session::set('follow', $params ['follow']);
-        }
+    public function loginPost(array $params) {
         try {
-            return 'redirect: ' . $this->getAuthHandlerByType($authProvider)->getAuthenticationUrl();
+            if (!isset($params['authProvider']) || empty($params['authProvider'])) {
+                throw new Exception('Please select a authentication provider');
+            }
+            Session::start(); // TODO Using the session for this kind of state is bad.
+            Session::set('rememberme', (isset ($params ['rememberme']) && !empty ($params ['rememberme'])) ? 1 : 0);
+            Session::set('follow', (isset ($params ['follow']) && !empty ($params ['follow'])) ? $params ['follow'] : null);
+            Session::set('grant', (isset ($params ['grant']) && !empty ($params ['grant'])) ? $params ['grant'] : null);
+            Session::set('uuid', (isset ($params ['uuid']) && !empty ($params ['uuid'])) ? $params ['uuid'] : null);
+            $handler = $this->getAuthHandlerByType($params ['authProvider']);
+            return 'redirect: ' . $handler->getAuthenticationUrl();
         } catch (Exception $e) {
-            $model->title = 'Login error';
-            $model->rememberme = $rememberme;
-            $model->error = new Exception ('Authentication type not supported');
-            return 'error';
-        }
-    }
-
-    /**
-     * @param \Exception $e
-     * @param ViewModel $model
-     * @return string
-     */
-    private function handleAuthError(\Exception $e, ViewModel $model) {
-        if (Session::hasRole(UserRole::USER)) {
             Session::setErrorBag($e->getMessage());
-            return 'redirect: /profile/authentication';
+            return 'redirect: /login';
         }
-        $model->title = 'Login error';
-        $model->error = $e;
-        return 'error';
     }
 }

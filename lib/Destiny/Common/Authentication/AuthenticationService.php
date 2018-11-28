@@ -5,6 +5,7 @@ use Destiny\Chat\EmoteService;
 use Destiny\Common\Application;
 use Destiny\Common\Crypto;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session;
 use Destiny\Common\Service;
@@ -91,6 +92,7 @@ class AuthenticationService extends Service {
     /**
      * Starts up the session, looks for remember me if there was no session
      * Also updates the session if the user is flagged for it.
+     * TODO this method is a mess
      *
      * @throws \Exception
      */
@@ -190,43 +192,6 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * @param AuthenticationCredentials $authCreds
-     * @return array
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function handleAuthCredentials(AuthenticationCredentials $authCreds) {
-        $userService = UserService::instance();
-        $user = $userService->getAuthByIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider());
-
-        if (empty ($user)) {
-            throw new Exception ('Invalid auth user');
-        }
-
-        // The user has register before...
-        // Update the auth profile for this provider
-        $authProfile = $userService->getAuthByUserAndProvider($user ['userId'], $authCreds->getAuthProvider());
-        if (!empty ($authProfile)) {
-            $userService->updateUserAuthProfile($user ['userId'], $authCreds->getAuthProvider(), [
-                'authCode' => $authCreds->getAuthCode(),
-                'authDetail' => $authCreds->getAuthDetail()
-            ]);
-        }
-
-        // Renew the session upon successful login, makes it slightly harder to hijack
-        $session = Session::instance();
-        $session->renew(true);
-
-        $credentials = $this->buildUserCredentials($user, $authCreds->getAuthProvider());
-        Session::updateCredentials($credentials);
-
-        $redisService = ChatRedisService::instance();
-        $redisService->setChatSession($credentials, Session::getSessionId());
-        $redisService->sendRefreshUser($credentials);
-        return $user;
-    }
-
-    /**
      * Handles the authentication and then merging of accounts
      * Merging of an account is basically connecting multiple authenticators to one user
      *
@@ -268,21 +233,24 @@ class AuthenticationService extends Service {
      * Note the rememberme cookie has a long expiry unlike the session cookie
      *
      * @param array $user
-     * @throws \Exception
      */
     public function setRememberMe(array $user) {
-        $cookie = Session::instance()->getRememberMeCookie();
-        $rawData = $cookie->getValue();
-        if (!empty ($rawData)) {
-            $cookie->clearCookie();
+        try {
+            $cookie = Session::instance()->getRememberMeCookie();
+            $rawData = $cookie->getValue();
+            if (!empty ($rawData)) {
+                $cookie->clearCookie();
+            }
+            $expires = Date::getDateTime(time() + mt_rand(0, 2419200)); // 0-28 days
+            $expires->add(new \DateInterval('P1M'));
+            $data = Crypto::encrypt(serialize([
+                'userId' => $user['userId'],
+                'expires' => $expires->getTimestamp()
+            ]));
+            $cookie->setValue($data, Date::getDateTime('NOW + 2 MONTHS')->getTimestamp());
+        } catch (\Exception $e) {
+            Log::error(new Exception('Failed to create remember me cookie.', $e));
         }
-        $expires = Date::getDateTime(time() + mt_rand(0, 2419200)); // 0-28 days
-        $expires->add(new \DateInterval('P1M'));
-        $data = Crypto::encrypt(serialize([
-            'userId' => $user['userId'],
-            'expires' => $expires->getTimestamp()
-        ]));
-        $cookie->setValue($data, Date::getDateTime('NOW + 2 MONTHS')->getTimestamp());
     }
 
     /**

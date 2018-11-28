@@ -8,48 +8,41 @@ namespace Destiny\Common\Utils;
  * Solution taken from here:
  * http://stackoverflow.com/a/13733588/1056679
  */
-class RandomStringGenerator {
+class RandomString {
 
     /** @var string */
-    protected $alphabet;
+    protected static $alphabetFull = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._~=$|![]#%@+<>/';
 
-    /** @var int */
-    protected $alphabetLength;
+    /** @var string */
+    protected static $alphabetAlphaNumeric = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
     /**
+     * @param int $length
      * @param string $alphabet
+     * @return string
      */
-    public function __construct($alphabet = '') {
-        if (!empty($alphabet)) {
-            $this->setAlphabet($alphabet);
-        } else {
-            $this->setAlphabet(
-                implode(range('a', 'z'))
-                . implode(range('A', 'Z'))
-                . implode(range(0, 9))
-            );
+    private static function guid($length, $alphabet) {
+        $token = '';
+        for ($i = 0; $i < $length; $i++) {
+            $token .= $alphabet[self::getRandomInteger(0, strlen($alphabet))];
         }
-    }
-
-    /**
-     * @param string $alphabet
-     */
-    public function setAlphabet($alphabet) {
-        $this->alphabet = $alphabet;
-        $this->alphabetLength = strlen($alphabet);
+        return $token;
     }
 
     /**
      * @param int $length
      * @return string
      */
-    public function generate($length) {
-        $token = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomKey = $this->getRandomInteger(0, $this->alphabetLength);
-            $token .= $this->alphabet[$randomKey];
-        }
-        return $token;
+    public static function make($length) {
+        return self::guid($length, self::$alphabetFull);
+    }
+
+    /**
+     * @param $length
+     * @return string
+     */
+    public static function makeUrlSafe($length) {
+        return self::guid($length, self::$alphabetAlphaNumeric);
     }
 
     /**
@@ -57,7 +50,7 @@ class RandomStringGenerator {
      * @param int $max
      * @return int
      */
-    protected function getRandomInteger($min, $max) {
+    protected static function getRandomInteger($min, $max) {
         $range = ($max - $min);
         if ($range < 0) {
             // Not so random...
@@ -74,7 +67,6 @@ class RandomStringGenerator {
             $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
             // Discard irrelevant bits.
             $rnd = $rnd & $filter;
-
         } while ($rnd >= $range);
         return ($min + $rnd);
     }
