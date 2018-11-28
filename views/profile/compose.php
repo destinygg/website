@@ -1,6 +1,6 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 ?>
 <div class="modal fade message-composition" id="compose" tabindex="-1" role="dialog" aria-labelledby="composeLabel" aria-hidden="true">

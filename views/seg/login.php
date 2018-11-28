@@ -1,6 +1,6 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 ?>
 <?php if(!Session::hasRole(UserRole::USER)): ?>

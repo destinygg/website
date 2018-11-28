@@ -1,6 +1,9 @@
 <?php
 namespace Destiny\Common;
 
+use Destiny\Common\Session\Session;
+use Destiny\Common\Session\SessionCredentials;
+use Destiny\Common\Session\SessionInstance;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
@@ -56,7 +59,6 @@ class Application extends Service {
      */
     public function executeRequest(Request $request) {
         $response = new Response();
-        $response->setStatus(Http::STATUS_OK);
         $route = $this->router->findRoute($request);
         $model = new ViewModel ();
 

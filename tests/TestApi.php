@@ -1,11 +1,10 @@
 <?php
 use Destiny\Blog\BlogApiService;
 use Destiny\Common\Config;
-use Destiny\Common\Utils\ImageDownload;
+use Destiny\Common\Images\ImageDownloadUtil;
 use Destiny\LastFm\LastFMApiService;
 use Destiny\Reddit\RedditFeedService;
 use Destiny\Twitch\TwitchApiService;
-use Destiny\Twitter\TwitterApiService;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Youtube\YoutubeApiService;
 
@@ -13,10 +12,10 @@ class TestApi extends PHPUnit\Framework\TestCase {
 
     public function testDownloadImage(){
         $base = Config::$a['images']['path'];
-        ImageDownload::download('https://i.ytimg.com/vi/H9aSGPimnac/default.jpg', true, $base);
-        ImageDownload::download('https://lastfm-img2.akamaized.net/i/u/64s/7835874030a04069c015d6af92121c84.png', true, $base);
-        ImageDownload::download('http://i.ytimg.com/vi/pKvw87dQg0Y/default.jpg', true, $base);
-        ImageDownload::download('http://www.404.com/404.jpg', true, $base);
+        ImageDownloadUtil::download('https://i.ytimg.com/vi/H9aSGPimnac/default.jpg', true, $base);
+        ImageDownloadUtil::download('https://lastfm-img2.akamaized.net/i/u/64s/7835874030a04069c015d6af92121c84.png', true, $base);
+        ImageDownloadUtil::download('http://i.ytimg.com/vi/pKvw87dQg0Y/default.jpg', true, $base);
+        ImageDownloadUtil::download('http://www.404.com/404.jpg', true, $base);
         $this->assertTrue(true);
     }
 

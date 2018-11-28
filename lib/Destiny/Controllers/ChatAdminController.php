@@ -9,7 +9,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\User\UserService;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
 

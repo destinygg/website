@@ -6,7 +6,7 @@ use Destiny\Common\Log;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Exception;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\RandomString;
 use Doctrine\DBAL\DBALException;
 

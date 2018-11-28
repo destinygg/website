@@ -4,8 +4,8 @@ namespace Destiny\Tasks;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
-use Destiny\Common\TaskInterface;
-use Destiny\Common\Utils\ImageDownload;
+use Destiny\Common\Cron\TaskInterface;
+use Destiny\Common\Images\ImageDownloadUtil;
 use Destiny\Youtube\YoutubeApiService;
 
 /**
@@ -17,7 +17,7 @@ class YoutubeFeed implements TaskInterface {
         $json = YoutubeApiService::instance()->getYoutubePlaylist();
         if (!empty ($json)) {
             foreach ($json ['items'] as $i => $item) {
-                $path = ImageDownload::download($json ['items'][$i]['snippet']['thumbnails']['high']['url']);
+                $path = ImageDownloadUtil::download($json ['items'][$i]['snippet']['thumbnails']['high']['url']);
                 if (!empty($path))
                     $json ['items'][$i]['snippet']['thumbnails']['high']['url'] = Config::cdni() . '/' . $path;
             }

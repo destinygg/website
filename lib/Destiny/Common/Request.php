@@ -5,34 +5,22 @@ use Destiny\Common\Utils\Options;
 
 class Request {
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $address;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $method;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $uri;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $get;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $post;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $headers;
 
     public function __construct(array $options = null){

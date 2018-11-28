@@ -2,8 +2,8 @@
 
 use Destiny\Common\DirectoryClassIterator;
 use Destiny\Common\Log;
-use Destiny\Common\Scheduler;
-use Destiny\Common\TaskAnnotationLoader;
+use Destiny\Common\Cron\Scheduler;
+use Destiny\Common\Cron\TaskAnnotationLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 
 class TestCron extends PHPUnit\Framework\TestCase {
@@ -27,6 +27,6 @@ class TestCron extends PHPUnit\Framework\TestCase {
             Log::info("Executing {class} ...", ['class' => get_class($class)]);
             $class->execute();
         }
-        $this->assertTrue(count($scheduler->schedule) > 0);
+        self::assertTrue(count($scheduler->schedule) > 0);
     }
 }

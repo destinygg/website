@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Common;
+namespace Destiny\Common\Session;
 
 use Destiny\Common\Utils\Options;
 

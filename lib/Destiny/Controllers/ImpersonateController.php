@@ -2,7 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Common\Exception;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;

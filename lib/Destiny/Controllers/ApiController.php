@@ -29,7 +29,7 @@ class ApiController {
      *
      * @param array $params
      * @throws \Exception
-     * @return \Destiny\Common\SessionCredentials|array
+     * @return \Destiny\Common\Session\SessionCredentials|array
      */
     public function userInfo(array $params) {
         FilterParams::required($params, 'token');

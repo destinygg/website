@@ -2,9 +2,9 @@
 namespace Destiny\Tasks;
 
 use Destiny\Common\Annotation\Schedule;
-use Destiny\Common\ImageService;
+use Destiny\Common\Images\ImageService;
 use Destiny\Common\Log;
-use Destiny\Common\TaskInterface;
+use Destiny\Common\Cron\TaskInterface;
 
 /**
  * @Schedule(frequency=1,period="hour")

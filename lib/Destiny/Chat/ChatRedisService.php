@@ -4,7 +4,7 @@ namespace Destiny\Chat;
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
 use Destiny\Common\Service;
-use Destiny\Common\SessionCredentials;
+use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\Config;
 use Destiny\Redis\RedisUtils;
 use \Redis;

@@ -1,6 +1,6 @@
 <?php
 
-use Destiny\Common\Crypto;
+use Destiny\Common\Utils\Crypto;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\RandomString;
 

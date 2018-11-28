@@ -1,6 +1,8 @@
 <?php
-namespace Destiny\Common;
+namespace Destiny\Common\Images;
 
+use Destiny\Common\Application;
+use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
 use RuntimeException;

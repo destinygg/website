@@ -4,7 +4,7 @@ namespace Destiny\Tasks;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Log;
-use Destiny\Common\TaskInterface;
+use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;
 

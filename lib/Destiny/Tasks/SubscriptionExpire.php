@@ -8,7 +8,7 @@ use Destiny\Common\Application;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Log;
-use Destiny\Common\TaskInterface;
+use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\StreamLabs\StreamLabsAlertsType;

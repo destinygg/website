@@ -79,7 +79,7 @@ class TwitchApiService extends Service {
 
     /**
      * What channel {you} are hosting
-     * @param $id int stream id
+     * @param int $id stream id
      * @return array
      */
     public function getChannelHost($id){
@@ -157,7 +157,7 @@ class TwitchApiService extends Service {
     }
 
     /**
-     * @param $name string channel name
+     * @param string $name channel name
      * @return array|null
      */
     public function getChannel($name) {
@@ -179,7 +179,7 @@ class TwitchApiService extends Service {
     }
 
     /**
-     * @param $name string stream name
+     * @param string $name stream name
      * @return array
      */
     public function getStreamInfo($name) {

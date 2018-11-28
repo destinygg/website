@@ -1,5 +1,5 @@
 <?php
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
@@ -8,7 +8,7 @@ use Destiny\Common\User\UserRole;
 use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
@@ -53,7 +53,7 @@ use Destiny\Commerce\SubscriptionStatus;
                         <label>Country</label>
                         <select name="country" class="form-control">
                             <option value="">Select your country</option>
-                            <?$countries = Country::getCountries();?>
+                            <?php $countries = Country::getCountries(); ?>
                             <option value="">&nbsp;</option>
                             <option value="US" <?php if($this->user['country'] == 'US'): ?>
                                 selected="selected" <?php endif;?>>United States</option>

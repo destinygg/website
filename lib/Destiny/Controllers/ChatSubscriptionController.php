@@ -16,7 +16,7 @@ use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Messages\PrivateMessageService;
-use Destiny\Common\SessionCredentials;
+use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\Authentication\AuthenticationService;
 use Doctrine\DBAL\DBALException;
 

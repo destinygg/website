@@ -56,11 +56,13 @@ class MinecraftAuthController {
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'userNotFound';
         }
-        $ban = $chatBanService->getUserActiveBan($userid, @$params ['ipaddress']);
-        if (!empty($ban)) {
-            Log::info('User banned');
-            $response->setStatus(Http::STATUS_FORBIDDEN);
-            return 'userBanned';
+        if (!empty($params ['ipaddress'])) {
+            $ban = $chatBanService->getUserActiveBan($userid, $params ['ipaddress']);
+            if (!empty($ban)) {
+                Log::info('User banned');
+                $response->setStatus(Http::STATUS_FORBIDDEN);
+                return 'userBanned';
+            }
         }
         $user = $userService->getUserById($userid);
         if (empty ($user)) {
@@ -129,11 +131,13 @@ class MinecraftAuthController {
             $response->setStatus(Http::STATUS_NOT_FOUND);
             return 'nameNotFound';
         }
-        $ban = $chatBanService->getUserActiveBan($userid, @$params ['ipaddress']);
-        if (!empty($ban)) {
-            Log::info("user banned");
-            $response->setStatus(Http::STATUS_FORBIDDEN);
-            return 'userBanned';
+        if (!empty($params ['ipaddress'])) {
+            $ban = $chatBanService->getUserActiveBan($userid, $params ['ipaddress']);
+            if (!empty($ban)) {
+                Log::info("user banned");
+                $response->setStatus(Http::STATUS_FORBIDDEN);
+                return 'userBanned';
+            }
         }
         $user = $userService->getUserById($userid);
         if (empty ($user)) {

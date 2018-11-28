@@ -3,13 +3,13 @@ namespace Destiny\Common\Authentication;
 
 use Destiny\Chat\EmoteService;
 use Destiny\Common\Application;
-use Destiny\Common\Crypto;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
+use Destiny\Common\Utils\Crypto;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\Service;
-use Destiny\Common\SessionCredentials;
+use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;
@@ -39,7 +39,9 @@ class AuthenticationService extends Service {
         $front = substr($normalizeduname, 0, 2);
 
         $emoteService = EmoteService::instance();
-        $emotes = array_map(function($v){ return $v['prefix']; }, $emoteService->findAllEmotes());
+        $emotes = array_map(function($v) {
+            return $v['prefix'];
+        }, $emoteService->findAllEmotes());
 
         foreach ($emotes as $emote) {
             $normalizedemote = strtolower($emote);
@@ -200,23 +202,23 @@ class AuthenticationService extends Service {
      * @throws Exception
      */
     public function handleAuthAndMerge(AuthenticationCredentials $authCreds) {
-        $userService = UserService::instance ();
-        $user = $userService->getAuthByIdAndProvider ( $authCreds->getAuthId (), $authCreds->getAuthProvider () );
-        $sessAuth = Session::getCredentials ()->getData ();
+        $userService = UserService::instance();
+        $user = $userService->getAuthByIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider());
+        $sessAuth = Session::getCredentials()->getData();
         // We need to merge the accounts if one exists
-        if (! empty ( $user )) {
+        if (!empty ($user)) {
             // If the profile userId is the same as the current one, the profiles are connceted, they shouldn't be here
             if ($user ['userId'] == $sessAuth ['userId']) {
-                throw new Exception ( 'These account are already connected' );
+                throw new Exception ('These account are already connected');
             }
             // If the profile user is older than the current user, prompt the user to rather login using the other profile
-            if (intval ( $user ['userId'] ) < $sessAuth ['userId']) {
-                throw new Exception ( sprintf ( 'Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds->getAuthProvider () ) );
+            if (intval($user ['userId']) < $sessAuth ['userId']) {
+                throw new Exception (sprintf('Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds->getAuthProvider()));
             }
             // So we have a profile for a different user to the one logged in, we delete that user, and add a profile for the current user
-            $userService->removeAuthProfile ( $user ['userId'], $authCreds->getAuthProvider () );
+            $userService->removeAuthProfile($user ['userId'], $authCreds->getAuthProvider());
             // Set the user profile to Merged
-            $userService->updateUser ( $user ['userId'], ['userStatus' => 'Merged']);
+            $userService->updateUser($user ['userId'], ['userStatus' => 'Merged']);
         }
         $userService->addUserAuthProfile([
             'userId' => $sessAuth ['userId'],
@@ -263,14 +265,14 @@ class AuthenticationService extends Service {
         $cookie = Session::instance()->getRememberMeCookie();
         $rawData = $cookie->getValue();
         $user = null;
-        if ( empty ( $rawData ))
+        if (empty($rawData))
             goto end;
 
-        if(strlen($rawData) < 64)
+        if (strlen($rawData) < 64)
             goto cleanup;
 
         $data = unserialize(Crypto::decrypt($rawData));
-        if (! $data)
+        if (!$data)
             goto cleanup;
 
         if (!isset($data['expires']) or !isset($data['userId']))

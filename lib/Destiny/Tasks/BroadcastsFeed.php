@@ -4,8 +4,8 @@ namespace Destiny\Tasks;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
-use Destiny\Common\TaskInterface;
-use Destiny\Common\Utils\ImageDownload;
+use Destiny\Common\Cron\TaskInterface;
+use Destiny\Common\Images\ImageDownloadUtil;
 use Destiny\Twitch\TwitchApiService;
 
 /**
@@ -20,7 +20,7 @@ class BroadcastsFeed implements TaskInterface {
         $broadcasts = TwitchApiService::instance ()->getPastBroadcasts ();
         if (! empty ( $broadcasts )){
             foreach ($broadcasts['videos'] as $i=>$video){
-                $path = ImageDownload::download($video['preview']);
+                $path = ImageDownloadUtil::download($video['preview']);
                 if(!empty($path))
                     $broadcasts['videos'][$i]['preview'] = Config::cdni() . '/' . $path;
             }

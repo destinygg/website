@@ -1,10 +1,9 @@
 <?php
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
@@ -32,7 +31,7 @@ use Destiny\Common\Config;
                             <td><?=ucwords($id)?></td>
                             <td style="width:100%;">
                                 <?php if(in_array($id, $this->authProfileTypes)): ?>
-                                    <a onclick="return confirm('Are you sure?')" href="/profile/remove/<?=$id?>" class="btn btn-danger btn-xs btn-post">Remove</a>
+                                    <a href="/profile/remove/<?=$id?>" data-confirm="Are you sure?" class="btn btn-danger btn-xs btn-post">Remove</a>
                                 <?php else: ?>
                                     <a href="/profile/connect/<?=$id?>" class="btn btn-primary btn-xs btn-post">Connect</a>
                                 <?php endif ?>

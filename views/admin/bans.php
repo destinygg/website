@@ -3,7 +3,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
@@ -51,7 +51,7 @@ use Destiny\Common\Utils\Tpl;
                                 echo Tpl::moment(Date::getDateTime($ban['endtimestamp']), Date::STRING_FORMAT);
                             ?>
                         </td>
-                        <td><a class="btn btn-danger btn-xs" href="/admin/user/<?=$ban['targetuserid']?>/ban/remove?follow=<?=rawurlencode( $_SERVER['REQUEST_URI'] )?>">Remove</a>
+                        <td><a class="btn btn-danger btn-xs" href="/admin/user/<?=$ban['targetuserid']?>/ban/remove?follow=<?=rawurlencode($_SERVER['REQUEST_URI'])?>">Remove</a>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

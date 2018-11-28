@@ -1,12 +1,13 @@
 <?php
-namespace Destiny\Common\Utils;
+namespace Destiny\Common\Images;
 
 use Destiny\Common\Config;
 use Destiny\Common\Log;
+use Destiny\Common\Utils\Http;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
-class ImageDownload {
+class ImageDownloadUtil {
 
     private static $ALLOWED_EXT = ["jpg", "jpeg", "png", "gif"];
     private static $PATH_SEPARATOR = "/";
@@ -15,16 +16,16 @@ class ImageDownload {
      * Downloads a remote image. File is named using a hash of the URL.
      * Files are stored in sub folders using the first 0-9A-z of the hash.
      *
-     * @param $url string
+     * @param string $url
      *  url to image
-     * @param $path string
-     *  Full directory, must not begin with slash, must end with slash
-     *  Must not include filename, must be an existing path, must include a filename and ext
-     * @param $overwrite boolean
+     * @param boolean $overwrite
      *  If false, will not request a new image if one is found
      *  If true, filename will be derived from the md5 of the file contents, instead of the URL
      *   This is to make sure new images are not cached by the http server.
      *   @TODO Adds complexity where there shouldn't - refactor
+     * @param string $path
+     *  Full directory, must not begin with slash, must end with slash
+     *  Must not include filename, must be an existing path, must include a filename and ext
      *
      * @return string a RELATIVE path to the file, or an empty string if something went wrong
      */

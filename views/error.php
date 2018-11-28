@@ -5,7 +5,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title(empty($this->code) ? $this->title : Http::$HEADER_STATUSES [$this->code])?>
     <?php include 'seg/meta.php' ?>
@@ -41,7 +41,7 @@ use Destiny\Common\Utils\Tpl;
             <p>Include this ID in your support query <label class="label label-danger"><?=Tpl::out($this->id)?></label></p>
         <?php endif; ?>
 
-        <?php $ini = @ini_get('display_errors') ?>
+        <?php $ini = ini_get('display_errors') ?>
         <?php if($this->error && $this->error instanceof Exception || $ini === '1' || $ini === 'true' || $ini === true || $ini === 1): ?>
             <?php $msg = $this->error->getMessage() ?>
             <?php if(is_string($msg) && strlen(trim($msg)) > 0): ?>

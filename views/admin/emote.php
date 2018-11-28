@@ -3,7 +3,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
@@ -35,7 +35,7 @@ use Destiny\Common\Config;
                     <div class="image-view-group">
                         <div class="image-view image-view-upload" data-upload="/admin/emotes/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/emotes/">
                             <?php if(!empty($this->emote['imageName'])): ?>
-                                <img width="<?=Tpl::out($this->emote['width'])?>" height="<?=Tpl::out($this->emote['height'])?>" src="<?=Config::cdnv()?>/emotes/<?=Tpl::out($this->emote['imageName'])?>" />
+                                <img alt="<?=Tpl::out($this->emote['imageName'])?>" width="<?=Tpl::out($this->emote['width'])?>" height="<?=Tpl::out($this->emote['height'])?>" src="<?=Config::cdnv()?>/emotes/<?=Tpl::out($this->emote['imageName'])?>" />
                             <?php else: ?>
                                 <i class="fa fa-fw fa-upload fa-3x"></i>
                             <?php endif; ?>

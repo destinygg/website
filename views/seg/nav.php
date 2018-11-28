@@ -1,7 +1,7 @@
 <?php
 namespace Destiny; 
 use Destiny\Common\User\UserRole;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 ?>
 <div id="main-nav" class="navbar navbar-static-top navbar-inverse">
     <div class="container-fluid">

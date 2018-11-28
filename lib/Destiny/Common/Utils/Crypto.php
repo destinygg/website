@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Common;
+namespace Destiny\Common\Utils;
 /*
  * This class attempts to follow the recommendations from
  * http://www.daemonology.net/blog/2009-06-11-cryptographic-right-answers.html
@@ -16,6 +16,9 @@ namespace Destiny\Common;
  * TODO: use sha3 if available finally, make sure the hardcoded length of
  * the HMAC still matches
  */
+
+use Destiny\Common\Config;
+
 class Crypto {
 
     /**

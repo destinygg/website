@@ -7,7 +7,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\ViewModel;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;

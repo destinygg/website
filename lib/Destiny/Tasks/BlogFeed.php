@@ -4,7 +4,7 @@ namespace Destiny\Tasks;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Blog\BlogApiService;
-use Destiny\Common\TaskInterface;
+use Destiny\Common\Cron\TaskInterface;
 
 /**
  * @Schedule(frequency=60,period="minute")

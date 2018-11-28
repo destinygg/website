@@ -5,7 +5,7 @@ namespace Destiny\Tasks;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Commerce\SubscriptionStatus;
-use Destiny\Common\TaskInterface;
+use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Utils\Options;
 
 /**
@@ -24,11 +24,11 @@ class RedditSubscribers implements TaskInterface {
      * @throws \Doctrine\DBAL\DBALException
      */
     public function execute() {
-        if (empty ( $this->output ))
+        if (empty ($this->output))
             return;
 
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( '
+        $stmt = $conn->prepare('
             SELECT 
                 auth.authId,
                 auth.authDetail,
@@ -46,38 +46,40 @@ class RedditSubscribers implements TaskInterface {
             WHERE s.status = :subscriptionStatus
             ORDER BY s.createdDate ASC
             LIMIT :start,:limit
-        ' );
-        
-        $stmt->bindValue ( 'subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR );
-        $stmt->bindValue ( 'authProvider', 'reddit', \PDO::PARAM_STR );
-        $stmt->bindValue ( 'start', 0, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', 10000, \PDO::PARAM_INT );
-        $stmt->execute ();
-        
-        $records = $stmt->fetchAll ();
+        ');
+
+        $stmt->bindValue('subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
+        $stmt->bindValue('authProvider', 'reddit', \PDO::PARAM_STR);
+        $stmt->bindValue('start', 0, \PDO::PARAM_INT);
+        $stmt->bindValue('limit', 10000, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $records = $stmt->fetchAll();
         $json = [];
-        foreach ( $records as $record ) {
+        foreach ($records as $record) {
             $json [] = [
-                    'id' => $record ['userId'],
-                    'username' => $record ['username'],
-                    'subscription' => [
-                            'startDate' => $record ['createdDate'],
-                            'endDate' => $record ['endDate'],
-                            'recurring' => ($record ['recurring']) ? true : false,
-                            'tier' => $record ['subscriptionTier'],
-                            'type' => $record ['subscriptionType']
-                    ],
-                    'reddit' => [
-                            'username' => $record ['authDetail'],
-                            'id' => $record ['authId']
-                    ]
+                'id' => $record ['userId'],
+                'username' => $record ['username'],
+                'subscription' => [
+                    'startDate' => $record ['createdDate'],
+                    'endDate' => $record ['endDate'],
+                    'recurring' => ($record ['recurring']) ? true : false,
+                    'tier' => $record ['subscriptionTier'],
+                    'type' => $record ['subscriptionType']
+                ],
+                'reddit' => [
+                    'username' => $record ['authDetail'],
+                    'id' => $record ['authId']
+                ]
             ];
         }
-        
-        $tmpFilename = $this->output . '.' . time ();
-        file_put_contents ( $tmpFilename, json_encode ( $json, JSON_NUMERIC_CHECK ) );
-        @unlink ( $this->output );
-        rename ( $tmpFilename, $this->output );
+
+        $tmpFilename = $this->output . '.' . time();
+        file_put_contents($tmpFilename, json_encode($json, JSON_NUMERIC_CHECK));
+        if (is_file($this->output)) {
+            unlink($this->output);
+        }
+        rename($tmpFilename, $this->output);
     }
     
     /**

@@ -4,7 +4,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
@@ -45,7 +45,7 @@ use Destiny\Common\Config;
                     </div>
                     <div class="form-actions block-foot">
                         <button class="btn btn-primary" type="submit">Save App</button>
-                        <a onclick="return confirm('Are you sure?')" href="/profile/app/<?=$authClient['clientId']?>/remove" class="btn btn-danger btn-post">Delete App</a>
+                        <a href="/profile/app/<?=$authClient['clientId']?>/remove" data-confirm="Are you sure?" class="btn btn-danger btn-post">Delete App</a>
                     </div>
                     <?php break; ?>
                     <?php endforeach; ?>
@@ -101,7 +101,7 @@ use Destiny\Common\Config;
                                 <?php endif; ?>
                             </td>
                             <td><?=Tpl::moment(Date::getDateTime($token['createdDate']), Date::STRING_FORMAT)?></td>
-                            <td><a onclick="return confirm('Are you sure?')" href="/profile/authtoken/<?=$token['tokenId']?>/delete" class="btn btn-danger btn-xs btn-post">Remove</a></td>
+                            <td><a href="/profile/authtoken/<?=$token['tokenId']?>/delete" data-confirm="Are you sure?" class="btn btn-danger btn-xs btn-post">Remove</a></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>

@@ -12,7 +12,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;

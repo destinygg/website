@@ -44,7 +44,7 @@ $(function(){
         const chatpanel   = $('#chat-panel'),
               streampanel = $('#stream-panel'),
               chatframe   = $('iframe#chat-frame'),
-              overlay     = $('<div class="overlay" />');
+              overlay     = $('<div class="overlay"></div>');
 
         chatframe.on('load', function(){
             const chatwindow = this.contentWindow;
@@ -441,9 +441,11 @@ $(function(){
 
 $(function(){
     $('.btn-post').on('click', function () {
-        const a = $(this), form = $(this).closest('form');
-        form.attr('action', a.attr('href'));
-        form.trigger('submit');
+        const a = $(this), form = $(this).closest('form'), confirmMessage = a.data('confirm');
+        if (!confirmMessage || confirm(confirmMessage)) {
+            form.attr('action', a.attr('href'));
+            form.trigger('submit');
+        }
         return false;
     });
 });

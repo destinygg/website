@@ -3,7 +3,7 @@ namespace Destiny;
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>

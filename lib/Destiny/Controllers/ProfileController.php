@@ -7,7 +7,7 @@ use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Authentication\OAuthService;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\RandomString;
@@ -57,7 +57,7 @@ class ProfileController {
         $model->discordAuthProfile = $userService->getAuthByUserAndProvider($userId, 'discord');
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
         $model->title = 'Account';
-        return 'profile';
+        return 'profile/account';
     }
 
     /**

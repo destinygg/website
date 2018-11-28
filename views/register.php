@@ -1,11 +1,10 @@
 <?php
 namespace Destiny;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Utils\Country;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>

@@ -7,7 +7,7 @@ use Destiny\Common\Utils\Date;
 use Destiny\Commerce\SubscriptionStatus;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>

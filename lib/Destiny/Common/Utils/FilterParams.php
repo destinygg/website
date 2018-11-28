@@ -1,14 +1,6 @@
 <?php
 namespace Destiny\Common\Utils;
 
-use Destiny\Common\Exception;
-
-/**
- * Thrown if the filter param is not validated
- */
-class FilterParamsException extends Exception {
-}
-
 /**
  * Abstract class to help with handling request variables
  */

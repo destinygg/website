@@ -9,7 +9,7 @@ use Destiny\Common\Authentication\OAuthService;
 use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Request;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\ViewModel;
 use Destiny\Discord\DiscordAuthHandler;
@@ -24,7 +24,7 @@ use Destiny\Twitter\TwitterAuthHandler;
 class LoginController {
 
     /**
-     * @param $type String
+     * @param string $type
      * @return AuthHandlerInterface
      * @throws \Exception
      */

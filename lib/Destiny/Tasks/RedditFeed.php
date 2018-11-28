@@ -3,7 +3,7 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
-use Destiny\Common\TaskInterface;
+use Destiny\Common\Cron\TaskInterface;
 use Destiny\Reddit\RedditFeedService;
 
 /**

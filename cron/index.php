@@ -1,8 +1,8 @@
 <?php
 use Destiny\Common\DirectoryClassIterator;
-use Destiny\Common\TaskAnnotationLoader;
 use Destiny\Common\Application;
-use Destiny\Common\Scheduler;
+use Destiny\Common\Cron\Scheduler;
+use Destiny\Common\Cron\TaskAnnotationLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Destiny\Common\Log;
 

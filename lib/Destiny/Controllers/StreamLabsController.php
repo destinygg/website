@@ -8,7 +8,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\ViewModel;

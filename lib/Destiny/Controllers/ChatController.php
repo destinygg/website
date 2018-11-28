@@ -7,7 +7,7 @@ use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Exception;
 use Destiny\Common\Request;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;

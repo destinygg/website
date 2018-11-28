@@ -15,7 +15,7 @@ use Destiny\Common\Utils\Date;
                   <?php foreach($this->toptracks['toptracks']['track'] as $trackIndex=>$track): ?>
                       <?php if($trackIndex == 3){break;}; ?>
                       <div class="media">
-                          <a class="pull-left cover-image" href="<?=$track['url']?>" style="width: 74px; height: 64px;"><img class="media-object img_64x64" data-src="<?=$track['image'][1]['#text']?>"></a>
+                          <a class="pull-left cover-image" href="<?=$track['url']?>" style="width: 74px; height: 64px;"><img alt="<?=Tpl::out($track['name'])?>" class="media-object img_64x64" data-src="<?=$track['image'][1]['#text']?>"></a>
                           <div class="media-body">
                               <div class="media-heading trackname">
                                   <a href="<?=$track['url']?>"><?=Tpl::out($track['name'])?></a>

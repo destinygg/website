@@ -1,7 +1,6 @@
 <?php
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
-
 ?>
 <section class="container">
     <ol class="breadcrumb" style="margin-bottom:0; font-size: 110%;">

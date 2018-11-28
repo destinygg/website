@@ -5,7 +5,7 @@ use Destiny\Chat\ChatBanService;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Messages\PrivateMessageService;
@@ -15,7 +15,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\User\UserService;
 use Destiny\Chat\ChatRedisService;
-use Destiny\Common\SessionCredentials;
+use Destiny\Common\Session\SessionCredentials;
 use Doctrine\DBAL\DBALException;
 
 /**

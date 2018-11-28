@@ -19,7 +19,7 @@ class RedisUtils {
     public static function callScript($scriptname, $argument) {
         $redis = Application::instance()->getRedis();
         $dir = Config::$a['redis']['scriptdir'];
-        $hash = @file_get_contents($dir . $scriptname . '.hash');
+        $hash = file_get_contents($dir . $scriptname . '.hash');
         if ($hash) {
             $ret = $redis->evalSha($hash, $argument);
             if ($ret) return $ret;

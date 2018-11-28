@@ -1,12 +1,11 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>

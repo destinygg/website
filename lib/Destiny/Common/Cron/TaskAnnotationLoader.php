@@ -1,7 +1,8 @@
 <?php
-namespace Destiny\Common;
+namespace Destiny\Common\Cron;
 
 use Destiny\Common\Annotation;
+use Destiny\Common\DirectoryClassIterator;
 use Doctrine\Common\Annotations\Reader;
 use \ReflectionClass;
 

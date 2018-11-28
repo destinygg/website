@@ -3,7 +3,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
@@ -36,7 +36,7 @@ use Destiny\Common\Config;
                     <div class="image-view-group">
                         <div class="image-view image-view-upload" data-upload="/admin/flairs/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/flairs/">
                             <?php if(!empty($this->flair['imageName'])): ?>
-                                <img width="<?=Tpl::out($this->flair['width'])?>" height="<?=Tpl::out($this->flair['height'])?>" src="<?=Config::cdnv()?>/flairs/<?=Tpl::out($this->flair['imageName'])?>" />
+                                <img alt="<?=Tpl::out($this->flair['imageName'])?>" width="<?=Tpl::out($this->flair['width'])?>" height="<?=Tpl::out($this->flair['height'])?>" src="<?=Config::cdnv()?>/flairs/<?=Tpl::out($this->flair['imageName'])?>" />
                             <?php else: ?>
                                 <i class="fa fa-fw fa-upload fa-3x"></i>
                             <?php endif; ?>

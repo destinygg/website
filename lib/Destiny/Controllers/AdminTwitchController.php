@@ -7,7 +7,7 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
-use Destiny\Common\Session;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;

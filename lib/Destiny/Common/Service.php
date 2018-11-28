@@ -3,9 +3,7 @@ namespace Destiny\Common;
 
 abstract class Service {
 
-    /**
-     * @var Service[]
-     */
+    /** @var Service[] */
     protected static $_instances = [];
 
     public static function instance() {

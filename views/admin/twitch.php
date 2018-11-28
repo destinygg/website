@@ -2,7 +2,7 @@
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
@@ -21,10 +21,8 @@ use Destiny\Common\Utils\Tpl;
         <div id="details-content" class="content content-dark clearfix collapse in">
             <div class="ds-block">
                 <div class="form-group">
-                    <p>
-                        <span style="display: block;">Attached profile: <a><?=Tpl::out($this->user['username'])?></a></span>
+                    <p><span style="display: block;">Attached profile: <a><?=Tpl::out($this->user['username'])?></a></span></p>
                     <p class="text-muted">Clicking the authorize button will attempt to grant special permissions.<br />This is for broadcasters only.</p>
-                    </p>
                     <div>
                         <a href="/admin/twitch/authorize" class="btn btn-primary" role="button">Authorize</a>
                     </div>

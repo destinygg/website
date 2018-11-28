@@ -3,7 +3,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>

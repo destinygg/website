@@ -5,8 +5,8 @@ use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
-use Destiny\Common\TaskInterface;
-use Destiny\Common\Utils\ImageDownload;
+use Destiny\Common\Cron\TaskInterface;
+use Destiny\Common\Images\ImageDownloadUtil;
 use Destiny\Twitch\TwitchApiService;
 
 /**
@@ -25,10 +25,10 @@ class StreamInfo implements TaskInterface {
         // STREAM STATUS
         $streaminfo = $twitchApiService->getStreamInfo(Config::$a ['twitch']['user']);
         if (!empty($streaminfo)) {
-            $path = ImageDownload::download($streaminfo['preview'], true);
+            $path = ImageDownloadUtil::download($streaminfo['preview'], true);
             if (!empty($path))
                 $streaminfo['preview'] = Config::cdni() . '/' . $path;
-            $path = ImageDownload::download($streaminfo['animated_preview'], true);
+            $path = ImageDownloadUtil::download($streaminfo['animated_preview'], true);
             if (!empty($path))
                 $streaminfo['animated_preview'] = Config::cdni() . '/' . $path;
         }

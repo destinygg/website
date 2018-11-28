@@ -1,6 +1,7 @@
 <?php
-namespace Destiny\Common;
+namespace Destiny\Common\Cron;
 
+use Destiny\Common\Exception;
 use Doctrine\DBAL\DBALException;
 
 interface TaskInterface {

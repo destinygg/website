@@ -15,7 +15,7 @@ class PrivateMessageService extends Service {
     /**
      * Check if a user is allowed to send a message based on various criteria
      *
-     * @param \Destiny\Common\SessionCredentials $user
+     * @param \Destiny\Common\Session\SessionCredentials $user
      * @param int $targetuserid
      * @return bool
      *
