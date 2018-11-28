@@ -43,7 +43,7 @@ use Destiny\Common\Config;
             <div class="ds-block" style="text-align: center;">
                 <h2><span style="color: #B91010;"><?=Tpl::out($this->app['clientName'])?></span></h2>
                 <h4>Wants to know who you are on Destiny.gg!</h4>
-                <p>They will know your username, id, subscription <br />country, roles, flairs and created date.</p>
+                <p>They will know your username, id, subscription,<br /> roles, flairs and account creation date.</p>
             </div>
         </div>
         <?php endif; ?>

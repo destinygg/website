@@ -28,11 +28,12 @@ class OAuthService extends Service {
     /**
      * @param string $name
      * @param array $data
+     * @param int $lifeTime
      */
-    public function saveFlashStore($name, array $data) {
+    public function saveFlashStore($name, array $data, $lifeTime = 3600) {
         $cache = Application::instance()->getCache();
         $name = "[oauth]$name";
-        $cache->save($name, \GuzzleHttp\json_encode($data), 3600); // TODO 300
+        $cache->save($name, \GuzzleHttp\json_encode($data), $lifeTime); // TODO 300
     }
 
     /**

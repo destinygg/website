@@ -1,5 +1,5 @@
 <?php
-// auto-generated: 1543435172529
+// auto-generated: 1543437568152
 return [
 	"common.vendor.css" => "common.vendor.0833833b6b75a00f048d.css",
 	"common.vendor.js" => "common.vendor.17f530dbcbef7d2472be.js",
@@ -11,7 +11,7 @@ return [
 	"profile.js" => "profile.ad331e948dff15ad9153.js",
 	"streamchat.js" => "streamchat.e7cf77c5badf1cc27a52.js",
 	"web.css" => "web.5199285bd5908d22aaf8.css",
-	"web.js" => "web.0d49329bfcf48c208583.js",
+	"web.js" => "web.1f1e78c750687fd42fa9.js",
 	"fonts/font-awesome.scss" => "fonts/fontawesome-webfont.woff2",
 	"fonts/bootstrap.css" => "fonts/glyphicons-halflings-regular.woff2",
 	"img/style.scss" => "img/sl-logo.png",

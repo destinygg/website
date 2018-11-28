@@ -510,6 +510,7 @@ $(function(){
         const target = $(elem.attr('href'));
         target.show();
         elem.hide();
+        return false;
     });
 });
 

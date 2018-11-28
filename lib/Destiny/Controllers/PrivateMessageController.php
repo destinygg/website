@@ -94,7 +94,8 @@ class PrivateMessageController {
                 throw new Exception('You may only send to maximum 20 users.');
 
             $credentials = new SessionCredentials ($user);
-            foreach ($recipients as $recipientId) {
+            foreach ($recipients as $recipient) {
+                $recipientId = $recipient['userId'];
                 $canSend = $privateMessageService->canSend($credentials, $recipientId);
                 if (!$canSend)
                     throw new Exception ("You have sent too many messages, throttled.");

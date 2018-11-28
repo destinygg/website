@@ -22,8 +22,8 @@ use Destiny\Common\Config;
         <h3 class="collapsed" data-toggle="collapse" data-target="#app-content">Applications</h3>
         <div id="app-content" class="content content-dark clearfix collapse">
             <div class="ds-block">
-                <p>Only one application allowed per account. (for now)<br />
-                    Integrate you application with DGG users.</p>
+                <p>OAuth-ish integration with destiny.gg users. Read the <a href="#">usage guide</a>.<br />
+                   Only one application allowed per account for now.</p>
             </div>
             <?php if(!empty($this->oauthClients)): ?>
                 <form id="app-form" action="/profile/app/update" method="post" role="form">
@@ -75,9 +75,9 @@ use Destiny\Common\Config;
         <h3 class="collapsed" data-toggle="collapse" data-target="#login-key-content">Connections</h3>
         <div id="login-key-content" class="content content-dark clearfix collapse">
             <div class="ds-block">
-                <p>Login keys allow <strong>you</strong> to authenticate without the need for a username or password.<br />
-                    DGG chat will authenticate your user when you connect to the chat server with a cookie <strong>authtoken</strong> with the token as the value.<br />
-                    <strong>IMPORTANT</strong> these keys must be kept private.</p>
+                <p>DGG login keys allow <strong>you</strong> to authenticate without the need for a username or password.<br />
+                    DGG chat will authenticate your user when you connect to the chat server with a cookie <strong>authtoken</strong> with the token as the value.</p>
+                <p>Connections to third-party applications can also be revoked here.</p>
             </div>
             <form id="authtoken-form" action="/profile/authtoken/create" method="post">
                 <?php if(!empty($this->accessTokens)): ?>
