@@ -73,6 +73,7 @@ class OAuthService extends Service {
             'clientCode' => $client['clientCode'],
             'clientSecret' => $client['clientSecret'],
             'clientName' => $client['clientName'],
+            'redirectUrl' => $client['redirectUrl'],
             'ownerId' => $client['ownerId'],
             'createdDate' => Date::getSqlDateTime(),
             'modifiedDate' => Date::getSqlDateTime()
@@ -298,8 +299,8 @@ class OAuthService extends Service {
      * @throws Exception
      */
     public function validateNewCodeChallenge($challenge) {
-        if (mb_strlen($challenge) > 64) {
-            throw new Exception("code_challenge must not be more than 64 characters long");
+        if (mb_strlen($challenge) > 128) {
+            throw new Exception("code_challenge must not be more than 128 characters long");
         }
         $cache = Application::getNsCache();
         if ($cache->contains("challenge[$challenge]")) {

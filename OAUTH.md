@@ -53,7 +53,7 @@ GET https://www.destiny.gg/oauth/authorize
 ##### Code Challenge
 ```js
 let secret = hash("sha256", CLIENT_SECRET)
-let code_verifier = 'OFNH04FH0EIFNWSD0IFN08FHN08' //  Random URL-safe string with a minimum length of 43 characters.
+let code_verifier = 'Fwef[...]8ehyf9' //  Random URL-safe string with a minimum length of 43 characters.
 let code_challenge = base64_encode(hash("sha256", code_verifier + secret))
 ```
 
@@ -101,7 +101,7 @@ GET https://www.destiny.gg/oauth/token
       </tr>
       <tr>
         <td>code_verifier</td>
-        <td>The code verifier portion used in the initial /oauth/authorize endpoint (see above would be 'OFNH04FH0EIFNWSD0IFN08FHN08')</td>
+        <td>The code verifier portion used in the initial /oauth/authorize endpoint (see above would be 'Fwef[...]8ehyf9')</td>
       </tr>
     <tbody>
 </table>

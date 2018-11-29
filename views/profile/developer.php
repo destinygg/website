@@ -22,7 +22,7 @@ use Destiny\Common\Config;
         <h3 class="collapsed" data-toggle="collapse" data-target="#app-content">Applications</h3>
         <div id="app-content" class="content content-dark clearfix collapse">
             <div class="ds-block">
-                <p>OAuth-ish integration with destiny.gg users. Read the <a href="#">usage guide</a>.<br />
+                <p>OAuth-ish integration with destiny.gg users. Read the <a href="https://github.com/destinygg/website/blob/master/OAUTH.md">usage guide</a>.<br />
                    Only one application allowed per account for now.</p>
             </div>
             <?php if(!empty($this->oauthClients)): ?>
@@ -32,11 +32,15 @@ use Destiny\Common\Config;
                     <div class="ds-block">
                         <div class="form-group">
                             <label>Name:</label>
-                            <input class="form-control" type="text" name="name" value="<?=Tpl::out($authClient['clientName'])?>" placeholder="Name" />
+                            <input class="form-control" type="text" name="name" value="<?=Tpl::out($authClient['clientName'])?>" placeholder="Client Name" />
                         </div>
                         <div class="form-group">
                             <label>ID:</label>
-                            <input class="form-control" type="text" readonly="readonly" name="code" value="<?=Tpl::out($authClient['clientCode'])?>" placeholder="Code" />
+                            <input class="form-control" type="text" readonly="readonly" name="code" value="<?=Tpl::out($authClient['clientCode'])?>" placeholder="Client ID" />
+                        </div>
+                        <div class="form-group">
+                            <label>Redirect Url:</label>
+                            <input class="form-control" type="text" name="redirectUrl" value="<?=Tpl::out($authClient['redirectUrl'])?>" placeholder="https://yourwebsite.com/dgg/auth" />
                         </div>
                         <div class="form-group">
                             <label>Secret <a id="app-form-secret-create" data-id="<?=$authClient['clientId']?>" href="#">(create)</a>:</label>
@@ -56,6 +60,10 @@ use Destiny\Common\Config;
                         <div class="form-group">
                             <label>Name:</label>
                             <input class="form-control input-lg" type="text" name="name" value="<?=Tpl::out($this->user['username'])?> App" placeholder="Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Redirect Url:</label>
+                            <input class="form-control" type="text" name="redirectUrl" value="" placeholder="https://yourwebsite.com/dgg/auth" />
                         </div>
                     </div>
                     <div id="recaptcha1" class="form-group ds-block hidden">

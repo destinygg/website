@@ -212,22 +212,30 @@ class ProfileController {
     public function appCreate(array $params, Request $request) {
         try {
             FilterParams::required($params, 'name');
+            FilterParams::required($params, 'redirectUrl');
+
             $userId = Session::getCredentials()->getUserId();
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
             $googleRecaptchaHandler->resolveWithRequest($request);
             $oauthService = OAuthService::instance();
+
             // Validate the application name
             $name = trim($params['name']);
-            if (preg_match('/^[A-Za-z0-9 ]{3,64}$/', $name) == 0) {
-                throw new Exception ('Name may only contain A-z 0-9 or spaces and must be over 3 characters and under 64 characters in length.');
-            }
+            $this->validateAppName($name);
+
+            // Validate redirectUrl
+            $redirect = trim($params['redirectUrl']);
+            $this->validateAppRedirect($redirect);
+
             // only allow 1 max application
             if (count($oauthService->getAuthClientsByUserId($userId)) >= 1) {
                 throw new Exception ('You have reached the maximum [1] allowed applications.');
             }
+
             $oauthService->addAuthClient([
                 'clientCode' => RandomString::makeUrlSafe(32),
                 'clientSecret' => RandomString::make(64),
+                'redirectUrl' => $redirect,
                 'clientName' => $name,
                 'ownerId' => $userId
             ]);
@@ -252,20 +260,26 @@ class ProfileController {
         try {
             FilterParams::required($params, 'id');
             FilterParams::required($params, 'name');
-            $name = trim($params['name']);
+            FilterParams::required($params, 'redirectUrl');
+
             $userId = Session::getCredentials()->getUserId();
             $oauthService = OAuthService::instance();
             $client = $oauthService->getAuthClientById($params['id']);
+
             if (empty($client)) {
                 throw new Exception('Invalid client_id');
             }
             if ($client['ownerId'] != $userId) {
                 throw new Exception('You are not the owner of this client.');
             }
-            if (preg_match('/^[A-Za-z0-9 ]{3,64}$/', $name) == 0) {
-                throw new Exception ('Name may only contain A-z 0-9 or spaces and must be over 3 characters and under 64 characters in length.');
-            }
-            $oauthService->updateAuthClient($params['id'], ['clientName' => $name]);
+
+            $name = trim($params['name']);
+            $this->validateAppName($name);
+
+            $redirect = trim($params['redirectUrl']);
+            $this->validateAppRedirect($redirect);
+
+            $oauthService->updateAuthClient($params['id'], ['clientName' => $name, 'redirectUrl' => $redirect]);
             Session::setSuccessBag('Application updated!');
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
@@ -565,6 +579,26 @@ class ProfileController {
             Session::setErrorBag('Minecraft name already in use');
         }
         return 'redirect: /profile';
+    }
+
+    /**
+     * @param string $name
+     * @throws Exception
+     */
+    private function validateAppName($name) {
+        if (preg_match('/^[A-Za-z0-9 ]{3,64}$/', $name) == 0) {
+            throw new Exception ('Name may only contain A-z 0-9 or spaces and must be over 3 characters and under 64 characters in length.');
+        }
+    }
+
+    /**
+     * @param string $redirect
+     * @throws Exception
+     */
+    private function validateAppRedirect($redirect) {
+        if (mb_strlen($redirect) > 255) {
+            throw new Exception ('Redirect URL has exceeded max length of 255 characters.');
+        }
     }
 
 }
