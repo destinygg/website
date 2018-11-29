@@ -15,7 +15,7 @@ abstract class Country {
      *
      * @var array
      */
-    public static $countries = [];
+    public static $countries = null;
     
     /**
      * List of countries by code e.g.
@@ -32,19 +32,19 @@ abstract class Country {
      */
     public static function getCountries() {
         if (self::$countries == null) {
-            $cacheDriver = Application::getNsCache();
-            $countries = $cacheDriver->fetch ( 'geodata' );
-            if (empty ( $countries )) {
-                $countries = json_decode ( file_get_contents ( _BASEDIR . '/assets/countries.json' ), true );
-                $cacheDriver->save ( 'geodata', $countries );
+            $cache = Application::getNsCache();
+            $countries = $cache->fetch('geodata');
+            if (empty ($countries)) {
+                $countries = \GuzzleHttp\json_decode(file_get_contents(_BASEDIR . '/assets/countries.json'), true);
+                $cache->save('geodata', $countries);
             }
-            if (is_array ( $countries )) {
+            if (is_array($countries)) {
                 self::$countries = $countries;
             }
         }
-        if (empty ( self::$codeIndex )) {
-            foreach ( self::$countries as $i => $country ) {
-                self::$codeIndex [strtolower ( $country ['alpha-2'] )] = $i;
+        if (empty (self::$codeIndex)) {
+            foreach (self::$countries as $i => $country) {
+                self::$codeIndex [strtolower($country ['alpha-2'])] = $i;
             }
         }
         return self::$countries;
@@ -57,11 +57,12 @@ abstract class Country {
      * @throws Exception
      */
     public static function getCountryByCode($code) {
+        $countries = self::getCountries();
         $code = strtolower($code);
-        if (!isset (self::$codeIndex [$code])) {
+        if (!isset (self::$codeIndex[$code])) {
             throw new Exception ('Invalid country');
         }
-        return self::getCountries()[self::$codeIndex[$code]];
+        return $countries[self::$codeIndex[$code]];
     }
 
 }
