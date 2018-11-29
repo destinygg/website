@@ -30,10 +30,10 @@ class OAuthService extends Service {
      * @param array $data
      * @param int $lifeTime
      */
-    public function saveFlashStore($name, array $data, $lifeTime = 3600) {
+    public function saveFlashStore($name, array $data, $lifeTime = 300 /* 5m */) {
         $cache = Application::getNsCache();
         $name = "[oauth]$name";
-        $cache->save($name, \GuzzleHttp\json_encode($data), $lifeTime); // TODO 300
+        $cache->save($name, \GuzzleHttp\json_encode($data), $lifeTime);
     }
 
     /**
@@ -291,6 +291,31 @@ class OAuthService extends Service {
     public function hasAccessTokenExpired($token) {
         $expireIn = intval($token['expireIn']);
         return $expireIn > 0 ? (Date::getDateTimePlusSeconds($token['createdDate'], $expireIn) < Date::getDateTime()) : false;
+    }
+
+    /**
+     * @param $challenge
+     * @throws Exception
+     */
+    public function validateNewCodeChallenge($challenge) {
+        if (mb_strlen($challenge) > 64) {
+            throw new Exception("code_challenge must not be more than 64 characters long");
+        }
+        $cache = Application::getNsCache();
+        if ($cache->contains("challenge[$challenge]")) {
+            throw new Exception("code_challenge used too recently");
+        }
+        $cache->save("challenge[$challenge]", true, 30);
+    }
+
+    /**
+     * @param $state
+     * @throws Exception
+     */
+    public function validateNewState($state) {
+        if (mb_strlen($state) > 64) {
+            throw new Exception("state must not be more than 64 characters long");
+        }
     }
 
 }

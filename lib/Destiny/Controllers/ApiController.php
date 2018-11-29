@@ -199,9 +199,13 @@ class ApiController {
         }
         $oauthService = OAuthService::instance();
         $accessToken = $oauthService->getAccessTokenByToken($params['token']);
-        if (empty ($accessToken) || !empty($accessToken['clientId']) /* ONLY ALLOW CLIENT-LESS ACCESS KEYS */) {
+        if (empty ($accessToken)) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return ['message' => 'Auth token not found', 'error' => 'invalidtoken', 'code' => Http::STATUS_FORBIDDEN];
+        }
+        if (!empty($accessToken['clientId']) /* ONLY ALLOW CLIENT-LESS ACCESS KEYS */) {
+            $response->setStatus(Http::STATUS_FORBIDDEN);
+            return ['message' => 'Only DGG Login Keys can be used', 'error' => 'invalidtoken', 'code' => Http::STATUS_FORBIDDEN];
         }
         if ($oauthService->hasAccessTokenExpired($accessToken)) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
