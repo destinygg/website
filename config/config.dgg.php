@@ -35,7 +35,7 @@ return [
         '/ting' => 'https://ting.7eer.net/c/72409/87559/2020',
         '/eve' => 'https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy',
         '/schedule' => 'https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com',
-        '/shirt' => 'https://www.amazon.com/shop/destiny?listId=1U7DVEENMW4U&ref=idea_share_inf',
+        '/shirt' => 'https://www.designbyhumans.com/shop/Destiny/',
         '/forge' => 'https://bit.ly/ForgeDestiny',
         '/facebook' => 'https://www.facebook.com/OmniDestiny',
         '/youtube' => 'https://www.youtube.com/user/Destiny',
@@ -51,6 +51,8 @@ return [
         '/amazon' => 'https://www.amazon.com/shop/destiny?listId=1U7DVEENMW4U&ref=idea_share_inf',
         '/gmg' => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979',
         '/greenmangaming' => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979',
-        '/instagram' => 'https://www.instagram.com/destiny/'
+        '/instagram' => 'https://www.instagram.com/destiny/',
+        '/podcast' => 'https://destiny.libsyn.com/',
+        '/podcastrss' => 'https://destiny.libsyn.com/rss'
     ]
 ];
