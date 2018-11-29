@@ -35,7 +35,7 @@ class RegistrationController {
             throw new Exception ('Invalid code');
         }
         $authSession = Session::get('authSession');
-        if ($authSession instanceof AuthenticationCredentials) {
+        if (!empty($authSession) && $authSession instanceof AuthenticationCredentials) {
             if (empty ($authSession) || ($authSession->getAuthCode() != $params ['code'])) {
                 throw new Exception ('Invalid authentication code');
             }
@@ -127,7 +127,7 @@ class RegistrationController {
             $conn->commit();
             Session::remove('authSession');
         } catch (DBALException $e) {
-            $n = new Exception("Failed to insert user records", $e);
+            $n = new Exception("Registration failed.", $e);
             Log::critical($n);
             $conn->rollBack();
             throw $n;

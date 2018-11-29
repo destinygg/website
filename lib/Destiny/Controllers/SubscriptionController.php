@@ -414,8 +414,7 @@ class SubscriptionController {
             }
             //
         } catch (Exception $e) {
-            $n = new Exception("Failed to process subscription {subscriptionId}", $e);
-            Log::critical($n, $subscription);
+            Log::critical("Error processing subscription. " . $e->getMessage(), $subscription);
             $subscriptionsService->updateSubscription([
                 'subscriptionId' => $subscription ['subscriptionId'],
                 'status' => SubscriptionStatus::ERROR
