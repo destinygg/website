@@ -39,7 +39,7 @@ class Tpl {
         $url = Config::cdn() . '/' . Config::$a['manifest'][$name];
         $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
         $str = !empty($attribs) ? " $attribs" : "";
-        return "<script$str src=\"$url\" crossorigin=\"anonymous\"></script>\r\n";
+        return "<script$str src=\"$url\"></script>\r\n";
     }
 
     public static function manifestLink($name, array $attr = []) {
@@ -47,7 +47,7 @@ class Tpl {
         $attr = array_merge(['rel' => 'stylesheet', 'media' => 'screen'], $attr);
         $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
         $str = !empty($attribs) ? " $attribs" : "";
-        return "<link$str href=\"$url\" crossorigin=\"anonymous\">\r\n";
+        return "<link$str href=\"$url\">\r\n";
     }
 
 }
