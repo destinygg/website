@@ -172,7 +172,7 @@ class AdminController {
         FilterParams::required($params, 'type');
         $graphType = strtoupper($params['type']);
         $statisticsService = StatisticsService::instance();
-        $cacheDriver = Application::instance()->getCache();
+        $cacheDriver = Application::getNsCache();
         $data = [];
         try {
             switch ($graphType) {

@@ -25,7 +25,7 @@ try {
     $router = new Router();
     ControllerAnnotationLoader::factory(
         new DirectoryClassIterator (_BASEDIR . '/lib/', 'Destiny/Controllers/'),
-        new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), $app->getCache()),
+        new Doctrine\Common\Annotations\CachedReader(new AnnotationReader(), Application::getVerCache()),
         $router
     );
 

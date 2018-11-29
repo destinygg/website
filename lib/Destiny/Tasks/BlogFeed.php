@@ -13,8 +13,10 @@ class BlogFeed implements TaskInterface {
 
     public function execute() {
         $response = BlogApiService::instance()->getBlogPosts();
-        if (!empty ($response))
-            Application::instance()->getCache()->save('recentblog', $response);
+        if (!empty ($response)) {
+            $cache = Application::getNsCache();
+            $cache->save('recentblog', $response);
+        }
     }
 
 }

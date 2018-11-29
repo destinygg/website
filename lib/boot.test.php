@@ -40,4 +40,5 @@ try {
     exit(1);
 }
 
-$app->setCache(new Doctrine\Common\Cache\ArrayCache());
+$app->setCache1(new Doctrine\Common\Cache\ArrayCache());
+$app->setCache2(new Doctrine\Common\Cache\ArrayCache());

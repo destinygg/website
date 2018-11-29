@@ -37,7 +37,8 @@ class ApiController {
         $oauthService = OAuthService::instance();
         $data = $oauthService->getAccessTokenByToken($token);
         if (!empty($data)) {
-            if ($oauthService->checkAccessTokenExpiration($data)) {
+            // TODO encapsulate
+            if ($oauthService->hasAccessTokenExpired($data)) {
                 return [
                     'error' => 'token_expired',
                     'message' => 'The token has expired.',
@@ -198,11 +199,11 @@ class ApiController {
         }
         $oauthService = OAuthService::instance();
         $accessToken = $oauthService->getAccessTokenByToken($params['token']);
-        if (empty ($accessToken)) {
+        if (empty ($accessToken) || !empty($accessToken['clientId']) /* ONLY ALLOW CLIENT-LESS ACCESS KEYS */) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return ['message' => 'Auth token not found', 'error' => 'invalidtoken', 'code' => Http::STATUS_FORBIDDEN];
         }
-        if ($oauthService->checkAccessTokenExpiration($accessToken)) {
+        if ($oauthService->hasAccessTokenExpired($accessToken)) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return ['message' => 'Access token expired', 'error' => 'expiredtoken', 'code' => Http::STATUS_FORBIDDEN];
         }

@@ -43,19 +43,26 @@ try {
     exit(1);
 }
 
-// Global Redis instance
+// Redis (NO serializer, used for chat and sessions)
 $redis1 = new Redis();
 $redis1->connect(Config::$a['redis']['host'], Config::$a['redis']['port']);
 $redis1->select(Config::$a['redis']['database']);
 $redis1->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_NONE);
 $app->setRedis($redis1);
 
-// Cache implementation, with separate redis instance
+// Redis Store
 $redis2 = new Redis();
 $redis2->connect(Config::$a['redis']['host'], Config::$a['redis']['port']);
 $redis2->select(Config::$a['redis']['database']);
 
+// Namespace cache (ns changes explicitly)
 $cache = new RedisCache();
 $cache->setRedis($redis2);
 $cache->setNamespace(Config::$a['cacheNamespace']);
-$app->setCache($cache);
+$app->setCache1($cache);
+
+// Versioned cache (ns changes with version)
+$cache = new RedisCache();
+$cache->setRedis($redis2);
+$cache->setNamespace(Config::version());
+$app->setCache2($cache);

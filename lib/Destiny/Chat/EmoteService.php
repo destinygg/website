@@ -172,7 +172,7 @@ class EmoteService extends Service {
      * set the cache key.
      */
     public function saveStaticFiles() {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $cacheKey = round(microtime(true) * 1000) . "." . rand(1000,9999);
         $this->saveStaticCss($cacheKey);
         $this->saveStaticJson($cacheKey);

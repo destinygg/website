@@ -57,7 +57,7 @@ class OAuthController {
 
             // Recently used code_challenge
             $challenge = $params['code_challenge'];
-            $cache = Application::instance()->getCache();
+            $cache = Application::getNsCache();
             if ($cache->contains("challenge[$challenge]")) {
                 throw new Exception("code_challenge used too recently");
             }

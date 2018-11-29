@@ -303,8 +303,10 @@ class AuthenticationService extends Service {
         if (!is_array($user))
             $user = UserService::instance()->getUserById($user);
         if (!empty($user)) {
-            Application::instance()->getCache()->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
-            ChatRedisService::instance()->sendRefreshUser($this->buildUserCredentials($user));
+            $cache = Application::getNsCache();
+            $cache->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
+            $redisService = ChatRedisService::instance();
+            $redisService->sendRefreshUser($this->buildUserCredentials($user));
         }
     }
 
@@ -312,7 +314,7 @@ class AuthenticationService extends Service {
      * @param $userId
      */
     protected function clearUserUpdateFlag($userId) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $cache->delete('refreshusersession-' . $userId);
     }
 
@@ -321,7 +323,7 @@ class AuthenticationService extends Service {
      * @return bool
      */
     protected function isUserFlaggedForUpdate($userId) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $lastUpdated = $cache->fetch('refreshusersession-' . $userId);
         return !empty ($lastUpdated);
     }

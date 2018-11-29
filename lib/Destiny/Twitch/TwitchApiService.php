@@ -183,7 +183,7 @@ class TwitchApiService extends Service {
      * @return array
      */
     public function getStreamInfo($name) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $streaminfo = self::$STREAM_INFO;
         $channel = $this->getChannel($name);
         if (!empty ( $channel )){

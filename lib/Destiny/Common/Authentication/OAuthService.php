@@ -31,7 +31,7 @@ class OAuthService extends Service {
      * @param int $lifeTime
      */
     public function saveFlashStore($name, array $data, $lifeTime = 3600) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $name = "[oauth]$name";
         $cache->save($name, \GuzzleHttp\json_encode($data), $lifeTime); // TODO 300
     }
@@ -43,7 +43,7 @@ class OAuthService extends Service {
      * @throws Exception
      */
     public function getFlashStore($name, $identifier) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $name = "[oauth]$name";
         if ($cache->contains($name)) {
             return \GuzzleHttp\json_decode($cache->fetch($name), true);
@@ -56,7 +56,7 @@ class OAuthService extends Service {
      * @return array | false
      */
     public function deleteFlashStore($name) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $name = "[oauth]$name";
         if ($cache->contains($name)) {
             return $cache->delete($name);
@@ -288,8 +288,9 @@ class OAuthService extends Service {
      * @param array $token
      * @return bool
      */
-    public function checkAccessTokenExpiration($token) {
-        return Date::getDateTimePlusSeconds($token['createdDate'], intval($token['expireIn'])) < Date::getDateTime();
+    public function hasAccessTokenExpired($token) {
+        $expireIn = intval($token['expireIn']);
+        return $expireIn > 0 ? (Date::getDateTimePlusSeconds($token['createdDate'], $expireIn) < Date::getDateTime()) : false;
     }
 
 }

@@ -17,41 +17,40 @@ use function GuzzleHttp\json_encode;
  */
 class Application extends Service {
 
-    /**
-     * @var CacheProvider
-     */
-    public $cache = null;
+    /** @var CacheProvider */
+    public $cache1 = null;
+
+    /** @var CacheProvider */
+    public $cache2 = null;
     
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     protected $dbal;
     
-    /**
-     * @var SessionInstance
-     */
+    /** @var SessionInstance */
     protected $session = null;
     
-    /**
-     * @var \Redis
-     */
+    /** @var \Redis */
     protected $redis = null;
     
-    /**
-     * @var Router
-     */
+    /** @var Router */
     protected $router;
     
-    /**
-     * @var callable
-     */
+    /** @var callable */
     public $loader;
 
-    /**
-     * @return Connection
-     */
+    /** @return Connection */
     public static function getDbConn(){
         return self::instance()->getDbal();
+    }
+
+    /** @return CacheProvider */
+    public static function getNsCache(){
+        return self::instance()->getCache1();
+    }
+
+    /** @return CacheProvider */
+    public static function getVerCache(){
+        return self::instance()->getCache2();
     }
 
     /**
@@ -298,12 +297,20 @@ class Application extends Service {
         $this->dbal = $dbal;
     }
 
-    public function getCache() {
-        return $this->cache;
+    public function getCache1() {
+        return $this->cache1;
     }
 
-    public function setCache(CacheProvider $cache) {
-        $this->cache = $cache;
+    public function setCache1(CacheProvider $cache) {
+        $this->cache1 = $cache;
+    }
+
+    public function getCache2() {
+        return $this->cache2;
+    }
+
+    public function setCache2(CacheProvider $cache) {
+        $this->cache2 = $cache;
     }
 
     public function getSession() {

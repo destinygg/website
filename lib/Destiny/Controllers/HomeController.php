@@ -24,7 +24,7 @@ class HomeController {
      * @return string
      */
     public function home(ViewModel $model) {
-        $cache = Application::instance ()->getCache ();
+        $cache = Application::getNsCache();
         $model->posts = $cache->fetch ( 'recentposts' );
         $model->articles = $cache->fetch ( 'recentblog' );
         $model->tweets = $cache->fetch ( 'twitter' );
@@ -51,7 +51,7 @@ class HomeController {
      * @return array|false|mixed
      */
     public function stream(Response $response) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : TwitchApiService::$STREAM_INFO;
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'private');
         $response->addHeader(Http::HEADER_PRAGMA, 'public');
@@ -66,7 +66,7 @@ class HomeController {
      * @return string
      */
     public function embedChat(ViewModel $model) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $model->title = 'Chat';
         $model->cacheKey = $cache->fetch('chatCacheKey');
         return 'chat';
@@ -79,7 +79,7 @@ class HomeController {
      * @return string
      */
     public function chatstreamed(ViewModel $model) {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $model->title = 'Chat';
         $model->cacheKey = $cache->fetch('chatCacheKey');
         return 'chatstreamed';

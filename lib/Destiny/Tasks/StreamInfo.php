@@ -18,7 +18,7 @@ class StreamInfo implements TaskInterface {
      * @return mixed|void
      */
     public function execute() {
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $twitchApiService = TwitchApiService::instance();
         $redisService = ChatRedisService::instance();
 

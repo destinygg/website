@@ -34,7 +34,7 @@ class AdminEmotesController {
      */
     public function emotes(ViewModel $model) {
         $emoteService = EmoteService::instance();
-        $cache = Application::instance()->getCache();
+        $cache = Application::getNsCache();
         $model->title = 'Emotes';
         $model->emotes = $emoteService->findAllEmotes();
         $model->cacheKey = $cache->fetch('chatCacheKey');
