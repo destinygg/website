@@ -190,7 +190,7 @@ CREATE TABLE `images` (
 
 CREATE TABLE `oauth_access_tokens` (
    `tokenId` int(14) NOT NULL AUTO_INCREMENT,
-   `clientId` int(14) NOT NULL,
+   `clientId` int(14) DEFAULT NULL,
    `userId` int(14) NOT NULL,
    `scope` varchar(100) NOT NULL,
    `token` varchar(64) NOT NULL,
@@ -201,7 +201,7 @@ CREATE TABLE `oauth_access_tokens` (
    KEY `IDX_TOKEN` (`token`),
    KEY `IDX_REFRESH` (`clientId`,`refresh`),
    KEY `IDX_USER` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `oauth_client_details` (
   `clientId` int(14) NOT NULL AUTO_INCREMENT,
@@ -215,4 +215,4 @@ CREATE TABLE `oauth_client_details` (
   PRIMARY KEY (`clientId`),
   UNIQUE KEY `UQ_CODE` (`clientCode`),
   KEY `IDX_OWNER` (`ownerId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
