@@ -54,7 +54,7 @@ class OAuthController {
             if ($params['code_challenge_method'] != 'S256') {
                 throw new Exception("code_challenge_method must be 'S256'");
             }
-            if (mb_substr($params['redirect_uri'], 0, mb_strlen($client['redirectUrl'])) === $client['redirectUrl']) {
+            if (mb_substr($params['redirect_uri'], 0, mb_strlen($client['redirectUrl'])) != $client['redirectUrl']) {
                 throw new Exception("redirect_uri does not match the client redirect url.");
             }
 
