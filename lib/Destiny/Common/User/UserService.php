@@ -509,11 +509,18 @@ class UserService extends Service {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate FROM dfl_users AS u
-          WHERE u.username LIKE :wildcard1 OR email LIKE :wildcard1
+          LEFT JOIN dfl_users_auth a ON a.userId = u.userId
+            WHERE u.username LIKE :wildcard1 
+            OR u.email LIKE :wildcard1
+            OR a.authDetail LIKE :wildcard1
+            OR a.authId LIKE :wildcard1
+          GROUP BY u.userId
           ORDER BY CASE
           WHEN u.username LIKE :wildcard2 THEN 0
           WHEN u.username LIKE :wildcard3 THEN 1
           WHEN u.username LIKE :wildcard4 THEN 2
+          WHEN u.username LIKE :wildcard4 THEN 4
+          WHEN u.username LIKE :wildcard4 THEN 5
           ELSE 3
           END, u.username
           LIMIT :start,:limit
