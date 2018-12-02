@@ -11,7 +11,6 @@ use Destiny\Commerce\SubscriptionStatus;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="account" class="no-contain">
@@ -107,12 +106,12 @@ use Destiny\Commerce\SubscriptionStatus;
                                 <?php if(strcasecmp($subscription['status'], SubscriptionStatus::PENDING)===0): ?>
                                     <dl>
                                         <dt>This subscription is currently</dt>
-                                        <dd><span class="label label-warning"><?=Tpl::out(strtoupper($subscription['status']))?></span></dd>
+                                        <dd><span class="badge badge-warning"><?=Tpl::out(strtoupper($subscription['status']))?></span></dd>
                                     </dl>
                                 <?php endif ?>
                                 <?php if(!empty($subscription['gifterUsername'])): ?>
                                     <p>
-                                        <span class="fa fa-gift"></span> This subscription was gifted by <span class="label label-success"><?=Tpl::out($subscription['gifterUsername'])?></span>
+                                        <i class="fas fa-gift"></i> This subscription was gifted by <span class="badge badge-success"><?=Tpl::out($subscription['gifterUsername'])?></span>
                                     </p>
                                 <?php endif ?>
                                 <div style="margin-top:20px;">
@@ -243,7 +242,7 @@ use Destiny\Commerce\SubscriptionStatus;
             <?php else: ?>
                 <div class="ds-block">
                     <div class="form-group">
-                        <p>Your profile is <span class="label label-success">CONNECTED</span> to <strong><?=Tpl::out($this->discordAuthProfile['authDetail'])?></strong>.</p>
+                        <p>Your profile is <span class="badge badge-success">CONNECTED</span> to <strong><?=Tpl::out($this->discordAuthProfile['authDetail'])?></strong>.</p>
                         <p>You can <a href="/profile/authentication">disconnect</a> your profile at any time.</p>
                     </div>
                 </div>

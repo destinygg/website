@@ -52,7 +52,7 @@ class HomeController {
      */
     public function stream(Response $response) {
         $cache = Application::getNsCache();
-        $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : TwitchApiService::$STREAM_INFO;
+        $streaminfo = $cache->fetch('streamstatus');
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'private');
         $response->addHeader(Http::HEADER_PRAGMA, 'public');
         $response->addHeader(Http::HEADER_ETAG, md5(var_export($streaminfo, true)));

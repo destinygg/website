@@ -37,7 +37,7 @@ class RegistrationController {
         $authSession = Session::get('authSession');
         if (!empty($authSession) && $authSession instanceof AuthenticationCredentials) {
             if (empty ($authSession) || ($authSession->getAuthCode() != $params ['code'])) {
-                throw new Exception ('Invalid authentication code');
+                throw new Exception ('Invalid authentication code ');
             }
             if (!$authSession->isValid()) {
                 throw new Exception ('Invalid authentication information');

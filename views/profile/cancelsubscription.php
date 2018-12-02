@@ -8,7 +8,6 @@ use Destiny\Common\Utils\Date;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="subscription" class="no-contain">
@@ -30,7 +29,7 @@ use Destiny\Common\Utils\Date;
                 <div class="ds-block">
                     <div class="form-group">
                         <p>
-                            <label class="label label-success">SUCCESS</label> Your subscription has been cancelled.
+                            <label class="badge badge-success">SUCCESS</label> Your subscription has been cancelled.
                             Thank you for your support!
                         </p>
                     </div>
@@ -39,11 +38,11 @@ use Destiny\Common\Utils\Date;
                             <dt>Status:</dt>
 
                             <dd>
-                                <span class="label label-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
+                                <span class="badge badge-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
                                 <?php if($this->subscription['recurring']):?>
-                                    <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
+                                    <span class="badge badge-warning" title="This subscription is automatically renewed">Recurring</span>
                                 <?php else: ?>
-                                    <span class="label label-default" title="This subscription is not automatically renewed">Not recurring</span>
+                                    <span class="badge badge-default" title="This subscription is not automatically renewed">Not recurring</span>
                                 <?php endif ?>
                             </dd>
 
@@ -77,9 +76,9 @@ use Destiny\Common\Utils\Date;
                             <dl class="dl-horizontal">
                                 <dt>Status:</dt>
                                 <dd>
-                                    <span class="label label-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
+                                    <span class="badge badge-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
                                     <?php if($this->subscription['recurring']):?>
-                                        <span class="label label-warning" title="This subscription is automatically renewed">Recurring</span>
+                                        <span class="badge badge-warning" title="This subscription is automatically renewed">Recurring</span>
                                     <?php endif ?>
                                 </dd>
 

@@ -3,10 +3,9 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Twitch\TwitchApiService;
 
 $cache = Application::getNsCache();
-$streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : TwitchApiService::$STREAM_INFO;
+$info = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
 ?>
 <section id="header-band">
     <div class="container">
@@ -16,39 +15,44 @@ $streaminfo = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') :
         </header>
 
         <div id="discord-status">
-            <div style="margin-right: 0.75em; display: flex; align-items: center;">
-                <a href="https://discordapp.com/invite/destiny" class="discord-logo"></a>
-            </div>
+            <a title="Join discord" href="https://discordapp.com/invite/destiny" class="discord-logo">
+                <i class="fab fa-discord"></i>
+            </a>
             <div>
                 <h3>Debate me</h3>
                 <p>Join the <a href="https://discordapp.com/invite/destiny">discord</a>. <br/>You're welcome!</p>
             </div>
         </div>
 
-        <div id="stream-status" class=" <?= (!empty($streaminfo['host'])) ? 'hosting': (($streaminfo['live']) ? 'online':'offline') ?>">
+        <?php if(!empty($info)): ?>
+        <div id="stream-status" class="<?= (!empty($info['host'])) ? 'hosting': (($info['live']) ? 'online':'offline') ?>">
             <div id="stream-status-info-offline">
                 <h3>Stream offline</h3>
-                <p>Ended <span id="stream-status-end"><?= Tpl::fromNow(Date::getDateTime($streaminfo['ended_at'])) ?></span>.<br />Join the <a href="/bigscreen">chat</a> while you wait.</p>
+                <p>Ended <span id="stream-status-end"><?= Tpl::fromNow(Date::getDateTime($info['ended_at'])) ?></span>.
+                    <br />Join <a class="critical" href="/bigscreen">chat</a> while you wait.</p>
             </div>
             <div id="stream-status-info-online">
                 <h3>Stream online</h3>
-                <p>Started <span id="stream-status-start"><?= Tpl::fromNow(Date::getDateTime($streaminfo['started_at'])) ?></span>.<br />Watch on the <a class="critical" href="/bigscreen">Bigscreen</a></p>
+                <p>Started <span id="stream-status-start"><?= Tpl::fromNow(Date::getDateTime($info['started_at'])) ?></span>.
+                    <br />Watch on <a class="critical" href="/bigscreen">Bigscreen</a></p>
             </div>
             <div id="stream-status-info-host">
                 <h3>Stream host</h3>
-                <p>Hosting <a id="stream-status-host" href="<?= (!empty($streaminfo['host'])) ? Tpl::out($streaminfo['host']['url']):'' ?>" target="_blank"><?= (!empty($streaminfo['host'])) ? Tpl::out($streaminfo['host']['display_name']):'' ?></a>! <br /> or join the <a href="/bigscreen">chat</a> while you wait.</p>
+                <p>Watch <a id="stream-status-host" href="<?= (!empty($info['host'])) ? Tpl::out($info['host']['url']):'' ?>" target="_blank"><?= (!empty($info['host'])) ? Tpl::out($info['host']['display_name']):'' ?></a>!
+                    <br /> Join the <a class="critical" href="/bigscreen">chat</a>.</p>
             </div>
             <div id="stream-status-preview">
-                <a href="/bigscreen" style="background-image: url('<?= Tpl::out($streaminfo['preview']) ?>');" data-animated="<?= Tpl::out($streaminfo['animated_preview']) ?>"></a>
+                <a href="/bigscreen" style="background-image: url('<?= Tpl::out($info['preview']) ?>');"></a>
                 <div class="dropdown">
-                    <i data-toggle="dropdown" class="dropdown-toggle fa fa-clone fa-flip-horizontal"></i>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a target="_blank" class="popup" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Chat</a></li>
-                        <li><a target="_blank" class="popup" href="https://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Stream</a></li>
-                    </ul>
+                    <span class="dropdown-toggle fas fa-clone fa-flip-horizontal" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item popup" target="_blank" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Chat</a>
+                        <a class="dropdown-item popup" target="_blank" href="https://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Stream</a>
+                    </div>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
 
     </div>
 </section>

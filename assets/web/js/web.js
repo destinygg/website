@@ -18,176 +18,173 @@ const getOptionsString = function(options){
     return Object.keys(options).map(k => `${k}=${options[k]}`).join(',');
 };
 
-// textarea[maxlength] , form.validate
+const $document = $(document),
+    $body = $document.find('body'),
+    $win = $(window);
+
 $(function(){
 
-    $('.text-message textarea[maxlength]').each((i, e) => {
+    $body.find('.text-message textarea[maxlength]').each((i, e) => {
         const ta = $(e), max = ta.attr('maxlength')
         const indicator = $(`<div class="max-length-indicator">${max}</div>`)
         ta.on('keyup', () => indicator.text(max - ta.val().toString().length))
         ta.after(indicator)
     });
 
-    $('form.validate').validate({
+    $body.find('form.validate').validate({
         highlight: (e) => $(e).closest('.form-group').addClass('error'),
         unhighlight: (e) => $(e).closest('.form-group').removeClass('error')
     });
 })
 
-// Document ready
 $(function(){
 
-    const body = $('body');
+    const $body = $('body#bigscreen');
 
-    $('body#bigscreen').each(function(){
+    $body.each(function(){
 
-        const chatpanel   = $('#chat-panel'),
-              streampanel = $('#stream-panel'),
-              chatframe   = $('iframe#chat-frame'),
-              overlay     = $('<div class="overlay"></div>');
+        const chatpanel = $body.find('#chat-panel'),
+            layout = $body.find('#bigscreen-layout'),
+            resizebar = $body.find('#chat-panel-resize-bar'),
+            paneltools = $body.find('#chat-panel-tools'),
+            chatframe = $body.find('#chat-wrap iframe'),
+            overlay = $('<div class="overlay"></div>'),
+            minwidth = 23.333,
+            maxsize = 76.666;
+
+        const BSSettings = {
+            getOrientation: function(){
+                return localStorage.getItem('bigscreen.chat.orientation') || '1'
+            },
+            setOrientation: function(dir){
+                localStorage.setItem('bigscreen.chat.orientation', dir)
+            },
+            getSize: function(){
+                return parseFloat(localStorage.getItem('bigscreen.chat.size') || 0)
+            },
+            setSize: function(percentage){
+                const percent = (this.getOrientation() === '0') ? 100 - percentage : percentage
+                localStorage.setItem('bigscreen.chat.size', Math.min(maxsize, Math.max(minwidth, percent)).toFixed(4))
+            }
+        }
+
+        const updateOrientation = function() {
+            const dir = BSSettings.getOrientation()
+            layout.attr('data-orientation', dir)
+            switch(parseInt(dir)){
+                case 0:
+                    layout.removeClass('chat-left')
+                        .addClass('chat-right')
+                    break
+                case 1:
+                    layout.removeClass('chat-right')
+                        .addClass('chat-left')
+                    break
+            }
+        };
+
+        const updateSize = function() {
+            const size = BSSettings.getSize()
+            if (size > 0) {
+                chatpanel.css('width', size + '%')
+            }
+        };
 
         chatframe.on('load', function(){
-            const chatwindow = this.contentWindow;
-
-            if(!chatwindow)
-                return;
-
-            $('#chat-panel-tools').each(function(){
-                $(this).on('click', '#popout', function(){
-                    window.open('/embed/chat', '_blank', getOptionsString());
-                    $('body').addClass('nochat');
-                    chatpanel.remove();
-                    streampanel.removeAttr('style');
-                    return false;
+            const chatwindow = this.contentWindow
+            if(!chatwindow) return;
+            paneltools
+                .on('click touch', '#popout', function(){
+                    window.open('/embed/chat', '_blank', getOptionsString())
+                    $body.addClass('nochat')
+                    chatpanel.remove()
+                    return false
+                })
+                .on('click touch', '#refresh', function(){
+                    chatwindow.location.reload()
+                    return false
+                })
+                .on('click touch', '#close', function(){
+                    $body.addClass('nochat')
+                    chatpanel.remove()
+                    return false
+                })
+                .on('click touch', '#swap', function(){
+                    BSSettings.setOrientation(BSSettings.getOrientation() === '1' ? '0':'1')
+                    updateOrientation()
+                    return false
                 });
-                $(this).on('click', '#refresh', function(){
-                    chatwindow.location.reload();
-                    return false;
-                });
-                $(this).on('click', '#close', function(){
-                    $('body').addClass('nochat');
-                    chatpanel.remove();
-                    streampanel.removeAttr('style');
-                    return false;
-                });
-                $(this).on('click', '#swap', function(){
-                    chatpanel.toggleClass('left').toggleClass('right');
-                    streampanel.toggleClass('left').toggleClass('right');
-                    localStorage.setItem('bigscreen.orientation', streampanel.hasClass('left') ? 0:1);
-                    return false;
-                });
-            });
         });
 
         // Bigscreen resize
-        $('#chat-panel-resize-bar').each(function(){
+        resizebar.each(function(){
 
-            const resizebar    = $(this),
-                  minwidth     = 320,
-                  disableWidth = 768;
+            resizebar.on('mousedown.chat touchstart.chat', function(e){
+                const startClientX = e.clientX || e.originalEvent['touches'][0].clientX || 0,
+                    startPosX = resizebar.position().left
+                resizebar.addClass('active')
+                let clientX = -1
+                $body
+                    .on('mouseup.chat touchend.chat', e => {
+                        if (clientX === -1) { return false; }
+                        //const clientX = e.clientX || e.originalEvent['touches'][0].clientX || 0
+                        $body.unbind('mousemove.chat mouseup.chat touchend.chat touchmove.chat')
+                        BSSettings.setSize((clientX / layout.outerWidth()) * 100)
+                        resizebar.removeClass('active').removeAttr('style')
+                        overlay.remove()
+                        updateSize()
+                        return false
+                    })
+                    .on('mousemove.chat touchmove.chat', e => {
+                        clientX = e.clientX || e.originalEvent['touches'][0].clientX || 0
+                        resizebar.css('left', startPosX + (clientX - startClientX))
+                    })
+                    .append(overlay)
+                return false;
+            })
 
-            // Resize the stream / chat frames
-            const resizeFrames = function(width=null) {
-                let nwidth = 0;
-                if(width === null) {
-                    if(chatpanel.hasClass('left')){
-                        nwidth = resizebar.offset().left;
-                    } else {
-                        nwidth = (chatpanel.offset().left + chatpanel.outerWidth()) - resizebar.offset().left;
-                    }
-                } else {
-                    nwidth = width;
-                }
-                resizebar.css('left', '');
-                nwidth = Math.max(nwidth, minwidth);
-                streampanel.css('width', '-moz-calc(100% - '+ nwidth +'px)');
-                streampanel.css('width', '-webkit-calc(100% - '+ nwidth +'px)');
-                streampanel.css('width', '-o-calc(100% - '+ nwidth +'px)');
-                streampanel.css('width', 'calc(100% - '+ nwidth +'px)');
-                chatpanel.css('width', nwidth);
-                localStorage.setItem('bigscreen.chat.width', nwidth);
-            };
-
-            resizebar.on('mousedown.chatresize', function(e){
-                e.preventDefault();
-                resizebar.addClass('active');
-                overlay.appendTo('body');
-                let offsetX = e.clientX,
-                    sx      = resizebar.position().left;
-
-                $(document).on('mouseup.chatresize', function(e){
-                    e.preventDefault();
-                    resizebar.removeClass('active');
-                    overlay.remove();
-                    resizebar.css('left', sx + (e.clientX - offsetX));
-                    $(document).unbind('mousemove.chatresize');
-                    $(document).unbind('mouseup.chatresize');
-                    resizeFrames();
-                });
-
-                $(document).on('mousemove.chatresize', function(e){
-                    e.preventDefault();
-                    resizebar.css('left', sx + (e.clientX - offsetX));
-                });
-
-            });
-
-            // If the window is reduced to a size below the disableWidth, disable the custom resizing
-            $(window).on('resize.chatresize', function(){
-                if($(window).width() <= disableWidth){
-                    streampanel.removeAttr('style');
-                    chatpanel.removeAttr('style');
-                }
-            });
-
-            // Onload, remember the last width the user chose
-            const width = parseInt(localStorage.getItem('bigscreen.chat.width'));
-            if(width > minwidth && $(window).width() > disableWidth)
-                resizeFrames(width);
-
-            const dir = localStorage.getItem('bigscreen.orientation') || -1;
-            switch(parseInt(dir)){
-                case 0:
-                    streampanel.removeClass('right').addClass('left');
-                    chatpanel.removeClass('left').addClass('right');
-                    break;
-                case 1:
-                    streampanel.removeClass('left').addClass('right');
-                    chatpanel.removeClass('right').addClass('left');
-                    break;
-            }
-
+            updateOrientation()
+            updateSize()
         });
 
     });
 
-    $('.btn-show-all').on('click', function(e){
+});
+
+$(function(){
+
+    const $body = $('body');
+
+    $body.find('.btn-show-all').on('click', e => {
+        $body.find('.collapse').collapse('show');
         e.preventDefault();
-        $('.collapse').collapse('show');
     });
 
     // Tabs selector - dont know why I need this
-    if (location.hash !== '') 
-        $('a[href="' + location.hash + '"]').tab('show');
+    if (location.hash !== '') {
+        $body.find('a[href="' + location.hash + '"]').tab('show');
+    }
 
     // Set the top nav selection
-    $('.navbar a[rel="'+body.attr('id')+'"]').closest('li').addClass('active');
-    $('.navbar a[rel="'+body.attr('class')+'"]').closest('li').addClass('active');
+    $body.find('.navbar a[rel="'+$body.attr('id')+'"]').closest('li').addClass('active');
+    $body.find('.navbar a[rel="'+$body.attr('class')+'"]').closest('li').addClass('active');
 
     // lazy loading images
-    $(document).find('img[data-src]').each(function () {
+    $body.find('img[data-src]').each(function () {
         const img = $(this), url = img.data('src');
         if (url !== '' && url !== null) {
             const clone = img.clone();
             clone.one('load', function () {
                 img.replaceWith(clone);
             });
-            clone.removeClass('img_320x240 img_64x64').removeAttr('data-src').attr('src', url);
+            clone.removeClass('img_320x240 img_64x64')
+                .removeAttr('data-src')
+                .attr('src', url);
         }
     });
 
     // Generic popup links
-    body.on('click', 'a.popup', function(e){
+    $body.on('click', 'a.popup', function(e){
         const a = $(this);
         a.data('popup', window.open(a.attr('href'), '_blank', getOptionsString(a.data('options'))) );
         e.preventDefault();
@@ -195,7 +192,7 @@ $(function(){
     });
 
     // Tooltips
-    $(this).find('[data-toggle="tooltip"]').tooltip();
+    $body.find('[data-toggle="tooltip"]').tooltip();
 })
 
 // Change time on selected elements
@@ -237,12 +234,12 @@ $(function(){
 // Gifting / user search
 $(function(){
 
-    let usrSearch    = $('#usersearchmodal'),
-        usrInput     = usrSearch.find('input#userSearchInput'),
+    let usrSearch = $('#usersearchmodal'),
+        usrInput = usrSearch.find('input#userSearchInput'),
         usrSelectBtn = usrSearch.find('button#userSearchSelect'),
         usrSearchForm = usrSearch.find('form#userSearchForm'),
         giftMsgInput = usrSearch.find('textarea#giftmessage'),
-        hasErrors    = false,
+        hasErrors = false,
         giftUsername = '';
 
     const checkUser = function(username, success){
@@ -342,7 +339,6 @@ $(function(){
 
     $('#stream-status').each(function(){
         const el = $(this),
-            a = el.find('#stream-status-preview > a'),
             end = el.find('#stream-status-end'),
             start = el.find('#stream-status-start'),
             host = el.find('#stream-status-host');
@@ -351,7 +347,6 @@ $(function(){
             live: false,
             game: null,
             preview: "",
-            animated_preview: "",
             status_text: "",
             started_at: null,
             ended_at: "",
@@ -365,7 +360,6 @@ $(function(){
             el.removeClass('online offline hosting').addClass(state);
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
-            a.data('animated', status.animated_preview).css('background-image', status.preview);
             if(state === 'hosting'){
                 host.text(status.host['display_name']);
                 host.attr('href', status.host['url']);
@@ -386,14 +380,6 @@ $(function(){
             });
         }, 60000);
 
-        a.src = a.css('background-image');
-        a.animated =  'url('+ a.data('animated') +')';
-        a.on('mouseover', function(){
-            a.css('background-image', a.animated);
-        })
-        .on('mouseout', function(){
-            a.css('background-image', a.src);
-        });
     });
 
 })
@@ -505,10 +491,10 @@ $(function(){
         });
     });
 
-    $(document).on('click', '[data-toggle="show"]', function(){
-        const elem = $(this);
-        const target = $(elem.attr('href'));
-        target.show();
+    $body.on('click', '[data-toggle="show"]', function(){
+        const elem = $(this),
+            target = $(elem.attr('href'));
+        target.addClass('show');
         elem.hide();
         return false;
     });

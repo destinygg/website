@@ -8,7 +8,6 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="developer" class="no-contain">
@@ -109,7 +108,7 @@ use Destiny\Common\Config;
                                 <?php endif; ?>
                             </td>
                             <td><?=Tpl::moment(Date::getDateTime($token['createdDate']), Date::STRING_FORMAT)?></td>
-                            <td><a href="/profile/authtoken/<?=$token['tokenId']?>/delete" data-confirm="Are you sure?" class="btn btn-danger btn-xs btn-post">Remove</a></td>
+                            <td><a href="/profile/authtoken/<?=$token['tokenId']?>/delete" data-confirm="Are you sure?" class="btn btn-danger btn-sm btn-post">Remove</a></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>

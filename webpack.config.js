@@ -61,13 +61,13 @@ module.exports = {
         { apply: c => c.hooks.afterEmit.tap('webpackManifestPlugin', covertManifestJsonToPhp) }
     ],
     watchOptions: {
-        ignored: /node_modules/
+        ignored: /(node_modules)/
     },
     module: {
         rules: [
             {
                 test: /\.m?js$/,
-                exclude: /(node_modules|)/,
+                exclude: /(node_modules)/,
                 loader: 'babel-loader',
                 options: {presets: ['@babel/preset-env']}
             },
@@ -75,18 +75,24 @@ module.exports = {
                 test: /\.(sa|sc|c)ss$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    'css-loader',
+                    'css-loader?importLoaders=1',
                     'postcss-loader',
-                    'sass-loader',
-                ],
+                    'sass-loader'
+                ]
             },
             {
-                test: /(-webfont|glyphicons-halflings-regular)\.(eot|svg|ttf|woff2?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                test: /\.(eot|ttf|woff2?)$/,
                 loader: 'file-loader',
-                options: {name: 'fonts/[name].[ext]'}
+                options: {name: 'font/[name].[ext]'}
+            },
+            {
+                test: /fa-.*\.svg/,
+                loader: 'file-loader',
+                options: {name: 'font/[name].[ext]'}
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,
+                exclude: /fa-.*\.svg/,
                 loader: 'file-loader',
                 options: {name: 'img/[name].[ext]'}
             },

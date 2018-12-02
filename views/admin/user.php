@@ -12,7 +12,6 @@ use Destiny\Commerce\SubscriptionStatus;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -394,7 +393,7 @@ use Destiny\Commerce\SubscriptionStatus;
                         <tbody>
                         <?php foreach($this->authSessions as $auth): ?>
                             <tr>
-                                <td><a onclick="return confirm('Are you sure?')" href="/admin/user/<?=$this->user['userId']?>/auth/<?= $auth['authProvider'] ?>/delete" class="btn btn-danger btn-xs btn-post">Delete</a></td>
+                                <td><a onclick="return confirm('Are you sure?')" href="/admin/user/<?=$this->user['userId']?>/auth/<?= $auth['authProvider'] ?>/delete" class="btn btn-danger btn-sm btn-post">Delete</a></td>
                                 <td><?= $auth['authProvider'] ?></td>
                                 <td><?= (!empty($auth['authDetail'])) ? Tpl::out($auth['authDetail']):Tpl::out($auth['authId']) ?></td>
                                 <td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>

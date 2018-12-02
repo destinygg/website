@@ -15,7 +15,7 @@
         "ext-mcrypt": "*",
         "ext-ctype": "*",
         "ext-gd": "*",
-        "guzzlehttp/guzzle": "6.2.3",
+        "guzzlehttp/guzzle": "6.3.3",
         "guzzlehttp/oauth-subscriber": "0.3.*",
         "paypal/merchant-sdk-php" : "3.12.*",
         "monolog/monolog" : "1.12.0",

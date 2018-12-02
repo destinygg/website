@@ -7,7 +7,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="messages" class="no-contain">
@@ -24,8 +23,8 @@ use Destiny\Common\Utils\Tpl;
     </section>
 
     <section class="container">
-        <h3 data-toggle="collapse" data-target="#inbox-content">Inbox <i id="inbox-loading" class="fa fa-cog fa-spin" style="display: none;"></i></h3>
-        <div id="inbox-content" class="content content-dark collapse in clearfix">
+        <h3 data-toggle="collapse" data-target="#inbox-content">Inbox <i id="inbox-loading" class="fas fa-cog fa-spin" style="display: none;"></i></h3>
+        <div id="inbox-content" class="content content-dark collapse show">
             <table id="inbox" class="grid messages">
                 <colgroup>
                     <col class="c2">

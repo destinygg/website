@@ -248,7 +248,7 @@ class ChatSubscriptionController {
         $userService = UserService::instance();
         $user = $userService->getAuthByIdAndProvider($authId, 'twitch');
         if (empty($user)) {
-            throw new Exception('Invalid user');
+            throw new Exception('Invalid twitch user user');
         }
         return $user;
     }

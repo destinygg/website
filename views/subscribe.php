@@ -9,7 +9,6 @@ use Destiny\Common\User\UserRole;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="subscribe" class="no-brand">
@@ -28,12 +27,12 @@ use Destiny\Common\User\UserRole;
         <?php if(Session::hasRole(UserRole::USER)): ?>
             <div id="giftSubscriptionSelect" class="alert alert-info" style="text-align: center;">
                 Would you like to gift someone a subscription?
-                <button class="btn btn-primary" data-toggle="modal" data-target="#usersearchmodal">Yes, gift a subscription <span class="fa fa-gift"></span></button>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#usersearchmodal">Yes, gift a subscription <i class="fas fa-gift"></i></button>
             </div>
 
             <div id="giftSubscriptionConfirm" class="alert alert-info hidden" style="text-align: center;">
                 You are gifting your subscription to <strong id="subscriptionGiftUsername"></strong>!
-                <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#usersearchmodal">Change <span class="fa fa-gift"></span></button>
+                <button class="btn btn-primary" id="selectGiftSubscription" data-toggle="modal" data-target="#usersearchmodal">Change <i class="fas fa-gift"></i></button>
                 <button class="btn btn-default" id="cancelGiftSubscription">Abort!</button>
             </div>
         <?php endif ?>
@@ -196,27 +195,25 @@ use Destiny\Common\User\UserRole;
 
     </section>
 
-    <div class="modal fade" id="usersearchmodal" tabindex="-1" role="dialog" aria-labelledby="userSearchModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <form id="userSearchForm" class="form-alt">
+</div>
 
-                        <div class="form-group">
-                            <label>Who do you want to gift?</label>
-                            <input tabindex="1" type="text" id="userSearchInput" class="form-control" placeholder="E.g. Destiny" />
-                            <label class="error hidden"></label>
-                        </div>
-
-                        <button tabindex="4" type="button" class="btn btn-default" data-dismiss="modal" id="userSearchCancel">Cancel</button>
-                        <button tabindex="3" type="submit" class="btn btn-primary" id="userSearchSelect" data-loading-text="Checking user...">Select</button>
-                    </form>
-                </div>
+<div class="modal" id="usersearchmodal" tabindex="-1" role="dialog" aria-labelledby="userSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <form id="userSearchForm" class="form-alt">
+                    <div class="form-group">
+                        <label>Who do you want to gift?</label>
+                        <input tabindex="1" type="text" id="userSearchInput" class="form-control" placeholder="E.g. Destiny" />
+                        <label class="error hidden"></label>
+                    </div>
+                    <button tabindex="4" type="button" class="btn btn-default" data-dismiss="modal" id="userSearchCancel">Cancel</button>
+                    <button tabindex="3" type="submit" class="btn btn-primary" id="userSearchSelect" data-loading-text="Checking user...">Select</button>
+                </form>
             </div>
         </div>
     </div>
-
 </div>
 
 <?php include 'seg/foot.php' ?>

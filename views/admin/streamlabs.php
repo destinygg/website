@@ -8,7 +8,6 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -20,15 +19,15 @@ use Destiny\Common\Config;
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#details-content">StreamLabs</h3>
-        <div id="details-content" class="content content-dark clearfix collapse in">
+        <div id="details-content" class="content content-dark collapse show">
             <div class="ds-block">
                 <div class="form-group">
                     Attached profile: <a><?=Tpl::out($this->user['username'])?></a>
                     <?php if(!empty($this->auth)): ?>
-                        <span class="label label-default">Authorized</span>
+                        <span class="badge badge-default">Authorized</span>
                         <p>Next auth code renew <?= Tpl::fromNow(Date::getDateTimePlusSeconds($this->auth['createdDate'], 3600)) ?></p>
                     <?php else: ?>
-                        <span class="label label-danger">Unauthorized</span>
+                        <span class="badge badge-danger">Unauthorized</span>
                     <?php endif; ?>
                 </div>
             </div>

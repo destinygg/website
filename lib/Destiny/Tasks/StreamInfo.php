@@ -20,43 +20,18 @@ class StreamInfo implements TaskInterface {
     public function execute() {
         $cache = Application::getNsCache();
         $twitchApiService = TwitchApiService::instance();
-        $redisService = ChatRedisService::instance();
-
-        // STREAM STATUS
-        $streaminfo = $twitchApiService->getStreamInfo(Config::$a ['twitch']['user']);
-        if (!empty($streaminfo)) {
-            $path = ImageDownloadUtil::download($streaminfo['preview'], true);
-            if (!empty($path))
-                $streaminfo['preview'] = Config::cdni() . '/' . $path;
-            $path = ImageDownloadUtil::download($streaminfo['animated_preview'], true);
-            if (!empty($path))
-                $streaminfo['animated_preview'] = Config::cdni() . '/' . $path;
+        $info = $twitchApiService->getStreamStatus(
+            Config::$a['twitch']['user'],
+            $cache->fetch('lasttimeonline')
+        );
+        if (!empty($info)) {
+            $cache->save('lasttimeonline', $info['ended_at']);
+            $path = ImageDownloadUtil::download($info['preview'], true);
+            if (!empty($path)) {
+                $info['preview'] = Config::cdni() . '/' . $path;
+            }
+            $cache->save('streamstatus', $info);
         }
-
-        // STREAM HOSTING
-        $lasthost = $cache->contains('streamhostinfo') ? $cache->fetch('streamhostinfo') : [];
-        $currhost = $twitchApiService->getChannelHostWithInfo(Config::$a['twitch']['id']);
-        if(TwitchApiService::checkForHostingChange($lasthost, $currhost) == TwitchApiService::$HOST_NOW_HOSTING){
-            $redisService->sendBroadcast(sprintf(
-                '%s is now hosting %s at %s',
-                Config::$a['meta']['shortName'],
-                $currhost['display_name'],
-                $currhost['url'])
-            );
-        }
-
-        // STEAM GO-LIVE ANNOUNCEMENT
-        $waslive = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
-        if($waslive !== null && $streaminfo !== null && (isset($waslive['live']) && $waslive['live'] == false && $streaminfo['live'] == true)){
-            $redisService->sendBroadcast(sprintf(
-                '%s is now live!',
-                Config::$a['meta']['shortName'])
-            );
-        }
-
-        $streaminfo['host'] = $currhost;
-        $cache->save('streamhostinfo', $currhost);
-        $cache->save('streamstatus', $streaminfo);
     }
 
 }

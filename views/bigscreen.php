@@ -8,40 +8,34 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="bigscreen" class="no-contain">
+<div id="page-wrap">
 
-<?php include 'seg/nav.php' ?>
+    <?php include 'seg/nav.php' ?>
 
-<div id="page-content" class="container">
-
-    <div id="stream-panel" class="left">
-        <div id="stream-wrap">
-            <iframe class="stream-element" marginheight="0" marginwidth="0" frameborder="0" src="<?= Config::$a['embed']['stream'] ?>" scrolling="no" seamless allowfullscreen></iframe>
-        </div>
-    </div>
-
-    <div id="chat-panel" class="right">
-        <div id="chat-panel-resize-bar"></div>
-        <div class="panelheader clearfix">
-            <div class="toolgroup clearfix">
-                <div id="chat-panel-tools">
-                    <a title="Refresh" id="refresh" class="pull-left"><span class="fa fa-refresh"></span></a>
-                    <a title="Close" id="close" class="pull-right"><span class="fa fa-remove"></span></a>
-                    <a title="Popout" id="popout" class="pull-right"><span class="fa fa-external-link-square"></span></a>
-                    <a title="Swap" id="swap" class="pull-right"><span class="fa fa-exchange"></span></a>
-                </div>
+    <div id="bigscreen-layout">
+        <div id="stream-panel">
+            <div id="stream-wrap">
+                <iframe seamless="seamless" marginheight="0" marginwidth="0" frameborder="0" src="<?= Config::$a['embed']['stream'] ?>" scrolling="no" allowfullscreen></iframe>
             </div>
         </div>
-        <div id="chat-wrap">
-            <iframe id="chat-frame" class="stream-element" seamless="seamless" src="<?= Config::$a['embed']['chat'] ?>?follow=<?= urlencode('/bigscreen') ?>"></iframe>
+        <div id="chat-panel">
+            <div id="chat-panel-resize-bar"></div>
+            <div id="chat-panel-tools">
+                <a title="Refresh" id="refresh" class="float-left"><i class="fas fa-sync"></i></a>
+                <a title="Close" id="close" class="float-right"><i class="fas fa-times"></i></a>
+                <a title="Popout" id="popout" class="float-right"><i class="fas fa-external-link-square-alt"></i></a>
+                <a title="Swap" id="swap" class="float-right"><i class="fas fa-exchange-alt"></i></a>
+            </div>
+            <div id="chat-wrap">
+                <iframe seamless="seamless" marginheight="0" marginwidth="0" frameborder="0" src="<?= Config::$a['embed']['chat'] ?>?follow=<?= urlencode('/bigscreen') ?>"></iframe>
+            </div>
         </div>
     </div>
 
 </div>
-
 <?php include 'seg/tracker.php' ?>
 <?php include 'seg/login.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

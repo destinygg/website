@@ -5,7 +5,7 @@ use Destiny\Common\User\UserRole;
 <section class="container">
     <ol class="breadcrumb" style="margin-bottom:0; font-size: 110%;">
 
-        <li><a href="/admin"><span class="fa fa-home fa-fw"></span></a></li>
+        <li><a href="/admin"><i class="fas fa-home"></i></a></li>
 
         <?php if(Session::hasRole(UserRole::MODERATOR)): ?>
             <li><a href="/admin/users">Users</a></li>

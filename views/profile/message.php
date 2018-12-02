@@ -7,7 +7,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="message" class="no-contain">
@@ -20,7 +19,7 @@ use Destiny\Common\Utils\Tpl;
 
     <section id="message-list" class="container active" data-userid="<?= $this->targetuser['userId'] ?>" data-username="<?= $this->targetuser['username'] ?>">
         <h4 id="message-list-title">
-            Messages between you and <em><?= Tpl::out($this->targetuser['username']) ?></em> ... <i id="message-list-loading" class="fa fa-cog fa-spin"  style="display: none;"></i>
+            Messages between you and <em><?= Tpl::out($this->targetuser['username']) ?></em> ... <i id="message-list-loading" class="fas fa-cog fa-spin"  style="display: none;"></i>
         </h4>
         <hr />
         <div style="text-align: center">

@@ -1,5 +1,4 @@
 import {fetch} from 'whatwg-fetch'
-import 'normalize.css'
 import 'dgg-chat-gui/assets/chat/css/style.scss'
 import Chat from 'dgg-chat-gui/assets/chat/js/chat'
 

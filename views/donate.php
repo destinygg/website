@@ -9,7 +9,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="donate" class="no-brand">
@@ -56,7 +55,7 @@ use Destiny\Common\Utils\Tpl;
                     <textarea name="message" autocomplete="off" maxlength="200" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Continue</button>
+                    <button class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
                     <a href="/" class="btn btn-link">Cancel</a>
                     <p class="agreement">
                         <span>By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</span>

@@ -6,7 +6,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -18,7 +17,7 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#details-content">Twitch</h3>
-        <div id="details-content" class="content content-dark clearfix collapse in">
+        <div id="details-content" class="content content-dark collapse show">
             <div class="ds-block">
                 <div class="form-group">
                     <p><span style="display: block;">Attached profile: <a><?=Tpl::out($this->user['username'])?></a></span></p>

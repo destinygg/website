@@ -8,7 +8,6 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="subscription-complete" class="no-brand">
@@ -39,7 +38,7 @@ use Destiny\Common\Config;
             <form action="/" method="GET">
 
                 <div class="ds-block">
-                    <p>Your order was successful, The order reference is <span class="label label-default">#<?=$this->subscription['subscriptionId']?></span>
+                    <p>Your order was successful, The order reference is <span class="badge badge-default">#<?=$this->subscription['subscriptionId']?></span>
                         <br />Please email <a href="mailto:<?=Config::$a['support_email']?>"><?=Config::$a['support_email']?></a> for any queries or issues.<br /><br />
                         Thank you for your support!</p>
                 </div>
@@ -52,7 +51,7 @@ use Destiny\Common\Config;
                             <p>Subscription is automatically renewed</p>
                         <?php endif ?>
                         <?php if(!empty($this->giftee)): ?>
-                            <p><span class="fa fa-gift"></span> You have gifted this to <span class="label label-danger"><?=Tpl::out($this->giftee['username'])?></span></p>
+                            <p><i class="fas fa-gift"></i> You have gifted this to <span class="badge badge-danger"><?=Tpl::out($this->giftee['username'])?></span></p>
                         <?php endif ?>
                     </div>
                 </div>

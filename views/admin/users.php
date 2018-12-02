@@ -7,7 +7,6 @@ use Destiny\Common\Utils\Date;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -19,14 +18,14 @@ use Destiny\Common\Utils\Date;
 
     <section class="container">
 
-        <div class="content content-dark clearfix">
-            <div class="ds-block clearfix">
+        <div class="content content-dark">
+            <div class="ds-block">
                 <form id="userSearchForm" class="form-inline" role="form">
-                    <div class="form-group">
+                    <div class="form-group mr-auto">
                         <input name="search" type="text" class="form-control" placeholder="Username or email..." value="<?=Tpl::out($this->search)?>" />
                         <button type="submit" class="btn btn-primary">Search</button>
                     </div>
-                    <div class="form-group pull-right">
+                    <div class="form-group">
                         <select name="feature" class="form-control">
                             <option value="" disabled selected>Feature</option>
                             <option value=""></option>
@@ -48,7 +47,7 @@ use Destiny\Common\Utils\Date;
                 <div class="ds-block clearfix">
 
                     <?php if($this->users['totalpages'] > 1): ?>
-                        <form class="form-inline pull-left" role="form">
+                        <form class="form-inline float-left" role="form">
                             <ul class="pagination" style="margin: 0 15px 0 0;">
                                 <li><a data-page="1" href="?page=0">First</a></li>
                                 <?php for($i = max(1, $this->users['page'] - 2); $i <= min($this->users['page'] + 2, $this->users['totalpages']); $i++): ?>
@@ -59,7 +58,7 @@ use Destiny\Common\Utils\Date;
                         </form>
                     <?php endif ?>
 
-                    <form class="form-inline pull-right" role="form">
+                    <form class="form-inline float-right" role="form">
                         <div class="form-group">
                             <label for="gridSize">Showing: </label>
                             <select id="gridSize" name="size" class="form-control">

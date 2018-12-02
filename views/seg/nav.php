@@ -1,89 +1,97 @@
 <?php
-namespace Destiny; 
+namespace Destiny;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Session\Session;
 ?>
-<div id="main-nav" class="navbar navbar-static-top navbar-inverse">
-    <div class="container-fluid">
-    
-        <a class="brand pull-left visible-lg" href="/">Destiny.gg</a>
+<div id="main-nav" class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
 
-        <ul class="nav navbar-nav">
-            <li id="menubtn">
-                <a title="Menu" href="#" class="collapsed" aria-label="Menu" data-toggle="collapse" data-target="#collapsemenu">
-                    <span class="menuicon"></span>
-                </a>
-            </li>
-        </ul>
+        <a class="brand float-left" href="/">Destiny.gg</a>
 
-        <ul class="nav navbar-nav navbar-right pull-right">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsemenu" aria-controls="collapsemenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <li class="bigscreen">
-                <a title="So. Much. Girth." href="/bigscreen" rel="bigscreen">
-                    <i class="icon-tv"></i>
-                    <span class="visible-lg-inline">Big screen</span>
-                </a>
-            </li>
-
-            <?php if(Session::hasRole(UserRole::USER)): ?>
-            <li class="hidden-xs">
-                <a href="/profile">
-                    <span class="fa fa-user-circle"></span>
-                    <span class="visible-lg-inline visible-xs-inline">Account</span>
-                </a>
-            </li>
-            <?php else: ?>
-            <li>
-                <a data-toggle="modal" data-target="#loginmodal" rel="login">
-                    <span class="fa fa-sign-in"></span>
-                    <span class="visible-lg-inline visible-xs-inline">Sign In</span>
-                </a>
-            </li>
-            <?php endif ?>
-
-        </ul>
-
-        <div class="navbar-collapse collapse" id="collapsemenu">
-            <ul class="nav navbar-nav">
-
-                <li class="visible-md visible-sm">
-                    <a title="Home" href="/">
-                        <span class="fa fa-home"></span>
-                    </a>
+        <div class="collapse navbar-collapse" id="collapsemenu">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item d-block d-sm-none">
+                    <a class="nav-link" title="Home" href="/">Home</a>
                 </li>
-
-                <li class="visible-xs"><a title="Home" href="/">Home</a></li>
-                <li class="visible-xs"><a title="Bigscreen" href="/bigscreen">Bigscreen</a></li>
+                <li class="nav-item d-block d-sm-none">
+                    <a class="nav-link" title="Bigscreen" href="/bigscreen">Bigscreen</a>
+                </li>
 
                 <?php if(Session::hasRole(UserRole::USER)): ?>
-                    <li class="visible-xs"><a title="Your account" href="/profile">Profile</a></li>
-                    <li class="divider-vertical visible-xs"></li>
+                    <li class="nav-item d-block d-sm-none">
+                        <a class="nav-link" title="Your account" href="/profile">Profile</a>
+                    </li>
                 <?php else: ?>
-                    <li class="visible-xs"><a title="Sign in" href="/login">Sign In</a></li>
-                    <li class="divider-vertical visible-xs"></li>
+                    <li class="nav-item d-block d-sm-none">
+                        <a class="nav-link" title="Sign in" href="/login">Sign In</a>
+                    </li>
                 <?php endif ?>
 
-                <li><a title="Youtube" href="/youtube">Youtube</a></li>
-                <li><a title="Instagram" href="/instagram">Instagram</a></li>
-                <li><a title="Reddit" href="/reddit">Reddit</a></li>
-                <li><a title="Facebook" href="/facebook">Facebook</a></li>
-                <li><a title="Blog" href="/blog">Blog</a></li>
-                <li><a title="Donate" href="/donate">Donate</a></li>
-
-                <?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
-                    <li class="subscribe"><a href="/subscribe" rel="subscribe" title="Get your own subscription"><span>Subscribe</span></a></li>
-                <?php else: ?>
-                    <li class="subscribed"><a href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a></li>
-                <?php endif ?>
-
-                <li>
-                    <a title="Shirts @ Amazon" href="/amazon">
-                        <span>Shirts</span>
-                        <span class="fa fa-fw fa-amazon" aria-hidden="true"></span>
-                    </a>
+                <li class="nav-item">
+                    <a class="nav-link" title="Youtube" href="/youtube">Youtube</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Instagram" href="/instagram">Instagram</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Reddit" href="/reddit">Reddit</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Facebook" href="/facebook">Facebook</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Blog" href="/blog">Blog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Donate" href="/donate">Donate</a>
                 </li>
 
+                <?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
+                    <li class="nav-item subscribe">
+                        <a class="nav-link" href="/subscribe" rel="subscribe" title="Get your own subscription"><span>Subscribe</span></a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item subscribed">
+                        <a class="nav-link" href="/subscribe" rel="subscribe" title="You have an active subscription!"><span>Subscribe</span></a>
+                    </li>
+                <?php endif ?>
+
+                <li class="nav-item">
+                    <a class="nav-link" title="Shirts @ Amazon" href="/amazon">
+                        <span>Shirts</span>
+                        <span class="fab fa-fw fa-amazon" aria-hidden="true"></span>
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav">
+                <li class="nav-item bigscreen">
+                    <a class="nav-link" title="So. Much. Girth." href="/bigscreen" rel="bigscreen">
+                        <i class="fas fa-tv"></i>
+                        <span>Big screen</span>
+                    </a>
+                </li>
+                <?php if(Session::hasRole(UserRole::USER)): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Account</span>
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="modal" data-target="#loginmodal" rel="login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Sign In</span>
+                        </a>
+                    </li>
+                <?php endif ?>
             </ul>
         </div>
+
     </div>
 </div>

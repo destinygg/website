@@ -8,7 +8,6 @@ use Destiny\Common\Config;
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
     <meta name="referrer" content="no-referrer">
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('chat.vendor.css')?>
 </head>
 <body>

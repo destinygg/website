@@ -6,7 +6,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -18,7 +17,7 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#admin-dashboard-content">Dashboard</h3>
-        <div id="admin-dashboard-content" class="content content-dark collapse in clearfix">
+        <div id="admin-dashboard-content" class="content content-dark collapse show">
             <div class="ds-block">
                 <p>If you are seeing this, you only have access to the <code>ADMIN</code> role.<br /></p>
                 <p>Work in progress ...</p>

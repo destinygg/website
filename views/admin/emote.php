@@ -7,7 +7,6 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -28,7 +27,7 @@ use Destiny\Common\Config;
                 <small>(<?=Tpl::out($this->emote['id'])?>)</small>
             <?php endif; ?>
         </h3>
-        <div id="emote-content" data-id="<?=Tpl::out($this->emote['id'])?>" class="content content-dark emote-form clearfix collapse in">
+        <div id="emote-content" data-id="<?=Tpl::out($this->emote['id'])?>" class="content content-dark emote-form collapse show">
             <form id="emote-form" action="<?=$this->action?>" method="post">
 
                 <div class="ds-block">
@@ -37,9 +36,9 @@ use Destiny\Common\Config;
                             <?php if(!empty($this->emote['imageName'])): ?>
                                 <img alt="<?=Tpl::out($this->emote['imageName'])?>" width="<?=Tpl::out($this->emote['width'])?>" height="<?=Tpl::out($this->emote['height'])?>" src="<?=Config::cdnv()?>/emotes/<?=Tpl::out($this->emote['imageName'])?>" />
                             <?php else: ?>
-                                <i class="fa fa-fw fa-upload fa-3x"></i>
+                                <i class="fas fa-fw fa-upload fa-3x"></i>
                             <?php endif; ?>
-                            <i class="fa fa-fw fa-cog fa-spin fa-3x"></i>
+                            <i class="fas fa-fw fa-cog fa-spin fa-3x"></i>
                             <input name="imageId" type="hidden" value="<?=$this->emote['imageId']?>" />
                         </div>
                     </div>
@@ -88,7 +87,7 @@ use Destiny\Common\Config;
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a href="/admin/emotes" class="btn">Cancel</a>
                     <?php if(!empty($this->emote['id'])): ?>
-                        <a class="btn btn-danger pull-right delete-item">Delete</a>
+                        <a class="btn btn-danger float-right delete-item">Delete</a>
                     <?php endif; ?>
                 </div>
             </form>

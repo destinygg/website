@@ -17,15 +17,16 @@ class BroadcastsFeed implements TaskInterface {
      * @return mixed|void
      */
     public function execute() {
-        $broadcasts = TwitchApiService::instance ()->getPastBroadcasts ();
-        if (! empty ( $broadcasts )){
-            foreach ($broadcasts['videos'] as $i=>$video){
+        $twitchApiService = TwitchApiService::instance();
+        $broadcasts = $twitchApiService->getPastBroadcasts(Config::$a['twitch']['user']);
+        if (!empty ($broadcasts)) {
+            foreach ($broadcasts['videos'] as $i => $video) {
                 $path = ImageDownloadUtil::download($video['preview']);
-                if(!empty($path))
+                if (!empty($path))
                     $broadcasts['videos'][$i]['preview'] = Config::cdni() . '/' . $path;
             }
             $cache = Application::getNsCache();
-            $cache->save ( 'pastbroadcasts', $broadcasts );
+            $cache->save('pastbroadcasts', $broadcasts);
         }
     }
 

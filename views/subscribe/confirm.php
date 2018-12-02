@@ -7,7 +7,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="subscription-confirm" class="no-brand">
@@ -27,7 +26,7 @@ use Destiny\Common\Utils\Tpl;
             <?php if(!empty($this->warning)): ?>
                 <div class="alert alert-danger alert-dismissable" style="margin: 15px 15px 0 15px;">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-                    <strong><span class="fa fa-warning"></span> Warning!</strong>
+                    <strong><i class="fas fa-exclamation-triangle"></i> Warning!</strong>
                     <?=Tpl::out($this->warning->getMessage())?>
                 </div>
             <?php endif ?>
@@ -42,7 +41,7 @@ use Destiny\Common\Utils\Tpl;
                         <div class="subscription">
                             <h2><?=$this->subscriptionType['tierLabel']?></h2>
                             <?php if(!empty($this->gift)): ?>
-                                <p><span class="fa fa-gift"></span> You are gifting this to <span class="label label-danger"><?=Tpl::out($this->gift)?></span></p>
+                                <p><i class="fas fa-gift"></i> You are gifting this to <span class="badge badge-danger"><?=Tpl::out($this->gift)?></span></p>
                             <?php endif ?>
                             <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
                         </div>
@@ -63,7 +62,7 @@ use Destiny\Common\Utils\Tpl;
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-lg"><span class="fa fa-shopping-cart"></span> Continue</button>
+                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
                         <a href="/subscribe" class="btn btn-link">Cancel</a>
                         <p class="agreement">
                             <span>By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</span>

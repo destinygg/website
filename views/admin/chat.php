@@ -7,7 +7,6 @@ use Destiny\Common\Utils\Date;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -19,7 +18,7 @@ use Destiny\Common\Utils\Date;
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#broadcast-content">Broadcast</h3>
-        <div id="broadcast-content" class="content content-dark collapse in clearfix">
+        <div id="broadcast-content" class="content content-dark collapse show">
             <form class="form" action="/admin/chat/broadcast" role="form">
                 <div class="ds-block">
                     <div class="form-group">
@@ -36,7 +35,7 @@ use Destiny\Common\Utils\Date;
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#search-content">Search</h3>
-        <div id="search-content" class="content content-dark collapse in clearfix">
+        <div id="search-content" class="content content-dark collapse show">
             <form class="form-search" action="/admin/chat/ip">
                 <div class="ds-block">
                     <div class="form-group">

@@ -7,7 +7,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -27,7 +26,7 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#details-content"><?=Tpl::out( sprintf('Active bans (%d)', count( $this->activeBans ) ) )?></h3>
-        <div id="details-content" class="content content-dark clearfix collapse in">
+        <div id="details-content" class="content content-dark collapse show">
             <table class="grid">
                 <thead>
                 <tr>
@@ -51,7 +50,7 @@ use Destiny\Common\Utils\Tpl;
                                 echo Tpl::moment(Date::getDateTime($ban['endtimestamp']), Date::STRING_FORMAT);
                             ?>
                         </td>
-                        <td><a class="btn btn-danger btn-xs" href="/admin/user/<?=$ban['targetuserid']?>/ban/remove?follow=<?=rawurlencode($_SERVER['REQUEST_URI'])?>">Remove</a>
+                        <td><a class="btn btn-danger btn-sm" href="/admin/user/<?=$ban['targetuserid']?>/ban/remove?follow=<?=rawurlencode($_SERVER['REQUEST_URI'])?>">Remove</a>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

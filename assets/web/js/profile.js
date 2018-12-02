@@ -57,7 +57,7 @@ $(function(){
             }
 
             disableMessageForm();
-            $modalmsg.show().html('<i class="fa fa-cog fa-spin"></i> Sending message ...');
+            $modalmsg.show().html('<i class="fas fa-cog fa-spin"></i> Sending message ...');
 
             saveStateOnClose = true;
             $.ajax({type: 'post', url: '/profile/messages/send', data: {'recipients' : recipients, 'message' : message}})
@@ -155,13 +155,15 @@ $(function(){
     const inboxtable = $('table#inbox')
     if(inboxtable.length > 0) {
         const activateSelector = function(){
-            $(this).find('i').attr('class', 'fa fa-dot-circle-o')
             $(this).addClass('active')
+                .find('i')
+                .attr('class', 'fas fa-circle')
         };
 
         const deactivateSelector = function(){
-            $(this).find('i').attr('class', 'fa fa-circle-o')
             $(this).removeClass('active')
+                .find('i')
+                .attr('class', 'fas fa-dot-circle')
         };
 
         const toggleRowSelector = function(e){
@@ -273,7 +275,7 @@ $(function(){
                 return ``+
                 `<div id="${msg['id']}" class="message ${styles.join(' ')} content">`+
                     `<div class="message-from">`+
-                        `<div class="message-date pull-right"><i class="fa message-list-item-status pull-right ${isme ? 'read':'unread'}"></i>  ${msg['timestamp']}</div>`+
+                        `<div class="message-date float-right"><i class="fa message-list-item-status float-right ${isme ? 'read':'unread'}"></i>  ${msg['timestamp']}</div>`+
                         `<span title="${msg['from']}">${msg['from']}</span>`+
                     `</div>`+
                     `<div class="message-content">`+

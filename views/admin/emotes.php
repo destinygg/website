@@ -7,7 +7,6 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
     <link href="<?=Config::cdnv()?>/emotes/emotes.css?_=<?=Tpl::out($this->cacheKey)?>" rel="stylesheet" media="screen">
 </head>
@@ -21,7 +20,7 @@ use Destiny\Common\Config;
     <section class="container">
         <div class="content content-dark clearfix">
             <div class="ds-block" style="display: flex;">
-                <a href="/admin/emotes/new" class="btn btn-primary">New Emote <i class="fa fa-fw fa-plus"></i></a>
+                <a href="/admin/emotes/new" class="btn btn-primary">New Emote <i class="fas fa-fw fa-plus"></i></a>
                 <input style="margin-left: 1rem;" id="emote-search" type="text" class="form-control" placeholder="Search ..." />
             </div>
         </div>

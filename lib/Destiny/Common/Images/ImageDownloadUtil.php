@@ -4,6 +4,7 @@ namespace Destiny\Common\Images;
 use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\RandomString;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -18,58 +19,88 @@ class ImageDownloadUtil {
      *
      * @param string $url
      *  url to image
-     * @param boolean $overwrite
+     * @param boolean $hashContents
      *  If false, will not request a new image if one is found
      *  If true, filename will be derived from the md5 of the file contents, instead of the URL
      *   This is to make sure new images are not cached by the http server.
-     *   @TODO Adds complexity where there shouldn't - refactor
      * @param string $path
      *  Full directory, must not begin with slash, must end with slash
      *  Must not include filename, must be an existing path, must include a filename and ext
      *
      * @return string a RELATIVE path to the file, or an empty string if something went wrong
      */
-    public static function download($url, $overwrite = false, $path = null) {
-        $response = '';
-        if (empty($url))
-            return $response;
-        if (empty($path))
+    public static function download($url, $hashContents = false, $path = null) {
+        if (empty($url)) {
+            return '';
+        }
+        if (empty($path)) {
             $path = Config::$a['images']['path'];
-        $urlpath = parse_url($url, PHP_URL_PATH);
-        $ext = strtolower(pathinfo($urlpath, PATHINFO_EXTENSION));
+        }
+
         $hash = md5($url);
+        $ext = strtolower(pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION));
         $shard = (preg_match("/[a-z0-9]/i", $hash, $match)) ? $match[0] : "0";
-        $final = $shard . self::$PATH_SEPARATOR . $hash . "." . $ext;
-        Log::debug("Downloading [$url]");
+        $fullfolder = $path . $shard . self::$PATH_SEPARATOR;
+
         if (strlen($shard) <= 0) {
-            Log::error("Invalid shard." . $shard);
-        } else if (!file_exists($path . $shard) && !mkdir($path . $shard)) {
-            Log::error("Could not make shard sub-folder. " . $path . $shard);
+            Log::error("Invalid shard. $shard");
+            return '';
         } else if (empty($ext) || !in_array($ext, self::$ALLOWED_EXT)) {
-            Log::error("File type not supported or invalid extension." . $urlpath);
-        } else if ($overwrite === false && file_exists($path . $final)) {
-            Log::notice("Not downloading image, one already exists ($url).");
-            $response = $final;
+            Log::error("File type not supported or invalid extension. $url");
+            return '';
+        } else if (!file_exists($fullfolder) && !mkdir($fullfolder)) {
+            Log::error("Could not make shard sub-folder. $fullfolder");
+            return '';
+        }
+
+        if (!$hashContents) {
+            $filename = "$hash.$ext";
+            if (file_exists($fullfolder . $filename) || self::downloadImage($url, $fullfolder . $filename)) {
+                Log::debug("Not downloading image, one already exists ($url).");
+                return $shard . self::$PATH_SEPARATOR . $filename;
+            }
         } else {
-            try {
-                $client = new Client(['timeout' => 15, 'connect_timeout' => 5]);
-                $r = $client->request('GET', $url, [
-                    'headers' => ['User-Agent' => Config::userAgent()],
-                    'sink' => $path . $final
-                ]);
-                $code = $r->getStatusCode();
-                if ($code != Http::STATUS_OK) {
-                    Log::error("Invalid http response code. [" . $code . "] " . $url);
+            $filename = RandomString::makeUrlSafe(32) . ".tmp";
+            // TODO do a head request, or check the etag
+            if (self::downloadImage($url, $fullfolder . $filename)) {
+                $newfilename = md5_file($fullfolder . $filename) . ".$ext";
+                if (!is_file($fullfolder . $newfilename)) {
+                    Log::debug("Rename $fullfolder$filename, $fullfolder$newfilename");
+                    rename($fullfolder . $filename, $fullfolder . $newfilename);
                 } else {
-                    $response = $final;
+                    Log::debug("Unlink $fullfolder$filename");
+                    unlink($fullfolder . $filename);
                 }
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-            } catch (GuzzleException $e) {
-                Log::error($e->getMessage());
+                return $shard . self::$PATH_SEPARATOR . $newfilename;
             }
         }
-        return $response;
+        return '';
+    }
+
+    /**
+     * @param $url
+     * @param $dest
+     * @return mixed
+     */
+    private static function downloadImage($url, $dest) {
+        try {
+            Log::debug("Downloading $url");
+            $client = new Client(['timeout' => 15, 'connect_timeout' => 5]);
+            $r = $client->request('GET', $url, [
+                'headers' => ['User-Agent' => Config::userAgent()],
+                'sink' => $dest
+            ]);
+            $code = $r->getStatusCode();
+            if ($code == Http::STATUS_OK) {
+                return true;
+            }
+            Log::notice("Invalid http response code. [" . $code . "] $url");
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        } catch (GuzzleException $e) {
+            Log::error($e->getMessage());
+        }
+        return false;
     }
 
 }

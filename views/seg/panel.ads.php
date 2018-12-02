@@ -3,7 +3,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
 ?>
 
-<section id="dc-donate" class="container row-no-padding">
+<section id="dc-donate" class="container">
     <div id="dc-donate-wrap">
         <div id="ting-block" class="dc-donate-blk">
             <div class="dc-donate-inner">

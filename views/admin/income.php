@@ -6,7 +6,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -19,40 +18,40 @@ use Destiny\Common\Utils\Tpl;
     <section class="container">
         <h3 id="income-dates">
                 <span id="date-selector">
-                    <a href='#'><i class='fa fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fa fa-arrow-right'></i></a>
+                    <a href='#'><i class='fas fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fas fa-arrow-right'></i></a>
                 </span>
         </h3>
         <div class="row">
-            <div class="col-md-6 col-sm-12 card">
-                <div id="graph4" class="card-inner">
+            <div class="col-md-6 col-sm-12">
+                <div id="graph4">
                     <div class="graph-outer">
                         <canvas height="350"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-12 card">
-                <div id="graph5" class="card-inner">
+            <div class="col-md-6 col-sm-12">
+                <div id="graph5">
                     <div class="graph-outer">
                         <canvas height="350"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 card">
-                <div id="graph1" class="card-inner">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div id="graph1">
                     <div class="graph-outer">
                         <canvas height="300"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 card">
-                <div id="graph2" class="card-inner">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div id="graph2">
                     <div class="graph-outer">
                         <canvas height="300"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-12 col-sm-12 card">
-                <div id="graph3" class="card-inner">
+            <div class="col-lg-4 col-md-12 col-sm-12">
+                <div id="graph3">
                     <div class="graph-outer">
                         <canvas height="300"></canvas>
                     </div>

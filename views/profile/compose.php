@@ -3,20 +3,23 @@ namespace Destiny;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 ?>
-<div class="modal fade message-composition" id="compose" tabindex="-1" role="dialog" aria-labelledby="composeLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal message-composition" id="compose" tabindex="-1" role="dialog" aria-labelledby="composeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="composeLabel">New message</h4>
+                <h4 class="modal-title mr-auto" id="composeLabel">New message</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
             </div>
             <div id="compose-form">
                 <div class="modal-recipients">
                     <div class="modal-user-groups" class="clearfix">
-                        <?php if(Session::hasRole(UserRole::ADMIN)): ?>
-                        <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-xs btn-primary">Add group</button>
-                            <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <?php
+                        /*<?php if(Session::hasRole(UserRole::ADMIN)): ?>
+                        <div class="btn-group float-right">
+                            <button type="button" class="btn btn-sm btn-primary">Add group</button>
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
                                 <span class="caret"></span>
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
@@ -27,7 +30,8 @@ use Destiny\Common\User\UserRole;
                                 <li><a href="#">T1 Subscribers</a></li>
                             </ul>
                         </div>
-                        <?php endif ?>
+                        <?php endif ?>*/
+                        ?>
                         <input tabindex="1" id="compose-recipients" type="text" placeholder="Enter a recipient ..." autocomplete="false" autocorrect="off" spellcheck="false" />
                     </div>
                     <div class="recipient-container"></div>

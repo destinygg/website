@@ -7,7 +7,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -19,7 +18,7 @@ use Destiny\Common\Utils\Tpl;
         <?php if(!empty($tier)): ?>
             <section class="container">
                 <h3 class="in" data-toggle="collapse" data-target="#tier-<?=$num?>-content">T<?=$num?> Subscribers</h3>
-                <div id="tier-<?=$num?>-content" class="content content-dark collapse in clearfix">
+                <div id="tier-<?=$num?>-content" class="content content-dark collapse show">
                     <table class="grid">
                         <thead>
                         <tr>
@@ -38,7 +37,7 @@ use Destiny\Common\Utils\Tpl;
                                 <td>
                                     <a href="/admin/user/<?=$sub['userId']?>/edit"><?=Tpl::out($sub['username'])?></a>
                                     <?php if(!empty($sub['gifter'])): ?>
-                                        &nbsp; (<a title="Gifted by" href="/admin/user/<?=$sub['gifter']?>/edit"><span class="fa fa-gift" title="Gift"></span> <?=Tpl::out($sub['gifterUsername'])?></a>)
+                                        &nbsp; (<a title="Gifted by" href="/admin/user/<?=$sub['gifter']?>/edit"><i class="fas fa-gift"></i> <?=Tpl::out($sub['gifterUsername'])?></a>)
                                     <?php endif ?>
                                 </td>
                                 <td><?=($sub['recurring'] == 1) ? 'Yes':'No'?></td>
@@ -56,7 +55,7 @@ use Destiny\Common\Utils\Tpl;
     <?php if(empty($this->subscribersT4) && empty($this->subscribersT3) && empty($this->subscribersT2) && empty($this->subscribersT1)): ?>
         <section class="container">
             <h3 class="in" data-toggle="collapse" data-target="#no-subs-content">Subscribers</h3>
-            <div id="no-subs-content" class="content content-dark collapse in clearfix">
+            <div id="no-subs-content" class="content content-dark collapse show">
                 <div class="ds-block">
                     <p>No subscribers</p>
                 </div>

@@ -8,7 +8,6 @@ use Destiny\Common\Utils\Tpl;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="donations" class="no-contain">
@@ -23,7 +22,7 @@ use Destiny\Common\Utils\Tpl;
     <section class="container">
 
         <h3 data-toggle="collapse" data-target="#donations-content">Donations</h3>
-        <div id="donations-content" class="content collapse in">
+        <div id="donations-content" class="content collapse show">
             <div class="content-dark clearfix">
 
                 <?php if(!empty($this->donations)): ?>

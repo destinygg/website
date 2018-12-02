@@ -7,7 +7,6 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="authentication" class="no-contain">
@@ -19,7 +18,7 @@ use Destiny\Common\Config;
 
     <section class="container">
         <h3 data-toggle="collapse" data-target="#authentication-content">Providers</h3>
-        <div id="authentication-content" class="content content-dark collapse in clearfix">
+        <div id="authentication-content" class="content content-dark collapse show">
             <div class="ds-block">
                 <p>Connect all the providers to the same destiny.gg user.</p>
             </div>
@@ -31,9 +30,9 @@ use Destiny\Common\Config;
                             <td><?=ucwords($id)?></td>
                             <td style="width:100%;">
                                 <?php if(in_array($id, $this->authProfileTypes)): ?>
-                                    <a href="/profile/remove/<?=$id?>" data-confirm="Are you sure?" class="btn btn-danger btn-xs btn-post">Remove</a>
+                                    <a href="/profile/remove/<?=$id?>" data-confirm="Are you sure?" class="btn btn-danger btn-sm btn-post">Remove</a>
                                 <?php else: ?>
-                                    <a href="/profile/connect/<?=$id?>" class="btn btn-primary btn-xs btn-post">Connect</a>
+                                    <a href="/profile/connect/<?=$id?>" class="btn btn-primary btn-sm btn-post">Connect</a>
                                 <?php endif ?>
                             </td>
                         </tr>

@@ -7,7 +7,6 @@ use Destiny\Common\Config;
 <head>
     <?=Tpl::title($this->title)?>
     <?php include 'seg/meta.php' ?>
-    <?=Tpl::manifestLink('common.vendor.css')?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
 <body id="admin" class="no-contain">
@@ -20,7 +19,7 @@ use Destiny\Common\Config;
     <section class="container">
         <div class="content content-dark clearfix">
             <div class="ds-block" style="display: flex;">
-                <a href="/admin/flairs/new" class="btn btn-primary">New Flair <i class="fa fa-fw fa-plus"></i></a>
+                <a href="/admin/flairs/new" class="btn btn-primary">New Flair <i class="fas fa-fw fa-plus"></i></a>
                 <input style="margin-left: 1rem;" id="flair-search" type="text" class="form-control" placeholder="Search ..." />
             </div>
         </div>
@@ -34,7 +33,7 @@ use Destiny\Common\Config;
                         <?php if(!boolval($flair['hidden'])): ?>
                             <img alt="<?=Tpl::out($flair['imageName'])?>" width="<?=Tpl::out($flair['width'])?>" height="<?=Tpl::out($flair['height'])?>" src="<?=Config::cdnv()?>/flairs/<?=Tpl::out($flair['imageName'])?>" />
                         <?php else: ?>
-                            <i title="Hidden" class="fa fa-fw fa-eye-slash fa-2x"></i>
+                            <i title="Hidden" class="fas fa-fw fa-eye-slash fa-2x"></i>
                         <?php endif; ?>
                     </a>
                     <a href="/admin/flairs/<?=Tpl::out($flair['featureId'])?>/edit" class="image-info" style="<?=(!empty($flair['color'])) ? 'border-color:'.$flair['color']:''?>">
