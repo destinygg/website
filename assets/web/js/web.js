@@ -54,7 +54,7 @@ $(function(){
 
         const BSSettings = {
             getOrientation: function(){
-                return localStorage.getItem('bigscreen.chat.orientation') || '1'
+                return localStorage.getItem('bigscreen.chat.orientation') || '0'
             },
             setOrientation: function(dir){
                 localStorage.setItem('bigscreen.chat.orientation', dir)
@@ -74,11 +74,11 @@ $(function(){
             switch(parseInt(dir)){
                 case 0:
                     layout.removeClass('chat-left')
-                        .addClass('chat-right')
+                          .addClass('chat-right')
                     break
                 case 1:
                     layout.removeClass('chat-right')
-                        .addClass('chat-left')
+                           .addClass('chat-left')
                     break
             }
         };

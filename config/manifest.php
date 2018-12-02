@@ -1,5 +1,5 @@
 <?php
-// auto-generated: 1543759767755
+// auto-generated: 1543760903799
 return [
 	"common.vendor.js" => "common.vendor.267cebbf346831540037.js",
 	"runtime.js" => "runtime.ffaf452731b773b5b33e.js",
@@ -10,7 +10,7 @@ return [
 	"profile.js" => "profile.f8645f2f657bf4920d07.js",
 	"streamchat.js" => "streamchat.9f304f3b0657f84e67dd.js",
 	"web.css" => "web.aa8683d21a098b429de7.css",
-	"web.js" => "web.034ff16fb318c36083c3.js",
+	"web.js" => "web.1fb1f6bba752f70755fa.js",
 	"font/style.scss" => "font/fa-solid-900.woff2",
 	"img/style.scss" => "img/sl-logo.png"
 ];
