@@ -43,25 +43,17 @@ class SubscriptionController {
      * @param ViewModel $model
      * @return string
      *
-     * @throws Exception
      * @throws DBALException
      */
     public function subscribe(ViewModel $model) {
         $subscriptionsService = SubscriptionsService::instance();
-
         if (Session::hasRole(UserRole::USER)) {
             $userId = Session::getCredentials()->getUserId();
-
-            // Pending subscription
-            $subscription = $subscriptionsService->findByUserIdAndStatus($userId, SubscriptionStatus::PENDING);
-            if (!empty ($subscription)) {
-                throw new Exception ('You already have a subscription in the "pending" state.');
-            }
-
             // Active subscription
             $model->subscription = $subscriptionsService->getUserActiveSubscription($userId);
+            // Pending subscription
+            $model->pending = $subscriptionsService->findByUserIdAndStatus($userId, SubscriptionStatus::PENDING);
         }
-
         $model->title = 'Subscribe';
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         return 'subscribe';

@@ -19,8 +19,7 @@ const getOptionsString = function(options){
 };
 
 const $document = $(document),
-    $body = $document.find('body'),
-    $win = $(window);
+    $body = $document.find('body');
 
 $(function(){
 

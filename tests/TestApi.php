@@ -27,57 +27,56 @@ class TestApi extends PHPUnit\Framework\TestCase {
     public function testBlog() {
         $apiService = BlogApiService::instance();
         $json = $apiService->getBlogPosts();
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
 
     public function testLastFM() {
         $apiService = LastFMApiService::instance();
         $json = $apiService->getLastPlayedTracks();
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertTrue($json != null && isset($json['recenttracks']));
     }
 
     public function testTwitchApiBroadcasts() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getPastBroadcasts(Config::$a['twitch']['user']);
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertTrue($json != null && isset($json['videos']));
     }
 
     public function testTwitchApiStreamInfo() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getStreamStatus(Config::$a ['twitch']['user']);
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
-        echo PHP_EOL . PHP_EOL;
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
 
     public function testTwitchApiChannelHost() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getChannelHost(Config::$a['twitch']['id']);
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
 
     public function testTwitchApiChannel() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getChannel(Config::$a['twitch']['user']);
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
 
     public function testTwitchApiLive() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getStreamLiveDetails(Config::$a['twitch']['id']);
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
 
     public function testTwitchApiHostWithInfo() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getChannelHostWithInfo(Config::$a['twitch']['id']);
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
 
@@ -90,14 +89,14 @@ class TestApi extends PHPUnit\Framework\TestCase {
     public function testYoutubeApi() {
         $apiService = YoutubeApiService::instance();
         $json = $apiService->getYoutubePlaylist();
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertTrue($json != null);
     }
 
     public function testRedditThreads() {
         $apiService = RedditFeedService::instance();
         $json = $apiService->getHotThreads();
-        Log::debug(json_encode($json, JSON_PRETTY_PRINT));
+        echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertTrue($json != null);
     }
 

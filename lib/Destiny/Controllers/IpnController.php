@@ -42,14 +42,8 @@ class IpnController {
                 $response->setStatus(Http::STATUS_BAD_REQUEST);
                 return 'invalid_ipn';
             }
-            $data = $ipnMessage->getRawData();
-            // Make sure this IPN is for the merchant
-            if (!isset($data['receiver_email']) || strcasecmp(Config::$a ['commerce'] ['receiver_email'], $data['receiver_email']) !== 0) {
-                Log::critical('IPN originated with incorrect receiver_email [{ipn_track_id},{receiver_email}]', $data);
-                $response->setStatus(Http::STATUS_BAD_REQUEST);
-                return 'invalid_ipn';
-            }
             try {
+                $data = $ipnMessage->getRawData();
                 Log::info('Got a valid IPN [txn_id: {txn_id}, txn_type: {txn_type}]', $data);
                 $orderService = OrdersService::instance();
                 $orderService->addIpnRecord([
@@ -92,6 +86,7 @@ class IpnController {
             // This is sent when a express checkout has been performed by a user
             // We need to handle the case where orders go through, but have pending payments.
             case 'EXPRESS_CHECKOUT' :
+                $this->checkTransactionRecipientEmail($data);
                 $payment = $orderService->getPaymentByTransactionId($txnId);
                 if (!empty ($payment)) {
                     // Make sure the payment values are the same
@@ -124,6 +119,7 @@ class IpnController {
 
             // This is sent from paypal when a recurring payment is billed
             case 'RECURRING_PAYMENT' :
+                $this->checkTransactionRecipientEmail($data);
                 if (!isset ($data ['payment_status']))
                     throw new Exception ('Invalid payment status');
                 if (!isset ($data ['next_payment_date']))
@@ -158,6 +154,7 @@ class IpnController {
                 break;
 
             case 'RECURRING_PAYMENT_SKIPPED':
+                $this->checkTransactionRecipientEmail($data);
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
                 $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
@@ -167,6 +164,7 @@ class IpnController {
                 break;
 
             case 'RECURRING_PAYMENT_PROFILE_CANCEL' :
+                $this->checkTransactionRecipientEmail($data);
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
                 $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
@@ -176,6 +174,7 @@ class IpnController {
                 break;
 
             case 'RECURRING_PAYMENT_FAILED' :
+                $this->checkTransactionRecipientEmail($data);
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
                 $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
@@ -186,12 +185,17 @@ class IpnController {
 
             // Sent on first post-back when the user subscribes
             case 'RECURRING_PAYMENT_PROFILE_CREATED' :
+                $this->checkTransactionRecipientEmail($data);
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);
                 $subscriptionsService->updateSubscription([
                     'subscriptionId' => $subscription['subscriptionId'],
                     'paymentStatus' => PaymentStatus::ACTIVE
                 ]);
                 Log::debug('Updated payment profile {recurring_payment_id} status {profile_status}', $data);
+                break;
+
+            case 'ADJUSTMENT':
+                Log::debug('Received payment adjustment'. $data['reason_code'], $data);
                 break;
         }
     }
@@ -204,7 +208,7 @@ class IpnController {
      */
     protected function getSubscriptionByPaymentProfileData(array $data) {
         $subscription = null;
-        if (isset ($data ['recurring_payment_id']) && !empty ($data ['recurring_payment_id'])) {
+        if (isset($data ['recurring_payment_id']) && !empty($data['recurring_payment_id'])) {
             $subscriptionService = SubscriptionsService::instance();
             $subscription = $subscriptionService->findByPaymentProfileId($data ['recurring_payment_id']);
         }
@@ -213,6 +217,17 @@ class IpnController {
             throw new Exception('Could not load subscription by payment data');
         }
         return $subscription;
+    }
+
+    /**
+     * @param array $data
+     * @throws Exception
+     */
+    private function checkTransactionRecipientEmail(array $data) {
+        if (!isset($data['receiver_email']) || strcasecmp(Config::$a['commerce']['receiver_email'], $data['receiver_email']) !== 0) {
+            Log::critical('IPN originated with incorrect receiver_email', $data);
+            throw new Exception('IPN originated with incorrect receiver_email');
+        }
     }
 
 }

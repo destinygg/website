@@ -24,6 +24,13 @@ use Destiny\Common\User\UserRole;
         </h1>
         <br />
 
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center;">
+            <strong>Warning!</strong> You have an existing subscription in a <strong>pending</strong> state.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
         <?php if(Session::hasRole(UserRole::USER)): ?>
             <div id="giftSubscriptionSelect" class="alert alert-info" style="text-align: center;">
                 Would you like to gift someone a subscription?

@@ -84,7 +84,7 @@ class DonateController {
         $minimum = Config::$a['commerce']['minimum_donation'];
         if ($amount < $minimum) {
             Session::setErrorBag('Only donations of $5.00 more more are accepted');
-            throw new Exception ('Minimum donation amount not met');
+            return "redirect: /donate";
         }
 
         try {

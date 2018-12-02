@@ -208,12 +208,12 @@ class TwitchApiService extends Service {
         //     use lastOnline
         //   else
         //     use channel[updated_date]
-        $lastSeen = (empty($live) ? (!empty($lastOnline) ? Date::getDateTime($lastOnline) : Date::getDateTime($channel['updated_at'])) : Date::getDateTime())->format(Date::FORMAT);
+        $lastSeen = (empty($live) ? (!empty($lastOnline) ? Date::getDateTime($lastOnline) : Date::getDateTime($channel['updated_at'])) : Date::getDateTime());
         $data = [
             'live' => !empty($live),
             'game' => $channel['game'],
             'status_text' => $channel['status'],
-            'ended_at' => $lastSeen,
+            'ended_at' => $lastSeen->format(Date::FORMAT),
         ];
 
         if (!empty($live)) {
@@ -228,9 +228,10 @@ class TwitchApiService extends Service {
         } else {
 
             $broadcasts = $this->getPastBroadcasts($name, 1);
+            $host = $this->getChannelHostWithInfo($channel['_id']);
             $lastPreview = (!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])) ? $broadcasts['videos'][0]['preview'] : null;
-            $data['host'] = $this->getChannelHostWithInfo($channel['_id']);
-            $data['preview'] = !empty($data['host']) ? $data['host']['preview'] : $lastPreview;
+            $data['host'] = $host;
+            $data['preview'] = !empty($host) ? $host['preview'] : $lastPreview;
             $data['started_at'] = null;
             $data['duration'] = 0;
             $data['viewers'] = 0;
