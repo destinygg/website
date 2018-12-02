@@ -60,7 +60,7 @@ $(function(){
                 localStorage.setItem('bigscreen.chat.orientation', dir)
             },
             getSize: function(){
-                return parseFloat(localStorage.getItem('bigscreen.chat.size') || 0)
+                return parseFloat(localStorage.getItem('bigscreen.chat.size') || 27.5)
             },
             setSize: function(percentage){
                 const percent = (this.getOrientation() === '0') ? 100 - percentage : percentage
