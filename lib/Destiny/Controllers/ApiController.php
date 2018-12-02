@@ -198,7 +198,7 @@ class ApiController {
             return ['message' => 'Invalid or empty authToken', 'error' => 'fielderror', 'code' => Http::STATUS_FORBIDDEN];
         }
         $oauthService = OAuthService::instance();
-        $accessToken = $oauthService->getAccessTokenByToken($params['token']);
+        $accessToken = $oauthService->getAccessTokenByToken($params['authtoken']);
         if (empty ($accessToken)) {
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return ['message' => 'Auth token not found', 'error' => 'invalidtoken', 'code' => Http::STATUS_FORBIDDEN];
