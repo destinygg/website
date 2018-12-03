@@ -21,7 +21,7 @@ const getOptionsString = function(options){
 const $document = $(document),
     $body = $document.find('body');
 
-$(function(){
+(function(){
 
     $body.find('.text-message textarea[maxlength]').each((i, e) => {
         const ta = $(e), max = ta.attr('maxlength')
@@ -34,9 +34,9 @@ $(function(){
         highlight: (e) => $(e).closest('.form-group').addClass('error'),
         unhighlight: (e) => $(e).closest('.form-group').removeClass('error')
     });
-})
+})();
 
-$(function(){
+(function(){
 
     const $body = $('body#bigscreen');
 
@@ -48,8 +48,8 @@ $(function(){
             paneltools = $body.find('#chat-panel-tools'),
             chatframe = $body.find('#chat-wrap iframe'),
             overlay = $('<div class="overlay"></div>'),
-            minwidth = 23.333,
-            maxsize = 76.666;
+            minwidth = 300,     // pixels
+            maxsize = 76.666;   // percent
 
         const BSSettings = {
             getOrientation: function(){
@@ -59,11 +59,11 @@ $(function(){
                 localStorage.setItem('bigscreen.chat.orientation', dir)
             },
             getSize: function(){
-                return parseFloat(localStorage.getItem('bigscreen.chat.size') || 27.5)
+                return parseFloat(localStorage.getItem('bigscreen.chat.size') || 20.00)
             },
             setSize: function(percentage){
                 const percent = (this.getOrientation() === '0') ? 100 - percentage : percentage
-                localStorage.setItem('bigscreen.chat.size', Math.min(maxsize, Math.max(minwidth, percent)).toFixed(4))
+                localStorage.setItem('bigscreen.chat.size', Math.min(maxsize, Math.max(0, percent)).toFixed(4))
             }
         }
 
@@ -83,9 +83,12 @@ $(function(){
         };
 
         const updateSize = function() {
-            const size = BSSettings.getSize()
-            if (size > 0) {
-                chatpanel.css('width', size + '%')
+            const percent = BSSettings.getSize(),
+                minp = (minwidth / layout.outerWidth() * 100);
+            if (percent > minp) {
+                chatpanel.css('width', Math.max(minp, percent) + '%')
+            } else {
+                chatpanel.css('width', 'inherit')
             }
         };
 
@@ -118,9 +121,10 @@ $(function(){
         // Bigscreen resize
         resizebar.each(function(){
 
-            resizebar.on('mousedown.chat touchstart.chat', function(e){
+            resizebar.on('mousedown.chat touchstart.chat', e => {
                 const startClientX = e.clientX || e.originalEvent['touches'][0].clientX || 0,
-                    startPosX = resizebar.position().left
+                    startPosX = resizebar.position().left,
+                    clientWidth = layout.outerWidth();
                 resizebar.addClass('active')
                 let clientX = -1
                 $body
@@ -128,15 +132,15 @@ $(function(){
                         if (clientX === -1) { return false; }
                         //const clientX = e.clientX || e.originalEvent['touches'][0].clientX || 0
                         $body.unbind('mousemove.chat mouseup.chat touchend.chat touchmove.chat')
-                        BSSettings.setSize((clientX / layout.outerWidth()) * 100)
+                        BSSettings.setSize((clientX/clientWidth) * 100)
                         resizebar.removeClass('active').removeAttr('style')
                         overlay.remove()
                         updateSize()
                         return false
                     })
                     .on('mousemove.chat touchmove.chat', e => {
-                        clientX = e.clientX || e.originalEvent['touches'][0].clientX || 0
-                        resizebar.css('left', startPosX + (clientX - startClientX))
+                        clientX = e.clientX || e.originalEvent['touches'][0].clientX || 0;
+                        resizebar.css('left', startPosX + (clientX - startClientX));
                     })
                     .append(overlay)
                 return false;
@@ -148,9 +152,9 @@ $(function(){
 
     });
 
-});
+})();
 
-$(function(){
+(function(){
 
     const $body = $('body');
 
@@ -192,10 +196,9 @@ $(function(){
 
     // Tooltips
     $body.find('[data-toggle="tooltip"]').tooltip();
-})
+})();
 
-// Change time on selected elements
-$(function(){
+(function(){
 
     const applyMomentToElement = function(e){
 
@@ -228,10 +231,9 @@ $(function(){
         applyMomentToElement(this);
     });
 
-})
+})();
 
-// Gifting / user search
-$(function(){
+(function(){
 
     let usrSearch = $('#usersearchmodal'),
         usrInput = usrSearch.find('input#userSearchInput'),
@@ -331,10 +333,9 @@ $(function(){
         return false;
     });
 
-})
+})();
 
-// Stream status
-$(function(){
+(function(){
 
     $('#stream-status').each(function(){
         const el = $(this),
@@ -381,9 +382,9 @@ $(function(){
 
     });
 
-})
+})();
 
-$(function(){
+(function(){
 
     const selectFollowUri = form => {
         let follow = ''
@@ -422,9 +423,9 @@ $(function(){
         })
     })
 
-})
+})();
 
-$(function(){
+(function(){
     $('.btn-post').on('click', function () {
         const a = $(this), form = $(this).closest('form'), confirmMessage = a.data('confirm');
         if (!confirmMessage || confirm(confirmMessage)) {
@@ -433,9 +434,9 @@ $(function(){
         }
         return false;
     });
-});
+})();
 
-$(function(){
+(function(){
     // Subscription page
     $('body#subscription').each(function () {
         $(this).find('button#cancelSubscriptionBtn').on('click', function () {
@@ -497,6 +498,6 @@ $(function(){
         elem.hide();
         return false;
     });
-});
+})();
 
 window.showLoginModal = () => $('#loginmodal').modal("show")
