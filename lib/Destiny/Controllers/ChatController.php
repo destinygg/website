@@ -5,16 +5,20 @@ use Destiny\Chat\ChatBanService;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
+use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
 use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
+use GuzzleHttp\Client;
 
 /**
  * @Controller
@@ -115,4 +119,88 @@ class ChatController {
         return empty($ban) ? 'bannotfound' : $ban;
     }
 
+    private static $LOGS_ENDPOINT = [
+        'mentions' => 'https://overrustlelogs.net/api/v1/mentions/Destinygg/',
+        'stalk' => 'https://overrustlelogs.net/api/v1/stalk/Destinygg/'
+    ];
+
+    /**
+     * @Route ("/api/chat/stalk")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     * @ResponseBody
+     *
+     * @param array $params
+     * @param Response $response
+     * @return array|mixed|string
+     */
+    public function stalk(array $params, Response $response){
+        if (!isset($params['username']) || preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $params['username'] ) === 0){
+            $response->setStatus(Http::STATUS_ERROR);
+            return 'invalidnick';
+        }
+        $cd = Session::get('chat_ucd_stalks');
+        if($cd != null && Date::getDateTime($cd) >= Date::getDateTime()){
+            $response->setStatus(Http::STATUS_ERROR);
+            return 'throttled';
+        }
+        Session::set('chat_ucd_stalks', time() + 10);
+        $limit = isset($params['limit']) ? intval($params['limit']) : 3;
+        $limit = $limit > 0 && $limit < 30 ? $limit : 3;
+        try {
+            $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $r = $client->get(self::$LOGS_ENDPOINT['stalk'] . urlencode($params['username']) . '.json', [
+                'headers' => ['User-Agent' => Config::userAgent()],
+                'query' => ['limit' => $limit]
+            ]);
+            if($r->getStatusCode() == Http::STATUS_OK) {
+                $response->setStatus(Http::STATUS_OK);
+                return json_decode($r->getBody(), true);
+            }
+        } catch (\Exception $e) {
+            Log::warn("Failed to return valid response for chat stalk");
+        }
+        $response->setStatus(Http::STATUS_ERROR);
+        return 'badproxyresponse';
+    }
+
+    /**
+     * @Route ("/api/chat/mentions")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
+     * @ResponseBody
+     *
+     * @param array $params
+     * @param Response $response
+     * @return array|mixed|string
+     */
+    public function mentions(array $params, Response $response){
+        if (!isset($params['username']) || preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $params['username'] ) === 0){
+            $response->setStatus(Http::STATUS_ERROR);
+            return 'invalidnick';
+        }
+        $cd = Session::get('chat_ucd_mentions');
+        if($cd != null && Date::getDateTime($cd) >= Date::getDateTime()){
+            $response->setStatus(Http::STATUS_ERROR);
+            return 'throttled';
+        }
+        Session::set('chat_ucd_mentions', time() + 10);
+        $limit = isset($params['limit']) ? intval($params['limit']) : 3;
+        $limit = $limit > 0 && $limit < 30 ? $limit : 3;
+        try {
+            $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $r = $client->get(self::$LOGS_ENDPOINT['mentions'] . urlencode($params['username']) . '.json', [
+                'headers' => ['User-Agent' => Config::userAgent()],
+                'query' => ['limit' => $limit]
+            ]);
+            if($r->getStatusCode() == Http::STATUS_OK) {
+                $response->setStatus(Http::STATUS_OK);
+                return json_decode($r->getBody(), true);
+            }
+        } catch (\Exception $e) {
+            Log::warn("Failed to return valid response for chat mentions");
+        }
+        $response->setStatus(Http::STATUS_ERROR);
+        return 'badproxyresponse';
+    }
 }
