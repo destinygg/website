@@ -84,7 +84,6 @@ label small {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-bottom: 1em;
 }
 
 .overlay {
@@ -1496,24 +1495,24 @@ body.drag-over .image-view {
   }
 }
 
-@media (min-width: $screen-xxs) {
+@include media-breakpoint-up(lg) {
   .image-grid .image-grid-item {
-    width: 33.333%;
+    width: 10%;
   }
 }
-@media (min-width: $screen-sm-min) {
+@include media-breakpoint-down(lg) {
   .image-grid .image-grid-item {
     width: 20%;
   }
 }
-@media (min-width: $screen-lg-min) {
+@include media-breakpoint-down(md) {
   .image-grid .image-grid-item {
-    width: 12.5%;
+    width: 33.333%;
   }
 }
-@media (min-width: $screen-llg-min) {
+@include media-breakpoint-down(xs) {
   .image-grid .image-grid-item {
-    width: 10%;
+    width: 50%;
   }
 }
 

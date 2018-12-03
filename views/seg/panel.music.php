@@ -2,7 +2,7 @@
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 ?>
-<section class="container">
+<section class="container mb-3">
     <div class="content content-dark">
         <div class="content-split row no-gutters">
             <div class="media-block col-sm-6 stream">
