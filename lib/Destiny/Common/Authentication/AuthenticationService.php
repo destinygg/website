@@ -157,6 +157,9 @@ class AuthenticationService extends Service {
         if (!empty ($sub)) {
             $creds->addRoles(UserRole::SUBSCRIBER);
             $creds->addFeatures(UserFeature::SUBSCRIBER);
+            if ($user['istwitchsubscriber']) {
+                $creds->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
+            }
             switch ($sub['subscriptionTier']) {
                 case 1:
                     $creds->addFeatures(UserFeature::SUBSCRIBERT1);

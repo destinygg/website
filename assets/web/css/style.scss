@@ -168,7 +168,7 @@ form.form-alt {
   text-overflow: ellipsis;
 }
 
-.breadcrumb>li+li:before {
+.breadcrumb-item+.breadcrumb-item::before {
   content: "|\00a0";
   padding: 0 5px;
   color: $text-color3;
