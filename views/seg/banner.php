@@ -15,12 +15,12 @@ $info = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
         </header>
 
         <div id="discord-status">
-            <a title="Join discord" href="https://discordapp.com/invite/destiny" class="discord-logo">
+            <a title="Join discord" href="/discord" class="discord-logo">
                 <i class="fab fa-discord"></i>
             </a>
             <div>
                 <h3>Debate me</h3>
-                <p>Join the <a href="https://discordapp.com/invite/destiny">discord</a>. <br/>You're welcome!</p>
+                <p>Join the <a href="/discord">discord</a>. <br/>You're welcome!</p>
             </div>
         </div>
 
@@ -29,17 +29,17 @@ $info = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
             <div id="stream-status-info-offline">
                 <h3>Stream offline</h3>
                 <p>Ended <span id="stream-status-end"><?= Tpl::fromNow(Date::getDateTime($info['ended_at'])) ?></span>.
-                    <br />Join <a class="critical" href="/bigscreen">chat</a> while you wait.</p>
+                    <br />Join <a class="badge badge-secondary" href="/bigscreen">chat</a> while you wait.</p>
             </div>
             <div id="stream-status-info-online">
                 <h3>Stream online</h3>
                 <p>Started <span id="stream-status-start"><?= Tpl::fromNow(Date::getDateTime($info['started_at'])) ?></span>.
-                    <br />Watch on <a class="critical" href="/bigscreen">Bigscreen</a></p>
+                    <br />Watch on <a class="badge badge-danger" href="/bigscreen">Bigscreen</a></p>
             </div>
             <div id="stream-status-info-host">
                 <h3>Stream host</h3>
                 <p>Watch <a id="stream-status-host" href="<?= (!empty($info['host'])) ? Tpl::out($info['host']['url']):'' ?>" target="_blank"><?= (!empty($info['host'])) ? Tpl::out($info['host']['display_name']):'' ?></a>!
-                    <br /> Join the <a class="critical" href="/bigscreen">chat</a>.</p>
+                    <br /> Join the <a class="badge badge-secondary" href="/bigscreen">chat</a>.</p>
             </div>
             <div id="stream-status-preview">
                 <a href="/bigscreen" style="background-image: url('<?= Tpl::out($info['preview']) ?>');"></a>

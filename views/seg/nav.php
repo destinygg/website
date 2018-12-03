@@ -47,6 +47,9 @@ use Destiny\Common\Session\Session;
                     <a class="nav-link" title="Blog" href="/blog">Blog</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/discord" rel="discord" title="Join discord"><span>Discord</span></a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" title="Donate" href="/donate">Donate</a>
                 </li>
 
@@ -61,11 +64,12 @@ use Destiny\Common\Session\Session;
                 <?php endif ?>
 
                 <li class="nav-item">
-                    <a class="nav-link" title="Shirts @ Amazon" href="/amazon">
-                        <span>Shirts</span>
-                        <span class="fab fa-fw fa-amazon" aria-hidden="true"></span>
+                    <a class="nav-link" title="Shop" href="/shop">
+                        <span>Shop</span>
+                        <i class="fas fa-shopping-cart"></i>
                     </a>
                 </li>
+
             </ul>
 
             <ul class="navbar-nav">

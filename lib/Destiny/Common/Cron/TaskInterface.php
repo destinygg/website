@@ -7,7 +7,7 @@ use Doctrine\DBAL\DBALException;
 interface TaskInterface {
 
     /**
-     * @return mixed
+     * @return mixed|void
      *
      * @throws Exception
      * @throws DBALException

@@ -16,6 +16,54 @@ use Destiny\Twitch\TwitchApiService;
  */
 class HomeController {
 
+    private $merchandise = [
+        [
+            'title' => 'Destiny 2018 Holiday Mug',
+            'image' => 'dbh-mug1',
+            'url' => 'https://www.designbyhumans.com/shop/mug/destiny-2018-holiday-mug/1053112/',
+        ],
+        [
+            'title' => 'Destiny 2018 Holiday Sweater',
+            'image' => 'dbh-sweater1',
+            'url' => 'https://www.designbyhumans.com/shop/crewneck/destiny-2018-holiday-sweater/1053098/',
+        ],
+        [
+            'title' => 'The CinnaBonnelli Hoodie',
+            'image' => 'dbh-hood1',
+            'url' => 'https://www.designbyhumans.com/shop/pullover-hoodie/the-cinnabonnelli-hoodie/1052252/',
+        ],
+        [
+            'title' => 'The Original Memer Shirt',
+            'image' => 'dbh-shirt2',
+            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/the-original-memer-shirt/1046704/',
+        ],
+        [
+            'title' => 'CinnaBonnelli Shirt!',
+            'image' => 'dbh-shirt1',
+            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/cinnabonnelli-shirt/1051248/',
+        ],
+        [
+            'title' => 'The Leruse',
+            'image' => 'dbh-shirt3',
+            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/the-leruse/1046720/',
+        ],
+        /*[
+            'title' => 'The Leruse Mug',
+            'image' => 'dbh-mug2',
+            'url' => 'https://www.designbyhumans.com/shop/mug/the-cinnabonnelli-mug/1052192/',
+        ],
+        [
+            'title' => 'The Leruse Sticker',
+            'image' => 'dbh-sticker1',
+            'url' => 'https://www.designbyhumans.com/shop/sticker/the-leruse-sticker/1052198/',
+        ],
+        [
+            'title' => 'The CinnaBonnelli Mug',
+            'image' => 'dbh-mug2',
+            'url' => 'https://www.designbyhumans.com/shop/mug/the-cinnabonnelli-mug/1052192/',
+        ],*/
+    ];
+
     /**
      * @Route ("/")
      * @Route ("/home")
@@ -32,6 +80,8 @@ class HomeController {
         $model->toptracks = $cache->fetch ( 'toptracks' );
         $model->playlist = $cache->fetch ( 'youtubeplaylist' );
         $model->broadcasts = $cache->fetch ( 'pastbroadcasts' );
+        $model->libsynfeed = $cache->fetch ( 'libsynfeed' );
+        $model->merchandise = $this->merchandise;
         return 'home';
     }
 

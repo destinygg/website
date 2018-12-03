@@ -4,6 +4,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Images\ImageDownloadUtil;
 use Destiny\Common\Log;
 use Destiny\LastFm\LastFMApiService;
+use Destiny\LibSyn\LibSynFeedService;
 use Destiny\Reddit\RedditFeedService;
 use Destiny\Twitch\TwitchApiService;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -76,6 +77,13 @@ class TestApi extends PHPUnit\Framework\TestCase {
     public function testTwitchApiHostWithInfo() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getChannelHostWithInfo(Config::$a['twitch']['id']);
+        echo json_encode($json, JSON_PRETTY_PRINT);
+        self::assertNotEmpty($json);
+    }
+
+    public function testTwitchLibSyn() {
+        $libSynService = LibSynFeedService::instance();
+        $json = $libSynService->getFeed(Config::$a['libsyn']['user']);
         echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }

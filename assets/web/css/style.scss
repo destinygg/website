@@ -84,6 +84,7 @@ label small {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-bottom: 1em;
 }
 
 .overlay {
@@ -304,6 +305,7 @@ body.no-brand .navbar {
     border: none;
     background-color: $color-surface-dark2;
     text-shadow: 1px 1px 0 black;
+    border-radius: 3px;
   }
   .thumbnail p {
     color: $text-color1;
@@ -335,35 +337,34 @@ body.no-brand .navbar {
 
 .stream {
   .thumbnails {
-    margin: 0;
-    padding: 20px 0 0 0;
     border-top: 1px solid #121212;
+    padding: 0 0.5em 1em 0.5em;
     list-style: none;
-  }
-  .thumbnails:after,
-  .thumbnails:before {
-    content: " ";
-    display: table;
-    clear: both;
-  }
-  .thumbnails li {
+    display: flex;
     margin: 0;
-    width: 24.2%;
-    float: left;
-  }
-  .thumbnails .thumbnail {
-    margin-left: 20px;
-    margin-bottom: 20px;
-  }
-  .thumbnails .thumbnail a {
-    display: block;
-  }
-  .thumbnails .thumbnail img {
-    max-width: 100%;
-    border-radius: 3px;
-  }
-  .thumbnails .thumbnail:hover {
-    box-shadow: 0 0 8px $color-accent-light;
+
+    &:after,
+    &:before {
+      content: " ";
+      display: table;
+      clear: both;
+    }
+    & li {
+      margin: 0;
+    }
+    & .thumbnail {
+      margin: 0 0.5em;
+      & a {
+        display: block;
+      }
+      & img {
+        max-width: 100%;
+        border-radius: 3px;
+      }
+      &:hover {
+        box-shadow: 0 0 8px $color-accent-light;
+      }
+    }
   }
   .title {
     border-bottom: 1px solid black;
@@ -378,6 +379,7 @@ body.no-brand .navbar {
     text-decoration: none;
   }
   .media {
+    align-items: center;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
     color: $text-color1;
     background: rgba(15, 15, 15, 0.5);
@@ -391,15 +393,8 @@ body.no-brand .navbar {
   .media:last-child {
     border-bottom: none;
   }
-  .entries {
-    min-height: 200px;
-  }
-  .thumbnails {
-    min-height: 132px;
-  }
   .media-body {
-    display: block;
-    width: auto;
+    overflow: hidden;
   }
   .media-body time,
   .media-body small {
@@ -1095,7 +1090,7 @@ table#inbox a {
 #discord-status,
 #stream-status {
   border-radius:5px;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.3);
   margin: 15px;
   padding: 15px;
   text-align: right;
@@ -1553,8 +1548,8 @@ body.no-brand #main-nav .brand {
 
 @include media-breakpoint-down(md) {
   #main-nav > .container {
-    margin-left: 15px;
-    margin-right: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
   body.no-brand #main-nav .brand {
     display: inline-block;
@@ -1616,4 +1611,76 @@ body#bigscreen {
   border: 1px solid #ffffff1a;
   padding: 0.5em;
   color: $text-color;
+}
+
+img.podcast-icon {
+  content: url("../img/podcast80.png");
+}
+
+img.dbh-hood1 {
+  content: url("../img/dbh-hood1.png");
+}
+img.dbh-mug1 {
+  content: url("../img/dbh-mug1.png");
+}
+img.dbh-mug2 {
+  content: url("../img/dbh-mug2.png");
+}
+img.dbh-mug3 {
+  content: url("../img/dbh-mug3.png");
+}
+img.dbh-shirt1 {
+  content: url("../img/dbh-shirt1.png");
+}
+img.dbh-shirt2 {
+  content: url("../img/dbh-shirt2.png");
+}
+img.dbh-shirt3 {
+  content: url("../img/dbh-shirt3.png");
+}
+img.dbh-sticker1 {
+  content: url("../img/dbh-sticker1.png");
+}
+img.dbh-sweater1 {
+  content: url("../img/dbh-sweater1.png");
+}
+
+#podcasts {
+  .entries {
+    //flex-wrap: nowrap;
+    justify-content: center;
+  }
+  .media {
+    align-items: center;
+    padding: 1em;
+  }
+  .media-heading {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+@include media-breakpoint-down(md) {
+  #podcasts {
+    .media {
+      width: 33.3333%
+    }
+  }
+}
+@include media-breakpoint-down(sm) {
+  #podcasts {
+    .entries {
+      justify-content: left;
+    }
+    .media {
+      background: rgba(0,0,0,0.3);
+      width: 100%;
+      &:first-child {
+        border-radius: 5px 5px 0 0;
+      }
+      &:last-child {
+        border-radius: 0 0 5px 5px;
+      }
+    }
+  }
 }

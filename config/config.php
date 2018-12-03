@@ -168,6 +168,10 @@ return [
         'user' => '',
     ],
 
+    'libsyn' => [
+        'user' => 'destiny',
+    ],
+
     'streamlabs' => [
         'default_user' => -1,
         'alert_donations' => true,

@@ -12,7 +12,7 @@ use Destiny\Common\Utils\Date;
                 <?php if(!empty($this->posts)): ?>
                     <div class="entries">
                         <?php foreach($this->posts as $i=>$a): ?>
-                            <?php if($i == 4){break;}; ?>
+                            <?php if($i == 2){break;}; ?>
                             <div class="media">
                                 <div class="media-body">
                                     <div class="media-heading">
@@ -40,7 +40,7 @@ use Destiny\Common\Utils\Date;
                 </h3>
                 <?php if(!empty($this->articles)): ?>
                     <div class="entries">
-                        <?php for ($i=0; $i<min($this->articles, 4); ++$i):?>
+                        <?php for ($i=0; $i<min($this->articles, 2); ++$i):?>
                             <?php $article = $this->articles[$i] ?>
                             <div class="media">
                                 <div class="media-body">

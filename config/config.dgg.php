@@ -53,6 +53,8 @@ return [
         '/greenmangaming' => 'https://www.greenmangaming.com/?tap_a=1964-996bbb&tap_s=55177-fd1979',
         '/instagram' => 'https://www.instagram.com/destiny/',
         '/podcast' => 'https://destiny.libsyn.com/',
-        '/podcastrss' => 'https://destiny.libsyn.com/rss'
+        '/podcastrss' => 'https://destiny.libsyn.com/rss',
+        '/shop' => 'https://www.designbyhumans.com/shop/Destiny',
+        '/discord' => 'https://discordapp.com/invite/destiny',
     ]
 ];
