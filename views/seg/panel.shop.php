@@ -1,4 +1,5 @@
 <?php
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
 ?>
 <?php if(!empty($this->merchandise)): ?>
@@ -14,7 +15,9 @@ use Destiny\Common\Utils\Tpl;
                     <?php foreach ($this->merchandise as $i=>$a): ?>
                         <li class="col-6 col-md-2 col-xs-6">
                             <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=Tpl::out($a['title'])?>">
-                                <a href="<?=$a['url']?>"><img class="<?=$a['image']?>" alt="<?=Tpl::out($a['title'])?>" /></a>
+                                <a href="<?=$a['url']?>">
+                                    <img src="<?=Config::cdnv()?>/img/<?=$a['image']?>.png"  class="<?=$a['image']?>" alt="<?=Tpl::out($a['title'])?>" />
+                                </a>
                             </div>
                         </li>
                     <?php endforeach; ?>

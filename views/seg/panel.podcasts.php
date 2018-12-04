@@ -1,4 +1,5 @@
 <?php
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
 ?>
 <?php if(!empty($this->libsynfeed) && count($this->libsynfeed) >= 3): ?>
@@ -8,7 +9,7 @@ use Destiny\Common\Utils\Tpl;
             <?php if($i == 3){break;}; ?>
             <div class="media">
                 <a class="float-left cover-image" href="<?=$a['full_item_url']?>" style="width: 74px;">
-                    <img class="media-object img_64x64 podcast-icon">
+                    <img src="<?=Config::cdnv()?>/img/podcast80.png" alt="<?=Tpl::out($a['item_title'])?>" class="media-object img_64x64 podcast-icon">
                 </a>
                 <div class="media-body">
                     <div class="media-heading trackname">

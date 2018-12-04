@@ -1,5 +1,6 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 ?>
@@ -17,7 +18,7 @@ use Destiny\Common\Utils\Date;
                             <li>
                                 <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
                                     <a href="https://www.youtube.com/watch?v=<?=$vid['id']['videoId']?>">
-                                        <img class="img_320x240" alt="<?=$title?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
+                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$title?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
                                     </a>
                                 </div>
                             </li>
@@ -40,7 +41,7 @@ use Destiny\Common\Utils\Date;
                             <li>
                                 <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$time?>">
                                     <a href="<?=$broadcast['url']?>">
-                                        <img class="img_320x240" alt="<?=$time?>" data-src="<?=$broadcast['preview']?>" />
+                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$time?>" data-src="<?=$broadcast['preview']?>" />
                                     </a>
                                 </div>
                             </li>
