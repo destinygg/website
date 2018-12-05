@@ -4,7 +4,7 @@ use Destiny\Common\Utils\Tpl;
 ?>
 <?php if(!empty($this->libsynfeed) && count($this->libsynfeed) >= 3): ?>
 <section class="container" id="podcasts">
-    <div class="entries row no-gutters">
+    <div class="entries row no-gutters content-dark">
         <?php foreach($this->libsynfeed as $i=>$a): ?>
             <?php if($i == 3){break;}; ?>
             <div class="media">

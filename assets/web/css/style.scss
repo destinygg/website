@@ -1,31 +1,10 @@
-@import "../../common";
-
+@import "common";
+@import "./bootstrap";
+@import "~roboto-fontface/css/roboto/roboto-fontface.css";
 @import "~@fortawesome/fontawesome-free/css/fontawesome.css";
 @import "~@fortawesome/fontawesome-free/css/brands.css";
 @import "~@fortawesome/fontawesome-free/css/solid.css";
 //@import "~@fortawesome/fontawesome-free/css/regular.css";
-
-@import "~roboto-fontface/css/roboto/roboto-fontface.css";
-//@import url("https://fonts.googleapis.com/css?family=Roboto");
-
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-$grid-breakpoints: (
-  xs: 0,
-  sm: 567px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px,
-  xxl: 1980px
-);
-$container-max-widths: (
-  sm: 567px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px,
-  xxl: 1980px
-);
-@import "~bootstrap/scss/bootstrap";
 
 .hidden { // TODO refactor out
   display: none;
@@ -69,6 +48,16 @@ h1,h2,h3,h4,h5,h6 {
     color: $text-color2;
   }
 }
+
+@include media-breakpoint-down(md) {
+  .title {
+    small {
+      display: block;
+      clear: both;
+    }
+  }
+}
+
 blockquote {
   border-color: $color-surface-dark2;
 }
@@ -283,7 +272,8 @@ body.no-brand .navbar {
 }
 
 /* TODO FIX */
-.content-dark:before, .content-dark:after {
+.content-dark:before,
+.content-dark:after {
   display: table;
   content: " ";
 }
@@ -539,49 +529,62 @@ body.no-contain #footer {
   background: $color-surface-dark1;
   border-radius: 4px;
   position: relative;
-}
-.subfeature h1 {
-  margin-top: 10px;
-}
-.subfeature > p {
-  color: $text-color2;
+  display: flex;
+  h1 {
+    margin-top: 10px;
+  }
+  p {
+    color: $text-color2;
+  }
 }
 .subfeature-options {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-top: 1em;
+  display: flex;
+  align-items: center;
 }
 .subfeature-t1 {
   border-right: 1px dashed rgba(255,255,255,0.2);
+  padding-right: 20px;
+  margin-right: 20px;
 }
 .subfeature-t1,
 .subfeature-t2 {
-  float: left;
-  padding: 0 20px;
-}
-.subfeature-period {
-  text-align: center;
+  form {
+    display: flex;
+  }
 }
 .subfeature-desc {
-  width: 45%;
-}
-.subfeature-desc > p {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  flex: 1;
 }
 .subfeature-info {
   font-size: 1.4em;
-  float: left;
+  .subfeature-period {
+    text-align: center;
+    white-space: nowrap;
+  }
+  button {
+    width: 100%;
+  }
 }
 .subfeature-price {
   margin-right: 10px;
-  float: left;
   font-size: 2.6em;
-  line-height:70px;
+  line-height: 4rem;
   color: $text-color;
   text-shadow: 1px 2px 1px rgba(0,0,0,0.5);
+}
+@include media-breakpoint-down(md) {
+  .subfeature {
+    flex-direction: column;
+  }
+  .subfeature-options {
+    margin-bottom: 1em;
+  }
+  .subfeature-t1,
+  .subfeature-t2 {
+    form {
+      flex-direction: column;
+    }
+  }
 }
 
 .ui-step-legend {
@@ -642,7 +645,6 @@ body.no-contain #footer {
   color: $color-success-text;
   text-decoration: underline;
 }
-
 
 // Grid
 table.grid {
@@ -1672,7 +1674,6 @@ img.dbh-sweater1 {
       justify-content: left;
     }
     .media {
-      background: rgba(0,0,0,0.3);
       width: 100%;
       &:first-child {
         border-radius: 5px 5px 0 0;

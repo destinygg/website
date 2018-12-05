@@ -1,8 +1,3 @@
-$screen-xxs:            650px;
-$screen-sm-min:         865px; /* if you change this value, you need to change the value in ui.js ^disableWidth */
-$screen-lg-min:         1200px;
-$screen-llg-min:        1620px;
-
 $body-bg-color:         #272727;
 $color-light:           #FFF7F9;
 $color-dark:            #201F1E;
@@ -36,7 +31,6 @@ $color-chat-disabled:   #414141;
 $hb-light:              #849EB5;
 $hb-dark:               #30394A;
 
-$twitch-purple:         #6441a5;
 
 .bg-grad-main {
   background: -moz-linear-gradient(left,  $hb-light 0%, $hb-light 51%, $hb-dark 51%,$hb-dark 100%);
