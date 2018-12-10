@@ -1,14 +1,14 @@
 <?php
-// auto-generated: 1544015121589
+// auto-generated: 1544475887852
 return [
-	"common.vendor.js" => "common.vendor.977c7671da200f4fcf55.js",
+	"common.vendor.js" => "common.vendor.9445ea86023969226bce.js",
 	"runtime.js" => "runtime.ffaf452731b773b5b33e.js",
-	"chat.vendor.css" => "chat.vendor.d4ae3c4d052de9867099.css",
-	"chat.vendor.js" => "chat.vendor.4e6651d538657e89819e.js",
-	"admin.js" => "admin.ec40c741aae626b8e485.js",
-	"chat.js" => "chat.a3bc720362b6267531d8.js",
+	"chat.vendor.css" => "chat.vendor.fe09f96f4bf85e06df54.css",
+	"chat.vendor.js" => "chat.vendor.e94f0f3d43ce2d6bd949.js",
+	"admin.js" => "admin.b36e6e6a18130e4ab646.js",
+	"chat.js" => "chat.232c943284c176a0f150.js",
 	"profile.js" => "profile.f8645f2f657bf4920d07.js",
-	"streamchat.js" => "streamchat.5c08beecd8b304e2ba0d.js",
+	"streamchat.js" => "streamchat.2bd5472683d8289d43f2.js",
 	"web.css" => "web.51d4bffdee7df8739449.css",
 	"web.js" => "web.edf5e5dc161775e35c66.js",
 	"font/style.scss" => "font/fa-solid-900.woff2",
