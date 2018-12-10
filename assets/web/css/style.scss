@@ -1164,10 +1164,11 @@ table#inbox a {
   display: none;
 }
 
-.form-actions .agreement {
+p.agreement {
   font-size: 0.9em;
-  margin: 15px 0 0 0;
-  color: $text-color2;
+  margin: 1em 0 0 0;
+  color: $text-color1;
+  text-align: center;
 }
 
 h3[data-toggle="collapse"] {
@@ -1648,12 +1649,11 @@ img.dbh-sweater1 {
 
 #podcasts {
   .entries {
-    //flex-wrap: nowrap;
     justify-content: center;
   }
   .media {
     align-items: center;
-    padding: 1em;
+    padding: 1em 2em;
   }
   .media-heading {
     text-overflow: ellipsis;

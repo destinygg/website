@@ -65,8 +65,7 @@ use Destiny\Common\Config;
             </form>
         </div>
 
-        <br />
-        <p class="agreement" style="text-align: center;">By clicking the &quot;Continue&quot; button, you are confirming that you have read and agree with the <a href="/agreement">user agreement</a>.</p>
+        <p class="agreement">By clicking the &quot;Continue&quot; button, you are confirming that you have read and agree with the <a href="/agreement">user agreement</a>.</p>
 
     </section>
 </div>

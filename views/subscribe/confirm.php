@@ -64,14 +64,14 @@ use Destiny\Common\Utils\Tpl;
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
                         <a href="/subscribe" class="btn btn-link">Cancel</a>
-                        <p class="agreement">
-                            <span>By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</span>
-                        </p>
                     </div>
 
                 </form>
             </div>
         </div>
+
+        <p class="agreement">By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</p>
+
     </section>
 </div>
 <?php include 'seg/foot.php' ?>

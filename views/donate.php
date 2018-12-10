@@ -57,12 +57,11 @@ use Destiny\Common\Utils\Tpl;
                 <div class="form-actions">
                     <button class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
                     <a href="/" class="btn btn-link">Cancel</a>
-                    <p class="agreement">
-                        <span>By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</span>
-                    </p>
                 </div>
             </form>
         </div>
+
+        <p class="agreement">By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</p>
 
     </section>
 
