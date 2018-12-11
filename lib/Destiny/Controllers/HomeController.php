@@ -128,11 +128,24 @@ class HomeController {
      * @param ViewModel $model
      * @return string
      */
-    public function chatstreamed(ViewModel $model) {
+    public function streamChat(ViewModel $model) {
         $cache = Application::getNsCache();
         $model->title = 'Chat';
         $model->cacheKey = $cache->fetch('chatCacheKey');
-        return 'chatstreamed';
+        return 'streamchat';
+    }
+
+    /**
+     * @Route ("/embed/votechat")
+     *
+     * @param ViewModel $model
+     * @return string
+     */
+    public function embedVote(ViewModel $model) {
+        $cache = Application::getNsCache();
+        $model->title = 'Vote';
+        $model->cacheKey = $cache->fetch('chatCacheKey');
+        return 'votechat';
     }
 
     /**

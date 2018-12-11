@@ -15,7 +15,7 @@ use Destiny\Common\Config;
 <?=Tpl::manifestScript('common.vendor.js')?>
 <?=Tpl::manifestScript('chat.vendor.js')?>
 <?=Tpl::manifestScript('streamchat.js', [
-    'id' => "chat-include",
+    'id' => 'chat-include',
     'data-cache-key' => $this->cacheKey,
     'data-cdn' => Config::cdnv()
 ])?>

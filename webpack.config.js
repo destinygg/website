@@ -9,7 +9,8 @@ const entries = {
     admin: './assets/admin.js',
     profile: './assets/profile.js',
     chat: './assets/chat.js',
-    streamchat: './assets/streamchat.js'
+    streamchat: './assets/streamchat.js',
+    votechat: './assets/votechat.js'
 }
 
 const entryPoints = Object.keys(entries).reduce((p, v) => {
