@@ -148,7 +148,9 @@ class AdminUserController {
         else if (mb_strlen($discorduuid) > 36)
             $discorduuid = mb_substr($discorduuid, 0, 36);
 
-        $authService->validateEmail($email, $user);
+        if (!empty($email)) {
+            $authService->validateEmail($email, $user);
+        }
 
         if (!empty ($country)) {
             $countryArr = Country::getCountryByCode($country);
