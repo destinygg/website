@@ -33,7 +33,7 @@ class RoutesTest extends PHPUnit\Framework\TestCase {
             $join = ' [' . join(',', ($method ? $method : ['*'])) .'] ';
             echo str_pad($join, 15, " ") . "" . $route->getPath() . PHP_EOL;
         }
-        $this->assertTrue(count($routes) > 0);
+        self::assertTrue(count($routes) > 0);
     }
 
 }

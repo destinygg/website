@@ -27,7 +27,7 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
             'message' => '*Billy* bought a *Catarrian Shirt*!'
         ]);
         print_r(json_decode($r->getBody(), true));
-        $this->assertArrayHasKey('success', json_decode($r->getBody(), true));
+        self::assertArrayHasKey('success', json_decode($r->getBody(), true));
     }
 
     /**
@@ -39,7 +39,7 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
             'message' => sprintf("*%s* has donated *%s*! %s", 'Billy', '$' . number_format(32, 2), '')
         ]);
         //print_r(json_decode($r->getBody(), true));
-        $this->assertArrayHasKey('success', json_decode($r->getBody(), true));
+        self::assertArrayHasKey('success', json_decode($r->getBody(), true));
     }
 
     /**
@@ -54,7 +54,7 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
             'currency' => 'USD'
         ]);
         print_r(json_decode($r->getBody(), true));
-        $this->assertArrayHasKey('donation_id', json_decode($r->getBody(), true));
+        self::assertArrayHasKey('donation_id', json_decode($r->getBody(), true));
     }
 
 }
