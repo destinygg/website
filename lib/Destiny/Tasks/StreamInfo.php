@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Tasks;
 
-use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Config;

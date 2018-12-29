@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Twitch;
 
-use Destiny\Common\Application;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Config;

@@ -862,5 +862,4 @@ class UserService extends Service {
         return (bool)$stmt->rowCount();
     }
 
-
 }

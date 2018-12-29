@@ -1,7 +1,5 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Session\Session;
-use Destiny\Common\User\UserRole;
 ?>
 <div class="modal message-composition" id="compose" tabindex="-1" role="dialog" aria-labelledby="composeLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -15,23 +13,6 @@ use Destiny\Common\User\UserRole;
             <div id="compose-form">
                 <div class="modal-recipients">
                     <div class="modal-user-groups" class="clearfix">
-                        <?php
-                        /*<?php if(Session::hasRole(UserRole::ADMIN)): ?>
-                        <div class="btn-group float-right">
-                            <button type="button" class="btn btn-sm btn-primary">Add group</button>
-                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="groups dropdown-menu dropdown-menu-right" role="menu">
-                                <li><a href="#">T4 Subscribers</a></li>
-                                <li><a href="#">T3 Subscribers</a></li>
-                                <li><a href="#">T2 Subscribers</a></li>
-                                <li><a href="#">T1 Subscribers</a></li>
-                            </ul>
-                        </div>
-                        <?php endif ?>*/
-                        ?>
                         <input tabindex="1" id="compose-recipients" type="text" placeholder="Enter a recipient ..." autocomplete="false" autocorrect="off" spellcheck="false" />
                     </div>
                     <div class="recipient-container"></div>

@@ -2,7 +2,6 @@
 use Destiny\Blog\BlogApiService;
 use Destiny\Common\Config;
 use Destiny\Common\Images\ImageDownloadUtil;
-use Destiny\Common\Log;
 use Destiny\LastFm\LastFMApiService;
 use Destiny\LibSyn\LibSynFeedService;
 use Destiny\Reddit\RedditFeedService;

@@ -9,7 +9,6 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Config;
-use Destiny\Twitch\TwitchApiService;
 
 /**
  * @Controller
