@@ -42,13 +42,6 @@ use Destiny\Commerce\SubscriptionStatus;
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label" for="inputEmail">Email</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->user['email'])?>" placeholder="Email">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
                         <label>Country</label>
                         <select name="country" class="form-control">
                             <option value="">Select your country</option>
@@ -280,7 +273,6 @@ use Destiny\Commerce\SubscriptionStatus;
                     <thead>
                     <tr>
                         <td>Username</td>
-                        <td>Email</td>
                         <td>Created</td>
                     </tr>
                     </thead>
@@ -288,7 +280,6 @@ use Destiny\Commerce\SubscriptionStatus;
                     <?php foreach($this->smurfs as $user): ?>
                         <tr>
                             <td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a></td>
-                            <td><?=Tpl::out($user['email'])?></td>
                             <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
                         </tr>
                     <?php endforeach; ?>

@@ -84,14 +84,12 @@ class ProfileController {
         }
 
         $username = (isset ( $params ['username'] ) && ! empty ( $params ['username'] )) ? $params ['username'] : $user ['username'];
-        $email = (isset ( $params ['email'] ) && ! empty ( $params ['email'] )) ? $params ['email'] : $user ['email'];
         $country = (isset ( $params ['country'] ) && ! empty ( $params ['country'] )) ? $params ['country'] : $user ['country'];
         $allowGifting = (isset ( $params ['allowGifting'] )) ? $params ['allowGifting'] : $user ['allowGifting'];
 
         try {
             $authService->validateUsername($username);
             $userService->checkUsernameTaken($username, $user['userId']);
-            $authService->validateEmail($email, $user);
             if (! empty ( $country )) {
                 $countryArr = Country::getCountryByCode ( $country );
                 $country = $countryArr ['alpha-2'];
@@ -105,7 +103,6 @@ class ProfileController {
         $userData = [
             'username' => $username,
             'country' => $country,
-            'email' => $email,
             'allowGifting' => $allowGifting
         ];
 

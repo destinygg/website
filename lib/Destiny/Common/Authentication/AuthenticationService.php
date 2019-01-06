@@ -70,25 +70,17 @@ class AuthenticationService extends Service {
 
     /**
      * @param string $email
-     * @param array $user
-     * @param null|boolean $skipusercheck
-     * @throws DBALException
      * @throws Exception
      */
-    public function validateEmail($email, array $user = null, $skipusercheck = null) {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+    public function validateEmail($email) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new Exception ('A valid email is required');
-        if (!$skipusercheck and !empty ($user)) {
-            if (UserService::instance()->getIsEmailTaken($email, $user ['userId']))
-                throw new Exception ('The email you asked for is already being used');
-        } elseif (!$skipusercheck) {
-            if (UserService::instance()->getIsEmailTaken($email))
-                throw new Exception ('The email you asked for is already being used');
         }
         $emailDomain = strtolower(substr($email, strpos($email, '@') + 1));
         $blacklist = array_merge([], include _BASEDIR . '/config/domains.blacklist.php');
-        if (in_array($emailDomain, $blacklist))
+        if (in_array($emailDomain, $blacklist)) {
             throw new Exception ('email is blacklisted');
+        }
     }
 
     /**
@@ -154,12 +146,14 @@ class AuthenticationService extends Service {
         $creds->addFeatures($userService->getFeaturesByUserId($user ['userId']));
         $creds->addRoles($userService->getRolesByUserId($user ['userId']));
         $sub = $subscriptionService->getUserActiveSubscription($user ['userId']);
+
+        if ($user['istwitchsubscriber']) {
+            $creds->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
+        }
+
         if (!empty ($sub)) {
             $creds->addRoles(UserRole::SUBSCRIBER);
             $creds->addFeatures(UserFeature::SUBSCRIBER);
-            if ($user['istwitchsubscriber']) {
-                $creds->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
-            }
             switch ($sub['subscriptionTier']) {
                 case 1:
                     $creds->addFeatures(UserFeature::SUBSCRIBERT1);
@@ -184,7 +178,6 @@ class AuthenticationService extends Service {
         } else if ($user['istwitchsubscriber']) {
             $creds->addRoles(UserRole::SUBSCRIBER);
             $creds->addFeatures(UserFeature::SUBSCRIBER);
-            $creds->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
             $creds->setSubscription([
                 'tier' => 1,
                 'source' => 'twitch.tv',

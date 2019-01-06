@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Twitch;
 
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
@@ -59,39 +60,14 @@ class TwitchAuthHandler implements AuthHandlerInterface {
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
             $data = json_decode((string) $response->getBody(), true);
-            if (empty ($data) || isset ($data['error']) || !isset ($data['access_token']))
+            if (empty ($data) || isset ($data['error']) || !isset ($data['access_token'])) {
                 throw new Exception ('Invalid access_token response');
-            $info = $this->getUserInfo($data['access_token']);
-            if($info != null) {
-                $auth = $this->getAuthCredentials($params['code'], $info);
-                $authHandler = new AuthenticationRedirectionFilter($auth);
-                return $authHandler->execute();
             }
+            $auth = $this->mapInfoToAuthCredentials($params['code'], $this->getUserInfo($data['access_token']));
+            $authHandler = new AuthenticationRedirectionFilter($auth);
+            return $authHandler->execute();
         }
         throw new Exception ("Bad response from oauth provider: {$response->getStatusCode()}");
-    }
-
-    /**
-     * @param string $code
-     * @param array $data
-     * @return AuthenticationCredentials
-     * @throws Exception
-     */
-    private function getAuthCredentials($code, array $data) {
-        if (empty ($data) || !isset ($data ['_id']) || empty ($data ['_id'])) {
-            throw new Exception ('Authorization failed, invalid user data');
-        }
-        if (!isset($data['email']) || empty($data['email']) || !$data['email']) {
-            throw new Exception ('You must have a verified email address for your registration to complete successfully.');
-        }
-        $arr = [];
-        $arr ['authProvider'] = $this->authProvider;
-        $arr ['authCode'] = $code;
-        $arr ['authId'] = $data ['_id'];
-        $arr ['authDetail'] = $data ['name'];
-        $arr ['username'] = (isset ($data ['display_name']) && !empty ($data ['display_name'])) ? $data ['display_name'] : $data ['name'];
-        $arr ['email'] = $data ['email'];
-        return new AuthenticationCredentials ($arr);
     }
 
     /**
@@ -112,5 +88,32 @@ class TwitchAuthHandler implements AuthHandlerInterface {
             return json_decode((string) $response->getBody(), true);
         }
         return null;
+    }
+
+    /**
+     * @param string $code
+     * @param array $data
+     * @return AuthenticationCredentials
+     * @throws Exception
+     */
+    public function mapInfoToAuthCredentials($code, array $data) {
+        if (empty ($data) || !isset ($data ['_id']) || empty ($data ['_id'])) {
+            throw new Exception ('Authorization failed, invalid user data');
+        }
+        if (!isset($data['email']) || empty($data['email']) || !$data['email']) {
+            throw new Exception ('You must have a verified email address for your registration to complete successfully.');
+        }
+
+        $authService = AuthenticationService::instance();
+        $authService->validateEmail($data['email']);
+
+        $arr = [];
+        $arr ['username'] = (isset ($data ['display_name']) && !empty ($data ['display_name'])) ? $data ['display_name'] : $data ['name'];
+        $arr ['authProvider'] = $this->authProvider;
+        $arr ['authCode'] = $code;
+        $arr ['authId'] = $data['_id'];
+        $arr ['authDetail'] = $data['name'];
+        $arr ['authEmail'] = $data['email'];
+        return new AuthenticationCredentials ($arr);
     }
 }

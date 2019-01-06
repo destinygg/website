@@ -119,7 +119,6 @@ class AdminUserController {
 
         $redirect = 'redirect: /admin/user/' . $user ['userId'] . '/edit';
         $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : $user ['username'];
-        $email = (isset ($params ['email']) && !empty ($params ['email'])) ? $params ['email'] : $user ['email'];
         $country = (isset ($params ['country']) && !empty ($params ['country'])) ? $params ['country'] : $user ['country'];
         $allowGifting = (isset ($params ['allowGifting'])) ? $params ['allowGifting'] : $user ['allowGifting'];
         $istwitchsubscriber = (isset ($params ['istwitchsubscriber'])) ? $params ['istwitchsubscriber'] : $user ['istwitchsubscriber'];
@@ -148,10 +147,6 @@ class AdminUserController {
         else if (mb_strlen($discorduuid) > 36)
             $discorduuid = mb_substr($discorduuid, 0, 36);
 
-        if (!empty($email)) {
-            $authService->validateEmail($email, $user);
-        }
-
         if (!empty ($country)) {
             $countryArr = Country::getCountryByCode($country);
             $country = $countryArr ['alpha-2'];
@@ -172,7 +167,6 @@ class AdminUserController {
         $userData = [
             'username' => $username,
             'country' => $country,
-            'email' => $email,
             'allowGifting' => $allowGifting,
             'istwitchsubscriber' => $istwitchsubscriber,
             'discordname' => $discordname,

@@ -15,35 +15,18 @@ class AuthenticationRedirectionFilter {
     /**
      * @var AuthenticationCredentials
      */
-    private $authCreds;
+    private $creds;
 
     /**
      * @param AuthenticationCredentials $authCreds
-     * @throws DBALException
      * @throws Exception
      */
     function __construct(AuthenticationCredentials $authCreds) {
-        $this->authCreds = $authCreds;
-        $this->validate();
-    }
-
-    /**
-     * @throws DBALException
-     * @throws Exception
-     */
-    public function validate() {
-        $authCreds = $this->authCreds;
-        // Make sure the creds are valid
-        if (!$authCreds->isValid()) {
+        if (empty($authCreds) || !$authCreds->isValid()) {
             Log::error('Error validating auth credentials {creds}', ['creds' => var_export($authCreds, true)]);
             throw new Exception ('Invalid auth credentials');
         }
-        // TODO not sure we need this?
-        $email = $authCreds->getEmail();
-        if (!empty($email)) {
-            $authService = AuthenticationService::instance();
-            $authService->validateEmail($email, null, true);
-        }
+        $this->creds = $authCreds;
     }
 
     /**
@@ -52,8 +35,7 @@ class AuthenticationRedirectionFilter {
      * @throws Exception
      */
     public function execute() {
-        $authCreds = $this->authCreds;
-        if (empty($authCreds)) {
+        if (!$this->creds) {
             throw new Exception('Invalid authentication credentials');
         }
 
@@ -73,15 +55,15 @@ class AuthenticationRedirectionFilter {
                 throw new Exception ('Authentication required for account merge');
             }
             Session::setSuccessBag('Authorization successful!');
-            $authService->handleAuthAndMerge($authCreds);
+            $authService->handleAuthAndMerge($this->creds);
             return 'redirect: /profile';
         }
 
         // If the user profile doesn't exist, go to the register page
-        if (!$userService->getAuthExistsByAuthIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider())) {
-            Session::set('authSession', $authCreds);
+        if (!$userService->getAuthExistsByAuthIdAndProvider($this->creds->getAuthId(), $this->creds->getAuthProvider())) {
+            Session::set('authSession', $this->creds);
             $url = '/register';
-            $url .= '?code=' . urlencode($authCreds->getAuthCode());
+            $url .= '?code=' . urlencode($this->creds->getAuthCode());
             if (!empty($follow)) {
                 $url .= '&follow=' . urlencode($follow);
             }
@@ -99,17 +81,18 @@ class AuthenticationRedirectionFilter {
         // We return to this point, after /register
 
         // Make sure we got a user
-        $user = $userService->getAuthByIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider());
+        $user = $userService->getAuthByIdAndProvider($this->creds->getAuthId(), $this->creds->getAuthProvider());
         if (empty ($user)) {
             throw new Exception ('Invalid auth user');
         }
 
         // Update the auth profile for this provider
-        $authProfile = $userService->getAuthByUserAndProvider($user['userId'], $authCreds->getAuthProvider());
+        $authProfile = $userService->getAuthByUserAndProvider($user['userId'], $this->creds->getAuthProvider());
         if (!empty ($authProfile)) {
-            $userService->updateUserAuthProfile($user['userId'], $authCreds->getAuthProvider(), [
-                'authCode' => $authCreds->getAuthCode(),
-                'authDetail' => $authCreds->getAuthDetail()
+            $userService->updateUserAuthProfile($user['userId'], $this->creds->getAuthProvider(), [
+                'authCode' => $this->creds->getAuthCode(),
+                'authDetail' => $this->creds->getAuthDetail(),
+                'authEmail' => $this->creds->getAuthEmail(),
             ]);
         }
 
@@ -144,7 +127,7 @@ class AuthenticationRedirectionFilter {
             $session = Session::instance();
             $session->renew(true);
 
-            $credentials = $authService->buildUserCredentials($user, $authCreds->getAuthProvider());
+            $credentials = $authService->buildUserCredentials($user, $this->creds->getAuthProvider());
             Session::updateCredentials($credentials);
 
             $redisService = ChatRedisService::instance();

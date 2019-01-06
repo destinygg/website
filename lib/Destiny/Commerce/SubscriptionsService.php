@@ -222,7 +222,6 @@ class SubscriptionsService extends Service {
           SELECT
             u.userId,
             u.username,
-            u.email,
             s.subscriptionType,
             s.createdDate,
             s.endDate,

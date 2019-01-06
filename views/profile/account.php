@@ -185,13 +185,6 @@ use Destiny\Commerce\SubscriptionStatus;
                     <?php endif ?>
 
                     <div class="form-group">
-                        <label>Email:
-                            <br><small>Be it valid or not, it will be safe with us.</small>
-                        </label>
-                        <input class="form-control" type="text" name="email" value="<?=Tpl::out($this->user['email'])?>" placeholder="Email" />
-                    </div>
-
-                    <div class="form-group">
                         <label for="country">Nationality:
                             <br><small>The country you identify with</small>
                         </label>
