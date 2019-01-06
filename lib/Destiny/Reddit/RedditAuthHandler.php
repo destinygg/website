@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Reddit;
 
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
@@ -59,15 +60,15 @@ class RedditAuthHandler implements AuthHandlerInterface {
             ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
-            $data = json_decode((string) $response->getBody(), true);
-            if (empty($data) || isset($data['error']) || !isset($data['access_token']))
+            $data = json_decode((string)$response->getBody(), true);
+            if (empty($data) || isset($data['error']) || !isset($data['access_token'])) {
                 throw new Exception('Invalid access_token response');
-            $info = $this->getUserInfo($data['access_token']);
-            $authCreds = $this->getAuthCredentials($params['code'], $info);
+            }
+            $authCreds = $this->mapInfoToAuthCredentials($params['code'], $this->getUserInfo($data['access_token']));
             $authHandler = new AuthenticationRedirectionFilter($authCreds);
             return $authHandler->execute();
         }
-        throw new Exception ( "Bad response from oauth provider: {$response->getStatusCode()}" );
+        throw new Exception ("Bad response from oauth provider: {$response->getStatusCode()}");
     }
 
     /**
@@ -94,22 +95,20 @@ class RedditAuthHandler implements AuthHandlerInterface {
      * @return AuthenticationCredentials
      * @throws Exception
      */
-    private function getAuthCredentials($code, array $data) {
-        if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
-            throw new Exception ( 'Authorization failed, invalid user data' );
+    public function mapInfoToAuthCredentials($code, array $data) {
+        if (empty ($data) || !isset ($data ['id']) || empty ($data ['id'])) {
+            throw new Exception ('Authorization failed, invalid user data');
         }
-
-        if(!isset($data['has_verified_email']) || empty($data['has_verified_email']) || $data['has_verified_email'] != 1){
-            throw new Exception ( 'You must have a verified email address for your registration to complete successfully.' );
+        if (!isset($data['has_verified_email']) || empty($data['has_verified_email']) || $data['has_verified_email'] != 1) {
+            throw new Exception ('You must have a verified email address for your registration to complete successfully.');
         }
-
         $arr = [];
+        $arr ['username'] = $data ['name'];
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;
         $arr ['authId'] = $data ['id'];
         $arr ['authDetail'] = $data ['name'];
-        $arr ['username'] = $data ['name'];
-        $arr ['email'] = '';
-        return new AuthenticationCredentials ( $arr );
+        $arr ['authEmail'] = '';
+        return new AuthenticationCredentials ($arr);
     }
 }

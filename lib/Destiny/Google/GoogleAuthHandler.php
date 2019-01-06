@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Google;
 
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
 use Destiny\Common\Authentication\AuthenticationCredentials;
@@ -55,39 +56,16 @@ class GoogleAuthHandler implements AuthHandlerInterface {
                 'code' => $params['code']
             ]
         ]);
-        if($response->getStatusCode() == Http::STATUS_OK) {
-            $data = json_decode((string) $response->getBody(), true);
-            if (empty($data) || isset($data['error']) || !isset($data['access_token']))
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            $data = json_decode((string)$response->getBody(), true);
+            if (empty($data) || isset($data['error']) || !isset($data['access_token'])) {
                 throw new Exception ('Invalid access_token response');
-            $info = $this->getUserInfo($data['access_token']);
-            if($info != null) {
-                $auth = $this->getAuthCredentials($params['code'], $info);
-                $authHandler = new AuthenticationRedirectionFilter($auth);
-                return $authHandler->execute();
             }
+            $auth = $this->mapInfoToAuthCredentials($params['code'], $this->getUserInfo($data['access_token']));
+            $authHandler = new AuthenticationRedirectionFilter($auth);
+            return $authHandler->execute();
         }
         throw new Exception ("Bad response from oauth provider: {$response->getStatusCode()}");
-    }
-
-    /**
-     * @param string $code
-     * @param array $data
-     * @return AuthenticationCredentials
-     *
-     * @throws Exception
-     */
-    private function getAuthCredentials($code, array $data) {
-        if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
-            throw new Exception ( 'Authorization failed, invalid user data' );
-        }
-        $arr = [];
-        $arr ['authProvider'] = $this->authProvider;
-        $arr ['authCode'] = $code;
-        $arr ['authId'] = $data ['id'];
-        $arr ['authDetail'] = $data ['email'];
-        $arr ['username'] = (isset ( $data ['hd'] )) ? $data ['hd'] : '';
-        $arr ['email'] = $data ['email'];
-        return new AuthenticationCredentials ( $arr );
     }
 
     /**
@@ -104,5 +82,26 @@ class GoogleAuthHandler implements AuthHandlerInterface {
             return json_decode((string) $response->getBody(), true);
         }
         return null;
+    }
+
+    /**
+     * @param string $code
+     * @param array $data
+     * @return AuthenticationCredentials
+     *
+     * @throws Exception
+     */
+    public function mapInfoToAuthCredentials($code, array $data) {
+        if (empty ( $data ) || ! isset ( $data ['id'] ) || empty ( $data ['id'] )) {
+            throw new Exception ( 'Authorization failed, invalid user data' );
+        }
+        $arr = [];
+        $arr ['username'] = (isset ( $data ['hd'] )) ? $data ['hd'] : '';
+        $arr ['authProvider'] = $this->authProvider;
+        $arr ['authCode'] = $code;
+        $arr ['authId'] = $data ['id'];
+        $arr ['authDetail'] = $data ['email'];
+        $arr ['authEmail'] = $data ['email'];
+        return new AuthenticationCredentials ( $arr );
     }
 }

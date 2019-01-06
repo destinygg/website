@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Twitter;
 
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
@@ -63,8 +64,8 @@ class TwitterAuthHandler implements AuthHandlerInterface {
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             $data = $service->extract_params((string)$response->getBody());
-            $authCreds = $this->getAuthCredentials($data ['oauth_token'], $data);
-            $authHandler = new AuthenticationRedirectionFilter($authCreds);
+            $auth = $this->mapInfoToAuthCredentials($data['oauth_token'], $data);
+            $authHandler = new AuthenticationRedirectionFilter($auth);
             return $authHandler->execute();
         }
         throw new Exception ('Failed to retrieve user data');
@@ -76,17 +77,17 @@ class TwitterAuthHandler implements AuthHandlerInterface {
      * @return AuthenticationCredentials
      * @throws Exception
      */
-    private function getAuthCredentials($code, array $data) {
+    public function mapInfoToAuthCredentials($code, array $data) {
         if (empty ($data) || !isset ($data['user_id']) || empty ($data['user_id'])) {
             throw new Exception ('Authorization failed, invalid user data');
         }
         $arr = [];
+        $arr ['username'] = $data ['screen_name'];
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;
         $arr ['authId'] = $data ['user_id'];
         $arr ['authDetail'] = $data ['screen_name'];
-        $arr ['username'] = $data ['screen_name'];
-        $arr ['email'] = '';
+        $arr ['authEmail'] = '';
         return new AuthenticationCredentials ($arr);
     }
 }

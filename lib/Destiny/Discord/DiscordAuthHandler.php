@@ -3,6 +3,7 @@ namespace Destiny\Discord;
 
 use Destiny\Common\Authentication\AuthenticationCredentials;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
@@ -61,10 +62,10 @@ class DiscordAuthHandler implements AuthHandlerInterface {
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
-            if (empty($data) || isset($data['error']) || !isset($data['access_token']))
+            if (empty($data) || isset($data['error']) || !isset($data['access_token'])) {
                 throw new Exception('Invalid access_token response');
-            $info = $this->getUserInfo($data['access_token']);
-            $authCreds = $this->getAuthCredentials($params['code'], $info);
+            }
+            $authCreds = $this->mapInfoToAuthCredentials($params['code'], $this->getUserInfo($data['access_token']));
             $authHandler = new AuthenticationRedirectionFilter($authCreds);
             return $authHandler->execute();
         }
@@ -84,7 +85,7 @@ class DiscordAuthHandler implements AuthHandlerInterface {
             ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
-            return json_decode((string)$response->getBody(), true);
+            return json_decode((string) $response->getBody(), true);
         }
         return null;
     }
@@ -95,20 +96,24 @@ class DiscordAuthHandler implements AuthHandlerInterface {
      * @return AuthenticationCredentials
      * @throws Exception
      */
-    private function getAuthCredentials($code, array $data) {
+    public function mapInfoToAuthCredentials($code, array $data) {
         if (empty ($data) || !isset ($data ['id']) || empty ($data ['id'])) {
             throw new Exception ('Authorization failed, invalid user data');
         }
         if (!isset($data['verified']) || empty($data['verified']) || $data['verified'] != 1) {
             throw new Exception (' You must have a verified email address for your registration to complete successfully.');
         }
+
+        $authService = AuthenticationService::instance();
+        $authService->validateEmail($data['email']);
+
         $arr = [];
+        $arr ['username'] = $data ['username'];
         $arr ['authProvider'] = $this->authProvider;
         $arr ['authCode'] = $code;
         $arr ['authId'] = $data ['id'];
         $arr ['authDetail'] = $data ['username'];// . '#' . $data ['discriminator'];
-        $arr ['username'] = $data ['username'];
-        $arr ['email'] = $data ['email'];
+        $arr ['authEmail'] = $data ['email'];
         return new AuthenticationCredentials ($arr);
     }
 

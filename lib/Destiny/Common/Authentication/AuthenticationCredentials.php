@@ -9,12 +9,12 @@ class AuthenticationCredentials {
     private $authCode;
     private $authId;
     private $authDetail;
+    private $authEmail;
     private $refreshToken;
     private $username;
-    private $email;
 
     public function __construct(array $options = null) {
-        Options::setOptions ( $this, $options );
+        Options::setOptions($this, $options);
     }
 
     function __sleep() {
@@ -23,14 +23,14 @@ class AuthenticationCredentials {
             'authCode',
             'authId',
             'authDetail',
+            'authEmail',
             'refreshToken',
-            'username',
-            'email'
+            'username'
         ];
     }
 
     public function isValid() {
-        if (empty ( $this->authId ) || empty ( $this->authCode ) || empty ( $this->authProvider )) {
+        if (empty ($this->authId) || empty ($this->authCode) || empty ($this->authProvider)) {
             return false;
         }
         return true;
@@ -76,12 +76,12 @@ class AuthenticationCredentials {
         $this->username = $username;
     }
 
-    public function getEmail() {
-        return $this->email;
+    public function getAuthEmail() {
+        return $this->authEmail;
     }
 
-    public function setEmail($email) {
-        $this->email = $email;
+    public function setAuthEmail($authEmail) {
+        $this->authEmail = $authEmail;
     }
 
     public function getRefreshToken() {

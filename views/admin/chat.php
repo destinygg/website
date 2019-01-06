@@ -58,7 +58,6 @@ use Destiny\Common\Utils\Date;
                         <thead>
                         <tr>
                             <td>Username</td>
-                            <td>Email</td>
                             <td>Created</td>
                         </tr>
                         </thead>
@@ -66,7 +65,6 @@ use Destiny\Common\Utils\Date;
                         <?php foreach($this->usersByIp as $user): ?>
                             <tr>
                                 <td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a></td>
-                                <td><?=Tpl::out($user['email'])?></td>
                                 <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
                             </tr>
                         <?php endforeach; ?>

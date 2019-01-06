@@ -10,7 +10,6 @@ class SessionCredentials implements \JsonSerializable {
     protected $authProvider = '';
     protected $username = '';
     protected $userStatus = '';
-    protected $email = '';
     protected $country = '';
     protected $createdDate;
     protected $roles = [];
@@ -40,9 +39,6 @@ class SessionCredentials implements \JsonSerializable {
             }
             if (!FilterParams::isEmpty($params, 'username')) {
                 $this->setUsername($params ['username']);
-            }
-            if (!FilterParams::isEmpty($params, 'email')) {
-                $this->setEmail($params ['email']);
             }
             if (!FilterParams::isEmpty($params, 'country')) {
                 $this->setCountry($params ['country']);
@@ -77,9 +73,9 @@ class SessionCredentials implements \JsonSerializable {
      */
     public function jsonSerialize() {
         return [
-            'userId' => $this->getUserId(),
             'nick' => $this->getUsername(),
             'username' => $this->getUsername(),
+            'userId' => $this->getUserId(),
             'status' => $this->getUserStatus(),
             'createdDate' => $this->getCreatedDate(),
             'roles' => $this->getRoles(),
@@ -93,7 +89,6 @@ class SessionCredentials implements \JsonSerializable {
      */
     public function getData() {
         return [
-            'email' => $this->getEmail(),
             'nick' => $this->getUsername(),
             'username' => $this->getUsername(),
             'userId' => $this->getUserId(),
@@ -133,14 +128,6 @@ class SessionCredentials implements \JsonSerializable {
 
     public function setUsername($username) {
         $this->username = $username;
-    }
-
-    public function getEmail() {
-        return $this->email;
-    }
-
-    public function setEmail($email) {
-        $this->email = $email;
     }
 
     public function getRoles() {
