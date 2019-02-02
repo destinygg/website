@@ -17,6 +17,7 @@ use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
+use Destiny\Common\Utils\RandomString;
 use Destiny\Common\ViewModel;
 use Destiny\PayPal\PayPalApiService;
 use Destiny\StreamLabs\StreamLabsAlertsType;
@@ -107,6 +108,7 @@ class DonateController {
                 'amount'    => $amount,
                 'status'    => DonationStatus::PENDING,
                 'message'   => mb_substr($params['message'], 0, 200),
+                'invoiceId' => RandomString::makeUrlSafe(32),
                 'timestamp' => Date::getDateTime ()->format ( 'Y-m-d H:i:s' )
             ]);
             $payPalApiService = PayPalApiService::instance();

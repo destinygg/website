@@ -5,6 +5,7 @@ use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
+use Destiny\Common\Utils\RandomString;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsRequestType;
@@ -235,7 +236,7 @@ class PayPalApiService extends Service {
         $details->AllowNote = 0;
         $details->ReturnURL = $returnUrl;
         $details->CancelURL = $cancelUrl;
-        $details->InvoiceID = $donation['id'];
+        $details->InvoiceID = $donation['invoiceId'];
         $details->PaymentDetails[0] = $payment;
 
         // Execute checkout
