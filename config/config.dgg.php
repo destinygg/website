@@ -21,8 +21,9 @@ return [
     ],
 
     'meta' => [
-        'shortName'      => 'Destiny',
+        'shortName'      => 'Destiny.gg',
         'title'          => 'Destiny - Steven Bonnell II',
+        'domain'         => 'www.destiny.gg',
         'author'         => 'Steven Bonnell II',
         'description'    => 'Steven (Destiny) Bonnell II is a professional streamer, primarily playing games, but will often venture off into other topics, including but not limited to: philosophy, youtube videos, music and all sorts of wonderful pseudo-intellectualism.',
         'keywords'       => 'Steven Bonnell,Destiny,Destiny.gg,StarCraft,StarCraft2,Counter Strike,CS:GO,League of Legends,Hearth Stone,streamer,stream,game,pc,build a box,twitch,tv,twitch.tv',

@@ -2,6 +2,7 @@
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Log;
+use Destiny\Discord\DiscordLogHandler;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\DBAL\DriverManager;
@@ -9,7 +10,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.7.7'); // auto-generated: 1549068812326
+define('_APP_VERSION', '2.7.8'); // auto-generated: 1549576021723
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
@@ -32,6 +33,7 @@ $app->setLoader($loader);
 // Logging
 Log::$log = new Logger ('web');
 Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Logger::ERROR));
+Log::$log->pushHandler(new DiscordLogHandler(Logger::ERROR));
 Log::$log->pushProcessor(new PsrLogMessageProcessor());
 Log::$log->pushProcessor(new Monolog\Processor\WebProcessor());
 

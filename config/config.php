@@ -172,6 +172,10 @@ return [
         'user' => 'destiny',
     ],
 
+    'discord' => [
+        'webhook' => ''
+    ],
+
     'streamlabs' => [
         'default_user' => -1,
         'alert_donations' => true,

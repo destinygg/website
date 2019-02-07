@@ -8,6 +8,7 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Destiny\Common\Utils\RandomString;
+use Destiny\Discord\DiscordLogHandler;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use function GuzzleHttp\json_encode;
@@ -117,7 +118,7 @@ class Application extends Service {
             }
         } catch (Exception $e) {
             $id = RandomString::makeUrlSafe(12);
-            Log::error("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            Log::error("[#$id] " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             $model->code = Http::STATUS_ERROR;
             $model->error = $e;
             $model->id = $id;
@@ -125,7 +126,7 @@ class Application extends Service {
             $response->setBody($this->errorTemplate($model, $useResponseAsBody));
         } catch (\Exception $e) {
             $id = RandomString::makeUrlSafe(12);
-            Log::critical("[#$id]" . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            Log::critical("[#$id] " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             $model->code = Http::STATUS_ERROR;
             $model->error = new Exception ('Application error', $e);
             $model->id = $id;
