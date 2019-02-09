@@ -134,29 +134,35 @@ class SubscriptionController {
         $userId = Session::getCredentials ()->getUserId ();
         $subscription = $subscriptionsService->findById ( $params['subscriptionId'] );
 
-        $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-        $googleRecaptchaHandler->resolveWithRequest($request);
-
-        if (empty($subscription)) {
-            throw new Exception('Invalid subscription');
-        }
-        if ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) {
-            throw new Exception('Invalid subscription owner');
-        }
-        if ($subscription['status'] != SubscriptionStatus::ACTIVE) {
-            throw new Exception('Invalid subscription status');
-        }
         try {
-            $subscriptionsService->cancelSubscription($subscription, isset($params['cancelSubscription']) && $params['cancelSubscription'] == '1');
+            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+            $googleRecaptchaHandler->resolveWithRequest($request);
+
+            if (empty($subscription)) {
+                throw new Exception('Invalid subscription');
+            }
+            if ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) {
+                throw new Exception('Invalid subscription owner');
+            }
+            if ($subscription['status'] != SubscriptionStatus::ACTIVE) {
+                throw new Exception('Invalid subscription status');
+            }
+            try {
+                $subscriptionsService->cancelSubscription($subscription, isset($params['cancelSubscription']) && $params['cancelSubscription'] == '1');
+            } catch (Exception $e) {
+                Log::critical("Error cancelling subscription {id}", $subscription);
+                throw $e;
+            }
+
+            $authService->flagUserForUpdate($subscription ['userId']);
+            $model->subscription = $subscription;
+            $model->subscriptionCancelled = true;
+            $model->title = 'Cancel Subscription';
+            return 'profile/cancelsubscription';
         } catch (Exception $e) {
-            Log::critical("Error cancelling subscription {id}", $subscription);
-            throw $e;
+            Session::setErrorBag($e->getMessage());
+            return 'redirect:/profile';
         }
-        $authService->flagUserForUpdate($subscription ['userId']);
-        $model->subscription = $subscription;
-        $model->subscriptionCancelled = true;
-        $model->title = 'Cancel Subscription';
-        return 'profile/cancelsubscription';
     }
 
     /**
