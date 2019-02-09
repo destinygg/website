@@ -3,11 +3,8 @@ namespace Destiny\Discord;
 
 use Destiny\Common\Config;
 use Destiny\Common\Log;
-use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
-use Destiny\Common\Utils\FilterParams;
 use GuzzleHttp\Client;
-use GuzzleHttp\Middleware;
 use GuzzleHttp\RequestOptions;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
@@ -44,7 +41,7 @@ class DiscordLogHandler extends AbstractProcessingHandler {
             $creds = Session::getCredentials();
             $username = $creds->isValid() ? "<https://www.destiny.gg/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : "";
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
-            $this->guzzle->postAsync($webhook, [
+            $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
                     'username' => Config::$a['meta']['shortName'],
                     'text' => $record['message'],

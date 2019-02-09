@@ -61,7 +61,7 @@ class StreamLabsController {
                 'authCode'     => $auth['access_token'],
                 'refreshToken' => $auth['refresh_token'],
                 'authId'       => $creds->getUserId(),
-                'authDetail'   => $creds->getEmail()
+                'authDetail'   => $creds->getUsername()
             ]);
         } else {
             $now = Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' );

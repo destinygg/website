@@ -8,7 +8,6 @@ use Destiny\Common\Utils\Http;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Destiny\Common\Utils\RandomString;
-use Destiny\Discord\DiscordLogHandler;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use function GuzzleHttp\json_encode;

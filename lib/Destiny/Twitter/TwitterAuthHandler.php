@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Twitter;
 
-use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\AuthHandlerInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
