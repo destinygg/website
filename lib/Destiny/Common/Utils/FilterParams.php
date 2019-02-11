@@ -54,7 +54,7 @@ abstract class FilterParams {
      * @return bool
      */
     public static function isEmpty(array $params, $identifier) {
-        if (!is_array($params) || !isset ($params [$identifier]) || empty ($params [$identifier]) || trim($params [$identifier]) == '') {
+        if (!is_array($params) || !isset ($params [$identifier]) || strlen ($params [$identifier]) == 0 || trim($params [$identifier]) == '') {
             return true;
         }
         return false;
