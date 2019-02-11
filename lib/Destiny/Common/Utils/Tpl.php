@@ -10,6 +10,9 @@ class Tpl {
     }
 
     public static function out($var, $default = "") {
+        if ($var instanceof \Exception) {
+            $var = $var->getMessage();
+        }
         return htmlentities(((empty ($var)) ? $default : $var), ENT_QUOTES, 'UTF-8');
     }
 

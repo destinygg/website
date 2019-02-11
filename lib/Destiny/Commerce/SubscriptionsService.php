@@ -75,18 +75,11 @@ class SubscriptionsService extends Service {
     }
 
     /**
-     * Get a subscription type by id
-     *
      * @param string $typeId
-     * @return array
-     * @throws Exception
+     * @return array||null
      */
-    public function getSubscriptionType($typeId) {
-        $subscriptions = Config::$a ['commerce'] ['subscriptions'];
-        if (!empty ($typeId) && isset ($subscriptions [$typeId])) {
-            return $subscriptions [$typeId];
-        }
-        throw new Exception (sprintf('Subscription type [%s] not found', $typeId));
+    public function getSubscriptionType($typeId): array {
+        return Config::$a['commerce']['subscriptions'][$typeId] ?? null;
     }
 
     /**
@@ -184,7 +177,8 @@ class SubscriptionsService extends Service {
         $stmt->execute();
         $subscriptions = $stmt->fetchAll();
         for ($i = 0; $i < count($subscriptions); $i++) {
-            $subscriptions [$i]['type'] = $this->getSubscriptionType($subscriptions [$i]['subscriptionType']);
+            // TODO possible to assign null to this.
+            $subscriptions[$i]['type'] = $this->getSubscriptionType($subscriptions[$i]['subscriptionType']);
         }
         return $subscriptions;
     }
@@ -291,7 +285,8 @@ class SubscriptionsService extends Service {
         $stmt->execute();
         $gifts = $stmt->fetchAll();
         for ($i = 0; $i < count($gifts); $i++) {
-            $gifts [$i]['type'] = $this->getSubscriptionType($gifts [$i]['subscriptionType']);
+            // TODO possible to assign null to this.
+            $gifts[$i]['type'] = $this->getSubscriptionType($gifts [$i]['subscriptionType']);
         }
         return $gifts;
     }
@@ -300,7 +295,6 @@ class SubscriptionsService extends Service {
      * @param int $gifterId
      * @param string $status
      * @return array <array>
-     * @throws Exception
      * @throws DBALException
      */
     public function findByGifterIdAndStatus($gifterId, $status) {
@@ -318,7 +312,8 @@ class SubscriptionsService extends Service {
         $stmt->execute();
         $gifts = $stmt->fetchAll();
         for ($i = 0; $i < count($gifts); $i++) {
-            $gifts [$i]['type'] = $this->getSubscriptionType($gifts [$i]['subscriptionType']);
+            // TODO possible to assign null to this.
+            $gifts[$i]['type'] = $this->getSubscriptionType($gifts[$i]['subscriptionType']);
         }
         return $gifts;
     }

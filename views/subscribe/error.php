@@ -22,6 +22,8 @@ use Destiny\Common\Config;
             <span>Subscribe</span> <small>become one of the brave</small>
         </h1>
 
+        <?php include 'seg/alerts.php' ?>
+
         <div class="content content-dark clearfix">
 
             <div class="ui-step-legend-wrap clearfix">
@@ -45,13 +47,6 @@ use Destiny\Common\Config;
 
                     <br>Please start again or email <a href="mailto:<?=Config::$a['support_email']?>"><?=Config::$a['support_email']?></a> for queries.
                 </p>
-
-                <?php if(!empty($this->error)): ?>
-                    <div class="alert alert-danger">
-                        <strong>Error!</strong>
-                        <?=Tpl::out($this->error->getMessage())?>
-                    </div>
-                <?php endif ?>
 
             </div>
 

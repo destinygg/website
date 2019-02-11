@@ -122,7 +122,9 @@ class DonateController {
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (\Exception $e) {
             $conn->rollBack();
-            throw new Exception('Error processing donation.', $e);
+            Log::error('Error processing donation. ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Session::setErrorBag('Error processing donation.');
+            return 'redirect: /donate';
         }
     }
 

@@ -23,12 +23,7 @@ use Destiny\Common\Config;
             <small>your sign-up details</small>
         </h1>
 
-        <?php if(!empty($this->error)): ?>
-            <div class="alert alert-danger">
-                <strong>Error!</strong>
-                <?=Tpl::out($this->error->getMessage())?>
-            </div>
-        <?php endif ?>
+        <?php include 'seg/alerts.php' ?>
 
         <div class="content content-dark clearfix">
             <form action="/register" method="post">

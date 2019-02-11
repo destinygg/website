@@ -6,6 +6,8 @@ use Destiny\Common\ViewModel;
 
 abstract class Session {
 
+    const KEY_AUTH_SESSION = 'authSession';
+
     /**
      * @return SessionInstance
      */

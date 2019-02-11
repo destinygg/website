@@ -16,8 +16,9 @@ use Destiny\Common\User\UserRole;
 
     <?php include 'seg/nav.php' ?>
 
-    <section class="container" style="flex: 1; display: flex; justify-content: center; align-items: center;">
+    <section class="container">
         <div style="flex: 1;">
+
             <h1 class="title">
                 <span>Subscribe</span>
                 <small>send a message too</small>

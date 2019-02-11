@@ -3,6 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Common\Application;
 use Destiny\Common\Log;
+use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Exception;
@@ -16,6 +17,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Google\GoogleRecaptchaHandler;
 use Doctrine\DBAL\DBALException;
+use PHPUnit\Util\Filter;
 
 /**
  * @Controller
@@ -31,19 +33,17 @@ class RegistrationController {
      * @return AuthenticationCredentials
      */
     private function getSessionAuthenticationCredentials(array $params) {
-        if (!isset ($params ['code']) || empty ($params ['code'])) {
-            throw new Exception ('Invalid code');
-        }
-        $authSession = Session::get('authSession');
+        FilterParams::required($params, 'code');
+        $authSession = Session::get(Session::KEY_AUTH_SESSION);
         if (!empty($authSession) && $authSession instanceof AuthenticationCredentials) {
             if (empty ($authSession) || ($authSession->getAuthCode() != $params ['code'])) {
                 throw new Exception ('Invalid authentication code ');
             }
             if (!$authSession->isValid()) {
-                throw new Exception ('Invalid authentication information');
+                throw new Exception ('Invalid session credentials');
             }
         } else {
-            throw new Exception ('Could not retrieve session data. Possibly due to cookies not being enabled.');
+            throw new Exception ('Invalid session.');
         }
         return $authSession;
     }
@@ -57,19 +57,24 @@ class RegistrationController {
      * @param array $params
      * @param ViewModel $model
      * @return string
-     * @throws Exception
      */
     public function register(array $params, ViewModel $model) {
-        $authCreds = $this->getSessionAuthenticationCredentials($params);
-        $username = $authCreds->getUsername();
-        $model->title = 'Register';
-        $model->username = $username;
-        $model->rememberme = (isset($params['rememberme'])) ? $params['rememberme'] : 0;
-        $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
-        $model->grant = (isset($params['grant'])) ? $params['grant'] : '';
-        $model->uuid = (isset($params['uuid'])) ? $params['uuid'] : '';
-        $model->authProvider = $authCreds->getAuthProvider();
-        $model->code = $authCreds->getAuthCode();
+        try {
+            FilterParams::required($params, 'code');
+            $authCreds = $this->getSessionAuthenticationCredentials($params);
+            $username = $authCreds->getUsername();
+            $model->title = 'Sign up';
+            $model->username = $username;
+            $model->rememberme = (isset($params['rememberme'])) ? $params['rememberme'] : 0;
+            $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
+            $model->grant = (isset($params['grant'])) ? $params['grant'] : '';
+            $model->uuid = (isset($params['uuid'])) ? $params['uuid'] : '';
+            $model->authProvider = $authCreds->getAuthProvider();
+            $model->code = $authCreds->getAuthCode();
+        } catch (Exception $e) {
+            Session::setErrorBag("Sign up error. " . $e->getMessage());
+            return 'redirect:/login';
+        }
         return 'register';
     }
 
@@ -98,7 +103,7 @@ class RegistrationController {
             $userService->checkUsernameTaken($username, -1);
             $authCreds->setUsername($username);
         } catch (Exception $e) {
-            $model->title = 'Register Error';
+            $model->title = 'Sign Up Error';
             $model->username = $username;
             $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
             $model->grant = (isset($params['grant'])) ? $params['grant'] : '';
@@ -125,7 +130,7 @@ class RegistrationController {
                 'refreshToken' => $authCreds->getRefreshToken()
             ]);
             $conn->commit();
-            Session::remove('authSession');
+            Session::remove(Session::KEY_AUTH_SESSION);
         } catch (DBALException $e) {
             $n = new Exception("Registration failed.", $e);
             Log::critical($n);

@@ -208,12 +208,13 @@ class IpnController {
      */
     protected function getSubscriptionByPaymentProfileData(array $data) {
         $subscription = null;
-        if (isset($data ['recurring_payment_id']) && !empty($data['recurring_payment_id'])) {
+        $paymentId = $data['recurring_payment_id'] ?? null;
+        if (!empty($paymentId)) {
             $subscriptionService = SubscriptionsService::instance();
-            $subscription = $subscriptionService->findByPaymentProfileId($data ['recurring_payment_id']);
+            $subscription = $subscriptionService->findByPaymentProfileId($paymentId);
         }
         if (empty($subscription)) {
-            Log::critical('Could not load subscription using IPN', $data);
+            Log::critical("Could not load subscription using IPN [#$paymentId]", $data);
             throw new Exception('Could not load subscription by payment data');
         }
         return $subscription;
@@ -224,7 +225,8 @@ class IpnController {
      * @throws Exception
      */
     private function checkTransactionRecipientEmail(array $data) {
-        if (!isset($data['receiver_email']) || strcasecmp(Config::$a['commerce']['receiver_email'], $data['receiver_email']) !== 0) {
+        $email = $data['receiver_email'] ?? null;
+        if (empty($email) || strcasecmp(Config::$a['commerce']['receiver_email'], $email) !== 0) {
             Log::critical('IPN originated with incorrect receiver_email', $data);
             throw new Exception('IPN originated with incorrect receiver_email');
         }

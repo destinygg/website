@@ -332,7 +332,11 @@ class AdminUserController {
 
         $userService = UserService::instance();
         $subscriptionsService = SubscriptionsService::instance();
-        $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscriptionType']);
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscriptionType']);
+
+        if (empty($subscriptionType)) {
+            throw new Exception("Invalid subscription type");
+        }
 
         $subscription = [];
         $subscription ['subscriptionType'] = $subscriptionType ['id'];

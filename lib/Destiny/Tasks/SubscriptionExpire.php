@@ -34,6 +34,10 @@ class SubscriptionExpire implements TaskInterface {
         foreach ($subscriptions as $subscription) {
             try {
                 $subType = $subscriptionService->getSubscriptionType($subscription ['subscriptionType']);
+                if (empty($subType)) {
+                    Log::critical("Invalid subscription type.", $subscription);
+                    continue;
+                }
 
                 // Because subscriptions can be revived after months of skipped payments;
                 // The end date may not simply be behind by the subscription frequency.

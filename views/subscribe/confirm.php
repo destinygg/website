@@ -23,13 +23,7 @@ use Destiny\Common\Utils\Tpl;
 
         <div class="content content-dark clearfix">
 
-            <?php if(!empty($this->warning)): ?>
-                <div class="alert alert-danger alert-dismissable" style="margin: 15px 15px 0 15px;">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-                    <strong><i class="fas fa-exclamation-triangle"></i> Warning!</strong>
-                    <?=Tpl::out($this->warning->getMessage())?>
-                </div>
-            <?php endif ?>
+            <?php include 'seg/alerts.php' ?>
 
             <div style="width: 100%;" class="clearfix stream">
                 <form id="subscribe-form" action="/subscription/create" method="post">

@@ -838,12 +838,12 @@ span.icon-required {
   left: 0;
   right: 0;
 }
-#alerts-container .alert {
+/*#alerts-container .alert {
   margin: 15px;
 }
 #alerts-static .alert {
   margin: 15px;
-}
+}*/
 #alerts-static strong {
   display: block;
 }
@@ -1683,4 +1683,10 @@ img.dbh-sweater1 {
       }
     }
   }
+}
+
+.container.vertical-contain {
+  flex: 1; display: flex;
+  justify-content: center;
+  align-items: center;
 }

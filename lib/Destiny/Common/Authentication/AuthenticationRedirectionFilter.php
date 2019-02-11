@@ -2,6 +2,7 @@
 namespace Destiny\Common\Authentication;
 
 use Destiny\Chat\ChatRedisService;
+use Destiny\Common\Application;
 use Destiny\Common\Log;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
@@ -61,7 +62,7 @@ class AuthenticationRedirectionFilter {
 
         // If the user profile doesn't exist, go to the register page
         if (!$userService->getAuthExistsByAuthIdAndProvider($this->creds->getAuthId(), $this->creds->getAuthProvider())) {
-            Session::set('authSession', $this->creds);
+            Session::set(Session::KEY_AUTH_SESSION, $this->creds);
             $url = '/register';
             $url .= '?code=' . urlencode($this->creds->getAuthCode());
             if (!empty($follow)) {

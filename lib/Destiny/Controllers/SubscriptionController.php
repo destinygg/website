@@ -6,6 +6,7 @@ use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
+use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Config;
@@ -173,25 +174,30 @@ class SubscriptionController {
      * @return string
      *
      * @throws DBALException
-     * @throws Exception
      */
     public function subscriptionConfirm(array $params, ViewModel $model) {
-        FilterParams::required($params, 'subscription');
-        $subscriptionsService = SubscriptionsService::instance();
+        try {
+            FilterParams::required($params, 'subscription');
 
-        // If there is no user, save the selection, and go to the login screen
-        if (!Session::hasRole(UserRole::USER)) {
-            $url = '/subscription/confirm?subscription=' . $params ['subscription'];
-            if (isset($params ['gift']) && !empty($params ['gift'])) {
-                $url .= '&gift=' . $params ['gift'];
+            // If there is no user, save the selection, and go to the login screen
+            if (!Session::hasRole(UserRole::USER)) {
+                $url = '/subscription/confirm?subscription=' . $params ['subscription'];
+                if (isset($params ['gift']) && !empty($params ['gift'])) {
+                    $url .= '&gift=' . $params ['gift'];
+                }
+                return 'redirect: /login?follow=' . urlencode($url);
             }
-            return 'redirect: /login?follow=' . urlencode($url);
-        }
 
-        $userId = Session::getCredentials()->getUserId();
-        $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscription']);
-        if (empty($subscriptionType)) {
-            throw new Exception('Invalid subscription specified');
+            $userId = Session::getCredentials()->getUserId();
+            $subscriptionsService = SubscriptionsService::instance();
+            $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscription']);
+            if (empty($subscriptionType)) {
+                throw new Exception("Invalid subscription type");
+            }
+
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /subscribe';
         }
 
         // If this is a gift, there is no need to check the current subscription
@@ -211,8 +217,9 @@ class SubscriptionController {
                 }
             }
         }
+
         $model->subscriptionType = $subscriptionType;
-        $model->title = 'Subscription Confirm';
+        $model->title = 'Subscribe Confirm';
         return 'subscribe/confirm';
     }
 
@@ -234,9 +241,13 @@ class SubscriptionController {
         $userService = UserService::instance ();
         $subscriptionsService = SubscriptionsService::instance ();
         $payPalApiService = PayPalApiService::instance ();
-
         $userId = Session::getCredentials ()->getUserId ();
-        $subscriptionType = $subscriptionsService->getSubscriptionType ( $params ['subscription'] );
+
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscription']);
+        if (empty($subscriptionType)) {
+            throw new Exception("Invalid subscription type");
+        }
+
         $recurring = (isset ( $params ['renew'] ) && $params ['renew'] == '1');
         $giftReceiverUsername = (isset( $params['gift'] ) && !empty( $params['gift'] )) ? $params['gift'] : null;
         $giftReceiver = null;
@@ -338,6 +349,10 @@ class SubscriptionController {
             throw new Exception ('Invalid subscription state');
         }
         $subscriptionType = $subscriptionsService->getSubscriptionType($subscription ['subscriptionType']);
+        if (empty($subscriptionType)) {
+            throw new Exception("Invalid subscription type");
+        }
+
         $user = $userService->getUserById($subscription['userId']);
         if ($user['userId'] != $userId && $subscription['gifter'] != $userId) {
             throw new Exception ('Invalid subscription');
@@ -487,19 +502,21 @@ class SubscriptionController {
         $userId = Session::getCredentials ()->getUserId ();
         $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
 
-        if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) )
-            throw new Exception ( 'Invalid subscription record' );
+        if (empty ($subscription) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId)) {
+            throw new Exception ('Invalid subscription record');
+        }
 
-        $subscriptionType = $subscriptionsService->getSubscriptionType($subscription ['subscriptionType']);
-
-        if(!empty($subscription['gifter'])){
-            $giftee = $userService->getUserById ( $subscription['userId'] );
+        if (!empty($subscription['gifter'])) {
+            $giftee = $userService->getUserById($subscription['userId']);
             $model->giftee = $giftee;
         }
 
         $model->title = 'Subscription Complete';
         $model->subscription = $subscription;
-        $model->subscriptionType = $subscriptionType;
+        $model->subscriptionType = $subscriptionsService->getSubscriptionType($subscription ['subscriptionType']);
+        if (empty($subscriptionType)) {
+            throw new Exception("Invalid subscription type");
+        }
         return 'subscribe/complete';
     }
 
