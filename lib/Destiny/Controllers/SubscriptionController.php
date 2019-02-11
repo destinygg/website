@@ -6,7 +6,6 @@ use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
-use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Config;
@@ -497,10 +496,10 @@ class SubscriptionController {
     public function subscriptionComplete(array $params, ViewModel $model) {
         FilterParams::required($params, 'subscriptionId');
 
-        $subscriptionsService = SubscriptionsService::instance ();
-        $userService = UserService::instance ();
-        $userId = Session::getCredentials ()->getUserId ();
-        $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
+        $subscriptionsService = SubscriptionsService::instance();
+        $userService = UserService::instance();
+        $userId = Session::getCredentials()->getUserId();
+        $subscription = $subscriptionsService->findById($params ['subscriptionId']);
 
         if (empty ($subscription) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId)) {
             throw new Exception ('Invalid subscription record');
@@ -514,9 +513,6 @@ class SubscriptionController {
         $model->title = 'Subscription Complete';
         $model->subscription = $subscription;
         $model->subscriptionType = $subscriptionsService->getSubscriptionType($subscription ['subscriptionType']);
-        if (empty($subscriptionType)) {
-            throw new Exception("Invalid subscription type");
-        }
         return 'subscribe/complete';
     }
 

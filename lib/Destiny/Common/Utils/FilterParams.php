@@ -4,7 +4,7 @@ namespace Destiny\Common\Utils;
 /**
  * Abstract class to help with handling request variables
  */
-abstract class FilterParams {
+class FilterParams {
 
     /**
      * Make sure a parameter is set and not empty
@@ -28,7 +28,7 @@ abstract class FilterParams {
      * @throws FilterParamsException
      */
     public static function declared(array $params, $identifier) {
-        if (!is_array($params) || !isset ($params [$identifier])) {
+        if (!is_array($params) || !isset ($params[$identifier])) {
             throw new FilterParamsException (sprintf('Field not set %s', $identifier));
         }
     }
@@ -41,7 +41,7 @@ abstract class FilterParams {
      * @throws FilterParamsException
      */
     public static function requireArray(array $params, $identifier) {
-        if (!is_array($params) || !isset ($params [$identifier]) || !is_array($params [$identifier])) {
+        if (!is_array($params) || !isset ($params[$identifier]) || !is_array($params[$identifier])) {
             throw new FilterParamsException (sprintf('Field not set or not an array %s', $identifier));
         }
     }
@@ -54,7 +54,7 @@ abstract class FilterParams {
      * @return bool
      */
     public static function isEmpty(array $params, $identifier) {
-        if (!is_array($params) || !isset ($params [$identifier]) || strlen ($params [$identifier]) == 0 || trim($params [$identifier]) == '') {
+        if (!is_array($params) || !isset($params [$identifier]) || strlen($params [$identifier]) == 0 || trim($params [$identifier]) == '') {
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ abstract class FilterParams {
      * @return bool
      */
     public static function isArray(array $params, $identifier) {
-        if (!is_array($params) || !isset ($params [$identifier]) || !is_array($params [$identifier])) {
+        if (!is_array($params) || !isset($params[$identifier]) || !is_array($params[$identifier])) {
             return false;
         }
         return true;

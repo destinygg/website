@@ -1,5 +1,4 @@
 <?php
-
 namespace Destiny\Common\User;
 
 use Destiny\Common\Service;
