@@ -117,7 +117,7 @@ class Application extends Service {
             }
         } catch (Exception $e) {
             $id = RandomString::makeUrlSafe(12);
-            Log::error("[#$id] " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error($e->getMessage(), ['trace' => $e->getTraceAsString(), 'guid' => $id]);
             $model->code = Http::STATUS_ERROR;
             $model->error = $e;
             $model->id = $id;
@@ -125,7 +125,7 @@ class Application extends Service {
             $response->setBody($this->errorTemplate($model, $useResponseAsBody));
         } catch (\Exception $e) {
             $id = RandomString::makeUrlSafe(12);
-            Log::critical("[#$id] " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::critical($e->getMessage(), ['trace' => $e->getTraceAsString(), 'guid' => $id]);
             $model->code = Http::STATUS_ERROR;
             $model->error = new Exception ('Application error', $e);
             $model->id = $id;

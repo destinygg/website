@@ -39,7 +39,9 @@ class DiscordLogHandler extends AbstractProcessingHandler {
         }
         try {
             $creds = Session::getCredentials();
-            $username = $creds->isValid() ? "<https://www.destiny.gg/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : "";
+            $url = $_SERVER['REQUEST_URI'] ?? 'None';
+            $address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? 'None';
+            $username = $creds->isValid() ? "<https://www.destiny.gg/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : 'None';
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
             $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
@@ -52,17 +54,17 @@ class DiscordLogHandler extends AbstractProcessingHandler {
                             'fields' => [
                                 [
                                     'title' => 'URL',
-                                    'value' => $record['extra']['url'],
+                                    'value' => $url,
                                     'short' => false
                                 ],
                                 [
                                     'title' => 'User',
-                                    'value' => empty($username) ? "none" : $username,
+                                    'value' => $username,
                                     'short' => false
                                 ],
                                 [
                                     'title' => 'Address',
-                                    'value' => $record['extra']['ip'],
+                                    'value' => $address,
                                     'short' => true
                                 ]
                             ],
