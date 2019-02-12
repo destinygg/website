@@ -23,6 +23,7 @@ class ImageService extends Service {
      * @param array $img
      * @param $tag
      * @return string
+     * @throws DBALException
      */
     function addImage(array $img, $tag) {
         $conn = Application::getDbConn();
@@ -70,6 +71,7 @@ class ImageService extends Service {
     /**
      * @param $id
      * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     * @throws DBALException
      */
     function removeImageById($id) {
         $conn = Application::getDbConn();

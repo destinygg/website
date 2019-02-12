@@ -117,6 +117,7 @@ class AdminEmotesController {
      * @param array $params
      * @return string
      * @throws FilterParamsException
+     * @throws DBALException
      */
     public function newEmotePost(array $params) {
         FilterParams::required($params, 'imageId');

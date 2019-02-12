@@ -20,6 +20,7 @@ class FlairService extends Service {
      * TODO need to add `locked` field?
      * @param $id
      * @param array $flair
+     * @throws DBALException
      */
     public function updateFlair($id, array $flair) {
         $conn = Application::getDbConn();
@@ -36,6 +37,7 @@ class FlairService extends Service {
     /**
      * @param array $flair
      * @return int
+     * @throws DBALException
      */
     public function insertFlair(array $flair) {
         $conn = Application::getDbConn();
@@ -106,6 +108,7 @@ class FlairService extends Service {
     /**
      * @param $id
      * @throws InvalidArgumentException
+     * @throws DBALException
      */
     function removeFlairById($id) {
         $conn = Application::getDbConn();

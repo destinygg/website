@@ -17,7 +17,6 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Google\GoogleRecaptchaHandler;
 use Doctrine\DBAL\DBALException;
-use PHPUnit\Util\Filter;
 
 /**
  * @Controller

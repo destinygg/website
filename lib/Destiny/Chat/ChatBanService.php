@@ -99,6 +99,7 @@ class ChatBanService extends Service {
     /**
      * @param array $ban
      * @return string
+     * @throws DBALException
      */
     public function insertBan(array $ban) {
         $conn = Application::getDbConn();
@@ -109,6 +110,7 @@ class ChatBanService extends Service {
     /**
      * update an existing ban
      * @param array $ban
+     * @throws DBALException
      */
     public function updateBan(array $ban) {
         $conn = Application::getDbConn();

@@ -17,6 +17,7 @@ class SubscriptionsService extends Service {
     /**
      * @param array $subscription
      * @return string
+     * @throws DBALException
      */
     public function addSubscription(array $subscription) {
         $conn = Application::getDbConn();
@@ -27,6 +28,7 @@ class SubscriptionsService extends Service {
     /**
      * Update subscription
      * @param array $subscription
+     * @throws DBALException
      */
     public function updateSubscription(array $subscription) {
         $conn = Application::getDbConn();
@@ -160,7 +162,6 @@ class SubscriptionsService extends Service {
     /**
      * @param int $userId
      * @return array
-     * @throws Exception
      * @throws DBALException
      */
     public function getUserActiveAndPendingSubscriptions($userId) {
@@ -263,7 +264,6 @@ class SubscriptionsService extends Service {
      * @param int $start
      * @return array <array>
      * @throws DBALException
-     * @throws Exception
      */
     public function findCompletedByGifterId($gifterId, $limit = 100, $start = 0) {
         $conn = Application::getDbConn();

@@ -43,7 +43,6 @@ class ProfileController {
      * @return string
      *
      * @throws DBALException
-     * @throws Exception
      */
     public function profile(ViewModel $model) {
         $userService = UserService::instance();
@@ -473,7 +472,6 @@ class ProfileController {
      * @param ViewModel $model
      * @return string
      * @throws DBALException
-     * @throws Exception
      */
     function gifts(ViewModel $model) {
         $userId = Session::getCredentials ()->getUserId ();

@@ -66,6 +66,7 @@ class OAuthService extends Service {
 
     /**
      * @param array $client
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function addAuthClient(array $client) {
         $conn = Application::getDbConn();
@@ -90,6 +91,7 @@ class OAuthService extends Service {
     /**
      * @param string $clientId
      * @param array $client
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function updateAuthClient($clientId, array $client) {
         $conn = Application::getDbConn();
@@ -100,6 +102,7 @@ class OAuthService extends Service {
     /**
      * @param number $clientId
      * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function removeAuthClient($clientId) {
         $conn = Application::getDbConn();
@@ -242,6 +245,7 @@ class OAuthService extends Service {
 
     /**
      * @param array $data
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function addAccessToken(array $data) {
         $conn = Application::getDbConn();
@@ -265,6 +269,7 @@ class OAuthService extends Service {
     /**
      * @param int $tokenId
      * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function removeAccessToken($tokenId) {
         $conn = Application::getDbConn();
@@ -275,6 +280,7 @@ class OAuthService extends Service {
      * @param string $accessToken
      * @param string $renewToken
      * @param int $tokenId
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function renewAccessToken($accessToken, $renewToken, $tokenId) {
         $conn = Application::getDbConn();

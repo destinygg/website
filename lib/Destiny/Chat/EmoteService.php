@@ -19,6 +19,7 @@ class EmoteService extends Service {
     /**
      * @param $id
      * @param array $emote
+     * @throws DBALException
      */
     public function updateEmote($id, array $emote) {
         $conn = Application::getDbConn();
@@ -35,6 +36,7 @@ class EmoteService extends Service {
     /**
      * @param array $emote
      * @return int
+     * @throws DBALException
      */
     public function insertEmote(array $emote) {
         $conn = Application::getDbConn();
@@ -53,6 +55,7 @@ class EmoteService extends Service {
     /**
      * @param $id
      * @throws InvalidArgumentException
+     * @throws DBALException
      */
     function removeEmoteById($id) {
         $conn = Application::getDbConn();

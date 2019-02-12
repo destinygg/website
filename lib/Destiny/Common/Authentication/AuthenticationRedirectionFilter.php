@@ -2,7 +2,6 @@
 namespace Destiny\Common\Authentication;
 
 use Destiny\Chat\ChatRedisService;
-use Destiny\Common\Application;
 use Destiny\Common\Log;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;

@@ -113,6 +113,7 @@ class Scheduler {
 
     /**
      * @param array $task
+     * @throws DBALException
      */
     protected function updateTask(array $task) {
         $conn = Application::getDbConn();
@@ -130,6 +131,7 @@ class Scheduler {
 
     /**
      * @param array $task
+     * @throws DBALException
      */
     protected function insertTask(array $task) {
         $conn = Application::getDbConn();

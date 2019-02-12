@@ -82,6 +82,7 @@ class StreamLabsService extends Service {
      * @param array $args
      * @param array|null $auth
      * @return null|\Psr\Http\Message\ResponseInterface
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function sendAlert(array $args, array $auth = null){
         if($auth === null) {
@@ -102,6 +103,7 @@ class StreamLabsService extends Service {
      * @param array $args
      * @param array $auth
      * @return null|\Psr\Http\Message\ResponseInterface
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function sendDonation(array $args, array $auth = null){
         if($auth === null) {
@@ -121,6 +123,7 @@ class StreamLabsService extends Service {
     /**
      * @param array $auth
      * @return string
+     * @throws \Doctrine\DBAL\DBALException
      */
     private function renewToken(array $auth){
         $token = $auth['authCode'];
@@ -153,6 +156,7 @@ class StreamLabsService extends Service {
     /**
      * @param array $auth
      * @return string
+     * @throws \Doctrine\DBAL\DBALException
      */
     private function getFreshValidToken(array $auth){
         return Date::getDateTime($auth['createdDate'])->getTimestamp() + 3600 < Date::getDateTime()->getTimestamp() ? $this->renewToken($auth) : $auth['authCode'];

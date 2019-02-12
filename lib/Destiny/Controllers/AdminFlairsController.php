@@ -136,6 +136,7 @@ class AdminFlairsController {
      * @param array $params
      * @return string
      * @throws FilterParamsException
+     * @throws DBALException
      */
     public function newFlairPost(array $params) {
         FilterParams::required($params, 'imageId');
