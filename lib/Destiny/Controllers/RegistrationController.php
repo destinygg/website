@@ -92,10 +92,11 @@ class RegistrationController {
     public function registerProcess(array $params, ViewModel $model, Request $request) {
         $userService = UserService::instance();
         $authService = AuthenticationService::instance();
-        $authCreds = $this->getSessionAuthenticationCredentials($params);
         $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : '';
+        $authCreds = null;
 
         try {
+            $authCreds = $this->getSessionAuthenticationCredentials($params);
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
             $googleRecaptchaHandler->resolveWithRequest($request);
             $authService->validateUsername($username);

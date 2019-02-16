@@ -395,42 +395,43 @@ class ProfileController {
      * @throws Exception
      */
     public function authProfileConnect(array $params) {
-        FilterParams::required ( $params, 'provider' );
+        FilterParams::required($params, 'provider');
         $authProvider = $params ['provider'];
 
         // check if the auth provider you are trying to login with is not the same as the current
-        $currentAuthProvider = Session::getCredentials ()->getAuthProvider ();
-        if (strcasecmp ( $currentAuthProvider, $authProvider ) === 0) {
-            throw new Exception ( 'Provider already authenticated' );
+        $currentAuthProvider = Session::getCredentials()->getAuthProvider();
+        if (strcasecmp($currentAuthProvider, $authProvider) === 0) {
+            Session::setErrorBag('You must logout if you wish to authenticate with the same provider you are currently logged in with.');
+            return 'redirect: /profile/authentication';
         }
 
         // Set a session var that is picked up in the AuthenticationService
         // in the GET method, this variable is unset
-        Session::set ( 'accountMerge', '1' );
+        Session::set('accountMerge', '1');
 
-        switch (strtoupper ( $authProvider )) {
+        switch (strtoupper($authProvider)) {
             case 'TWITCH' :
                 $authHandler = new TwitchAuthHandler ();
-                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
 
             case 'GOOGLE' :
                 $authHandler = new GoogleAuthHandler ();
-                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
 
             case 'TWITTER' :
                 $authHandler = new TwitterAuthHandler ();
-                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
 
             case 'REDDIT' :
                 $authHandler = new RedditAuthHandler ();
-                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
 
             case 'DISCORD' :
                 $authHandler = new DiscordAuthHandler ();
-                return 'redirect: ' . $authHandler->getAuthenticationUrl ();
+                return 'redirect: ' . $authHandler->getAuthenticationUrl();
 
             default :
-                throw new Exception ( 'Authentication type not supported' );
+                throw new Exception ('Authentication type not supported');
         }
     }
 

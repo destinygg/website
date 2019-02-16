@@ -16,6 +16,7 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
+use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
 use Destiny\Common\ViewModel;
@@ -71,46 +72,54 @@ class DonateController {
      *
      * @param array $params
      * @return string
-     *
-     * @throws Exception
-     * @throws DBALException
+     * @throws \Doctrine\DBAL\ConnectionException
      */
-    public function donatePost(array $params){
-        FilterParams::required($params, 'amount');
-        FilterParams::declared($params, 'message');
+    public function donatePost(array $params) {
         $conn = Application::getDbConn();
         $authService = AuthenticationService::instance();
 
-        $amount = floatval($params['amount']);
-        $minimum = Config::$a['commerce']['minimum_donation'];
-        if ($amount < $minimum) {
-            Session::setErrorBag('Only donations of $5.00 more more are accepted');
-            return "redirect: /donate";
+        try {
+            FilterParams::required($params, 'amount');
+            FilterParams::declared($params, 'message');
+            $params['amount'] = floatval($params['amount']);
+            if ($params['amount'] < Config::$a['commerce']['minimum_donation']) {
+                throw new FilterParamsException('Only donations of $5.00 more more are accepted');
+            }
+            if (!Session::hasRole(UserRole::USER)) {
+                FilterParams::required($params, 'username');
+                $authService->validateUsername($params['username']);
+            }
+        } catch (FilterParamsException $e) {
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /donate';
+        } catch (\Exception $e) {
+            // TODO validateUsername must throw a subclass, or rather not throw an exception at all
+            Session::setErrorBag('You must specify a username if you are not signed in.');
+            return 'redirect: /donate';
         }
 
         try {
-            $userid = null;
-            $username = null;
-            $conn->beginTransaction();
-            if(Session::hasRole(UserRole::USER)) {
+            if (Session::hasRole(UserRole::USER)) {
                 $userid = Session::getCredentials()->getUserId();
                 $username = Session::getCredentials()->getUsername();
             } else {
-                FilterParams::required($params, 'username');
-                $authService->validateUsername($params['username']);
+                $userid = null;
                 $username = $params['username'];
             }
+
+            $conn->beginTransaction();
             $donationService = DonationService::instance();
             $donation = $donationService->addDonation([
-                'userid'    => $userid,
-                'username'  => $username,
-                'currency'  => Config::$a ['commerce'] ['currency'],
-                'amount'    => $amount,
-                'status'    => DonationStatus::PENDING,
-                'message'   => mb_substr($params['message'], 0, 200),
+                'userid' => $userid,
+                'username' => $username,
+                'currency' => Config::$a ['commerce'] ['currency'],
+                'amount' => $params['amount'],
+                'status' => DonationStatus::PENDING,
+                'message' => mb_substr($params['message'], 0, 200),
                 'invoiceId' => RandomString::makeUrlSafe(32),
-                'timestamp' => Date::getDateTime ()->format ( 'Y-m-d H:i:s' )
+                'timestamp' => Date::getDateTime()->format('Y-m-d H:i:s')
             ]);
+
             $payPalApiService = PayPalApiService::instance();
             $returnUrl = Http::getBaseUrl() . '/donate/process?success=true&donationid=' . urlencode($donation['id']);
             $cancelUrl = Http::getBaseUrl() . '/donate/process?success=false&donationid=' . urlencode($donation['id']);
