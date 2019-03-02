@@ -155,32 +155,38 @@ class IpnController {
 
             case 'RECURRING_PAYMENT_SKIPPED':
                 $this->checkTransactionRecipientEmail($data);
-                $subscription = $this->getSubscriptionByPaymentProfileData($data);
-                $subscriptionsService->updateSubscription([
-                    'subscriptionId' => $subscription['subscriptionId'],
-                    'paymentStatus' => PaymentStatus::SKIPPED
-                ]);
-                Log::debug('Payment skipped {recurring_payment_id}', $data);
+                $subscription = $this->findSubscriptionByPaymentProfileData($data);
+                if (!empty($subscription)) {
+                    $subscriptionsService->updateSubscription([
+                        'subscriptionId' => $subscription['subscriptionId'],
+                        'paymentStatus' => PaymentStatus::SKIPPED
+                    ]);
+                    Log::debug('Payment skipped {recurring_payment_id}', $data);
+                }
                 break;
 
             case 'RECURRING_PAYMENT_PROFILE_CANCEL' :
                 $this->checkTransactionRecipientEmail($data);
-                $subscription = $this->getSubscriptionByPaymentProfileData($data);
-                $subscriptionsService->updateSubscription([
-                    'subscriptionId' => $subscription['subscriptionId'],
-                    'paymentStatus' => PaymentStatus::CANCELLED
-                ]);
-                Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
+                $subscription = $this->findSubscriptionByPaymentProfileData($data);
+                if (!empty($subscription)) {
+                    $subscriptionsService->updateSubscription([
+                        'subscriptionId' => $subscription['subscriptionId'],
+                        'paymentStatus' => PaymentStatus::CANCELLED
+                    ]);
+                    Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
+                }
                 break;
 
             case 'RECURRING_PAYMENT_FAILED' :
                 $this->checkTransactionRecipientEmail($data);
-                $subscription = $this->getSubscriptionByPaymentProfileData($data);
-                $subscriptionsService->updateSubscription([
-                    'subscriptionId' => $subscription['subscriptionId'],
-                    'paymentStatus' => PaymentStatus::FAILED
-                ]);
-                Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
+                $subscription = $this->findSubscriptionByPaymentProfileData($data);
+                if (!empty($subscription)) {
+                    $subscriptionsService->updateSubscription([
+                        'subscriptionId' => $subscription['subscriptionId'],
+                        'paymentStatus' => PaymentStatus::FAILED
+                    ]);
+                    Log::debug('Payment profile cancelled {recurring_payment_id} status {profile_status}', $data);
+                }
                 break;
 
             // Sent on first post-back when the user subscribes
@@ -214,10 +220,23 @@ class IpnController {
             $subscription = $subscriptionService->findByPaymentProfileId($paymentId);
         }
         if (empty($subscription)) {
-            Log::critical("Could not load subscription using IPN [#$paymentId]", $data);
-            throw new Exception('Could not load subscription by payment data');
+            throw new Exception("Could not load subscription using IPN [#$paymentId]");
         }
         return $subscription;
+    }
+
+    /**
+     * @param array $data
+     * @return array|null
+     * @throws DBALException
+     */
+    protected function findSubscriptionByPaymentProfileData(array $data) {
+        try {
+            return $this->getSubscriptionByPaymentProfileData($data);
+        } catch (Exception $e) {
+            Log::warn($e->getMessage());
+        }
+        return null;
     }
 
     /**
@@ -227,8 +246,7 @@ class IpnController {
     private function checkTransactionRecipientEmail(array $data) {
         $email = $data['receiver_email'] ?? null;
         if (empty($email) || strcasecmp(Config::$a['commerce']['receiver_email'], $email) !== 0) {
-            Log::critical('IPN originated with incorrect receiver_email', $data);
-            throw new Exception('IPN originated with incorrect receiver_email');
+            throw new Exception("IPN originated with incorrect receiver_email [$email]");
         }
     }
 
