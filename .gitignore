@@ -22,6 +22,7 @@ config/config.local.php
 
 ./phpunit.phar
 /config/domains.blacklist.php
+/config/nick.blacklist.php
 /composer.phar
 /phpunit.phar
 /package-lock.json

@@ -3,6 +3,7 @@ namespace Destiny\Common\Authentication;
 
 use Destiny\Chat\EmoteService;
 use Destiny\Common\Application;
+use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Crypto;
@@ -37,6 +38,12 @@ class AuthenticationService extends Service {
         // nick-to-emote similarity heuristics, not perfect sadly ;(
         $normalizeduname = strtolower($username);
         $front = substr($normalizeduname, 0, 2);
+
+        // nick blacklists
+        $blacklist = array_merge([], include _BASEDIR . '/config/nick.blacklist.php');
+        if (in_array($normalizeduname, $blacklist)) {
+            throw new Exception ('nick is blacklisted');
+        }
 
         $emoteService = EmoteService::instance();
         $emotes = array_map(function($v) {
