@@ -17,14 +17,14 @@ class HomeController {
 
     private $merchandise = [
         [
-            'title' => 'Destiny 2018 Holiday Mug',
-            'image' => 'dbh-mug1',
-            'url' => 'https://www.designbyhumans.com/shop/mug/destiny-2018-holiday-mug/1053112/',
+            'title' => 'DuckerZ Shirt',
+            'image' => 'dbh-duckerz',
+            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/duckerz-shirt/1101862/',
         ],
         [
-            'title' => 'Destiny 2018 Holiday Sweater',
-            'image' => 'dbh-sweater1',
-            'url' => 'https://www.designbyhumans.com/shop/crewneck/destiny-2018-holiday-sweater/1053098/',
+            'title' => 'Hot Cocoa Shirt!',
+            'image' => 'dbh-cocoa',
+            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/hot-cocoa-shirt/1081128/',
         ],
         [
             'title' => 'The CinnaBonnelli Hoodie',
@@ -46,21 +46,6 @@ class HomeController {
             'image' => 'dbh-shirt3',
             'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/the-leruse/1046720/',
         ],
-        /*[
-            'title' => 'The Leruse Mug',
-            'image' => 'dbh-mug2',
-            'url' => 'https://www.designbyhumans.com/shop/mug/the-cinnabonnelli-mug/1052192/',
-        ],
-        [
-            'title' => 'The Leruse Sticker',
-            'image' => 'dbh-sticker1',
-            'url' => 'https://www.designbyhumans.com/shop/sticker/the-leruse-sticker/1052198/',
-        ],
-        [
-            'title' => 'The CinnaBonnelli Mug',
-            'image' => 'dbh-mug2',
-            'url' => 'https://www.designbyhumans.com/shop/mug/the-cinnabonnelli-mug/1052192/',
-        ],*/
     ];
 
     /**
