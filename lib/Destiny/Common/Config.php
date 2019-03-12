@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common;
 
-abstract class Config {
+class Config {
 
     /**
      * @var array

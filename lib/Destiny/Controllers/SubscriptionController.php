@@ -78,7 +78,8 @@ class SubscriptionController {
         $subscriptionId = $params['id'];
         $sub = $subscriptionsService->findById($subscriptionId);
         if (empty ($sub) || $sub['userId'] !== $userId || $sub['status'] !== SubscriptionStatus::ACTIVE) {
-            throw new Exception ('Must have an active subscription');
+            Session::setErrorBag('Must have an active subscription');
+            return 'redirect: /profile';
         }
         $model->subscription = $sub;
         $model->title = 'Cancel Subscription';
@@ -103,8 +104,13 @@ class SubscriptionController {
         $userService = UserService::instance();
         $userId = Session::getCredentials()->getUserId();
         $sub = $subscriptionsService->findById($params['id']);
-        if (empty($sub) || $sub['gifter'] !== $userId || $sub['status'] !== SubscriptionStatus::ACTIVE) {
-            throw new Exception ('Invalid subscription');
+        if (empty($sub) || $sub['status'] !== SubscriptionStatus::ACTIVE) {
+            Session::setErrorBag('Must be an valid subscription');
+            return 'redirect: /profile';
+        }
+        if ($sub['gifter'] !== $userId) {
+            Session::setErrorBag('Not allowed to cancel this subscription');
+            return 'redirect: /profile';
         }
         $model->subscription = $sub;
         $model->giftee = $userService->getUserById($sub['userId']);

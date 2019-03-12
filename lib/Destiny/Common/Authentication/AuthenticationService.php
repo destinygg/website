@@ -35,7 +35,7 @@ class AuthenticationService extends Service {
         if (preg_match('/^[A-Za-z0-9_]{3,20}$/', $username) == 0)
             throw new Exception ('Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.');
 
-        // nick-to-emote similarity heuristics, not perfect sadly ;(
+        $emoteService = EmoteService::instance();
         $normalizeduname = strtolower($username);
         $front = substr($normalizeduname, 0, 2);
 
@@ -45,20 +45,15 @@ class AuthenticationService extends Service {
             throw new Exception ('nick is blacklisted');
         }
 
-        $emoteService = EmoteService::instance();
-        $emotes = array_map(function($v) {
-            return $v['prefix'];
-        }, $emoteService->findAllEmotes());
-
-        foreach ($emotes as $emote) {
-            $normalizedemote = strtolower($emote);
+        // nick-to-emote similarity heuristics, not perfect sadly ;(
+        foreach (array_map(function($v) { return strtolower($v['prefix']); }, $emoteService->findAllEmotes()) as $normalizedemote) {
             if (strpos($normalizeduname, $normalizedemote) === 0) {
                 throw new Exception ('Username too similar to an emote, try changing the first characters');
             }
-            if ($emote == 'LUL') { // TODO remove this static reference
+            if ($normalizedemote == 'lul') { // TODO remove this static reference
                 continue;
             }
-            $shortuname = substr($normalizeduname, 0, strlen($emote));
+            $shortuname = substr($normalizeduname, 0, strlen($normalizedemote));
             $emotefront = substr($normalizedemote, 0, 2);
             if ($front == $emotefront and levenshtein($normalizedemote, $shortuname) <= 2) {
                 throw new Exception ('Username too similar to an emote, try changing the first characters');
