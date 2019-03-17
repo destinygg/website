@@ -45,7 +45,7 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/prefix")
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
-     * @ResponseBody()
+     * @ResponseBody
      *
      * @param array $params
      * @return array

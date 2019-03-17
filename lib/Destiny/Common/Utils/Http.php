@@ -27,6 +27,7 @@ abstract class Http {
     const STATUS_ERROR = 500;
     const STATUS_SERVICE_UNAVAILABLE = 503;
     const STATUS_OK = 200;
+    const STATUS_ACCEPTED = 202;
     const STATUS_NO_CONTENT = 204;
     
     public static $HEADER_STATUSES = [

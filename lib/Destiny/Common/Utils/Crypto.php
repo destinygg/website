@@ -61,7 +61,7 @@ class Crypto {
      * @return string
      * @throws \Exception
      */
-    static public function encrypt($data ) {
+    static public function encrypt($data) {
         // initialize the mcrypt module with a random IV
         $crypt        = self::initCrypt();
         // encrypt the data

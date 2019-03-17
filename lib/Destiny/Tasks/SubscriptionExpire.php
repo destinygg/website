@@ -11,8 +11,6 @@ use Destiny\Common\Log;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
-use Destiny\StreamLabs\StreamLabsAlertsType;
-use Destiny\StreamLabs\StreamLabsService;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -101,8 +99,6 @@ class SubscriptionExpire implements TaskInterface {
                 $message = sprintf("%s has resubscribed! active for %s", $user['username'], $months);
                 $redisService = ChatRedisService::instance();
                 $redisService->sendBroadcast($message);
-                $streamLabService = StreamLabsService::withAuth();
-                $streamLabService->sendAlert(['message' => $message, 'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION]);
             } catch (\Exception $e) {
                 Log::critical('Could not send resubscribe broadcast', $subscription);
             }
