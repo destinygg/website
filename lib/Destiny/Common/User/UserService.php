@@ -815,8 +815,8 @@ class UserService extends Service {
     }
 
     /**
-     * @param $userId
-     * @param $settings
+     * @param int $userId
+     * @param string $settings
      * @return bool
      * @throws DBALException
      */

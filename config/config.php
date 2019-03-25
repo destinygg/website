@@ -164,6 +164,13 @@ return [
         'user' => ''
     ],
 
+    'twitch_webhooks' => [
+        'user_id' => '',
+        'client_id' => '',
+        'callback' => '',
+        'secret' => '',
+    ],
+
     'twitter' => [
         'user' => '',
     ],
