@@ -13,39 +13,8 @@ use GuzzleHttp\Client;
  */
 class TwitchApiService extends Service {
 
-    public static $HOST_UNCHANGED   = 0;
-    public static $HOST_NOW_HOSTING = 1;
-    public static $HOST_STOPPED     = 2;
-
     private $apiBase = 'https://api.twitch.tv/kraken';
     private $tmiBase = 'https://tmi.twitch.tv';
-
-    /**
-     * @param array $lasthosting
-     * @param array $hosting
-     * @return int
-     *  0 no change
-     *  1 now hosting
-     *  2 stopped hosting
-     */
-    public static function checkForHostingChange(array $lasthosting, array $hosting = null){
-        if ($hosting === null) {
-            $hosting = [];
-        }
-        if (!isset($lasthosting['id']) && isset($hosting['id']))
-            // now hosting
-            $state = self::$HOST_NOW_HOSTING;
-        else if((isset($lasthosting['id']) && isset($hosting['id'])) && $lasthosting['id'] != $hosting['id'])
-            // now hosting different
-            $state = self::$HOST_NOW_HOSTING;
-        else if (isset($lasthosting['id']) && !isset($hosting['id']))
-            // stopped hosting
-            $state = self::$HOST_STOPPED;
-        else
-            // unchanged
-            $state = self::$HOST_UNCHANGED;
-        return $state;
-    }
 
     /**
      * What channel {you} are hosting
@@ -208,6 +177,7 @@ class TwitchApiService extends Service {
         //   else
         //     use channel[updated_date]
         $lastSeen = (empty($live) ? (!empty($lastOnline) ? Date::getDateTime($lastOnline) : Date::getDateTime($channel['updated_at'])) : Date::getDateTime());
+
         $data = [
             'live' => !empty($live),
             'game' => $channel['game'],

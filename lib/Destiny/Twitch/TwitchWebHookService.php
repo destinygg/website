@@ -1,5 +1,4 @@
-<?php
-namespace Destiny\Twitch;
+<?php namespace Destiny\Twitch;
 
 use Destiny\Common\Application;
 use Destiny\Common\Config;
@@ -30,6 +29,8 @@ class TwitchWebHookService extends Service {
     const TOPIC_USER_CHANGED = 'topic-user-changed';
     const TOPIC_GAME_ANALYTICS = 'topic-game-analytics';
     const TOPIC_EXTENSION_ANALYTICS = 'topic-extension-analytics';
+
+    const CACHE_KEY_PREFIX = "twitch.stream.";
 
     /**
      * @see https://dev.twitch.tv/docs/api/webhooks-reference/#subscribe-tounsubscribe-from-events
@@ -96,16 +97,16 @@ class TwitchWebHookService extends Service {
                 $this->handleStreamChangeWebhook($request);
                 break;
             case self::TOPIC_FOLLOW:
-                Log::warn("Unhandled $topic");
+                Log::debug("Unhandled $topic");
                 break;
             case self::TOPIC_USER_CHANGED:
-                Log::warn("Unhandled $topic");
+                Log::debug("Unhandled $topic");
                 break;
             case self::TOPIC_GAME_ANALYTICS:
-                Log::warn("Unhandled $topic");
+                Log::debug("Unhandled $topic");
                 break;
             case self::TOPIC_EXTENSION_ANALYTICS:
-                Log::warn("Unhandled $topic");
+                Log::debug("Unhandled $topic");
                 break;
         }
         return 'ok';
@@ -113,6 +114,7 @@ class TwitchWebHookService extends Service {
 
     /**
      * This is the incoming request for stream change event
+     * TODO we currently do not store anything other than if the stream is online
      *
      * @param Request $request
      * @see https://dev.twitch.tv/docs/api/webhooks-reference/#example-notification-payload-for-other-stream-change-events
@@ -120,24 +122,23 @@ class TwitchWebHookService extends Service {
     private function handleStreamChangeWebhook(Request $request) {
         $payload = json_decode($request->getBody(), true);
         if (!empty($payload) && isset($payload['data']) && is_array($payload['data'])) {
-            $cache = Application::getNsCache();
-            $data = $payload['data'];
             $userId = $request->param('user_id');
-            $key = "twitch.stream.$userId";
-            if (!empty($data) && isset($data[0]) && !empty($data[0])) {
-                // ONLINE
-                if ($userId != $data[0]['user_id']) {
-                    Log::error('Invalid stream change payload.', $data[0]);
-                    return;
-                }
-                $cache->save($key, [
-                    'time' => time(),
-                    'data' => $data[0]
-                ]);
-            } else {
-                // OFFLINE
+            if (!empty($userId)) {
                 $cache = Application::getNsCache();
-                $cache->delete($key);
+                $data = $payload['data'][0] ?? null;
+                if (!empty($data)) {
+                    // If the event data, and the user_id GET are not the same
+                    if ($userId != $data['user_id']) {
+                        Log::error('Invalid stream change payload.', $data[0]);
+                        return;
+                    }
+                    if ($data['type'] == 'live') {
+                        $cache->save(self::CACHE_KEY_PREFIX . $userId, ['time' => time(), 'live' => true]);
+                        return;
+                    }
+                }
+                // OFFLINE
+                $cache->save(self::CACHE_KEY_PREFIX . $userId, ['time' => time(), 'live' => false]);
             }
         }
     }

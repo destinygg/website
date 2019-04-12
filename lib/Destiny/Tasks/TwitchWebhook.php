@@ -8,6 +8,9 @@ use Destiny\Common\Log;
 use Destiny\Twitch\TwitchWebHookService;
 
 /**
+ * This method periodically subscribes to the twitch web hook api
+ * Twitch sends HTTP posts to "us" when stream status changes see @see TwitchWebhookController::notify
+ *
  * @Schedule(frequency=1,period="hour")
  */
 class TwitchWebhook {

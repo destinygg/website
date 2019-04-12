@@ -10,7 +10,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.7.11'); // auto-generated: 1551619890923
+define('_APP_VERSION', '2.7.11'); // auto-generated: 1551649702952
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
@@ -31,12 +31,16 @@ $app = Application::instance();
 $app->setLoader($loader);
 
 // Logging
-Log::$log = new Logger ('web');
-Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Logger::ERROR));
-Log::$log->pushHandler(new DiscordLogHandler(Logger::ERROR));
-Log::$log->pushProcessor(new PsrLogMessageProcessor());
-Log::$log->pushProcessor(new Monolog\Processor\WebProcessor());
-
+try {
+    Log::$log = new Logger ('web');
+    Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Logger::WARNING));
+    Log::$log->pushHandler(new DiscordLogHandler(Logger::ERROR));
+    Log::$log->pushProcessor(new PsrLogMessageProcessor());
+    Log::$log->pushProcessor(new Monolog\Processor\WebProcessor());
+} catch (\Exception $e) {
+    Log::error("Could not setup logging. " . $e->getMessage());
+    exit(1);
+}
 // Database
 try {
     $app->setDbal(DriverManager::getConnection(Config::$a['db']));
