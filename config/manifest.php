@@ -1,10 +1,10 @@
 <?php
-// auto-generated: 1555077114938
+// auto-generated: 1555080231535
 return [
 	"common.vendor.js" => "common.vendor.512d08b91ed0d6d22c60.js",
 	"runtime.js" => "runtime.eb9762bffc276c701715.js",
 	"chat.vendor.css" => "chat.vendor.3b6a7cec45e01f9d8325.css",
-	"chat.vendor.js" => "chat.vendor.1c3dae354a6b1bc3ab91.js",
+	"chat.vendor.js" => "chat.vendor.be88001fc32464380a27.js",
 	"admin.js" => "admin.c22cabdc60266ea3d426.js",
 	"bigscreen.js" => "bigscreen.395a7891f83279500731.js",
 	"chat.js" => "chat.75f4f7a3e59fd3747fdb.js",
