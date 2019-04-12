@@ -1690,3 +1690,82 @@ img.dbh-cocoa {
   justify-content: center;
   align-items: center;
 }
+
+
+#nav-host-pill-container {
+  margin: 0.3em 1em;
+  display: flex;
+}
+
+#nav-host-pill {
+  display: none;
+  cursor: default;
+
+  &.embedded,
+  &.hosting {
+    cursor: pointer;
+    &:hover #nav-host-pill-icon,
+    &:hover #nav-host-pill-type {
+      opacity: 1;
+    }
+    &:hover #nav-host-pill-name {
+      color: $color-light;
+    }
+  }
+
+  #nav-host-pill-button {
+    transition: background-color 150ms linear;
+    border: 1px solid #3b3b3b;
+    border-top-color: #272727;
+    border-radius: 2em;
+    display: flex;
+    align-items: center;
+    background-color: $color-surface-dark2;
+    font-size: 0.9em;
+
+    #nav-host-pill-name {
+      margin-left: 0.25em;
+      text-transform: uppercase;
+      max-width: 110px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #nav-host-pill-type {
+      text-transform: uppercase;
+      margin-left: 1em;
+      opacity: 0.5;
+    }
+
+    #nav-host-pill-icon {
+      margin: 0 0.75em 0 0.5em;
+      opacity: 0.5;
+    }
+
+  }
+
+  &.embedded #nav-host-pill-button {
+    box-shadow: inset 0 0 3px 1px #00000045;
+    border: 1px solid #212121;
+    background-color: #6441A5;
+    color: $color-light;
+  }
+}
+
+#bigscreen #nav-host-pill {
+  display: flex;
+}
+
+@include media-breakpoint-down(md) {
+  #bigscreen #nav-host-pill {
+    display: none;
+  }
+  #secondary-navbar .nav-label {
+    display: inline-flex;
+  }
+}
+@include media-breakpoint-down(lg) {
+  #secondary-navbar .nav-label {
+    display: none;
+  }
+}

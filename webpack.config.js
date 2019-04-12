@@ -6,6 +6,7 @@ const fs = require('fs')
 
 const entries = {
     web: './assets/web.js',
+    bigscreen: './assets/bigscreen.js',
     admin: './assets/admin.js',
     profile: './assets/profile.js',
     chat: './assets/chat.js',

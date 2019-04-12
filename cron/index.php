@@ -5,8 +5,11 @@ use Destiny\Common\Cron\Scheduler;
 use Destiny\Common\Cron\TaskAnnotationLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Destiny\Common\Log;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 require __DIR__ . '/../lib/boot.app.php';
+Log::$log->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 $app = Application::instance();
 
 try {

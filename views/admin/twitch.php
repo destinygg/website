@@ -1,5 +1,8 @@
 <?php
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
+
+$conf = Config::$a['twitch_webhooks'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,8 +19,8 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <h3 class="in" data-toggle="collapse" data-target="#details-content">Twitch</h3>
-        <div id="details-content" class="content content-dark collapse show">
+        <h3 class="in" data-toggle="collapse" data-target="#twitch-api">Twitch API</h3>
+        <div id="twitch-api" class="content content-dark collapse show">
             <div class="ds-block">
                 <div class="form-group">
                     <p><span style="display: block;">Attached profile: <a><?=Tpl::out($this->user['username'])?></a></span></p>

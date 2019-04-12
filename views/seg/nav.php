@@ -64,33 +64,41 @@ use Destiny\Common\Session\Session;
                 <?php endif ?>
 
                 <li class="nav-item">
-                    <a class="nav-link" title="Shop" href="/shop">
-                        <span>Shop</span>
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
+                    <a class="nav-link" title="Shop" href="/shop">Shop</a>
                 </li>
 
             </ul>
 
-            <ul class="navbar-nav">
+            <ul class="navbar-nav" id="secondary-navbar">
+
+                <li class="nav-item hidden" id="nav-host-pill">
+                    <div id="nav-host-pill-container">
+                        <div id="nav-host-pill-button">
+                            <span id="nav-host-pill-type"></span>
+                            <span id="nav-host-pill-name"></span>
+                            <div id="nav-host-pill-icon"><i class="fab fa-fw fa-twitch"></i></div>
+                        </div>
+                    </div>
+                </li>
+
                 <li class="nav-item bigscreen">
-                    <a class="nav-link" title="So. Much. Girth." href="/bigscreen" rel="bigscreen">
-                        <i class="fas fa-tv"></i>
-                        <span>Big screen</span>
+                    <a class="nav-link" title="Big screen" href="/bigscreen" rel="bigscreen">
+                        <i class="fas fa-fw fa-tv"></i>
+                        <span class="nav-label">Big screen</span>
                     </a>
                 </li>
                 <?php if(Session::hasRole(UserRole::USER)): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/profile">
-                            <i class="fas fa-user-circle"></i>
-                            <span>Account</span>
+                        <a title="Account" class="nav-link" href="/profile">
+                            <i class="fas fa-fw fa-user-circle"></i>
+                            <span class="nav-label">Account</span>
                         </a>
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="modal" data-target="#loginmodal" rel="login">
+                        <a title="Sign In" class="nav-link" data-toggle="modal" data-target="#loginmodal" rel="login">
                             <i class="fas fa-sign-in-alt"></i>
-                            <span>Sign In</span>
+                            <span class="nav-label">Sign In</span>
                         </a>
                     </li>
                 <?php endif ?>

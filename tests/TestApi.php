@@ -87,12 +87,6 @@ class TestApi extends PHPUnit\Framework\TestCase {
         self::assertNotEmpty($json);
     }
 
-    public function testTwitchApiHosting() {
-        self::assertTrue(TwitchApiService::checkForHostingChange(['id' => 1], ['id' => 1]) === TwitchApiService::$HOST_UNCHANGED);
-        self::assertTrue(TwitchApiService::checkForHostingChange([], ['id' => 1]) === TwitchApiService::$HOST_NOW_HOSTING);
-        self::assertTrue(TwitchApiService::checkForHostingChange(['id' => 1], []) === TwitchApiService::$HOST_STOPPED);
-    }
-
     public function testYoutubeApi() {
         $apiService = YoutubeApiService::instance();
         $json = $apiService->getYoutubePlaylist();

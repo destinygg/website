@@ -16,3 +16,8 @@ $container-max-widths: (
     xxl: 1980px
 );
 @import "~bootstrap/scss/bootstrap";
+
+// fix after updating bootstrap lib
+.btn {
+  white-space: nowrap;
+}

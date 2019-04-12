@@ -41,6 +41,7 @@ use Destiny\Common\Config;
 <?=Tpl::manifestScript('runtime.js')?>
 <?=Tpl::manifestScript('common.vendor.js')?>
 <?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('bigscreen.js')?>
 
 </body>
 </html>

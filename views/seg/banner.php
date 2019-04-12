@@ -46,7 +46,7 @@ $info = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
                 <div class="dropdown">
                     <span class="dropdown-toggle fas fa-clone fa-flip-horizontal" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item popup" target="_blank" href="/embed/chat" data-options="<?=Tpl::out('{"height":"500","width":"420"}')?>">Chat</a>
+                        <a class="dropdown-item popup" target="_blank" href="/embed/chat">Chat</a>
                         <a class="dropdown-item popup" target="_blank" href="https://www.twitch.tv/<?=Config::$a['twitch']['user']?>/popout" data-options="<?=Tpl::out('{"height":"420","width":"720"}')?>">Stream</a>
                     </div>
                 </div>
