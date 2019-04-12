@@ -116,9 +116,9 @@ import $ from 'jquery'
     // Embedding, hosting and "navhostpill"
     const initUrl = document.location.href // important this is stored before any work is done that may change this value
     let streamframe = $body.find('#stream-panel iframe')
-    const hashregex = /^#(twitch)\/([A-z0-9_]{3,24})$/
+    const hashregex = /^#(twitch|youtube)\/([A-z0-9_-]{3,24})$/
     const streamInfo = {live: false, host: null, preview: null},
-        embedInfo = {embed: false, title: 'Bigscreen', name: 'destiny', id: null, url: '/bigscreen'},
+        embedInfo = {embed: false, platform: 'twitch', title: 'Bigscreen', name: 'destiny', id: null, url: '/bigscreen'},
         defaultEmbedInfo = Object.assign({}, embedInfo),
         navpillclasses = ['embedded','hidden','hosting','online','offline'],
         navhostpill = {container: $body.find('#nav-host-pill')},
@@ -129,8 +129,13 @@ import $ from 'jquery'
     navhostpill.icon = navhostpill.container.find('#nav-host-pill-icon')
 
     const updateStreamFrame = function(){
-        const src = 'https://player.twitch.tv/?channel=' + encodeURIComponent(embedInfo.name)
-        if (streamframe.attr('src') !== src) { // avoids a flow issue when in
+        let src = ''
+        if (embedInfo.platform === 'twitch') {
+            src = 'https://player.twitch.tv/?channel=' + encodeURIComponent(embedInfo.name)
+        } else if (embedInfo.platform === 'youtube') {
+            src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
+        }
+        if (src !== '' && streamframe.attr('src') !== src) { // avoids a flow issue when in
             document.title = embedInfo.title + ' - Destiny.gg'
             const frame = streamframe.clone()
             frame.attr('src', src)
@@ -166,12 +171,14 @@ import $ from 'jquery'
     const toggleEmbedHost = function() {
         if (!embedInfo.embed && streamInfo.host) {
             embedInfo.embed = true
+            embedInfo.platform = 'twitch'
             embedInfo.title = streamInfo.host['display_name']
             embedInfo.name = streamInfo.host['name']
             embedInfo.id = streamInfo.host['id']
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
         } else if (embedInfo.embed) {
             embedInfo.embed = false
+            embedInfo.platform = defaultEmbedInfo.platform
             embedInfo.title = defaultEmbedInfo.title
             embedInfo.name = defaultEmbedInfo.name
             embedInfo.id = defaultEmbedInfo.id
@@ -221,9 +228,10 @@ import $ from 'jquery'
         const parts = parseEmbedHash(window.location.hash)
         if (parts) {
             embedInfo.embed = true
-            embedInfo.title = parts['name']
-            embedInfo.name = parts['name']
-            embedInfo.id = parts['id']
+            embedInfo.platform = parts.platform
+            embedInfo.title = parts.name
+            embedInfo.name = parts.name
+            embedInfo.id = parts.id
         }
     }
 
