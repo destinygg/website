@@ -153,14 +153,14 @@ class TwitchWebHookService extends Service {
      */
     public function handleIncomingNotify(Request $request) {
         $gets = $request->get();
-        FilterParams::required($gets, 'hub.topic');
-        FilterParams::required($gets, 'hub.mode');
-        if ($gets['hub.mode'] == self::MODE_DENIED) {
-            Log::error('Denied twitch webhook subscription.', ['reason' => $get['hub.reason'] ?? 'Unspecified']);
+        FilterParams::required($gets, 'hub_topic');
+        FilterParams::required($gets, 'hub_mode');
+        if ($gets['hub_mode'] == self::MODE_DENIED) {
+            Log::error('Denied twitch webhook subscription.', ['reason' => $get['hub_reason'] ?? 'Unspecified']);
             return 'denied';
         }
-        Log::info('Handled incoming notification.', ['topic' => $gets['hub.topic']]);
-        return $gets['hub.challenge'] ?? 'none';
+        Log::info('Handled incoming notification.', ['topic' => $gets['hub_topic']]);
+        return $gets['hub_challenge'] ?? 'none';
     }
 
 
