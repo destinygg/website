@@ -1769,3 +1769,21 @@ img.dbh-cocoa {
     display: none;
   }
 }
+
+.form-group-remember-me {
+  text-align: center;
+  margin-top: 1.5em;
+  margin-bottom: 0;
+  font-size: 1.2em;
+
+  label {
+    cursor: pointer;
+  }
+  label:hover {
+    color: $text-color;
+  }
+  .help-block {
+    opacity: 0.5;
+  }
+
+}

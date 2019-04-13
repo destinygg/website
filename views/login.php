@@ -42,8 +42,15 @@ use Destiny\Common\Config;
                     <input type="hidden" name="uuid" value="<?=Tpl::out($this->uuid)?>" />
                     <input type="hidden" name="authProvider" class="hidden" />
                     <div class="ds-block">
+                        <div id="loginproviders">
+                            <?php foreach (Config::$a['authProfiles'] as $i => $id): ?>
+                                <a class="btn btn-lg btn-<?=$id?>" tabindex="<?=$i+1?>" data-provider="<?=$id?>">
+                                    <i class="fab fa-<?=$id?>"></i> <?=ucwords($id)?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
                         <?php if($this->grant !== 'code'): ?>
-                            <div class="form-group">
+                            <div class="form-group form-group-remember-me">
                                 <div class="controls checkbox">
                                     <label>
                                         <input tabindex="1" autofocus type="checkbox" name="rememberme" <?=($this->rememberme) ? 'checked':''?>> Remember me
@@ -52,13 +59,6 @@ use Destiny\Common\Config;
                                 </div>
                             </div>
                         <?php endif; ?>
-                        <div id="loginproviders">
-                            <?php foreach (Config::$a['authProfiles'] as $i => $id): ?>
-                                <a class="btn btn-lg btn-<?=$id?>" tabindex="<?=$i+1?>" data-provider="<?=$id?>">
-                                    <i class="fab fa-<?=$id?>"></i> <?=ucwords($id)?>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
                     </div>
                 </form>
             </div>
