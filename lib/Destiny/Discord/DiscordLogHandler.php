@@ -32,7 +32,7 @@ class DiscordLogHandler extends AbstractProcessingHandler {
      * @param  array $record
      * @return void
      */
-    protected function write(array $record): void {
+    protected function write(array $record) {
         $webhook = Config::$a['discord']['webhook'];
         if (empty($webhook)) {
             return;
@@ -77,5 +77,6 @@ class DiscordLogHandler extends AbstractProcessingHandler {
         } catch (\Exception $e) {
             Log::error("Error sending discord message." . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
+        return;
     }
 }
