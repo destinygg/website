@@ -4,6 +4,7 @@ namespace Destiny\Discord;
 use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
+use Destiny\Common\Session\SessionCredentials;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -38,10 +39,13 @@ class DiscordLogHandler extends AbstractProcessingHandler {
             return;
         }
         try {
-            $creds = Session::getCredentials();
+            // We may be running within the command line, no session object is instantiated
+            $session = Session::instance();
+            $creds = !empty($session) ? $session->getCredentials() : null;
+            $username = !empty($creds) && $creds->isValid() ? "<https://www.destiny.gg/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : 'None';
+            //
             $url = $_SERVER['REQUEST_URI'] ?? 'None';
             $address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? 'None';
-            $username = $creds->isValid() ? "<https://www.destiny.gg/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : 'None';
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
             $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
