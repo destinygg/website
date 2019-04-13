@@ -1,4 +1,5 @@
 <?php
+
 use Destiny\Common\DirectoryClassIterator;
 use Destiny\Common\Application;
 use Destiny\Common\Cron\Scheduler;
@@ -19,9 +20,10 @@ try {
         new AnnotationReader(),
         $scheduler
     );
+
     $scheduler->loadTasks();
     $scheduler->execute();
-} catch (\Exception $e) {
+} catch (Exception $e) {
     Log::error("Could not setup scheduler. " . $e->getMessage());
     exit(1);
 }

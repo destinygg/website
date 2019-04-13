@@ -1,6 +1,6 @@
 {
   "name": "dgg-website",
-  "version": "2.7.15",
+  "version": "2.7.16",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
@@ -33,7 +33,7 @@
     "@fortawesome/fontawesome-free": "^5.8.1",
     "bootstrap": ">=4.3.1",
     "chart.js": "^2.8.0",
-    "dgg-chat-gui": "git://github.com/destinygg/chat-gui.git#92ee3bb3b66be647b6e4786662036139a8db2fe5",
+    "dgg-chat-gui": "git://github.com/destinygg/chat-gui.git#84d4ce0cf29078825cac0bc32531bb9600fe0c30",
     "jquery": "~3.3.1",
     "jquery-validation": "^1.19.0",
     "moment": "~2.22.2",

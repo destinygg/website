@@ -158,7 +158,7 @@ class ChatController {
                 return json_decode($r->getBody(), true);
             }
         } catch (\Exception $e) {
-            Log::warn("Failed to return valid response for chat stalk");
+            Log::warn('Failed to return valid response for chat stalk', ['message' => $e->getMessage()]);
         }
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';
@@ -198,7 +198,7 @@ class ChatController {
                 return json_decode($r->getBody(), true);
             }
         } catch (\Exception $e) {
-            Log::warn("Failed to return valid response for chat mentions");
+            Log::warn('Failed to return valid response for chat mentions', ['message' => $e->getMessage()]);
         }
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';

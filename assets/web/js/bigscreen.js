@@ -116,7 +116,7 @@ import $ from 'jquery'
     // Embedding, hosting and "navhostpill"
     const initUrl = document.location.href // important this is stored before any work is done that may change this value
     let streamframe = $body.find('#stream-panel iframe')
-    const hashregex = /^#(twitch|twitch-vod|youtube)\/([A-z0-9_\-]{3,64})$/
+    const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube)\/([A-z0-9_\-]{3,64})$/
     const streamInfo = {live: false, host: null, preview: null},
         embedInfo = {embed: false, platform: 'twitch', title: 'Bigscreen', name: 'destiny', id: null, url: '/bigscreen'},
         defaultEmbedInfo = Object.assign({}, embedInfo),
@@ -130,15 +130,21 @@ import $ from 'jquery'
 
     const updateStreamFrame = function(){
         let src = ''
-        if (embedInfo.platform === 'twitch') {
-            src = 'https://player.twitch.tv/?channel=' + encodeURIComponent(embedInfo.name)
-        } else if (embedInfo.platform === 'twitch-vod') {
-            src = 'https://player.twitch.tv/?video=' + encodeURIComponent(embedInfo.name)
-        } else if (embedInfo.platform === 'youtube') {
-            src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
+        switch(embedInfo.platform) {
+            case 'twitch':
+                src = 'https://player.twitch.tv/?channel=' + encodeURIComponent(embedInfo.name)
+                break;
+            case 'twitch-vod':
+                src = 'https://player.twitch.tv/?video=' + encodeURIComponent(embedInfo.name)
+                break;
+            case 'twitch-clip':
+                src = 'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(embedInfo.name)
+                break;
+            case 'youtube':
+                src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
+                break;
         }
         if (src !== '' && streamframe.attr('src') !== src) { // avoids a flow issue when in
-            document.title = embedInfo.title + ' - Destiny.gg'
             const frame = streamframe.clone()
             frame.attr('src', src)
             streamframe.replaceWith(frame)
