@@ -72,10 +72,13 @@ class TwitchWebHookService extends Service {
     private function validateIncomingCallback(Request $request) {
         $conf = Config::$a['twitch_webhooks'];
         // Returned as X-Hub-Signature sha256(secret, notification_bytes)
-        $length = intval($request->header('HTTP_CONTENT_LENGTH') ?? 0);
         $signature = $request->header('HTTP_X_HUB_SIGNATURE');
-        if ($signature != hash('sha256', $conf['secret'] . $length)) {
-            throw new TwitchWebHookException('Invalid or empty signature');
+        if (empty($signature)) {
+            throw new TwitchWebHookException('Empty signature');
+        }
+        $knownhmac = hash_hmac( 'sha256', $request->getBody(), $conf['secret'], true );
+        if ($signature != $knownhmac) {
+            throw new TwitchWebHookException('Invalid signature ' . $signature);
         }
         // Make sure the callback get param was returned
         if (empty($request->param(self::GET_DISAMBIGUATING_KEY))) {
