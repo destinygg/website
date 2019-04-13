@@ -22,7 +22,7 @@ class TwitchWebHookService extends Service {
     const MODE_SUBSCRIBE = 'subscribe';
     const MODE_UNSUBSCRIBE = 'unsubscribe';
     const MODE_DENIED = 'denied';
-    const GET_DISAMBIGUATING_KEY = 'k';
+    const GET_TOPIC_KEY = 'k';
 
     const TOPIC_STREAM = 'topic-stream-changed';
     const TOPIC_FOLLOW = 'topic-user-follows';
@@ -51,7 +51,7 @@ class TwitchWebHookService extends Service {
             ],
             'form_params' => [
                 'hub.mode' => $mode,
-                'hub.callback' => $conf['callback'] . '?'. self::GET_DISAMBIGUATING_KEY. '=' . urlencode($key),
+                'hub.callback' => $conf['callback'] . '?'. self::GET_TOPIC_KEY. '=' . urlencode($key),
                 'hub.topic' => $topic,
                 'hub.lease_seconds' => $ttl,
                 'hub.secret' => $conf['secret']
@@ -80,8 +80,9 @@ class TwitchWebHookService extends Service {
             throw new TwitchWebHookException('Invalid signature ' . $signature);
         }
         // Make sure the callback get param was returned
-        if (empty($request->param(self::GET_DISAMBIGUATING_KEY))) {
-            throw new TwitchWebHookException('Invalid key');
+        $topic = $request->param(self::GET_TOPIC_KEY);
+        if (empty($topic)) {
+            throw new TwitchWebHookException('Empty $topic');
         }
         return true;
     }
@@ -93,7 +94,7 @@ class TwitchWebHookService extends Service {
      */
     public function handleIncomingWebhook(Request $request) {
         $this->validateIncomingCallback($request);
-        $topic = $request->param(self::GET_DISAMBIGUATING_KEY);
+        $topic = $request->param(self::GET_TOPIC_KEY);
         switch ($topic) {
             case self::TOPIC_STREAM:
                 $this->handleStreamChangeWebhook($request);
