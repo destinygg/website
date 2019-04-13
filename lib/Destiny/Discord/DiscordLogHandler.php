@@ -4,7 +4,6 @@ namespace Destiny\Discord;
 use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
-use Destiny\Common\Session\SessionCredentials;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Monolog\Handler\AbstractProcessingHandler;

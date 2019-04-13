@@ -55,10 +55,6 @@ class Request {
         return $this->post;
     }
 
-    public function headers() {
-        return $this->headers;
-    }
-
     public function header($name) {
         return isset($this->headers[$name]) ? $this->headers[$name] : null;
     }

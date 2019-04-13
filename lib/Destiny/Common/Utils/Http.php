@@ -4,11 +4,7 @@ namespace Destiny\Common\Utils;
 abstract class Http {
 
     const HEADER_ETAG = 'Etag';
-    const HEADER_STATUS = 'Status';
-    const HEADER_CONTENT_LENGTH = 'Content-Length';
-    const HEADER_LAST_MODIFIED = 'Last-Modified';
     const HEADER_CACHE_CONTROL = 'Cache-Control';
-    const HEADER_IF_MODIFIED_SINCE = 'If-Modified-Since';
     const HEADER_LOCATION = 'Location';
     const HEADER_PRAGMA = 'Pragma';
     const HEADER_CONNECTION = 'Connection';
@@ -65,27 +61,20 @@ abstract class Http {
      */
     public static function getBaseUrl() {
         $protocol = 'http';
-        if ($_SERVER ['SERVER_PORT'] == 443 || (! empty ( $_SERVER ['HTTPS'] ) && strtolower ( $_SERVER ['HTTPS'] ) == 'on')) {
+        if ($_SERVER ['SERVER_PORT'] == 443 || (!empty ($_SERVER ['HTTPS']) && strtolower($_SERVER ['HTTPS']) == 'on')) {
             $protocol .= 's';
         }
         $host = $_SERVER ['HTTP_HOST'];
         $request = $_SERVER ['PHP_SELF'];
-        return dirname ( $protocol . '://' . $host . $request );
+        return dirname($protocol . '://' . $host . $request);
     }
 
     /**
      * @param array $server
      * @return mixed|null
      */
-    public static function extractIpAddress(array $server){
-        $ip = isset($server ['REMOTE_ADDR']) ? $server ['REMOTE_ADDR'] : null;
-        if (!empty ($server ['HTTP_X_REAL_IP'])) // ip from haproxy
-            $ip = $server ['HTTP_X_REAL_IP'];
-        else if (!empty ($server ['HTTP_CLIENT_IP'])) // check ip from share internet
-            $ip = $server ['HTTP_CLIENT_IP'];
-        else if (!empty ($server ['HTTP_X_FORWARDED_FOR'])) // to check ip is pass from proxy
-            $ip = $server ['HTTP_X_FORWARDED_FOR'];
-        return $ip;
+    public static function extractIpAddress(array $server) {
+        return $server ['REMOTE_ADDR'] ?? $server ['HTTP_X_REAL_IP'] ?? $server ['HTTP_CLIENT_IP'] ?? $server ['HTTP_X_FORWARDED_FOR'] ?? null;
     }
 
     /**
@@ -94,18 +83,7 @@ abstract class Http {
      * @return array
      */
     public static function extractHeaders(array $server){
-        $headers = [];
-        if (isset ($server['HTTP_IF_NONE_MATCH']))
-            $headers[self::HEADER_IF_NONE_MATCH] = $server['HTTP_IF_NONE_MATCH'];
-        if (isset ($server['HTTP_IF_MODIFIED_SINCE']))
-            $headers[self::HEADER_IF_MODIFIED_SINCE] = $server['HTTP_IF_MODIFIED_SINCE'];
-        if (isset ($server['HTTP_X_REQUESTED_WITH']))
-            $headers[self::HEADER_REQUESTED_WITH] = $server['HTTP_X_REQUESTED_WITH'];
-        if (isset ($server['HTTP_X_AUTH_TOKEN']))
-            $headers[self::HEADER_AUTH_TOKEN] = $server['HTTP_X_AUTH_TOKEN'];
-        if (isset($server['HTTP_CONTENT_TYPE']))
-            $headers[self::HEADER_CONTENT_TYPE] = $server['HTTP_CONTENT_TYPE'];
-        return $headers;
+        return array_filter($server, function($name) { return substr($name, 0, 5) == 'HTTP_'; }, ARRAY_FILTER_USE_KEY);
     }
 
 }
