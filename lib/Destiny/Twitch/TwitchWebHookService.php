@@ -76,8 +76,8 @@ class TwitchWebHookService extends Service {
         if (empty($signature)) {
             throw new TwitchWebHookException('Empty signature');
         }
-        $knownhmac = hash_hmac( 'sha256', $request->getBody(), $conf['secret'], true );
-        if ($signature != $knownhmac) {
+        $signature = substr($signature, strlen('sha256='));
+        if ($signature != hash_hmac( 'sha256', $request->getBody(), $conf['secret'], true )) {
             throw new TwitchWebHookException('Invalid signature ' . $signature);
         }
         // Make sure the callback get param was returned
