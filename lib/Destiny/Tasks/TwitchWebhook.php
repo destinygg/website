@@ -22,7 +22,8 @@ class TwitchWebhook {
             $twitchWebhookService->sendSubscriptionRequest(
                 TwitchWebHookService::MODE_SUBSCRIBE,
                 TwitchWebHookService::TOPIC_STREAM,
-                TwitchWebHookService::API_BASE . "/streams?user_id=$id"
+                TwitchWebHookService::API_BASE . "/streams?user_id=$id",
+                $id
             );
         } catch (Exception $e) {
             Log::error('Error handling twitch hook cron task ' . $e->getMessage());

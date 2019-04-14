@@ -37,11 +37,12 @@ class TwitchWebHookService extends Service {
      * @param string $mode subscribe|unsubscribe
      * @param string $key appended to the end of the callback url
      * @param string $topic the full url for the topic
+     * @param string $userId the twitch user id
      * @param int $ttl
      * @return bool
      * @throws Exception
      */
-    public function sendSubscriptionRequest($mode, $key, $topic, $ttl = 86400) {
+    public function sendSubscriptionRequest($mode, $key, $topic, $userId, $ttl = 86400) {
         $conf = Config::$a['twitch_webhooks'];
         $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
         $response = $client->post(self::API_BASE . '/webhooks/hub', [
@@ -51,7 +52,7 @@ class TwitchWebHookService extends Service {
             ],
             'form_params' => [
                 'hub.mode' => $mode,
-                'hub.callback' => $conf['callback'] . '?'. self::GET_TOPIC_KEY. '=' . urlencode($key),
+                'hub.callback' => $conf['callback'] . '?'. self::GET_TOPIC_KEY. '=' . urlencode($key) .'&user_id=' . urlencode($userId),
                 'hub.topic' => $topic,
                 'hub.lease_seconds' => $ttl,
                 'hub.secret' => $conf['secret']
@@ -124,6 +125,7 @@ class TwitchWebHookService extends Service {
      */
     private function handleStreamChangeWebhook(Request $request) {
         $payload = json_decode($request->getBody(), true);
+        Log::warn('handling twitch stream change webhook', $payload);
         if (!empty($payload) && isset($payload['data']) && is_array($payload['data'])) {
             $userId = $request->param('user_id');
             if (!empty($userId)) {
