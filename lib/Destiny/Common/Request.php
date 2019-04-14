@@ -56,11 +56,11 @@ class Request {
     }
 
     public function header($name) {
-        return isset($this->headers[$name]) ? $this->headers[$name] : null;
+        return $this->headers[$name] ?? null;
     }
 
     public function param($name) {
-        return isset($this->get[$name]) ? $this->get[$name] : isset($this->post[$name]) ? $this->post[$name] : null;
+        return $this->get[$name] ?? $this->post[$name] ?? null;
     }
 
 }
