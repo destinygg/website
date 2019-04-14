@@ -2,7 +2,6 @@
 namespace Destiny\Discord;
 
 use Destiny\Common\Config;
-use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -46,39 +45,42 @@ class DiscordLogHandler extends AbstractProcessingHandler {
             $url = $_SERVER['REQUEST_URI'] ?? 'None';
             $address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? 'None';
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
+            $attachment = [
+                'color' => $color,
+                'text' => $record['context']['trace'] ?? 'No stack trace.',
+                'fields' => []
+            ];
+            if (!empty($url)) {
+                $attachment['fields'][] = [
+                    'title' => 'URL',
+                    'value' => $url,
+                    'short' => false
+                ];
+            }
+            if (!empty($username)) {
+                $attachment['fields'][] = [
+                    'title' => 'User',
+                    'value' => $username,
+                    'short' => false
+                ];
+            }
+            if (!empty($address)) {
+                $attachment['fields'][] = [
+                    'title' => 'Address',
+                    'value' => $address,
+                    'short' => true
+                ];
+            }
             $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
                     'username' => Config::$a['meta']['shortName'],
                     'text' => $record['message'],
-                    'attachments' => [
-                        [
-                            'color' => $color,
-                            'text' => "```" . $record['context']['trace'] . "```",
-                            'fields' => [
-                                [
-                                    'title' => 'URL',
-                                    'value' => $url,
-                                    'short' => false
-                                ],
-                                [
-                                    'title' => 'User',
-                                    'value' => $username,
-                                    'short' => false
-                                ],
-                                [
-                                    'title' => 'Address',
-                                    'value' => $address,
-                                    'short' => true
-                                ]
-                            ],
-                            'footer' => Config::$a['meta']['domain'],
-                            'ts' => time()
-                        ]
-                    ]
+                    'attachments' => [$attachment]
                 ],
             ]);
         } catch (\Exception $e) {
-            Log::error("Error sending discord message." . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            // Recursion
+            // Log::error("Error sending discord message." . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
         return;
     }

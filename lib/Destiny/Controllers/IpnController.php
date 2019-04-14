@@ -36,9 +36,10 @@ class IpnController {
      */
     public function ipn(Request $request, Response $response) {
         try {
-            $ipnMessage = new PPIPNMessage ($request->getBody(), Config::$a['paypal']['sdk']);
+            $body = $request->getBody();
+            $ipnMessage = new PPIPNMessage ($body, Config::$a['paypal']['sdk']);
             if (!$ipnMessage->validate()) {
-                Log::error('Got a invalid IPN');
+                Log::error('Got a invalid IPN ' . $body, $request->headers);
                 $response->setStatus(Http::STATUS_BAD_REQUEST);
                 return 'invalid_ipn';
             }
