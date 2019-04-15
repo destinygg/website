@@ -134,13 +134,13 @@ class ChatController {
      * @param Response $response
      * @return array|mixed|string
      */
-    public function stalk(array $params, Response $response){
-        if (!isset($params['username']) || preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $params['username'] ) === 0){
+    public function stalk(array $params, Response $response) {
+        if (!isset($params['username']) || preg_match('/^[A-Za-z0-9_]{3,20}$/', $params['username']) === 0) {
             $response->setStatus(Http::STATUS_ERROR);
             return 'invalidnick';
         }
         $cd = Session::get('chat_ucd_stalks');
-        if($cd != null && Date::getDateTime($cd) >= Date::getDateTime()){
+        if ($cd != null && Date::getDateTime($cd) >= Date::getDateTime()) {
             $response->setStatus(Http::STATUS_ERROR);
             return 'throttled';
         }
@@ -150,12 +150,15 @@ class ChatController {
         try {
             $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
             $r = $client->get(self::$LOGS_ENDPOINT['stalk'] . urlencode($params['username']) . '.json', [
+                'http_errors' => false,
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => ['limit' => $limit]
             ]);
-            if($r->getStatusCode() == Http::STATUS_OK) {
+            if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
                 $response->setStatus(Http::STATUS_OK);
                 return json_decode($r->getBody(), true);
+            } else {
+                Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
             }
         } catch (\Exception $e) {
             Log::warn('Failed to return valid response for chat stalk', ['message' => $e->getMessage()]);
@@ -174,13 +177,13 @@ class ChatController {
      * @param Response $response
      * @return array|mixed|string
      */
-    public function mentions(array $params, Response $response){
-        if (!isset($params['username']) || preg_match ( '/^[A-Za-z0-9_]{3,20}$/', $params['username'] ) === 0){
+    public function mentions(array $params, Response $response) {
+        if (!isset($params['username']) || preg_match('/^[A-Za-z0-9_]{3,20}$/', $params['username']) === 0) {
             $response->setStatus(Http::STATUS_ERROR);
             return 'invalidnick';
         }
         $cd = Session::get('chat_ucd_mentions');
-        if($cd != null && Date::getDateTime($cd) >= Date::getDateTime()){
+        if ($cd != null && Date::getDateTime($cd) >= Date::getDateTime()) {
             $response->setStatus(Http::STATUS_ERROR);
             return 'throttled';
         }
@@ -190,12 +193,15 @@ class ChatController {
         try {
             $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
             $r = $client->get(self::$LOGS_ENDPOINT['mentions'] . urlencode($params['username']) . '.json', [
+                'http_errors' => false,
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => ['limit' => $limit]
             ]);
-            if($r->getStatusCode() == Http::STATUS_OK) {
+            if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
                 $response->setStatus(Http::STATUS_OK);
                 return json_decode($r->getBody(), true);
+            } else {
+                Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
             }
         } catch (\Exception $e) {
             Log::warn('Failed to return valid response for chat mentions', ['message' => $e->getMessage()]);
