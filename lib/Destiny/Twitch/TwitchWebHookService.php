@@ -1,5 +1,6 @@
 <?php namespace Destiny\Twitch;
 
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
@@ -131,6 +132,7 @@ class TwitchWebHookService extends Service {
             if (!empty($userId)) {
                 $cache = Application::getNsCache();
                 $data = $payload['data'][0] ?? null;
+                $waslive = $cache->fetch(self::CACHE_KEY_PREFIX . $userId)['live'] ?? false;
                 if (!empty($data)) {
                     // If the event data, and the user_id GET are not the same
                     if ($userId != $data['user_id']) {
@@ -139,12 +141,23 @@ class TwitchWebHookService extends Service {
                     }
                     if ($data['type'] == 'live') {
                         $cache->save(self::CACHE_KEY_PREFIX . $userId, ['time' => time(), 'live' => true]);
+                        if ($waslive === false && $userId == Config::$a['twitch']['user']) {
+                            ChatRedisService::instance()->sendBroadcast("Destiny is now live :) " . $data['title']);
+                        }
                         return;
+                    }
+                } else {
+                    if ($waslive === true && $userId == Config::$a['twitch']['user']) {
+                        ChatRedisService::instance()->sendBroadcast("Destiny is now offline :( ");
                     }
                 }
                 // OFFLINE
                 $cache->save(self::CACHE_KEY_PREFIX . $userId, ['time' => time(), 'live' => false]);
+            } else {
+                Log::warn('Missing user id for twitch change webhook');
             }
+        } else {
+            Log::warn('Missing payload for twitch change webhook');
         }
     }
 
