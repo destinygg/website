@@ -126,28 +126,29 @@ class TwitchWebHookService extends Service {
      */
     private function handleStreamChangeWebhook(Request $request) {
         $payload = json_decode($request->getBody(), true);
-        Log::warn('handling twitch stream change webhook', $payload);
+        Log::info('handling twitch stream change webhook', $payload);
         if (!empty($payload) && isset($payload['data']) && is_array($payload['data'])) {
             $userId = $request->param('user_id');
             if (!empty($userId)) {
                 $cache = Application::getNsCache();
+                $existing = $cache->fetch(self::CACHE_KEY_PREFIX . $userId) ?: ['live' => false];
+                $waslive = $existing['live'] ?? false;
                 $data = $payload['data'][0] ?? null;
-                $waslive = $cache->fetch(self::CACHE_KEY_PREFIX . $userId)['live'] ?? false;
                 if (!empty($data)) {
                     // If the event data, and the user_id GET are not the same
                     if ($userId != $data['user_id']) {
                         Log::error('Invalid stream change payload.', $data[0]);
                         return;
                     }
-                    if ($data['type'] == 'live') {
+                    if ($data['type'] === 'live') {
                         $cache->save(self::CACHE_KEY_PREFIX . $userId, ['time' => time(), 'live' => true]);
-                        if ($waslive === false && $userId == Config::$a['twitch']['user']) {
+                        if (!$waslive && $userId == Config::$a['twitch']['user']) {
                             ChatRedisService::instance()->sendBroadcast("Destiny is now live :) " . $data['title']);
                         }
                         return;
                     }
                 } else {
-                    if ($waslive === true && $userId == Config::$a['twitch']['user']) {
+                    if ($waslive && $userId == Config::$a['twitch']['user']) {
                         ChatRedisService::instance()->sendBroadcast("Destiny is now offline :( ");
                     }
                 }
