@@ -31,7 +31,8 @@ class TwitchWebHookService extends Service {
     const TOPIC_GAME_ANALYTICS = 'topic-game-analytics';
     const TOPIC_EXTENSION_ANALYTICS = 'topic-extension-analytics';
 
-    const CACHE_KEY_PREFIX = "twitch.stream.";
+    const CACHE_KEY_PREFIX = 'twitch.stream.';
+    const CACHE_KEY_STREAM_STATUS = 'streamstatus';
 
     /**
      * @see https://dev.twitch.tv/docs/api/webhooks-reference/#subscribe-tounsubscribe-from-events

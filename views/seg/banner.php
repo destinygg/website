@@ -3,9 +3,10 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
+use Destiny\Twitch\TwitchWebHookService;
 
 $cache = Application::getNsCache();
-$info = $cache->contains('streamstatus') ? $cache->fetch('streamstatus') : null;
+$info = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
 ?>
 <section id="header-band">
     <div class="container">
