@@ -18,15 +18,20 @@ namespace Destiny\Common\Utils;
  */
 
 use Destiny\Common\Config;
+use Exception;
+use InvalidArgumentException;
 
-class Crypto {
+/**
+ * @deprecated
+ */
+class CryptoMcrypt {
 
     /**
      * initCrypt initializes the mcrypt module and generates
      * a random Initialization Vector if not provided
      * @param null $iv
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     static protected function initCrypt($iv = null ) {
         $cryptmod = mcrypt_module_open( MCRYPT_RIJNDAEL_256, null, 'ctr', null );
@@ -39,7 +44,7 @@ class Crypto {
             $iv  = mcrypt_create_iv( mcrypt_enc_get_iv_size( $cryptmod ), MCRYPT_DEV_URANDOM );
 
         if ( strlen( $key ) < $keylen )
-            throw new \Exception("Config[crypto][key] is too short!");
+            throw new Exception("Config[crypto][key] is too short!");
 
         $key = substr( $key, 0, $keylen );
         mcrypt_generic_init( $cryptmod, $key, $iv );
@@ -59,7 +64,7 @@ class Crypto {
      * so maybe include something random
      * @param $data
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     static public function encrypt($data) {
         // initialize the mcrypt module with a random IV
@@ -81,7 +86,7 @@ class Crypto {
     /**
      * @param $data
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     static public function decrypt($data ) {
         $crypteddata = base64_decode( $data );
@@ -113,7 +118,7 @@ class Crypto {
 
     static protected function constantTimeCompare($known, $given){
         if (strlen($known) == 0)
-            throw new \InvalidArgumentException("This function cannot safely compare against an empty given string");
+            throw new InvalidArgumentException("This function cannot safely compare against an empty given string");
 
         $res  = strlen($given) ^ strlen($known);
         $glen = strlen($given);

@@ -1,12 +1,14 @@
 <?php
 namespace Destiny\Common\Authentication;
 
+use DateInterval;
 use Destiny\Chat\EmoteService;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
-use Destiny\Common\Utils\Crypto;
+use Destiny\Common\Utils\CryptoMcrypt;
+use Destiny\Common\Utils\CryptoOpenSSL;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Service;
@@ -242,8 +244,8 @@ class AuthenticationService extends Service {
                 $cookie->clearCookie();
             }
             $expires = Date::getDateTime(time() + mt_rand(0, 2419200)); // 0-28 days
-            $expires->add(new \DateInterval('P1M'));
-            $data = Crypto::encrypt(serialize([
+            $expires->add(new DateInterval('P1M'));
+            $data = CryptoOpenSSL::encrypt(serialize([
                 'userId' => $user['userId'],
                 'expires' => $expires->getTimestamp()
             ]));
@@ -269,10 +271,16 @@ class AuthenticationService extends Service {
         if (strlen($rawData) < 64)
             goto cleanup;
 
-        $data = unserialize(Crypto::decrypt($rawData));
+        // TODO Remove CryptoMcrypt::decrypt in 30 days from deployment
+        $data = CryptoOpenSSL::decrypt($rawData);
+        if (empty($data)) {
+            $data = CryptoMcrypt::decrypt($rawData);
+        }
+
         if (!$data)
             goto cleanup;
 
+        $data = unserialize($data);
         if (!isset($data['expires']) or !isset($data['userId']))
             goto cleanup;
 
