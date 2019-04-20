@@ -37,43 +37,42 @@ class SubscriptionsService extends Service {
 
     /**
      * @param array $subscription
-     * @param bool $cancel
+     * @param bool $removeRemaining
+     * @return array subscription
      * @throws ConnectionException
      * @throws Exception
      */
-    public function cancelSubscription(array $subscription, $cancel = false){
+    public function cancelSubscription(array $subscription, $removeRemaining = false){
         $payPalAPIService = PayPalApiService::instance();
         $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
-            // Cancel subscription
-            if ($cancel) {
+            // Set subscription to cancelled
+            if ($removeRemaining) {
                 $subscription['status'] = SubscriptionStatus::CANCELLED;
-                $this->updateSubscription([
-                    'subscriptionId' => $subscription ['subscriptionId'],
-                    'status' => $subscription['status']
-                ]);
             }
-            // Update the subscription info
+            // Cancel the payment profile
+            if (!empty($subscription['paymentProfileId']) && strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE) === 0) {
+                $payPalAPIService->cancelPaymentProfile($subscription['paymentProfileId']);
+                $subscription['paymentStatus'] = PaymentStatus::CANCELLED;
+            }
+            // Set recurring flag
+            if ($subscription['recurring'] == 1) {
+                $subscription['recurring'] = 0;
+            }
+            // Update the payment info
             $this->updateSubscription([
                 'subscriptionId' => $subscription['subscriptionId'],
                 'paymentStatus' => $subscription['paymentStatus'],
                 'recurring' => $subscription['recurring'],
                 'status' => $subscription['status']
             ]);
-            // Cancel the payment profile
-            if (!empty ($subscription ['paymentProfileId'])) {
-                if (strcasecmp($subscription ['paymentStatus'], PaymentStatus::ACTIVE) === 0) {
-                    $payPalAPIService->cancelPaymentProfile($subscription ['paymentProfileId']);
-                    $subscription['paymentStatus'] = PaymentStatus::CANCELLED;
-                }
-                $subscription['recurring'] = 0;
-            }
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollBack();
             throw new Exception("Error updating subscription", $e);
         }
+        return $subscription;
     }
 
     /**

@@ -317,18 +317,6 @@ const $document = $(document),
 
 (function(){
 
-    // Subscription page
-    $('body#subscription').each(function () {
-        $(this).find('button#cancelSubscriptionBtn').on('click', function () {
-            $('input[name="cancelSubscription"]').val('1');
-            $(this).closest('form').submit();
-        });
-        $(this).find('button#stopRecurringBtn').on('click', function () {
-            $('input[name="cancelSubscription"]').val('0');
-            $(this).closest('form').submit();
-        });
-    });
-
     // Developer
     $('body#developer').each(function () {
         let $body = $(this);

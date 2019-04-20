@@ -27,7 +27,7 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <h3 data-toggle="collapse" data-target="#inbox-list">
-            <span>Inbox</span>
+            <em>Inbox</em>
             <i id="inbox-loading" class="fas fa-cog fa-spin" style="display: none;"></i>
         </h3>
         <div id="inbox-list" class="content content-dark collapse show">

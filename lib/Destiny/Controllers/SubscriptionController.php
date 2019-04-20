@@ -77,8 +77,8 @@ class SubscriptionController {
         $userId = Session::getCredentials()->getUserId();
         $subscriptionId = $params['id'];
         $sub = $subscriptionsService->findById($subscriptionId);
-        if (empty ($sub) || $sub['userId'] !== $userId || $sub['status'] !== SubscriptionStatus::ACTIVE) {
-            Session::setErrorBag('Must have an active subscription');
+        if (empty ($sub) || $sub['userId'] !== $userId ) {
+            Session::setErrorBag('Invalid subscription');
             return 'redirect: /profile';
         }
         $model->subscription = $sub;
@@ -136,14 +136,13 @@ class SubscriptionController {
 
         $subscriptionsService = SubscriptionsService::instance();
         $authService = AuthenticationService::instance();
-        
-        $userId = Session::getCredentials ()->getUserId ();
-        $subscription = $subscriptionsService->findById ( $params['subscriptionId'] );
+
+        $userId = Session::getCredentials()->getUserId();
+        $subscription = $subscriptionsService->findById($params['subscriptionId']);
 
         try {
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
             $googleRecaptchaHandler->resolveWithRequest($request);
-
             if (empty($subscription)) {
                 throw new Exception('Invalid subscription');
             }
@@ -153,18 +152,15 @@ class SubscriptionController {
             if ($subscription['status'] != SubscriptionStatus::ACTIVE) {
                 throw new Exception('Invalid subscription status');
             }
-            try {
-                $subscriptionsService->cancelSubscription($subscription, isset($params['cancelSubscription']) && $params['cancelSubscription'] == '1');
-            } catch (Exception $e) {
-                Log::critical("Error cancelling subscription {id}", $subscription);
-                throw $e;
+            if ($subscription['recurring'] == 1) {
+                $subscription = $subscriptionsService->cancelSubscription($subscription, false);
+                Session::setSuccessBag('Subscription payment stopped. You can now remove the subscription.');
+            } else {
+                $subscription = $subscriptionsService->cancelSubscription($subscription, true);
+                Session::setSuccessBag('Subscription removed.');
             }
-
             $authService->flagUserForUpdate($subscription ['userId']);
-            $model->subscription = $subscription;
-            $model->subscriptionCancelled = true;
-            $model->title = 'Cancel Subscription';
-            return 'profile/cancelsubscription';
+            return "redirect: /subscription/${subscription['subscriptionId']}/cancel";
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
             return 'redirect:/profile';

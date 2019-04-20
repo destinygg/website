@@ -49,7 +49,7 @@ use Destiny\Common\Config;
                     </div>
                     <div class="form-group">
                         <div class="controls">
-                            <div class="g-recaptcha" data-sitekey="<?=Config::$a['g-recaptcha']['key']?>"></div>
+                            <div class="g-recaptcha" data-theme="dark" data-sitekey="<?=Config::$a['g-recaptcha']['key']?>"></div>
                         </div>
                     </div>
                 </div>

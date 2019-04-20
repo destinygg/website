@@ -67,7 +67,7 @@ use Destiny\Common\Config;
                     </div>
                     <div id="recaptcha1" class="form-group ds-block hidden">
                         <div class="controls">
-                            <div class="g-recaptcha" data-sitekey="<?=Tpl::out(Config::$a['g-recaptcha']['key'])?>"></div>
+                            <div class="g-recaptcha" data-theme="dark" data-sitekey="<?=Tpl::out(Config::$a['g-recaptcha']['key'])?>"></div>
                         </div>
                     </div>
                     <div class="form-actions">
@@ -116,7 +116,7 @@ use Destiny\Common\Config;
                 <?php endif ?>
                 <div id="recaptcha2" class="form-group ds-block hidden">
                     <div class="controls">
-                        <div class="g-recaptcha" data-sitekey="<?=Tpl::out(Config::$a['g-recaptcha']['key'])?>"></div>
+                        <div class="g-recaptcha" data-theme="dark" data-sitekey="<?=Tpl::out(Config::$a['g-recaptcha']['key'])?>"></div>
                     </div>
                 </div>
                 <div class="form-actions">

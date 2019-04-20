@@ -57,7 +57,7 @@ use Destiny\Common\Utils\Tpl;
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
-                        <a href="/subscribe" class="btn btn-link">Cancel</a>
+                        <a href="/subscribe" class="btn btn-dark">Cancel</a>
                     </div>
 
                 </form>

@@ -62,13 +62,13 @@ use Destiny\Commerce\SubscriptionStatus;
         </section>
     <?php endif ?>
 
-    <?php if(!empty($this->subscriptions)): ?>
+    <?php if(!empty($this->subscriptions) || $this->user['istwitchsubscriber'] == 1): ?>
         <section class="container">
             <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>
             <div id="subscription-content" class="content collapse">
 
                 <?php if($this->user['istwitchsubscriber'] == 1): ?>
-                    <div class="content-dark clearfix" style="margin-bottom:10px; margin-top: 10px;">
+                    <div class="content-dark clearfix" style="margin-top: 10px;">
                         <div class="ds-block">
                             <div class="subscription" style="width: auto;">
                                 <h3>Twitch</h3>
@@ -79,7 +79,7 @@ use Destiny\Commerce\SubscriptionStatus;
                 <?php endif; ?>
 
                 <?php foreach($this->subscriptions as $subscription): ?>
-                    <div class="content-dark clearfix" style="margin-bottom:10px;">
+                    <div class="content-dark clearfix" style="margin-top:10px;">
                         <div class="ds-block">
                             <div class="subscription" style="width: auto;">
                                 <h3><?=$subscription['type']['tierLabel']?></h3>
@@ -118,7 +118,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                     </p>
                                 <?php endif ?>
                                 <div style="margin-top:20px;">
-                                    <a class="btn btn-warning" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Change</a>
+                                    <a class="btn btn-primary" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Update</a>
                                 </div>
                             </div>
                         </div>

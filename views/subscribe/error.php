@@ -51,8 +51,8 @@ use Destiny\Common\Config;
             </div>
 
             <div class="form-actions">
-                <a href="/subscribe" class="btn btn-link">Subscriptions</a>
-                <a href="/profile" class="btn btn-link">Back to profile</a>
+                <a href="/subscribe" class="btn btn-dark">Subscriptions</a>
+                <a href="/profile" class="btn btn-dark">Back to profile</a>
             </div>
 
         </div>

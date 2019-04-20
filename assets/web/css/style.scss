@@ -946,9 +946,8 @@ body#inbox {
   }
 }
 
-// Messages
-#message-list {
-  h3 {
+body#inbox {
+  h3[data-toggle="collapse"] {
     span {
       opacity: 0.5;
     }
@@ -957,6 +956,10 @@ body#inbox {
       font-style: normal;
     }
   }
+}
+
+// Messages
+#message-list {
   .timestamp {
     opacity: 0.5;
   }

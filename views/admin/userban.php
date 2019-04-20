@@ -61,7 +61,7 @@ use Destiny\Common\Utils\Tpl;
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary btn-lg">Save</button>
-                    <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" class="btn btn-link">Back</a>
+                    <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" class="btn btn-dark">Back</a>
                 </div>
 
             </form>
