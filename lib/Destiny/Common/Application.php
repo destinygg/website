@@ -11,6 +11,8 @@ use Destiny\Common\Utils\RandomString;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use function GuzzleHttp\json_encode;
+use Redis;
+use ReflectionClass;
 
 /**
  * @method static Application instance()
@@ -29,7 +31,7 @@ class Application extends Service {
     /** @var SessionInstance */
     protected $session = null;
     
-    /** @var \Redis */
+    /** @var Redis */
     protected $redis = null;
     
     /** @var Router */
@@ -183,7 +185,7 @@ class Application extends Service {
     private function executeController(Route $route, Request $request, Response $response, ViewModel $model) {
         $className = $route->getClass();
         $classMethod = $route->getClassMethod();
-        $classReflection = new \ReflectionClass ($className);
+        $classReflection = new ReflectionClass ($className);
         $classInstance = $classReflection->newInstance();
         $methodReflection = $classReflection->getMethod($classMethod);
         $methodParams = $methodReflection->getParameters();
@@ -325,7 +327,7 @@ class Application extends Service {
         return $this->redis;
     }
 
-    public function setRedis(\Redis $redis) {
+    public function setRedis(Redis $redis) {
         $this->redis = $redis;
     }
 

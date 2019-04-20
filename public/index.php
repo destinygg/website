@@ -15,10 +15,10 @@ use Destiny\Common\Request;
 use Destiny\Common\Utils\Http;
 use Doctrine\Common\Annotations\AnnotationReader;
 
-ini_set ( 'session.gc_maxlifetime', 5 * 60 * 60 );
+ini_set('session.gc_maxlifetime', 5 * 60 * 60);
 
 require __DIR__ . '/../lib/boot.app.php';
-$app = Application::instance ();
+$app = Application::instance();
 
 try {
     // Routing
@@ -45,12 +45,12 @@ try {
 
     // Attempts to find a route and execute it
     $app->executeRequest(new Request([
-        'uri'       => $_SERVER['REQUEST_URI'],
-        'method'    => $_SERVER['REQUEST_METHOD'],
-        'headers'   => Http::extractHeaders($_SERVER),
+        'uri' => $_SERVER['REQUEST_URI'],
+        'method' => $_SERVER['REQUEST_METHOD'],
+        'headers' => Http::extractHeaders($_SERVER),
         'ipAddress' => Http::extractIpAddress($_SERVER),
-        'get'       => $_GET,
-        'post'      => $_POST
+        'get' => $_GET,
+        'post' => $_POST
     ]));
 } catch (Exception $e) {
     Log::error($e->getMessage());

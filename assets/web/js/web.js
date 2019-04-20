@@ -72,36 +72,43 @@ const $document = $(document),
 
 (function(){
 
-    const applyMomentToElement = function(e){
-
+    const applyMomentToElement = function (e) {
         const ui = $(e),
-          format = ui.data('format') || 'MMMM Do, h:mm:ss a';
+            format = ui.data('format') || 'MMMM Do, h:mm:ss a';
         let datetime = ui.data('datetime') || ui.attr('datetime') || ui.text();
-
-        if(datetime === true)
+        if (datetime === true)
             datetime = ui.attr('title');
-        if(ui.data('moment-fromnow')){
+        if (!ui.attr('title')) {
+            ui.attr('title', datetime)
+        }
+        if (ui.data('moment-fromnow')) {
             ui.addClass('moment-update');
             ui.html(moment(datetime).fromNow());
-        }else if(ui.data('moment-calendar')){
+        } else if (ui.data('moment-calendar')) {
             ui.addClass('moment-update');
             ui.html(moment(datetime).calendar());
-        }else{
+        } else {
             ui.html(moment(datetime).format(format));
         }
-
         ui.data('datetime', datetime).addClass('moment-set');
     };
 
-    window.setInterval(function(){
-        $('time.moment-update').each(function(){
+    const applyMomentUpdate = function () {
+        $('time.moment-update').each(function () {
             applyMomentToElement(this);
         });
-    }, 30000);
+    };
 
-    $('time[data-moment="true"]:not(.moment-set)').each(function(){
-        applyMomentToElement(this);
-    });
+    const applyMomentToElements = function () {
+        $('time[data-moment]:not(.moment-set)').each(function () {
+            applyMomentToElement(this);
+        });
+    };
+
+    window.applyMomentUpdate = applyMomentUpdate;
+    window.applyMomentToElements = applyMomentToElements;
+    window.applyMomentToElement = applyMomentToElement;
+    window.setInterval(applyMomentUpdate, 30000);
 
 })();
 

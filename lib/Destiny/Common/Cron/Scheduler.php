@@ -1,12 +1,14 @@
 <?php
 namespace Destiny\Common\Cron;
 
+use DateTime;
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Options;
 use Doctrine\DBAL\DBALException;
+use PDO;
 
 class Scheduler {
 
@@ -62,7 +64,7 @@ class Scheduler {
                 if ($taskNeverRun || time() > $nextExecute->getTimestamp()) {
                     try {
                         $task['executeCount'] = intval($task['executeCount']) + 1;
-                        $task['lastExecuted'] = date(\DateTime::ATOM);
+                        $task['lastExecuted'] = date(DateTime::ATOM);
                         if($taskNeverRun) {
                             $this->insertTask($task);
                         } else {
@@ -71,7 +73,7 @@ class Scheduler {
                         Log::info('Execute start {action}', $task);
                         $this->getTaskClass($task)->execute();
                     } catch (\Exception $e) {
-                        Log::error("Error executing task: " . $e->getMessage());
+                        Log::error("Error executing task: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
                     }
                     Log::info('Execute end {action}', $task);
                 } else {
@@ -80,7 +82,7 @@ class Scheduler {
             }
             Log::info('Schedule complete');
         } catch (\Exception $e) {
-            Log::critical("Error executing tasks: " . $e->getMessage());
+            Log::critical("Error executing tasks: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         Log::info('Completed in ' . (microtime(true) - $startTime) . ' seconds');
     }
@@ -123,9 +125,9 @@ class Scheduler {
         ], [
             'action' => $task ['action']
         ], [
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR
         ]);
     }
 
@@ -142,12 +144,12 @@ class Scheduler {
             'period' => $task ['period'],
             'executeCount' => $task ['executeCount']
         ], [
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_INT
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_INT,
+            PDO::PARAM_INT
         ]);
     }
 

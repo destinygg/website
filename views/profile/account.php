@@ -68,8 +68,11 @@ use Destiny\Commerce\SubscriptionStatus;
             <div id="subscription-content" class="content collapse">
 
                 <?php if($this->user['istwitchsubscriber'] == 1): ?>
-                    <div class="content-dark clearfix" style="margin-bottom:10px;">
+                    <div class="content-dark clearfix" style="margin-bottom:10px; margin-top: 10px;">
                         <div class="ds-block">
+                            <div class="subscription" style="width: auto;">
+                                <h3>Twitch</h3>
+                            </div>
                             <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
                         </div>
                     </div>

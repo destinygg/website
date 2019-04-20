@@ -3,9 +3,12 @@ namespace Destiny\Messages;
 
 use Destiny\Common\Application;
 use Destiny\Common\Service;
+use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\User\UserRole;
+use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
+use PDO;
 
 /**
  * @method static PrivateMessageService instance()
@@ -15,7 +18,7 @@ class PrivateMessageService extends Service {
     /**
      * Check if a user is allowed to send a message based on various criteria
      *
-     * @param \Destiny\Common\Session\SessionCredentials $user
+     * @param SessionCredentials $user
      * @param int $targetuserid
      * @return bool
      *
@@ -28,21 +31,13 @@ class PrivateMessageService extends Service {
         $userid = $user->getUserId();
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
-            SELECT
-                userid,
-                targetuserid,
-                isread,
-                UNIX_TIMESTAMP(timestamp) AS timestamp
-            FROM privatemessages
-            WHERE
-                (
-                    userid = :userid OR
-                    targetuserid = :userid
-                ) AND
-                DATE_SUB(NOW(), INTERVAL 1 HOUR) < timestamp
+            SELECT userid, targetuserid, isread, UNIX_TIMESTAMP(timestamp) AS timestamp
+            FROM privatemessages 
+            WHERE (userid = :userid OR targetuserid = :userid) 
+            AND DATE_SUB(NOW(), INTERVAL 1 HOUR) < timestamp
             ORDER BY id ASC
         ");
-        $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
+        $stmt->bindValue('userid', $userid, PDO::PARAM_INT);
         $stmt->execute();
 
         $now       = time();
@@ -103,13 +98,15 @@ class PrivateMessageService extends Service {
             'targetuserid' => $data['targetuserid'],
             'message' => $data['message'],
             'timestamp' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' ) ,
-            'isread' => 0
+            'isread' => 0,
+            'deletedbysender' => 0,
+            'deletedbyreceiver' => 0,
         ], [
-            \PDO::PARAM_INT,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_INT
+            PDO::PARAM_INT,
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            PDO::PARAM_INT
         ]);
         return $conn->lastInsertId ();
     }
@@ -120,11 +117,7 @@ class PrivateMessageService extends Service {
      */
     public function openMessageById($id){
         $conn = Application::getDbConn();
-        $conn->update( 'privatemessages', [
-            'isread' => 1
-        ], [
-            'id' => $id
-        ]);
+        $conn->update( 'privatemessages', ['isread' => 1], ['id' => $id]);
     }
 
     /**
@@ -149,39 +142,19 @@ class PrivateMessageService extends Service {
                 FROM privatemessages AS pm
                 LEFT JOIN dfl_users AS du ON(du.userId = pm.userid)
                 LEFT JOIN dfl_users AS tdu ON(tdu.userId = pm.targetuserid)
-                WHERE pm.targetuserid = :userid OR pm.userid = :userid
-                GROUP BY IF(pm.targetuserid = :userid, du.userId, tdu.userId)
+                WHERE (pm.userid = :userid AND pm.deletedbysender = 0) 
+                OR (pm.targetuserid = :userid AND pm.deletedbyreceiver = 0) 
+                GROUP BY IF(pm.targetuserid = :userid, du.userId, tdu.userId) 
             ) z
             LEFT JOIN privatemessages AS pm3 ON (pm3.id = z.id)
             ORDER BY `unread` DESC, z.timestamp DESC
             LIMIT :start,:limit
         ");
-        $stmt->bindValue('userid', $userid, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('userid', $userid, PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
-    }
-
-    /**
-     * @param int $id
-     * @param int $targetUserId
-     * @return array
-     *
-     * @throws DBALException
-     */
-    public function getMessageByIdAndTargetUserId($id, $targetUserId){
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT p.*, `from`.username `from` FROM privatemessages p
-            LEFT JOIN `dfl_users` `from` ON (`from`.userId = p.userid)
-            WHERE p.id = :id AND p.targetuserid = :targetUserId
-            LIMIT 0,1
-        ');
-        $stmt->bindValue('id', $id, \PDO::PARAM_INT);
-        $stmt->bindValue('targetUserId', $targetUserId, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
     }
 
     /**
@@ -199,86 +172,22 @@ class PrivateMessageService extends Service {
             SELECT
                 p.*,
                 `from`.username `from`,
-                target.username `to`
+                `target`.username `to`
             FROM privatemessages p
-            LEFT JOIN `dfl_users` AS `from` ON (
-                `from`.userId = p.userid
-            )
-            LEFT JOIN `dfl_users` AS `target` ON (
-                target.userId = p.targetuserid
-            )
+            LEFT JOIN `dfl_users` AS `from` ON (`from`.userId = p.userid)
+            LEFT JOIN `dfl_users` AS `target` ON (`target`.userId = p.targetuserid)
             WHERE
-                p.userid IN(:userId, :targetUserId) AND
-                p.targetuserid IN(:userId, :targetUserId)
+                (p.userid = :userId AND p.targetuserid = :targetUserId AND p.deletedbysender = 0) OR 
+                (p.userid = :targetUserId AND p.targetuserid = :userId AND p.deletedbyreceiver = 0)
             ORDER BY p.id DESC
             LIMIT :start, :limit
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('targetUserId', $targetUserId, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('targetUserId', $targetUserId, PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
-    }
-
-    /**
-     * @param int $targetuserid
-     *
-     * @throws DBALException
-     */
-    public function markAllMessagesRead($targetuserid) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            UPDATE privatemessages
-            SET isread = 1
-            WHERE targetuserid = :targetuserid
-        ");
-        $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
-        $stmt->execute();
-    }
-
-    /**
-     * @param int $targetuserid
-     * @param int $fromuserid
-     * @return void
-     *
-     * @throws DBALException
-     */
-    public function markMessagesRead($targetuserid, $fromuserid) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            UPDATE privatemessages
-            SET isread = 1
-            WHERE
-                targetuserid = :targetuserid AND
-                userid       = :fromuserid
-        ");
-        $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
-        $stmt->bindValue('fromuserid', $fromuserid, \PDO::PARAM_INT);
-        $stmt->execute();
-    }
-
-    /**
-     * @param int $messageid
-     * @param int $targetuserid
-     * @return boolean $success
-     *
-     * @throws DBALException
-     */
-    public function markMessageRead($messageid, $targetuserid) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            UPDATE privatemessages
-            SET isread = 1
-            WHERE
-                id           = :messageid AND
-                targetuserid = :targetuserid
-            LIMIT 1
-        ");
-        $stmt->bindValue('messageid', $messageid, \PDO::PARAM_INT);
-        $stmt->bindValue('targetuserid', $targetuserid, \PDO::PARAM_INT);
-        $stmt->execute();
-        return (bool) $stmt->rowCount();
     }
 
     /**
@@ -292,18 +201,96 @@ class PrivateMessageService extends Service {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT * FROM (
-              SELECT p.id `messageid`,u.username,MAX(p.timestamp) `timestamp`, COUNT(*) `unread` FROM `privatemessages` p
+              SELECT p.id `messageid`, u.username,MAX(p.timestamp) `timestamp`, COUNT(*) `unread` FROM `privatemessages` p
               INNER JOIN `dfl_users` u ON (u.userId = p.userid)
-              WHERE p.targetuserid = :userId AND p.isread = 0
+              WHERE p.targetuserid = :userId AND p.isread = 0 AND p.deletedbyreceiver = 0
               GROUP BY p.userid
             ) b
             ORDER BY b.timestamp DESC, b.unread DESC
             LIMIT 0,:limit
         ");
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    /**
+     * @param int $targetuserid
+     * @return bool
+     *
+     * @throws DBALException
+     */
+    public function markAllMessagesRead($targetuserid) {
+        $conn = Application::getDbConn();
+        return (bool) $conn->update('privatemessages', ['isread' => 1], [
+            'targetuserid' => $targetuserid,
+        ], [PDO::PARAM_INT, PDO::PARAM_INT]);
+    }
+
+    /**
+     * @param int $targetuserid
+     * @param int $fromuserid
+     * @return bool
+     *
+     * @throws DBALException
+     */
+    public function markMessagesRead($targetuserid, $fromuserid) {
+        $conn = Application::getDbConn();
+        return (bool) $conn->update('privatemessages', ['isread' => 1], [
+            'targetuserid' => $targetuserid,
+            'userid' => $fromuserid
+        ], [PDO::PARAM_INT, PDO::PARAM_INT, PDO::PARAM_INT]);
+    }
+
+    /**
+     * @param int $messageid
+     * @param int $targetuserid
+     * @return boolean $success
+     *
+     * @throws DBALException
+     */
+    public function markMessageRead($messageid, $targetuserid) {
+        $conn = Application::getDbConn();
+        return (bool) $conn->update('privatemessages', ['isread' => 1], [
+            'messageid' => $messageid,
+            'targetuserid' => $targetuserid
+        ], [PDO::PARAM_INT, PDO::PARAM_INT, PDO::PARAM_INT]);
+    }
+
+    /**
+     * @param int $userid
+     * @param int $targetuserid
+     * @return bool $success
+     *
+     * @throws DBALException
+     * @throws ConnectionException
+     */
+    public function markConversationDeleted($userid, $targetuserid) {
+        $conn = Application::getDbConn();
+        $conn->beginTransaction();
+        // user -> target
+        $stmt = $conn->prepare("
+            UPDATE privatemessages pm 
+            SET pm.deletedbysender = 1 
+            WHERE pm.userid = :userid 
+            AND pm.targetuserid = :targetuserid
+        ");
+        $stmt->bindValue('userid', $userid, PDO::PARAM_INT);
+        $stmt->bindValue('targetuserid', $targetuserid, PDO::PARAM_INT);
+        $stmt->execute();
+        // user <- target
+        $stmt = $conn->prepare("
+            UPDATE privatemessages pm 
+            SET pm.deletedbyreceiver = 1 
+            WHERE pm.userid = :targetuserid
+            AND pm.targetuserid = :userid 
+        ");
+        $stmt->bindValue('userid', $userid, PDO::PARAM_INT);
+        $stmt->bindValue('targetuserid', $targetuserid, PDO::PARAM_INT);
+        $stmt->execute();
+        //
+        return $conn->commit();
     }
 
 }

@@ -3,6 +3,7 @@ namespace Destiny\Discord;
 
 use Destiny\Common\Config;
 use Destiny\Common\Session\Session;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -42,8 +43,8 @@ class DiscordLogHandler extends AbstractProcessingHandler {
             $creds = !empty($session) ? $session->getCredentials() : null;
             $username = !empty($creds) && $creds->isValid() ? "<https://www.destiny.gg/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : 'None';
             //
-            $url = $_SERVER['REQUEST_URI'] ?? 'None';
-            $address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? 'None';
+            $url = $_SERVER['REQUEST_URI'] ?? '';
+            $address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '';
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
             $attachment = [
                 'color' => $color,
@@ -78,7 +79,7 @@ class DiscordLogHandler extends AbstractProcessingHandler {
                     'attachments' => [$attachment]
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Recursion
             // Log::error("Error sending discord message." . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }

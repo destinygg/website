@@ -155,10 +155,15 @@ CREATE TABLE `privatemessages` (
   `message` blob NOT NULL,
   `timestamp` datetime NOT NULL,
   `isread` tinyint(1) DEFAULT '0',
+  `deletedbysender` tinyint(1) DEFAULT '0',
+  `deletedbyreceiver` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `targetuserid` (`targetuserid`),
-  KEY `userid` (`userid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `userid` (`userid`),
+  KEY `target_user` (`targetuserid`,`userid`),
+  KEY `time` (`timestamp`),
+  KEY `isread` (`isread`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `emotes` (
   `id` int(14) NOT NULL AUTO_INCREMENT,

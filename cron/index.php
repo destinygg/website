@@ -20,7 +20,6 @@ try {
         new AnnotationReader(),
         $scheduler
     );
-
     $scheduler->loadTasks();
     $scheduler->execute();
 } catch (Exception $e) {

@@ -6,6 +6,8 @@ use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
+use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Messages\PrivateMessageService;
@@ -156,20 +158,74 @@ class PrivateMessageController {
     }
 
     /**
-     * @Route ("/api/messages/open")
+     * @Route ("/profile/messages/delete")
      * @Secure ({"USER"})
+     * @HttpMethod ({"POST"})
+     *
+     * @param array $params
+     * @return string
+     * @throws DBALException
+     */
+    public function deleteMessages(array $params) {
+        try {
+            FilterParams::requireArray($params, 'selected');
+            $privateMessageService = PrivateMessageService::instance();
+            foreach ($params['selected'] as $target) {
+                $privateMessageService->markConversationDeleted(
+                    Session::getCredentials()->getUserId(),
+                    intval($target)
+                );
+            }
+            Session::setSuccessBag('Messages deleted');
+        } catch (FilterParamsException $e) {
+            Session::setErrorBag('Could not open messages. ' . $e->getMessage());
+        }
+        return 'redirect: /profile/messages';
+    }
+
+    /**
+     * @Route ("/profile/messages/read")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param array $params
+     * @return string
+     * @throws DBALException
+     */
+    public function readMessages(array $params) {
+        try {
+            FilterParams::requireArray($params, 'selected');
+            $privateMessageService = PrivateMessageService::instance();
+            foreach ($params['selected'] as $target) {
+                $privateMessageService->markMessagesRead(
+                    Session::getCredentials()->getUserId(),
+                    intval($target)
+                );
+            }
+            Session::setSuccessBag('Messages read');
+        } catch (FilterParamsException $e) {
+            Session::setErrorBag('Could not open messages. ' . $e->getMessage());
+        }
+        return 'redirect: /profile/messages';
+    }
+
+    // API METHODS
+
+    /**
+     * @Route ("/api/messages/unread")
+     * @Secure ({"USER"})
+     * @HttpMethod ({"GET"})
      * @ResponseBody
      */
-    public function messagesOpen() {
-        $userId = Session::getCredentials()->getUserId();
-        $privateMessageService = PrivateMessageService::instance();
+    public function messagesUnread(){
         try {
-            $privateMessageService->markAllMessagesRead($userId);
+            $userId = Session::getCredentials ()->getUserId ();
+            $privateMessageService = PrivateMessageService::instance();
+            return $this->applyUTCTimestamp($privateMessageService->getUnreadConversations($userId, 50));
         } catch (DBALException $e) {
-            Log::warn($e->getMessage());
-            return ['false' => true];
+            Log::error($e->getMessage());
         }
-        return ['success' => true];
+        return null;
     }
 
     /**
@@ -186,25 +242,9 @@ class PrivateMessageController {
     public function messagesInbox(array $params){
         $userId = Session::getCredentials ()->getUserId ();
         $privateMessageService = PrivateMessageService::instance();
-        $start = isset($params['s']) ? intval($params['s']) : 0;
-        return $privateMessageService->getMessagesInboxByUserId( $userId, $start, 25 );
-    }
-
-    /**
-     * @Route ("/api/messages/unread")
-     * @Secure ({"USER"})
-     * @HttpMethod ({"GET"})
-     * @ResponseBody
-     */
-    public function messagesUnread(){
-        $userId = Session::getCredentials ()->getUserId ();
-        $privateMessageService = PrivateMessageService::instance();
-        try {
-            return $privateMessageService->getUnreadConversations($userId, 50);
-        } catch (DBALException $e) {
-            Log::error($e->getMessage());
-        }
-        return null;
+        $start = $params['s'] ?? 0;
+        // TODO make this generic mysql return
+        return $this->applyUTCTimestamp($privateMessageService->getMessagesInboxByUserId($userId, intval($start), 25));
     }
 
     /**
@@ -215,18 +255,31 @@ class PrivateMessageController {
      *
      * @param array $params
      * @return array
-     *
      * @throws DBALException
      */
     public function messagesUserInbox(array $params){
         $userService = UserService::instance();
         $privateMessageService = PrivateMessageService::instance();
-        $userId = Session::getCredentials ()->getUserId ();
-        $start = isset($params['s']) ? intval($params['s']) : 0;
+        $start = $params['s'] ?? 0;
+        $userId = Session::getCredentials()->getUserId();
         $targetuser = $userService->getUserByUsername($params['username']);
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId( $userId, $targetuser['userId'], $start, 10 );
-        $privateMessageService->markMessagesRead( $userId, $targetuser['userId'] );
-        return $messages;
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId($userId, intval($targetuser['userId']), intval($start), 25);
+        $privateMessageService->markMessagesRead($userId, $targetuser['userId']);
+        // TODO make this generic mysql return
+        return $this->applyUTCTimestamp($messages);
+    }
+
+    /**
+     * @Route ("/api/messages/open")
+     * @Secure ({"USER"})
+     * @ResponseBody
+     * @throws DBALException
+     */
+    public function markAllConversationsRead() {
+        $userId = Session::getCredentials()->getUserId();
+        $privateMessageService = PrivateMessageService::instance();
+        $privateMessageService->markAllMessagesRead($userId);
+        return ['success' => true];
     }
 
     /**
@@ -237,18 +290,32 @@ class PrivateMessageController {
      *
      * @param array $params
      * @return array
+     * @throws DBALException
      */
-    public function messageOpen(array $params) {
+    public function markConversationRead(array $params) {
         try {
             FilterParams::required($params, 'id');
             $privateMessageService = PrivateMessageService::instance();
-            $userId = Session::getCredentials ()->getUserId ();
-            if(!$privateMessageService->markMessageRead( intval($params['id']), $userId ))
+            if (!$privateMessageService->markMessageRead(intval($params['id']), Session::getCredentials()->getUserId())) {
                 throw new Exception('Invalid message');
-            return ['success' => true];
-        } catch (\Exception $e) {
+            }
+        } catch (FilterParamsException $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        } catch (Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
         }
+        return ['success' => true];
+    }
+
+    /**
+     * @param array $messages
+     * @return array
+     */
+    private function applyUTCTimestamp(array $messages) {
+        return array_map(function (&$a) {
+            $a['timestamp'] = Date::getDateTime($a['timestamp'])->format(Date::FORMAT);
+            return $a;
+        }, $messages);
     }
 
 }

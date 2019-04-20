@@ -4,7 +4,7 @@
 @import "~@fortawesome/fontawesome-free/css/fontawesome.css";
 @import "~@fortawesome/fontawesome-free/css/brands.css";
 @import "~@fortawesome/fontawesome-free/css/solid.css";
-//@import "~@fortawesome/fontawesome-free/css/regular.css";
+@import "~@fortawesome/fontawesome-free/css/regular.css";
 
 .hidden { // TODO refactor out
   display: none !important;
@@ -838,12 +838,7 @@ span.icon-required {
   left: 0;
   right: 0;
 }
-/*#alerts-container .alert {
-  margin: 15px;
-}
-#alerts-static .alert {
-  margin: 15px;
-}*/
+
 #alerts-static strong {
   display: block;
 }
@@ -856,51 +851,79 @@ span.icon-required {
   margin: 10px 0;
 }
 
-// INBOX
-body#messages section h4,
-body#message section h4 {
-  color: $text-color2;
-  font-size: 1.2em;
-  font-weight: normal;
-}
+// Inbox and Inbox Messages
 table.messages {
   display: table;
   table-layout: fixed;
   width: 100%;
-
-  colgroup .c1 {
-    width: 35px;
-  }
-  colgroup .c2 {
-    width: 200px;
-  }
-  colgroup .c3 {
-    width: auto;
-  }
-  colgroup .c4 {
-    width: 230px;
+  colgroup {
+    .c1 {
+      width: 35px;
+    }
+    .c2 {
+      width: 200px;
+    }
+    .c3 {
+      width: auto;
+    }
+    .c4 {
+      width: 230px;
+    }
   }
   td {
-    cursor: pointer;
     white-space: nowrap;
     vertical-align: middle;
   }
   td.timestamp {
     text-align: right;
   }
-  tr td.selector:hover {
-    cursor: default;
-    color: $color-light;
-  }
-  tr.pressed td.selector,
-  tr td.selector.active {
-    color: $color-light;
+  td.selector {
+    padding-left: 0.74em !important;
   }
   .count {
     font-weight: normal;
     color: $color-chat-disabled;
   }
-  .message span {
+  tr:nth-child(odd) td {
+    background: none;
+  }
+}
+
+// Inbox and Inbox Messages
+body#inbox {
+  section h4 {
+    color: $text-color2;
+    font-size: 1.2em;
+    font-weight: normal;
+  }
+  .chat-emote {
+    z-index: 1;
+    top: 10px;
+    margin: 0 2px;
+    overflow: hidden;
+    text-indent: -90000px;
+    vertical-align: middle;
+    display: inline-block;
+  }
+  .fa-dgg-read:before {
+    content: "\f2b6";
+    color: $text-color3;
+  }
+  .fa-dgg-unread:before {
+    content: "\f0e0";
+    color: $text-color2;
+  }
+  #alerts-static .alert {
+    margin: 1em 1em 0;
+  }
+  #inbox-loading {
+    color: $text-color2;
+  }
+}
+
+// Inbox
+#inbox-list {
+  .message-txt {
     font-family: Helvetica,"Trebuchet MS",Verdana,sans-serif;
     color: $color-chat-disabled;
     font-size: 1.2em;
@@ -909,61 +932,36 @@ table.messages {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .grid tbody tr:nth-child(odd) td {
-    background: none;
+  .unread .from a {
+    font-weight: bold;
+  }
+  .read .from a {
+    color: $color-chat-text3;
+  }
+  a {
+    text-decoration: none;
+  }
+  table td {
+    cursor: pointer;
   }
 }
 
-table#inbox .unread .from a {
-  font-weight: bold;
-}
-table#inbox .read .from a {
-  color: $color-chat-text3;
-}
-table#inbox a {
-  text-decoration: none;
-}
-#inbox-show-more {
-  margin: 25px 0;
-  display: inline-block;
-}
-#inbox-loading {
-  color: $text-color2;
-}
-
-// MESSAGES
-#inbox-content .chat-emote,
-#message-list .chat-emote {
-  z-index: 1;
-  top: 10px;
-  margin: 0 2px;
-  overflow: hidden;
-  text-indent: -90000px;
-  vertical-align: middle;
-  display: inline-block;
-}
+// Messages
 #message-list {
-  #message-list-title {
-    margin-bottom: 20px;
+  h3 {
+    span {
+      opacity: 0.5;
+    }
     em {
-      color: $text-color;
+      opacity: 1;
       font-style: normal;
     }
   }
-  .message {
-    position: relative;
-    margin: 10px 0;
-  }
-  .message-content {
-    padding: 20px 10px 20px 20px;
-    border-radius: 8px;
-    background-color: $color-surface-dark1;
-  }
-  .message-me {
+  .timestamp {
     opacity: 0.5;
-    &:hover {
-      opacity: 1;
-    }
+  }
+  table td {
+    padding: 1em;
   }
   .message-txt {
     white-space: pre-line;
@@ -973,18 +971,26 @@ table#inbox a {
     font-size: 0.9em;
     color: $text-color2;
   }
-  .message-list-item-status.read:before {
-    content: "\f2b6";
-    color: $text-color3;
+  .message-header {
+    display: flex;
+    margin-bottom: 1em;
+    align-items: center;
+    .from {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      margin-right: 0.25em;
+      time {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .username {
+        margin: 0 0.5em;
+        color: $text-color;
+        font-weight: 600;
+      }
+    }
   }
-  .message-list-item-status.unread:before {
-    content: "\f0e0";
-    color: $text-color2;
-  }
-}
-#message-reply {
-  text-align: center;
-  margin: 15px 0;
 }
 
 .collapsed-group .message,
@@ -1007,16 +1013,19 @@ table#inbox a {
   height: 8px;
 }
 
+.modal-header {
+  background: $color-surface-light3;
+  border-radius: 4px 4px 0 0;
+}
+.modal-header h4 {
+  color: $text-color2;
+  font-weight: normal;
+  font-size: 1.2em;
+}
+
+
 // COMPOSE
 #compose {
-  .modal-header {
-    background: #555;
-    border-radius: 4px 4px 0 0;
-  }
-  .modal-header h4 {
-    font-weight: normal;
-    font-size: 1em;
-  }
   .modal-recipients {
     padding: 10px 15px 10px 15px;
     border-bottom: 1px solid #e5e5e5;
