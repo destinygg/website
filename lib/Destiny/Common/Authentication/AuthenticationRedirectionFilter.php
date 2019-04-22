@@ -80,10 +80,16 @@ class AuthenticationRedirectionFilter {
         }
         // We return to this point, after /register
 
-        // Make sure we got a user
+        // At this point the user should exist
         $user = $userService->getAuthByIdAndProvider($this->creds->getAuthId(), $this->creds->getAuthProvider());
         if (empty ($user)) {
             throw new Exception ('Invalid auth user');
+        }
+
+        // Deleted user aren't allowed to login
+        if ($user['userStatus'] === 'Deleted') {
+            Session::setErrorBag('This user has been marked for deletion');
+            return 'redirect: /';
         }
 
         // Update the auth profile for this provider

@@ -10,6 +10,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
+use Destiny\Common\Utils\FilterParamsException;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -28,33 +29,36 @@ class ImpersonateController {
      * @throws DBALException
      */
     public function impersonate(array $params) {
-        if (!Config::$a ['allowImpersonation']) {
-            throw new Exception ('Impersonating is not allowed');
+        try {
+            Session::start();
+            $authService = AuthenticationService::instance();
+            $userService = UserService::instance();
+            if (!Config::$a['allowImpersonation']) {
+                throw new FilterParamsException ('Impersonating is not allowed');
+            }
+            $userId = $params ['userId'] ?? '';
+            $username = $params ['username'] ?? '';
+            if (!empty ($userId)) {
+                $user = $userService->getUserById($userId);
+            } else if (!empty ($username)) {
+                $user = $userService->getUserByUsername($username);
+            } else {
+                throw new FilterParamsException('Invalid userId or username');
+            }
+            if (empty ($user)) {
+                throw new FilterParamsException ('User not found. Try a different userId or username');
+            }
+            if ($user['userStatus'] === 'Deleted') {
+                throw new FilterParamsException ("User status is 'deleted'.");
+            }
+            $credentials = $authService->buildUserCredentials($user);
+            Session::updateCredentials($credentials);
+            $redisService = ChatRedisService::instance();
+            $redisService->setChatSession($credentials, Session::getSessionId());
+            $redisService->sendRefreshUser($credentials);
+        } catch (FilterParamsException $e) {
+            Session::setErrorBag($e->getMessage());
         }
-        $userId = (isset ($params ['userId']) && !empty ($params ['userId'])) ? $params ['userId'] : '';
-        $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : '';
-        if (empty ($userId) && empty ($username)) {
-            throw new Exception ('[username] or [userId] required');
-        }
-        $authService = AuthenticationService::instance();
-        $userService = UserService::instance();
-        if (!empty ($userId)) {
-            $user = $userService->getUserById($userId);
-        } else if (!empty ($username)) {
-            $user = $userService->getUserByUsername($username);
-        }
-
-        if (empty ($user)) {
-            throw new Exception ('User not found. Try a different userId or username');
-        }
-
-        $credentials = $authService->buildUserCredentials($user);
-        Session::start();
-        Session::updateCredentials($credentials);
-
-        $redisService = ChatRedisService::instance();
-        $redisService->setChatSession($credentials, Session::getSessionId());
-        $redisService->sendRefreshUser($credentials);
         return 'redirect: /';
     }
 
