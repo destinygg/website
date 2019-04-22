@@ -253,7 +253,7 @@ class PrivateMessageService extends Service {
     public function markMessageRead($messageid, $targetuserid) {
         $conn = Application::getDbConn();
         return (bool) $conn->update('privatemessages', ['isread' => 1], [
-            'messageid' => $messageid,
+            'id' => $messageid,
             'targetuserid' => $targetuserid
         ], [PDO::PARAM_INT, PDO::PARAM_INT, PDO::PARAM_INT]);
     }

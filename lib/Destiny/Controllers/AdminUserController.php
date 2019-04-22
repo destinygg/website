@@ -114,7 +114,8 @@ class AdminUserController {
 
         $user = $userService->getUserById($params ['id']);
         if (empty ($user)) {
-            throw new Exception ('User was not found');
+            Session::setErrorBag('Invalid user');
+            return 'redirect: /admin';
         }
 
         $redirect = 'redirect: /admin/user/' . $user ['userId'] . '/edit';
@@ -126,6 +127,14 @@ class AdminUserController {
         $discorduuid = (isset ($params ['discorduuid'])) ? $params ['discorduuid'] : $user ['discorduuid'];;
         $minecraftname = (isset ($params ['minecraftname'])) ? $params ['minecraftname'] : $user ['minecraftname'];
         $minecraftuuid = (isset ($params ['minecraftuuid'])) ? $params ['minecraftuuid'] : $user ['minecraftuuid'];
+
+        try {
+            $authService->validateUsername($username);
+            $userService->checkUsernameTaken($username, $user['userId']);
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            return $redirect;
+        }
 
         if (empty($minecraftname))
             $minecraftname = null;
