@@ -27,3 +27,7 @@ config/config.local.php
 /phpunit.phar
 /package-lock.json
 /config/cert.pem
+
+/static/cache
+/static/emotes
+/static/flairs

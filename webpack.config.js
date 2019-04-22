@@ -44,6 +44,8 @@ const cacheGroups = Object.keys(entries).reduce((p, key) => {
     },
 })
 
+const cleanExclude = ['**', '!cache', '!flairs', '!emotes']
+
 module.exports = {
     optimization: {
         minimize: true,
@@ -56,8 +58,12 @@ module.exports = {
         filename: '[name].[contenthash].js',
     },
     plugins: [
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-        new CleanWebpackPlugin(['static'], {root: __dirname, verbose: false, exclude: ['cache', 'flairs', 'emotes']}),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // cache|flairs|emotes
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: cleanExclude,
+            verbose: true,
+            dry: false
+        }),
         new MiniCssExtractPlugin({filename: '[name].[contenthash].css'}),
         new ManifestPlugin(),
         { apply: c => c.hooks.afterEmit.tap('webpackManifestPlugin', covertManifestJsonToPhp) }
@@ -77,7 +83,7 @@ module.exports = {
                 test: /\.(sa|sc|c)ss$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    'css-loader?importLoaders=1',
+                    'css-loader',
                     'postcss-loader',
                     'sass-loader'
                 ]

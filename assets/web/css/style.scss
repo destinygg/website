@@ -240,8 +240,13 @@ form.form-alt {
   }
 }
 
-body#home #main-nav {
-  @extend .bg-grad-main;
+body#home {
+  #main-nav {
+    @extend .bg-grad-main;
+  }
+  #alerts-static .alert {
+    margin: 1em 0 0;
+  }
 }
 
 body.no-brand .navbar {
