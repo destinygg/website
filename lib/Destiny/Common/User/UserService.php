@@ -6,9 +6,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
 use PDO;
 
 /**

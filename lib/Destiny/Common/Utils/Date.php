@@ -1,6 +1,11 @@
 <?php
 namespace Destiny\Common\Utils;
 
+use DateInterval;
+use DateTime;
+use DateTimeZone;
+use Exception;
+
 /**
  * This class is bad
  */
@@ -12,25 +17,25 @@ abstract class Date {
 
     /**
      * @param int|string $time
-     * @return \DateTime
+     * @return DateTime
      */
     public static function getDateTime($time = 'NOW') {
         try {
             if (!is_numeric($time)) {
-                $date = new \DateTime($time);
+                $date = new DateTime($time);
             } else {
-                $date = new \DateTime();
+                $date = new DateTime();
                 $date->setTimestamp($time);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             try {
-                $date = new \DateTime();
-            } catch (\Exception $e2) {
+                $date = new DateTime();
+            } catch (Exception $e2) {
                 $date = null;
             }
         }
         if ($date != null) {
-            $date->setTimezone(new \DateTimeZone(ini_get('date.timezone')));
+            $date->setTimezone(new DateTimeZone(ini_get('date.timezone')));
         }
         return $date;
     }
@@ -38,11 +43,11 @@ abstract class Date {
     /**
      * @param string $time
      * @param int $seconds
-     * @return \DateTime
+     * @return DateTime
      */
     public static function getDateTimePlusSeconds($time = 'NOW', $seconds = 0) {
         $date = Date::getDateTime($time);
-        try { $date->add(new \DateInterval("PT". $seconds ."S")); } catch (\Exception $e) {/* IGNORED */}
+        try { $date->add(new DateInterval("PT". $seconds ."S")); } catch (Exception $e) {/* IGNORED */}
         return $date;
     }
 
@@ -60,18 +65,18 @@ abstract class Date {
      * On big intervals, you get months and days.
      * Only the two biggest parts are used.
      *
-     * @param \DateTime $start
-     * @param \DateTime|null $end
+     * @param DateTime $start
+     * @param DateTime|null $end
      * @return string
      */
     public static function getRemainingTime($start, $end = null) {
-        if (! ($start instanceof \DateTime)) {
+        if (! ($start instanceof DateTime)) {
             $start = self::getDateTime ( $start );
         }
         if ($end === null) {
             $end = self::getDateTime ();
         }
-        if (! ($end instanceof \DateTime)) {
+        if (! ($end instanceof DateTime)) {
             $end = self::getDateTime ( $end );
         }
         $interval = $end->diff ( $start );
@@ -114,11 +119,11 @@ abstract class Date {
     }
 
     /**
-     * @param \DateTime $date
-     * @param \DateTime $compareTo
+     * @param DateTime $date
+     * @param DateTime $compareTo
      * @return string
      */
-    public static function getElapsedTime(\DateTime $date, \DateTime $compareTo = NULL) {
+    public static function getElapsedTime(DateTime $date, DateTime $compareTo = NULL) {
         if (is_null ( $compareTo )) {
             $compareTo = self::getDateTime ();
         }

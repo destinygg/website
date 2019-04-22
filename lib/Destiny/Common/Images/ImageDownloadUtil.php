@@ -5,6 +5,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -95,7 +96,7 @@ class ImageDownloadUtil {
                 return true;
             }
             Log::notice("Invalid http response code. [" . $code . "] $url");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         } catch (GuzzleException $e) {
             Log::error($e->getMessage());

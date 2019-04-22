@@ -8,7 +8,9 @@ use Destiny\Common\Service;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
+use Doctrine\DBAL\DBALException;
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @method static StreamLabsService instance()
@@ -81,8 +83,8 @@ class StreamLabsService extends Service {
     /**
      * @param array $args
      * @param array|null $auth
-     * @return null|\Psr\Http\Message\ResponseInterface
-     * @throws \Doctrine\DBAL\DBALException
+     * @return null|ResponseInterface
+     * @throws DBALException
      */
     public function sendAlert(array $args, array $auth = null){
         if($auth === null) {
@@ -102,8 +104,8 @@ class StreamLabsService extends Service {
     /**
      * @param array $args
      * @param array $auth
-     * @return null|\Psr\Http\Message\ResponseInterface
-     * @throws \Doctrine\DBAL\DBALException
+     * @return null|ResponseInterface
+     * @throws DBALException
      */
     public function sendDonation(array $args, array $auth = null){
         if($auth === null) {
@@ -123,7 +125,7 @@ class StreamLabsService extends Service {
     /**
      * @param array $auth
      * @return string
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     private function renewToken(array $auth){
         $token = $auth['authCode'];
@@ -156,7 +158,7 @@ class StreamLabsService extends Service {
     /**
      * @param array $auth
      * @return string
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     private function getFreshValidToken(array $auth){
         return Date::getDateTime($auth['createdDate'])->getTimestamp() + 3600 < Date::getDateTime()->getTimestamp() ? $this->renewToken($auth) : $auth['authCode'];

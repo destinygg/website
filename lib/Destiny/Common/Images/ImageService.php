@@ -5,6 +5,8 @@ use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\InvalidArgumentException;
+use PDO;
 use RuntimeException;
 
 /**
@@ -50,7 +52,7 @@ class ImageService extends Service {
     function findImageById($id) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `images` WHERE `id` = :id LIMIT 0,1');
-        $stmt->bindValue('id', $id, \PDO::PARAM_STR);
+        $stmt->bindValue('id', $id, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -63,14 +65,14 @@ class ImageService extends Service {
     function findImageByName($name) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `images` WHERE `name` = :name LIMIT 0,1');
-        $stmt->bindValue('name', $name, \PDO::PARAM_STR);
+        $stmt->bindValue('name', $name, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
 
     /**
      * @param $id
-     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws DBALException
      */
     function removeImageById($id) {

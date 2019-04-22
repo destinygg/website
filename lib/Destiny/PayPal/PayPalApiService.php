@@ -1,11 +1,13 @@
 <?php
 namespace Destiny\PayPal;
 
+use DateTime;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Config;
 use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
+use PayPal\PayPalAPI\GetExpressCheckoutDetailsResponseType;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsRequestType;
 use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsReq;
@@ -84,13 +86,13 @@ class PayPalApiService extends Service {
      * @param string $token
      * @param $reference
      * @param $subscriberName
-     * @param \DateTime $billingStartDate
+     * @param DateTime $billingStartDate
      * @param array $subscriptionType
      * @return string $paymentProfileId
      *
      * @throws \Exception
      */
-    public function createSubscriptionPaymentProfile($token, $reference, $subscriberName, \DateTime $billingStartDate, array $subscriptionType) {
+    public function createSubscriptionPaymentProfile($token, $reference, $subscriberName, DateTime $billingStartDate, array $subscriptionType) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
         $paymentProfileId = null;
         $amount = $subscriptionType ['amount'];
@@ -99,7 +101,7 @@ class PayPalApiService extends Service {
 
         $RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
         $RPProfileDetails->SubscriberName = $subscriberName;
-        $RPProfileDetails->BillingStartDate = $billingStartDate->format ( \DateTime::ATOM );
+        $RPProfileDetails->BillingStartDate = $billingStartDate->format ( DateTime::ATOM );
         $RPProfileDetails->ProfileReference = $reference;
         
         $paymentBillingPeriod = new BillingPeriodDetailsType ();
@@ -257,7 +259,7 @@ class PayPalApiService extends Service {
      * Retrieve the checkout instance from paypal
      *
      * @param string $token
-     * @return null|\PayPal\PayPalAPI\GetExpressCheckoutDetailsResponseType
+     * @return null|GetExpressCheckoutDetailsResponseType
      *
      * @throws \Exception
      */

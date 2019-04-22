@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Common\Exception;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Config;
 use Destiny\Common\Annotation\Controller;
@@ -25,7 +24,6 @@ class ImpersonateController {
      * @param array $params
      * @return string
      *
-     * @throws Exception
      * @throws DBALException
      */
     public function impersonate(array $params) {

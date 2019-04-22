@@ -5,6 +5,9 @@ use Destiny\Common\Application;
 use Destiny\Common\Exception;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\InvalidArgumentException;
+use PDO;
 
 /**
  * @method static OAuthService instance()
@@ -15,7 +18,7 @@ class OAuthService extends Service {
      * @param int $clientId
      * @return array
      * @throws Exception
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function ensureAuthClient($clientId) {
         $data = $this->getAuthClientByCode($clientId);
@@ -66,7 +69,7 @@ class OAuthService extends Service {
 
     /**
      * @param array $client
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function addAuthClient(array $client) {
         $conn = Application::getDbConn();
@@ -79,19 +82,19 @@ class OAuthService extends Service {
             'createdDate' => Date::getSqlDateTime(),
             'modifiedDate' => Date::getSqlDateTime()
         ], [
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR
         ]);
     }
 
     /**
      * @param string $clientId
      * @param array $client
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function updateAuthClient($clientId, array $client) {
         $conn = Application::getDbConn();
@@ -101,8 +104,8 @@ class OAuthService extends Service {
 
     /**
      * @param number $clientId
-     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws InvalidArgumentException
+     * @throws DBALException
      */
     public function removeAuthClient($clientId) {
         $conn = Application::getDbConn();
@@ -112,7 +115,7 @@ class OAuthService extends Service {
     /**
      * @param int $clientId
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAuthClientById($clientId) {
         $conn = Application::getDbConn();
@@ -121,7 +124,7 @@ class OAuthService extends Service {
             WHERE clientId = :clientId
             LIMIT 1
         ");
-        $stmt->bindValue('clientId', $clientId, \PDO::PARAM_STR);
+        $stmt->bindValue('clientId', $clientId, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -129,7 +132,7 @@ class OAuthService extends Service {
     /**
      * @param string $clientCode
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAuthClientByCode($clientCode) {
         $conn = Application::getDbConn();
@@ -138,7 +141,7 @@ class OAuthService extends Service {
             WHERE clientCode = :clientCode
             LIMIT 1
         ");
-        $stmt->bindValue('clientCode', $clientCode, \PDO::PARAM_STR);
+        $stmt->bindValue('clientCode', $clientCode, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -146,12 +149,12 @@ class OAuthService extends Service {
     /**
      * @param int $userId
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAuthClientsByUserId($userId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("SELECT * FROM oauth_client_details WHERE ownerId = :ownerId");
-        $stmt->bindValue('ownerId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('ownerId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -159,7 +162,7 @@ class OAuthService extends Service {
     /**
      * @param int $tokenId
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAccessTokenById($tokenId) {
         $conn = Application::getDbConn();
@@ -168,7 +171,7 @@ class OAuthService extends Service {
             LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
             WHERE t.tokenId = :tokenId
             LIMIT 1");
-        $stmt->bindValue('tokenId', $tokenId, \PDO::PARAM_INT);
+        $stmt->bindValue('tokenId', $tokenId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -176,7 +179,7 @@ class OAuthService extends Service {
     /**
      * @param int $clientId
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAccessTokensByClientId($clientId) {
         $conn = Application::getDbConn();
@@ -185,7 +188,7 @@ class OAuthService extends Service {
             LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
             WHERE t.clientId = :clientId
             ORDER BY t.clientId ASC, t.tokenId DESC");
-        $stmt->bindValue('clientId', $clientId, \PDO::PARAM_INT);
+        $stmt->bindValue('clientId', $clientId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -193,7 +196,7 @@ class OAuthService extends Service {
     /**
      * @param int $userId
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAccessTokensByUserId($userId) {
         $conn = Application::getDbConn();
@@ -202,7 +205,7 @@ class OAuthService extends Service {
             LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
             WHERE t.userId = :userId
             ORDER BY t.clientId ASC, t.tokenId DESC");
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -211,7 +214,7 @@ class OAuthService extends Service {
      * @param string $refreshToken
      * @param int $clientId
      * @return array|null
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAccessTokenByRefreshAndClientId($refreshToken, $clientId) {
         $conn = Application::getDbConn();
@@ -220,8 +223,8 @@ class OAuthService extends Service {
             WHERE refresh = :refresh AND clientId = :clientId
             LIMIT 1
         ");
-        $stmt->bindValue('refresh', $refreshToken, \PDO::PARAM_STR);
-        $stmt->bindValue('clientId', $clientId, \PDO::PARAM_INT);
+        $stmt->bindValue('refresh', $refreshToken, PDO::PARAM_STR);
+        $stmt->bindValue('clientId', $clientId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -229,7 +232,7 @@ class OAuthService extends Service {
     /**
      * @param string $token
      * @return array|null
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getAccessTokenByToken($token) {
         $conn = Application::getDbConn();
@@ -238,14 +241,14 @@ class OAuthService extends Service {
             WHERE token = :token
             LIMIT 1
         ");
-        $stmt->bindValue('token', $token, \PDO::PARAM_STR);
+        $stmt->bindValue('token', $token, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
 
     /**
      * @param array $data
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function addAccessToken(array $data) {
         $conn = Application::getDbConn();
@@ -258,18 +261,18 @@ class OAuthService extends Service {
             'expireIn' => $data['expireIn'],
             'createdDate' => Date::getSqlDateTime()
         ], [
-            \PDO::PARAM_INT,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR
+            PDO::PARAM_INT,
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_INT,
+            PDO::PARAM_STR
         ]);
     }
 
     /**
      * @param int $tokenId
-     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws InvalidArgumentException
+     * @throws DBALException
      */
     public function removeAccessToken($tokenId) {
         $conn = Application::getDbConn();
@@ -280,7 +283,7 @@ class OAuthService extends Service {
      * @param string $accessToken
      * @param string $renewToken
      * @param int $tokenId
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function renewAccessToken($accessToken, $renewToken, $tokenId) {
         $conn = Application::getDbConn();

@@ -11,12 +11,14 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Authentication\OAuthService;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
+use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\User\UserService;
 use Doctrine\DBAL\DBALException;
+use Exception;
 
 /**
  * @Controller
@@ -28,8 +30,8 @@ class ApiController {
      * @ResponseBody
      *
      * @param array $params
-     * @throws \Exception
-     * @return \Destiny\Common\Session\SessionCredentials|array
+     * @throws Exception
+     * @return SessionCredentials|array
      */
     public function userInfo(array $params) {
         FilterParams::required($params, 'token');
@@ -155,7 +157,7 @@ class ApiController {
         } catch (FilterParamsException $e) {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['message' => $e->getMessage(), 'error' => 'fielderror', 'code' => Http::STATUS_BAD_REQUEST];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Internal error $e");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['message' => 'Server error', 'error' => 'server', 'code' => Http::STATUS_BAD_REQUEST];

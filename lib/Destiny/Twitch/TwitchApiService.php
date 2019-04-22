@@ -7,6 +7,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
 use GuzzleHttp\Client;
+use InvalidArgumentException;
 
 /**
  * @method static TwitchApiService instance()
@@ -62,7 +63,7 @@ class TwitchApiService extends Service {
                 if (!empty($json) && isset($json['hosts']))
                     return $json['hosts'][0];
                 return $json;
-            } catch (\InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 Log::error("Failed to parse channel host. " . $e->getMessage());
             }
         }
@@ -89,7 +90,7 @@ class TwitchApiService extends Service {
         if ($response->getStatusCode() == Http::STATUS_OK) {
             try {
                 return \GuzzleHttp\json_decode($response->getBody(), true);
-            } catch (\InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 Log::error("Failed to parse past broadcasts." . $e->getMessage());
             }
         }
@@ -116,7 +117,7 @@ class TwitchApiService extends Service {
                     return null;
                 }
                 return $data['stream'];
-            } catch (\InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 Log::error("Failed to parse streams. " . $e->getMessage());
             }
         }
@@ -138,7 +139,7 @@ class TwitchApiService extends Service {
         if($response->getStatusCode() == Http::STATUS_OK) {
             try {
                 return \GuzzleHttp\json_decode($response->getBody(), true);
-            } catch (\InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 Log::error("Failed to parse channel. " . $e->getMessage());
             }
         }

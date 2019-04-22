@@ -6,6 +6,7 @@ use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Doctrine\Common\Annotations\Reader;
 use \ReflectionClass;
+use ReflectionException;
 use \ReflectionMethod;
 
 class ControllerAnnotationLoader {
@@ -45,7 +46,7 @@ class ControllerAnnotationLoader {
      * @param Reader $reader
      * @param Router $router
      *
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function factory(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
         $ins = new self();
@@ -57,7 +58,7 @@ class ControllerAnnotationLoader {
      * @param Reader $reader
      * @param Router $router
      *
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
         $this->controllerRef = new ReflectionClass(new Annotation\Controller());

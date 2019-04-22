@@ -124,14 +124,13 @@ class SubscriptionController {
      * @HttpMethod ({"POST"})
      *
      * @param array $params
-     * @param ViewModel $model
      * @param Request $request
      * @return string
      *
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionCancelProcess(array $params, ViewModel $model, Request $request) {
+    public function subscriptionCancelProcess(array $params, Request $request) {
         FilterParams::required($params, 'subscriptionId');
 
         $subscriptionsService = SubscriptionsService::instance();

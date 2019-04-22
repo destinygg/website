@@ -4,6 +4,7 @@ namespace Destiny\Chat;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Doctrine\DBAL\DBALException;
+use PDO;
 
 /**
  * @method static ChatBanService instance()
@@ -42,7 +43,7 @@ class ChatBanService extends Service {
               ORDER BY b.id DESC
               LIMIT 0,1
             ');
-            $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+            $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         } else {
             $stmt = $conn->prepare('
               SELECT
@@ -67,8 +68,8 @@ class ChatBanService extends Service {
               ORDER BY b.id DESC
               LIMIT 0,1
             ');
-            $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-            $stmt->bindValue('ipaddress', $ipaddress, \PDO::PARAM_STR);
+            $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue('ipaddress', $ipaddress, PDO::PARAM_STR);
         }
         $stmt->execute();
         return $stmt->fetch();
@@ -91,7 +92,7 @@ class ChatBanService extends Service {
               endtimestamp >= NOW()
             )
         ");
-        $stmt->bindValue('targetuserid', $userid, \PDO::PARAM_INT);
+        $stmt->bindValue('targetuserid', $userid, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->rowCount();
     }
@@ -143,7 +144,7 @@ class ChatBanService extends Service {
           ORDER BY b.id DESC
           LIMIT 0,1
         ');
-        $stmt->bindValue('id', $banId, \PDO::PARAM_INT);
+        $stmt->bindValue('id', $banId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }

@@ -16,6 +16,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\ViewModel;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
+use Exception;
 use RuntimeException;
 
 /**
@@ -57,7 +58,7 @@ class AdminEmotesController {
             $emoteService = EmoteService::instance();
             $emote = $emoteService->findEmoteByPrefix($params['prefix']);
             return (empty($emote) || $emote['id'] == $params['id']) ? ['success' => true] : ['error' => 'exists'];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }

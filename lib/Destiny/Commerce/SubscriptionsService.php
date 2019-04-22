@@ -8,6 +8,7 @@ use Destiny\Common\Exception;
 use Destiny\PayPal\PayPalApiService;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
+use PDO;
 
 /**
  * @method static SubscriptionsService instance()
@@ -95,7 +96,7 @@ class SubscriptionsService extends Service {
             WHERE subscriptionId = :subscriptionId
             LIMIT 1
         ');
-        $stmt->bindValue('subscriptionId', $subscriptionId, \PDO::PARAM_INT);
+        $stmt->bindValue('subscriptionId', $subscriptionId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -113,7 +114,7 @@ class SubscriptionsService extends Service {
             WHERE s.recurring = 1 AND s.paymentStatus = :paymentStatus 
             AND s.endDate <= NOW() AND s.billingNextDate > NOW()
         ');
-        $stmt->bindValue('paymentStatus', PaymentStatus::ACTIVE, \PDO::PARAM_STR);
+        $stmt->bindValue('paymentStatus', PaymentStatus::ACTIVE, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -127,7 +128,7 @@ class SubscriptionsService extends Service {
     public function getSubscriptionsToExpire() {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT subscriptionId,userId FROM dfl_users_subscriptions WHERE status = :status AND endDate <= NOW()');
-        $stmt->bindValue('status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
+        $stmt->bindValue('status', SubscriptionStatus::ACTIVE, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -152,8 +153,8 @@ class SubscriptionsService extends Service {
           ORDER BY s.subscriptionTier DESC, s.createdDate DESC
           LIMIT 1
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('status', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('status', SubscriptionStatus::ACTIVE, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -171,9 +172,9 @@ class SubscriptionsService extends Service {
           WHERE s.userId = :userId AND (s.status = :activeStatus OR s.status = :pendingStatus)
           ORDER BY s.subscriptionTier DESC, s.createdDate DESC
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('activeStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
-        $stmt->bindValue('pendingStatus', SubscriptionStatus::PENDING, \PDO::PARAM_STR);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('activeStatus', SubscriptionStatus::ACTIVE, PDO::PARAM_STR);
+        $stmt->bindValue('pendingStatus', SubscriptionStatus::PENDING, PDO::PARAM_STR);
         $stmt->execute();
         $subscriptions = $stmt->fetchAll();
         for ($i = 0; $i < count($subscriptions); $i++) {
@@ -198,9 +199,9 @@ class SubscriptionsService extends Service {
           WHERE s.userId = :userId AND s.status = :status AND s.subscriptionId = :subscriptionId
           LIMIT 1
         ');
-        $stmt->bindValue('subscriptionId', $subscriptionId, \PDO::PARAM_INT);
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('status', $status, \PDO::PARAM_STR);
+        $stmt->bindValue('subscriptionId', $subscriptionId, PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('status', $status, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -230,9 +231,9 @@ class SubscriptionsService extends Service {
           WHERE s.subscriptionTier = :subscriptionTier AND s.status = :subscriptionStatus AND s.subscriptionSource = :subscriptionSource
           ORDER BY s.createdDate ASC
         ');
-        $stmt->bindValue('subscriptionTier', $tier, \PDO::PARAM_INT);
-        $stmt->bindValue('subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
-        $stmt->bindValue('subscriptionSource', Config::$a ['subscriptionType'], \PDO::PARAM_STR);
+        $stmt->bindValue('subscriptionTier', $tier, PDO::PARAM_INT);
+        $stmt->bindValue('subscriptionStatus', SubscriptionStatus::ACTIVE, PDO::PARAM_STR);
+        $stmt->bindValue('subscriptionSource', Config::$a ['subscriptionType'], PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -251,8 +252,8 @@ class SubscriptionsService extends Service {
           ORDER BY createdDate DESC 
           LIMIT 1
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('status', $status, \PDO::PARAM_STR);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('status', $status, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -275,12 +276,12 @@ class SubscriptionsService extends Service {
           ORDER BY endDate DESC
           LIMIT :start,:limit
         ');
-        $stmt->bindValue('active', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
-        $stmt->bindValue('cancelled', SubscriptionStatus::CANCELLED, \PDO::PARAM_STR);
-        $stmt->bindValue('expired', SubscriptionStatus::EXPIRED, \PDO::PARAM_STR);
-        $stmt->bindValue('gifter', $gifterId, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->bindValue('active', SubscriptionStatus::ACTIVE, PDO::PARAM_STR);
+        $stmt->bindValue('cancelled', SubscriptionStatus::CANCELLED, PDO::PARAM_STR);
+        $stmt->bindValue('expired', SubscriptionStatus::EXPIRED, PDO::PARAM_STR);
+        $stmt->bindValue('gifter', $gifterId, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
         $stmt->execute();
         $gifts = $stmt->fetchAll();
         for ($i = 0; $i < count($gifts); $i++) {
@@ -306,8 +307,8 @@ class SubscriptionsService extends Service {
           WHERE s.gifter = :gifter AND s.status = :status
           ORDER BY endDate ASC
         ');
-        $stmt->bindValue('gifter', $gifterId, \PDO::PARAM_INT);
-        $stmt->bindValue('status', $status, \PDO::PARAM_STR);
+        $stmt->bindValue('gifter', $gifterId, PDO::PARAM_INT);
+        $stmt->bindValue('status', $status, PDO::PARAM_STR);
         $stmt->execute();
         $gifts = $stmt->fetchAll();
         for ($i = 0; $i < count($gifts); $i++) {
@@ -331,9 +332,9 @@ class SubscriptionsService extends Service {
           WHERE userId = :userId
           ORDER BY createdDate DESC LIMIT :start,:limit
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -353,7 +354,7 @@ class SubscriptionsService extends Service {
         // Make sure the the giftee accepts gifts
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT userId FROM dfl_users WHERE userId = :userId AND allowGifting = 1');
-        $stmt->bindValue('userId', $giftee, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $giftee, PDO::PARAM_INT);
         $stmt->execute();
 
         if ($stmt->rowCount() <= 0) {
@@ -381,7 +382,7 @@ class SubscriptionsService extends Service {
             WHERE paymentProfileId = :paymentProfileId
             LIMIT 1
         ');
-        $stmt->bindValue('paymentProfileId', $paymentProfileId, \PDO::PARAM_STR);
+        $stmt->bindValue('paymentProfileId', $paymentProfileId, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -401,12 +402,12 @@ class SubscriptionsService extends Service {
           ORDER BY createdDate DESC 
           LIMIT :start,:limit
         ');
-        $stmt->bindValue('active', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
-        $stmt->bindValue('expired', SubscriptionStatus::EXPIRED, \PDO::PARAM_STR);
-        $stmt->bindValue('cancelled', SubscriptionStatus::CANCELLED, \PDO::PARAM_STR);
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->bindValue('active', SubscriptionStatus::ACTIVE, PDO::PARAM_STR);
+        $stmt->bindValue('expired', SubscriptionStatus::EXPIRED, PDO::PARAM_STR);
+        $stmt->bindValue('cancelled', SubscriptionStatus::CANCELLED, PDO::PARAM_STR);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

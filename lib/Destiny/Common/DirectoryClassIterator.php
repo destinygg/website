@@ -4,9 +4,11 @@ namespace Destiny\Common;
 use \RecursiveDirectoryIterator;
 use \RecursiveIteratorIterator;
 use \RecursiveRegexIterator;
+use ReflectionException;
 use \RegexIterator;
 use \ReflectionClass;
 use \Iterator;
+use SplFileInfo;
 
 /**
  * Reads all files in a folder and finds the .php ones with classes in them
@@ -37,7 +39,7 @@ class DirectoryClassIterator implements Iterator {
      *
      * @param string $base
      * @param string $path
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct($base, $path) {
         $this->base = $base;
@@ -51,7 +53,7 @@ class DirectoryClassIterator implements Iterator {
      * Load all files in a folder
      *
      * @return ReflectionClass[]
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function getClasses() {
         $files = self::getFiles ();
@@ -66,7 +68,7 @@ class DirectoryClassIterator implements Iterator {
             if (! $class) continue;
             
             // Make sure the class is not abstract
-            $refl = new \ReflectionClass ( $class );
+            $refl = new ReflectionClass ( $class );
             if ($refl->isAbstract ()) continue;
             
             $classes [] = $refl;
@@ -77,7 +79,7 @@ class DirectoryClassIterator implements Iterator {
     /**
      * Get all the php files in a folder
      *
-     * @return \SplFileInfo[]
+     * @return SplFileInfo[]
      */
     private function getFiles() {
         $directory = new RecursiveDirectoryIterator ( $this->base . $this->path );
@@ -86,7 +88,7 @@ class DirectoryClassIterator implements Iterator {
         $files = [];
         foreach ( $regex as $file ) {
             $filename = $file [0];
-            $files [] = new \SplFileInfo ( $filename );
+            $files [] = new SplFileInfo ( $filename );
         }
         return $files;
     }

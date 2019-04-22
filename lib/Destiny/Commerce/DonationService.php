@@ -4,6 +4,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
+use PDO;
 
 /**
  * @method static DonationService instance()
@@ -50,7 +51,7 @@ class DonationService extends Service {
      */
     public function removeDonation($id){
         $conn = Application::getDbConn();
-        $conn->delete('donations', ['id' => $id], [\PDO::PARAM_INT]);
+        $conn->delete('donations', ['id' => $id], [PDO::PARAM_INT]);
     }
 
     /**
@@ -71,7 +72,7 @@ class DonationService extends Service {
     public function findById($id){
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `donations` WHERE `id` = :id LIMIT 1');
-        $stmt->bindValue('id', $id, \PDO::PARAM_INT);
+        $stmt->bindValue('id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -84,7 +85,7 @@ class DonationService extends Service {
     public function findByUserId($userId){
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `donations` WHERE `userid` = :userid LIMIT 1');
-        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -104,10 +105,10 @@ class DonationService extends Service {
           ORDER BY d.`timestamp` DESC
           LIMIT :start,:limit
         ');
-        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('status', DonationStatus::COMPLETED, \PDO::PARAM_STR);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
+        $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('status', DonationStatus::COMPLETED, PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

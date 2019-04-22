@@ -7,6 +7,8 @@ use Destiny\Common\Application;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Utils\Options;
+use Doctrine\DBAL\DBALException;
+use PDO;
 
 /**
  * @Schedule(frequency=1,period="hour")
@@ -21,7 +23,7 @@ class RedditSubscribers implements TaskInterface {
 
     /**
      * @return mixed|void
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function execute() {
         if (empty ($this->output))
@@ -48,10 +50,10 @@ class RedditSubscribers implements TaskInterface {
             LIMIT :start,:limit
         ');
 
-        $stmt->bindValue('subscriptionStatus', SubscriptionStatus::ACTIVE, \PDO::PARAM_STR);
-        $stmt->bindValue('authProvider', 'reddit', \PDO::PARAM_STR);
-        $stmt->bindValue('start', 0, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', 10000, \PDO::PARAM_INT);
+        $stmt->bindValue('subscriptionStatus', SubscriptionStatus::ACTIVE, PDO::PARAM_STR);
+        $stmt->bindValue('authProvider', 'reddit', PDO::PARAM_STR);
+        $stmt->bindValue('start', 0, PDO::PARAM_INT);
+        $stmt->bindValue('limit', 10000, PDO::PARAM_INT);
         $stmt->execute();
 
         $records = $stmt->fetchAll();

@@ -1,7 +1,10 @@
 <?php
 namespace Destiny\Common;
 
-class ViewModel extends \stdClass implements \JsonSerializable {
+use JsonSerializable;
+use stdClass;
+
+class ViewModel extends stdClass implements JsonSerializable {
     
     /**
      * @var array

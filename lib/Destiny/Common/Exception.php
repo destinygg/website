@@ -1,7 +1,9 @@
 <?php
 namespace Destiny\Common;
 
-class Exception extends \Exception implements \JsonSerializable {
+use JsonSerializable;
+
+class Exception extends \Exception implements JsonSerializable {
 
     public function __construct($message = "", \Exception $previous = null) {
         parent::__construct($message, 0, $previous);

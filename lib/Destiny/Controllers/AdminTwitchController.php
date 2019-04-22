@@ -11,6 +11,7 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
+use Doctrine\DBAL\DBALException;
 use GuzzleHttp\Client;
 
 /**
@@ -23,7 +24,7 @@ class AdminTwitchController {
 
     /**
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     private function getBroadcasterUser() {
         $userService = UserService::instance();
@@ -38,7 +39,7 @@ class AdminTwitchController {
      *
      * @param ViewModel $model
      * @return string
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function adminTwitch(ViewModel $model) {
         $model->user = $this->getBroadcasterUser();

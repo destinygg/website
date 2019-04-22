@@ -8,6 +8,8 @@ use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
+use Exception;
+use PDO;
 
 /**
  * @method static EmoteService instance()
@@ -104,7 +106,7 @@ class EmoteService extends Service {
              WHERE e.prefix = :prefix
              LIMIT 0,1
          ');
-        $stmt->bindValue('prefix', $prefix, \PDO::PARAM_STR);
+        $stmt->bindValue('prefix', $prefix, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -129,7 +131,7 @@ class EmoteService extends Service {
              WHERE e.id = :id
              LIMIT 0,1
          ');
-        $stmt->bindValue('id', $id, \PDO::PARAM_INT);
+        $stmt->bindValue('id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -224,7 +226,7 @@ class EmoteService extends Service {
 
             fclose($file);
             rename($filename, self::EMOTES_DIR . 'emotes.css');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::critical($e->getMessage());
         }
     }
@@ -243,7 +245,7 @@ class EmoteService extends Service {
             }, $this->getPublicEmotes())));
             fclose($file);
             rename($filename, self::EMOTES_DIR . 'emotes.json');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::critical($e->getMessage());
         }
     }

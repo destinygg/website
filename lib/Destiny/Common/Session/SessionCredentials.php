@@ -3,8 +3,9 @@ namespace Destiny\Common\Session;
 
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
+use JsonSerializable;
 
-class SessionCredentials implements \JsonSerializable {
+class SessionCredentials implements JsonSerializable {
 
     protected $userId = null;
     protected $authProvider = '';

@@ -23,7 +23,8 @@ use Destiny\Common\ViewModel;
 use Destiny\PayPal\PayPalApiService;
 use Destiny\StreamLabs\StreamLabsAlertsType;
 use Destiny\StreamLabs\StreamLabsService;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\ConnectionException;
+use PayPal\CoreComponentTypes\BasicAmountType;
 
 /**
  * @Controller
@@ -72,7 +73,7 @@ class DonateController {
      *
      * @param array $params
      * @return string
-     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws ConnectionException
      */
     public function donatePost(array $params) {
         $conn = Application::getDbConn();
@@ -171,7 +172,7 @@ class DonateController {
                     throw new Exception ('Failed to retrieve express checkout details');
                 }
 
-                /** @var \PayPal\CoreComponentTypes\BasicAmountType $total */
+                /** @var BasicAmountType $total */
                 $total = $checkinfo->GetExpressCheckoutDetailsResponseDetails->PaymentDetails[0]->OrderTotal;
                 if (strcasecmp($total->currencyID, $donation['currency']) !== 0 || number_format($total->value, 2) !== number_format($donation['amount'], 2)) {
                     throw new Exception ('Invalid donation amount');

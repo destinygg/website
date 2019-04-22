@@ -1,7 +1,9 @@
 <?php
 namespace Destiny\Common\Utils;
 
+use DateTime;
 use Destiny\Common\Config;
+use Exception;
 
 class Tpl {
 
@@ -10,7 +12,7 @@ class Tpl {
     }
 
     public static function out($var, $default = "") {
-        if ($var instanceof \Exception) {
+        if ($var instanceof Exception) {
             $var = $var->getMessage();
         }
         return htmlentities(((empty ($var)) ? $default : $var), ENT_QUOTES, 'UTF-8');
@@ -30,11 +32,11 @@ class Tpl {
         return "<title>$str</title>\r\n";
     }
 
-    public static function moment(\DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+    public static function moment(DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
         return sprintf('<time title="%s" data-moment="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $momentFormat, $date->format($format));
     }
 
-    public static function fromNow(\DateTime $date, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+    public static function fromNow(DateTime $date, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
         return sprintf('<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $momentFormat, Date::getElapsedTime($date));
     }
 

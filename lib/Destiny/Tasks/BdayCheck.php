@@ -7,6 +7,7 @@ use Destiny\Common\Log;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserService;
+use Exception;
 
 /**
  * @Schedule(frequency=5,period="minute")
@@ -30,7 +31,7 @@ class BdayCheck implements TaskInterface {
                 $userService->removeUserFeature($user['userId'], UserFeature::DGGBDAY);
                 $authService->flagUserForUpdate($userService->getUserById($user['userId']));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error checking bdays. " . $e->getMessage());
         }
     }

@@ -5,6 +5,7 @@ use Destiny\Common\Service;
 use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
+use PDO;
 
 /**
  * @method static OrdersService instance()
@@ -43,7 +44,7 @@ class OrdersService extends Service {
     public function getPaymentByTransactionId($transactionId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payments WHERE transactionId = :transactionId LIMIT 0,1' );
-        $stmt->bindValue ( 'transactionId', $transactionId, \PDO::PARAM_STR );
+        $stmt->bindValue ( 'transactionId', $transactionId, PDO::PARAM_STR );
         $stmt->execute ();
         return $stmt->fetch ();
     }
@@ -67,9 +68,9 @@ class OrdersService extends Service {
             ORDER BY p.paymentDate ASC
             LIMIT :start,:limit
         ' );
-        $stmt->bindValue ( 'subscriptionId', $subscriptionId, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'start', $start, \PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', $limit, \PDO::PARAM_INT );
+        $stmt->bindValue ( 'subscriptionId', $subscriptionId, PDO::PARAM_INT );
+        $stmt->bindValue ( 'start', $start, PDO::PARAM_INT );
+        $stmt->bindValue ( 'limit', $limit, PDO::PARAM_INT );
         $stmt->execute ();
         return $stmt->fetchAll ();
     }

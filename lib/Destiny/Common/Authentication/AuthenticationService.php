@@ -4,7 +4,6 @@ namespace Destiny\Common\Authentication;
 use DateInterval;
 use Destiny\Chat\EmoteService;
 use Destiny\Common\Application;
-use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\CryptoMcrypt;
@@ -199,7 +198,6 @@ class AuthenticationService extends Service {
      *
      * @param AuthenticationCredentials $authCreds
      * @throws DBALException
-     * @throws Exception
      */
     public function handleAuthAndMerge(AuthenticationCredentials $authCreds) {
         $userService = UserService::instance();

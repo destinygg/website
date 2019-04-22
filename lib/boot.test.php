@@ -35,7 +35,7 @@ Log::$log->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 
 try {
     $app->setDbal(DriverManager::getConnection(Config::$a ['db']));
-} catch (\Exception $e) {
+} catch (Exception $e) {
     Log::error("Could not setup DB connection. " . $e->getMessage());
     exit(1);
 }

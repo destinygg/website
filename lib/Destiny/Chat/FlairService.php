@@ -8,6 +8,8 @@ use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
+use Exception;
+use PDO;
 
 /**
  * @method static FlairService instance()
@@ -157,7 +159,7 @@ class FlairService extends Service {
              WHERE f.featureId = :id
              LIMIT 0,1
          ');
-        $stmt->bindValue('id', $id, \PDO::PARAM_INT);
+        $stmt->bindValue('id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -182,7 +184,7 @@ class FlairService extends Service {
              WHERE f.featureName = :name
              LIMIT 0,1
          ');
-        $stmt->bindValue('name', $name, \PDO::PARAM_STR);
+        $stmt->bindValue('name', $name, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -250,7 +252,7 @@ class FlairService extends Service {
             }
             fclose($file);
             rename($filename, self::FLAIRS_DIR . 'flairs.css');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::critical($e->getMessage());
         }
     }
@@ -266,7 +268,7 @@ class FlairService extends Service {
             fwrite($file, json_encode($this->getPublicFlairs()));
             fclose($file);
             rename($filename, self::FLAIRS_DIR . 'flairs.json');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::critical($e->getMessage());
         }
     }

@@ -1,7 +1,5 @@
 <?php
 namespace Destiny;
-use Destiny\Common\Exception;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>

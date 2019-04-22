@@ -5,6 +5,7 @@ use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Images\ImageService;
 use Destiny\Common\Log;
 use Destiny\Common\Cron\TaskInterface;
+use Exception;
 
 /**
  * @Schedule(frequency=1,period="hour")
@@ -22,7 +23,7 @@ class CleanImageUploads implements TaskInterface {
                 $imageService->removeImageFile($image['name'], _BASEDIR . '/static/'. $image['tag'] .'/');
                 $imageService->removeImageById($image['id']);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::critical($e->getMessage());
         }
     }

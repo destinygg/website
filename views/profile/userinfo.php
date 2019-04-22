@@ -35,7 +35,7 @@ use Destiny\Common\Utils\Tpl;
                 </div>
                 <div class="modal-body">
                     <p style="color: black;">Do you really want to delete your account? <br /> This cannot be undone, so be sure!</p>
-                    <p><div class="g-recaptcha" data-sitekey="<?= Config::$a['g-recaptcha']['key'] ?>"></div></p>
+                    <div style="margin-bottom: 1em;"><div class="g-recaptcha" data-sitekey="<?= Config::$a['g-recaptcha']['key'] ?>"></div></div>
                     <p>Note: your username will <strong>NOT</strong> be made available after deletion.<br /> You will be logged on completion.</p>
                 </div>
                 <div class="modal-footer">

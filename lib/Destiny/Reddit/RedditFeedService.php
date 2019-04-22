@@ -5,6 +5,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Http;
+use Exception;
 use GuzzleHttp\Client;
 use function GuzzleHttp\json_decode;
 
@@ -59,7 +60,7 @@ class RedditFeedService extends Service {
                     return $data;
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to parse reddit threads. " . $e->getMessage());
         }
         return null;

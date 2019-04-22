@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Tasks;
 
+use DateTime;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Annotation\Schedule;
@@ -12,6 +13,8 @@ use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
+use Exception;
+use PDO;
 
 /**
  * @Schedule(frequency=5,period="minute")
@@ -40,7 +43,7 @@ class SubscriptionExpire implements TaskInterface {
                 // Because subscriptions can be revived after months of skipped payments;
                 // The end date may not simply be behind by the subscription frequency.
                 $end = Date::getDateTime($subscription ['endDate']);
-                $diff = $end->diff(new \DateTime ('NOW'));
+                $diff = $end->diff(new DateTime ('NOW'));
                 $end->modify('+' . (intval(($diff->format('%y') * 12)) + intval($diff->format('%m'))) . ' month');
                 $end->modify('+' . $subType ['billingFrequency'] . ' ' . strtolower($subType ['billingPeriod']));
 
@@ -51,7 +54,7 @@ class SubscriptionExpire implements TaskInterface {
                 ]);
                 $this->sendResubscribeBroadcast($subscription);
                 $users[] = $subscription ['userId'];
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::critical("Could not roll over subscription", $subscription);
             }
         }
@@ -80,7 +83,7 @@ class SubscriptionExpire implements TaskInterface {
           DELETE FROM `dfl_users_subscriptions`
           WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 1 HOUR)
         ');
-        $stmt->bindValue('status', SubscriptionStatus::_NEW, \PDO::PARAM_STR);
+        $stmt->bindValue('status', SubscriptionStatus::_NEW, PDO::PARAM_STR);
         $stmt->execute();
     }
 
@@ -99,7 +102,7 @@ class SubscriptionExpire implements TaskInterface {
                 $message = sprintf("%s has resubscribed! active for %s", $user['username'], $months);
                 $redisService = ChatRedisService::instance();
                 $redisService->sendBroadcast($message);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::critical('Could not send resubscribe broadcast', $subscription);
             }
         }
