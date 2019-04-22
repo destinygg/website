@@ -1,5 +1,7 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Exception;
+use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
@@ -9,17 +11,22 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/meta.php' ?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
-<body id="home" class="no-brand">
+<body id="profile" class="error no-brand">
 <div id="page-wrap">
+
     <?php include 'seg/nav.php' ?>
     <?php include 'seg/banner.php' ?>
-    <div class="container"><?php include 'seg/alerts.php' ?></div>
-    <?php include 'seg/panel.shop.php' ?>
-    <?php include 'seg/panel.podcasts.php' ?>
-    <?php include 'seg/panel.reddit.php' ?>
-    <?php include 'seg/panel.videos.php' ?>
-    <?php include 'seg/panel.music.php' ?>
-    <?php/* include 'seg/panel.ads.php' */?>
+
+    <section id="error-container" class="container">
+        <div class="mt-3 mb-3" style="text-align: center;">
+            <h1 class="display-1">Account Delete</h1>
+            <p class="lead">
+                Your account has been disabled and marked for deletion.<br />
+                Thank you for your support. Good luck to you!
+            </p>
+        </div>
+    </section>
+
 </div>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>

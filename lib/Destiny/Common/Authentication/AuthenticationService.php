@@ -203,25 +203,17 @@ class AuthenticationService extends Service {
      */
     public function handleAuthAndMerge(AuthenticationCredentials $authCreds) {
         $userService = UserService::instance();
-        $user = $userService->getAuthByIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider());
-        $sessAuth = Session::getCredentials()->getData();
-        // We need to merge the accounts if one exists
-        if (!empty ($user)) {
-            // If the profile userId is the same as the current one, the profiles are connceted, they shouldn't be here
-            if ($user ['userId'] == $sessAuth ['userId']) {
-                throw new Exception ('These account are already connected');
-            }
-            // If the profile user is older than the current user, prompt the user to rather login using the other profile
-            if (intval($user ['userId']) < $sessAuth ['userId']) {
-                throw new Exception (sprintf('Your user profile for the %s account is older. Please login and use that account to merge.', $authCreds->getAuthProvider()));
-            }
-            // So we have a profile for a different user to the one logged in, we delete that user, and add a profile for the current user
-            $userService->removeAuthProfile($user ['userId'], $authCreds->getAuthProvider());
-            // Set the user profile to Merged
-            $userService->updateUser($user ['userId'], ['userStatus' => 'Merged']);
+        $user = Session::getCredentials()->getData();
+
+        // If this auth profile exists, delete it what ever user had it.
+        $existingAuth = $userService->getAuthByIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider());
+        if (!empty($existingAuth)) {
+            $userService->removeAuthProfile($existingAuth['userId'], $authCreds->getAuthProvider());
         }
+
+        // Add the auth profile to the user
         $userService->addUserAuthProfile([
-            'userId' => $sessAuth ['userId'],
+            'userId' => $user['userId'],
             'authProvider' => $authCreds->getAuthProvider(),
             'authId' => $authCreds->getAuthId(),
             'authCode' => $authCreds->getAuthCode(),

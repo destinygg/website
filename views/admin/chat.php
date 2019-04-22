@@ -27,7 +27,7 @@ use Destiny\Common\Utils\Date;
                         </label>
                         <input name="message" type="text" class="form-control" value="" placeholder="Please no pasterino..." />
                     </div>
-                    <button type="submit" class="btn btn-danger">Send</button>
+                    <button type="submit" class="btn btn-primary">Send</button>
                 </div>
             </form>
         </div>

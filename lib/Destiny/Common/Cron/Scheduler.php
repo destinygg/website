@@ -55,36 +55,31 @@ class Scheduler {
      */
     public function execute() {
         $startTime = microtime(true);
-        try {
-            Log::info('Schedule starting');
-            foreach ($this->schedule as &$task) {
-                $taskNeverRun = $task['lastExecuted'] == '';
-                $nextExecute = $taskNeverRun ? Date::getDateTime() : Date::getDateTime($task['lastExecuted']);
-                $nextExecute->modify('+' . $task['frequency'] . ' ' . $task['period']);
-                if ($taskNeverRun || time() > $nextExecute->getTimestamp()) {
-                    try {
-                        $task['executeCount'] = intval($task['executeCount']) + 1;
-                        $task['lastExecuted'] = date(DateTime::ATOM);
-                        if($taskNeverRun) {
-                            $this->insertTask($task);
-                        } else {
-                            $this->updateTask($task);
-                        }
-                        Log::info('Execute start {action}', $task);
-                        $this->getTaskClass($task)->execute();
-                    } catch (\Exception $e) {
-                        Log::error("Error executing task: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+        Log::info('Schedule starting');
+        foreach ($this->schedule as &$task) {
+            $taskNeverRun = $task['lastExecuted'] == '';
+            $nextExecute = $taskNeverRun ? Date::getDateTime() : Date::getDateTime($task['lastExecuted']);
+            $nextExecute->modify('+' . $task['frequency'] . ' ' . $task['period']);
+            if ($taskNeverRun || time() > $nextExecute->getTimestamp()) {
+                try {
+                    $task['executeCount'] = intval($task['executeCount']) + 1;
+                    $task['lastExecuted'] = date(DateTime::ATOM);
+                    if ($taskNeverRun) {
+                        $this->insertTask($task);
+                    } else {
+                        $this->updateTask($task);
                     }
-                    Log::info('Execute end {action}', $task);
-                } else {
-                    Log::info('Not executed. ' . $task['action'] . ' next: ' . $nextExecute->format('Y-m-d H:i:s'));
+                    Log::info('Execute start {action}', $task);
+                    $this->getTaskClass($task)->execute();
+                } catch (\Exception $e) {
+                    Log::error('Error executing task: ' . serialize($task) . ' ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
                 }
+                Log::info('Execute end {action}', $task);
+            } else {
+                Log::info('Not executed. ' . $task['action'] . ' next: ' . $nextExecute->format('Y-m-d H:i:s'));
             }
-            Log::info('Schedule complete');
-        } catch (\Exception $e) {
-            Log::critical("Error executing tasks: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
-        Log::info('Completed in ' . (microtime(true) - $startTime) . ' seconds');
+        Log::info('Schedule complete. Completed in ' . (microtime(true) - $startTime) . ' seconds');
     }
 
     /**

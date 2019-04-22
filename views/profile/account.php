@@ -247,7 +247,7 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
 
     <section class="container">
-        <h3 class="collapsed" data-toggle="collapse" data-target="#minecraft-content">Minecraft <small>(Subscribers only)</small></h3>
+        <h3 class="collapsed" data-toggle="collapse" data-target="#minecraft-content">Minecraft</h3>
         <div id="minecraft-content" class="content content-dark clearfix collapse">
             <form id="minecraftForm" action="/profile/minecraft/update" method="post" role="form">
                 <div class="ds-block">
@@ -263,6 +263,7 @@ use Destiny\Commerce\SubscriptionStatus;
                             <input type="text" class="form-control" name="minecraftuuid" id="inputMinecraftuuid" value="<?=Tpl::out($this->user['minecraftuuid'])?>" placeholder="Minecraft UUID" disabled>
                         </div>
                     </div>
+                    <p>Note: This service is only available to subscribers</p>
                 </div>
                 <div class="form-actions block-foot">
                     <button class="btn btn-primary" type="submit">Update</button>
@@ -279,6 +280,7 @@ use Destiny\Commerce\SubscriptionStatus;
 <?=Tpl::manifestScript('common.vendor.js')?>
 <?=Tpl::manifestScript('web.js')?>
 <?=Tpl::manifestScript('profile.js')?>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 
 </body>
 </html>

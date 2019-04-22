@@ -42,14 +42,14 @@ class AuthenticationRedirectionFilter {
         $authService = AuthenticationService::instance();
         $userService = UserService::instance();
 
-        $merge = Session::getAndRemove('accountMerge');
+        $isConnectingAccount = Session::getAndRemove('isConnectingAccount');
         $rememberme = Session::getAndRemove('rememberme');
         $follow = Session::getAndRemove('follow');
         $grant = Session::getAndRemove('grant');
         $uuid = Session::getAndRemove('uuid');
 
-        // Account merge
-        if ($merge === '1') {
+        // Connecting account
+        if ($isConnectingAccount === '1') {
             // Must be logged in to do a merge
             if (!Session::hasRole(UserRole::USER)) {
                 throw new Exception ('Authentication required for account merge');

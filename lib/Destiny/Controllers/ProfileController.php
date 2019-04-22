@@ -2,14 +2,17 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Authentication\OAuthService;
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Country;
+use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Request;
@@ -21,6 +24,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\User\UserService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Discord\DiscordAuthHandler;
+use Destiny\Discord\DiscordMessenger;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
@@ -407,7 +411,7 @@ class ProfileController {
 
         // Set a session var that is picked up in the AuthenticationService
         // in the GET method, this variable is unset
-        Session::set('accountMerge', '1');
+        Session::set('isConnectingAccount', '1');
 
         switch (strtoupper($authProvider)) {
             case 'TWITCH' :
@@ -594,6 +598,40 @@ class ProfileController {
     private function validateAppRedirect($redirect) {
         if (mb_strlen($redirect) > 255) {
             throw new Exception ('Redirect URL has exceeded max length of 255 characters.');
+        }
+    }
+
+    /**
+     * @Route ("/profile/delete")
+     * @HttpMethod ({"POST"})
+     * @Secure ({"USER"})
+     *
+     * @param Request $request
+     * @return string
+     *
+     * @throws DBALException
+     */
+    public function deleteAccount(Request $request) {
+        try {
+            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+            $googleRecaptchaHandler->resolveWithRequest($request);
+            $userId = Session::getCredentials()->getUserId();
+            $creds = Session::instance()->getCredentials();
+
+            $userServer = UserService::instance();
+            $userServer->updateUser($userId, ['userStatus' => 'Deleted']);
+
+            $redis = ChatRedisService::instance();
+            $redis->removeChatSession(Session::getSessionId());
+
+            $messenger = DiscordMessenger::instance();
+            $messenger->send(Config::$a['meta']['shortName'], "<". Http::getBaseUrl() ."/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has requested account deletion.");
+
+            Session::destroy();
+            return 'profile/deleted';
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /profile';
         }
     }
 

@@ -6,7 +6,10 @@ use Destiny\Common\Application;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\InvalidArgumentException;
+use PDO;
 
 /**
  * @method static UserService instance()
@@ -135,7 +138,7 @@ class UserService extends Service {
             INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
             WHERE userId = :userId
             ORDER BY a.featureId ASC');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $features = [];
         while ($feature = $stmt->fetchColumn()) {
@@ -192,8 +195,8 @@ class UserService extends Service {
     public function checkUsernameTaken($username, $excludeUserId = 0, $msg = 'The username you asked for is already being used') {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId');
-        $stmt->bindValue('username', $username, \PDO::PARAM_STR);
-        $stmt->bindValue('excludeUserId', $excludeUserId, \PDO::PARAM_INT);
+        $stmt->bindValue('username', $username, PDO::PARAM_STR);
+        $stmt->bindValue('excludeUserId', $excludeUserId, PDO::PARAM_INT);
         $stmt->execute();
         if ($stmt->fetchColumn() > 0) {
             throw new Exception ($msg);
@@ -209,8 +212,8 @@ class UserService extends Service {
     public function getIsEmailTaken($email, $excludeUserId = 0) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE email = :email AND userId != :excludeUserId');
-        $stmt->bindValue('email', $email, \PDO::PARAM_STR);
-        $stmt->bindValue('excludeUserId', $excludeUserId, \PDO::PARAM_INT);
+        $stmt->bindValue('email', $email, PDO::PARAM_STR);
+        $stmt->bindValue('excludeUserId', $excludeUserId, PDO::PARAM_INT);
         $stmt->execute();
         return ($stmt->fetchColumn() > 0) ? true : false;
     }
@@ -223,7 +226,7 @@ class UserService extends Service {
     public function getUserByUsername($username) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE username = :username LIMIT 1');
-        $stmt->bindValue('username', $username, \PDO::PARAM_STR);
+        $stmt->bindValue('username', $username, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -236,7 +239,7 @@ class UserService extends Service {
     public function getUserById($userId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE userId = :userId LIMIT 1');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -262,9 +265,7 @@ class UserService extends Service {
     public function updateUser($userId, array $user) {
         $conn = Application::getDbConn();
         $user ['modifiedDate'] = Date::getSqlDateTime();
-        $conn->update('dfl_users', $user, [
-            'userId' => $userId
-        ]);
+        $conn->update('dfl_users', $user, ['userId' => $userId]);
     }
 
     /**
@@ -279,7 +280,7 @@ class UserService extends Service {
           INNER JOIN dfl_roles b ON (b.roleId = a.roleId)
           WHERE a.userId = :userId
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $roles = [];
         while ($role = $stmt->fetchColumn()) {
@@ -302,8 +303,8 @@ class UserService extends Service {
           WHERE a.authId = :authId AND a.authProvider = :authProvider
           LIMIT 1
         ');
-        $stmt->bindValue('authId', $authId, \PDO::PARAM_STR);
-        $stmt->bindValue('authProvider', $authProvider, \PDO::PARAM_STR);
+        $stmt->bindValue('authId', $authId, PDO::PARAM_STR);
+        $stmt->bindValue('authProvider', $authProvider, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -322,8 +323,8 @@ class UserService extends Service {
           WHERE a.authId = :authId AND a.authProvider = :authProvider
           LIMIT 1
         ');
-        $stmt->bindValue('authId', $authId, \PDO::PARAM_STR);
-        $stmt->bindValue('authProvider', $authProvider, \PDO::PARAM_STR);
+        $stmt->bindValue('authId', $authId, PDO::PARAM_STR);
+        $stmt->bindValue('authProvider', $authProvider, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn() > 0 ? true : false;
     }
@@ -341,8 +342,8 @@ class UserService extends Service {
           WHERE a.userId = :userId AND a.authProvider = :authProvider
           LIMIT 1
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('authProvider', $authProvider, \PDO::PARAM_STR);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('authProvider', $authProvider, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
     }
@@ -359,7 +360,7 @@ class UserService extends Service {
           WHERE a.userId = :userId
           ORDER BY a.createdDate DESC
         ');
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -396,14 +397,14 @@ class UserService extends Service {
             'createdDate' => Date::getSqlDateTime(),
             'modifiedDate' => Date::getSqlDateTime()
         ], [
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_STR
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            PDO::PARAM_STR
         ]);
     }
 
@@ -435,9 +436,9 @@ class UserService extends Service {
           ORDER BY u.username DESC
           LIMIT :start,:limit
         ');
-        $stmt->bindValue('username', $username, \PDO::PARAM_STR);
-        $stmt->bindValue('start', $start, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('username', $username, PDO::PARAM_STR);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -456,8 +457,8 @@ class UserService extends Service {
           ORDER BY u.userId DESC
           LIMIT :start,:limit
         ');
-        $stmt->bindValue('start', ($page - 1) * $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('start', ($page - 1) * $limit, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         $pagination = [];
         $pagination ['list'] = $stmt->fetchAll();
@@ -487,9 +488,9 @@ class UserService extends Service {
           ORDER BY u.userId DESC
           LIMIT :start,:limit
         ');
-        $stmt->bindValue('featureName', $feature, \PDO::PARAM_STR);
-        $stmt->bindValue('start', ($page - 1) * $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('featureName', $feature, PDO::PARAM_STR);
+        $stmt->bindValue('start', ($page - 1) * $limit, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         $pagination = [];
         $pagination ['list'] = $stmt->fetchAll();
@@ -528,12 +529,12 @@ class UserService extends Service {
           END, u.username
           LIMIT :start,:limit
         ');
-        $stmt->bindValue('wildcard1', '%' . $search . '%', \PDO::PARAM_STR);
-        $stmt->bindValue('wildcard2', $search . ' %', \PDO::PARAM_STR);
-        $stmt->bindValue('wildcard3', $search . '%', \PDO::PARAM_STR);
-        $stmt->bindValue('wildcard4', '% %' . $search . '% %', \PDO::PARAM_STR);
-        $stmt->bindValue('start', ($page - 1) * $limit, \PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue('wildcard1', '%' . $search . '%', PDO::PARAM_STR);
+        $stmt->bindValue('wildcard2', $search . ' %', PDO::PARAM_STR);
+        $stmt->bindValue('wildcard3', $search . '%', PDO::PARAM_STR);
+        $stmt->bindValue('wildcard4', '% %' . $search . '% %', PDO::PARAM_STR);
+        $stmt->bindValue('start', ($page - 1) * $limit, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 
         $pagination = [];
@@ -562,7 +563,7 @@ class UserService extends Service {
             AND TIMESTAMPDIFF(YEAR, u.createdDate, CURDATE()) > 0
             AND uf.featureId IS NULL
          ");
-        $stmt->bindValue('featureId', $featureId, \PDO::PARAM_INT);
+        $stmt->bindValue('featureId', $featureId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -581,7 +582,7 @@ class UserService extends Service {
             WHERE DATE_FORMAT(u.createdDate,'%m-%d') <> DATE_FORMAT(CURDATE(),'%m-%d')
             AND u.userStatus = 'Active'
          ");
-        $stmt->bindValue('featureId', $featureId, \PDO::PARAM_INT);
+        $stmt->bindValue('featureId', $featureId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -599,7 +600,7 @@ class UserService extends Service {
             WHERE " . $field . " = :value
             LIMIT 1
         ");
-        $stmt->bindValue('value', $value, \PDO::PARAM_STR);
+        $stmt->bindValue('value', $value, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
@@ -626,8 +627,8 @@ class UserService extends Service {
             WHERE a.authDetail = :detail AND a.authProvider = :provider
             LIMIT 1
         ");
-        $stmt->bindValue('detail', $detail, \PDO::PARAM_STR);
-        $stmt->bindValue('provider', $provider, \PDO::PARAM_STR);
+        $stmt->bindValue('detail', $detail, PDO::PARAM_STR);
+        $stmt->bindValue('provider', $provider, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
@@ -645,8 +646,8 @@ class UserService extends Service {
             WHERE a.authId = :id AND a.authProvider = :provider
             LIMIT 1
         ");
-        $stmt->bindValue('id', $id, \PDO::PARAM_STR);
-        $stmt->bindValue('provider', $provider, \PDO::PARAM_STR);
+        $stmt->bindValue('id', $id, PDO::PARAM_STR);
+        $stmt->bindValue('provider', $provider, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
@@ -696,7 +697,7 @@ class UserService extends Service {
           WHERE u.userId = :userId AND DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW()
           LIMIT 1
         ");
-        $stmt->bindValue('userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return !!$stmt->fetchColumn();
     }
@@ -811,7 +812,7 @@ class UserService extends Service {
             u.istwitchsubscriber = 1
         ");
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
     /**
@@ -826,8 +827,8 @@ class UserService extends Service {
           UPDATE dfl_users SET `chatsettings` = :chatsettings
           WHERE userId = :userid LIMIT 1
         ");
-        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
-        $stmt->bindValue('chatsettings', $settings, \PDO::PARAM_STR);
+        $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('chatsettings', $settings, PDO::PARAM_STR);
         $stmt->execute();
         return (bool)$stmt->rowCount();
     }
@@ -843,7 +844,7 @@ class UserService extends Service {
             SELECT `chatsettings` FROM dfl_users
             WHERE `userId` = :userid LIMIT 1
         ");
-        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $data = $stmt->fetchColumn();
         return !empty($data) ? json_decode($data) : [];
@@ -860,7 +861,7 @@ class UserService extends Service {
           UPDATE dfl_users SET `chatsettings` = NULL
           WHERE userId = :userid LIMIT 1
         ");
-        $stmt->bindValue('userid', $userId, \PDO::PARAM_INT);
+        $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return (bool)$stmt->rowCount();
     }

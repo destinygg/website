@@ -17,6 +17,7 @@ use Destiny\Google\GoogleAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
+use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -60,10 +61,10 @@ class LoginController {
      * @param ViewModel $model
      * @return string
      * @throws Exception
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function login(array $params, ViewModel $model) {
-        Session::remove('accountMerge');
+        Session::remove('isConnectingAccount');
         $grant = isset($params['grant']) ? $params['grant'] : null;
         $follow = (isset($params ['follow'])) ? $params ['follow'] : '';
         $uuid = (isset($params ['uuid'])) ? $params ['uuid'] : '';
