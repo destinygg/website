@@ -461,13 +461,13 @@ class SubscriptionController {
             $redisService->sendBroadcast($message);
             if (!empty($subMessage)) {
                 $redisService->sendBroadcast("$gifternick said... $subMessage");
-            }
-            if(Config::$a['streamlabs']['alert_subscriptions']) {
-                $streamLabService = StreamLabsService::withAuth();
-                $streamLabService->sendAlert([
-                    'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-                    'message' => $message
-                ]);
+                if(Config::$a['streamlabs']['alert_subscriptions']) {
+                    $streamLabService = StreamLabsService::withAuth();
+                    $streamLabService->sendAlert([
+                        'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
+                        'message' => $subMessage
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             $n = new Exception("Error sending subscription broadcast.", $e);

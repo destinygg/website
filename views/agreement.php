@@ -18,7 +18,7 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <h1 class="title">Disclaimer</h1>
-        <div class="content content-dark clearfix">
+        <div class="content content-dark mb-4">
             <div class="ds-block">
                 <h4>Cookies</h4>
                 <p>When you are signed in, a <a target="_blank" href="https://en.wikipedia.org/wiki/HTTP_cookie">cookie</a> is used to track who you are; it contains a simple unique string used to identify your requests.</p>
@@ -29,15 +29,22 @@ use Destiny\Common\Utils\Tpl;
                 <p>Your IP address is recorded with your chat messages for a time period; it is accessible to admins of the website.</p>
             </div>
         </div>
+        <h2>Account Deletion</h2>
+        <div class="content content-dark mb-4">
+            <div class="ds-block">
+                <p>You can request account removal via your profile. We will action this within 30 days of your submission.<br />
+                    Your private messages, even when deleted via your profile, are not removed from the recipients inbox.</p>
+            </div>
+        </div>
         <h2>User Agreement</h2>
-        <div class="content content-dark clearfix">
+        <div class="content content-dark mb-4">
             <div class="ds-block">
                 <p>You must not attempt to gain access to data or user accounts that are not yours.</p>
                 <p>You must not create user profiles using automated code.</p>
             </div>
         </div>
         <h2>Rights Reserved</h2>
-        <div class="content content-dark clearfix">
+        <div class="content content-dark mb-4">
             <div class="ds-block">
                 <p>We may change these and others rules on the website.</p>
                 <p>We may block or delete your account when appropriate.</p>
