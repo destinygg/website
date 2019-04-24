@@ -1,4 +1,6 @@
 <?php
+
+use Destiny\Common\Config;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Date;
@@ -33,6 +35,13 @@ use Destiny\Commerce\SubscriptionStatus;
                 <input type="hidden" name="id" value="<?=Tpl::out($this->user['userId'])?>" />
 
                 <div class="ds-block">
+                    <div class="form-group">
+                        <label class="control-label" for="inputUsername">Status</label>
+                        <div class="controls">
+                            <input type="text" class="form-control" name="status" id="inputStatus" value="<?=Tpl::out($this->user['userStatus'])?>" placeholder="status" disabled>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label class="control-label" for="inputUsername">Username / Nickname</label>
                         <div class="controls">
@@ -398,6 +407,37 @@ use Destiny\Commerce\SubscriptionStatus;
         </form>
     <?php endif ?>
 
+    <?php if(empty($this->deleted)): ?>
+        <form method="post" action="/admin/user/<?=$this->user['userId']?>/delete">
+            <section class="container">
+                <h3 class="collapsed" data-toggle="collapse" data-target="#danger-content">Danger</h3>
+                <div id="danger-content" class="content content-dark clearfix collapse">
+                    <div class="ds-block">
+                        <p>
+                            Delete all authentication profiles, oauth tokens.
+                            <br />Re-name the user to <code>deleted{ID}</code>
+                            <br />Insert a record into the <code>users_deleted</code> table<br />
+                            This cannot be undone!
+                        </p>
+                        <div class="g-recaptcha" data-theme="dark" data-sitekey="<?=Tpl::out(Config::$a['g-recaptcha']['key'])?>"></div>
+                        <div style="margin-top: 1em;">
+                            <button class="btn btn-danger">Delete Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </form>
+    <?php else: ?>
+        <section class="container">
+            <h3 class="collapsed" data-toggle="collapse" data-target="#danger-content">Danger</h3>
+            <div id="danger-content" class="content content-dark clearfix collapse">
+                <div class="ds-block">
+                    <p>This user has been deleted by <?= Tpl::out($this->deleted['deletedByUsername']) ?> on <?= Tpl::moment(Date::getDateTime($this->deleted['timestamp']), Date::STRING_FORMAT); ?></p>
+                </div>
+            </div>
+        </section>
+    <?php endif ?>
+
 
 </div>
 
@@ -407,6 +447,7 @@ use Destiny\Commerce\SubscriptionStatus;
 <?=Tpl::manifestScript('common.vendor.js')?>
 <?=Tpl::manifestScript('web.js')?>
 <?=Tpl::manifestScript('admin.js')?>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 
 </body>
 </html>

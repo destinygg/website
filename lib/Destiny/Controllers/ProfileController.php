@@ -625,7 +625,7 @@ class ProfileController {
             $redis->removeChatSession(Session::getSessionId());
 
             $messenger = DiscordMessenger::instance();
-            $messenger->send(Config::$a['meta']['shortName'], "<". Http::getBaseUrl() ."/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has requested account deletion.");
+            $messenger->send("<". Http::getBaseUrl() ."/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has requested account deletion.");
 
             Session::destroy();
             return 'profile/deleted';

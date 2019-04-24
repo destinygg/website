@@ -3,10 +3,14 @@ namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
 use Destiny\Chat\ChatRedisService;
+use Destiny\Common\Annotation\Audit;
 use Destiny\Common\Application;
 use Destiny\Common\Log;
+use Destiny\Common\Request;
+use Destiny\Common\Session\SessionInstance;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
+use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Annotation\Controller;
@@ -20,7 +24,12 @@ use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Config;
 use Destiny\Commerce\OrdersService;
+use Destiny\Discord\DiscordMessenger;
+use Destiny\Google\GoogleRecaptchaHandler;
+use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\InvalidArgumentException;
+use PDO;
 
 /**
  * @Controller
@@ -65,18 +74,20 @@ class AdminUserController {
         $redisService = ChatRedisService::instance();
         $subscriptionsService = SubscriptionsService::instance();
 
-        $user ['roles'] = $userService->getRolesByUserId($user ['userId']);
-        $user ['features'] = $userService->getFeaturesByUserId($user ['userId']);
-        $user ['ips'] = $redisService->getIPByUserId($user ['userId']);
+        $userId = $user['userId'];
+        $user['roles'] = $userService->getRolesByUserId($userId);
+        $user['features'] = $userService->getFeaturesByUserId($userId);
+        $user['ips'] = $redisService->getIPByUserId($userId);
 
         $model->user = $user;
-        $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($user ['userId']));
+        $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($userId));
         $model->features = $userService->getAllFeatures();
         $model->roles = $this->getAllowedRoles();
-        $model->ban = $chatBanService->getUserActiveBan($user ['userId']);
-        $model->authSessions = $userService->getAuthByUserId($user ['userId']);
-        $model->subscriptions = $subscriptionsService->findByUserId($user ['userId']);
-        $model->gifts = $subscriptionsService->findCompletedByGifterId($user ['userId']);
+        $model->ban = $chatBanService->getUserActiveBan($userId);
+        $model->authSessions = $userService->getAuthByUserId($userId);
+        $model->subscriptions = $subscriptionsService->findByUserId($userId);
+        $model->gifts = $subscriptionsService->findCompletedByGifterId($userId);
+        $model->deleted = $userService->getUserDeletedByUserId($userId);
 
         $gifters = [];
         $recipients = [];
@@ -100,6 +111,7 @@ class AdminUserController {
      * @Route ("/admin/user/{id}/edit")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -189,7 +201,7 @@ class AdminUserController {
             $conn->beginTransaction();
             $userService->updateUser($user ['userId'], $userData);
             $user = $userService->getUserById($params ['id']);
-            $authService->flagUserForUpdate($user ['userId']);
+            $authService->flagUserForUpdate($user['userId']);
             $conn->commit();
         } catch (DBALException $e) {
             Log::critical("Error updating user", $user);
@@ -205,6 +217,7 @@ class AdminUserController {
      * @Route ("/admin/user/{id}/toggle/flair")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      *
@@ -231,6 +244,7 @@ class AdminUserController {
      * @Route ("/admin/user/{id}/toggle/role")
      * @Secure ({"ADMIN"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      *
@@ -325,6 +339,7 @@ class AdminUserController {
      * @Route ("/admin/user/{id}/subscription/save")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -390,6 +405,7 @@ class AdminUserController {
      * @Route ("/admin/user/{id}/auth/{provider}/delete")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -441,6 +457,7 @@ class AdminUserController {
      * @Route ("/admin/user/{userId}/ban")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -504,6 +521,7 @@ class AdminUserController {
      * @Route ("/admin/user/{userId}/ban/{id}/update")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -543,6 +561,7 @@ class AdminUserController {
     /**
      * @Route ("/admin/user/{userId}/ban/remove")
      * @Secure ({"MODERATOR"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -567,6 +586,49 @@ class AdminUserController {
             return 'redirect: ' . $params['follow'];
 
         return 'redirect: /admin/user/' . $params ['userId'] . '/edit';
+    }
+
+    /**
+     * @Route ("/admin/user/{userId}/delete")
+     * @Secure ({"ADMIN"})
+     * @HttpMethod ({"POST"})
+     * @Audit
+     *
+     * @param array $params
+     * @param Request $request
+     * @return string
+     *
+     * @throws DBALException
+     * @throws ConnectionException
+     * @throws InvalidArgumentException
+     */
+    public function deleteUser(array $params, Request $request) {
+        $userId = intval($params['userId']);
+        try {
+            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+            $googleRecaptchaHandler->resolveWithRequest($request);
+        } catch (Exception $e) {
+            Session::setErrorBag('Invalid captcha');
+            return "redirect: /admin/user/$userId/edit";
+        }
+
+        $userService = UserService::instance();
+        $user = $userService->getUserById($userId);
+
+        if (empty($user)) {
+            Session::setErrorBag('Invalid user');
+            return 'redirect: /admin';
+        }
+
+        $userService->logicalDeleteUser($user);
+
+        $editUrl = Http::getBaseUrl() ."/admin/user/$userId/edit";
+        $creds = Session::getCredentials();
+        $messenger = DiscordMessenger::instance();
+        $messenger->send("<$editUrl|{$user['username']}> account has been deleted by *{$creds->getUsername()}*.");
+
+        Session::setSuccessBag('User deleted');
+        return "redirect: /admin/user/$userId/edit";
     }
 
 }

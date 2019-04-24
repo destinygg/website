@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\EmoteService;
+use Destiny\Common\Annotation\Audit;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
@@ -47,6 +48,7 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
      * @ResponseBody
+     * @Audit
      *
      * @param array $params
      * @return array
@@ -114,6 +116,7 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/new")
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -143,6 +146,7 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/{id}/edit")
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -178,6 +182,7 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
      * @ResponseBody
+     * @Audit
      *
      * @return array
      */
@@ -193,6 +198,7 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/{id}/delete")
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return mixed

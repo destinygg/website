@@ -1,0 +1,32 @@
+<?php
+namespace Destiny\Common;
+
+use Destiny\Common\Session\Session;
+use Destiny\Common\Utils\Date;
+
+class AuditLogger {
+
+    /**
+     * @param Request $request
+     * @return bool
+     */
+    public function logRequest(Request $request){
+        try {
+            $session = Session::instance();
+            if ($session !== null) {
+                $creds = $session->getCredentials();
+                $conn = Application::getDbConn();
+                return $conn->insert('users_audit', [
+                    'userid' => $creds->getUserId(),
+                    'username' => $creds->getUsername(),
+                    'timestamp' => Date::getSqlDateTime(),
+                    'requesturi' => $request->uri
+                ]) > 0;
+            }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+        }
+        return false;
+    }
+
+}

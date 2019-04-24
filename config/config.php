@@ -11,6 +11,8 @@ return [
         'key' => '***REPLACE***',   // used as the key for encryption
         'seed' => '***REPLACE***',  // used as the seed for hashing like hmac
     ],
+
+    'deleted_user_hash' => '***REPLACE****',
     'allowImpersonation' => false,  // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
 
     'embed' => [

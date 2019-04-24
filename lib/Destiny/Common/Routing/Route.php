@@ -14,6 +14,7 @@ class Route {
     public $url;
     public $responseBody;
     public $privateKeys;
+    public $audit;
 
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
@@ -31,7 +32,8 @@ class Route {
             'feature',
             'url',
             'privateKeys',
-            'responseBody'
+            'responseBody',
+            'audit'
         ];
     }
 
@@ -109,6 +111,14 @@ class Route {
 
     public function setPrivateKeys($privateKeys) {
         $this->privateKeys = $privateKeys;
+    }
+
+    public function getAudit() {
+        return $this->audit;
+    }
+
+    public function setAudit($audit) {
+        $this->audit = $audit;
     }
 
 }

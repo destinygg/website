@@ -42,6 +42,11 @@ class ControllerAnnotationLoader {
     private $privateKeyRef;
 
     /**
+     * @var ReflectionClass
+     */
+    private $auditKeyRef;
+
+    /**
      * @param DirectoryClassIterator $classIterator
      * @param Reader $reader
      * @param Router $router
@@ -62,6 +67,7 @@ class ControllerAnnotationLoader {
      */
     public function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
         $this->controllerRef = new ReflectionClass(new Annotation\Controller());
+        $this->auditKeyRef = new ReflectionClass(new Annotation\Audit());
         $this->responseBodyRef = new ReflectionClass(new Annotation\ResponseBody());
         $this->httpMethodRef = new ReflectionClass(new Annotation\HttpMethod());
         $this->privateKeyRef = new ReflectionClass(new Annotation\PrivateKey());
@@ -96,6 +102,8 @@ class ControllerAnnotationLoader {
     public function loadClassMethod(ReflectionClass $classRef, ReflectionMethod $method, Reader $reader, Router $router) {
         $routes = $this->getMethodRoutes($reader, $method);
         if (count($routes) > 0) {
+            /** @var Annotation\Audit $audit */
+            $audit = $reader->getMethodAnnotation($method, $this->auditKeyRef->getName());
             /** @var Annotation\ResponseBody $responseBody */
             $responseBody = $reader->getMethodAnnotation($method, $this->responseBodyRef->getName());
             /** @var Annotation\HttpMethod $httpMethod */
@@ -110,9 +118,10 @@ class ControllerAnnotationLoader {
                     'class' => $classRef->name,
                     'classMethod' => $method->name,
                     'responseBody' => !!$responseBody,
-                    'httpMethod' => ($httpMethod) ? $httpMethod->allow : null,
-                    'privateKeys' => ($privateKey) ? $privateKey->names : null,
-                    'secure' => ($secure) ? $secure->roles : null
+                    'httpMethod' => $httpMethod ? $httpMethod->allow : null,
+                    'privateKeys' => $privateKey ? $privateKey->names : null,
+                    'secure' => $secure ? $secure->roles : null,
+                    'audit' => !!$audit
                 ]));
             }
         }

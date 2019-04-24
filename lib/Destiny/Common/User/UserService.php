@@ -1,12 +1,16 @@
 <?php
 namespace Destiny\Common\User;
 
+use Destiny\Common\Config;
 use Destiny\Common\Service;
 use Destiny\Common\Application;
+use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\InvalidArgumentException;
 use PDO;
 
 /**
@@ -450,7 +454,7 @@ class UserService extends Service {
     public function findAll($limit, $page = 1) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
-          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
+          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.userStatus,u.createdDate
           FROM dfl_users AS u
           ORDER BY u.userId DESC
           LIMIT :start,:limit
@@ -478,7 +482,7 @@ class UserService extends Service {
     public function findByFeature($feature, $limit, $page=0) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
-          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate
+          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.userStatus,u.createdDate
           FROM dfl_users AS u
           INNER JOIN dfl_users_features AS uf ON (uf.userId = u.userId)
           INNER JOIN dfl_features AS f ON (f.featureId = uf.featureId)
@@ -510,12 +514,14 @@ class UserService extends Service {
     public function findBySearch($search, $limit, $page) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
-          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.createdDate FROM dfl_users AS u
+          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.userStatus,u.createdDate FROM dfl_users AS u
           LEFT JOIN dfl_users_auth a ON a.userId = u.userId
-            WHERE u.username LIKE :wildcard1 
-            OR u.email LIKE :wildcard1
-            OR a.authDetail LIKE :wildcard1
-            OR a.authId LIKE :wildcard1
+            WHERE (
+                u.username LIKE :wildcard1 
+                OR u.email LIKE :wildcard1
+                OR a.authDetail LIKE :wildcard1
+                OR a.authId LIKE :wildcard1
+            )
           GROUP BY u.userId
           ORDER BY CASE
           WHEN u.username LIKE :wildcard2 THEN 0
@@ -862,6 +868,69 @@ class UserService extends Service {
         $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return (bool)$stmt->rowCount();
+    }
+
+    /**
+     * @param $userId
+     * @return mixed
+     * @throws DBALException
+     */
+    public function getUserDeletedByUserId($userId) {
+        $conn = Application::getDbConn();
+        return $conn->executeQuery('SELECT d.*, u1.username as `deletedByUsername` FROM users_deleted d INNER JOIN dfl_users u1 ON u1.userId = d.deletedby WHERE d.userid = :userId', ['userId' => $userId], [PDO::PARAM_INT])->fetch();
+    }
+
+    /**
+     * @param array $user user id
+     * @throws ConnectionException
+     * @throws DBALException
+     * @throws InvalidArgumentException
+     */
+    public function logicalDeleteUser(array $user) {
+        $deletedBy = Session::getCredentials()->getUserId();
+        $userId = $user['userId'];
+        $newUsername = "deleted$userId";
+        $newEmail = "deleted$userId";
+
+        $conn = Application::getDbConn();
+        $conn->beginTransaction();
+
+        $conn->delete('dfl_users_auth', ['userId' => $userId], [PDO::PARAM_INT]);
+        $conn->delete('dfl_users_auth_token', ['userId' => $userId], [PDO::PARAM_INT]);
+        $conn->delete('oauth_access_tokens', ['userId' => $userId], [PDO::PARAM_INT]);
+        $conn->delete('oauth_client_details', ['ownerId' => $userId], [PDO::PARAM_INT]);
+        $conn->update('donations', ['username' => $newUsername], ['userid' => $userId], [PDO::PARAM_STR, PDO::PARAM_INT]);
+
+        $conn->insert('users_deleted', [
+            'userid' => $userId,
+            'deletedby' => $deletedBy,
+            'timestamp' => Date::getSqlDateTime(),
+            'usernamehash' => $this->hashEmail($user['username']),
+            'emailhash' => $this->hashUsername($user['email']),
+        ]);
+
+        $conn->update('dfl_users', [
+            'username' => $newUsername,
+            'email' => $newEmail
+        ], ['userId' => $userId]);
+
+        $conn->commit();
+    }
+
+    /**
+     * @param string $username
+     * @return string
+     */
+    private function hashUsername($username) {
+        return base64_encode(hash('sha256', $username . Config::$a['deleted_user_hash']));
+    }
+
+    /**
+     * @param string $email
+     * @return string
+     */
+    private function hashEmail($email) {
+        return base64_encode(hash('sha256', $email . Config::$a['deleted_user_hash']));
     }
 
 }

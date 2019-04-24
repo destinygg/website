@@ -2,6 +2,7 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\FlairService;
+use Destiny\Common\Annotation\Audit;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
@@ -97,6 +98,7 @@ class AdminFlairsController {
      * @Route ("/admin/flairs/{id}/edit")
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -132,6 +134,7 @@ class AdminFlairsController {
      * @Route ("/admin/flairs/new")
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return string
@@ -166,6 +169,7 @@ class AdminFlairsController {
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"POST"})
      * @ResponseBody
+     * @Audit
      *
      * @return array
      */
@@ -181,6 +185,7 @@ class AdminFlairsController {
      * @Route ("/admin/flairs/{id}/delete")
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"POST"})
+     * @Audit
      *
      * @param array $params
      * @return mixed

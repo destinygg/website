@@ -52,12 +52,10 @@ class DiscordLogHandler extends AbstractProcessingHandler {
                 'text' => $record['context']['trace'] ?? 'No stack trace.',
                 'fields' => $fields
             ];
+
             $messenger = DiscordMessenger::instance();
-            $messenger->send(
-                Config::$a['meta']['shortName'],
-                $record['message'],
-                [$attachment]
-            );
+            $messenger->send($record['message'], [$attachment]);
+
         } catch (Exception $e) {
             // Recursion
             // Log::error("Error sending discord message." . $e->getMessage() . PHP_EOL . $e->getTraceAsString());

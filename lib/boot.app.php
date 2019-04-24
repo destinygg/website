@@ -1,5 +1,6 @@
 <?php
 use Destiny\Common\Application;
+use Destiny\Common\AuditLogger;
 use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Discord\DiscordLogHandler;
@@ -10,7 +11,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.7.18'); // auto-generated: 1555956532044
+define('_APP_VERSION', '2.7.21'); // auto-generated: 1556094582576
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
@@ -47,6 +48,10 @@ try {
     Log::error("Could not setup DB connection. " . $e->getMessage());
     exit(1);
 }
+
+// Audit logging
+$auditLogger = new AuditLogger();
+$app->setAuditLogger($auditLogger);
 
 // Redis (NO serializer, used for chat and sessions)
 $redis1 = new Redis();

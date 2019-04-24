@@ -4,6 +4,8 @@ namespace Destiny\Common;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\Session\SessionInstance;
+use Destiny\Common\User\UserFeature;
+use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
@@ -35,7 +37,10 @@ class Application extends Service {
     protected $redis = null;
     
     /** @var Router */
-    protected $router;
+    protected $router = null;
+
+    /** @var AuditLogger */
+    protected $auditLogger = null;
     
     /** @var callable */
     public $loader;
@@ -98,6 +103,9 @@ class Application extends Service {
 
         try {
             $result = $this->executeController($route, $request, $response, $model);
+            if ($this->auditLogger !== null && $route->getAudit()) {
+                $this->auditLogger->logRequest($request);
+            }
             if($useResponseAsBody) {
                 // Use result as response body
                 $response->setBody($result);
@@ -173,6 +181,7 @@ class Application extends Service {
     /**
      * Runs a controller method
      * Does some magic around what parameters are passed in.
+     * TODO reflection is slow
      *
      * @param Route $route
      * @param Request $request
@@ -345,6 +354,14 @@ class Application extends Service {
 
     public function setLoader($loader) {
         $this->loader = $loader;
+    }
+
+    public function getAuditLogger() {
+        return $this->auditLogger;
+    }
+
+    public function setAuditLogger($auditLogger) {
+        $this->auditLogger = $auditLogger;
     }
 
 }

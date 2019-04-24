@@ -86,6 +86,7 @@ use Destiny\Common\Utils\Date;
                     <thead>
                     <tr>
                         <td>User <small>(<?=$this->users['total']?>)</small></td>
+                        <td>Status</td>
                         <td>Created on</td>
                     </tr>
                     </thead>
@@ -96,6 +97,7 @@ use Destiny\Common\Utils\Date;
                                 <a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a>
                                 <?php if(!empty($user['email'])): ?>(<?=Tpl::out($user['email'])?>)<?php endif; ?>
                             </td>
+                            <td><?=$user['userStatus']?></td>
                             <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT)?></td>
                         </tr>
                     <?php endforeach; ?>

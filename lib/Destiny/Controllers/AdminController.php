@@ -3,6 +3,7 @@ namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
 use Destiny\Commerce\StatisticsService;
+use Destiny\Common\Annotation\Audit;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
@@ -150,6 +151,8 @@ class AdminController {
     /**
      * @Route ("/admin/bans/purgeall")
      * @Secure ({"MODERATOR"})
+     * @Audit
+     *
      * @throws DBALException
      */
     public function adminPurgeBans() {

@@ -221,3 +221,24 @@ CREATE TABLE `oauth_client_details` (
   UNIQUE KEY `UQ_CODE` (`clientCode`),
   KEY `IDX_OWNER` (`ownerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `users_deleted` (
+  `userid` int(14) DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `deletedby` int(14) DEFAULT NULL,
+  `usernamehash` varchar(92) DEFAULT NULL,
+  `emailhash` varchar(92) DEFAULT NULL,
+  KEY `userid` (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `users_audit` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `userid` bigint(20) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `timestamp` datetime NOT NULL,
+  `requesturi` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `userid` (`userid`),
+  KEY `timestamp` (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

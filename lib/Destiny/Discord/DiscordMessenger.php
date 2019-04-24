@@ -34,13 +34,13 @@ class DiscordMessenger extends Service {
      * @param array $attachments
      * @return ResponseInterface
      */
-    public function send($username, $text, array $attachments = []) {
+    public function send($text, array $attachments = [], $username = '') {
         $webhook = Config::$a['discord']['webhook'] ?? '';
         if (!empty($webhook)) {
             $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
                     'text' => $text,
-                    'username' => $username,
+                    'username' => empty($username) ? Config::$a['meta']['shortName'] : $username,
                     'attachments' => $attachments
                 ],
             ]);
