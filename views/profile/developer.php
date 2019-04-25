@@ -14,7 +14,7 @@ use Destiny\Common\Config;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.php' ?>
+    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'menu.php' ?>
 
     <section class="container active">

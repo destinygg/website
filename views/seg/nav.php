@@ -103,9 +103,9 @@ use Destiny\Common\Session\Session;
                     </li>
                 <?php endif ?>
                 <?php if(Session::hasRole(UserRole::ADMIN)): ?>
-                    <li class="nav-item">
+                    <li id="admin-link" class="nav-item">
                         <a title="Admin" href="/admin" class="nav-link">
-                            <i class="fas fa-hammer"></i>
+                            <i class="fas fa-shield-alt"></i>
                             <span class="nav-label">Admin</span>
                         </a>
                     </li>

@@ -15,7 +15,7 @@ use Destiny\Common\Utils\Tpl;
 
     <div id="alerts-container"></div>
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.php' ?>
+    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'menu.php' ?>
     <?php include 'profile/userinfo.php' ?>
 

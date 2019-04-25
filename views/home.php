@@ -13,7 +13,7 @@ use Destiny\Common\Utils\Tpl;
 <div id="page-wrap">
     <?php include 'seg/nav.php' ?>
     <?php include 'seg/banner.php' ?>
-    <div class="container"><?php include 'seg/alerts.php' ?></div>
+    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'seg/panel.shop.php' ?>
     <?php include 'seg/panel.podcasts.php' ?>
     <?php include 'seg/panel.reddit.php' ?>

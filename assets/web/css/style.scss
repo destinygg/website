@@ -221,13 +221,11 @@ form.form-alt {
   .navbar-nav>.open>a,
   .navbar-nav>.open>a:hover,
   .navbar-nav>.open>a:focus {
-    //background-color: $color-surface-dark3;
     color: white;
   }
   .navbar-nav>.active>a,
   .navbar-nav>.active>a:hover,
   .navbar-nav>.active>a:focus {
-    //background-color: $color-surface-dark3;
     color: white;
   }
   .brand {
@@ -238,15 +236,33 @@ form.form-alt {
     width: 105px;
     height: 30px;
   }
+  #admin-link .fa-shield-alt {
+    background: #111;
+    border-radius: 50%;
+    padding: 0.4em;
+    margin: -0.4em;
+    border: 1px solid #3b3b3b;
+    border-top-color: #272727;
+  }
 }
 
 body#home {
   #main-nav {
     @extend .bg-grad-main;
   }
+}
+
+body#inbox,
+body#home {
   #alerts-static .alert {
-    margin: 1em 0 0;
+    margin: 1em 1em 0;
   }
+}
+#alerts-static strong {
+  display: block;
+}
+section > #alerts-static > .alert {
+  margin:0;
 }
 
 body.no-brand .navbar {
@@ -845,10 +861,6 @@ span.icon-required {
   right: 0;
 }
 
-#alerts-static strong {
-  display: block;
-}
-
 .graph-outer {
   border-radius: 3px;
   background: $color-surface-dark3;
@@ -918,9 +930,6 @@ body#inbox {
   .fa-dgg-unread:before {
     content: "\f0e0";
     color: $text-color2;
-  }
-  #alerts-static .alert {
-    margin: 1em 1em 0;
   }
   #inbox-loading {
     color: $text-color2;
@@ -1254,7 +1263,8 @@ img.img_64x64 {
   box-shadow: 0 1px 4px 1px rgba(black, 0.5);
 }
 
-#loginmodal, #loginform {
+#loginmodal,
+#loginform {
   .checkbox {
     margin-top: 0;
   }
@@ -1317,13 +1327,6 @@ img.img_64x64 {
   &.btn:last-child {
     margin-bottom: 0;
   }
-}
-
-.no-wrap-title {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
 }
 
 .max-length-indicator {
@@ -1776,6 +1779,11 @@ img.dbh-cocoa {
   display: flex;
 }
 
+@include media-breakpoint-up(xl) {
+  #admin-link .nav-label {
+    display: none !important;
+  }
+}
 @include media-breakpoint-down(lg) {
   #secondary-navbar .nav-label {
     display: none;
@@ -1787,6 +1795,9 @@ img.dbh-cocoa {
   }
   #secondary-navbar .nav-label {
     display: inline-flex;
+  }
+  #secondary-navbar .fas {
+    display: none;
   }
 }
 

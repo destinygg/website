@@ -1,7 +1,7 @@
 <?php
 use Destiny\Common\Utils\Tpl;
 ?>
-<?php if(!empty($this->error) || !empty($this->success)): ?>
+<?php if(!empty($this->error) || !empty($this->success) || !empty($this->warning)): ?>
 <div id="alerts-static">
     <?php if(!empty($this->error)): ?>
     <div class="alert alert-danger alert-dismissable">
