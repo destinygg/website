@@ -274,4 +274,19 @@ class AdminController {
         return $data;
     }
 
+    /**
+     * @Route ("/admin/audit")
+     * @Secure ({"ADMIN"})
+     * @HttpMethod ({"GET"})
+     *
+     * @param ViewModel $model
+     * @return string
+     * @throws DBALException
+     */
+    public function getAuditLog(ViewModel $model) {
+        $userService = UserService::instance();
+        $model->logs = $userService->getAuditLog();
+        return 'admin/auditlog';
+    }
+
 }

@@ -30,5 +30,9 @@ use Destiny\Common\User\UserRole;
             <li class="breadcrumb-item"><a href="/admin/flairs">Flairs</a></li>
         <?php endif; ?>
 
+        <?php if(Session::hasRole(UserRole::ADMIN)): ?>
+            <li class="breadcrumb-item"><a href="/admin/audit">Audit</a></li>
+        <?php endif; ?>
+
     </ol>
 </section>

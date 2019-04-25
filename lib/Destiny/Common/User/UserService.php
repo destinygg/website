@@ -933,4 +933,19 @@ class UserService extends Service {
         return base64_encode(hash('sha256', $email . Config::$a['deleted_user_hash']));
     }
 
+    /**
+     * @param int $start
+     * @param int $limit
+     * @return mixed[]
+     * @throws DBALException
+     */
+    public function getAuditLog($start = 0, $limit = 250){
+        $conn = Application::getDbConn();
+        return $conn->executeQuery(
+            'SELECT a.* FROM users_audit a ORDER BY a.id DESC LIMIT ?,?',
+            [$start, $limit],
+            [PDO::PARAM_INT, PDO::PARAM_INT]
+        )->fetchAll();
+    }
+
 }
