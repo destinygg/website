@@ -59,7 +59,6 @@ class RegistrationController {
      */
     public function register(array $params, ViewModel $model) {
         try {
-            FilterParams::required($params, 'code');
             $authCreds = $this->getSessionAuthenticationCredentials($params);
             $username = $authCreds->getUsername();
             $model->title = 'Sign up';
@@ -92,26 +91,33 @@ class RegistrationController {
     public function registerProcess(array $params, ViewModel $model, Request $request) {
         $userService = UserService::instance();
         $authService = AuthenticationService::instance();
-        $username = (isset ($params ['username']) && !empty ($params ['username'])) ? $params ['username'] : '';
-        $authCreds = null;
-
+        
         try {
             $authCreds = $this->getSessionAuthenticationCredentials($params);
-            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
-            $googleRecaptchaHandler->resolveWithRequest($request);
-            $authService->validateUsername($username);
-            $userService->checkUsernameTaken($username, -1);
-            $authCreds->setUsername($username);
+            $username = $params ['username'] ?? '';
+            try {
+                FilterParams::required($params, 'agreement');
+                FilterParams::required($params, 'username');
+                $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+                $googleRecaptchaHandler->resolveWithRequest($request);
+                $authService->validateUsername($username);
+                $userService->checkUsernameTaken($username, -1);
+                $authCreds->setUsername($username);
+            } catch (Exception $e) {
+                $model->title = 'Sign Up Error';
+                $model->username = $username;
+                $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
+                $model->grant = (isset($params['grant'])) ? $params['grant'] : '';
+                $model->uuid = (isset($params['uuid'])) ? $params['uuid'] : '';
+                $model->authProvider = $authCreds->getAuthProvider();
+                $model->code = $authCreds->getAuthCode();
+                $model->error = $e;
+                return 'register';
+            }
         } catch (Exception $e) {
-            $model->title = 'Sign Up Error';
-            $model->username = $username;
-            $model->follow = (isset($params['follow'])) ? $params['follow'] : '';
-            $model->grant = (isset($params['grant'])) ? $params['grant'] : '';
-            $model->uuid = (isset($params['uuid'])) ? $params['uuid'] : '';
-            $model->authProvider = $authCreds->getAuthProvider();
-            $model->code = $authCreds->getAuthCode();
-            $model->error = $e;
-            return 'register';
+            Session::setErrorBag('Error occurred during register. Please try again.');
+            Log::error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return 'redirect: /login';
         }
 
         $conn = Application::getDbConn();

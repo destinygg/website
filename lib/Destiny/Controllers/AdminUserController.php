@@ -625,7 +625,7 @@ class AdminUserController {
         $editUrl = Http::getBaseUrl() ."/admin/user/$userId/edit";
         $creds = Session::getCredentials();
         $messenger = DiscordMessenger::instance();
-        $messenger->send("<$editUrl|{$user['username']}> account has been deleted by *{$creds->getUsername()}*.");
+        $messenger->send("<$editUrl|{$user['username']}> account has been deleted by {$creds->getUsername()}.");
 
         Session::setSuccessBag('User deleted');
         return "redirect: /admin/user/$userId/edit";

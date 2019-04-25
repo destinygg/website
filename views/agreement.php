@@ -33,7 +33,13 @@ use Destiny\Common\Utils\Tpl;
         <div class="content content-dark mb-4">
             <div class="ds-block">
                 <p>You can request account removal via your profile. We will action this within 30 days of your submission.<br />
-                    Your private messages, even when deleted via your profile, are not removed from the recipients inbox.</p>
+                    Your private messages, even when deleted via your profile, are not removed from the recipients inbox (but usernames are obfuscated).</p>
+            </div>
+        </div>
+        <h2>Data Access</h2>
+        <div class="content content-dark mb-4">
+            <div class="ds-block">
+                <p>Any user may request a full output of their data at any point. An admin will provide these details within a reasonable amount of time.</p>
             </div>
         </div>
         <h2>User Agreement</h2>

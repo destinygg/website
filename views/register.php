@@ -42,6 +42,13 @@ use Destiny\Common\Config;
                     <div class="form-group">
                         <div class="controls checkbox">
                             <label>
+                                <input type="checkbox" name="agreement"> Accept the user <a href="/agreement">agreement</a>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="controls checkbox">
+                            <label>
                                 <input type="checkbox" name="rememberme" <?=($this->rememberme) ? 'checked':''?>> Remember me
                             </label>
                             <span class="help-block">(this should only be used if you are on a private computer)</span>
@@ -59,9 +66,6 @@ use Destiny\Common\Config;
                 </div>
             </form>
         </div>
-
-        <p class="agreement">By clicking the &quot;Continue&quot; button, you are confirming that you have read and agree with the <a href="/agreement">user agreement</a>.</p>
-
     </section>
 </div>
 

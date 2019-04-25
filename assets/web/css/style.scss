@@ -1776,17 +1776,17 @@ img.dbh-cocoa {
   display: flex;
 }
 
+@include media-breakpoint-down(lg) {
+  #secondary-navbar .nav-label {
+    display: none;
+  }
+}
 @include media-breakpoint-down(md) {
   #bigscreen #nav-host-pill {
     display: none;
   }
   #secondary-navbar .nav-label {
     display: inline-flex;
-  }
-}
-@include media-breakpoint-down(lg) {
-  #secondary-navbar .nav-label {
-    display: none;
   }
 }
 
