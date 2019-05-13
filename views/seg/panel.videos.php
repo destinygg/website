@@ -16,9 +16,9 @@ use Destiny\Common\Utils\Date;
                         <?php foreach($this->playlist['items'] as $vid ): ?>
                             <?php $title = Tpl::out($vid['snippet']['title'])?>
                             <li>
-                                <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
+                                <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=html_entity_decode($title);?>">
                                     <a href="https://www.youtube.com/watch?v=<?=$vid['id']['videoId']?>">
-                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$title?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
+                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=html_entity_decode($title);?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
                                     </a>
                                 </div>
                             </li>
