@@ -14,11 +14,10 @@ use Destiny\Common\Utils\Date;
                 <?php if(isset($this->playlist['items']) && !empty($this->playlist['items'])): ?>
                     <ul class="thumbnails">
                         <?php foreach($this->playlist['items'] as $vid ): ?>
-                            <?php $title = Tpl::out($vid['snippet']['title'])?>
                             <li>
-                                <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=html_entity_decode($title);?>">
+                                <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=html_entity_decode(Tpl::out($vid['snippet']['title']))?>">
                                     <a href="https://www.youtube.com/watch?v=<?=$vid['id']['videoId']?>">
-                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=html_entity_decode($title);?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
+                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=html_entity_decode(Tpl::out($vid['snippet']['title']))?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
                                     </a>
                                 </div>
                             </li>
@@ -37,11 +36,10 @@ use Destiny\Common\Utils\Date;
                 <?php if(isset($this->broadcasts) && !empty($this->broadcasts['videos'])):?>
                     <ul class="thumbnails">
                         <?php foreach( $this->broadcasts['videos'] as $broadcast ):?>
-                            <?php $time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
                             <li>
-                                <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$time?>">
+                                <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>">
                                     <a href="<?=$broadcast['url']?>">
-                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$time?>" data-src="<?=$broadcast['preview']?>" />
+                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>" data-src="<?=$broadcast['preview']?>" />
                                     </a>
                                 </div>
                             </li>
