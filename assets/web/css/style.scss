@@ -113,10 +113,11 @@ label small {
   border-left-color: black;
 }
 .form-control:focus {
-  background-color: white;
-  border: 1px solid #CCCCCC;
+  background-color: #1B1B1B;
+  border-color: #007bff;
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-  color: #555;
+  outline: 1px solid #007bff;
+  color: white;
 }
 .form-control[disabled],
 .form-control[readonly],
@@ -128,11 +129,11 @@ fieldset[disabled] .form-control {
   color: $color-chat-disabled;
 }
 .form-control:focus::placeholder {
-  color: $text-color1;
+  color: $text-color2;
 }
 
 form.form-alt {
-  .form-control,
+  .form-control,alerts-container
   .form-control:focus {
     background-color: white;
     border: 1px solid #CCCCCC;
@@ -156,11 +157,16 @@ form.form-alt {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.breadcrumb-item+.breadcrumb-item::before {
-  content: "|\00a0";
-  padding: 0 5px;
-  color: $text-color3;
+.breadcrumb-item + .breadcrumb-item {
+  padding-left: 0;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+  padding-left: 0;
+  display: none;
+  content: none;
+}
+.breadcrumb-item {
+  margin: 0 0.5rem;
 }
 
 .form-actions {
@@ -265,14 +271,15 @@ section > #alerts-static > .alert {
   margin:0;
 }
 
-body.no-brand .navbar {
-  .navbar-nav > li > a {
-    color: $color-light;
-    text-shadow: 0 0 1px black;
-    &:hover {
-      color: white;
-    }
+.navbar-dark .navbar-nav .nav-link {
+  color: $color-light;
+  text-shadow: 0 0 1px black;
+  &:hover {
+    color: white;
   }
+}
+body.no-brand .navbar-dark .navbar-nav .nav-link {
+  color: white;
 }
 
 .dropdown-menu {
@@ -856,9 +863,34 @@ span.icon-required {
 #alerts-container {
   z-index: 1001;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  .alert-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 300ms ease-out;
+  }
+  .alert-container.show {
+    max-height: 84px; // TODO
+  }
+  .alert {
+    width: 567px;
+    align-self: center;
+  }
+  .alert-info {
+    background-color: transparentize(#d1ecf1, 0.1);
+  }
+  .alert-info:hover {
+    background-color: #d1ecf1;
+  }
+  .alert-danger {
+    background-color: transparentize(#f8d7da, 0.1);
+  }
+  .alert-danger:hover {
+    background-color: #f8d7da;
+  }
 }
 
 .graph-outer {
@@ -1257,6 +1289,7 @@ img.img_64x64 {
   height: 35px;
 }
 
+#connectModal .modal-content,
 #loginmodal .modal-content {
   border-radius: 5px;
   background-color: #1b1b1b;
@@ -1813,8 +1846,93 @@ img.dbh-cocoa {
   label:hover {
     color: $text-color;
   }
-  .help-block {
+
+}
+
+.help-block {
+  opacity: 0.5;
+}
+
+.filter-form {
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .filters .form-group {
+    margin: 1em;
+  }
+  .filters .form-group label {
     opacity: 0.5;
   }
+  .filter-buttons {
+    margin: 1em;
+    white-space: nowrap;
+  }
+  #search-input {
+    flex: 1;
+  }
+  .page-item .page-link {
+    box-shadow: none;
+    color: $color-accent;
+    outline: none;
+    background: none;
+    border: none;
+  }
+  .page-item:first-child .page-link {
+    padding-left: 0;
+  }
+  .page-item.active .page-link {
+    color: white;
+  }
 
+}
+
+@media (max-width: 1200px) {
+  .filter-form #search-input {
+    flex-basis: 100%;
+  }
+  .filter-form .filter-buttons {
+    flex: 1;
+  }
+}
+@media (max-width: 640px) {
+  .filter-form .filter-buttons {
+    flex-basis: 100%;
+  }
+}
+
+form#nameForm {
+  #nameChangeAlert {
+    z-index: 62;
+    border-top-left-radius: 0;
+    margin-top: 1em;
+    display: inline-flex;
+  }
+  #nameChangeAlert.alert-success {
+    cursor: pointer;
+    border-top-left-radius: 0.25rem !important;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  #nameChangeAlert.alert-success:hover {
+    background-color: #aed6b8;
+  }
+  input#nameChange {
+    font-size: 1.75em;
+    z-index: 61;
+    position: relative;
+  }
+  #nameChangeBackDrop {
+    background-color: rgba(0,0,0,0.35);
+    position: absolute;
+    z-index: 60;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+td.selector {
+  cursor: pointer;
+  width: 15px;
 }

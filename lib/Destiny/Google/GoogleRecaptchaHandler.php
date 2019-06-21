@@ -3,21 +3,18 @@ namespace Destiny\Google;
 
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp\Client;
 use function GuzzleHttp\json_decode;
 
 class GoogleRecaptchaHandler {
 
     /**
-     * @param Request $request
-     * @param string $name
-     * @return bool
      * @throws Exception
      */
-    public function resolveWithRequest(Request $request, $name = 'g-recaptcha-response') {
+    public function resolveWithRequest(Request $request, string $name = 'g-recaptcha-response'): bool {
         $value = $request->param($name);
         if (empty($value)) {
             throw new Exception ('You must solve the recaptcha.');
@@ -26,16 +23,11 @@ class GoogleRecaptchaHandler {
     }
 
     /**
-     * @param string $token The user response token provided by the reCAPTCHA to the user and provided to your site on.
-     * @param Request $request The request
-     * @return bool
-     *
      * @throws Exception
      */
-    public function resolve($token, Request $request){
+    public function resolve(string $token, Request $request): bool {
         try {
-            $client = new Client(['timeout' => 20, 'connect_timeout' => 10, 'http_errors' => false]);
-            $response = $client->get('https://www.google.com/recaptcha/api/siteverify', [
+            $response = HttpClient::instance()->get('https://www.google.com/recaptcha/api/siteverify', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => [
                     'response' => $token,
@@ -43,12 +35,13 @@ class GoogleRecaptchaHandler {
                     'secret' => Config::$a ['g-recaptcha'] ['secret']
                 ]
             ]);
-            if($response->getStatusCode() == Http::STATUS_OK){
+            if ($response->getStatusCode() == Http::STATUS_OK) {
                 $data = json_decode($response->getBody(), true);
-                if(empty($data))
+                if (empty($data)) {
                     throw new Exception('Failed to resolve captcha.');
-                if(!$data['success']){
-                    if(isset($data['error-codes'])){
+                }
+                if (!$data['success']) {
+                    if (isset($data['error-codes'])) {
                         switch ($data['error-codes']) {
                             case 'missing-input-secret':
                                 throw new Exception('The secret parameter is missing.');
@@ -61,7 +54,7 @@ class GoogleRecaptchaHandler {
                             default:
                                 throw new Exception('Failed to resolve captcha.');
                         }
-                    }else{
+                    } else {
                         throw new Exception('Failed to resolve captcha.');
                     }
                 }

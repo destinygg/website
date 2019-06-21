@@ -14,7 +14,6 @@ use Destiny\Common\Utils\Date;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
@@ -30,9 +29,16 @@ use Destiny\Common\Utils\Date;
 
             <form action="<?=$url?>" method="post">
 
+                <?php if(!empty($this->subscription['cancelDate'])): ?>
+                    <div class="ds-block">
+                        <p>Cancelled on <strong><?=Tpl::moment(Date::getDateTime($this->subscription['cancelDate']), Date::STRING_FORMAT)?></strong></p>
+                    </div>
+                <?php endif; ?>
+
                 <div class="ds-block">
+
                     <div class="form-group">
-                        <label>Type:</label>
+                        <label>Type</label>
                         <select name="subscriptionType" class="form-control">
                             <option value="">Select a subscription type</option>
                             <option value="">&nbsp;</option>
@@ -43,6 +49,11 @@ use Destiny\Common\Utils\Date;
                     </div>
 
                     <div class="form-group">
+                        <label>Recurring</label>
+                        <input type="text" class="form-control" value="<?=($this->subscription['recurring'] == '1') ? 'Yes':'No'?>" readonly />
+                    </div>
+
+                    <div class="form-group">
                         <label class="control-label" for="inputGifter">Gifter</label>
                         <div class="controls">
                             <input type="text" class="form-control" name="gifter" id="inputGifter" value="<?=Tpl::out($this->subscription['gifter'])?>" placeholder="Gifter user id or username">
@@ -50,7 +61,7 @@ use Destiny\Common\Utils\Date;
                     </div>
 
                     <div class="form-group">
-                        <label>Status:</label>
+                        <label>Status</label>
                         <select name="status" class="form-control">
                             <option value="<?=SubscriptionStatus::ACTIVE?>" <?=(strcasecmp($this->subscription['status'], SubscriptionStatus::ACTIVE) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::ACTIVE?></option>
                             <option value="<?=SubscriptionStatus::CANCELLED?>" <?=(strcasecmp($this->subscription['status'], SubscriptionStatus::CANCELLED) === 0) ? 'selected="selected"':''?>><?=SubscriptionStatus::CANCELLED?></option>
@@ -60,25 +71,19 @@ use Destiny\Common\Utils\Date;
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label" for="inputStarttimestamp">Start</label>
+                        <label class="control-label" for="inputStarttimestamp">Start <small>(time specified in UCT)</small></label>
                         <div class="controls">
                             <input type="text" class="form-control" name="createdDate" id="inputStarttimestamp" value="<?=Tpl::out($this->subscription['createdDate'])?>" placeholder="Y-m-d H:i:s">
-                            <span class="help-block">time specified in UCT</span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label" for="inputEndtimestamp">End</label>
+                        <label class="control-label" for="inputEndtimestamp">End  <small>(time specified in UCT)</small></label>
                         <div class="controls">
                             <input type="text" class="form-control" name="endDate" id="inputEndtimestamp" value="<?=Tpl::out($this->subscription['endDate'])?>" placeholder="Y-m-d H:i:s">
-                            <span class="help-block">time specified in UCT</span>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Recurring:</label>
-                        <strong><?=($this->subscription['recurring'] == '1') ? 'Yes':'No'?></strong>
-                    </div>
                 </div>
 
                 <div class="form-actions">
@@ -154,6 +159,7 @@ use Destiny\Common\Utils\Date;
 
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

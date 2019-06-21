@@ -11,7 +11,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.7.21'); // auto-generated: 1556215873761
+define('_APP_VERSION', '2.8.0'); // auto-generated: 1567698741945
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
@@ -50,7 +50,7 @@ try {
 }
 
 // Audit logging
-$auditLogger = new AuditLogger();
+$auditLogger = AuditLogger::instance();
 $app->setAuditLogger($auditLogger);
 
 // Redis (NO serializer, used for chat and sessions)

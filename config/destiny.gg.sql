@@ -76,7 +76,7 @@ CREATE TABLE `dfl_users` (
   `createdDate` datetime NOT NULL,
   `modifiedDate` datetime DEFAULT NULL,
   `userStatus` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nameChangedCount` tinyint(4) DEFAULT '0',
+  `allowNameChange` tinyint(4) DEFAULT '0',
   `nameChangedDate` datetime DEFAULT NULL,
   `allowGifting` tinyint(1) DEFAULT '1',
   `istwitchsubscriber` int(11) NOT NULL DEFAULT '0',
@@ -91,9 +91,10 @@ CREATE TABLE `dfl_users` (
 CREATE TABLE `dfl_users_auth` (
   `userId` int(14) DEFAULT NULL,
   `authProvider` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `authCode` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `authId` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `authDetail` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `expiresIn` int(11) DEFAULT NULL,
+  `accessToken` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `refreshToken` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `createdDate` datetime DEFAULT NULL,
   `modifiedDate` datetime DEFAULT NULL,
@@ -116,24 +117,27 @@ CREATE TABLE `dfl_users_roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_users_subscriptions` (
-  `subscriptionId` INT(14) NOT NULL AUTO_INCREMENT,
-  `subscriptionSource` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `subscriptionType` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `subscriptionTier` TINYINT(4) DEFAULT NULL,
-  `userId` INT(14) DEFAULT NULL,
-  `createdDate` DATETIME DEFAULT NULL,
-  `endDate` DATETIME DEFAULT NULL,
-  `status` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `recurring` TINYINT(4) DEFAULT NULL,
-  `paymentProfileId` VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `billingStartDate` DATETIME DEFAULT NULL,
-  `billingNextDate` DATETIME DEFAULT NULL,
-  `paymentStatus` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `subscriptionId` int(14) NOT NULL AUTO_INCREMENT,
+  `subscriptionSource` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `subscriptionType` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `subscriptionTier` tinyint(4) DEFAULT NULL,
+  `userId` int(14) DEFAULT NULL,
+  `endDate` datetime DEFAULT NULL,
+  `status` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `recurring` tinyint(4) DEFAULT NULL,
+  `paymentProfileId` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `billingStartDate` datetime DEFAULT NULL,
+  `billingNextDate` datetime DEFAULT NULL,
+  `paymentStatus` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL,
   `gifter` int(14) DEFAULT NULL,
+  `cancelledBy` int(14) DEFAULT NULL,
+  `cancelDate` datetime DEFAULT NULL,
+  `createdDate` datetime DEFAULT NULL,
   PRIMARY KEY (`subscriptionId`),
   KEY `userId` (`userId`),
   KEY `userStatus` (`userId`,`status`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
 
 CREATE TABLE `donations` (
   `id` int(14) NOT NULL AUTO_INCREMENT,

@@ -10,38 +10,25 @@ class Router {
      */
     private $routes = [];
 
-    /**
-     * @param Route[] $routes
-     */
     public function __construct(array $routes = null) {
-        if (! empty ( $routes )) {
-            $this->setRoutes ( $routes );
+        if (!empty ($routes)) {
+            $this->setRoutes($routes);
         }
     }
 
-    /**
-     * @return Route[]
-     */
-    public function getRoutes() {
+    public function getRoutes(): array {
         return $this->routes;
     }
 
-    /**
-     * @param Route[] $routes
-     */
     public function setRoutes(array $routes) {
         $this->routes = $routes;
     }
     
-    /**
-     * @param Route $route
-     */
     public function addRoute(Route $route){
         $this->routes[] = $route;
     }
 
     /**
-     * @param Request $request
      * @return Route|null
      */
     public function findRoute(Request $request) {
@@ -56,14 +43,7 @@ class Router {
         return null;
     }
 
-    /**
-     * @param Route $route
-     * @param string $preparedUriPath
-     * @param string $rawUriPath
-     * @param string $httpMethod
-     * @return boolean
-     */
-    protected function testRoute(Route $route, $preparedUriPath, $rawUriPath, $httpMethod) {
+    protected function testRoute(Route $route, string $preparedUriPath, string $rawUriPath, string $httpMethod): bool {
         $routeHttpMethod = $route->getHttpMethod();
         if (empty ( $routeHttpMethod ) || in_array ( $httpMethod, $routeHttpMethod )) {
             return (strcasecmp ( $route->getPath (), $preparedUriPath ) === 0 || RoutePathParser::match ( $route->getPath (), $preparedUriPath )) ||
@@ -72,21 +52,14 @@ class Router {
         return false;
     }
 
-    /**
-     * @param Route $route
-     * @param string $uriPath
-     * @return array
-     */
-    public function getRoutePathParams(Route $route, $uriPath) {
+    public function getRoutePathParams(Route $route, string $uriPath): array {
         return RoutePathParser::search ( $route->getPath (), $this->prepareUriPath($uriPath) );
     }
 
     /**
      * Removes extension and trailing slash from the $path
-     * @param string $path
-     * @return string
      */
-    protected function prepareUriPath($path) {
+    protected function prepareUriPath(string $path): string {
         $extension = pathinfo ( $path, PATHINFO_EXTENSION );
         if (! empty ( $extension ))
             $path = substr ( $path, 0, - (strlen ( $extension ) + 1) );

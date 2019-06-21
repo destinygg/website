@@ -12,8 +12,11 @@ abstract class Service {
         $class = get_called_class();
         if ( !isset( static::$_instances[$class] ) ){
             static::$_instances[$class] = new static;
+            static::$_instances[$class]->afterConstruct();
         }
         return static::$_instances[$class];
     }
+
+    public function afterConstruct() {}
 
 }

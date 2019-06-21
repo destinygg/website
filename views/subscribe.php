@@ -11,12 +11,12 @@ use Destiny\Common\User\UserRole;
     <?php include 'seg/meta.php' ?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
-<body id="subscribe" class="no-brand">
+<body id="subscribe">
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
 
-    <section class="container">
+    <section class="container vertical-contain">
         <div style="flex: 1;">
 
             <h1 class="title">

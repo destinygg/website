@@ -10,18 +10,10 @@ namespace Destiny\Common\Utils;
  */
 class RandomString {
 
-    /** @var string */
     protected static $alphabetFull = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._~=$|![]#%@+<>/';
-
-    /** @var string */
     protected static $alphabetAlphaNumeric = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-    /**
-     * @param int $length
-     * @param string $alphabet
-     * @return string
-     */
-    private static function guid($length, $alphabet) {
+    private static function guid(int $length, string $alphabet): string {
         $token = '';
         for ($i = 0; $i < $length; $i++) {
             $token .= $alphabet[self::getRandomInteger(0, strlen($alphabet))];
@@ -29,28 +21,15 @@ class RandomString {
         return $token;
     }
 
-    /**
-     * @param int $length
-     * @return string
-     */
-    public static function make($length) {
+    public static function make(int $length): string {
         return self::guid($length, self::$alphabetFull);
     }
 
-    /**
-     * @param $length
-     * @return string
-     */
-    public static function makeUrlSafe($length) {
+    public static function makeUrlSafe(int $length): string {
         return self::guid($length, self::$alphabetAlphaNumeric);
     }
 
-    /**
-     * @param int $min
-     * @param int $max
-     * @return int
-     */
-    protected static function getRandomInteger($min, $max) {
+    protected static function getRandomInteger(int $min, int $max): int {
         $range = ($max - $min);
         if ($range < 0) {
             // Not so random...

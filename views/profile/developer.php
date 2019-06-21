@@ -14,7 +14,6 @@ use Destiny\Common\Config;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'menu.php' ?>
 
     <section class="container active">
@@ -128,6 +127,7 @@ use Destiny\Common\Config;
 
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

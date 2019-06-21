@@ -1,4 +1,6 @@
 <?php
+
+use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
@@ -14,41 +16,49 @@ use Destiny\Common\Config;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'seg/admin.nav.php' ?>
+
+    <?php if(!empty($this->warning)): ?>
+        <section class="container mb-0">
+            <div class="alert alert-danger alert-dismissable mb-0">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+                <strong><i class="fas fa-exclamation-triangle"></i> Warning</strong>
+                <div><?=Tpl::out($this->warning)?></div>
+            </div>
+        </section>
+    <?php endif ?>
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#details-content">StreamLabs</h3>
         <div id="details-content" class="content content-dark collapse show">
             <div class="ds-block">
                 <div class="form-group">
-                    Attached profile: <a><?=Tpl::out($this->user['username'])?></a>
+                    <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>
                     <?php if(!empty($this->auth)): ?>
-                        <span class="badge badge-default">Authorized</span>
-                        <p>Next auth code renew <?= Tpl::fromNow(Date::getDateTimePlusSeconds($this->auth['createdDate'], 3600)) ?></p>
+                        <span class="badge-pill badge-success">Authorized</span>
+                        <p>Last updated <?=Tpl::fromNow(Date::getDateTime($this->auth['createdDate']), Date::STRING_FORMAT_YEAR)?></p>
                     <?php else: ?>
-                        <span class="badge badge-danger">Unauthorized</span>
+                        <span class="badge-pill badge-danger">Unauthorized</span>
                     <?php endif; ?>
                 </div>
             </div>
             <div class="ds-block">
                 <div class="form-group">
-                    <label>Settings</label>
                     <div class="checkbox">
                         <label>
-                            <input disabled type="checkbox" name="roles[]" <?=(Config::$a['streamlabs']['alert_donations'])?'checked="checked"':''?>>
+                            <input disabled type="checkbox" name="roles[]" <?=(Config::$a[AuthProvider::STREAMLABS]['alert_donations'])?'checked="checked"':''?>>
                             Alert donations
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input disabled type="checkbox" name="roles[]" <?=(Config::$a['streamlabs']['alert_subscriptions'])?'checked="checked"':''?>>
+                            <input disabled type="checkbox" name="roles[]" <?=(Config::$a[AuthProvider::STREAMLABS]['alert_subscriptions'])?'checked="checked"':''?>>
                             Alert subscriptions
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input disabled type="checkbox" name="roles[]" <?=(Config::$a['streamlabs']['send_donations'])?'checked="checked"':''?>>
+                            <input disabled type="checkbox" name="roles[]" <?=(Config::$a[AuthProvider::STREAMLABS]['send_donations'])?'checked="checked"':''?>>
                             Send donations
                         </label>
                     </div>
@@ -56,8 +66,8 @@ use Destiny\Common\Config;
             </div>
             <div class="ds-block">
                 <p>
-                    <button id="authBtn" class="btn btn-primary">Authorize</button>
-                    <button id="testBtn" class="btn btn-default test" <?=(empty($this->auth))? 'disabled':''?>>Send Test</button>
+                    <a href="/admin/streamlabs/authorize" class="btn btn-primary">Authorize</a>
+                    <a href="/admin/streamlabs/alert/test" class="btn btn-danger <?=(empty($this->auth))? 'disabled':''?>">Send Test</a>
                 </p>
             </div>
         </div>
@@ -65,6 +75,7 @@ use Destiny\Common\Config;
 
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

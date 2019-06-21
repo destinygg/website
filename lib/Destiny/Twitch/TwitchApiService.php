@@ -1,12 +1,12 @@
 <?php
 namespace Destiny\Twitch;
 
+use Destiny\Common\Config;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
-use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp\Client;
 use InvalidArgumentException;
 
 /**
@@ -17,15 +17,18 @@ class TwitchApiService extends Service {
     private $apiBase = 'https://api.twitch.tv/kraken';
     private $tmiBase = 'https://tmi.twitch.tv';
 
+    public function getApiCredentials(): array {
+        return Config::$a['twitch_api'];
+    }
+
     /**
      * What channel {you} are hosting
-     * @param $id
      * @return array|null
      */
     public function getChannelHostWithInfo($id) {
         $host = $this->getChannelHost($id);
-        if (!empty($host) && isset($host['target_login'])) {
-            $target = $this->getStreamLiveDetails($host['target_login']);
+        if (!empty($host) && isset($host['target_id'])) {
+            $target = $this->getStreamLiveDetails($host['target_id']);
             if (!empty($target) && isset($target['channel'])) {
                 $channel = $target['channel'];
                 return [
@@ -43,14 +46,15 @@ class TwitchApiService extends Service {
     /**
      * What channel {you} are hosting
      * @param int $id stream id
-     * @return array
+     * @return array|mixed
      */
     public function getChannelHost($id){
-        $client = new Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
+        $conf = $this->getApiCredentials();
+        $client = HttpClient::instance();
         $response = $client->get("$this->tmiBase/hosts", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id']
+                'Client-ID' => $conf['client_id']
             ],
             'query' => [
                 'include_logins' => '1',
@@ -71,16 +75,15 @@ class TwitchApiService extends Service {
     }
 
     /**
-     * @param string $name
-     * @param int $limit
-     * @return array
+     * @return array|mixed
      */
-    public function getPastBroadcasts($name, $limit = 4) {
-        $client = new Client(['timeout' => 15, 'connect_timeout' => 5, 'http_errors' => false]);
-        $response = $client->get("$this->apiBase/channels/$name/videos", [
+    public function getPastBroadcasts(int $channelId, int $limit = 4) {
+        $conf = $this->getApiCredentials();
+        $client = HttpClient::instance();
+        $response = $client->get("$this->apiBase/channels/$channelId/videos", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id']
+                'Client-ID' => $conf['client_id']
             ],
             'query' => [
                 'broadcasts' => true,
@@ -99,15 +102,15 @@ class TwitchApiService extends Service {
 
     /**
      * Stream object is an object when streamer is ONLINE, otherwise null
-     * @param $name
-     * @return array|null
+     * @return array|mixed
      */
-    public function getStreamLiveDetails($name) {
-        $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
-        $response = $client->get("$this->apiBase/streams/$name", [
+    public function getStreamLiveDetails(int $channelId) {
+        $conf = $this->getApiCredentials();
+        $client = HttpClient::instance();
+        $response = $client->get("$this->apiBase/streams/$channelId", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id']
+                'Client-ID' => $conf['client_id']
             ]
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
@@ -125,15 +128,15 @@ class TwitchApiService extends Service {
     }
 
     /**
-     * @param string $name channel name
      * @return array|null
      */
-    public function getChannel($name) {
-        $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
-        $response = $client->get("$this->apiBase/channels/$name", [
+    public function getChannel(int $channelId) {
+        $conf = $this->getApiCredentials();
+        $client = HttpClient::instance();
+        $response = $client->get("$this->apiBase/channels/$channelId", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Client-ID' => Config::$a['oauth_providers']['twitch']['client_id'],
+                'Client-ID' => $conf['client_id'],
             ]
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
@@ -158,18 +161,16 @@ class TwitchApiService extends Service {
      *   'viewers'          => 0,
      *   'host'             => null
      * ]
-     * @param string $name stream name
-     * @param string|false $lastOnline
-     * @return array
+     * @return array|null
      */
-    public function getStreamStatus($name, $lastOnline = false) {
-        $channel = $this->getChannel($name);
+    public function getStreamStatus(int $channelId, bool $lastOnline = false) {
+        $channel = $this->getChannel($channelId);
 
         if (empty($channel)) {
             return null;
         }
 
-        $live = $this->getStreamLiveDetails($name);
+        $live = $this->getStreamLiveDetails($channelId);
         // if there are live details
         //   use the current time
         // else if there are no live details
@@ -197,7 +198,7 @@ class TwitchApiService extends Service {
 
         } else {
 
-            $broadcasts = $this->getPastBroadcasts($name, 1);
+            $broadcasts = $this->getPastBroadcasts($channelId, 1);
             $host = $this->getChannelHostWithInfo($channel['_id']);
             $lastPreview = (!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])) ? $broadcasts['videos'][0]['preview'] : null;
             $data['host'] = $host;

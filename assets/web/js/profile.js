@@ -1,6 +1,8 @@
 // Message composition UI
 // TODO re-implement emotes in private messages
+
 import $ from 'jquery'
+import {debounce} from 'throttle-debounce'
 import {HtmlTextFormatter,UrlFormatter,EmoteFormatter} from 'dgg-chat-gui/assets/chat/js/formatters'
 
 const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatter()], ctx = {};
@@ -15,7 +17,6 @@ const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatte
         (function () {
             const $modalmsg = $composeModal.find('.modal-message'),
                 $form = $composeModal.find('#compose-form'),
-                $pagealrt = $('#alerts-container'),
                 $message = $form.find('textarea#compose-message'),
                 $recipients = $form.find('input#compose-recipients'),
                 $recipientscont = $form.find('.modal-recipients .recipient-container'),
@@ -66,8 +67,7 @@ const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatte
                     .fail(e => $modalmsg.show().html(`<span class="text-danger">${e.status}: ${e.statusText}</span>`))
                     .done(data => {
                         if(data.success === true){
-                            $pagealrt.show().html('<div class="alert alert-info"><strong>Sent!</strong> Your message has been sent.</div>')
-                            window.setTimeout(() => $pagealrt.hide(), 3000)
+                            $(document).alertSuccess("Your message has been sent.", {delay: 3000});
                             $composeModal.modal('hide')
                         }else{
                             $modalmsg.show().html(`<span class="text-danger">${data.message}</span>`);
@@ -389,4 +389,128 @@ const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatte
         });
     }
 
-})()
+})();
+
+(function(){
+    const nameChangeForm = $('form#nameForm');
+    nameChangeForm.each(function(){
+        const nameChange = $('input#nameChange'),
+            nameChangeAlert = $('#nameChangeAlert'),
+            nameChangeBackDrop = $('#nameChangeBackDrop'),
+            alertContentDefault = nameChangeAlert.find('p').html(),
+            alertContentSuccess = '<i class="fas fa-fw fa-check-circle"></i>&nbsp;Click <strong>here</strong> to confirm your username!';
+        let isValidName = false;
+        const onUsernameChange = function(){
+            const username = nameChange.val();
+            if (username === '') {
+                nameChangeAlert.find('p').html(alertContentDefault)
+                return;
+            }
+            $.ajax({
+                url: '/profile/usernamecheck',
+                data: {username},
+                type: 'GET',
+                success: function(data) {
+                    if (data) {
+                        if (data['success'] === true) {
+                            nameChangeAlert.removeClass('alert-danger').addClass('alert-success');
+                            nameChangeAlert.find('p').html(alertContentSuccess)
+                            isValidName = true
+                        } else {
+                            nameChangeAlert.removeClass('alert-success').addClass('alert-danger');
+                            const msg = data['error'] ? data['error'] : 'Username already exists, try another!';
+                            nameChangeAlert.find('p').html('<i class="fas fa-fw fa-times-circle"></i>&nbsp;' + msg)
+                        }
+                    } else {
+                        nameChangeAlert.removeClass('alert-success').addClass('alert-danger');
+                    }
+                }
+            });
+        };
+        nameChangeAlert.on('click', function(){
+            if (isValidName) nameChangeForm.submit();
+            return false;
+        });
+        nameChangeBackDrop.on('click', function(){
+            nameChange.blur().focus();
+            return false;
+        });
+        nameChange.on('change keyup', debounce(250, false, onUsernameChange));
+    });
+
+})();
+
+(function(){
+
+    const $connTable = $('#connections-content'),
+        $btnToggle = $('#connectSelectToggleBtn'),
+        $btnConnect = $('#connectNewConnBtn'),
+        $btnRemove = $('#connectRemoveBtn'),
+        $connectModal = $('#connectModal'),
+        $connectToolsForm = $('#connectToolsForm');
+
+    if ($connTable.length > 0) {
+
+        const toggleToolsBasedOnSelection = function() {
+            const someSelected = getActiveSelectors().length === 0
+            $btnRemove.prop( 'disabled', someSelected)
+        };
+
+        const getActiveSelectors = function() {
+            return $connTable.find('td.selector.active').toArray()
+        };
+
+        const activateSelector = function(){
+            $(this).addClass('active')
+                .find('i')
+                .attr('class', 'far fa-dot-circle')
+            toggleToolsBasedOnSelection()
+        };
+
+        const deactivateSelector = function () {
+            $(this).removeClass('active')
+                .find('i')
+                .attr('class', 'far fa-circle')
+            toggleToolsBasedOnSelection()
+        };
+
+        const toggleRowSelector = function (e) {
+            const self = $(this)
+            e.preventDefault()
+            e.stopPropagation()
+            if (self.hasClass('active')) {
+                deactivateSelector.apply(self)
+            } else {
+                activateSelector.apply(self)
+            }
+        };
+
+        $btnToggle.on('click touch', function(e){
+            $connTable.find('.selector').each(function(){
+                const self = $(this)
+                if (self.hasClass('active')) {
+                    deactivateSelector.apply(self)
+                } else {
+                    activateSelector.apply(self)
+                }
+            })
+            return false
+        });
+
+        $btnRemove.on('click', function(){
+            if (confirm("Are you sure? This cannot be undone!")) {
+                const selected = getActiveSelectors().map(a => {
+                    return $(a).closest('tr').data('id')
+                })
+                $connectToolsForm.attr('action', '/profile/remove')
+                    .append(selected.map(e => `<input type="hidden" name="selected[]" value="${e}" />`))
+                    .submit();
+                return false
+            }
+        });
+
+        $connTable.on('click', 'tbody td.selector', toggleRowSelector)
+
+    }
+})();
+

@@ -12,12 +12,9 @@ use PDO;
 class MineCraftService extends Service {
 
     /**
-     * @param $userid
-     * @param $uuid
-     * @return bool
      * @throws DBALException
      */
-    public function setMinecraftUUID($userid, $uuid) {
+    public function setMinecraftUUID(int $userid, string $uuid): bool {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           UPDATE dfl_users SET minecraftuuid = :uuid

@@ -1,6 +1,6 @@
 <?php
+use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,44 +13,88 @@ use Destiny\Common\Config;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'menu.php' ?>
 
+    <section id="connectTools" class="container">
+        <button id="connectSelectToggleBtn" title="Toggle" class="btn btn btn-dark"><i class="far fa-circle"></i></button>
+        <button id="connectNewConnBtn" accesskey="n" class="btn btn-primary" data-toggle="modal" data-target="#connectModal">Connect</button>
+        <button id="connectRemoveBtn" accesskey="d" class="btn btn-danger" disabled>Remove</button>
+        <form id="connectToolsForm" method="post"></form>
+    </section>
+
     <section class="container">
-        <h3 data-toggle="collapse" data-target="#authentication-content">Providers</h3>
-        <div id="authentication-content" class="content content-dark collapse show">
-            <div class="ds-block">
-                <p>Connect all the providers to the same destiny.gg user.</p>
-            </div>
-            <form id="auth-profile-form" method="post">
-                <table class="grid" style="width:100%">
-                    <tbody>
-                    <?php foreach(Config::$a ['authProfiles'] as $id): ?>
+
+        <h3 data-toggle="collapse" data-target="#connections-content">Logins</h3>
+        <div id="connections-content" class="content collapse show">
+            <div class="content-dark clearfix">
+                <?php if(!empty($this->authProfiles)): ?>
+                    <table class="grid">
+                        <thead>
                         <tr>
-                            <td><?=ucwords($id)?></td>
-                            <td style="width:100%;">
-                                <?php if(in_array($id, $this->authProfileTypes)): ?>
-                                    <a href="/profile/remove/<?=$id?>" data-confirm="Are you sure?" class="btn btn-danger btn-sm btn-post">Remove</a>
-                                <?php else: ?>
-                                    <a href="/profile/connect/<?=$id?>" class="btn btn-primary btn-sm btn-post">Connect</a>
-                                <?php endif ?>
-                            </td>
+                            <td></td>
+                            <td>Provider</td>
+                            <td>Detail</td>
+                            <td>Created</td>
                         </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </form>
-            <br />
+                        </thead>
+                        <tbody>
+                        <?php foreach($this->authProfiles as $auth): ?>
+                            <tr data-id="<?=Tpl::out($auth['id'])?>">
+                                <td class="selector"><i class="far fa-circle"></i></td>
+                                <td><?=Tpl::out($auth['authProvider'])?></td>
+                                <td title="<?=Tpl::out($auth['authId'])?>"><?=!empty($auth['authDetail']) ? Tpl::out($auth['authDetail']):Tpl::out($auth['authId'])?></td>
+                                <td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <div class="ds-block">
+                        <p>No connections</p>
+                    </div>
+                <?php endif ?>
+
+            </div>
         </div>
+
     </section>
 
 </div>
 
+<div class="modal" id="connectModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="loginproviders">
+                    <a href="/profile/connect/twitch" class="btn btn-lg btn-twitch" tabindex="1" data-provider="twitch">
+                        <i class="fab fa-twitch"></i> Twitch
+                    </a>
+                    <a href="/profile/connect/google" class="btn btn-lg btn-google" tabindex="2" data-provider="google">
+                        <i class="fab fa-google"></i> Google
+                    </a>
+                    <a href="/profile/connect/twitter" class="btn btn-lg btn-twitter" tabindex="2" data-provider="twitter">
+                        <i class="fab fa-twitter"></i> Twitter
+                    </a>
+                    <a href="/profile/connect/reddit" class="btn btn-lg btn-reddit" tabindex="2" data-provider="reddit">
+                        <i class="fab fa-reddit"></i> Reddit
+                    </a>
+                    <a href="/profile/connect/discord" class="btn btn-lg btn-discord" tabindex="2" data-provider="discord">
+                        <i class="fab fa-discord"></i> Discord
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>
 <?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('chat.vendor.js')?>
 <?=Tpl::manifestScript('web.js')?>
+<?=Tpl::manifestScript('profile.js')?>
 
 </body>
 </html>

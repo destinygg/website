@@ -11,7 +11,7 @@ class Tpl {
         return json_encode($var, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
     }
 
-    public static function out($var, $default = "") {
+    public static function out($var, string $default = ''): string {
         if ($var instanceof Exception) {
             $var = $var->getMessage();
         }
@@ -22,7 +22,7 @@ class Tpl {
         return number_format($number);
     }
 
-    public static function title($title) {
+    public static function title($title): string {
         $title = trim("$title");
         if (!empty($title)) {
             $str = sprintf('%s - %s', $title, Config::$a['meta']['shortName']);
@@ -32,22 +32,22 @@ class Tpl {
         return "<title>$str</title>\r\n";
     }
 
-    public static function moment(DateTime $date, $format, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+    public static function moment(DateTime $date, string $format = '', string $momentFormat = 'MMMM Do, h:mm:ss a, YYYY'): string {
         return sprintf('<time title="%s" data-moment="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $momentFormat, $date->format($format));
     }
 
-    public static function fromNow(DateTime $date, $momentFormat = 'MMMM Do, h:mm:ss a, YYYY') {
+    public static function fromNow(DateTime $date, string $momentFormat = 'MMMM Do, h:mm:ss a, YYYY'): string {
         return sprintf('<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $momentFormat, Date::getElapsedTime($date));
     }
 
-    public static function manifestScript($name, array $attr = []) {
+    public static function manifestScript(string $name, array $attr = []): string {
         $url = Config::cdn() . '/' . Config::$a['manifest'][$name];
         $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
         $str = !empty($attribs) ? " $attribs" : "";
         return "<script$str src=\"$url\"></script>\r\n";
     }
 
-    public static function manifestLink($name, array $attr = []) {
+    public static function manifestLink(string $name, array $attr = []): string {
         $url = Config::cdn() . '/' . Config::$a['manifest'][$name];
         $attr = array_merge(['rel' => 'stylesheet', 'media' => 'screen'], $attr);
         $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));

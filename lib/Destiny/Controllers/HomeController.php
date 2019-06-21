@@ -1,14 +1,14 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Common\Annotation\ResponseBody;
-use Destiny\Common\ViewModel;
-use Destiny\Common\Application;
 use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Route;
+use Destiny\Common\Application;
+use Destiny\Common\Config;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\Config;
+use Destiny\Common\ViewModel;
 use Destiny\Twitch\TwitchWebHookService;
 
 /**
@@ -52,15 +52,10 @@ class HomeController {
     /**
      * @Route ("/")
      * @Route ("/home")
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function home(ViewModel $model) {
+    public function home(ViewModel $model): string {
         $cache = Application::getNsCache();
         $model->posts = $cache->fetch ( 'recentposts' );
-        $model->articles = $cache->fetch ( 'recentblog' );
-        $model->tweets = $cache->fetch ( 'twitter' );
         $model->recenttracks = $cache->fetch ( 'recenttracks' );
         $model->toptracks = $cache->fetch ( 'toptracks' );
         $model->playlist = $cache->fetch ( 'youtubeplaylist' );
@@ -72,8 +67,6 @@ class HomeController {
 
     /**
      * @Route ("/ping")
-     *
-     * @param Response $response
      */
     public function ping(Response $response) {
         $response->addHeader ( 'X-Pong', Config::$a['meta']['shortName'] );
@@ -99,11 +92,8 @@ class HomeController {
 
     /**
      * @Route ("/embed/chat")
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function embedChat(ViewModel $model) {
+    public function embedChat(ViewModel $model): string {
         $cache = Application::getNsCache();
         $model->title = 'Chat';
         $model->cacheKey = $cache->fetch('chatCacheKey');
@@ -112,11 +102,8 @@ class HomeController {
 
     /**
      * @Route ("/embed/onstreamchat")
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function streamChat(ViewModel $model) {
+    public function streamChat(ViewModel $model): string {
         $cache = Application::getNsCache();
         $model->title = 'Chat';
         $model->cacheKey = $cache->fetch('chatCacheKey');
@@ -125,11 +112,8 @@ class HomeController {
 
     /**
      * @Route ("/embed/votechat")
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function embedVote(ViewModel $model) {
+    public function embedVote(ViewModel $model): string {
         $cache = Application::getNsCache();
         $model->title = 'Vote';
         $model->cacheKey = $cache->fetch('chatCacheKey');
@@ -138,22 +122,16 @@ class HomeController {
 
     /**
      * @Route ("/agreement")
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function agreement(ViewModel $model) {
+    public function agreement(ViewModel $model): string {
         $model->title = 'User agreement';
         return 'agreement';
     }
 
     /**
      * @Route ("/bigscreen")
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function bigscreen(ViewModel $model) {
+    public function bigscreen(ViewModel $model): string {
         $model->title = 'Bigscreen';
         return 'bigscreen';
     }

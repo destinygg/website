@@ -1,14 +1,16 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Common\Session\Session;
-use Destiny\Common\Config;
-use Destiny\Common\Annotation\Controller;
-use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Chat\ChatRedisService;
+use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Annotation\Route;
 use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\Config;
+use Destiny\Common\Exception;
+use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
+use Destiny\Common\User\UserStatus;
 use Destiny\Common\Utils\FilterParamsException;
 use Doctrine\DBAL\DBALException;
 
@@ -20,13 +22,9 @@ class ImpersonateController {
     /**
      * @Route ("/impersonate")
      * @HttpMethod ({"GET"})
-     *
-     * @param array $params
-     * @return string
-     *
      * @throws DBALException
      */
-    public function impersonate(array $params) {
+    public function impersonate(array $params): string {
         try {
             Session::start();
             $authService = AuthenticationService::instance();
@@ -46,15 +44,12 @@ class ImpersonateController {
             if (empty ($user)) {
                 throw new FilterParamsException ('User not found. Try a different userId or username');
             }
-            if ($user['userStatus'] === 'Deleted') {
-                throw new FilterParamsException ("User status is 'deleted'.");
+            if ($user['userStatus'] != UserStatus::ACTIVE) {
+                throw new FilterParamsException ("Invalid user status [${user['userStatus']}]");
             }
-            $credentials = $authService->buildUserCredentials($user);
-            Session::updateCredentials($credentials);
-            $redisService = ChatRedisService::instance();
-            $redisService->setChatSession($credentials, Session::getSessionId());
-            $redisService->sendRefreshUser($credentials);
-        } catch (FilterParamsException $e) {
+            $authService->updateWebSession($user);
+
+        } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
         }
         return 'redirect: /';

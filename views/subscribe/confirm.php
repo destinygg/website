@@ -9,65 +9,79 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/meta.php' ?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
-<body id="subscription-confirm" class="no-brand">
+<body id="subscription-confirm">
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/banner.php' ?>
 
-    <section class="container">
+    <section class="container vertical-contain">
+        <div style="flex: 1;">
 
-        <h1 class="title">
-            <span>Subscribe</span> <small>confirm your selection</small>
-        </h1>
+            <h1 class="title">
+                <span>Subscribe</span> <small>confirm your selection</small>
+            </h1>
 
-        <div class="content content-dark clearfix">
+            <div class="content content-dark clearfix">
 
-            <?php include 'seg/alerts.php' ?>
-
-            <div style="width: 100%;" class="clearfix stream">
-                <form id="subscribe-form" action="/subscription/create" method="post">
-
-                    <input type="hidden" name="subscription" value="<?= $this->subscriptionType['id'] ?>">
-                    <input type="hidden" name="gift" value="<?= $this->gift ?>">
-
-                    <div class="subscription-tier ds-block">
-                        <div class="subscription">
-                            <h2><?=$this->subscriptionType['tierLabel']?></h2>
-                            <?php if(!empty($this->gift)): ?>
-                                <p><i class="fas fa-gift"></i> You are gifting this to <span class="badge badge-danger"><?=Tpl::out($this->gift)?></span></p>
-                            <?php endif ?>
-                            <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
+                <?php if(!empty($this->warning)): ?>
+                    <section class="container mb-0">
+                        <div class="alert alert-danger alert-dismissable mb-0">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+                            <strong><i class="fas fa-exclamation-triangle"></i> Warning</strong>
+                            <div><?=Tpl::out($this->warning)?></div>
                         </div>
-                    </div>
+                    </section>
+                <?php endif ?>
 
-                    <div class="ds-block text-message">
-                        <div>Send a message with your subscription (optional):</div>
-                        <textarea name="sub-message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder=""></textarea>
-                    </div>
+                <div style="width: 100%;" class="clearfix stream">
+                    <form id="subscribe-form" action="/subscription/create" method="post">
 
-                    <div class="ds-block">
-                        <div class="checkbox">
-                            <label for="renew">
-                                <span><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></span>
-                                <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
-                            </label>
+                        <input type="hidden" name="subscription" value="<?= $this->subscriptionType['id'] ?>">
+                        <input type="hidden" name="gift" value="<?= $this->gift ?>">
+
+                        <div class="subscription-tier ds-block">
+                            <div class="subscription">
+                                <h2><?=$this->subscriptionType['tierLabel']?></h2>
+                                <?php if(!empty($this->gift)): ?>
+                                    <p><i class="fas fa-gift"></i> You are gifting this to <span class="badge badge-danger"><?=Tpl::out($this->gift)?></span></p>
+                                <?php endif ?>
+                                <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
-                        <a href="/subscribe" class="btn btn-dark">Cancel</a>
-                    </div>
+                        <div class="ds-block text-message">
+                            <div>Why are you subscribing? where did you hear about Destiny? (optional)</div>
+                            <textarea name="sub-note" autocomplete="off" maxlength="250" rows="1" class="form-control" placeholder=""></textarea>
+                        </div>
 
-                </form>
+                        <div class="ds-block text-message">
+                            <div>Send a broadcast message with your subscription (optional)</div>
+                            <textarea name="sub-message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder=""></textarea>
+                        </div>
+
+                        <div class="ds-block">
+                            <div class="checkbox">
+                                <label for="renew">
+                                    <span><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></span>
+                                    <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
+                            <a href="/subscribe" class="btn btn-dark">Cancel</a>
+                        </div>
+
+                    </form>
+                </div>
             </div>
+
+            <p class="agreement">By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</p>
         </div>
-
-        <p class="agreement">By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</p>
-
     </section>
 </div>
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

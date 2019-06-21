@@ -12,12 +12,10 @@ use PDO;
 class ChatBanService extends Service {
 
     /**
-     * @param int $userId
-     * @param string $ipaddress
-     * @return array
+     * @return array|false
      * @throws DBALException
      */
-    public function getUserActiveBan($userId, $ipaddress = "") {
+    public function getUserActiveBan(int $userId, string $ipaddress = "") {
         $conn = Application::getDbConn();
         if(empty($ipaddress)) {
             $stmt = $conn->prepare('
@@ -76,21 +74,13 @@ class ChatBanService extends Service {
     }
 
     /**
-     * @param $userid
-     * @return int $count The number of rows modified
      * @throws DBALException
      */
-    public function removeUserBan($userid) {
+    public function removeUserBan(int $userid): int {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
-          UPDATE bans
-          SET endtimestamp = NOW()
-          WHERE
-            targetuserid = :targetuserid AND
-            (
-              endtimestamp IS NULL OR
-              endtimestamp >= NOW()
-            )
+          UPDATE bans SET endtimestamp = NOW()
+          WHERE targetuserid = :targetuserid AND (endtimestamp IS NULL OR endtimestamp >= NOW())
         ");
         $stmt->bindValue('targetuserid', $userid, PDO::PARAM_INT);
         $stmt->execute();
@@ -98,19 +88,15 @@ class ChatBanService extends Service {
     }
 
     /**
-     * @param array $ban
-     * @return string
      * @throws DBALException
      */
-    public function insertBan(array $ban) {
+    public function insertBan(array $ban): int {
         $conn = Application::getDbConn();
         $conn->insert('bans', $ban);
-        return $conn->lastInsertId();
+        return intval($conn->lastInsertId());
     }
 
     /**
-     * update an existing ban
-     * @param array $ban
      * @throws DBALException
      */
     public function updateBan(array $ban) {
@@ -119,11 +105,10 @@ class ChatBanService extends Service {
     }
 
     /**
-     * @param int $banId
-     * @return array
+     * @return array|false
      * @throws DBALException
      */
-    public function getBanById($banId) {
+    public function getBanById(int $banId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT
@@ -150,10 +135,9 @@ class ChatBanService extends Service {
     }
 
     /**
-     * @return array
      * @throws DBALException
      */
-    public function getActiveBans() {
+    public function getActiveBans(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT

@@ -10,13 +10,10 @@ class RedisUtils {
 
     /**
      * Loads the given redis script if needed and calls it with the $arguments param
-     *
-     * @param string $scriptname
-     * @param array $argument
-     * @return array $users The users found
+     * @return mixed
      * @throws Exception
      */
-    public static function callScript($scriptname, $argument) {
+    public static function callScript(string $scriptname, array $argument = []) {
         $redis = Application::instance()->getRedis();
         $dir = Config::$a['redis']['scriptdir'];
         $hash = file_get_contents($dir . $scriptname . '.hash');

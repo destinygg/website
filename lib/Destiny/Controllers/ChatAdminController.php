@@ -1,16 +1,16 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Common\Exception;
-use Destiny\Common\ViewModel;
-use Destiny\Common\Annotation\Controller;
-use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\User\UserService;
-use Destiny\Common\Session\Session;
 use Destiny\Chat\ChatRedisService;
+use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Exception;
+use Destiny\Common\Session\Session;
+use Destiny\Common\User\UserService;
+use Destiny\Common\Utils\FilterParams;
+use Destiny\Common\ViewModel;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -22,11 +22,8 @@ class ChatAdminController {
      * @Route ("/admin/chat")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function adminChat(ViewModel $model) {
+    public function adminChat(ViewModel $model): string {
         $model->title = 'Chat';
         return 'admin/chat';
     }
@@ -34,13 +31,9 @@ class ChatAdminController {
     /**
      * @Route ("/admin/chat/broadcast")
      * @Secure ({"MODERATOR"})
-     *
-     * @param array $params         
-     * @param ViewModel $model          
      * @throws Exception
-     * @return string
      */
-    public function adminChatBroadcast(array $params, ViewModel $model){
+    public function adminChatBroadcast(array $params, ViewModel $model): string {
         $model->title = 'Chat';
         FilterParams::required($params, 'message');
         ChatRedisService::instance()->sendBroadcast($params ['message']);
@@ -51,15 +44,10 @@ class ChatAdminController {
     /**
      * @Route ("/admin/chat/ip")
      * @Secure ({"MODERATOR"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
      * @throws Exception
      * @throws DBALException
      */
-    public function adminChatIp(array $params, ViewModel $model){
+    public function adminChatIp(array $params, ViewModel $model): string {
         $model->title = 'Chat';
         FilterParams::required($params, 'ip');
         $ids = ChatRedisService::instance()->findUserIdsByIP($params['ip']);

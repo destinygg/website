@@ -2,21 +2,20 @@
 namespace Destiny\Common\Authentication;
 
 use DateInterval;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Chat\EmoteService;
+use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
-use Destiny\Common\Utils\CryptoMcrypt;
+use Destiny\Common\Service;
+use Destiny\Common\Session\Session;
+use Destiny\Common\Session\SessionCredentials;
+use Destiny\Common\User\UserFeature;
+use Destiny\Common\User\UserRole;
+use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\CryptoOpenSSL;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Session\Session;
-use Destiny\Common\Service;
-use Destiny\Common\Session\SessionCredentials;
-use Destiny\Common\User\UserRole;
-use Destiny\Common\User\UserFeature;
-use Destiny\Common\User\UserService;
-use Destiny\Commerce\SubscriptionsService;
-use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -24,58 +23,65 @@ use Doctrine\DBAL\DBALException;
  */
 class AuthenticationService extends Service {
 
+    const REGEX_VALID_USERNAME = '/^[A-Za-z0-9_]{3,20}$/';
+    const REGEX_REPLACE_CHAR_USERNAME = '/[^A-Za-z0-9_]/';
+    const USERNAME_MIN = 3;
+    const USERNAME_MAX = 20;
+
     /**
-     * @param string $username
      * @throws Exception
-     * @throws DBALException
      */
-    public function validateUsername($username) {
-        if (empty ($username))
+    public function validateUsername(string $username) {
+        if (empty($username)) {
             throw new Exception ('Username required');
-
-        if (preg_match('/^[A-Za-z0-9_]{3,20}$/', $username) == 0)
+        }
+        if (preg_match(self::REGEX_VALID_USERNAME, $username) == 0) {
             throw new Exception ('Username may only contain A-z 0-9 or underscores and must be over 3 characters and under 20 characters in length.');
+        }
+        if (preg_match_all('/[0-9]{3}/', $username, $m) > 0) {
+            throw new Exception ('Too many numbers in a row in username');
+        }
+        if (preg_match_all('/[_]{2}/', $username, $m) > 0 || preg_match_all("/[_]+/", $username, $m) > 2) {
+            throw new Exception ('Too many underscores in username');
+        }
+        if (preg_match_all("/[0-9]/", $username, $m) > round(strlen($username) / 2)) {
+            throw new Exception ('Number ratio is too high in username');
+        }
 
-        $emoteService = EmoteService::instance();
         $normalizeduname = strtolower($username);
         $front = substr($normalizeduname, 0, 2);
 
         // nick blacklists
         $blacklist = array_merge([], include _BASEDIR . '/config/nick.blacklist.php');
         if (in_array($normalizeduname, $blacklist)) {
-            throw new Exception ('nick is blacklisted');
+            throw new Exception ('Username is blacklisted');
         }
 
         // nick-to-emote similarity heuristics, not perfect sadly ;(
-        foreach (array_map(function($v) { return strtolower($v['prefix']); }, $emoteService->findAllEmotes()) as $normalizedemote) {
-            if (strpos($normalizeduname, $normalizedemote) === 0) {
-                throw new Exception ('Username too similar to an emote, try changing the first characters');
+        foreach ($this->getEmotesForValidation() as $v) {
+            $prefix = $v['prefix'];
+            $emote = strtolower($v['prefix']);
+            if (strcasecmp($normalizeduname, $emote) === 0) {
+                throw new Exception ("Username too similar to emote $prefix, try changing the first characters");
             }
-            if ($normalizedemote == 'lul') { // TODO remove this static reference
+            if (strpos($normalizeduname, $emote) === 0) {
+                throw new Exception ("Username cannot start with emote $prefix, try changing the first characters");
+            }
+            if ($emote == 'lul') { // TODO remove this static reference
                 continue;
             }
-            $shortuname = substr($normalizeduname, 0, strlen($normalizedemote));
-            $emotefront = substr($normalizedemote, 0, 2);
-            if ($front == $emotefront and levenshtein($normalizedemote, $shortuname) <= 2) {
-                throw new Exception ('Username too similar to an emote, try changing the first characters');
+            $shortuname = substr($normalizeduname, 0, strlen($emote));
+            if ($front == substr($emote, 0, 2) and levenshtein($emote, $shortuname) <= 2) {
+                throw new Exception ("Username too similar to an emote $prefix, try changing the first characters");
             }
         }
 
-        if (preg_match_all('/[0-9]{3}/', $username, $m) > 0)
-            throw new Exception ('Too many numbers in a row in username');
-
-        if (preg_match_all('/[\_]{2}/', $username, $m) > 0 || preg_match_all("/[_]+/", $username, $m) > 2)
-            throw new Exception ('Too many underscores in username');
-
-        if (preg_match_all("/[0-9]/", $username, $m) > round(strlen($username) / 2))
-            throw new Exception ('Number ratio is too high in username');
     }
 
     /**
-     * @param string $email
      * @throws Exception
      */
-    public function validateEmail($email) {
+    public function validateEmail(string $email) {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new Exception ('A valid email is required');
         }
@@ -95,6 +101,8 @@ class AuthenticationService extends Service {
      */
     public function startSession() {
         $redisService = ChatRedisService::instance();
+        $userService = UserService::instance();
+
         // If the session has a cookie, start it
         if (Session::hasSessionCookie() && Session::start() && Session::hasRole(UserRole::USER)) {
             $sessionId = Session::getSessionId();
@@ -108,52 +116,40 @@ class AuthenticationService extends Service {
             $user = $this->getRememberMe();
             if (!empty($user)) {
                 Session::start();
-                Session::updateCredentials($this->buildUserCredentials($user));
+                $this->updateWebSession($user);
                 $this->setRememberMe($user);
-
-                // flagUserForUpdate updates the credentials AGAIN, but since its low impact
-                // Instead of doing the logic in two places
-                $this->flagUserForUpdate($user['userId']);
             }
         }
 
         // Update the user if they have been flagged for an update
         if (Session::hasRole(UserRole::USER)) {
-            $userId = Session::getCredentials()->getUserId();
+            $creds = Session::getCredentials();
+            $userId = $creds->getUserId();
             if (!empty($userId) && $this->isUserFlaggedForUpdate($userId)) {
-                $user = UserService::instance()->getUserById($userId);
-                if (!empty ($user)) {
-                    $this->clearUserUpdateFlag($userId);
-                    Session::updateCredentials($this->buildUserCredentials($user));
-
-                    // the refreshChatSession differs from this call, because only here we have access to the session id.
-                    $redisService->setChatSession(Session::getCredentials(), Session::getSessionId());
-                    $redisService->sendRefreshUser(Session::getCredentials());
-                }
+                $user = $userService->getUserById($userId);
+                $this->clearUserUpdateFlag($userId);
+                $this->updateWebSession($user, $creds->getAuthProvider());
             }
         }
     }
 
     /**
-     * @param array $user
-     * @param string $authProvider
-     * @return SessionCredentials
      * @throws DBALException
      */
-    public function buildUserCredentials(array $user, $authProvider = null) {
+    public function buildUserCredentials(array $user, string $authProvider = ''): SessionCredentials {
         $userService = UserService::instance();
         $subscriptionService = SubscriptionsService::instance();
-        $creds = new SessionCredentials ($user);
+        $creds = new SessionCredentials($user);
         $creds->setAuthProvider($authProvider);
         $creds->addRoles(UserRole::USER);
         $creds->addFeatures($userService->getFeaturesByUserId($user ['userId']));
         $creds->addRoles($userService->getRolesByUserId($user ['userId']));
-        $sub = $subscriptionService->getUserActiveSubscription($user ['userId']);
 
         if ($user['istwitchsubscriber']) {
             $creds->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
         }
 
+        $sub = $subscriptionService->getUserActiveSubscription($user ['userId']);
         if (!empty ($sub)) {
             $creds->addRoles(UserRole::SUBSCRIBER);
             $creds->addFeatures(UserFeature::SUBSCRIBER);
@@ -193,38 +189,8 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * Handles the authentication and then merging of accounts
-     * Merging of an account is basically connecting multiple authenticators to one user
-     *
-     * @param AuthenticationCredentials $authCreds
-     * @throws DBALException
-     */
-    public function handleAuthAndMerge(AuthenticationCredentials $authCreds) {
-        $userService = UserService::instance();
-        $user = Session::getCredentials()->getData();
-
-        // If this auth profile exists, delete it what ever user had it.
-        $existingAuth = $userService->getAuthByIdAndProvider($authCreds->getAuthId(), $authCreds->getAuthProvider());
-        if (!empty($existingAuth)) {
-            $userService->removeAuthProfile($existingAuth['userId'], $authCreds->getAuthProvider());
-        }
-
-        // Add the auth profile to the user
-        $userService->addUserAuthProfile([
-            'userId' => $user['userId'],
-            'authProvider' => $authCreds->getAuthProvider(),
-            'authId' => $authCreds->getAuthId(),
-            'authCode' => $authCreds->getAuthCode(),
-            'authDetail' => $authCreds->getAuthDetail(),
-            'refreshToken' => $authCreds->getRefreshToken()
-        ]);
-    }
-
-    /**
      * Generates a rememberme cookie
      * Note the rememberme cookie has a long expiry unlike the session cookie
-     *
-     * @param array $user
      */
     public function setRememberMe(array $user) {
         try {
@@ -247,7 +213,7 @@ class AuthenticationService extends Service {
 
     /**
      * Returns the user record associated with a remember me cookie
-     * @return array
+     * @return array|null
      *
      * @throws \Exception
      */
@@ -261,11 +227,7 @@ class AuthenticationService extends Service {
         if (strlen($rawData) < 64)
             goto cleanup;
 
-        // TODO Remove CryptoMcrypt::decrypt in 30 days from deployment
         $data = CryptoOpenSSL::decrypt($rawData);
-        if (empty($data)) {
-            $data = CryptoMcrypt::decrypt($rawData);
-        }
 
         if (!$data)
             goto cleanup;
@@ -291,37 +253,69 @@ class AuthenticationService extends Service {
      * Flag a user session for update
      * So that on their next request, the session data is updated.
      * Also does a chat session refresh
-     *
-     * @param array|number $user
-     * @throws DBALException
      */
-    public function flagUserForUpdate($user) {
-        if (!is_array($user))
-            $user = UserService::instance()->getUserById($user);
-        if (!empty($user)) {
-            $cache = Application::getNsCache();
-            $cache->save('refreshusersession-' . $user['userId'], time(), intval(ini_get('session.gc_maxlifetime')));
-            $redisService = ChatRedisService::instance();
-            $redisService->sendRefreshUser($this->buildUserCredentials($user));
+    public function flagUserForUpdate(int $userId) {
+        try {
+            $user = UserService::instance()->getUserById($userId);
+            if (!empty($user)) {
+                $creds = $this->buildUserCredentials($user);
+                $this->setUserUpdateFlag($userId);
+                $redisService = ChatRedisService::instance();
+                $redisService->sendRefreshUser($creds);
+            }
+        } catch (\Exception $e) {
+            Log::error("Error flagging user for update. {$e->getMessage()}");
         }
     }
 
-    /**
-     * @param $userId
-     */
-    protected function clearUserUpdateFlag($userId) {
+    private function isUserFlaggedForUpdate(int $userId): bool {
         $cache = Application::getNsCache();
-        $cache->delete('refreshusersession-' . $userId);
+        $lastUpdated = $cache->fetch("refreshusersession-$userId");
+        return !empty($lastUpdated);
+    }
+
+    private function clearUserUpdateFlag(int $userId) {
+        $cache = Application::getNsCache();
+        $cache->delete("refreshusersession-$userId");
+    }
+
+    private function setUserUpdateFlag(int $userId) {
+        $cache = Application::getNsCache();
+        $cache->save("refreshusersession-$userId", time(), intval(ini_get('session.gc_maxlifetime')));
     }
 
     /**
-     * @param int $userId
-     * @return bool
+     * @throws Exception
      */
-    protected function isUserFlaggedForUpdate($userId) {
-        $cache = Application::getNsCache();
-        $lastUpdated = $cache->fetch('refreshusersession-' . $userId);
-        return !empty ($lastUpdated);
+    public function updateWebSession(array $user, string $provider = '') {
+        try {
+            $credentials = $this->buildUserCredentials($user, $provider);
+            //
+            $session = Session::instance();
+            foreach ($credentials->getData() as $name => $value) {
+                $session->set($name, $value);
+            }
+            $session->setCredentials($credentials);
+            //
+            $redisService = ChatRedisService::instance();
+            $sessionId = Session::getSessionId();
+            if (boolval($user['allowChatting'])) {
+                $redisService->setChatSession($credentials, $sessionId);
+                $redisService->sendRefreshUser($credentials);
+            } else {
+                $redisService->removeChatSession($sessionId);
+            }
+        } catch (\Exception $e) {
+            throw new Exception("Cannot update web session.", $e);
+        }
     }
 
+    private function getEmotesForValidation(): array {
+        try {
+            return EmoteService::instance()->findAllEmotes();
+        } catch (DBALException $e) {
+            Log::error("Emote failed to load. {$e->getMessage()}");
+        }
+        return [];
+    }
 }

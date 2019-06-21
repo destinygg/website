@@ -5,12 +5,12 @@ use Destiny\Common\Utils\Options;
 
 class Cookie {
 
-    protected $name = '';
-    protected $life = 0;
-    protected $path = '/';
-    protected $domain = '';
-    protected $secure = false;
-    protected $httponly = true;
+    public $name = '';
+    public $life = 0;
+    public $path = '/';
+    public $domain = '';
+    public $secure = false;
+    public $httponly = true;
 
     public function __construct($name, array $params = null) {
         $this->setName($name);
@@ -19,69 +19,49 @@ class Cookie {
         }
     }
 
-    public function getName() {
+    public function getName(): string {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName(string $name) {
         $this->name = $name;
     }
 
-    public function getLife() {
+    public function getLife(): int {
         return $this->life;
     }
 
-    public function setLife($life) {
-        $this->life = $life;
-    }
-
-    public function getPath() {
+    public function getPath(): string {
         return $this->path;
     }
 
-    public function setPath($path) {
-        $this->path = $path;
-    }
-
-    public function getDomain() {
+    public function getDomain(): string {
         return $this->domain;
     }
 
-    public function setDomain($domain) {
-        $this->domain = $domain;
-    }
-
-    public function getSecure() {
+    public function getSecure(): bool {
         return $this->secure;
     }
 
-    public function setSecure($secure) {
-        $this->secure = $secure;
-    }
-
-    public function getHttpOnly() {
+    public function getHttpOnly(): bool {
         return $this->httponly;
     }
 
-    public function setHttpOnly($httponly) {
-        $this->httponly = $httponly;
-    }
-
     public function getValue() {
-        if (isset ($_COOKIE [$this->name])) {
-            return $_COOKIE [$this->name];
+        if (isset ($_COOKIE[$this->name])) {
+            return $_COOKIE[$this->name];
         }
         return null;
     }
 
     public function setValue($value, $expiry) {
-        $_COOKIE [$this->name] = $value;
+        $_COOKIE[$this->name] = $value;
         setcookie($this->name, $value, $expiry, $this->getPath(), $this->getDomain(), $this->getSecure(), $this->getHttpOnly());
     }
 
     public function clearCookie() {
-        if (isset ($_COOKIE [$this->name])) {
-            unset ($_COOKIE [$this->name]);
+        if (isset ($_COOKIE[$this->name])) {
+            unset ($_COOKIE[$this->name]);
         }
         setcookie($this->name, '', time() - 3600, $this->getPath(), $this->getDomain(), $this->getSecure(), $this->getHttpOnly());
     }

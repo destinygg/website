@@ -28,6 +28,15 @@ config/config.local.php
 /package-lock.json
 /config/cert.pem
 
+/static/img
 /static/cache
 /static/emotes
 /static/flairs
+
+/config/*.pem
+/config/*.csr
+
+/public/*.txt
+/public/files
+/public/*.html
+/public/t

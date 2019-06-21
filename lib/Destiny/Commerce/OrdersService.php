@@ -1,8 +1,8 @@
 <?php
 namespace Destiny\Commerce;
 
-use Destiny\Common\Service;
 use Destiny\Common\Application;
+use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
 use PDO;
@@ -13,7 +13,6 @@ use PDO;
 class OrdersService extends Service {
 
     /**
-     * @param array $ipn
      * @throws DBALException
      */
     public function addIpnRecord(array $ipn) {
@@ -27,60 +26,48 @@ class OrdersService extends Service {
     }
 
     /**
-     * @param array $payment
      * @throws DBALException
      */
     public function updatePayment(array $payment) {
         $conn = Application::getDbConn();
-        $conn->update ( 'dfl_orders_payments', $payment, ['paymentId' => $payment['paymentId']]);
+        $conn->update('dfl_orders_payments', $payment, ['paymentId' => $payment['paymentId']]);
     }
 
     /**
-     * @param string $transactionId
-     * @return mixed
-     *
+     * @return array|false
      * @throws DBALException
      */
-    public function getPaymentByTransactionId($transactionId) {
+    public function getPaymentByTransactionId(string $transactionId) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( 'SELECT * FROM dfl_orders_payments WHERE transactionId = :transactionId LIMIT 0,1' );
-        $stmt->bindValue ( 'transactionId', $transactionId, PDO::PARAM_STR );
-        $stmt->execute ();
-        return $stmt->fetch ();
+        $stmt = $conn->prepare('SELECT * FROM dfl_orders_payments WHERE transactionId = :transactionId LIMIT 0,1');
+        $stmt->bindValue('transactionId', $transactionId, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch();
     }
 
     /**
-     * @todo this returns payments in ASC order, the getPaymentsByUser returns them in DESC order
-     *
-     * @param int $subscriptionId
-     * @param int $limit
-     * @param int $start
-     * @return array
-     *
      * @throws DBALException
      */
-    public function getPaymentsBySubscriptionId($subscriptionId, $limit = 100, $start = 0) {
+    public function getPaymentsBySubscriptionId(int $subscriptionId, int $limit = 100, int $start = 0): array {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( '
+        $stmt = $conn->prepare('
             SELECT p.* FROM dfl_orders_payments `p`
             INNER JOIN dfl_users_subscriptions `s` ON (s.subscriptionId = p.subscriptionId)
             WHERE p.subscriptionId = :subscriptionId
             ORDER BY p.paymentDate ASC
             LIMIT :start,:limit
-        ' );
-        $stmt->bindValue ( 'subscriptionId', $subscriptionId, PDO::PARAM_INT );
-        $stmt->bindValue ( 'start', $start, PDO::PARAM_INT );
-        $stmt->bindValue ( 'limit', $limit, PDO::PARAM_INT );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
+        ');
+        $stmt->bindValue('subscriptionId', $subscriptionId, PDO::PARAM_INT);
+        $stmt->bindValue('start', $start, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     /**
-     * @param array $payment
-     * @return int paymentId
      * @throws DBALException
      */
-    public function addPayment(array $payment) {
+    public function addPayment(array $payment): int {
         $conn = Application::getDbConn();
         $conn->insert ( 'dfl_orders_payments', [
             'subscriptionId' => $payment ['subscriptionId'],
@@ -94,17 +81,13 @@ class OrdersService extends Service {
             'paymentDate' => $payment ['paymentDate'],
             'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
         ]);
-        return $conn->lastInsertId ();
+        return intval($conn->lastInsertId());
     }
 
     /**
      * Returns an easier way to read a billing cycle
-     *
-     * @param int $frequency
-     * @param string $period
-     * @return string
      */
-    public function buildBillingCycleString($frequency, $period) {
+    public function buildBillingCycleString(int $frequency, string $period): string {
         if ($frequency < 1) {
             return 'Never';
         }

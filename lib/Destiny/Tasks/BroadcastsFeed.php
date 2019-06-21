@@ -13,17 +13,15 @@ use Destiny\Twitch\TwitchApiService;
  */
 class BroadcastsFeed implements TaskInterface {
 
-    /**
-     * @return mixed|void
-     */
     public function execute() {
         $twitchApiService = TwitchApiService::instance();
-        $broadcasts = $twitchApiService->getPastBroadcasts(Config::$a['twitch']['user']);
+        $broadcasts = $twitchApiService->getPastBroadcasts(Config::$a['twitch']['id']);
         if (!empty ($broadcasts)) {
             foreach ($broadcasts['videos'] as $i => $video) {
-                $path = ImageDownloadUtil::download($video['preview']);
-                if (!empty($path))
+                $path = ImageDownloadUtil::download($video['preview']['medium']);
+                if (!empty($path)) {
                     $broadcasts['videos'][$i]['preview'] = Config::cdni() . '/' . $path;
+                }
             }
             $cache = Application::getNsCache();
             $cache->save('pastbroadcasts', $broadcasts);

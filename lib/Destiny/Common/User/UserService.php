@@ -1,14 +1,13 @@
 <?php
 namespace Destiny\Common\User;
 
-use Destiny\Common\Config;
-use Destiny\Common\Service;
 use Destiny\Common\Application;
+use Destiny\Common\Config;
+use Destiny\Common\Exception;
+use Destiny\Common\Service;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Exception;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use PDO;
@@ -29,13 +28,12 @@ class UserService extends Service {
     protected $features = null;
 
     /**
-     * @return array
      * @throws DBALException
      */
-    public function getAllRoles() {
+    public function getAllRoles(): array {
         if ($this->roles == null) {
             $conn = Application::getDbConn();
-            $stmt = $conn->prepare('SELECT roleId, roleName, roleLabel FROM `dfl_roles` ORDER BY roleId ASC');
+            $stmt = $conn->prepare('SELECT roleId, roleName, roleLabel FROM `dfl_roles` ORDER BY roleLabel ASC');
             $stmt->execute();
             $this->roles = [];
             while ($a = $stmt->fetch()) {
@@ -49,97 +47,76 @@ class UserService extends Service {
      * @return array <featureName, []>
      * @throws DBALException
      */
-    public function getAllFeatures() {
+    public function getAllFeatures(): array {
         if ($this->features == null) {
             $conn = Application::getDbConn();
-            $stmt = $conn->prepare('SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureId ASC');
+            $stmt = $conn->prepare('SELECT featureId, featureName, featureLabel FROM dfl_features ORDER BY featureLabel ASC');
             $stmt->execute();
             $this->features = [];
             while ($a = $stmt->fetch()) {
-                $this->features [$a ['featureName']] = $a;
+                $this->features [$a['featureName']] = $a;
             }
         }
         return $this->features;
     }
 
     /**
-     * @param string $roleName
-     * @return array
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function getRoleIdByName($roleName) {
+    public function getRoleIdByName(string $roleName): int {
         $roles = $this->getAllRoles();
-        if (!isset ($roles [$roleName])) {
-            throw new Exception (sprintf('Invalid role name %s', $roleName));
+        if (!isset($roles[$roleName])) {
+            throw new Exception ("Invalid role name $roleName");
         }
-        return $roles [$roleName]['roleId'];
+        return $roles[$roleName]['roleId'];
     }
 
     /**
      * Remove a role from a user
-     *
-     * @param int $userId
-     * @param string $roleName
      * @throws DBALException
      * @throws Exception
      */
-    public function removeUserRole($userId, $roleName) {
+    public function removeUserRole(int $userId, string $roleName) {
         $roleId = $this->getRoleIdByName($roleName);
         $conn = Application::getDbConn();
-        $conn->delete('dfl_users_roles', [
-            'userId' => $userId,
-            'roleId' => $roleId
-        ]);
+        $conn->delete('dfl_users_roles', ['userId' => $userId, 'roleId' => $roleId]);
     }
 
     /**
-     * @param int $userId
-     * @param string $roleName
-     * @return string
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function addUserRole($userId, $roleName) {
+    public function addUserRole(int $userId, string $roleName) {
         $roleId = $this->getRoleIdByName($roleName);
         $conn = Application::getDbConn();
-        $conn->insert('dfl_users_roles', [
-            'userId' => $userId,
-            'roleId' => $roleId
-        ]);
-        return $conn->lastInsertId();
+        $conn->insert('dfl_users_roles', ['userId' => $userId, 'roleId' => $roleId]);
     }
 
     /**
-     * @param string $featureName
-     * @return array
      * @throws DBALException
      * @throws Exception
      */
-    public function getFeatureIdByName($featureName) {
+    public function getFeatureIdByName(string $featureName): int {
         $features = $this->getAllFeatures();
-        if (!isset ($features [$featureName])) {
-            throw new Exception (sprintf('Invalid feature name %s', $featureName));
+        if (!isset($features[$featureName])) {
+            throw new Exception("Invalid feature name $featureName");
         }
-        return $features [$featureName]['featureId'];
+        return $features[$featureName]['featureId'];
     }
 
     /**
      * Get a list of user features
-     *
-     * @param int $userId
-     * @return array
      * @throws DBALException
      */
-    public function getFeaturesByUserId($userId) {
+    public function getFeaturesByUserId(int $userId): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT DISTINCT b.featureName AS `id` FROM dfl_users_features AS a
             INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
             WHERE userId = :userId
-            ORDER BY a.featureId ASC');
+            ORDER BY a.featureId ASC
+        ');
         $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $features = [];
@@ -151,50 +128,32 @@ class UserService extends Service {
 
     /**
      * Add a feature to a user
-     *
-     * @param int $userId
-     * @param string $featureName
-     * @return string
      * @throws DBALException
      * @throws Exception
      */
-    public function addUserFeature($userId, $featureName) {
+    public function addUserFeature(int $userId, string $featureName) {
         $featureId = $this->getFeatureIdByName($featureName);
         $conn = Application::getDbConn();
-        $conn->insert('dfl_users_features', [
-            'userId' => $userId,
-            'featureId' => $featureId
-        ]);
-        return $conn->lastInsertId();
+        $conn->insert('dfl_users_features', ['userId' => $userId, 'featureId' => $featureId]);
     }
 
     /**
      * Remove a feature from a user
-     *
-     * @param int $userId
-     * @param string $featureName
      * @throws DBALException
      * @throws Exception
      */
-    public function removeUserFeature($userId, $featureName) {
+    public function removeUserFeature(int $userId, string $featureName) {
         $featureId = $this->getFeatureIdByName($featureName);
         $conn = Application::getDbConn();
-        $conn->delete('dfl_users_features', [
-            'userId' => $userId,
-            'featureId' => $featureId
-        ]);
+        $conn->delete('dfl_users_features', ['userId' => $userId, 'featureId' => $featureId]);
     }
 
     /**
      * Throws an exception if username is taken
-     *
-     * @param string $username
-     * @param int $excludeUserId
-     * @param string $msg
      * @throws DBALException
      * @throws Exception
      */
-    public function checkUsernameTaken($username, $excludeUserId = 0, $msg = 'The username you asked for is already being used') {
+    public function checkUsernameTaken(string $username, $excludeUserId = 0, $msg = 'The username you asked for is already being used') {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE username = :username AND userId != :excludeUserId');
         $stmt->bindValue('username', $username, PDO::PARAM_STR);
@@ -206,26 +165,10 @@ class UserService extends Service {
     }
 
     /**
-     * @param $email
-     * @param int|string $excludeUserId
-     * @return bool
+     * @return array|null
      * @throws DBALException
      */
-    public function getIsEmailTaken($email, $excludeUserId = 0) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT COUNT(*) FROM `dfl_users` WHERE email = :email AND userId != :excludeUserId');
-        $stmt->bindValue('email', $email, PDO::PARAM_STR);
-        $stmt->bindValue('excludeUserId', $excludeUserId, PDO::PARAM_INT);
-        $stmt->execute();
-        return ($stmt->fetchColumn() > 0) ? true : false;
-    }
-
-    /**
-     * @param int $username
-     * @return mixed
-     * @throws DBALException
-     */
-    public function getUserByUsername($username) {
+    public function getUserByUsername(string $username) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE username = :username LIMIT 1');
         $stmt->bindValue('username', $username, PDO::PARAM_STR);
@@ -234,11 +177,10 @@ class UserService extends Service {
     }
 
     /**
-     * @param string $userId
-     * @return mixed
+     * @return array|null
      * @throws DBALException
      */
-    public function getUserById($userId) {
+    public function getUserById(int $userId) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `dfl_users` WHERE userId = :userId LIMIT 1');
         $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
@@ -247,35 +189,29 @@ class UserService extends Service {
     }
 
     /**
-     * @param array $user
-     * @return string
      * @throws DBALException
      */
-    public function addUser(array $user) {
+    public function addUser(array $user): int {
         $conn = Application::getDbConn();
         $user ['createdDate'] = Date::getSqlDateTime();
         $user ['modifiedDate'] = Date::getSqlDateTime();
         $conn->insert('dfl_users', $user);
-        return $conn->lastInsertId();
+        return (int) $conn->lastInsertId();
     }
 
     /**
-     * @param int $userId
-     * @param array $user
      * @throws DBALException
      */
-    public function updateUser($userId, array $user) {
+    public function updateUser(int $userId, array $user) {
         $conn = Application::getDbConn();
         $user ['modifiedDate'] = Date::getSqlDateTime();
         $conn->update('dfl_users', $user, ['userId' => $userId]);
     }
 
     /**
-     * @param int $userId
-     * @return array
      * @throws DBALException
      */
-    public function getRolesByUserId($userId) {
+    public function getRolesByUserId(int $userId): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT b.roleName FROM dfl_users_roles AS a
@@ -292,366 +228,135 @@ class UserService extends Service {
     }
 
     /**
-     * @param string $authId
-     * @param string $authProvider
-     * @return array
      * @throws DBALException
      */
-    public function getAuthByIdAndProvider($authId, $authProvider) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT u.* FROM dfl_users_auth AS a
-          INNER JOIN dfl_users AS u ON (u.userId = a.userId)
-          WHERE a.authId = :authId AND a.authProvider = :authProvider
-          LIMIT 1
-        ');
-        $stmt->bindValue('authId', $authId, PDO::PARAM_STR);
-        $stmt->bindValue('authProvider', $authProvider, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
+    public function searchAll(array $params): array {
+        $joins = [];
+        $clauses = [];
+        $orders = [];
 
-    /**
-     * @param number $authId
-     * @param string $authProvider
-     * @return bool
-     * @throws DBALException
-     */
-    public function getAuthExistsByAuthIdAndProvider($authId, $authProvider) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT COUNT(*) FROM dfl_users_auth AS a
-          INNER JOIN dfl_users AS u ON (u.userId = a.userId)
-          WHERE a.authId = :authId AND a.authProvider = :authProvider
-          LIMIT 1
-        ');
-        $stmt->bindValue('authId', $authId, PDO::PARAM_STR);
-        $stmt->bindValue('authProvider', $authProvider, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetchColumn() > 0 ? true : false;
-    }
-
-    /**
-     * @param number $userId
-     * @param string $authProvider
-     * @return array
-     * @throws DBALException
-     */
-    public function getAuthByUserAndProvider($userId, $authProvider) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT a.* FROM dfl_users_auth AS a
-          WHERE a.userId = :userId AND a.authProvider = :authProvider
-          LIMIT 1
-        ');
-        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
-        $stmt->bindValue('authProvider', $authProvider, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param number $userId
-     * @return array
-     * @throws DBALException
-     */
-    public function getAuthByUserId($userId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT a.* FROM dfl_users_auth AS a
-          WHERE a.userId = :userId
-          ORDER BY a.createdDate DESC
-        ');
-        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
-    /**
-     * @param number $userId
-     * @param string $authProvider
-     * @param array $auth
-     * @throws DBALException
-     */
-    public function updateUserAuthProfile($userId, $authProvider, array $auth) {
-        $conn = Application::getDbConn();
-        $auth ['modifiedDate'] = Date::getSqlDateTime();
-        $conn->update('dfl_users_auth', $auth, [
-            'userId' => $userId,
-            'authProvider' => $authProvider
-        ]);
-    }
-
-    /**
-     * @param array $auth
-     * @return void
-     * @throws DBALException
-     */
-    public function addUserAuthProfile(array $auth) {
-        $conn = Application::getDbConn();
-        $conn->insert('dfl_users_auth', [
-            'userId' => $auth ['userId'],
-            'authProvider' => $auth ['authProvider'],
-            'authId' => $auth ['authId'],
-            'authCode' => $auth ['authCode'],
-            'authDetail' => $auth ['authDetail'],
-            'refreshToken' => $auth ['refreshToken'],
-            'createdDate' => Date::getSqlDateTime(),
-            'modifiedDate' => Date::getSqlDateTime()
-        ], [
-            PDO::PARAM_INT,
-            PDO::PARAM_STR,
-            PDO::PARAM_INT,
-            PDO::PARAM_STR,
-            PDO::PARAM_STR,
-            PDO::PARAM_STR,
-            PDO::PARAM_STR,
-            PDO::PARAM_STR
-        ]);
-    }
-
-    /**
-     * @param int $userId
-     * @param string $authProvider
-     * @throws DBALException
-     */
-    public function removeAuthProfile($userId, $authProvider) {
-        $conn = Application::getDbConn();
-        $conn->delete('dfl_users_auth', [
-            'userId' => $userId,
-            'authProvider' => $authProvider
-        ]);
-    }
-
-    /**
-     * @param string $username
-     * @param int $limit
-     * @param int $start
-     * @return array
-     * @throws DBALException
-     */
-    public function findUsersByUsername($username, $limit = 10, $start = 0) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT u.userId,u.username,u.email FROM dfl_users AS u
-          WHERE u.username LIKE :username
-          ORDER BY u.username DESC
-          LIMIT :start,:limit
-        ');
-        $stmt->bindValue('username', $username, PDO::PARAM_STR);
-        $stmt->bindValue('start', $start, PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
-    /**
-     * @param int $limit
-     * @param int $page
-     * @return array
-     * @throws DBALException
-     */
-    public function findAll($limit, $page = 1) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.userStatus,u.createdDate
-          FROM dfl_users AS u
-          ORDER BY u.userId DESC
-          LIMIT :start,:limit
-        ');
-        $stmt->bindValue('start', ($page - 1) * $limit, PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        $pagination = [];
-        $pagination ['list'] = $stmt->fetchAll();
-        $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
-        $pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
-        $pagination ['pages'] = 5;
-        $pagination ['page'] = $page;
-        $pagination ['limit'] = $limit;
-        return $pagination;
-    }
-
-    /**
-     * @param string $feature
-     * @param int $limit
-     * @param int $page
-     * @return array
-     * @throws DBALException
-     */
-    public function findByFeature($feature, $limit, $page=0) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.userStatus,u.createdDate
-          FROM dfl_users AS u
-          INNER JOIN dfl_users_features AS uf ON (uf.userId = u.userId)
-          INNER JOIN dfl_features AS f ON (f.featureId = uf.featureId)
-          WHERE f.featureName = :featureName
-          ORDER BY u.userId DESC
-          LIMIT :start,:limit
-        ');
-        $stmt->bindValue('featureName', $feature, PDO::PARAM_STR);
-        $stmt->bindValue('start', ($page - 1) * $limit, PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        $pagination = [];
-        $pagination ['list'] = $stmt->fetchAll();
-        $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
-        $pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
-        $pagination ['pages'] = 5;
-        $pagination ['page'] = $page;
-        $pagination ['limit'] = $limit;
-        return $pagination;
-    }
-
-    /**
-     * @param string $search
-     * @param int $limit
-     * @param $page
-     * @return array
-     * @throws DBALException
-     */
-    public function findBySearch($search, $limit, $page) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          SELECT SQL_CALC_FOUND_ROWS u.userId,u.username,u.email,u.userStatus,u.createdDate FROM dfl_users AS u
-          LEFT JOIN dfl_users_auth a ON a.userId = u.userId
-            WHERE (
-                u.username LIKE :wildcard1 
+        if (!empty($params['search'])) {
+            $joins[] = ' LEFT JOIN dfl_users_auth a ON a.userId = u.userId ';
+            $clauses[] = '
+              (
+                u.username LIKE :wildcard1
                 OR u.email LIKE :wildcard1
                 OR a.authDetail LIKE :wildcard1
                 OR a.authId LIKE :wildcard1
-            )
-          GROUP BY u.userId
-          ORDER BY CASE
-          WHEN u.username LIKE :wildcard2 THEN 0
-          WHEN u.username LIKE :wildcard3 THEN 1
-          WHEN u.username LIKE :wildcard4 THEN 2
-          WHEN u.username LIKE :wildcard4 THEN 4
-          WHEN u.username LIKE :wildcard4 THEN 5
-          ELSE 3
-          END, u.username
-          LIMIT :start,:limit
-        ');
-        $stmt->bindValue('wildcard1', '%' . $search . '%', PDO::PARAM_STR);
-        $stmt->bindValue('wildcard2', $search . ' %', PDO::PARAM_STR);
-        $stmt->bindValue('wildcard3', $search . '%', PDO::PARAM_STR);
-        $stmt->bindValue('wildcard4', '% %' . $search . '% %', PDO::PARAM_STR);
-        $stmt->bindValue('start', ($page - 1) * $limit, PDO::PARAM_INT);
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+              )
+            ';
+            $orders[] = '
+              ORDER BY CASE
+                WHEN u.username LIKE :wildcard2 THEN 0
+                WHEN u.username LIKE :wildcard3 THEN 1
+                WHEN u.username LIKE :wildcard4 THEN 2
+                WHEN u.username LIKE :wildcard4 THEN 4
+                WHEN u.username LIKE :wildcard4 THEN 5
+              ELSE 3
+              END, u.username
+            ';
+        }
+
+        if (!empty($params['feature'])) {
+            $joins[] = ' INNER JOIN dfl_users_features f ON f.userId = u.userId AND f.featureId = :featureId ';
+        }
+        if (!empty($params['role'])) {
+            $joins[] = ' INNER JOIN dfl_users_roles r ON r.userId = u.userId AND r.roleId = :roleId  ';
+        }
+        if (!empty($params['status'])) {
+            $clauses[] = ' u.userStatus = :userStatus ';
+        }
+
+        $q = 'SELECT SQL_CALC_FOUND_ROWS u.userId, u.username, u.email, u.userStatus, u.createdDate FROM dfl_users AS u ';
+        $q .= ' ' . join(PHP_EOL, $joins);
+        if (count($clauses) > 0) {
+            $q .= ' WHERE ' . join(' AND ', $clauses);
+        }
+        if (count($joins) > 0) {
+            $q .= ' GROUP BY u.userId ';
+        }
+        $q .= ' ' . join(PHP_EOL, $orders);
+        $q .= ' LIMIT :start, :limit ';
+
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare($q);
+        if (!empty($params['search'])) {
+            $stmt->bindValue('wildcard1', '%' . $params['search'] . '%', PDO::PARAM_STR);
+            $stmt->bindValue('wildcard2', $params['search'] . ' %', PDO::PARAM_STR);
+            $stmt->bindValue('wildcard3', $params['search'] . '%', PDO::PARAM_STR);
+            $stmt->bindValue('wildcard4', '% %' . $params['search'] . '% %', PDO::PARAM_STR);
+        }
+        if (!empty($params['feature'])) {
+            $stmt->bindValue('featureId', $params['feature'], PDO::PARAM_INT);
+        }
+        if (!empty($params['role'])) {
+            $stmt->bindValue('roleId', $params['role'], PDO::PARAM_INT);
+        }
+        if (!empty($params['status'])) {
+            $stmt->bindValue('userStatus', $params['status'], PDO::PARAM_STR);
+        }
+
+        $stmt->bindValue('start', ($params['page'] - 1) * $params['size'], PDO::PARAM_INT);
+        $stmt->bindValue('limit', $params['size'], PDO::PARAM_INT);
         $stmt->execute();
 
         $pagination = [];
         $pagination ['list'] = $stmt->fetchAll();
         $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
-        $pagination ['totalpages'] = ceil($pagination ['total'] / $limit);
+        $pagination ['totalpages'] = ceil($pagination ['total'] / $params['size']);
         $pagination ['pages'] = 5;
-        $pagination ['page'] = $page;
-        $pagination ['limit'] = $limit;
+        $pagination ['page'] = $params['page'];
+        $pagination ['limit'] = $params['size'];
         return $pagination;
     }
 
     /**
-     * @return array
      * @throws DBALException
      * @throws Exception
      */
-    public function findByNewBDay() {
+    public function findByNewBDay(): array {
         $conn = Application::getDbConn();
         $featureId = $this->getFeatureIdByName(UserFeature::DGGBDAY);
         $stmt = $conn->prepare("
             SELECT DISTINCT u.userId, u.createdDate, TIMESTAMPDIFF(YEAR, u.createdDate, CURDATE())+1 `years` FROM dfl_users u 
             LEFT JOIN dfl_users_features uf ON (uf.userId = u.userId AND uf.featureId = :featureId)
             WHERE DATE_FORMAT(u.createdDate,'%m-%d') = DATE_FORMAT(CURDATE(),'%m-%d')
-            AND u.userStatus = 'Active'
+            AND u.userStatus = :userStatus
             AND TIMESTAMPDIFF(YEAR, u.createdDate, CURDATE()) > 0
             AND uf.featureId IS NULL
          ");
         $stmt->bindValue('featureId', $featureId, PDO::PARAM_INT);
+        $stmt->bindValue('userStatus', UserStatus::ACTIVE, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     /**
-     * @return array
      * @throws DBALException
      * @throws Exception
      */
-    public function findByExpiredBDay() {
+    public function findByExpiredBDay(): array {
         $conn = Application::getDbConn();
         $featureId = $this->getFeatureIdByName(UserFeature::DGGBDAY);
         $stmt = $conn->prepare("
             SELECT DISTINCT u.userId FROM dfl_users u 
             INNER JOIN dfl_users_features uf ON (uf.userId = u.userId AND uf.featureId = :featureId)
             WHERE DATE_FORMAT(u.createdDate,'%m-%d') <> DATE_FORMAT(CURDATE(),'%m-%d')
-            AND u.userStatus = 'Active'
+            AND u.userStatus = :userStatus
          ");
         $stmt->bindValue('featureId', $featureId, PDO::PARAM_INT);
+        $stmt->bindValue('userStatus', UserStatus::ACTIVE, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     /**
-     * @param $field
-     * @param $value
-     * @return bool|string
      * @throws DBALException
      */
-    public function getUserIdByField($field, $value) {
+    public function getUserIdByField(string $field, $value) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT userId FROM dfl_users
-            WHERE " . $field . " = :value
-            LIMIT 1
-        ");
+        $stmt = $conn->prepare("SELECT userId FROM dfl_users WHERE " . $field . " = :value LIMIT 1");
         $stmt->bindValue('value', $value, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetchColumn();
-    }
-
-    /**
-     * @param $id
-     * @return bool|string
-     * @throws DBALException
-     */
-    public function getUserIdByDiscordId($id) {
-        return $this->getUserIdByAuthId($id, 'discord');
-    }
-
-    /**
-     * @param $detail
-     * @param $provider
-     * @return bool|string
-     * @throws DBALException
-     */
-    public function getUserIdByAuthDetail($detail, $provider) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT a.userId FROM dfl_users_auth a
-            WHERE a.authDetail = :detail AND a.authProvider = :provider
-            LIMIT 1
-        ");
-        $stmt->bindValue('detail', $detail, PDO::PARAM_STR);
-        $stmt->bindValue('provider', $provider, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetchColumn();
-    }
-
-    /**
-     * @param $id
-     * @param $provider
-     * @return bool|string
-     * @throws DBALException
-     */
-    public function getUserIdByAuthId($id, $provider) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT a.userId FROM dfl_users_auth a
-            WHERE a.authId = :id AND a.authProvider = :provider
-            LIMIT 1
-        ");
-        $stmt->bindValue('id', $id, PDO::PARAM_STR);
-        $stmt->bindValue('provider', $provider, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
@@ -662,11 +367,9 @@ class UserService extends Service {
      * transformed into (int)123 and than later users with the given ids
      * queried from the database ordered by username in ascending order
      *
-     * @param array $userids
-     * @return array $users The users found
      * @throws DBALException
      */
-    public function getUsersByUserIds($userids) {
+    public function getUsersByUserIds(array $userids): array {
         if (!empty($userids)) {
             $conn = Application::getDbConn();
             $stmt = $conn->executeQuery("SELECT userId, username, email, createdDate FROM dfl_users WHERE userId IN (?) ORDER BY username", [$userids], [Connection::PARAM_STR_ARRAY]);
@@ -676,11 +379,9 @@ class UserService extends Service {
     }
 
     /**
-     * @param array $usernames
-     * @return array
      * @throws DBALException
      */
-    public function getUserIdsByUsernames(array $usernames) {
+    public function getUserIdsByUsernames(array $usernames): array {
         if (!empty($usernames)) {
             $conn = Application::getDbConn();
             $stmt = $conn->executeQuery("SELECT u.userId `userId` FROM `dfl_users` u WHERE u.username IN (?)", [$usernames], [Connection::PARAM_STR_ARRAY]);
@@ -690,17 +391,11 @@ class UserService extends Service {
     }
 
     /**
-     * @param $userId
-     * @return bool
      * @throws DBALException
      */
-    public function isUserOldEnough($userId) {
+    public function isUserOldEnough(int $userId): bool {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-          SELECT COUNT(*) FROM dfl_users AS u
-          WHERE u.userId = :userId AND DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW()
-          LIMIT 1
-        ");
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM dfl_users AS u WHERE u.userId = :userId AND DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW() LIMIT 1");
         $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return !!$stmt->fetchColumn();
@@ -718,12 +413,10 @@ class UserService extends Service {
      *
      *  Returns a user list containing only users that have their twitch sub changed.
      *
-     * @param array $data
-     * @return array
      * @throws DBALException
      * @throws Exception
      */
-    public function updateTwitchSubscriptions(array $data) {
+    public function updateTwitchSubscriptions(array $data): array {
         if (empty($data))
             return [];
 
@@ -799,10 +492,9 @@ class UserService extends Service {
     }
 
     /**
-     * @return array
      * @throws DBALException
      */
-    public function getActiveTwitchSubscriptions() {
+    public function getActiveTwitchSubscriptions(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
           SELECT ua.authId
@@ -820,17 +512,11 @@ class UserService extends Service {
     }
 
     /**
-     * @param int $userId
-     * @param string $settings
-     * @return bool
      * @throws DBALException
      */
-    public function saveChatSettings($userId, $settings) {
+    public function saveChatSettings(int $userId, string $settings): bool {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-          UPDATE dfl_users SET `chatsettings` = :chatsettings
-          WHERE userId = :userid LIMIT 1
-        ");
+        $stmt = $conn->prepare("UPDATE dfl_users SET `chatsettings` = :chatsettings WHERE userId = :userid LIMIT 1");
         $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
         $stmt->bindValue('chatsettings', $settings, PDO::PARAM_STR);
         $stmt->execute();
@@ -838,16 +524,11 @@ class UserService extends Service {
     }
 
     /**
-     * @param $userId
-     * @return array|mixed
      * @throws DBALException
      */
-    public function fetchChatSettings($userId) {
+    public function fetchChatSettings(int $userId) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT `chatsettings` FROM dfl_users
-            WHERE `userId` = :userid LIMIT 1
-        ");
+        $stmt = $conn->prepare("SELECT `chatsettings` FROM dfl_users WHERE `userId` = :userid LIMIT 1");
         $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $data = $stmt->fetchColumn();
@@ -855,40 +536,33 @@ class UserService extends Service {
     }
 
     /**
-     * @param $userId
-     * @return bool
      * @throws DBALException
      */
-    public function deleteChatSettings($userId) {
+    public function deleteChatSettings(int $userId): bool {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-          UPDATE dfl_users SET `chatsettings` = NULL
-          WHERE userId = :userid LIMIT 1
-        ");
+        $stmt = $conn->prepare("UPDATE dfl_users SET `chatsettings` = NULL WHERE userId = :userid LIMIT 1");
         $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return (bool)$stmt->rowCount();
     }
 
     /**
-     * @param $userId
-     * @return mixed
      * @throws DBALException
      */
-    public function getUserDeletedByUserId($userId) {
+    public function getUserDeletedByUserId(int $userId) {
         $conn = Application::getDbConn();
         return $conn->executeQuery('SELECT d.*, u1.username as `deletedByUsername` FROM users_deleted d INNER JOIN dfl_users u1 ON u1.userId = d.deletedby WHERE d.userid = :userId', ['userId' => $userId], [PDO::PARAM_INT])->fetch();
     }
 
     /**
-     * @param array $user user id
-     * @throws ConnectionException
+     * Does a variety of deletions, but doesnt actually remove the user record.
+     *
      * @throws DBALException
      * @throws InvalidArgumentException
      */
-    public function logicalDeleteUser(array $user) {
+    public function allButDeleteUser(array $user) {
         $deletedBy = Session::getCredentials()->getUserId();
-        $userId = $user['userId'];
+        $userId = intval($user['userId']);
         $newUsername = "deleted$userId";
         $newEmail = "deleted$userId";
 
@@ -910,6 +584,7 @@ class UserService extends Service {
         ]);
 
         $conn->update('dfl_users', [
+            'userStatus' => UserStatus::REDACTED,
             'username' => $newUsername,
             'email' => $newEmail
         ], ['userId' => $userId]);
@@ -917,29 +592,18 @@ class UserService extends Service {
         $conn->commit();
     }
 
-    /**
-     * @param string $username
-     * @return string
-     */
-    private function hashUsername($username) {
+    private function hashUsername(string $username): string {
         return base64_encode(hash('sha256', $username . Config::$a['deleted_user_hash']));
     }
 
-    /**
-     * @param string $email
-     * @return string
-     */
-    private function hashEmail($email) {
+    private function hashEmail(string $email): string {
         return base64_encode(hash('sha256', $email . Config::$a['deleted_user_hash']));
     }
 
     /**
-     * @param int $start
-     * @param int $limit
-     * @return mixed[]
      * @throws DBALException
      */
-    public function getAuditLog($start = 0, $limit = 250){
+    public function getAuditLog(int $start = 0, int $limit = 250): array {
         $conn = Application::getDbConn();
         return $conn->executeQuery(
             'SELECT a.* FROM users_audit a ORDER BY a.id DESC LIMIT ?,?',

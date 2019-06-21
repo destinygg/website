@@ -29,11 +29,10 @@ class AdminFlairsController {
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"GET","POST"})
      *
-     * @param ViewModel $model
      * @return string
      * @throws DBALException
      */
-    public function flairs(ViewModel $model) {
+    public function flairs(ViewModel $model): string {
         $flairsService = FlairService::instance();
         $model->title = 'Flairs';
         $model->flairs = $flairsService->findAllFlairs();
@@ -46,13 +45,10 @@ class AdminFlairsController {
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
      * @throws FilterParamsException
      * @throws DBALException
      */
-    public function editFlair(array $params, ViewModel $model) {
+    public function editFlair(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
         $flairsService = FlairService::instance();
         $flair = $flairsService->findFlairById($params['id']);
@@ -71,11 +67,9 @@ class AdminFlairsController {
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"GET"})
      *
-     * @param ViewModel $model
-     * @return string
      * @throws DBALException
      */
-    public function newFlair(ViewModel $model) {
+    public function newFlair(ViewModel $model): string {
         $flairsService = FlairService::instance();
         $model->title = 'Flair';
         $model->flair = [
@@ -100,12 +94,10 @@ class AdminFlairsController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @param array $params
-     * @return string
      * @throws FilterParamsException
      * @throws DBALException
      */
-    public function editFeaturePost(array $params) {
+    public function editFeaturePost(array $params): string {
         FilterParams::required($params, 'id');
         FilterParams::required($params, 'imageId');
         FilterParams::required($params, 'featureLabel');
@@ -136,12 +128,10 @@ class AdminFlairsController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @param array $params
-     * @return string
      * @throws FilterParamsException
      * @throws DBALException
      */
-    public function newFlairPost(array $params) {
+    public function newFlairPost(array $params): string {
         FilterParams::required($params, 'imageId');
         FilterParams::required($params, 'featureLabel');
         FilterParams::required($params, 'featureName');
@@ -170,10 +160,8 @@ class AdminFlairsController {
      * @HttpMethod ({"POST"})
      * @ResponseBody
      * @Audit
-     *
-     * @return array
      */
-    public function uploadImage() {
+    public function uploadImage(): array {
         return array_map(function($file) {
             $imageService = ImageService::instance();
             $upload = $imageService->upload($file, FlairService::FLAIRS_DIR);
@@ -187,15 +175,12 @@ class AdminFlairsController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @param array $params
-     * @return mixed
-     *
      * @throws DBALException
      * @throws FilterParamsException
      * @throws InvalidArgumentException
      * @throws Exception
      */
-    public function deleteFlair(array $params) {
+    public function deleteFlair(array $params): string {
         FilterParams::required($params, 'id');
         $flairsService = FlairService::instance();
         $imageService = ImageService::instance();

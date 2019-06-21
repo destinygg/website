@@ -20,7 +20,6 @@ use Destiny\Commerce\SubscriptionStatus;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
@@ -39,6 +38,13 @@ use Destiny\Commerce\SubscriptionStatus;
                         <label class="control-label" for="inputUsername">Status</label>
                         <div class="controls">
                             <input type="text" class="form-control" name="status" id="inputStatus" value="<?=Tpl::out($this->user['userStatus'])?>" placeholder="status" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="inputEmail">Email</label>
+                        <div class="controls">
+                            <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->user['email'])?>" placeholder="email">
                         </div>
                     </div>
 
@@ -73,6 +79,25 @@ use Destiny\Commerce\SubscriptionStatus;
                             <option value="1"<?php if($this->user['istwitchsubscriber'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
                             <option value="0"<?php if($this->user['istwitchsubscriber'] == 0):?> selected="selected"<?php endif;?>>No</option>
                         </select>
+                        <span class="help-block">Under normal conditions this is set automatically.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Allow Chatting</label>
+                        <select class="form-control" name="allowChatting">
+                            <option value="1"<?php if($this->user['allowChatting'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                            <option value="0"<?php if($this->user['allowChatting'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                        </select>
+                        <span class="help-block">If 'No' the user will not automatically login to chat. (One can still use Login keys)</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Allow (a) Name Change</label>
+                        <select class="form-control" name="allowNameChange">
+                            <option value="1"<?php if($this->user['allowNameChange'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                            <option value="0"<?php if($this->user['allowNameChange'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                        </select>
+                        <span class="help-block">If 'Yes' the user will be prompted to change their username in their profile; after a name change is done, this value is set to 'No'.</span>
                     </div>
 
                     <div class="form-group">
@@ -385,7 +410,8 @@ use Destiny\Commerce\SubscriptionStatus;
                         <tr>
                             <td>Type</td>
                             <td></td>
-                            <td style="width:100%;">Detail</td>
+                            <td>Detail</td>
+                            <td style="width:100%;">Email</td>
                             <td>Created</td>
                             <td>Modified</td>
                         </tr>
@@ -393,9 +419,10 @@ use Destiny\Commerce\SubscriptionStatus;
                         <tbody>
                         <?php foreach($this->authSessions as $auth): ?>
                             <tr>
-                                <td><a onclick="return confirm('Are you sure?')" href="/admin/user/<?=$this->user['userId']?>/auth/<?= $auth['authProvider'] ?>/delete" class="btn btn-danger btn-sm btn-post">Delete</a></td>
+                                <td><a onclick="return confirm('Are you sure?')" href="/admin/user/<?=$this->user['userId']?>/auth/<?= $auth['id'] ?>/delete" class="btn btn-danger btn-sm btn-post">Delete</a></td>
                                 <td><?= $auth['authProvider'] ?></td>
                                 <td><?= (!empty($auth['authDetail'])) ? Tpl::out($auth['authDetail']):Tpl::out($auth['authId']) ?></td>
+                                <td><?=Tpl::out($auth['authEmail'])?></td>
                                 <td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
                                 <td><?=Tpl::moment(Date::getDateTime($auth['modifiedDate']), Date::STRING_FORMAT_YEAR)?></td>
                             </tr>
@@ -441,6 +468,7 @@ use Destiny\Commerce\SubscriptionStatus;
 
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

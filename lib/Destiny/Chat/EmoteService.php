@@ -19,8 +19,6 @@ class EmoteService extends Service {
     const EMOTES_DIR = _BASEDIR . '/static/emotes/';
 
     /**
-     * @param $id
-     * @param array $emote
      * @throws DBALException
      */
     public function updateEmote($id, array $emote) {
@@ -36,11 +34,9 @@ class EmoteService extends Service {
     }
 
     /**
-     * @param array $emote
-     * @return int
      * @throws DBALException
      */
-    public function insertEmote(array $emote) {
+    public function insertEmote(array $emote): int {
         $conn = Application::getDbConn();
         $conn->insert('emotes', [
             'imageId' => $emote['imageId'],
@@ -55,20 +51,18 @@ class EmoteService extends Service {
     }
 
     /**
-     * @param $id
      * @throws InvalidArgumentException
      * @throws DBALException
      */
-    function removeEmoteById($id) {
+    function removeEmoteById(int $id) {
         $conn = Application::getDbConn();
         $conn->delete('emotes', ['id' => $id]);
     }
 
     /**
-     * @return mixed
      * @throws DBALException
      */
-    function findAllEmotes() {
+    function findAllEmotes(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT 
@@ -87,11 +81,10 @@ class EmoteService extends Service {
     }
 
     /**
-     * @param $prefix
-     * @return mixed
+     * @return array|false
      * @throws DBALException
      */
-    function findEmoteByPrefix($prefix) {
+    function findEmoteByPrefix(string $prefix) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT 
@@ -112,11 +105,10 @@ class EmoteService extends Service {
     }
 
     /**
-     * @param $id
-     * @return mixed
+     * @return array|false
      * @throws DBALException
      */
-    function findEmoteById($id) {
+    function findEmoteById(int $id) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT 
@@ -139,7 +131,7 @@ class EmoteService extends Service {
     /**
      * @throws DBALException
      */
-    public function getPublicEmotes() {
+    public function getPublicEmotes(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT 
@@ -173,8 +165,7 @@ class EmoteService extends Service {
     }
 
     /**
-     * Save the css and json files
-     * set the cache key.
+     * Save the css and json files set the cache key.
      */
     public function saveStaticFiles() {
         $cache = Application::getNsCache();
@@ -186,9 +177,8 @@ class EmoteService extends Service {
 
     /**
      * Save the static css file
-     * @param $cacheKey
      */
-    private function saveStaticCss($cacheKey) {
+    private function saveStaticCss(string $cacheKey) {
         try {
             $filename = self::EMOTES_DIR . 'emotes.css.' . $cacheKey;
             $file = fopen($filename,'w+');
@@ -233,9 +223,8 @@ class EmoteService extends Service {
 
     /**
      * Save the static json file
-     * @param $cacheKey
      */
-    private function saveStaticJson($cacheKey) {
+    private function saveStaticJson(string $cacheKey) {
         try {
             $filename = self::EMOTES_DIR . 'emotes.json.' . $cacheKey;
             $file = fopen($filename,'w+');

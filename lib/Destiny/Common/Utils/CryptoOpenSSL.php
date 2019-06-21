@@ -18,8 +18,8 @@ namespace Destiny\Common\Utils;
  */
 
 use Destiny\Common\Config;
-use InvalidArgumentException;
 use Exception;
+use InvalidArgumentException;
 
 class CryptoOpenSSL {
 
@@ -34,14 +34,12 @@ class CryptoOpenSSL {
      * we always generate a separate random IV for every single message
      * when providing the data, try to avoid using something easily guessable
      * so maybe include something random
-     * @param $data
-     * @return string
      * @throws Exception
      */
-    static public function encrypt($data) {
+    static public function encrypt(string $data): string {
         $seed = Config::$a['crypto']['seed'];
         $key = Config::$a['crypto']['key'];
-        // initialize the mcrypt module with a random IV
+        // initialize the random IV
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(self::CIPHER_ALGORITHM));
         // encrypt the data
         $crypteddata = openssl_encrypt($data, self::CIPHER_ALGORITHM, $key, OPENSSL_RAW_DATA, $iv);
@@ -54,11 +52,9 @@ class CryptoOpenSSL {
     }
 
     /**
-     * @param $data
-     * @return string
      * @throws Exception
      */
-    static public function decrypt($data) {
+    static public function decrypt(string $data): string {
         $seed = Config::$a['crypto']['seed'];
         $key = Config::$a['crypto']['key'];
         // base64 decode
@@ -86,12 +82,7 @@ class CryptoOpenSSL {
         return openssl_decrypt($crypteddata, self::CIPHER_ALGORITHM, $key, OPENSSL_RAW_DATA, $iv);
     }
 
-    /**
-     * @param $known
-     * @param $given
-     * @return bool
-     */
-    static protected function constantTimeCompare($known, $given) {
+    static protected function constantTimeCompare(string $known = null, string $given = null): bool {
         if (strlen($known) == 0) {
             throw new InvalidArgumentException("This function cannot safely compare against an empty given string");
         }

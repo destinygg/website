@@ -12,7 +12,6 @@ use Destiny\Common\Utils\Tpl;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
@@ -60,22 +59,15 @@ use Destiny\Common\Utils\Tpl;
         </div>
     </section>
 
-    <section class="container">
-        <div class="alert alert-danger" style="margin:0;">
-            <strong>Note!</strong>
-            Data shown here does NOT take into account fees and taxes.
-        </div>
-    </section>
-
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>
 <?=Tpl::manifestScript('common.vendor.js')?>
 <?=Tpl::manifestScript('web.js')?>
 <?=Tpl::manifestScript('admin.js')?>
-
 
 </body>
 </html>

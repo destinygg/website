@@ -19,7 +19,6 @@ class FlairService extends Service {
     const FLAIRS_DIR = _BASEDIR . '/static/flairs/';
 
     /**
-     * TODO need to add `locked` field?
      * @param $id
      * @param array $flair
      * @throws DBALException
@@ -37,11 +36,9 @@ class FlairService extends Service {
     }
 
     /**
-     * @param array $flair
-     * @return int
      * @throws DBALException
      */
-    public function insertFlair(array $flair) {
+    public function insertFlair(array $flair): int {
         $conn = Application::getDbConn();
         $conn->insert('dfl_features', [
             'featureLabel' => $flair['featureLabel'],
@@ -60,7 +57,7 @@ class FlairService extends Service {
     /**
      * @throws DBALException
      */
-    public function getPublicFlairs() {
+    public function getPublicFlairs(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT 
@@ -97,10 +94,9 @@ class FlairService extends Service {
     }
 
     /**
-     * @return array
      * @throws DBALException
      */
-    function getAllFlairNames() {
+    function getAllFlairNames(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT featureName FROM dfl_features');
         $stmt->execute();
@@ -108,20 +104,18 @@ class FlairService extends Service {
     }
 
     /**
-     * @param $id
      * @throws InvalidArgumentException
      * @throws DBALException
      */
-    function removeFlairById($id) {
+    function removeFlairById(int $id) {
         $conn = Application::getDbConn();
         $conn->delete('dfl_features', ['featureId' => $id]);
     }
 
     /**
-     * @return mixed
      * @throws DBALException
      */
-    function findAllFlairs() {
+    function findAllFlairs(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT 
@@ -140,11 +134,10 @@ class FlairService extends Service {
     }
 
     /**
-     * @param $id
-     * @return mixed
+     * @return array|false
      * @throws DBALException
      */
-    function findFlairById($id) {
+    function findFlairById(int $id) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT 
@@ -165,35 +158,9 @@ class FlairService extends Service {
     }
 
     /**
-     * @param $name
-     * @return mixed
      * @throws DBALException
      */
-    function findFlairByName($name) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT 
-              f.*, 
-              i.name as `imageName`, 
-              i.label as `imageLabel`, 
-              i.size, 
-              i.width, 
-              i.height 
-             FROM dfl_features f 
-             LEFT JOIN images i ON i.id = f.imageId
-             WHERE f.featureName = :name
-             LIMIT 0,1
-         ');
-        $stmt->bindValue('name', $name, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @return array
-     * @throws DBALException
-     */
-    function findAvailableFlairNames() {
+    function findAvailableFlairNames(): array {
         $features = $this->getAllFlairNames();
         $presets = [];
         for($i=1; $i<=64; $i++) {
@@ -206,8 +173,7 @@ class FlairService extends Service {
     }
 
     /**
-     * Save the css and json files
-     * set the cache key.
+     * Save the css and json files set the cache key.
      */
     public function saveStaticFiles() {
         $cache = Application::getNsCache();
@@ -219,9 +185,8 @@ class FlairService extends Service {
 
     /**
      * Save the static css file
-     * @param $cacheKey
      */
-    private function saveStaticCss($cacheKey) {
+    private function saveStaticCss(string $cacheKey) {
         try {
             $filename = self::FLAIRS_DIR . 'flairs.css.' . $cacheKey;
             $file = fopen($filename,'w+');
@@ -259,9 +224,8 @@ class FlairService extends Service {
 
     /**
      * Save the static json file
-     * @param $cacheKey
      */
-    private function saveStaticJson($cacheKey) {
+    private function saveStaticJson(string $cacheKey) {
         try {
             $filename = self::FLAIRS_DIR . 'flairs.json.' . $cacheKey;
             $file = fopen($filename,'w+');

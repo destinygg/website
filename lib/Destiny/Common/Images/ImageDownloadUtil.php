@@ -2,11 +2,11 @@
 namespace Destiny\Common\Images;
 
 use Destiny\Common\Config;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
 class ImageDownloadUtil {
@@ -30,7 +30,7 @@ class ImageDownloadUtil {
      *
      * @return string a RELATIVE path to the file, or an empty string if something went wrong
      */
-    public static function download($url, $hashContents = false, $path = null) {
+    public static function download(string $url, bool $hashContents = false, string $path = null) {
         if (empty($url)) {
             return '';
         }
@@ -86,7 +86,7 @@ class ImageDownloadUtil {
     private static function downloadImage($url, $dest) {
         try {
             Log::debug("Downloading $url");
-            $client = new Client(['timeout' => 15, 'connect_timeout' => 5]);
+            $client = HttpClient::instance();
             $r = $client->request('GET', $url, [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'sink' => $dest

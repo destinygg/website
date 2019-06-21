@@ -44,8 +44,6 @@ const cacheGroups = Object.keys(entries).reduce((p, key) => {
     },
 })
 
-const cleanExclude = ['**', '!cache', '!flairs', '!emotes']
-
 module.exports = {
     optimization: {
         minimize: true,
@@ -60,7 +58,7 @@ module.exports = {
     plugins: [
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // cache|flairs|emotes
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: cleanExclude,
+            cleanOnceBeforeBuildPatterns: ['**', '!cache/**', '!flairs/**', '!emotes/**'],
             verbose: true,
             dry: false
         }),

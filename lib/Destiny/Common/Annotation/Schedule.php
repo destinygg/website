@@ -17,9 +17,6 @@ class Schedule {
      */
     public $period;
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params = null) {
         if(!empty($params)) {
             $this->frequency = $params ['frequency'];

@@ -12,9 +12,7 @@ use Destiny\Common\Utils\Tpl;
 <body id="inbox" class="no-contain">
 <div id="page-wrap">
 
-    <div id="alerts-container"></div>
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'menu.php' ?>
 
     <section id="inbox-tools" class="container">
@@ -57,6 +55,7 @@ use Destiny\Common\Utils\Tpl;
 </div>
 
 <?php include 'modal.compose.php' ?>
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

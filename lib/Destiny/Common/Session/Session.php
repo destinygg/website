@@ -6,88 +6,49 @@ use Destiny\Common\ViewModel;
 
 abstract class Session {
 
-    const KEY_AUTH_SESSION = 'authSession';
-
     /**
-     * @return SessionInstance
+     * @return SessionInstance|null
      */
     public static function instance() {
         return Application::instance()->getSession();
     }
 
-    /**
-     * @return boolean
-     */
-    public static function hasSessionCookie() {
+    public static function hasSessionCookie(): bool {
         $session = self::instance();
         $sid = $session->getSessionCookie()->getValue();
         return !empty($sid);
     }
 
-    /**
-     * Start the session if not already started
-     *
-     * @return boolean
-     */
-    public static function start() {
+    public static function start(): bool {
         $session = self::instance();
         return (!$session->isStarted()) ? $session->start() : true;
     }
 
-    /**
-     * @return boolean
-     */
-    public static function isStarted() {
+    public static function isStarted(): bool {
         return self::instance()->isStarted();
     }
 
-    /**
-     * @return string
-     */
-    public static function getSessionId() {
+    public static function getSessionId(): string {
         return self::instance()->getSessionId();
     }
 
     /**
-     * @param SessionCredentials $credentials
-     */
-    public static function updateCredentials(SessionCredentials $credentials) {
-        $session = self::instance();
-        $params = $credentials->getData();
-        foreach ($params as $name => $value) {
-            $session->set($name, $value);
-        }
-        $session->setCredentials($credentials);
-    }
-
-    /**
-     * @return SessionCredentials
+     * @return SessionCredentials|null
      */
     public static function getCredentials() {
         return self::instance()->getCredentials();
     }
 
-    /**
-     * @return void
-     */
     public static function destroy() {
         $session = self::instance();
         $session->destroy();
     }
 
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public static function get($name) {
+    public static function get(string $name) {
         return self::instance()->get($name);
     }
 
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public static function getAndRemove($name) {
+    public static function getAndRemove(string $name) {
         $v = self::instance()->get($name);
         self::instance()->set($name, null);
         return $v;
@@ -95,59 +56,27 @@ abstract class Session {
 
     /**
      * Set a session variable, if the value is NULL, unset the variable
-     * Returns the variable like a getter, but does the setter stuff too
-     *
-     * @param string $name
-     * @param string $value
-     * @return mixed
      */
-    public static function set($name, $value) {
-        return self::instance()->set($name, $value);
+    public static function set(string $name, $value = null) {
+        self::instance()->set($name, $value);
     }
 
-    /**
-     * Remove a session variable if it exists
-     *
-     * @param string $name
-     */
-    public static function remove($name) {
+    public static function remove(string $name) {
         self::instance()->set($name, null);
     }
 
-    /**
-     * @param string $name
-     * @return boolean
-     */
-    public static function has($name) {
+    public static function has(string $name): bool {
         return self::instance()->has($name);
     }
 
-    /**
-     * Check if the credential's has a specific role
-     *
-     * @param string $roleId
-     * @return boolean
-     */
-    public static function hasRole($roleId) {
+    public static function hasRole(string $roleId): bool {
         $credentials = self::getCredentials();
-        if (!empty ($credentials) && $credentials->hasRole($roleId)) {
-            return true;
-        }
-        return false;
+        return (!empty ($credentials) && $credentials->hasRole($roleId));
     }
 
-    /**
-     * Check if the credential's has a specific feature
-     *
-     * @param string $featureId
-     * @return boolean
-     */
-    public static function hasFeature($featureId) {
+    public static function hasFeature(string $featureId): bool {
         $credentials = self::getCredentials();
-        if (!empty ($credentials) && $credentials->hasFeature($featureId)) {
-            return true;
-        }
-        return false;
+        return (!empty ($credentials) && $credentials->hasFeature($featureId));
     }
 
     public static function applyBags(ViewModel $model) {
@@ -161,11 +90,11 @@ abstract class Session {
         }
     }
 
-    public static function setSuccessBag($message) {
+    public static function setSuccessBag(string $message) {
         self::set('modelSuccess', $message);
     }
 
-    public static function setErrorBag($message) {
+    public static function setErrorBag(string $message) {
         self::set('modelError', $message);
     }
 

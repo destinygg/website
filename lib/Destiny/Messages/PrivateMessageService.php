@@ -4,8 +4,8 @@ namespace Destiny\Messages;
 use Destiny\Common\Application;
 use Destiny\Common\Service;
 use Destiny\Common\Session\SessionCredentials;
-use Destiny\Common\Utils\Date;
 use Destiny\Common\User\UserRole;
+use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
 use PDO;
@@ -17,14 +17,9 @@ class PrivateMessageService extends Service {
 
     /**
      * Check if a user is allowed to send a message based on various criteria
-     *
-     * @param SessionCredentials $user
-     * @param int $targetuserid
-     * @return bool
-     *
      * @throws DBALException
      */
-    public function canSend($user, $targetuserid) {
+    public function canSend(SessionCredentials $user, int $targetuserid): bool {
         if ($user->hasRole(UserRole::ADMIN))
             return true;
 
@@ -87,11 +82,9 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param array $data
-     * @return int last_insert_id()
      * @throws DBALException
      */
-    public function addMessage(array $data){
+    public function addMessage(array $data): int {
         $conn = Application::getDbConn();
         $conn->insert ( 'privatemessages', [
             'userid' => $data['userid'],
@@ -108,27 +101,13 @@ class PrivateMessageService extends Service {
             PDO::PARAM_STR,
             PDO::PARAM_INT
         ]);
-        return $conn->lastInsertId ();
+        return intval($conn->lastInsertId());
     }
 
     /**
-     * @param int $id
      * @throws DBALException
      */
-    public function openMessageById($id){
-        $conn = Application::getDbConn();
-        $conn->update( 'privatemessages', ['isread' => 1], ['id' => $id]);
-    }
-
-    /**
-     * @param $userid
-     * @param int $start
-     * @param int $limit
-     * @return array
-     *
-     * @throws DBALException
-     */
-    public function getMessagesInboxByUserId($userid, $start=0, $limit=20){
+    public function getMessagesInboxByUserId(int $userid, int $start = 0, int $limit = 20): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT z.*,pm3.message FROM (
@@ -158,15 +137,9 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param int $userId
-     * @param int $targetUserId
-     * @param int $start
-     * @param int $limit
-     * @return array
-     *
      * @throws DBALException
      */
-    public function getMessagesBetweenUserIdAndTargetUserId($userId, $targetUserId, $start=0, $limit=50){
+    public function getMessagesBetweenUserIdAndTargetUserId(int $userId, int $targetUserId, int $start=0, int $limit=50): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT
@@ -191,13 +164,9 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param $userId
-     * @param $limit
-     * @return array
-     *
      * @throws DBALException
      */
-    public function getUnreadConversations($userId, $limit){
+    public function getUnreadConversations(int $userId, int $limit): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare("
             SELECT * FROM (
@@ -216,12 +185,9 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param int $targetuserid
-     * @return bool
-     *
      * @throws DBALException
      */
-    public function markAllMessagesRead($targetuserid) {
+    public function markAllMessagesRead(int $targetuserid): bool {
         $conn = Application::getDbConn();
         return (bool) $conn->update('privatemessages', ['isread' => 1], [
             'targetuserid' => $targetuserid,
@@ -229,13 +195,9 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param int $targetuserid
-     * @param int $fromuserid
-     * @return bool
-     *
      * @throws DBALException
      */
-    public function markMessagesRead($targetuserid, $fromuserid) {
+    public function markMessagesRead(int $targetuserid, int $fromuserid): bool {
         $conn = Application::getDbConn();
         return (bool) $conn->update('privatemessages', ['isread' => 1], [
             'targetuserid' => $targetuserid,
@@ -244,13 +206,9 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param int $messageid
-     * @param int $targetuserid
-     * @return boolean $success
-     *
      * @throws DBALException
      */
-    public function markMessageRead($messageid, $targetuserid) {
+    public function markMessageRead(int $messageid, int $targetuserid): bool {
         $conn = Application::getDbConn();
         return (bool) $conn->update('privatemessages', ['isread' => 1], [
             'id' => $messageid,
@@ -259,14 +217,10 @@ class PrivateMessageService extends Service {
     }
 
     /**
-     * @param int $userid
-     * @param int $targetuserid
-     * @return bool $success
-     *
      * @throws DBALException
      * @throws ConnectionException
      */
-    public function markConversationDeleted($userid, $targetuserid) {
+    public function markConversationDeleted(int $userid, int $targetuserid): bool {
         $conn = Application::getDbConn();
         $conn->beginTransaction();
         // user -> target

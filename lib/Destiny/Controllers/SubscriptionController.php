@@ -2,29 +2,31 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
+use Destiny\Chat\ChatRedisService;
+use Destiny\Commerce\OrdersService;
+use Destiny\Commerce\PaymentStatus;
+use Destiny\Commerce\SubscriptionsService;
+use Destiny\Commerce\SubscriptionStatus;
+use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Application;
+use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\Authentication\AuthProvider;
+use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
-use Destiny\Common\ViewModel;
 use Destiny\Common\Session\Session;
-use Destiny\Common\Config;
-use Destiny\Common\Annotation\Controller;
-use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Commerce\SubscriptionsService;
-use Destiny\Commerce\OrdersService;
-use Destiny\Commerce\SubscriptionStatus;
-use Destiny\Common\Authentication\AuthenticationService;
-use Destiny\Common\Application;
-use Destiny\Common\Utils\Date;
-use Destiny\Chat\ChatRedisService;
-use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserRole;
+use Destiny\Common\User\UserService;
+use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\Commerce\PaymentStatus;
 use Destiny\Common\Utils\Http;
+use Destiny\Common\ViewModel;
+use Destiny\Discord\DiscordMessenger;
 use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\PayPal\PayPalApiService;
 use Destiny\StreamLabs\StreamLabsAlertsType;
@@ -39,13 +41,9 @@ class SubscriptionController {
 
     /**
      * @Route ("/subscribe")
-     *
-     * @param ViewModel $model
-     * @return string
-     *
      * @throws DBALException
      */
-    public function subscribe(ViewModel $model) {
+    public function subscribe(ViewModel $model): string {
         $subscriptionsService = SubscriptionsService::instance();
         if (Session::hasRole(UserRole::USER)) {
             $userId = Session::getCredentials()->getUserId();
@@ -63,15 +61,10 @@ class SubscriptionController {
      * @Route ("/subscription/{id}/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionCancel(array $params, ViewModel $model) {
+    public function subscriptionCancel(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
         $subscriptionsService = SubscriptionsService::instance();
         $userId = Session::getCredentials()->getUserId();
@@ -90,15 +83,10 @@ class SubscriptionController {
      * @Route ("/subscription/gift/{id}/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionGiftCancel(array $params, ViewModel $model) {
+    public function subscriptionGiftCancel(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
         $subscriptionsService = SubscriptionsService::instance();
         $userService = UserService::instance();
@@ -122,26 +110,23 @@ class SubscriptionController {
      * @Route ("/subscription/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
-     *
-     * @param array $params
-     * @param Request $request
-     * @return string
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionCancelProcess(array $params, Request $request) {
+    public function subscriptionCancelProcess(array $params, Request $request): string {
         FilterParams::required($params, 'subscriptionId');
 
-        $subscriptionsService = SubscriptionsService::instance();
+        $subService = SubscriptionsService::instance();
         $authService = AuthenticationService::instance();
 
-        $userId = Session::getCredentials()->getUserId();
-        $subscription = $subscriptionsService->findById($params['subscriptionId']);
+        $creds = Session::getCredentials();
+        $userId = $creds->getUserId();
+        $subscription = $subService->findById($params['subscriptionId']);
 
         try {
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
             $googleRecaptchaHandler->resolveWithRequest($request);
+
             if (empty($subscription)) {
                 throw new Exception('Invalid subscription');
             }
@@ -152,12 +137,19 @@ class SubscriptionController {
                 throw new Exception('Invalid subscription status');
             }
             if ($subscription['recurring'] == 1) {
-                $subscription = $subscriptionsService->cancelSubscription($subscription, false);
+                $subscription = $subService->cancelSubscription($subscription, false, $userId);
                 Session::setSuccessBag('Subscription payment stopped. You can now remove the subscription.');
             } else {
-                $subscription = $subscriptionsService->cancelSubscription($subscription, true);
+                $subscription = $subService->cancelSubscription($subscription, true, $userId);
                 Session::setSuccessBag('Subscription removed.');
             }
+
+            $note = $params['message'] ?? '';
+            if (!empty($message)) {
+                $messenger = DiscordMessenger::instance();
+                $messenger->send("<" . Http::getBaseUrl() . "/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has cancelled a subscription. Note: $note");
+            }
+
             $authService->flagUserForUpdate($subscription ['userId']);
             return "redirect: /subscription/${subscription['subscriptionId']}/cancel";
         } catch (Exception $e) {
@@ -168,14 +160,9 @@ class SubscriptionController {
 
     /**
      * @Route ("/subscription/confirm")
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
      * @throws DBALException
      */
-    public function subscriptionConfirm(array $params, ViewModel $model) {
+    public function subscriptionConfirm(array $params, ViewModel $model): string {
         try {
             FilterParams::required($params, 'subscription');
 
@@ -203,9 +190,8 @@ class SubscriptionController {
         // If this is a gift, there is no need to check the current subscription
         if (isset($params['gift']) && !empty($params['gift'])) {
             $model->gift = $params['gift'];
-            $model->warning = new Exception('If the giftee has a subscription by the time this payment is completed the subscription will be marked as failed, but your payment will still go through.');
         }
-        // Existing subscription
+        // Existing subscription check
         else {
             $currentSubscription = $subscriptionsService->getUserActiveSubscription($userId);
             if (!empty ($currentSubscription)) {
@@ -213,6 +199,7 @@ class SubscriptionController {
                 $model->currentSubscriptionType = $subscriptionsService->getSubscriptionType($currentSubscription ['subscriptionType']);
                 // Warn about identical subscription overwrite
                 if ($model->currentSubscriptionType['id'] == $subscriptionType ['id']) {
+                    // Too verbose?
                     $model->warning = new Exception('Already subscribed. Your highest tier subscription will be shown.');
                 }
             }
@@ -226,49 +213,41 @@ class SubscriptionController {
     /**
      * @Route ("/subscription/create")
      * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
-     * @throws ConnectionException
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionCreate(array $params, ViewModel $model) {
+    public function subscriptionCreate(array $params, ViewModel $model): string {
         FilterParams::required($params, 'subscription');
-        
-        $userService = UserService::instance ();
-        $subscriptionsService = SubscriptionsService::instance ();
-        $payPalApiService = PayPalApiService::instance ();
-        $userId = Session::getCredentials ()->getUserId ();
 
-        $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscription']);
+        $userService = UserService::instance();
+        $subService = SubscriptionsService::instance();
+        $payPalApiService = PayPalApiService::instance();
+        $creds = Session::getCredentials();
+        $userId = $creds->getUserId();
+
+        $subscriptionType = $subService->getSubscriptionType($params ['subscription']);
         if (empty($subscriptionType)) {
             throw new Exception("Invalid subscription type");
         }
 
-        $recurring = (isset ( $params ['renew'] ) && $params ['renew'] == '1');
-        $giftReceiverUsername = (isset( $params['gift'] ) && !empty( $params['gift'] )) ? $params['gift'] : null;
+        $recurring = (isset ($params ['renew']) && $params ['renew'] == '1');
+        $giftReceiverUsername = (isset($params['gift']) && !empty($params['gift'])) ? $params['gift'] : null;
         $giftReceiver = null;
 
-        if (isset( $params ['sub-message'] ) and !empty( $params ['sub-message'] ))
-            Session::set('subMessage', mb_substr($params ['sub-message'], 0, 250));
-
         try {
-            if(!empty($giftReceiverUsername)){
-                $giftReceiver = $userService->getUserByUsername( $giftReceiverUsername );
-                if(empty($giftReceiver)){
-                   throw new Exception ( 'Invalid giftee (user not found)' );
+            if (!empty($giftReceiverUsername)) {
+                $giftReceiver = $userService->getUserByUsername($giftReceiverUsername);
+                if (empty($giftReceiver)) {
+                    throw new Exception ('Invalid giftee (user not found)');
                 }
-                if ($userId == $giftReceiver['userId']){
-                   throw new Exception ( 'Invalid giftee (cannot gift yourself)' );
+                if ($userId == $giftReceiver['userId']) {
+                    throw new Exception ('Invalid giftee (cannot gift yourself)');
                 }
-                if(!$subscriptionsService->canUserReceiveGift ( $userId, $giftReceiver['userId'] )){
-                   throw new Exception ( 'Invalid giftee (user does not accept gifts)' );
+                if (!$subService->canUserReceiveGift($userId, $giftReceiver['userId'])) {
+                    throw new Exception ('Invalid giftee (user does not accept gifts)');
                 }
             }
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $model->title = 'Subscription Error';
             $model->subscription = null;
             $model->error = $e;
@@ -276,9 +255,9 @@ class SubscriptionController {
         }
 
         // Create the NEW subscription
-        $start = Date::getDateTime ();
-        $end = Date::getDateTime ();
-        $end->modify ( '+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower ( $subscriptionType ['billingPeriod'] ) );
+        $start = Date::getDateTime();
+        $end = Date::getDateTime();
+        $end->modify('+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower($subscriptionType ['billingPeriod']));
 
         $subscription = [
             'userId'             => $userId,
@@ -291,17 +270,32 @@ class SubscriptionController {
             'status'             => SubscriptionStatus::_NEW
         ];
 
+
+        // Send a message to discord containing the sub note
+        // We are not store this value
+        $note = $params['sub-note'] ?? '';
+        if (!empty($note)) {
+            Session::set('subscribeMessage', $note);
+        }
+
+        // We set a session variable for the broadcastMessage
+        // Since this is not stored on the subscription itself, and we only want
+        // to action the message on SUCCESSFUL authentication
+        $message = $params['sub-message'] ?? '';
+        if (!empty($message)) {
+            Session::set('broadcastMessage', $message);
+        }
+
         // If this is a gift, change the user and the gifter
-        if(!empty($giftReceiver)){
+        if (!empty($giftReceiver)) {
             $subscription['userId'] = $giftReceiver['userId'];
             $subscription['gifter'] = $userId;
         }
 
-        $token = null;
         $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
-            $subscriptionId = $subscriptionsService->addSubscription($subscription);
+            $subscriptionId = $subService->addSubscription($subscription);
             $returnUrl = Http::getBaseUrl() . '/subscription/process?success=true&subscriptionId=' . urlencode($subscriptionId);
             $cancelUrl = Http::getBaseUrl() . '/subscription/process?success=false&subscriptionId=' . urlencode($subscriptionId);
             $token = $payPalApiService->createSubscribeECRequest($returnUrl, $cancelUrl, $subscriptionType, $recurring);
@@ -309,11 +303,11 @@ class SubscriptionController {
                 throw new Exception ("Error getting paypal response");
             }
             $conn->commit();
+            return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (\Exception $e) {
             $conn->rollBack();
             throw new Exception("Error creating order", $e);
         }
-        return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode ( $token );
     }
 
     /**
@@ -321,20 +315,22 @@ class SubscriptionController {
      * @Secure ({"USER"})
      *
      * We were redirected here from PayPal after the buyer approved/cancelled the payment
-     *
-     * @param array $params
-     * @return string
+     * TODO this method is massive
      *
      * @throws ConnectionException
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionProcess(array $params) {
+    public function subscriptionProcess(array $params): string {
         FilterParams::required($params, 'subscriptionId');
         FilterParams::required($params, 'token');
         FilterParams::declared($params, 'success');
 
-        $userId = Session::getCredentials()->getUserId();
+        $subscribeMessage = Session::getAndRemove('subscribeMessage');
+        $broadcastMessage = Session::getAndRemove('broadcastMessage');
+
+        $creds = Session::getCredentials();
+        $userId = $creds->getUserId();
         $chatBanService = ChatBanService::instance();
         $userService = UserService::instance();
         $ordersService = OrdersService::instance();
@@ -449,7 +445,8 @@ class SubscriptionController {
 
         // Broadcast
         try {
-            $subMessage = Session::getAndRemove('subMessage');
+
+            // Broadcast the subscription
             if (!empty($subscription['gifter'])) {
                 $gifter = $userService->getUserById($subscription['gifter']);
                 $gifternick = $gifter['username'];
@@ -459,42 +456,50 @@ class SubscriptionController {
                 $message = sprintf("%s is now a %s subscriber!", $user['username'], $subscriptionType ['tierLabel']);
             }
             $redisService->sendBroadcast($message);
-            if (!empty($subMessage)) {
-                $redisService->sendBroadcast("$gifternick said... $subMessage");
-                if(Config::$a['streamlabs']['alert_subscriptions']) {
-                    $streamLabService = StreamLabsService::withAuth();
-                    $streamLabService->sendAlert([
+
+
+            // Broadcast message
+            if (!empty($broadcastMessage) && !empty(trim($broadcastMessage))) {
+                $message = mb_substr($broadcastMessage, 0, 250);
+                $redisService->sendBroadcast("$gifternick said... $message");
+                if (Config::$a[AuthProvider::STREAMLABS]['alert_subscriptions']) {
+                    StreamLabsService::instance()->sendAlert([
                         'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-                        'message' => $subMessage
+                        'message' => $message
                     ]);
                 }
             }
+
+            // Sub message
+            if (!empty($subscribeMessage) && !empty(trim($subscribeMessage))) {
+                $message = mb_substr($broadcastMessage, 0, 250);
+                $messenger = DiscordMessenger::instance();
+                $messenger->send("<" . Http::getBaseUrl() . "/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has subscribed. Note: $message");
+            }
+
         } catch (\Exception $e) {
             $n = new Exception("Error sending subscription broadcast.", $e);
             Log::error($n);
         }
+
         // Update the user
         try {
-            $authService->flagUserForUpdate($user);
+            $authService->flagUserForUpdate($user['userId']);
         } catch (\Exception $e) {
             Log::error($e);
         }
+
         // Redirect to completion page
-        return 'redirect: /subscription/' . urlencode($subscription ['subscriptionId']) . '/complete';
+        return 'redirect: /subscription/' . urlencode($subscription['subscriptionId']) . '/complete';
     }
 
     /**
      * @Route ("/subscription/{subscriptionId}/complete")
      * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionComplete(array $params, ViewModel $model) {
+    public function subscriptionComplete(array $params, ViewModel $model): string {
         FilterParams::required($params, 'subscriptionId');
 
         $subscriptionsService = SubscriptionsService::instance();
@@ -520,15 +525,10 @@ class SubscriptionController {
     /**
      * @Route ("/subscription/{subscriptionId}/error")
      * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function subscriptionError(array $params, ViewModel $model) {
+    public function subscriptionError(array $params, ViewModel $model): string {
         FilterParams::required($params, 'subscriptionId');
 
         $subscriptionsService = SubscriptionsService::instance ();
@@ -547,14 +547,10 @@ class SubscriptionController {
      * @Route ("/api/info/giftcheck")
      * @Secure ({"USER"})
      * @ResponseBody
-     *
-     * @param array $params
-     * @return array
-     *
      * @throws DBALException
      * @throws Exception
      */
-    public function giftCheckUser(array $params) {
+    public function giftCheckUser(array $params): array {
         FilterParams::required($params, 's');
         $userService = UserService::instance();
         $subscriptionService = SubscriptionsService::instance();

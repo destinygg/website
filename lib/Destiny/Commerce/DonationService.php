@@ -12,11 +12,9 @@ use PDO;
 class DonationService extends Service {
 
     /**
-     * @param array $donation
-     * @return array
      * @throws DBALException
      */
-    public function addDonation(array $donation){
+    public function addDonation(array $donation): array {
         $conn = Application::getDbConn();
         $conn->insert ( 'donations', $donation);
         $donation['id'] = $conn->lastInsertId ();
@@ -24,11 +22,9 @@ class DonationService extends Service {
     }
 
     /**
-     * @param array $payment
-     * @return int paymentId
      * @throws DBALException
      */
-    public function addPayment(array $payment) {
+    public function addPayment(array $payment): int {
         $conn = Application::getDbConn();
         $conn->insert ( 'dfl_orders_payments', [
             'donationId' => $payment ['donationId'],
@@ -42,34 +38,22 @@ class DonationService extends Service {
             'paymentDate' => $payment ['paymentDate'],
             'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
         ]);
-        return $conn->lastInsertId ();
+        return intval($conn->lastInsertId());
     }
 
     /**
-     * @param $id
      * @throws DBALException
      */
-    public function removeDonation($id){
-        $conn = Application::getDbConn();
-        $conn->delete('donations', ['id' => $id], [PDO::PARAM_INT]);
-    }
-
-    /**
-     * @param $id
-     * @param array $donation
-     * @throws DBALException
-     */
-    public function updateDonation($id, array $donation){
+    public function updateDonation(int $id, array $donation){
         $conn = Application::getDbConn();
         $conn->update('donations', $donation, ['id' => $id]);
     }
 
     /**
-     * @param $id
-     * @return mixed
+     * @return array|false
      * @throws DBALException
      */
-    public function findById($id){
+    public function findById(int $id) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('SELECT * FROM `donations` WHERE `id` = :id LIMIT 1');
         $stmt->bindValue('id', $id, PDO::PARAM_INT);
@@ -78,26 +62,9 @@ class DonationService extends Service {
     }
 
     /**
-     * @param $userId
-     * @return mixed
      * @throws DBALException
      */
-    public function findByUserId($userId){
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM `donations` WHERE `userid` = :userid LIMIT 1');
-        $stmt->bindValue('userid', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param int $userId
-     * @param int $limit
-     * @param int $start
-     * @return array <array>
-     * @throws DBALException
-     */
-    public function findCompletedByUserId($userId, $limit = 100, $start = 0) {
+    public function findCompletedByUserId(int $userId, int $limit = 100, int $start = 0): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
           SELECT * FROM `donations` d 

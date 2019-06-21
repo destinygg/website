@@ -22,8 +22,6 @@ use Destiny\Common\Config;
             <span>Subscribe</span> <small>become one of the brave</small>
         </h1>
 
-        <?php include 'seg/alerts.php' ?>
-
         <div class="content content-dark clearfix">
 
             <div class="ui-step-legend-wrap clearfix">
@@ -59,6 +57,7 @@ use Destiny\Common\Config;
     </section>
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

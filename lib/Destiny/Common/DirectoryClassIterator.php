@@ -1,13 +1,13 @@
 <?php
 namespace Destiny\Common;
 
-use \RecursiveDirectoryIterator;
-use \RecursiveIteratorIterator;
-use \RecursiveRegexIterator;
+use Iterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RecursiveRegexIterator;
+use ReflectionClass;
 use ReflectionException;
-use \RegexIterator;
-use \ReflectionClass;
-use \Iterator;
+use RegexIterator;
 use SplFileInfo;
 
 /**
@@ -15,9 +15,6 @@ use SplFileInfo;
  */
 class DirectoryClassIterator implements Iterator {
     
-    /**
-     * @var int
-     */
     private $position = 0;
     
     /**
@@ -55,7 +52,7 @@ class DirectoryClassIterator implements Iterator {
      * @return ReflectionClass[]
      * @throws ReflectionException
      */
-    private function getClasses() {
+    private function getClasses(): array {
         $files = self::getFiles ();
         $classes = [];
         // Run through all the public classes, that have Action annotations, check for Route annotations
@@ -81,7 +78,7 @@ class DirectoryClassIterator implements Iterator {
      *
      * @return SplFileInfo[]
      */
-    private function getFiles() {
+    private function getFiles(): array {
         $directory = new RecursiveDirectoryIterator ( $this->base . $this->path );
         $iterator = new RecursiveIteratorIterator ( $directory, RecursiveIteratorIterator::SELF_FIRST );
         $regex = new RegexIterator ( $iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH );
@@ -110,7 +107,7 @@ class DirectoryClassIterator implements Iterator {
     }
 
     public function valid() {
-        return isset ( $this->array [$this->position] );
+        return isset ($this->array [$this->position]);
     }
 
 }

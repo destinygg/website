@@ -7,25 +7,12 @@ namespace Destiny\Common\Annotation;
  */
 class Route {
 
-    /**
-     * @var string
-     */
-    public $path;
+    public $path = '';
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params = null) {
         if (!empty($params)) {
-            $this->path = $params ['value'];
+            $this->path = $params['value'];
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath() {
-        return $this->path;
     }
 
 }

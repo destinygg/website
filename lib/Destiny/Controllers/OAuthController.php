@@ -5,7 +5,7 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Authentication\OAuthService;
+use Destiny\Common\Authentication\DggOAuthService;
 use Destiny\Common\Exception;
 use Destiny\Common\Response;
 use Destiny\Common\Session\Session;
@@ -26,16 +26,12 @@ class OAuthController {
     private $tokenGrantTypes = ['authorization_code', 'refresh_token'];
 
     /**
+     * @see https://www.oauth.com/oauth2-servers/pkce/authorization-request/
      * @Route("/oauth/authorize")
      * @HttpMethod({"GET"})
-     *
-     * @see https://www.oauth.com/oauth2-servers/pkce/authorization-request/
-     * @param array $params
-     *
      * @throws DBALException
-     * @return string
      */
-    public function authorize(array $params) {
+    public function authorize(array $params): string {
         try {
             FilterParams::required($params, 'response_type');           // code - indicates that your server expects to receive an authorization code
             FilterParams::required($params, 'client_id');               // The client ID you received when you first created the application
@@ -46,7 +42,7 @@ class OAuthController {
 
             $params['code_challenge_method'] = isset($params['code_challenge_method']) ? $params['code_challenge_method'] : 'S256';
 
-            $oauthService = OAuthService::instance();
+            $oauthService = DggOAuthService::instance();
             $client = $oauthService->ensureAuthClient($params['client_id']);
 
             if ($params['response_type'] != 'code') {
@@ -80,17 +76,13 @@ class OAuthController {
     }
 
     /**
-     * @Route("/oauth/token")
-     * @ResponseBody
-     *
      * @see https://www.oauth.com/oauth2-servers/pkce/authorization-code-exchange/
      * @see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/
-     * @param Response $response
-     * @param array $params
-     * @return array
+     * @Route("/oauth/token")
+     * @ResponseBody
      * @throws DBALException
      */
-    public function token(Response $response, array $params) {
+    public function token(Response $response, array $params): array {
         try {
             FilterParams::required($params, 'grant_type');      // authorization_code | refresh_token - Indicates the grant type of this token request
             if (!in_array($params['grant_type'], $this->tokenGrantTypes)) {
@@ -119,18 +111,16 @@ class OAuthController {
     }
 
     /**
-     * @param array $params
-     * @return array
      * @throws DBALException
      * @throws Exception
      */
-    private function tokenExchange(array $params) {
+    private function tokenExchange(array $params): array {
         FilterParams::required($params, 'code');            // The client will send the authorization code it obtained in the redirect
         FilterParams::required($params, 'client_id');       // The application’s registered client ID
         FilterParams::required($params, 'redirect_uri');    // The redirect URL that was used in the initial authorization request
         FilterParams::required($params, 'code_verifier');   // The code verifier for the PKCE request, that the app originally generated before the authorization request.
 
-        $oauthService = OAuthService::instance();
+        $oauthService = DggOAuthService::instance();
         $client = $oauthService->ensureAuthClient($params['client_id']);
         $data = $oauthService->getFlashStore($params['code'], 'code');
 
@@ -165,16 +155,14 @@ class OAuthController {
     }
 
     /**
-     * @param array $params
-     * @return array
      * @throws DBALException
      * @throws Exception
      */
-    private function tokenRenew(array $params) {
+    private function tokenRenew(array $params): array {
         FilterParams::required($params, 'client_id');       // The application’s registered client ID
         FilterParams::required($params, 'refresh_token');   // The refresh token from the original /oauth/authorize request
 
-        $oauthService = OAuthService::instance();
+        $oauthService = DggOAuthService::instance();
         $client = $oauthService->ensureAuthClient($params['client_id']);
         $auth = $oauthService->getAccessTokenByRefreshAndClientId($params['refresh_token'], $client['clientId']);
 

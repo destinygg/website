@@ -2,47 +2,44 @@
 namespace Destiny\PayPal;
 
 use DateTime;
+use Destiny\Common\Config;
+use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
-use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
-use PayPal\PayPalAPI\GetExpressCheckoutDetailsResponseType;
-use PayPal\Service\PayPalAPIInterfaceServiceService;
-use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsRequestType;
-use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsReq;
-use Destiny\Common\Exception;
-use PayPal\EBLBaseComponents\ManageRecurringPaymentsProfileStatusRequestDetailsType;
-use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusRequestType;
-use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusReq;
-use PayPal\EBLBaseComponents\RecurringPaymentsProfileDetailsType;
-use PayPal\EBLBaseComponents\BillingPeriodDetailsType;
 use PayPal\CoreComponentTypes\BasicAmountType;
-use PayPal\EBLBaseComponents\ScheduleDetailsType;
+use PayPal\EBLBaseComponents\BillingAgreementDetailsType;
+use PayPal\EBLBaseComponents\BillingPeriodDetailsType;
 use PayPal\EBLBaseComponents\CreateRecurringPaymentsProfileRequestDetailsType;
-use PayPal\PayPalAPI\CreateRecurringPaymentsProfileRequestType;
+use PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType;
+use PayPal\EBLBaseComponents\ManageRecurringPaymentsProfileStatusRequestDetailsType;
+use PayPal\EBLBaseComponents\PaymentDetailsItemType;
+use PayPal\EBLBaseComponents\PaymentDetailsType;
+use PayPal\EBLBaseComponents\RecurringPaymentsProfileDetailsType;
+use PayPal\EBLBaseComponents\ScheduleDetailsType;
+use PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType;
 use PayPal\PayPalAPI\CreateRecurringPaymentsProfileReq;
+use PayPal\PayPalAPI\CreateRecurringPaymentsProfileRequestType;
+use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
+use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
+use PayPal\PayPalAPI\DoExpressCheckoutPaymentResponseType;
 use PayPal\PayPalAPI\GetExpressCheckoutDetailsReq;
 use PayPal\PayPalAPI\GetExpressCheckoutDetailsRequestType;
-use PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType;
-use PayPal\EBLBaseComponents\BillingAgreementDetailsType;
-use PayPal\EBLBaseComponents\PaymentDetailsType;
-use PayPal\PayPalAPI\SetExpressCheckoutRequestType;
+use PayPal\PayPalAPI\GetExpressCheckoutDetailsResponseType;
+use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsReq;
+use PayPal\PayPalAPI\GetRecurringPaymentsProfileDetailsRequestType;
+use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusReq;
+use PayPal\PayPalAPI\ManageRecurringPaymentsProfileStatusRequestType;
 use PayPal\PayPalAPI\SetExpressCheckoutReq;
-use PayPal\EBLBaseComponents\PaymentDetailsItemType;
-use PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType;
-use PayPal\PayPalAPI\DoExpressCheckoutPaymentRequestType;
-use PayPal\PayPalAPI\DoExpressCheckoutPaymentReq;
+use PayPal\PayPalAPI\SetExpressCheckoutRequestType;
+use PayPal\Service\PayPalAPIInterfaceServiceService;
 
 /**
  * @method static PayPalApiService instance()
  */
 class PayPalApiService extends Service {
 
-    /**
-     * @return array
-     */
-    private function getConfig(){
+    private function getConfig(): array {
         return Config::$a['paypal']['sdk'];
     }
 
@@ -50,7 +47,7 @@ class PayPalApiService extends Service {
      * @param $paymentProfileId : The unique identifier paypal sending with payment responses.
      * @throws \Exception
      */
-    public function cancelPaymentProfile($paymentProfileId) {
+    public function cancelPaymentProfile(string $paymentProfileId) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
         $getRPPDetailsRequest = new GetRecurringPaymentsProfileDetailsRequestType ();
         $getRPPDetailsRequest->ProfileID = $paymentProfileId;
@@ -83,16 +80,10 @@ class PayPalApiService extends Service {
     }
 
     /**
-     * @param string $token
-     * @param $reference
-     * @param $subscriberName
-     * @param DateTime $billingStartDate
-     * @param array $subscriptionType
-     * @return string $paymentProfileId
-     *
+     * @return string|mixed
      * @throws \Exception
      */
-    public function createSubscriptionPaymentProfile($token, $reference, $subscriberName, DateTime $billingStartDate, array $subscriptionType) {
+    public function createSubscriptionPaymentProfile(string $token, string $reference, string $subscriberName, DateTime $billingStartDate, array $subscriptionType = []) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
         $paymentProfileId = null;
         $amount = $subscriptionType ['amount'];
@@ -134,16 +125,10 @@ class PayPalApiService extends Service {
 
     /**
      * Create an ExpressCheckout @ paypal before doing a 302 redirect
-     *
-     * @param string $returnUrl
-     * @param string $cancelUrl
-     * @param array $subscriptionType
-     * @param boolean $recurring
      * @return null|string
-     *
      * @throws \Exception
      */
-    public function createSubscribeECRequest($returnUrl, $cancelUrl, array $subscriptionType, $recurring = false) {
+    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
 
         $token = null;
@@ -200,15 +185,10 @@ class PayPalApiService extends Service {
 
     /**
      * Create an ExpressCheckout @ paypal before doing a 302 redirect
-     *
-     * @param string $returnUrl
-     * @param string $cancelUrl
-     * @param array $donation
      * @return null|string
-     *
      * @throws \Exception
      */
-    public function createDonateECRequest($returnUrl, $cancelUrl, array $donation){
+    public function createDonateECRequest(string $returnUrl, string $cancelUrl, array $donation = []){
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
         $token = null;
         $amount = $donation ['amount'];
@@ -257,31 +237,22 @@ class PayPalApiService extends Service {
 
     /**
      * Retrieve the checkout instance from paypal
-     *
-     * @param string $token
      * @return null|GetExpressCheckoutDetailsResponseType
-     *
      * @throws \Exception
      */
-    public function retrieveCheckoutInfo($token) {
+    public function retrieveCheckoutInfo(string $token) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
         $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq ();
-        $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType ( $token );
-        $response = $paypalService->GetExpressCheckoutDetails ( $getExpressCheckoutReq );
-        return (isset ( $response ) && $response->Ack == 'Success') ? $response : null;
+        $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType ($token);
+        $response = $paypalService->GetExpressCheckoutDetails($getExpressCheckoutReq);
+        return (isset ($response) && $response->Ack == 'Success') ? $response : null;
     }
 
     /**
      * Get express checkout payment request response
-     *
-     * @param string $payerId
-     * @param string $token
-     * @param $amount
-     * @return DoExpressCheckoutPaymentResponseType
-     *
      * @throws \Exception
      */
-    public function getCheckoutPaymentResponse($payerId, $token, $amount) {
+    public function getCheckoutPaymentResponse(string $payerId, string $token, $amount): DoExpressCheckoutPaymentResponseType {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
         $currency = Config::$a ['commerce'] ['currency'];
 
@@ -289,24 +260,20 @@ class PayPalApiService extends Service {
         $DoECRequestDetails->PayerID = $payerId;
         $DoECRequestDetails->Token = $token;
         $DoECRequestDetails->PaymentAction = 'Sale';
-        
+
         $paymentDetails = new PaymentDetailsType ();
-        $paymentDetails->OrderTotal = new BasicAmountType ( $currency, $amount );
+        $paymentDetails->OrderTotal = new BasicAmountType ($currency, $amount);
         $paymentDetails->NotifyURL = Config::$a['paypal']['endpoint_ipn'];
         $DoECRequestDetails->PaymentDetails [0] = $paymentDetails;
-        
+
         $DoECRequest = new DoExpressCheckoutPaymentRequestType ();
         $DoECRequest->DoExpressCheckoutPaymentRequestDetails = $DoECRequestDetails;
         $DoECReq = new DoExpressCheckoutPaymentReq ();
         $DoECReq->DoExpressCheckoutPaymentRequest = $DoECRequest;
-        return $paypalService->DoExpressCheckoutPayment ( $DoECReq );
+        return $paypalService->DoExpressCheckoutPayment($DoECReq);
     }
 
-    /**
-     * @param DoExpressCheckoutPaymentResponseType $DoECResponse
-     * @return array
-     */
-    public function getCheckoutResponsePayments(DoExpressCheckoutPaymentResponseType $DoECResponse){
+    public function getCheckoutResponsePayments(DoExpressCheckoutPaymentResponseType $DoECResponse): array {
         $payments = [];
         if (isset ( $DoECResponse ) && $DoECResponse->Ack == 'Success') {
             $details = $DoECResponse->DoExpressCheckoutPaymentResponseDetails;

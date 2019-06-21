@@ -1,4 +1,6 @@
 <?php
+
+use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
 ?>
@@ -13,41 +15,60 @@ use Destiny\Common\Utils\Date;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
+        <form id="user-search-form" class="filter-form" role="form">
 
-        <div class="content content-dark">
-            <div class="ds-block">
-                <form id="userSearchForm" class="form-inline" role="form">
-                    <div class="form-group mr-auto">
-                        <input name="search" type="text" class="form-control" placeholder="Username or email..." value="<?=Tpl::out($this->search)?>" />
-                        <button type="submit" class="btn btn-primary">Search</button>
+            <div class="content content-dark mb-3">
+                <div class="form-inline filters">
+                    <div id="search-input" class="form-group">
+                        <input name="search" type="text" class="form-control" style="width: 100%;" placeholder="Username or email..." value="<?=Tpl::out($this->search)?>" />
                     </div>
                     <div class="form-group">
-                        <select name="feature" class="form-control">
-                            <option value="" disabled selected>Feature</option>
-                            <option value=""></option>
-                            <?php foreach ($this->features as $feature): ?>
-                                <option value="<?=Tpl::out($feature['featureName']);?>"><?=Tpl::out($feature['featureLabel']);?></option>
+                        <label class="mr-2">Status</label>
+                        <select name="status" class="form-control">
+                            <option value="" <?=(!$this->status ? 'selected':'')?>>Any</option>
+                            <?php foreach ($this->statuses as $status): ?>
+                                <option <?=($status == $this->status) ? 'selected':''?> value="<?=Tpl::out($status)?>"><?=Tpl::out($status)?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                </form>
+                    <div class="form-group">
+                        <label class="mr-2">Role</label>
+                        <select name="role" class="form-control">
+                            <option value="" <?=(!$this->role ? 'selected':'')?>>Any</option>
+                            <?php foreach ($this->roles as $role): ?>
+                                <option <?=($role['roleName'] == $this->role) ? 'selected':''?> value="<?=Tpl::out($role['roleName'])?>"><?=Tpl::out($role['roleLabel'])?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="mr-2">Feature</label>
+                        <select name="feature" class="form-control">
+                            <option value="" <?=(!$this->feature ? 'selected':'')?>>Any</option>
+                            <?php foreach ($this->features as $feature): ?>
+                                <?php if(!in_array($feature['featureName'], UserFeature::$UNASSIGNABLE)): ?>
+                                <option <?=($feature['featureName'] == $this->feature) ? 'selected':''?> value="<?=Tpl::out($feature['featureName'])?>"><?=Tpl::out($feature['featureLabel'])?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="filter-buttons">
+                        <button type="reset" class="btn btn-secondary btn-dark">Reset</button>
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <br />
+            <div class="content content-dark clearfix">
+                <div data-size="<?=Tpl::out($this->size)?>" data-page="<?=Tpl::out($this->page)?>" class="stream stream-grid" style="width:100%;">
 
-        <div class="content content-dark clearfix">
+                    <div class="ds-block" style="display: flex;">
+                        <input type="hidden" name="page" value="1" />
 
-            <div id="userlist" data-size="<?=Tpl::out($this->size)?>" data-page="<?=Tpl::out($this->page)?>" data-feature="<?=Tpl::out($this->feature)?>" class="stream stream-grid" style="width:100%;">
-
-                <div class="ds-block clearfix">
-
-                    <?php if($this->users['totalpages'] > 1): ?>
-                        <form class="form-inline float-left" role="form">
+                        <div class="form-inline" role="form" style="flex: 1;">
+                            <?php if($this->users['totalpages'] > 1): ?>
                             <ul class="pagination" style="margin: 0 15px 0 0;">
                                 <li class="page-item">
                                     <a class="page-link" data-page="1" href="?page=0">First</a>
@@ -61,55 +82,52 @@ use Destiny\Common\Utils\Date;
                                     <a class="page-link" data-page="<?=$this->users['totalpages']?>" href="?page=<?=$this->users['totalpages']?>">Last</a>
                                 </li>
                             </ul>
-                        </form>
-                    <?php endif ?>
-
-                    <form class="form-inline float-right" role="form">
-                        <div class="form-group">
-                            <label for="gridSize">Showing: </label>
-                            <select id="gridSize" name="size" class="form-control">
-                                <option value=""></option>
-                                <option value="20">20</option>
-                                <option value="40">40</option>
-                                <option value="60">60</option>
-                                <option value="80">80</option>
-                                <option value="100">100</option>
-                                <option value="200">200</option>
-                            </select>
+                            <?php endif ?>
                         </div>
-                        <button id="resetuserlist" class="btn btn-warning">Reset</button>
-                    </form>
+
+                        <div class="form-inline" role="form">
+                            <div class="form-group">
+                                <label for="gridSize" class="text-muted">Showing (<?=count($this->users['list'])?>)</label>
+                                <select id="gridSize" name="size" class="form-control ml-2">
+                                    <?php foreach ($this->sizes as $size): ?>
+                                        <option value="<?=$size?>"><?=$size?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <table class="grid">
+                        <thead>
+                        <tr>
+                            <td>User <small>(<?=$this->users['total']?>)</small></td>
+                            <td>Status</td>
+                            <td>Created on</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($this->users['list'] as $user): ?>
+                            <tr>
+                                <td>
+                                    <a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a>
+                                    <?php if(!empty($user['email'])): ?>(<?=Tpl::out($user['email'])?>)<?php endif; ?>
+                                </td>
+                                <td><?=$user['userStatus']?></td>
+                                <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT)?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
 
                 </div>
-
-                <table class="grid">
-                    <thead>
-                    <tr>
-                        <td>User <small>(<?=$this->users['total']?>)</small></td>
-                        <td>Status</td>
-                        <td>Created on</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach($this->users['list'] as $user): ?>
-                        <tr>
-                            <td>
-                                <a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a>
-                                <?php if(!empty($user['email'])): ?>(<?=Tpl::out($user['email'])?>)<?php endif; ?>
-                            </td>
-                            <td><?=$user['userStatus']?></td>
-                            <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT)?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-
             </div>
-        </div>
 
+        </form>
     </section>
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

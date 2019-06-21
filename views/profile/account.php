@@ -17,7 +17,6 @@ use Destiny\Commerce\SubscriptionStatus;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'profile/menu.php' ?>
     <?php include 'profile/userinfo.php' ?>
 
@@ -168,32 +167,23 @@ use Destiny\Commerce\SubscriptionStatus;
             <form id="profileSaveForm" action="/profile/update" method="post" role="form">
 
                 <div class="ds-block">
-                    <?php if($this->user['nameChangedCount'] > 0): ?>
-                        <div class="form-group">
-                            <label>Username:
-                                <br><small>(You have <?=Tpl::number($this->user['nameChangedCount'])?> name changes left)</small>
-                            </label>
-                            <input class="form-control" type="text" name="username" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username" />
-                            <span class="help-block">A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters</span>
-                        </div>
-                    <?php endif ?>
-
-                    <?php if($this->user['nameChangedCount'] <= 0): ?>
-                        <div class="form-group">
-                            <label>Username:
-                                <br><small>(You have no more name changes available)</small>
-                            </label>
-                            <input class="form-control" type="text" disabled="disabled" name="username" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username" />
-                        </div>
-                    <?php endif ?>
-
+                    <div class="form-group">
+                        <label>Username:
+                            <br><small>(Request a name change!)</small>
+                        </label>
+                        <input class="form-control" type="text" disabled="disabled" name="username" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input class="form-control" type="text" name="email" value="<?=Tpl::out($this->user['email'])?>" placeholder="Email" />
+                    </div>
                     <div class="form-group">
                         <label for="country">Nationality:
                             <br><small>The country you identify with</small>
                         </label>
                         <select class="form-control" name="country" id="country">
                             <option value="">Select your country</option>
-                            <?$countries = Country::getCountries();?>
+                            <?php $countries = Country::getCountries(); ?>
                             <option value="">&nbsp;</option>
                             <option value="US" <?php if($this->user['country'] == 'US'):?>
                                 selected="selected" <?php endif ?>>United States</option>
@@ -274,10 +264,12 @@ use Destiny\Commerce\SubscriptionStatus;
 
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>
 <?=Tpl::manifestScript('common.vendor.js')?>
+<?=Tpl::manifestScript('chat.vendor.js')?>
 <?=Tpl::manifestScript('web.js')?>
 <?=Tpl::manifestScript('profile.js')?>
 <script src="https://www.google.com/recaptcha/api.js"></script>

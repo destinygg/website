@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Discord;
 
-use Destiny\Common\Config;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\Http;
 use Exception;

@@ -2,24 +2,27 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
+use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\StatisticsService;
+use Destiny\Commerce\SubscriptionsService;
+use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Annotation\Audit;
+use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Application;
+use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
-use Destiny\Common\Utils\Date;
-use Destiny\Common\ViewModel;
-use Destiny\Common\Annotation\Controller;
-use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Application;
 use Destiny\Common\User\UserService;
-use Destiny\Commerce\SubscriptionsService;
-use Destiny\Chat\ChatRedisService;
+use Destiny\Common\User\UserStatus;
+use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
+use Destiny\Common\ViewModel;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -49,19 +52,6 @@ class AdminController {
     }
 
     /**
-     * @Route ("/admin/dashboard")
-     * @Secure ({"ADMIN"})
-     * @HttpMethod ({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
-     */
-    public function dashboard(ViewModel $model) {
-        $model->title = 'Dashboard';
-        return 'admin/dashboard';
-    }
-
-    /**
      * @Route ("/admin/income")
      * @Secure ({"FINANCE"})
      * @HttpMethod ({"GET","POST"})
@@ -75,22 +65,52 @@ class AdminController {
     }
 
     /**
-     * @Route ("/admin/subscribers")
+     * @Route ("/admin/subscriptions")
      * @Secure ({"FINANCE"})
      *
      * @param ViewModel $model
+     * @param array $params
      * @return string
      *
      * @throws DBALException
      */
-    public function adminSubscribers(ViewModel $model) {
-        $subService = SubscriptionsService::instance ();
-        $model->subscribersT4 = $subService->findByTier ( 4 );
-        $model->subscribersT3 = $subService->findByTier ( 3 );
-        $model->subscribersT2 = $subService->findByTier ( 2 );
-        $model->subscribersT1 = $subService->findByTier ( 1 );
+    public function listSubscriptions(ViewModel $model, array $params) {
+        if (empty($params['page'])) {
+            $params['page'] = 1;
+        }
+        if (empty($params['size'])) {
+            $params['size'] = 60;
+        }
+        if (empty($params['search'])) {
+            $params['search'] = '';
+        }
+        if (empty($params['tier'])) {
+            $params['tier'] = '';
+        }
+        if (!isset($params['recurring']) || ($params['recurring'] !== '1' && $params['recurring'] !== '0')) {
+            $params['recurring'] = '';
+        }
+        if (empty($params['status'])) {
+            $params['status'] = '';
+        }
+        $subService = SubscriptionsService::instance();
         $model->title = 'Subscribers';
-        return 'admin/subscribers';
+        $model->subscriptions = $subService->searchAll($params);
+        $model->sizes = [20, 60, 120, 250];
+        $model->search = $params['search'];
+        $model->recurring = $params['recurring'];
+        $model->status = $params['status'];
+        $model->tier = $params['tier'];
+        $model->tiers = Config::$a['commerce']['tiers'];
+        $model->statuses = [
+            SubscriptionStatus::_NEW,
+            SubscriptionStatus::ACTIVE,
+            SubscriptionStatus::CANCELLED,
+            SubscriptionStatus::ERROR,
+            SubscriptionStatus::EXPIRED,
+            SubscriptionStatus::PENDING
+        ];
+        return 'admin/subscriptions';
     }
 
     /**
@@ -104,31 +124,38 @@ class AdminController {
      *
      * @throws DBALException
      */
-    public function users(array $params, ViewModel $model) {
-        if (empty ($params ['page']))
-            $params ['page'] = 1;
-        if (empty ($params ['size']))
-            $params ['size'] = 20;
-        if (empty ($params ['search']))
-            $params ['search'] = '';
-        if (empty ($params ['feature']))
-            $params ['feature'] = '';
-
-        $model->user = Session::getCredentials()->getData();
+    public function listUsers(array $params, ViewModel $model) {
+        if (empty($params ['page'])) {
+            $params['page'] = 1;
+        }
+        if (empty($params ['size'])) {
+            $params['size'] = 20;
+        }
+        if (empty($params ['search'])) {
+            $params['search'] = '';
+        }
+        if (empty($params ['feature'])) {
+            $params['feature'] = '';
+        }
+        if (empty($params ['role'])) {
+            $params['role'] = '';
+        }
+        if (empty($params ['status'])) {
+            $params['status'] = '';
+        }
         $userService = UserService::instance();
-
-        if (!empty($params ['feature']))
-            $model->users = $userService->findByFeature($params ['feature'], intval($params ['size']), intval($params ['page']));
-        else if (!empty($params ['search']))
-            $model->users = $userService->findBySearch($params ['search'], intval($params ['size']), intval($params ['page']));
-        else
-            $model->users = $userService->findAll(intval($params ['size']), intval($params ['page']));
-
+        $model->user = Session::getCredentials()->getData();
+        $model->features = $userService->getAllFeatures();
+        $model->roles = $userService->getAllRoles();
+        $model->statuses = [UserStatus::ACTIVE, UserStatus::DELETED, UserStatus::REDACTED];
+        $model->users = $userService->searchAll($params);
+        $model->sizes = [20, 60, 120, 250];
         $model->size = $params ['size'];
         $model->page = $params ['page'];
         $model->search = $params ['search'];
         $model->feature = $params ['feature'];
-        $model->features = $userService->getAllFeatures();
+        $model->role = $params ['role'];
+        $model->status = $params ['status'];
         $model->title = 'Users';
         return 'admin/users';
     }
@@ -276,14 +303,14 @@ class AdminController {
 
     /**
      * @Route ("/admin/audit")
-     * @Secure ({"ADMIN"})
+     * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
      * @param ViewModel $model
      * @return string
      * @throws DBALException
      */
-    public function getAuditLog(ViewModel $model) {
+    public function auditLogList(ViewModel $model) {
         $userService = UserService::instance();
         $model->logs = $userService->getAuditLog();
         return 'admin/auditlog';

@@ -1,12 +1,12 @@
 <?php
 namespace Destiny\Youtube;
 
+use Destiny\Common\Config;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp\Client;
 use InvalidArgumentException;
 
 /**
@@ -15,7 +15,6 @@ use InvalidArgumentException;
 class YoutubeApiService extends Service {
 
     /**
-     * @param array $params
      * @return array|null
      */
     public function getYoutubePlaylist(array $params = []) {
@@ -23,7 +22,7 @@ class YoutubeApiService extends Service {
         // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=Destiny&key={1}
         // GET https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={0}&key={1}
         $params ['limit'] = (isset ($params ['limit'])) ? intval($params ['limit']) : 4;
-        $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+        $client = HttpClient::instance();
         $response = $client->get('https://www.googleapis.com/youtube/v3/search', [
             'headers' => ['User-Agent' => Config::userAgent()],
             'query' => [

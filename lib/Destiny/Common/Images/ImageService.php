@@ -22,12 +22,9 @@ class ImageService extends Service {
     ];
 
     /**
-     * @param array $img
-     * @param $tag
-     * @return string
      * @throws DBALException
      */
-    function addImage(array $img, $tag) {
+    function addImage(array $img, string $tag = ''): int {
         $conn = Application::getDbConn();
         $conn->insert('images', [
             'label' => $img ['label'],
@@ -45,33 +42,18 @@ class ImageService extends Service {
     }
 
     /**
-     * @param $id
-     * @return mixed
+     * @return array|false
      * @throws DBALException
      */
-    function findImageById($id) {
+    function findImageById(int $id) {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM `images` WHERE `id` = :id LIMIT 0,1');
-        $stmt->bindValue('id', $id, PDO::PARAM_STR);
+        $stmt = $conn->prepare('SELECT * FROM `images` WHERE `id` = :id LIMIT 1');
+        $stmt->bindValue('id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
 
     /**
-     * @param $name
-     * @return mixed
-     * @throws DBALException
-     */
-    function findImageByName($name) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM `images` WHERE `name` = :name LIMIT 0,1');
-        $stmt->bindValue('name', $name, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @param $id
      * @throws InvalidArgumentException
      * @throws DBALException
      */
@@ -81,10 +63,9 @@ class ImageService extends Service {
     }
 
     /**
-     * @return array
      * @throws DBALException
      */
-    public function getAllOrphanedImages() {
+    public function getAllOrphanedImages(): array {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
             SELECT i.* FROM images i 
@@ -97,21 +78,11 @@ class ImageService extends Service {
         return $stmt->fetchAll();
     }
 
-    /**
-     * @param $name
-     * @param $destination
-     * @return bool
-     */
-    function removeImageFile($name, $destination) {
+    function removeImageFile(string $name, string $destination): bool {
         return unlink($destination . $name);
     }
 
-    /**
-     * @param array $upload
-     * @param $destination
-     * @return array
-     */
-    function upload(array $upload, $destination) {
+    function upload(array $upload, string $destination = null): array {
         try {
             // Undefined | Multiple Files | $_FILES Corruption Attack
             // If this request falls under any of them, treat it invalid.
@@ -168,11 +139,8 @@ class ImageService extends Service {
     /**
      * The files array is stored strangely, this is to convert it to
      * [file, file, file ...]
-     *
-     * @param $vector
-     * @return array
      */
-    public static function diverseArray($vector) {
+    public static function diverseArray(array $vector): array {
         $result = [];
         foreach ($vector as $key1 => $value1) {
             foreach ($value1 as $key2 => $value2) {

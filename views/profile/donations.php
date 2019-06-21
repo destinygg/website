@@ -13,9 +13,7 @@ use Destiny\Common\Utils\Tpl;
 <body id="donations" class="no-contain">
 <div id="page-wrap">
 
-    <div id="alerts-container"></div>
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'menu.php' ?>
     <?php include 'profile/userinfo.php' ?>
 
@@ -54,6 +52,7 @@ use Destiny\Common\Utils\Tpl;
     </section>
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

@@ -5,9 +5,9 @@ use Destiny\Common\Annotation;
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
 use Doctrine\Common\Annotations\Reader;
-use \ReflectionClass;
+use ReflectionClass;
 use ReflectionException;
-use \ReflectionMethod;
+use ReflectionMethod;
 
 class ControllerAnnotationLoader {
 
@@ -47,10 +47,6 @@ class ControllerAnnotationLoader {
     private $auditKeyRef;
 
     /**
-     * @param DirectoryClassIterator $classIterator
-     * @param Reader $reader
-     * @param Router $router
-     *
      * @throws ReflectionException
      */
     public static function factory(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
@@ -59,10 +55,6 @@ class ControllerAnnotationLoader {
     }
 
     /**
-     * @param DirectoryClassIterator $classIterator
-     * @param Reader $reader
-     * @param Router $router
-     *
      * @throws ReflectionException
      */
     public function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Router $router) {
@@ -81,11 +73,6 @@ class ControllerAnnotationLoader {
         }
     }
 
-    /**
-     * @param ReflectionClass $classRef
-     * @param Reader $reader
-     * @param Router $router
-     */
     public function loadClass(ReflectionClass $classRef, Reader $reader, Router $router) {
         $methods = $classRef->getMethods(ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
@@ -93,12 +80,6 @@ class ControllerAnnotationLoader {
         }
     }
 
-    /**
-     * @param ReflectionClass $classRef
-     * @param ReflectionMethod $method
-     * @param Reader $reader
-     * @param Router $router
-     */
     public function loadClassMethod(ReflectionClass $classRef, ReflectionMethod $method, Reader $reader, Router $router) {
         $routes = $this->getMethodRoutes($reader, $method);
         if (count($routes) > 0) {
@@ -128,8 +109,6 @@ class ControllerAnnotationLoader {
     }
 
     /**
-     * @param Reader $reader
-     * @param ReflectionMethod $method
      * @return Route[]
      */
     public function getMethodRoutes(Reader $reader, ReflectionMethod $method) {

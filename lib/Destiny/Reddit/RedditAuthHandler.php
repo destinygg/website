@@ -1,32 +1,30 @@
 <?php
 namespace Destiny\Reddit;
 
-use Destiny\Common\AuthHandlerInterface;
-use Destiny\Common\Exception;
-use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
-use Destiny\Common\Authentication\AuthenticationCredentials;
+use Destiny\Common\Authentication\AbstractAuthHandler;
+use Destiny\Common\Authentication\AuthProvider;
+use Destiny\Common\Authentication\OAuthResponse;
 use Destiny\Common\Config;
+use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
-use Doctrine\DBAL\DBALException;
-use GuzzleHttp\Client;
 
-class RedditAuthHandler implements AuthHandlerInterface {
-    
-    /**
-     * @var string
-     */
-    protected $authProvider = 'reddit';
-    protected $apiBase = 'https://ssl.reddit.com/api/v1';
-    protected $authBase = 'https://oauth.reddit.com/api/v1';
+/**
+ * @method static RedditAuthHandler instance()
+ */
+class RedditAuthHandler extends AbstractAuthHandler {
+
+    private $apiBase = 'https://ssl.reddit.com/api/v1';
+    private $authBase = 'https://oauth.reddit.com/api/v1';
+    public $authProvider = AuthProvider::REDDIT;
 
     /**
      * @return string
      */
-    public function getAuthenticationUrl() {
-        $conf = Config::$a ['oauth_providers'] [$this->authProvider];
+    function getAuthorizationUrl($scope = ['identity'], $claims = ''): string {
+        $conf = $this->getAuthProviderConf();
         return "$this->apiBase/authorize?" . http_build_query([
                 'response_type' => 'code',
-                'scope' => 'identity',
+                'scope' => join(' ', $scope),
                 'state' => md5(time() . 'eFdcSA_'),
                 'client_id' => $conf['client_id'],
                 'redirect_uri' => $conf['redirect_uri']
@@ -34,18 +32,14 @@ class RedditAuthHandler implements AuthHandlerInterface {
     }
 
     /**
-     * @param array $params
-     * @return string
-     *
-     * @throws DBALException
      * @throws Exception
      */
-    public function authenticate(array $params) {
-        if (!isset ($params['code']) || empty ($params['code'])) {
+    function getToken(array $params): array {
+        if (!isset($params['code']) || empty($params['code'])) {
             throw new Exception ('Authentication failed, invalid or empty code.');
         }
-        $conf = Config::$a ['oauth_providers'] [$this->authProvider];
-        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+        $conf = $this->getAuthProviderConf();
+        $client = $this->getHttpClient();
         $response = $client->post("$this->apiBase/access_token", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
@@ -63,51 +57,54 @@ class RedditAuthHandler implements AuthHandlerInterface {
             if (empty($data) || isset($data['error']) || !isset($data['access_token'])) {
                 throw new Exception('Invalid access_token response');
             }
-            $authCreds = $this->mapInfoToAuthCredentials($params['code'], $this->getUserInfo($data['access_token']));
-            $authHandler = new AuthenticationRedirectionFilter($authCreds);
-            return $authHandler->execute();
+            return $data;
         }
-        throw new Exception ("Bad response from oauth provider: {$response->getStatusCode()}");
+        throw new Exception("Failed to get token response");
     }
 
     /**
-     * @param $token
-     * @return array|null
+     * @throws Exception
      */
-    private function getUserInfo($token){
-        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+    private function getUserInfo(string $accessToken): array {
+        $client = $this->getHttpClient();
         $response = $client->get("$this->authBase/me.json", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Authorization' => "bearer $token"
+                'Authorization' => "bearer $accessToken"
             ]
         ]);
-        if($response->getStatusCode() == Http::STATUS_OK) {
-            return json_decode((string) $response->getBody(), true);
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            return json_decode((string)$response->getBody(), true);
         }
-        return null;
+        throw new Exception("Failed to retrieve user info.");
     }
 
     /**
-     * @param string $code
-     * @param array $data
-     * @return AuthenticationCredentials
      * @throws Exception
      */
-    public function mapInfoToAuthCredentials($code, array $data) {
-        if (empty ($data) || !isset ($data ['id']) || empty ($data ['id'])) {
+    function mapTokenResponse(array $token): OAuthResponse {
+        $data = $this->getUserInfo($token['access_token']);
+        if (empty($data) || !isset($data['id']) || empty($data['id'])) {
             throw new Exception ('Authorization failed, invalid user data');
         }
-        if (!isset($data['has_verified_email']) || empty($data['has_verified_email']) || $data['has_verified_email'] != 1) {
-            throw new Exception ('You must have a verified email address for your registration to complete successfully.');
-        }
-        $arr = [];
-        $arr ['username'] = $data ['name'];
-        $arr ['authProvider'] = $this->authProvider;
-        $arr ['authCode'] = $code;
-        $arr ['authId'] = $data ['id'];
-        $arr ['authDetail'] = $data ['name'];
-        $arr ['authEmail'] = '';
-        return new AuthenticationCredentials ($arr);
+        return new OAuthResponse([
+            'accessToken' => $token['access_token'],
+            'refreshToken' => $token['refresh_token'] ?? '',
+            'authProvider' => $this->authProvider,
+            'username' => $data['name'],
+            'authId' => (string) $data['id'],
+            'authDetail' => $data['name'],
+            'authEmail' => '',
+            'verified' => boolval($data['has_verified_email'] ?? false),
+        ]);
     }
+
+    /**
+     * @throws Exception
+     */
+    function renewToken(string $refreshToken): array {
+        throw new Exception("Not implemented");
+        // TODO Implement
+    }
+
 }

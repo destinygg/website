@@ -1,13 +1,13 @@
 <?php 
 namespace Destiny\LastFm;
 
+use Destiny\Common\Config;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Config;
 use Destiny\Common\Utils\Http;
 use InvalidArgumentException;
-use GuzzleHttp\Client;
 
 /**
  * @method static LastFMApiService instance()
@@ -19,7 +19,7 @@ class LastFMApiService extends Service {
      */
     public function getLastPlayedTracks() {
         try {
-            $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+            $client = HttpClient::instance();
             $response = $client->get('http://ws.audioscrobbler.com/2.0/', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => [
@@ -45,7 +45,7 @@ class LastFMApiService extends Service {
      */
     public function getTopTracks() {
         try {
-            $client = new Client(['timeout' => 10, 'connect_timeout' => 5, 'http_errors' => false]);
+            $client = HttpClient::instance();
             $response = $client->get('http://ws.audioscrobbler.com/2.0/', [
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => [
@@ -67,11 +67,9 @@ class LastFMApiService extends Service {
     }
 
     /**
-     * @param $rootNode
-     * @param array $json
      * @return array|null
      */
-    private function parseFeedResponse($rootNode, array $json) {
+    private function parseFeedResponse(string $rootNode, array $json) {
         if (!$json || isset ($json ['error']) && $json ['error'] > 0 || count($json [$rootNode] ['track']) <= 0) {
             return null;
         }

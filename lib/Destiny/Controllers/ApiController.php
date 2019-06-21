@@ -1,22 +1,24 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\PrivateKey;
 use Destiny\Common\Annotation\ResponseBody;
-use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Application;
 use Destiny\Common\Authentication\AuthenticationService;
-use Destiny\Common\Authentication\OAuthService;
+use Destiny\Common\Authentication\AuthProvider;
+use Destiny\Common\Authentication\DggOAuthService;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
+use Destiny\Common\Response;
 use Destiny\Common\Session\SessionCredentials;
+use Destiny\Common\User\UserAuthService;
+use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
-use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\User\UserService;
 use Doctrine\DBAL\DBALException;
 use Exception;
 
@@ -29,17 +31,15 @@ class ApiController {
      * @Route("/api/userinfo")
      * @ResponseBody
      *
-     * @param array $params
      * @throws Exception
      * @return SessionCredentials|array
      */
-    public function userInfo(array $params) {
+    public function userInfo(array $params): array {
         FilterParams::required($params, 'token');
         $token = trim($params['token']);
-        $oauthService = OAuthService::instance();
+        $oauthService = DggOAuthService::instance();
         $data = $oauthService->getAccessTokenByToken($token);
         if (!empty($data)) {
-            // TODO encapsulate
             if ($oauthService->hasAccessTokenExpired($data)) {
                 return [
                     'error' => 'token_expired',
@@ -87,17 +87,14 @@ class ApiController {
      * @PrivateKey ({"api","reddit","minecraft"})
      * @ResponseBody
      *
-     * @param Response $response
-     * @param Request $request
-     * @param array $params
-     * @return array|string
-     *
      * @throws DBALException
+     * @return array|SessionCredentials
      */
     public function apiUserByField(Response $response, Request $request, array $params) {
         $userid = null;
         try {
             $userService = UserService::instance();
+            $userAuthService = UserAuthService::instance();
             // Depending on which privatekey is used, only certain access is permitted
             switch (strtoupper(Application::getPrivateKeyNameFromRequest($request))) {
                 case 'API':
@@ -106,10 +103,10 @@ class ApiController {
                         $userid = $params['userid'];
                     } else if (isset($params['discordid'])) {
                         FilterParams::required($params, 'discordid');
-                        $userid = $userService->getUserIdByDiscordId($params['discordid']);
+                        $userid = $userAuthService->getUserIdByAuthIdAndProvider($params['discordid'], AuthProvider::DISCORD);
                     } else if (isset($params['discordusername'])) {
                         FilterParams::required($params, 'discordusername');
-                        $userid = $userService->getUserIdByAuthDetail($params['discordusername'], 'discord');
+                        $userid = $userAuthService->getUserIdByAuthDetail($params['discordusername'], AuthProvider::DISCORD);
                     } else if (isset($params['discordname'])) {
                         FilterParams::required($params, 'discordname');
                         $userid = $userService->getUserIdByField('discordname', $params['discordname']);
@@ -121,10 +118,10 @@ class ApiController {
                         $userid = $userService->getUserIdByField('username', $params['username']);
                     } else if (isset($params['redditname'])) {
                         FilterParams::required($params, 'redditname');
-                        $userid = $userService->getUserIdByAuthDetail($params['redditname'], 'reddit');
+                        $userid = $userAuthService->getUserIdByAuthDetail($params['redditname'], AuthProvider::REDDIT);
                     } else if (isset($params['redditid'])) {
                         FilterParams::required($params, 'redditid');
-                        $userid = $userService->getUserIdByAuthId($params['redditid'], 'reddit');
+                        $userid = $userAuthService->getUserIdByAuthIdAndProvider($params['redditid'], AuthProvider::REDDIT);
                     } else {
                         $response->setStatus(Http::STATUS_BAD_REQUEST);
                         return ['message' => 'No field specified', 'error' => 'fielderror', 'code' => Http::STATUS_BAD_REQUEST];
@@ -144,10 +141,10 @@ class ApiController {
                 case 'REDDIT':
                     if (isset($params['redditname'])) {
                         FilterParams::required($params, 'redditname');
-                        $userid = $userService->getUserIdByAuthDetail($params['redditname'], 'reddit');
+                        $userid = $userAuthService->getUserIdByAuthDetail($params['redditname'], AuthProvider::REDDIT);
                     } else if (isset($params['redditid'])) {
                         FilterParams::required($params, 'redditid');
-                        $userid = $userService->getUserIdByAuthId($params['redditid'], 'reddit');
+                        $userid = $userAuthService->getUserIdByAuthIdAndProvider($params['redditid'], AuthProvider::REDDIT);
                     } else {
                         $response->setStatus(Http::STATUS_BAD_REQUEST);
                         return ['message' => 'No field specified', 'error' => 'fielderror', 'code' => Http::STATUS_BAD_REQUEST];
@@ -188,10 +185,7 @@ class ApiController {
      * @ResponseBody
      * @PrivateKey ({"api","chat"})
      *
-     * @param Response $response
-     * @param array $params
-     * @return array|string
-     *
+     * @return SessionCredentials|array
      * @throws DBALException
      */
     public function userByAuthToken(Response $response, array $params) {
@@ -199,7 +193,7 @@ class ApiController {
             $response->setStatus(Http::STATUS_FORBIDDEN);
             return ['message' => 'Invalid or empty authToken', 'error' => 'fielderror', 'code' => Http::STATUS_FORBIDDEN];
         }
-        $oauthService = OAuthService::instance();
+        $oauthService = DggOAuthService::instance();
         $accessToken = $oauthService->getAccessTokenByToken($params['authtoken']);
         if (empty ($accessToken)) {
             $response->setStatus(Http::STATUS_FORBIDDEN);

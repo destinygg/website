@@ -40,26 +40,15 @@ abstract class Http {
         503 => 'Service Unavailable'
     ];
 
-    /**
-     * @param string $name
-     * @param string $value
-     * @param bool $replace
-     */
-    public static function header($name, $value, $replace = true) {
+    public static function header(string $name, string $value, bool $replace = true) {
         header ( $name . ': ' . $value, $replace );
     }
 
-    /**
-     * @param int $status
-     */
-    public static function status($status) {
+    public static function status(int $status) {
         header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
     }
     
-    /**
-     * @return string
-     */
-    public static function getBaseUrl() {
+    public static function getBaseUrl(): string {
         $protocol = 'http';
         if ($_SERVER ['SERVER_PORT'] == 443 || (!empty ($_SERVER ['HTTPS']) && strtolower($_SERVER ['HTTPS']) == 'on')) {
             $protocol .= 's';
@@ -69,20 +58,14 @@ abstract class Http {
         return dirname($protocol . '://' . $host . $request);
     }
 
-    /**
-     * @param array $server
-     * @return mixed|null
-     */
     public static function extractIpAddress(array $server) {
         return $server ['REMOTE_ADDR'] ?? $server ['HTTP_X_REAL_IP'] ?? $server ['HTTP_CLIENT_IP'] ?? $server ['HTTP_X_FORWARDED_FOR'] ?? null;
     }
 
     /**
      * TODO if you need an arbitrary header, its not currently possible
-     * @param array $server
-     * @return array
      */
-    public static function extractHeaders(array $server){
+    public static function extractHeaders(array $server): array {
         return array_filter($server, function($name) { return substr($name, 0, 5) == 'HTTP_'; }, ARRAY_FILTER_USE_KEY);
     }
 

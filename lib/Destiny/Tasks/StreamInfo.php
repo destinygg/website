@@ -14,14 +14,11 @@ use Destiny\Twitch\TwitchWebHookService;
  */
 class StreamInfo implements TaskInterface {
 
-    /**
-     * @return mixed|void
-     */
     public function execute() {
         $cache = Application::getNsCache();
         $twitchApiService = TwitchApiService::instance();
         $info = $twitchApiService->getStreamStatus(
-            Config::$a['twitch']['user'],
+            Config::$a['twitch']['id'],
             $cache->fetch('lasttimeonline')
         );
         if (!empty($info)) {
@@ -30,7 +27,7 @@ class StreamInfo implements TaskInterface {
             if (!empty($path)) {
                 $info['preview'] = Config::cdni() . '/' . $path;
             }
-            $islive = !empty($info['host']) ? false : (($info['live'] == true) ? true:false);
+            $islive = !empty($info['host']) ? false : (($info['live'] == true) ? true : false);
             $cache->save(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id'], ['time' => time(), 'live' => $islive]);
             $cache->save(TwitchWebHookService::CACHE_KEY_STREAM_STATUS, $info);
         }

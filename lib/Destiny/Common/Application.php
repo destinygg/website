@@ -1,20 +1,20 @@
 <?php
 namespace Destiny\Common;
 
+use Destiny\Common\Routing\Route;
+use Destiny\Common\Routing\Router;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\Session\SessionInstance;
-use Destiny\Common\User\UserFeature;
-use Destiny\Common\User\UserRole;
+use Destiny\Common\User\UserStatus;
 use Destiny\Common\Utils\Http;
-use Destiny\Common\Routing\Route;
-use Destiny\Common\Routing\Router;
 use Destiny\Common\Utils\RandomString;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
-use function GuzzleHttp\json_encode;
+use Error;
 use Redis;
 use ReflectionClass;
+use function GuzzleHttp\json_encode;
 
 /**
  * @method static Application instance()
@@ -60,9 +60,6 @@ class Application extends Service {
         return self::instance()->getCache2();
     }
 
-    /**
-     * @param Request $request
-     */
     public function executeRequest(Request $request) {
         $response = new Response();
         $route = $this->router->findRoute($request);
@@ -79,7 +76,7 @@ class Application extends Service {
         $useResponseAsBody = $route->getResponseBody();
         if ($route->isSecure()) {
             $creds = Session::getCredentials();
-            if ($creds->isValid() && strcasecmp($creds->getUserStatus(), 'Active') !== 0) {
+            if ($creds->isValid() && $creds->getUserStatus() != UserStatus::ACTIVE) {
                 $model->code = Http::STATUS_FORBIDDEN;
                 $model->error = new Exception('inactiveuser');
                 $response->setStatus(Http::STATUS_FORBIDDEN);
@@ -103,9 +100,11 @@ class Application extends Service {
 
         try {
             $result = $this->executeController($route, $request, $response, $model);
+            // TODO before invocation?
             if ($this->auditLogger !== null && $route->getAudit()) {
                 $this->auditLogger->logRequest($request);
             }
+            //
             if($useResponseAsBody) {
                 // Use result as response body
                 $response->setBody($result);
@@ -141,16 +140,20 @@ class Application extends Service {
             $model->id = $id;
             $response->setStatus(Http::STATUS_ERROR);
             $response->setBody($this->errorTemplate($model, $useResponseAsBody));
+        } catch (Error $e) {
+            $id = RandomString::makeUrlSafe(12);
+            Log::critical($e->getMessage(), ['trace' => $e->getTraceAsString(), 'guid' => $id]);
+            $model->code = Http::STATUS_ERROR;
+            $model->error = new Exception ('Application error ' . $e->getMessage());
+            $model->id = $id;
+            $response->setStatus(Http::STATUS_ERROR);
+            $response->setBody($this->errorTemplate($model, $useResponseAsBody));
         }
 
         $this->handleResponse($response);
     }
 
-    /**
-     * @param Response $response
-     * @return void
-     */
-    private function handleResponse(Response $response){
+    private function handleResponse(Response $response) {
         $location = $response->getLocation();
         if (!empty ($location)) {
             Http::status(Http::STATUS_MOVED_TEMPORARY);
@@ -181,15 +184,8 @@ class Application extends Service {
     /**
      * Runs a controller method
      * Does some magic around what parameters are passed in.
-     * TODO reflection is slow
-     *
-     * @param Route $route
-     * @param Request $request
-     * @param Response $response
-     * @param ViewModel $model
-     * @return mixed
-     *
      * @throws \Exception
+     * @return mixed|null
      */
     private function executeController(Route $route, Request $request, Response $response, ViewModel $model) {
         $className = $route->getClass();
@@ -219,13 +215,7 @@ class Application extends Service {
         return $methodReflection->invokeArgs($classInstance, $args);
     }
 
-    /**
-     * @param Route $route
-     * @param SessionCredentials $credentials
-     * @param Request $request
-     * @return bool
-     */
-    private function hasRouteSecurity(Route $route, SessionCredentials $credentials, Request $request) {
+    private function hasRouteSecurity(Route $route, SessionCredentials $credentials, Request $request): bool {
         // has ANY role
         $secure = $route->getSecure();
         if (!empty ($secure)) {
@@ -253,22 +243,16 @@ class Application extends Service {
 
     /**
      * Include a template and return the contents
-     *
-     * @param string $filename
-     * @param ViewModel $model
-     * @return string
      * @throws \Exception
      */
-    protected function template($filename, ViewModel $model) {
+    protected function template(string $filename, ViewModel $model) {
         return $model->getContent($filename);
     }
 
     /**
-     * @param ViewModel $model
-     * @param bool $useResponseAsBody
-     * @return \Exception|string|array
+     * @return string|array
      */
-    protected function errorTemplate(ViewModel $model, $useResponseAsBody = false) {
+    protected function errorTemplate(ViewModel $model, bool $useResponseAsBody = false) {
         try {
             return $useResponseAsBody ? $model : $model->getContent('error.php');
         } catch (\Exception $e) {
@@ -277,20 +261,18 @@ class Application extends Service {
     }
 
     /**
-     * @param Request $request
      * @return null|string
      */
     public static function getPrivateKeyValueFromRequest(Request $request) {
         $gets = $request->get();
         $posts = $request->post();
-        return isset($gets['privatekey']) ? $gets['privatekey'] : (isset($posts['privatekey']) ? $posts['privatekey'] : null);
+        return $gets['privatekey'] ?? $posts['privatekey'] ?? null;
     }
 
     /**
-     * @param Request $request
      * @return string|null
      */
-    public static function getPrivateKeyNameFromRequest(Request $request){
+    public static function getPrivateKeyNameFromRequest(Request $request) {
         $keyValue = self::getPrivateKeyValueFromRequest($request);
         foreach (Config::$a['privateKeys'] as $key => $value) {
             if ($value == $keyValue) {
@@ -300,7 +282,7 @@ class Application extends Service {
         return null;
     }
 
-    public function getDbal() {
+    public function getDbal(): Connection {
         return $this->dbal;
     }
 
@@ -308,7 +290,7 @@ class Application extends Service {
         $this->dbal = $dbal;
     }
 
-    public function getCache1() {
+    public function getCache1(): CacheProvider {
         return $this->cache1;
     }
 
@@ -316,7 +298,7 @@ class Application extends Service {
         $this->cache1 = $cache;
     }
 
-    public function getCache2() {
+    public function getCache2(): CacheProvider {
         return $this->cache2;
     }
 
@@ -332,7 +314,7 @@ class Application extends Service {
         $this->session = $session;
     }
 
-    public function getRedis() {
+    public function getRedis(): Redis {
         return $this->redis;
     }
 
@@ -340,27 +322,15 @@ class Application extends Service {
         $this->redis = $redis;
     }
 
-    public function getRouter() {
-        return $this->router;
-    }
-
     public function setRouter(Router $router) {
         $this->router = $router;
-    }
-
-    public function getLoader() {
-        return $this->loader;
     }
 
     public function setLoader($loader) {
         $this->loader = $loader;
     }
 
-    public function getAuditLogger() {
-        return $this->auditLogger;
-    }
-
-    public function setAuditLogger($auditLogger) {
+    public function setAuditLogger(AuditLogger $auditLogger) {
         $this->auditLogger = $auditLogger;
     }
 

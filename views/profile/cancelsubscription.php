@@ -1,4 +1,6 @@
 <?php
+
+use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
@@ -20,7 +22,6 @@ use Destiny\Common\Utils\Date;
             <span>Cancel</span>
             <small>subscription</small>
         </h1>
-        <?php include 'seg/alerts.php' ?>
     </section>
 
     <section class="container">
@@ -35,7 +36,7 @@ use Destiny\Common\Utils\Date;
                         <dl class="dl-horizontal">
                             <dt>Status:</dt>
                             <dd>
-                                <span class="badge badge-<?=($this->subscription['status'] == 'Active') ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
+                                <span class="badge badge-<?=($this->subscription['status'] == SubscriptionStatus::ACTIVE) ? 'success':'warning'?>"><?=Tpl::out($this->subscription['status'])?></span>
                                 <?php if($this->subscription['recurring']):?>
                                     <span class="badge badge-warning" title="This subscription is automatically renewed">Recurring</span>
                                 <?php endif ?>
@@ -57,17 +58,15 @@ use Destiny\Common\Utils\Date;
 
                         </dl>
                     </div>
-                    <?php if($this->subscription['status'] == 'Active'): ?>
-                    <div class="g-recaptcha" data-theme="dark" data-sitekey="<?= Config::$a ['g-recaptcha'] ['key'] ?>"></div>
-                    <?php endif; ?>
+
                 </div>
 
                 <div class="form-actions">
-                    <?php if($this->subscription['status'] == 'Active' && $this->subscription['recurring'] == '0'): ?>
-                        <button type="submit" id="cancelSubscriptionBtn" class="btn btn-danger">Remove Subscription</button>
+                    <?php if($this->subscription['status'] == SubscriptionStatus::ACTIVE && $this->subscription['recurring'] == '0'): ?>
+                        <button type="button" id="cancelSubscriptionBtn" class="btn btn-danger" data-toggle="modal" data-target="#confirmCancelSubscription">Remove Subscription</button>
                     <?php endif ?>
                     <?php if($this->subscription['recurring'] == '1'): ?>
-                        <button type="submit" id="cancelSubscriptionBtn" class="btn btn-danger">Cancel Subscription</button>
+                        <button type="button" id="cancelSubscriptionBtn" class="btn btn-danger" data-toggle="modal" data-target="#confirmCancelSubscription">Cancel Subscription</button>
                     <?php endif ?>
                     <a class="btn btn-dark" href="/profile">Back to profile</a>
                 </div>
@@ -77,6 +76,48 @@ use Destiny\Common\Utils\Date;
     </section>
 </div>
 
+<div class="modal" id="confirmCancelSubscription" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="/subscription/cancel" method="post" autocomplete="off" class="form-alt">
+                <div class="modal-header">
+                    <?php if($this->subscription['status'] == SubscriptionStatus::ACTIVE && $this->subscription['recurring'] == '0'): ?>
+                        <span class="modal-title">Confirm subscription removal</span>
+                    <?php endif ?>
+                    <?php if($this->subscription['recurring'] == '1'): ?>
+                        <span class="modal-title">Confirm subscription cancellation</span>
+                    <?php endif ?>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="subscriptionId" value="<?=Tpl::out($this->subscription['subscriptionId'])?>" />
+
+                    <?php if($this->subscription['recurring'] == '1'): ?>
+                    <div class="form-group">
+                        <p>This will stop the recurring payment for this subscription. If you want to remove the subscription entirely. Do this process again after the recurring payment has been cancelled.</p>
+                    </div>
+                    <?php endif ?>
+                    <?php if($this->subscription['recurring'] == '0'): ?>
+                    <div class="form-group">
+                        <div>Why are you un-subscribing? (optional)</div>
+                        <textarea name="message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder="" autofocus></textarea>
+                        <label class="error hidden"></label>
+                    </div>
+                    <?php endif ?>
+
+                    <?php if($this->subscription['status'] == SubscriptionStatus::ACTIVE): ?>
+                        <div class="g-recaptcha" data-theme="light" data-sitekey="<?= Config::$a ['g-recaptcha'] ['key'] ?>"></div>
+                    <?php endif; ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="userSearchCancel">Cancel</button>
+                    <button type="submit" id="cancelSubscriptionBtn" class="btn btn-danger">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

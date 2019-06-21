@@ -1,25 +1,16 @@
 <?php
 
-use Destiny\Common\Config;
-use Destiny\Common\User\UserService;
 use Destiny\StreamLabs\StreamLabsService;
 use Destiny\StreamLabs\StreamLabsAlertsType;
-use Doctrine\DBAL\DBALException;
 
 class TwitchAlertTest extends PHPUnit\Framework\TestCase {
 
-    /**
-     * @return StreamLabsService
-     * @throws DBALException
-     */
-    private function getService(){
-        $service = StreamLabsService::instance();
-        $service->setAuth(UserService::instance()->getAuthByUserAndProvider(Config::$a['streamlabs']['default_user'], 'streamlabs'));
-        return $service;
+    private function getService(): StreamLabsService {
+        return StreamLabsService::instance();
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function testOne() {
         $r = $this->getService()->sendAlert([
@@ -31,19 +22,19 @@ class TwitchAlertTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function testTwo() {
         $r = $this->getService()->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_DONATION,
             'message' => sprintf("*%s* has donated *%s*! %s", 'Billy', '$' . number_format(32, 2), '')
         ]);
-        //print_r(json_decode($r->getBody(), true));
+        print_r(json_decode($r->getBody(), true));
         self::assertArrayHasKey('success', json_decode($r->getBody(), true));
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function testThree() {
         $r = $this->getService()->sendDonation([

@@ -24,6 +24,65 @@ const $document = $(document),
         highlight: (e) => $(e).closest('.form-group').addClass('error'),
         unhighlight: (e) => $(e).closest('.form-group').removeClass('error')
     });
+
+})();
+
+(function(){
+
+    const getRootContainer = function(e) {
+        return $('#alerts-container')
+    }
+
+    const addAutoHideTimer = function($e, delay = 7000) {
+        setTimeout(function(){
+            if ($e[0] && $e.parent()[0]) {
+                $e.detach().remove()
+            }
+        }, delay)
+    }
+
+    const ensureContainerLimit = function($c) {
+        const alerts = $c.find('.alert-container');
+        if (alerts.length > 2) {
+            alerts.last().fadeOut(500, function(){ $(this).detach() });
+        }
+    }
+
+    const addToRootContainer = function(root, alert) {
+        alert.prependTo(root);
+        addAutoHideTimer(alert);
+        ensureContainerLimit(root);
+        setTimeout(() => { alert.addClass('show') }, 1);
+    }
+
+    $.fn.alertSuccess = function(message){
+        const root = getRootContainer(),
+            alert = $(`<div class="alert-container"><div class="alert alert-info alert-dismissable">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+                          <strong><i class="fas fa-check-square"></i> Success</strong>
+                          <div>${message}</div>
+                      </div></div>`);
+        addToRootContainer(root, alert)
+    };
+
+    $.fn.alertDanger = function(message){
+        const root = getRootContainer(),
+            alert = $(`<div class="alert-container"><div class="alert alert-danger alert-dismissable">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+                          <strong><i class="fas fa-exclamation-triangle"></i> Error</strong>
+                          <div>${message}</div>
+                      </div></div>`);
+        addToRootContainer(root, alert)
+    };
+
+    $(function(){
+        getRootContainer(this).find('.alert-container').each(function(){
+            const root = getRootContainer(),
+                alert = $(this).detach();
+            addToRootContainer(root, alert);
+        })
+    });
+
 })();
 
 (function(){

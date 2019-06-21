@@ -5,13 +5,31 @@ use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 ?>
 <section class="container">
+
     <div class="content-dark clearfix">
         <div class="ds-block">
-            <h3><?= Tpl::out($this->user['username']) ?></h3>
+
+            <form id="nameForm" method="post" action="/profile/usernamechange">
+                <?php if(boolval($this->user['allowNameChange'])): ?>
+                    <div id="nameChangeBackDrop"></div>
+                    <input name="username" id="nameChange" autofocus autocomplete="off" type="text" class="form-control" placeholder="<?=Tpl::out($this->user['username'])?>" value="" />
+                <?php else: ?>
+                    <h3><?= Tpl::out($this->user['username']) ?></h3>
+                <?php endif; ?>
+                <?php if(boolval($this->user['allowNameChange'])): ?>
+                    <div id="nameChangeAlert" class="alert alert-danger" role="alert">
+                        <p class="mb-0"><i class="fas fa-fw fa-arrow-circle-up"></i>&nbsp;Please confirm your username!</p>
+                    </div>
+                <?php endif; ?>
+            </form>
+
             <div>
                 <p>
                     <span>Joined on <?=Tpl::moment(Date::getDateTime($this->user['createdDate']), 'jS F, Y H:i a', 'Do MMMM, YYYY h:mm a')?></span><br />
                     Check out your old <a href="/profile/subscriptions" title="Your Subscriptions">Subscriptions</a>, <a href="/profile/gifts" title="Your Gifts">Gifts</a> and <a href="/profile/donations" title="Your Donations">Donations</a>.
+                    <?php if(!$this->user['allowChatting']): ?>
+                    <br /><span>Chat <strong><?= $this->user['allowChatting'] ? 'Enabled' : 'Disabled'?></strong></span>
+                    <?php endif; ?>
                 </p>
                 <hr />
             </div>

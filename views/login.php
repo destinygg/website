@@ -10,10 +10,10 @@ use Destiny\Common\Config;
     <?php include 'seg/meta.php' ?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
-<body id="login" class="no-brand">
+<body id="login">
 <div id="page-wrap">
 
-    <?php include 'seg/nav.php' ?>
+    <?php $hideSignIn = true; include 'seg/nav.php' ?>
 
     <section class="container vertical-contain">
         <div style="flex: 1;">
@@ -22,8 +22,6 @@ use Destiny\Common\Config;
                 <span>Sign in</span>
                 <small>with your favourite platform</small>
             </h1>
-
-            <?php include 'seg/alerts.php' ?>
 
             <?php if(!empty($this->app)):?>
                 <div class="content content-dark clearfix" style="margin: 2rem 0;">
@@ -66,6 +64,7 @@ use Destiny\Common\Config;
     </section>
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

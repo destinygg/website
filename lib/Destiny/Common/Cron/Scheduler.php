@@ -12,9 +12,6 @@ use PDO;
 
 class Scheduler {
 
-    /**
-     * @var array
-     */
     public $schedule = [];
 
     /**
@@ -29,30 +26,10 @@ class Scheduler {
         'executeCount' => 0
     ];
 
-    /**
-     * @param array $args
-     */
     public function __construct(array $args = []) {
         Options::setOptions($this, $args);
     }
 
-    /**
-     * @return array
-     */
-    public function getSchedule() {
-        return $this->schedule;
-    }
-
-    /**
-     * @param array $schedule
-     */
-    public function setSchedule(array $schedule) {
-        $this->schedule = $schedule;
-    }
-
-    /**
-     * @return void
-     */
     public function execute() {
         $startTime = microtime(true);
         Log::info('Schedule starting');
@@ -84,7 +61,6 @@ class Scheduler {
 
     /**
      * Load tasks from db, and sync with current schedule
-     *
      * @throws DBALException
      */
     public function loadTasks(){
@@ -100,16 +76,11 @@ class Scheduler {
         Log::info('Schedule loaded ['. join(',', array_keys($this->schedule)) .']');
     }
 
-    /**
-     * @param string $action
-     * @param array $task
-     */
-    public function addTask($action, array $task) {
+    public function addTask(string $action, array $task) {
         $this->schedule[$action] = array_merge($this->struct, $task);
     }
 
     /**
-     * @param array $task
      * @throws DBALException
      */
     protected function updateTask(array $task) {
@@ -127,7 +98,6 @@ class Scheduler {
     }
 
     /**
-     * @param array $task
      * @throws DBALException
      */
     protected function insertTask(array $task) {
@@ -149,17 +119,15 @@ class Scheduler {
     }
 
     /**
-     * @param array $task
-     * @return TaskInterface
      * @throws Exception
      */
-    public function getTaskClass(array $task) {
+    public function getTaskClass(array $task): TaskInterface {
         $class = null;
         if (class_exists($task['class'], true)) {
             $class = new $task['class'] ($task);
         }
         if (!$class) {
-            throw new Exception (sprintf('Action not found: %s', $task['class']));
+            throw new Exception('Action not found: ' . $task['class']);
         }
         return $class;
     }

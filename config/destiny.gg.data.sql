@@ -1,7 +1,7 @@
 /* INSERT DEFAULT DATA */
 
-INSERT INTO `dfl_users` (userId, username, email, country, createdDate, modifiedDate, userStatus, nameChangedCount, nameChangedDate) VALUES
-  (NULL, 'Admin', 'admin@destiny.gg', '', NOW(), NOW(), 'Active', 0, NULL);
+INSERT INTO `dfl_users` (userId, username, email, country, createdDate, modifiedDate, userStatus) VALUES
+  (NULL, 'Admin', 'admin@destiny.gg', '', NOW(), NOW(), 'Active');
 
 INSERT INTO `dfl_roles` (roleId, roleName, roleLabel) VALUES
   (1, 'ADMIN', 'Admin'),

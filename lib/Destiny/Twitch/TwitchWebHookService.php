@@ -4,13 +4,13 @@ use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Utils\Http;
-use GuzzleHttp\Client;
 use function GuzzleHttp\json_decode;
 
 /**
@@ -44,9 +44,9 @@ class TwitchWebHookService extends Service {
      * @return bool
      * @throws Exception
      */
-    public function sendSubscriptionRequest($mode, $key, $topic, $userId, $ttl = 86400) {
+    public function sendSubscriptionRequest(string $mode, string $key, string $topic, int $userId, int $ttl = 86400): bool {
         $conf = Config::$a['twitch_webhooks'];
-        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+        $client = HttpClient::instance();
         $response = $client->post(self::API_BASE . '/webhooks/hub', [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
@@ -67,12 +67,9 @@ class TwitchWebHookService extends Service {
     }
 
     /**
-     * @param Request $request
-     *
-     * @return bool
      * @throws TwitchWebHookException
      */
-    private function validateIncomingCallback(Request $request) {
+    private function validateIncomingCallback(Request $request): bool {
         $conf = Config::$a['twitch_webhooks'];
         // Returned as X-Hub-Signature sha256(secret, notification_bytes)
         $signature = $request->header('HTTP_X_HUB_SIGNATURE');
@@ -91,27 +88,19 @@ class TwitchWebHookService extends Service {
     }
 
     /**
-     * @param Request $request
-     * @return string
      * @throws TwitchWebHookException
      */
-    public function handleIncomingWebhook(Request $request) {
+    public function handleIncomingWebhook(Request $request): string {
         $this->validateIncomingCallback($request);
         $topic = $request->param(self::GET_TOPIC_KEY);
         switch ($topic) {
             case self::TOPIC_STREAM:
                 $this->handleStreamChangeWebhook($request);
                 break;
-            case self::TOPIC_FOLLOW:
-                Log::debug("Unhandled $topic");
-                break;
-            case self::TOPIC_USER_CHANGED:
-                Log::debug("Unhandled $topic");
-                break;
-            case self::TOPIC_GAME_ANALYTICS:
-                Log::debug("Unhandled $topic");
-                break;
             case self::TOPIC_EXTENSION_ANALYTICS:
+            case self::TOPIC_GAME_ANALYTICS:
+            case self::TOPIC_USER_CHANGED:
+            case self::TOPIC_FOLLOW:
                 Log::debug("Unhandled $topic");
                 break;
         }
@@ -166,12 +155,9 @@ class TwitchWebHookService extends Service {
     /**
      * This is the incoming request after the subscribe request is sent
      * Always return the challenge on success
-     *
-     * @param Request $request
-     * @return string
      * @throws FilterParamsException
      */
-    public function handleIncomingNotify(Request $request) {
+    public function handleIncomingNotify(Request $request): string {
         $gets = $request->get();
         FilterParams::required($gets, 'hub_topic');
         FilterParams::required($gets, 'hub_mode');

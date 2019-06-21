@@ -12,9 +12,6 @@ class Secure {
      */
     public $roles;
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params = null) {
         if (!empty($params)) {
             $this->roles = $params ['value'];

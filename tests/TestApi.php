@@ -1,10 +1,9 @@
 <?php
-use Destiny\Blog\BlogApiService;
 use Destiny\Common\Config;
 use Destiny\Common\Images\ImageDownloadUtil;
 use Destiny\LastFm\LastFMApiService;
 use Destiny\LibSyn\LibSynFeedService;
-use Destiny\Reddit\RedditFeedService;
+use Destiny\Reddit\RedditService;
 use Destiny\Twitch\TwitchApiService;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\Youtube\YoutubeApiService;
@@ -24,13 +23,6 @@ class TestApi extends PHPUnit\Framework\TestCase {
         self::assertTrue(true);
     }
 
-    public function testBlog() {
-        $apiService = BlogApiService::instance();
-        $json = $apiService->getBlogPosts();
-        echo json_encode($json, JSON_PRETTY_PRINT);
-        self::assertNotEmpty($json);
-    }
-
     public function testLastFM() {
         $apiService = LastFMApiService::instance();
         $json = $apiService->getLastPlayedTracks();
@@ -40,14 +32,14 @@ class TestApi extends PHPUnit\Framework\TestCase {
 
     public function testTwitchApiBroadcasts() {
         $apiService = TwitchApiService::instance();
-        $json = $apiService->getPastBroadcasts(Config::$a['twitch']['user']);
+        $json = $apiService->getPastBroadcasts(Config::$a['twitch']['id']);
         echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertTrue($json != null && isset($json['videos']));
     }
 
     public function testTwitchApiStreamInfo() {
         $apiService = TwitchApiService::instance();
-        $json = $apiService->getStreamStatus(Config::$a ['twitch']['user']);
+        $json = $apiService->getStreamStatus(Config::$a['twitch']['id']);
         echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
@@ -61,7 +53,7 @@ class TestApi extends PHPUnit\Framework\TestCase {
 
     public function testTwitchApiChannel() {
         $apiService = TwitchApiService::instance();
-        $json = $apiService->getChannel(Config::$a['twitch']['user']);
+        $json = $apiService->getChannel(Config::$a['twitch']['id']);
         echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertNotEmpty($json);
     }
@@ -95,7 +87,7 @@ class TestApi extends PHPUnit\Framework\TestCase {
     }
 
     public function testRedditThreads() {
-        $apiService = RedditFeedService::instance();
+        $apiService = RedditService::instance();
         $json = $apiService->getHotThreads();
         echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertTrue($json != null);
@@ -106,7 +98,7 @@ class TestApi extends PHPUnit\Framework\TestCase {
      */
     public function testTwitterAuth() {
         $authHandler = new TwitterAuthHandler();
-        $url = $authHandler->getAuthenticationUrl();
+        $url = $authHandler->getAuthorizationUrl();
         self::assertNotEmpty($url);
     }
 }

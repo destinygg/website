@@ -13,7 +13,6 @@ class ViewModel extends stdClass implements JsonSerializable {
 
     /**
      * ViewModel constructor.
-     * @param array|null $params
      */
     public function __construct(array $params = null) {
         if (! empty ( $params )) {
@@ -25,11 +24,9 @@ class ViewModel extends stdClass implements JsonSerializable {
 
     /**
      * TODO figure a way to remove this
-     * @param $filename
-     * @return string
      * @throws \Exception
      */
-    public function getContent($filename){
+    public function getContent(string $filename): string {
         $path = _BASEDIR . '/views/' . $filename;
         $contents = '';
         try {
@@ -45,37 +42,21 @@ class ViewModel extends stdClass implements JsonSerializable {
         return $contents;
     }
 
-    /**
-     * @return array
-     */
-    public function getData() {
+    public function getData(): array {
         return $this->vars;
     }
 
-    /**
-     * @param string $name
-     * @param mixed $value
-     * @return mixed
-     */
-    public function __set($name, $value) {
-        $this->vars [$name] = $value;
+    public function __set(string $name, $value) {
+        $this->vars[$name] = $value;
         return $value;
     }
 
-    /**
-     * @param string $name
-     * @return mixed|null
-     */
-    public function __get($name) {
-        return (isset ( $this->vars [$name] )) ? $this->vars [$name] : null;
+    public function __get(string $name) {
+        return (isset ($this->vars [$name])) ? $this->vars [$name] : null;
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name) {
-        return isset ( $this->vars [$name] );
+    public function __isset(string $name): bool {
+        return isset ($this->vars [$name]);
     }
 
     /**
@@ -85,7 +66,7 @@ class ViewModel extends stdClass implements JsonSerializable {
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    public function jsonSerialize() {
+    public function jsonSerialize(): array {
         return $this->getData();
     }
 }

@@ -11,7 +11,7 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/meta.php' ?>
     <?=Tpl::manifestLink('web.css')?>
 </head>
-<body id="donate" class="no-brand">
+<body id="donate">
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
@@ -26,8 +26,6 @@ use Destiny\Common\Utils\Tpl;
                 <a href="https://streamlabs.com/destiny" class="streamlabs-logo"></a>
             </span>
         </h1>
-
-        <?php include 'seg/alerts.php' ?>
 
         <div class="content content-dark clearfix">
             <form id="donateform" class="validate" action="/donate" method="post">
@@ -66,6 +64,7 @@ use Destiny\Common\Utils\Tpl;
     </section>
 
 </div>
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

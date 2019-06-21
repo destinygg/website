@@ -2,9 +2,9 @@
 namespace Destiny\Tasks;
 
 use Destiny\Common\Annotation\Schedule;
+use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Images\ImageService;
 use Destiny\Common\Log;
-use Destiny\Common\Cron\TaskInterface;
 use Exception;
 
 /**
@@ -12,9 +12,6 @@ use Exception;
  */
 class CleanImageUploads implements TaskInterface {
 
-    /**
-     * @return mixed|void
-     */
     public function execute() {
         try {
             $imageService = ImageService::instance();

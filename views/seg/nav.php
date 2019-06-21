@@ -94,7 +94,7 @@ use Destiny\Common\Session\Session;
                             <span class="nav-label">Account</span>
                         </a>
                     </li>
-                <?php else: ?>
+                <?php elseif(!($hideSignIn ?? false)): ?>
                     <li class="nav-item">
                         <a title="Sign In" class="nav-link" data-toggle="modal" data-target="#loginmodal" rel="login">
                             <i class="fas fa-sign-in-alt"></i>

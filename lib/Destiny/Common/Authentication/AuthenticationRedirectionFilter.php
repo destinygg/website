@@ -1,46 +1,49 @@
 <?php
 namespace Destiny\Common\Authentication;
 
-use Destiny\Chat\ChatRedisService;
-use Destiny\Common\Log;
-use Destiny\Common\User\UserService;
-use Destiny\Common\User\UserRole;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
+use Destiny\Common\User\UserAuthService;
+use Destiny\Common\User\UserRole;
+use Destiny\Common\User\UserService;
+use Destiny\Common\User\UserStatus;
+use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
+use Destiny\Discord\DiscordMessenger;
 use Doctrine\DBAL\DBALException;
 
 class AuthenticationRedirectionFilter {
 
     /**
-     * @var AuthenticationCredentials
+     * @var OAuthResponse
      */
-    private $creds;
+    private $authResponse;
 
     /**
-     * @param AuthenticationCredentials $authCreds
      * @throws Exception
      */
-    function __construct(AuthenticationCredentials $authCreds) {
-        if (empty($authCreds) || !$authCreds->isValid()) {
-            Log::error('Error validating auth credentials {creds}', ['creds' => var_export($authCreds, true)]);
+    function __construct(OAuthResponse $authResponse) {
+        if (empty($authResponse) || !$authResponse->isValid()) {
+            Log::error('Error validating auth response {creds}', ['creds' => var_export($authResponse, true)]);
             throw new Exception ('Invalid auth credentials');
         }
-        $this->creds = $authCreds;
+        $this->authResponse = $authResponse;
+    }
+
+    private function buildTempUsername(): string {
+        return "tmp" . RandomString::makeUrlSafe(9);
     }
 
     /**
-     * @return string
      * @throws DBALException
      * @throws Exception
      */
-    public function execute() {
-        if (!$this->creds) {
-            throw new Exception('Invalid authentication credentials');
-        }
-
-        $authService = AuthenticationService::instance();
+    public function execute(): string {
         $userService = UserService::instance();
+        $userAuthService = UserAuthService::instance();
+        $authService = AuthenticationService::instance();
+        $authResponse = $this->authResponse;
 
         $isConnectingAccount = Session::getAndRemove('isConnectingAccount');
         $rememberme = Session::getAndRemove('rememberme');
@@ -48,58 +51,75 @@ class AuthenticationRedirectionFilter {
         $grant = Session::getAndRemove('grant');
         $uuid = Session::getAndRemove('uuid');
 
-        // Connecting account
         if ($isConnectingAccount === '1') {
-            // Must be logged in to do a merge
             if (!Session::hasRole(UserRole::USER)) {
                 throw new Exception ('Authentication required for account merge');
             }
-            Session::setSuccessBag('Authorization successful!');
-            $authService->handleAuthAndMerge($this->creds);
-            return 'redirect: /profile';
+            $userId = Session::getCredentials()->getUserId();
+            $userAuthService->saveUserAuthWithOAuth($authResponse, $userId);
+            Session::setSuccessBag('Profile connected!');
+            return 'redirect: /profile/authentication';
         }
 
-        // If the user profile doesn't exist, go to the register page
-        if (!$userService->getAuthExistsByAuthIdAndProvider($this->creds->getAuthId(), $this->creds->getAuthProvider())) {
-            Session::set(Session::KEY_AUTH_SESSION, $this->creds);
-            $url = '/register';
-            $url .= '?code=' . urlencode($this->creds->getAuthCode());
-            if (!empty($follow)) {
-                $url .= '&follow=' . urlencode($follow);
-            }
-            if (!empty($rememberme)) {
-                $url .= '&rememberme=' . ($rememberme ? 1 : 0);
-            }
-            if (!empty($grant)) {
-                $url .= '&grant=' . urlencode($grant);
-            }
-            if (!empty($uuid)) {
-                $url .= '&uuid=' . urlencode($uuid);
-            }
-            return "redirect: $url";
-        }
-        // We return to this point, after /register
+        /**
+         * If there is no existing user auth, validate/sanitize username and create a new user, with new auth
+         * If there is a user auth, update the user auth
+         */
 
-        // At this point the user should exist
-        $user = $userService->getAuthByIdAndProvider($this->creds->getAuthId(), $this->creds->getAuthProvider());
-        if (empty ($user)) {
-            throw new Exception ('Invalid auth user');
-        }
+        $user = null;
+        $provider = $authResponse->getAuthProvider();
+        $username = $authResponse->getUsername();
+        $email = $authResponse->getAuthEmail();
+        $authId = $authResponse->getAuthId();
+        $userAuth = $userAuthService->getByAuthIdAndProvider($authId, $provider);
 
-        // Deleted user aren't allowed to login
-        if ($user['userStatus'] === 'Deleted') {
-            Session::setErrorBag('This user has been marked for deletion');
+        if (empty($userAuth)) {
+            if (!$authResponse->getVerified()) {
+                throw new Exception (' You must have a verified email address for your registration to complete successfully.');
+            }
+            if (!empty($email)) {
+                $authService->validateEmail($email);
+            }
+            if (empty($username)) {
+                $username = $this->buildTempUsername();
+            } else {
+                $username = $this->sanitizeUsername($username);
+                try {
+                    $authService->validateUsername($username);
+                    $userService->checkUsernameTaken($username);
+                } catch (Exception $e) {
+                    $username = $this->buildTempUsername();
+                    Log::warn("Invalid username or username already taken '{$authResponse->getUsername()}''. Generating username '$username' for auth '$authId'. {$e->getMessage()}");
+                }
+            }
+            $userId = $userService->addUser([
+                'username' => $username,
+                'allowChatting' => false,
+                'allowNameChange' => true,
+                'userStatus' => UserStatus::ACTIVE,
+            ]);
+
+            $messenger = DiscordMessenger::instance();
+            $messenger->send("<" . Http::getBaseUrl() . "/admin/user/$userId/edit|$username> has registered a new user");
+
+            $user = $userService->getUserById($userId);
+        } else {
+            $userId = (int) $userAuth['userId'];
+            $user = $userService->getUserById($userId);
+        }
+        $userAuthService->saveUserAuthWithOAuth($authResponse, $userId);
+        //
+
+        if (empty($user)) {
+            Log::critical("User not found during redirection / login.");
+            Session::setErrorBag("User not found");
             return 'redirect: /';
         }
 
-        // Update the auth profile for this provider
-        $authProfile = $userService->getAuthByUserAndProvider($user['userId'], $this->creds->getAuthProvider());
-        if (!empty ($authProfile)) {
-            $userService->updateUserAuthProfile($user['userId'], $this->creds->getAuthProvider(), [
-                'authCode' => $this->creds->getAuthCode(),
-                'authDetail' => $this->creds->getAuthDetail(),
-                'authEmail' => $this->creds->getAuthEmail(),
-            ]);
+        if ($user['userStatus'] != UserStatus::ACTIVE) {
+            Log::debug("Inactive user attempted to login {$user['userId']}.");
+            Session::setErrorBag("Invalid user status {$user['userStatus']}");
+            return 'redirect: /';
         }
 
         /**
@@ -114,7 +134,7 @@ class AuthenticationRedirectionFilter {
                 throw new Exception('Required uuid code');
             }
 
-            $oauthService = OAuthService::instance();
+            $oauthService = DggOAuthService::instance();
             $data = $oauthService->getFlashStore($uuid, 'uuid');
             $data['userId'] = $user['userId'];
 
@@ -122,37 +142,42 @@ class AuthenticationRedirectionFilter {
             $oauthService->saveFlashStore($code, $data);
             $oauthService->deleteFlashStore($uuid);
 
-            $redirectUri = $data['redirect_uri'];
-            $redirectUri .= '?code=' . urlencode($code);
-            $redirectUri .= '&state=' . urlencode($data['state']);
+            $redirectUri = $data['redirect_uri'] . '?' . http_build_query(['code' => $code, 'state' => $data['state']], null, '&');
             return "redirect: $redirectUri";
 
         } else {
 
             // Renew the session upon successful login, makes it slightly harder to hijack
-            $session = Session::instance();
-            $session->renew(true);
+            Session::instance()->renew();
+            $authService->updateWebSession($user, $provider);
 
-            $credentials = $authService->buildUserCredentials($user, $this->creds->getAuthProvider());
-            Session::updateCredentials($credentials);
-
-            $redisService = ChatRedisService::instance();
-            $redisService->setChatSession($credentials, Session::getSessionId());
-            $redisService->sendRefreshUser($credentials);
-
-            // Issue the web login flow
             if ($rememberme) {
                 $authService->setRememberMe($user);
             }
 
-            // Login success, redirect to /profile, or the follow url if its RELATIVE
-            if (!empty($follow) && substr($follow, 0, 1) == '/') {
-                return "redirect: $follow";
-            } else {
-                Session::setSuccessBag('Login successful!');
+            if (boolval($user['allowNameChange'])) {
                 return 'redirect: /profile';
             }
+
+            Session::setSuccessBag('Login successful!');
+            return (!empty($follow) && substr($follow, 0, 1) == '/') ? 'redirect: ' . $follow : 'redirect: /profile';
         }
     }
 
+    /**
+     * Convert a oauth provider username to a dgg compliant username
+     * Some auth providers do not provide a username, in that case some other
+     * value is used, which may contain illegal characters
+     */
+    public function sanitizeUsername(string $username): string {
+        $username = preg_replace(AuthenticationService::REGEX_REPLACE_CHAR_USERNAME, '', $username);
+        $length = mb_strlen($username);
+        if ($length > AuthenticationService::USERNAME_MAX) {
+            return mb_substr($username, 0, AuthenticationService::USERNAME_MAX);
+        }
+        if ($length < AuthenticationService::USERNAME_MIN) {
+            return $username . RandomString::makeUrlSafe((AuthenticationService::USERNAME_MIN + 5) - $length);
+        }
+        return $username;
+    }
 }

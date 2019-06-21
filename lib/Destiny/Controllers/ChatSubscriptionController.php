@@ -2,22 +2,24 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
+use Destiny\Chat\ChatRedisService;
+use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\PrivateKey;
 use Destiny\Common\Annotation\ResponseBody;
-use Destiny\Common\Exception;
-use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
+use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\Authentication\AuthProvider;
+use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
-use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\User\UserService;
 use Destiny\Common\Response;
-use Destiny\Common\Utils\Http;
-use Destiny\Chat\ChatRedisService;
-use Destiny\Messages\PrivateMessageService;
 use Destiny\Common\Session\SessionCredentials;
-use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\User\UserAuthService;
+use Destiny\Common\User\UserService;
+use Destiny\Common\Utils\FilterParams;
+use Destiny\Common\Utils\Http;
+use Destiny\Messages\PrivateMessageService;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -39,13 +41,9 @@ class ChatSubscriptionController {
      *     userid=999
      *     targetuserid=999
      *
-     * @param Response $response
-     * @param array $params
-     * @return array
-     *
      * @throws DBALException
      */
-    public function sendMessage(Response $response, array $params) {
+    public function sendMessage(Response $response, array $params): array {
         $privateMessageService = PrivateMessageService::instance();
         $chatBanService = ChatBanService::instance();
         $redisService = ChatRedisService::instance();
@@ -115,12 +113,9 @@ class ChatSubscriptionController {
      * Expects the following REQUEST params:
      *     privatekey=XXXXXXXX
      *
-     * @param Response $response
-     * @return array
-     *
      * @throws DBALException
      */
-    public function getSubscription(Response $response) {
+    public function getSubscription(Response $response): array {
         $userService = UserService::instance();
         $response->setStatus(Http::STATUS_OK);
         return ['authids' => $userService->getActiveTwitchSubscriptions()];
@@ -132,9 +127,7 @@ class ChatSubscriptionController {
      * @ResponseBody
      * @PrivateKey ({"chat"})
      *
-     * @param Response $response
-     * @param Request $request
-     * @return array
+     * @return array|null
      */
     public function postSubscription(Response $response, Request $request) {
         try {
@@ -171,9 +164,7 @@ class ChatSubscriptionController {
      * @ResponseBody
      * @PrivateKey ({"chat"})
      *
-     * @param Response $response
-     * @param Request $request
-     * @return array
+     * @return array|null
      */
     public function twitchSubscribe(Response $response, Request $request) {
         try {
@@ -181,15 +172,24 @@ class ChatSubscriptionController {
             FilterParams::required($data, 'context');
             FilterParams::required($data, 'user_id');
 
+            $userService = UserService::instance();
+            $userAuthService = UserAuthService::instance();
             $redisService = ChatRedisService::instance();
             $submessage = isset($data['sub_message']) && !empty($data['sub_message']) ? $data['sub_message']['message'] : '';
             $months = isset($data['months']) && !empty($data['months']) && $data['months'] > 0 ? ($data['months'] > 1 ? ' active for ' . $data['months'] . ' months' : ' active for ' . $data['months'] . ' month') : '';
-            $user = $this->getTwitchUserByAuthId($data['user_id']);
 
+            $userId = $userAuthService->getUserIdByAuthIdAndProvider((string) $data['user_id'], AuthProvider::TWITCH);
+            if (!$userId) {
+                Log::info("Twitch sub on a non dgg user.", $data);
+                $response->setStatus(Http::STATUS_NO_CONTENT);
+                return null;
+            }
+
+            $user = $userService->getUserById((int) $userId);
             switch (strtoupper($data['context'])) {
 
                 case 'SUB':
-                    $this->updateUserTwitchSub($user);
+                    $this->updateUserTwitchSub($user['userId']);
                     $redisService->sendBroadcast($user['username'] . " has subscribed on Twitch!");
                     if (!empty($submessage)) {
                         $redisService->sendBroadcast($user['username'] . " said... $submessage");
@@ -197,7 +197,7 @@ class ChatSubscriptionController {
                     break;
 
                 case 'RESUB':
-                    $this->updateUserTwitchSub($user);
+                    $this->updateUserTwitchSub($user['userId']);
                     $redisService->sendBroadcast($user['username'] . " has resubscribed on Twitch!$months");
                     if (!empty($submessage)) {
                         $redisService->sendBroadcast($user['username'] . " said... $submessage");
@@ -206,11 +206,16 @@ class ChatSubscriptionController {
 
                 case 'SUBGIFT':
                     FilterParams::required($data, 'recipient_id');
-                    $recipient = $this->getTwitchUserByAuthId($data['recipient_id']);
-                    $this->updateUserTwitchSub($recipient);
-                    $redisService->sendBroadcast($user['username'] . " has gifted ". $recipient['username'] ." a Twitch subscription!$months");
-                    if (!empty($submessage)) {
-                        $redisService->sendBroadcast($user['username'] . " said... $submessage");
+                    $recipientId = $userAuthService->getUserIdByAuthIdAndProvider((string) $data['recipient_id'], AuthProvider::TWITCH);
+                    if ($recipientId) {
+                        $this->updateUserTwitchSub($recipientId);
+                        $recipient = $userService->getUserById($recipientId);
+                        $redisService->sendBroadcast($user['username'] . " has gifted " . $recipient['username'] . " a Twitch subscription!$months");
+                        if (!empty($submessage)) {
+                            $redisService->sendBroadcast($user['username'] . " said... $submessage");
+                        }
+                    } else {
+                        Log::info("Twitch sub gifted to a non dgg user.", $data);
                     }
                     break;
 
@@ -225,31 +230,10 @@ class ChatSubscriptionController {
 
     /**
      * Set a users twitch flag to 1 and "flag" user for update.
-     *
-     * @param array $user
      * @throws DBALException
      */
-    private function updateUserTwitchSub(array $user) {
-        $userService = UserService::instance();
-        $authService = AuthenticationService::instance();
-        $userService->updateUser($user['userId'], ['istwitchsubscriber' => 1]);
-        $authService->flagUserForUpdate($user['userId']);
-    }
-
-    /**
-     * Get a user by twitch auth id (twitch user id)
-     * If one is not found, throw an exception
-     * @param $authId
-     * @return array
-     * @throws DBALException
-     * @throws Exception
-     */
-    private function getTwitchUserByAuthId($authId) {
-        $userService = UserService::instance();
-        $user = $userService->getAuthByIdAndProvider($authId, 'twitch');
-        if (empty($user)) {
-            throw new Exception('Invalid twitch user user');
-        }
-        return $user;
+    private function updateUserTwitchSub(int $userId) {
+        UserService::instance()->updateUser($userId, ['istwitchsubscriber' => 1]);
+        AuthenticationService::instance()->flagUserForUpdate($userId);
     }
 }

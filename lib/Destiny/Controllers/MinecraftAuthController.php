@@ -27,11 +27,7 @@ class MinecraftAuthController {
      * @HttpMethod ({"GET"})
      * @PrivateKey ({"minecraft"})
      * @ResponseBody
-     *
-     * @param Response $response
-     * @param array $params
      * @return array|string
-     *
      * @throws DBALException
      */
     public function authMinecraftGET(Response $response, array $params) {
@@ -91,11 +87,7 @@ class MinecraftAuthController {
      * @HttpMethod ({"POST"})
      * @PrivateKey ({"minecraft"})
      * @ResponseBody
-     *
-     * @param Response $response
-     * @param array $params
      * @return array|string
-     *
      * @throws DBALException
      */
     public function authMinecraftPOST(Response $response, array $params) {
@@ -190,11 +182,7 @@ class MinecraftAuthController {
      * @HttpMethod ({"GET"})
      * @PrivateKey ({"minecraft"})
      * @ResponseBody
-     *
-     * @param Response $response
-     * @param array $params
      * @return array|string
-     *
      * @throws DBALException
      * TODO remove this, minecraft plugin having issues sending post requests.
      */

@@ -30,39 +30,31 @@ class SessionInstance {
      */
     protected $credentials = null;
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params = null) {
-        if (! empty ( $params )) {
-            Options::setOptions ( $this, $params );
+        if (!empty($params)) {
+            Options::setOptions($this, $params);
         }
     }
 
     /**
      * Start the session, return true if the session was started otherwise false
-     *
-     * @todo this does a mix of things, need to clean-up
-     * @return boolean
+     * Copy the global session variables to the $credentials
      */
-    public function start() {
-        $this->started = session_start ();
-        $this->setSessionId ( session_id () );
-        $credentials = $this->getCredentials ();
-        $credentials->setData ( $this->getData () );
+    public function start(): bool {
+        $this->started = session_start();
+        $this->setSessionId(session_id());
+        $credentials = $this->getCredentials();
+        $credentials->setData($_SESSION);
         return $this->started;
     }
 
     /**
      * Regenerates the session id
-     *
-     * @param boolean $delete Delete the old associated session file
-     * @return boolean
      */
-    public function renew($delete = true) {
-        if ($this->isStarted () || $this->start ()) {
-            session_regenerate_id ( $delete );
-            $this->setSessionId ( session_id () );
+    public function renew(): bool {
+        if ($this->isStarted() || $this->start()) {
+            session_regenerate_id(true);
+            $this->setSessionId(session_id());
             return true;
         }
         return false;
@@ -70,8 +62,6 @@ class SessionInstance {
 
     /**
      * Deletes the session and recreates the session Id
-     *
-     * @return void
      */
     public function destroy() {
         $this->getSessionCookie()->clearCookie();
@@ -83,6 +73,9 @@ class SessionInstance {
         }
     }
 
+    /**
+     * @return SessionCredentials|null
+     */
     public function getCredentials() {
         return $this->credentials;
     }
@@ -91,22 +84,28 @@ class SessionInstance {
         $this->credentials = $credentials;
     }
 
+    /**
+     * @return Cookie|null
+     */
     public function getSessionCookie() {
         return $this->sessionCookie;
     }
 
     public function setSessionCookie(Cookie $sessionCookie) {
         $this->sessionCookie = $sessionCookie;
-        session_set_cookie_params (
-            $sessionCookie->getLife (),
-            $sessionCookie->getPath (),
-            $sessionCookie->getDomain (),
-            $sessionCookie->getSecure (),
-            $sessionCookie->getHttpOnly ()
+        session_set_cookie_params(
+            $sessionCookie->getLife(),
+            $sessionCookie->getPath(),
+            $sessionCookie->getDomain(),
+            $sessionCookie->getSecure(),
+            $sessionCookie->getHttpOnly()
         );
-        session_name ( $sessionCookie->getName () );
+        session_name($sessionCookie->getName());
     }
 
+    /**
+     * @return Cookie|null
+     */
     public function getRememberMeCookie() {
         return $this->rememberMeCookie;
     }
@@ -115,74 +114,44 @@ class SessionInstance {
         $this->rememberMeCookie = $sessionCookie;
     }
 
-    public function getSessionId() {
+    public function getSessionId(): string {
         return $this->sessionId;
     }
 
-    public function setSessionId($sessionId) {
+    public function setSessionId(string $sessionId) {
         $this->sessionId = $sessionId;
     }
 
-    public function getData() {
-        return $_SESSION;
+    public function isEmpty(string $name): bool {
+        $value = (isset($_SESSION[$name])) ? $_SESSION[$name] : null;
+        return empty($value);
     }
 
     /**
-     * Check if a variable is empty
-     *
-     * @param string $name
-     * @return bool
-     */
-    public function isEmpty($name) {
-        $value = (isset ( $_SESSION [$name] )) ? $_SESSION [$name] : null;
-        return empty ( $value );
-    }
-
-    /**
-     * Get a variable by name
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function get($name) {
-        return (isset ( $_SESSION [$name] )) ? $_SESSION [$name] : null;
-    }
-
-    /**
-     * Set a variable by name
-     *
-     * @param string $name
-     * @param mixed $value
      * @return mixed|null
      */
-    public function set($name, $value) {
+    public function get(string $name) {
+        return isset($_SESSION[$name]) ? $_SESSION[$name] : null;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public function set(string $name, $value) {
         if ($value === null) {
-            if (isset ( $_SESSION [$name] )) {
-                $value = $_SESSION [$name];
-                unset ( $_SESSION [$name] );
+            if (isset($_SESSION[$name])) {
+                unset($_SESSION[$name]);
             }
         } else {
-            $_SESSION [$name] = $value;
+            $_SESSION[$name] = $value;
         }
-        return $value;
     }
 
-    /**
-     * Return TRUE if property exists else FALSE
-     *
-     * @param string $name
-     * @return boolean
-     */
-    public function has($name) {
-        return isset ( $_SESSION [$name] );
+    public function has(string $name): bool {
+        return isset($_SESSION[$name]);
     }
 
-    /**
-     * Returns true if the session has been stared, false otherwise
-     *
-     * @return boolean
-     */
-    public function isStarted() {
+    public function isStarted(): bool {
         return $this->started;
     }
 

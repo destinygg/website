@@ -9,6 +9,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Application;
 use Destiny\Common\Authentication\AuthenticationService;
+use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
@@ -34,11 +35,8 @@ class DonateController {
     /**
      * @Route("/donate")
      * @HttpMethod({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function donateGet(ViewModel $model){
+    public function donateGet(ViewModel $model): string {
         $model->username = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUsername() : "";
         return 'donate';
     }
@@ -46,11 +44,8 @@ class DonateController {
     /**
      * @Route("/donate/complete")
      * @HttpMethod({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function donateComplete(ViewModel $model){
+    public function donateComplete(ViewModel $model): string {
         $model->username = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUsername() : "";
         return 'donate';
     }
@@ -58,11 +53,8 @@ class DonateController {
     /**
      * @Route("/donate/error")
      * @HttpMethod({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function donateError(ViewModel $model){
+    public function donateError(ViewModel $model): string {
         $model->username = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUsername() : "";
         return 'donate';
     }
@@ -70,12 +62,9 @@ class DonateController {
     /**
      * @Route("/donate")
      * @HttpMethod({"POST"})
-     *
-     * @param array $params
-     * @return string
      * @throws ConnectionException
      */
-    public function donatePost(array $params) {
+    public function donatePost(array $params): string {
         $conn = Application::getDbConn();
         $authService = AuthenticationService::instance();
 
@@ -90,11 +79,10 @@ class DonateController {
                 FilterParams::required($params, 'username');
                 $authService->validateUsername($params['username']);
             }
-        } catch (FilterParamsException $e) {
+        } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
             return 'redirect: /donate';
         } catch (\Exception $e) {
-            // TODO validateUsername must throw a subclass, or rather not throw an exception at all
             Session::setErrorBag('You must specify a username if you are not signed in.');
             return 'redirect: /donate';
         }
@@ -141,13 +129,9 @@ class DonateController {
     /**
      * @Route("/donate/process")
      * @HttpMethod({"GET"})
-     *
-     * @param array $params
-     * @return string
-     *
      * @throws Exception
      */
-    public function donateProcess(array $params){
+    public function donateProcess(array $params): string {
         FilterParams::required($params, 'donationid');
         FilterParams::required($params, 'token');
         FilterParams::declared($params, 'success');
@@ -197,21 +181,21 @@ class DonateController {
             }
             try {
                 $message = $donation['message'];
-                $symbol = $donation['currency'] === 'USD'? '$': $donation['currency']; // todo hokey currency symbol lookup
+                $symbol = $donation['currency'] === 'USD' ? '$': $donation['currency']; // todo hokey currency symbol lookup
                 $amount = $symbol . number_format($donation['amount'], 2);
                 $redisService = ChatRedisService::instance();
                 $redisService->sendBroadcast(sprintf("%s has donated %s!", $username, $amount));
                 if(!empty($message)) {
                     $redisService->sendBroadcast("$username said... $message");
                 }
-                if(Config::$a['streamlabs']['alert_donations']) {
-                    StreamLabsService::withAuth()->sendAlert([
+                if(Config::$a[AuthProvider::STREAMLABS]['alert_donations']) {
+                    StreamLabsService::instance()->sendAlert([
                         'type' => StreamLabsAlertsType::ALERT_DONATION,
                         'message' => sprintf("*%s* has donated *%s*!", $username, $amount)
                     ]);
                 }
-                if(Config::$a['streamlabs']['send_donations']) {
-                    StreamLabsService::withAuth()->sendDonation([
+                if(Config::$a[AuthProvider::STREAMLABS]['send_donations']) {
+                    StreamLabsService::instance()->sendDonation([
                         'name'          => $username,
                         'message'       => $donation['message'],
                         'identifier'    => $username .'#' . $userid,

@@ -15,11 +15,11 @@ abstract class Date {
     const STRING_FORMAT = 'D jS F Y, g:ia e';
     const FORMAT = DATE_ISO8601;
 
-    /**
-     * @param int|string $time
-     * @return DateTime
-     */
-    public static function getDateTime($time = 'NOW') {
+    public static function now(): DateTime {
+        return new DateTime();
+    }
+
+    public static function getDateTime($time = 'NOW'): DateTime {
         try {
             if (!is_numeric($time)) {
                 $date = new DateTime($time);
@@ -28,11 +28,7 @@ abstract class Date {
                 $date->setTimestamp($time);
             }
         } catch (Exception $e) {
-            try {
-                $date = new DateTime();
-            } catch (Exception $e2) {
-                $date = null;
-            }
+            $date = new DateTime();
         }
         if ($date != null) {
             $date->setTimezone(new DateTimeZone(ini_get('date.timezone')));
@@ -40,22 +36,13 @@ abstract class Date {
         return $date;
     }
 
-    /**
-     * @param string $time
-     * @param int $seconds
-     * @return DateTime
-     */
-    public static function getDateTimePlusSeconds($time = 'NOW', $seconds = 0) {
+    public static function getDateTimePlusSeconds($time = 'NOW', int $seconds = 0): DateTime {
         $date = Date::getDateTime($time);
         try { $date->add(new DateInterval("PT". $seconds ."S")); } catch (Exception $e) {/* IGNORED */}
         return $date;
     }
 
-    /**
-     * @param string $time
-     * @return string
-     */
-    public static function getSqlDateTime($time = "NOW") {
+    public static function getSqlDateTime($time = 'NOW'): string {
         return self::getDateTime($time)->format('Y-m-d H:i:s');
     }
 
@@ -64,12 +51,8 @@ abstract class Date {
      * On small intervals, you get minutes and seconds.
      * On big intervals, you get months and days.
      * Only the two biggest parts are used.
-     *
-     * @param DateTime $start
-     * @param DateTime|null $end
-     * @return string
      */
-    public static function getRemainingTime($start, $end = null) {
+    public static function getRemainingTime(DateTime $start, DateTime $end = null): string {
         if (! ($start instanceof DateTime)) {
             $start = self::getDateTime ( $start );
         }
@@ -109,28 +92,18 @@ abstract class Date {
         return (($start < $end) ? '-' : '') . $interval->format ( $format );
     }
     
-    /**
-     * @param int $nb
-     * @param string $str
-     * @return string
-     */
-    private static function getIntervalPlural($nb, $str){
+    private static function getIntervalPlural(int $nb, string $str): string {
         return $nb > 1 ? $str . 's' : $str;
     }
 
-    /**
-     * @param DateTime $date
-     * @param DateTime $compareTo
-     * @return string
-     */
-    public static function getElapsedTime(DateTime $date, DateTime $compareTo = NULL) {
-        if (is_null ( $compareTo )) {
-            $compareTo = self::getDateTime ();
+    public static function getElapsedTime(DateTime $date, DateTime $compareTo = null): string {
+        if (is_null($compareTo)) {
+            $compareTo = self::getDateTime();
         }
-        $diff = $compareTo->format ( 'U' ) - $date->format ( 'U' );
-        $dayDiff = floor ( $diff / 86400 );
-        if (is_nan ( $dayDiff ) || $dayDiff < 0) {
-            return '';
+        $diff = $compareTo->format('U') - $date->format('U');
+        $dayDiff = floor($diff / 86400);
+        if (is_nan($dayDiff) || $dayDiff < 0) {
+            return '' . $diff;
         }
         if ($dayDiff == 0) {
             if ($diff < 60) {
@@ -138,11 +111,11 @@ abstract class Date {
             } elseif ($diff < 120) {
                 return '1 minute ago';
             } elseif ($diff < 3600) {
-                return floor ( $diff / 60 ) . ' minutes ago';
+                return floor($diff / 60) . ' minutes ago';
             } elseif ($diff < 7200) {
                 return '1 hour ago';
             } elseif ($diff < 86400) {
-                return floor ( $diff / 3600 ) . ' hours ago';
+                return floor($diff / 3600) . ' hours ago';
             }
         } elseif ($dayDiff == 1) {
             return 'Yesterday';
@@ -151,11 +124,11 @@ abstract class Date {
         } elseif ($dayDiff == 7) {
             return '1 week ago';
         } elseif ($dayDiff < (7 * 6)) {
-            return ceil ( $dayDiff / 7 ) . ' weeks ago';
+            return ceil($dayDiff / 7) . ' weeks ago';
         } elseif ($dayDiff < 365) {
-            return ceil ( $dayDiff / (365 / 12) ) . ' months ago';
+            return ceil($dayDiff / (365 / 12)) . ' months ago';
         }
-        $years = round ( $dayDiff / 365 );
+        $years = round($dayDiff / 365);
         return $years . ' year' . ($years != 1 ? 's' : '') . ' ago';
     }
 

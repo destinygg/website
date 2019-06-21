@@ -7,25 +7,12 @@ namespace Destiny\Common\Annotation;
  */
 class PrivateKey {
 
-    /**
-     * @var string[]
-     */
-    public $names;
+    public $names = [];
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params = null) {
-        if(!empty($params)) {
+        if (!empty($params)) {
             $this->names = $params ['value'];
         }
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getNames(){
-        return $this->names;
     }
 
 }

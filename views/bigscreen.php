@@ -18,7 +18,7 @@ use Destiny\Common\Config;
     <div id="bigscreen-layout">
         <div id="stream-panel">
             <div id="stream-wrap">
-                <iframe seamless="seamless" marginheight="0" marginwidth="0" frameborder="0" src="<?= Config::$a['embed']['stream'] ?>" scrolling="no" allowfullscreen></iframe>
+                <iframe seamless="seamless" src="<?= Config::$a['embed']['stream'] ?>" allowfullscreen></iframe>
             </div>
         </div>
         <div id="chat-panel">
@@ -30,7 +30,7 @@ use Destiny\Common\Config;
                 <a title="Swap" id="swap" class="float-right"><i class="fas fa-exchange-alt"></i></a>
             </div>
             <div id="chat-wrap">
-                <iframe seamless="seamless" marginheight="0" marginwidth="0" frameborder="0" src="<?= Config::$a['embed']['chat'] ?>?follow=<?= urlencode('/bigscreen') ?>"></iframe>
+                <iframe seamless="seamless" src="<?= Config::$a['embed']['chat'] ?>?follow=<?= urlencode('/bigscreen') ?>"></iframe>
             </div>
         </div>
     </div>

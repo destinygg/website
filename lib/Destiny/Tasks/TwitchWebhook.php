@@ -3,6 +3,7 @@ namespace Destiny\Tasks;
 
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Config;
+use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Twitch\TwitchWebHookService;
@@ -13,7 +14,7 @@ use Destiny\Twitch\TwitchWebHookService;
  *
  * @Schedule(frequency=1,period="hour")
  */
-class TwitchWebhook {
+class TwitchWebhook implements TaskInterface {
 
     public function execute() {
         try {

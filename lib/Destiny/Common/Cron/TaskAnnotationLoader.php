@@ -4,15 +4,12 @@ namespace Destiny\Common\Cron;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\DirectoryClassIterator;
 use Doctrine\Common\Annotations\Reader;
-use \ReflectionClass;
+use ReflectionClass;
 use ReflectionException;
 
 abstract class TaskAnnotationLoader {
 
     /**
-     * @param DirectoryClassIterator $classIterator
-     * @param Reader $reader
-     * @param Scheduler $scheduler
      * @throws ReflectionException
      */
     public static function loadClasses(DirectoryClassIterator $classIterator, Reader $reader, Scheduler $scheduler) {

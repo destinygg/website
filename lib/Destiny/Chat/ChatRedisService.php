@@ -2,13 +2,16 @@
 namespace Destiny\Chat;
 
 use Destiny\Common\Application;
+use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Service;
 use Destiny\Common\Session\SessionCredentials;
-use Destiny\Common\Config;
 use Destiny\Redis\RedisUtils;
-use \Redis;
+use Redis;
 
+/**
+ * @method static ChatRedisService instance()
+ */
 class ChatRedisService extends Service {
 
     /**
@@ -26,23 +29,17 @@ class ChatRedisService extends Service {
      */
     public $redis;
 
-    /**
-     * @return ChatRedisService
-     */
-    public static function instance() {
-        $inst = parent::instance();
-        $inst->maxlife = intval(ini_get('session.gc_maxlifetime'));
-        $inst->redisdb = Config::$a['redis']['database'];
-        $inst->redis = Application::instance()->getRedis();
-        return $inst;
+    function afterConstruct() {
+        parent::afterConstruct();
+        $this->maxlife = intval(ini_get('session.gc_maxlifetime'));
+        $this->redisdb = Config::$a['redis']['database'];
+        $this->redis = Application::instance()->getRedis();
     }
 
     /**
-     * @param int $userid
-     * @return array $users The users found
      * @throws Exception
      */
-    public function findUserIdsByUsersIp($userid) {
+    public function findUserIdsByUsersIp(int $userid): array {
         $keys = RedisUtils::callScript('check-sameip-users', [$userid]);
         return array_filter(array_map(function($n) {
             return intval(substr($n, strlen('CHAT:userips-')));
@@ -52,11 +49,9 @@ class ChatRedisService extends Service {
     }
 
     /**
-     * @param string $ipaddress
-     * @return array $users The users found
      * @throws Exception
      */
-    public function findUserIdsByIP($ipaddress) {
+    public function findUserIdsByIP(string $ipaddress): array {
         $keys = RedisUtils::callScript('check-ip', [$ipaddress]);
         return array_filter(array_map(function($n) {
             return intval(substr($n, strlen('CHAT:userips-')));
@@ -66,58 +61,38 @@ class ChatRedisService extends Service {
     }
 
     /**
-     * @param int $userid
      * @return array $ipaddresses The addresses found
      */
-    public function getIPByUserId($userid) {
+    public function getIPByUserId(int $userid): array {
         $redis = Application::instance()->getRedis();
         return $redis->zRange('CHAT:userips-' . $userid, 0, -1);
     }
     
     /**
      * Updates the session ttl so it does not expire
-     * @param string $sessionId
-     * @return void
      */
-    public function renewChatSessionExpiration($sessionId) {
+    public function renewChatSessionExpiration(string $sessionId) {
         $this->redis->expire("CHAT:session-$sessionId", $this->maxlife);
     }
 
-    /**
-     * @param SessionCredentials $credentials
-     * @param string $sessionId         
-     */
-    public function setChatSession(SessionCredentials $credentials, $sessionId) {
+    public function setChatSession(SessionCredentials $credentials, string $sessionId) {
         $this->redis->set("CHAT:session-$sessionId", json_encode($credentials->getData()), $this->maxlife);
     }
 
-    /**
-     * @param string $sessionId
-     */
-    public function removeChatSession($sessionId) {
+    public function removeChatSession(string $sessionId) {
         $this->redis->delete("CHAT:session-$sessionId");
     }
 
-    /**
-     * @param SessionCredentials $credentials
-     */
     public function sendRefreshUser(SessionCredentials $credentials) {
         $this->redis->publish("refreshuser-$this->redisdb", json_encode($credentials->getData()));
     }
 
-    /**
-     * @param string $message
-     */
-    public function sendBroadcast($message) {
+    public function sendBroadcast(string $message) {
         $this->redis->publish("broadcast-$this->redisdb", json_encode(['data' => $message], JSON_FORCE_OBJECT));
     }
 
-    /**
-     * @param int $userId
-     *          the userId
-     */
-    public function sendUnban($userId) {
-        $this->redis->publish("unbanuserid-$this->redisdb", (string)$userId);
+    public function sendUnban(int $userId) {
+        $this->redis->publish("unbanuserid-$this->redisdb", "$userId");
     }
 
     /**
@@ -128,11 +103,7 @@ class ChatRedisService extends Service {
         $this->redis->publish("refreshbans-$this->redisdb", 'doesnotmatter');
     }
 
-    /**
-     * @param array $d
-     * @return int
-     */
-    public function publishPrivateMessage(array $d) {
+    public function publishPrivateMessage(array $d): int {
         return $this->redis->publish("privmsg-$this->redisdb", json_encode([
             'messageid' => $d['messageid'],
             'message' => $d['message'],
@@ -143,23 +114,7 @@ class ChatRedisService extends Service {
         ]));
     }
 
-    /**
-     * @param array $data
-     */
-    public function publishPrivateMessages(array $data){
-        foreach (array_chunk($data, 100) as $chunk) {
-            $this->redis->multi();
-            foreach ($chunk as $msgdata) {
-                $this->publishPrivateMessage($msgdata);
-            }
-            $this->redis->exec();
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getChatLog() {
+    public function getChatLog(): array {
         return $this->redis->lRange('CHAT:chatlog', 0, -1);
     }
 }

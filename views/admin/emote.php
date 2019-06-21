@@ -13,7 +13,6 @@ use Destiny\Common\Config;
 <div id="page-wrap">
 
     <?php include 'seg/nav.php' ?>
-    <?php include 'seg/alerts.contained.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
@@ -43,7 +42,12 @@ use Destiny\Common\Config;
                         </div>
                     </div>
 
-                    <p class="ds-block text-muted">Displayed as ~28x28 icon.</p>
+                    <p class="ds-block text-muted">
+                        <?php if(!empty($this->emote['imageName'])): ?>
+                        Image size <?=Tpl::out($this->emote['width'])?> x <?=Tpl::out($this->emote['height'])?><br />
+                        <?php endif; ?>
+                        Ideally a ~28x28 image.
+                    </p>
 
                     <hr style="margin: 2em 0 2em 0;" />
 
@@ -99,6 +103,7 @@ use Destiny\Common\Config;
 
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

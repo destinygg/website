@@ -12,12 +12,20 @@ return [
     'embed'         => ['stream' => 'https://player.twitch.tv/?channel=destiny'],
     'reddit'        => ['threads' => 'https://www.reddit.com/r/destiny/hot.json'],
     'blog'          => ['feed' => 'https://blog.destiny.gg/feed/json'],
-    'twitter'       => ['user' => 'OmniDestiny'],
     'android'       => ['app' => 'gg.destiny.app.chat'],
 
     'twitch' => [
-        'id'    => 18074328,
-        'user'  => 'destiny'
+        'id' => 18074328,
+        'user' => 'destiny',
+    ],
+    'streamelements' => [
+        'dgg_user' => 10
+    ],
+    'streamlabs' => [
+        'dgg_user' => 10
+    ],
+    'twitchbroadcaster' => [
+        'dgg_user' => 10
     ],
 
     'meta' => [

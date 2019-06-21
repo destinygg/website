@@ -1,20 +1,20 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Commerce\OrdersService;
 use Destiny\Commerce\PaymentStatus;
 use Destiny\Commerce\SubscriptionsService;
+use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Annotation\Route;
 use Destiny\Common\Application;
+use Destiny\Common\Config;
+use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Response;
-use Destiny\Common\Utils\Http;
-use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
-use Destiny\Common\Exception;
-use Destiny\Common\Annotation\Controller;
-use Destiny\Common\Annotation\Route;
-use Destiny\Commerce\OrdersService;
+use Destiny\Common\Utils\Http;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
 use PayPal\IPN\PPIPNMessage;
@@ -27,14 +27,8 @@ class IpnController {
     /**
      * @Route ("/ipn")
      * @ResponseBody
-     *
-     * Handles the incoming HTTP request
-     *
-     * @param Request $request
-     * @param Response $response
-     * @return string
      */
-    public function ipn(Request $request, Response $response) {
+    public function ipn(Request $request, Response $response): string {
         try {
             $body = $request->getBody();
             $ipnMessage = new PPIPNMessage ($body, Config::$a['paypal']['sdk']);
@@ -70,8 +64,6 @@ class IpnController {
     }
 
     /**
-     * @param array $data
-     *
      * @throws ConnectionException
      * @throws DBALException
      * @throws Exception
@@ -208,12 +200,10 @@ class IpnController {
     }
 
     /**
-     * @param array $data
-     * @return array|null
      * @throws DBALException
      * @throws Exception
      */
-    protected function getSubscriptionByPaymentProfileData(array $data) {
+    protected function getSubscriptionByPaymentProfileData(array $data): array {
         $subscription = null;
         $paymentId = $data['recurring_payment_id'] ?? null;
         if (!empty($paymentId)) {
@@ -227,7 +217,6 @@ class IpnController {
     }
 
     /**
-     * @param array $data
      * @return array|null
      * @throws DBALException
      */
@@ -241,7 +230,6 @@ class IpnController {
     }
 
     /**
-     * @param array $data
      * @throws Exception
      */
     private function checkTransactionRecipientEmail(array $data) {

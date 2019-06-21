@@ -50,64 +50,21 @@ import {debounce} from 'throttle-debounce'
 
     window.GraphUtil = GraphUtil;
 
-
-    $('#userlist').each(function () {
-
-        let usrlist = $(this),
-            userSearchForm = $('#userSearchForm'),
-            page = usrlist.data('page'),
-            size = usrlist.data('size'),
-            feature = usrlist.data('feature'),
-            reset = usrlist.find('#resetuserlist'),
-            searchEl = userSearchForm.find('input[name="search"]'),
-            search = searchEl.val();
-
-        usrlist.find('.pagination').on('click', 'a', function () {
-            page = $(this).data('page');
-            usrlist.trigger('gridupdate');
+    $('form.filter-form').each(function() {
+        const form = $(this);
+        form.find('select').on('change', () => {
+            form.submit();
+        });
+        form.find('button[type="reset"]').on('click', function(){
+            form.find('select').val('');
+            form.find('input[type="text"]').val('');
+            form.submit();
+        });
+        form.find('.pagination .page-link').on('click', function() {
+            form.find('input[name="page"]').val($(this).data('page'));
+            form.submit();
             return false;
         });
-
-        userSearchForm.find('select[name="feature"]').on('change', function () {
-            page = 1;
-            feature = $(this).val();
-            search = '';
-            usrlist.trigger('gridupdate');
-            return false;
-        }).val(feature);
-
-        usrlist.find('select[name="size"]').on('change', function () {
-            page = 1;
-            size = $(this).val();
-            usrlist.trigger('gridupdate');
-            return false;
-        }).val(size);
-
-        reset.on('click', function () {
-            size = '';
-            page = 1;
-            feature = '';
-            search = '';
-            usrlist.trigger('gridupdate');
-            return false;
-        });
-
-        usrlist.on('gridupdate', function () {
-            window.location.href = '/admin/users/?' +
-                'size=' + encodeURIComponent(size) +
-                '&page=' + encodeURIComponent(page) +
-                '&feature=' + encodeURIComponent(feature) +
-                '&search=' + encodeURIComponent(search);
-        });
-
-        userSearchForm.on('submit', function () {
-            size = '';
-            page = 1;
-            search = searchEl.val();
-            usrlist.trigger('gridupdate');
-            return false;
-        });
-
     });
 
     $('#flairs-selection').each(function(){
@@ -199,7 +156,7 @@ import {debounce} from 'throttle-debounce'
 
 })();
 
-$(function(){
+(function(){
     const fileInput = $('#file-input');
     const imageViews = $('.image-view.image-view-upload');
 
@@ -277,16 +234,7 @@ $(function(){
         beginUpload(imageTarget, fileInput[0].files[0]);
         imageTarget = null;
     });
-});
-
-$(function(){
-    $('#authBtn').on('click', function(){
-        window.location.href = '/streamlabs/authorize';
-    });
-    $('#testBtn').on('click', function(){
-        window.location.href = '/streamlabs/alert/test';
-    });
-})
+})();
 
 $(function(){
 

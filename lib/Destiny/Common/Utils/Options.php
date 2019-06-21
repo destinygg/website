@@ -11,8 +11,8 @@ abstract class Options {
      * @param array|null $options
      * @return bool
      */
-    public static function setOptions($object, array $options = null) {
-        if (is_array ( $options )) {
+    public static function setOptions($object, array $options = []): bool {
+        if (!empty($options) && is_array($options)) {
             foreach ( $options as $key => $value ) {
                 $method = 'set' . $key;
                 if (method_exists ( $object, $method )) {

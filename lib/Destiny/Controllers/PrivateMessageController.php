@@ -2,22 +2,22 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
+use Destiny\Chat\ChatRedisService;
+use Destiny\Common\Annotation\Controller;
+use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Annotation\Route;
+use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
+use Destiny\Common\Session\SessionCredentials;
+use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
+use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
-use Destiny\Common\Utils\FilterParams;
 use Destiny\Messages\PrivateMessageService;
-use Destiny\Common\Annotation\Controller;
-use Destiny\Common\Annotation\Route;
-use Destiny\Common\Annotation\HttpMethod;
-use Destiny\Common\Annotation\Secure;
-use Destiny\Common\User\UserService;
-use Destiny\Chat\ChatRedisService;
-use Destiny\Common\Session\SessionCredentials;
 use Doctrine\DBAL\DBALException;
 
 /**
@@ -29,11 +29,8 @@ class PrivateMessageController {
      * @Route ("/profile/messages")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
-     *
-     * @param ViewModel $viewModel
-     * @return string
      */
-    public function profileInbox(ViewModel $viewModel) {
+    public function profileInbox(ViewModel $viewModel): string {
         $username = Session::getCredentials ()->getUsername ();
         $viewModel->username = $username;
         $viewModel->title = 'Messages';
@@ -49,11 +46,8 @@ class PrivateMessageController {
      * Expects the following GET|POST variables:
      *     message=string
      *     recipients[]=username|group
-     *
-     * @param array $params
-     * @return array
      */
-    public function profileSend(array $params) {
+    public function profileSend(array $params): array {
         $privateMessageService = PrivateMessageService::instance();
         $redisService = ChatRedisService::instance();
         $chatBanService = ChatBanService::instance();
@@ -134,15 +128,10 @@ class PrivateMessageController {
      * @Route ("/profile/messages/{targetuserid}")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
-     *
-     * @param array $params
-     * @param ViewModel $viewModel
-     * @return string
-     *
      * @throws Exception
      * @throws DBALException
      */
-    public function profileMessages(array $params, ViewModel $viewModel) {
+    public function profileMessages(array $params, ViewModel $viewModel): string {
         FilterParams::required($params, 'targetuserid');
         $userService = UserService::instance();
         $userId = Session::getCredentials ()->getUserId ();
@@ -161,12 +150,9 @@ class PrivateMessageController {
      * @Route ("/profile/messages/delete")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
-     *
-     * @param array $params
-     * @return string
      * @throws DBALException
      */
-    public function deleteMessages(array $params) {
+    public function deleteMessages(array $params): string {
         try {
             FilterParams::requireArray($params, 'selected');
             $privateMessageService = PrivateMessageService::instance();
@@ -187,12 +173,9 @@ class PrivateMessageController {
      * @Route ("/profile/messages/read")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     *
-     * @param array $params
-     * @return string
      * @throws DBALException
      */
-    public function readMessages(array $params) {
+    public function readMessages(array $params): string {
         try {
             FilterParams::requireArray($params, 'selected');
             $privateMessageService = PrivateMessageService::instance();
@@ -217,7 +200,7 @@ class PrivateMessageController {
      * @HttpMethod ({"GET"})
      * @ResponseBody
      */
-    public function messagesUnread(){
+    public function messagesUnread() {
         try {
             $userId = Session::getCredentials ()->getUserId ();
             $privateMessageService = PrivateMessageService::instance();
@@ -233,13 +216,9 @@ class PrivateMessageController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
-     * @param array $params
-     * @return array
-     *
      * @throws DBALException
      */
-    public function messagesInbox(array $params){
+    public function messagesInbox(array $params): array {
         $userId = Session::getCredentials ()->getUserId ();
         $privateMessageService = PrivateMessageService::instance();
         $start = $params['s'] ?? 0;
@@ -257,7 +236,7 @@ class PrivateMessageController {
      * @return array
      * @throws DBALException
      */
-    public function messagesUserInbox(array $params){
+    public function messagesUserInbox(array $params): array {
         $userService = UserService::instance();
         $privateMessageService = PrivateMessageService::instance();
         $start = $params['s'] ?? 0;
@@ -275,7 +254,7 @@ class PrivateMessageController {
      * @ResponseBody
      * @throws DBALException
      */
-    public function markAllConversationsRead() {
+    public function markAllConversationsRead(): array {
         $userId = Session::getCredentials()->getUserId();
         $privateMessageService = PrivateMessageService::instance();
         $privateMessageService->markAllMessagesRead($userId);
@@ -287,12 +266,9 @@ class PrivateMessageController {
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
      * @ResponseBody
-     *
-     * @param array $params
-     * @return array
      * @throws DBALException
      */
-    public function markConversationRead(array $params) {
+    public function markConversationRead(array $params): array {
         try {
             FilterParams::required($params, 'id');
             $privateMessageService = PrivateMessageService::instance();
@@ -307,11 +283,7 @@ class PrivateMessageController {
         return ['success' => true];
     }
 
-    /**
-     * @param array $messages
-     * @return array
-     */
-    private function applyUTCTimestamp(array $messages) {
+    private function applyUTCTimestamp(array $messages): array {
         return array_map(function (&$a) {
             $a['timestamp'] = Date::getDateTime($a['timestamp'])->format(Date::FORMAT);
             return $a;

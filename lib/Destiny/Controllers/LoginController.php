@@ -5,8 +5,10 @@ use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
-use Destiny\Common\Authentication\OAuthService;
-use Destiny\Common\AuthHandlerInterface;
+use Destiny\Common\Authentication\AuthenticationHandler;
+use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
+use Destiny\Common\Authentication\AuthProvider;
+use Destiny\Common\Authentication\DggOAuthService;
 use Destiny\Common\Exception;
 use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
@@ -15,6 +17,8 @@ use Destiny\Common\ViewModel;
 use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
+use Destiny\StreamElements\StreamElementsAuthHandler;
+use Destiny\StreamLabs\StreamLabsAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
 use Doctrine\DBAL\DBALException;
@@ -25,27 +29,31 @@ use Doctrine\DBAL\DBALException;
 class LoginController {
 
     /**
-     * @param string $type
-     * @return AuthHandlerInterface
-     * @throws \Exception
+     * @throws Exception
      */
-    private function getAuthHandlerByType($type) {
+    private function getAuthHandlerByType(string $type): AuthenticationHandler {
         $authHandler = null;
         switch (strtolower($type)) {
-            case 'twitch':
+            case AuthProvider::TWITCH:
                 $authHandler = new TwitchAuthHandler();
                 break;
-            case 'twitter':
+            case AuthProvider::TWITTER:
                 $authHandler = new TwitterAuthHandler();
                 break;
-            case 'google':
+            case AuthProvider::GOOGLE:
                 $authHandler = new GoogleAuthHandler();
                 break;
-            case 'reddit':
+            case AuthProvider::REDDIT:
                 $authHandler = new RedditAuthHandler();
                 break;
-            case 'discord':
+            case AuthProvider::DISCORD:
                 $authHandler = new DiscordAuthHandler();
+                break;
+            case AuthProvider::STREAMELEMENTS:
+                $authHandler = new StreamElementsAuthHandler();
+                break;
+            case AuthProvider::STREAMLABS:
+                $authHandler = new StreamLabsAuthHandler();
                 break;
             default:
                 throw new Exception('No authentication handler found.');
@@ -56,21 +64,21 @@ class LoginController {
     /**
      * @Route ("/login")
      * @HttpMethod ({"GET"})
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
      * @throws Exception
      * @throws DBALException
      */
-    public function login(array $params, ViewModel $model) {
+    public function login(array $params, ViewModel $model): string {
+        if (Session::hasRole(UserRole::USER)) {
+            Session::setErrorBag('You are already signed in');
+            return 'redirect: /profile';
+        }
         Session::remove('isConnectingAccount');
         $grant = isset($params['grant']) ? $params['grant'] : null;
         $follow = (isset($params ['follow'])) ? $params ['follow'] : '';
         $uuid = (isset($params ['uuid'])) ? $params ['uuid'] : '';
 
         if (!empty($uuid)) {
-            $oauthService = OAuthService::instance();
+            $oauthService = DggOAuthService::instance();
             $auth = $oauthService->getFlashStore($uuid, 'uuid');
             $app = $oauthService->getAuthClientByCode($auth['client_id']);
         } else {
@@ -87,10 +95,8 @@ class LoginController {
 
     /**
      * @Route ("/logout")
-     *
-     * @return string
      */
-    public function logout() {
+    public function logout(): string {
         if (Session::isStarted()) {
             $redis = ChatRedisService::instance();
             $redis->removeChatSession(Session::getSessionId());
@@ -105,47 +111,36 @@ class LoginController {
      * @Route ("/auth/google")
      * @Route ("/auth/reddit")
      * @Route ("/auth/discord")
-     *
-     * @param array $params
-     * @param ViewModel $model
-     * @param Request $request
-     * @return string
      */
-    public function authType(array $params, ViewModel $model, Request $request) {
+    public function authByType(array $params, Request $request): string {
         try {
             $type = substr($request->path(), strlen("/auth/"));
-            return $this->getAuthHandlerByType($type)->authenticate($params);
+            $authHandler = $this->getAuthHandlerByType($type);
+            $response = $authHandler->exchangeCode($params);
+            $redirectFilter = new AuthenticationRedirectionFilter($response);
+            return $redirectFilter->execute();
         } catch (\Exception $e) {
-            if (Session::hasRole(UserRole::USER)) {
-                Session::setErrorBag($e->getMessage());
-                return 'redirect: /profile/authentication';
-            }
-            $model->title = 'Login error';
-            $model->error = $e;
-            return 'error';
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /login';
         }
     }
 
     /**
      * @Route ("/login")
      * @HttpMethod ({"POST"})
-     *
-     * @param array $params
-     * @return string
-     * @throws \Exception
      */
-    public function loginPost(array $params) {
+    public function loginPost(array $params): string {
         try {
             if (!isset($params['authProvider']) || empty($params['authProvider'])) {
                 throw new Exception('Please select a authentication provider');
             }
-            Session::start(); // TODO Using the session for this kind of state is bad.
+            Session::start();
             Session::set('rememberme', (isset ($params ['rememberme']) && !empty ($params ['rememberme'])) ? 1 : 0);
             Session::set('follow', (isset ($params ['follow']) && !empty ($params ['follow'])) ? $params ['follow'] : null);
             Session::set('grant', (isset ($params ['grant']) && !empty ($params ['grant'])) ? $params ['grant'] : null);
             Session::set('uuid', (isset ($params ['uuid']) && !empty ($params ['uuid'])) ? $params ['uuid'] : null);
             $handler = $this->getAuthHandlerByType($params ['authProvider']);
-            return 'redirect: ' . $handler->getAuthenticationUrl();
+            return 'redirect: ' . $handler->getAuthorizationUrl();
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
             return 'redirect: /login';

@@ -30,11 +30,9 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
      *
-     * @param ViewModel $model
-     * @return string
      * @throws DBALException
      */
-    public function emotes(ViewModel $model) {
+    public function emotes(ViewModel $model): string {
         $emoteService = EmoteService::instance();
         $cache = Application::getNsCache();
         $model->title = 'Emotes';
@@ -49,11 +47,8 @@ class AdminEmotesController {
      * @HttpMethod ({"POST"})
      * @ResponseBody
      * @Audit
-     *
-     * @param array $params
-     * @return array
      */
-    public function checkPrefix(array $params) {
+    public function checkPrefix(array $params): array {
         try {
             FilterParams::declared($params, 'id');
             FilterParams::required($params, 'prefix');
@@ -70,13 +65,10 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
      *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
      * @throws DBALException
      * @throws FilterParamsException
      */
-    public function editEmote(array $params, ViewModel $model) {
+    public function editEmote(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
         $emoteService = EmoteService::instance();
         $emote = $emoteService->findEmoteById($params['id']);
@@ -93,11 +85,8 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/new")
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
      */
-    public function newEmote(ViewModel $model) {
+    public function newEmote(ViewModel $model): string {
         $model->title = 'Emote';
         $model->emote = [
             'id' => null,
@@ -118,12 +107,10 @@ class AdminEmotesController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @param array $params
-     * @return string
      * @throws FilterParamsException
      * @throws DBALException
      */
-    public function newEmotePost(array $params) {
+    public function newEmotePost(array $params): string {
         FilterParams::required($params, 'imageId');
         FilterParams::required($params, 'prefix');
         FilterParams::declared($params, 'styles');
@@ -148,12 +135,10 @@ class AdminEmotesController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @param array $params
-     * @return string
      * @throws DBALException
      * @throws FilterParamsException
      */
-    public function editEmotePost(array $params) {
+    public function editEmotePost(array $params): string {
         FilterParams::required($params, 'id');
         FilterParams::required($params, 'imageId');
         FilterParams::required($params, 'prefix');
@@ -183,10 +168,8 @@ class AdminEmotesController {
      * @HttpMethod ({"POST"})
      * @ResponseBody
      * @Audit
-     *
-     * @return array
      */
-    public function uploadImage() {
+    public function uploadImage(): array {
         return array_map(function($file) {
             $imageService = ImageService::instance();
             $upload = $imageService->upload($file, EmoteService::EMOTES_DIR);
@@ -200,14 +183,11 @@ class AdminEmotesController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @param array $params
-     * @return mixed
-     *
      * @throws DBALException
      * @throws FilterParamsException
      * @throws InvalidArgumentException
      */
-    public function deleteEmote(array $params) {
+    public function deleteEmote(array $params): string {
         FilterParams::required($params, 'id');
         $emoteService = EmoteService::instance();
         $imageService = ImageService::instance();

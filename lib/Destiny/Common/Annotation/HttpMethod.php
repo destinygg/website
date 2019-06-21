@@ -12,9 +12,6 @@ class HttpMethod {
      */
     public $allow;
 
-    /**
-     * @param array $params
-     */
     public function __construct(array $params = null) {
         if (!empty($params)) {
             $this->allow = $params ['value'];

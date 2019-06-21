@@ -1,7 +1,9 @@
 <?php
 namespace Destiny\Discord;
 
+use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Config;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Service;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -17,25 +19,16 @@ class DiscordMessenger extends Service {
      */
     private $guzzle;
 
-    /**
-     * DiscordMessenger constructor.
-     */
-    public function __construct() {
-        $this->guzzle = new Client([
-            'timeout' => 10,
-            'connect_timeout' => 10,
-            'http_errors' => false
-        ]);
+    public function afterConstruct() {
+        parent::afterConstruct();
+        $this->guzzle = HttpClient::instance();
     }
 
     /**
-     * @param string $username
-     * @param string $text
-     * @param array $attachments
-     * @return ResponseInterface
+     * @return ResponseInterface|null
      */
-    public function send($text, array $attachments = [], $username = '') {
-        $webhook = Config::$a['discord']['webhook'] ?? '';
+    public function send(string $text, array $attachments = [], string $username = '') {
+        $webhook = Config::$a[AuthProvider::DISCORD]['webhook'] ?? '';
         if (!empty($webhook)) {
             $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
@@ -47,7 +40,5 @@ class DiscordMessenger extends Service {
         }
         return null;
     }
-
-
 
 }

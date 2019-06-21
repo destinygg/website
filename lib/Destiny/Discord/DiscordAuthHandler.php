@@ -1,52 +1,42 @@
 <?php
 namespace Destiny\Discord;
 
-use Destiny\Common\Authentication\AuthenticationCredentials;
-use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
-use Destiny\Common\Authentication\AuthenticationService;
-use Destiny\Common\AuthHandlerInterface;
+use Destiny\Common\Authentication\AbstractAuthHandler;
+use Destiny\Common\Authentication\AuthProvider;
+use Destiny\Common\Authentication\OAuthResponse;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\Http;
-use Doctrine\DBAL\DBALException;
-use GuzzleHttp\Client;
 
-class DiscordAuthHandler implements AuthHandlerInterface {
+/**
+ * @method static DiscordAuthHandler instance()
+ */
+class DiscordAuthHandler extends AbstractAuthHandler {
 
-    /**
-     * @var string
-     */
-    protected $authProvider = 'discord';
-    protected $apiBase = 'https://discordapp.com/api/v6';
-    protected $authBase = 'https://discordapp.com/api/oauth2';
+    private $authBase = 'https://discordapp.com/api/oauth2';
+    private $apiBase = 'https://discordapp.com/api';
+    public $authProvider = AuthProvider::DISCORD;
 
-    /**
-     * @return string
-     */
-    public function getAuthenticationUrl() {
-        $conf = Config::$a ['oauth_providers'] [$this->authProvider];
+    function getAuthorizationUrl($scope = ['identify', 'email'], $claims = ''): string {
+        $conf = $this->getAuthProviderConf();
         return "$this->authBase/authorize?" . http_build_query([
-                'response_type' => 'code',
-                'scope' => 'identify email',
-                'state' => md5(time() . 'ifC35_'),
-                'client_id' => $conf['client_id'],
-                'redirect_uri' => $conf['redirect_uri']
-            ], null, '&');
+            'response_type' => 'code',
+            'scope' => join(' ', $scope),
+            'state' => md5(time() . 'ifC35_'),
+            'client_id' => $conf['client_id'],
+            'redirect_uri' => $conf['redirect_uri']
+        ], null, '&');
     }
 
     /**
-     * @param array $params
-     * @return string
-     *
-     * @throws DBALException
      * @throws Exception
      */
-    public function authenticate(array $params) {
-        if (!isset ($params['code']) || empty ($params['code'])) {
+    function getToken(array $params): array {
+        if (!isset($params['code']) || empty($params['code'])) {
             throw new Exception ('Authentication failed, invalid or empty code.');
         }
-        $conf = Config::$a ['oauth_providers'] [$this->authProvider];
-        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+        $conf = $this->getAuthProviderConf();
+        $client = $this->getHttpClient();
         $response = $client->post("$this->authBase/token", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
@@ -65,56 +55,59 @@ class DiscordAuthHandler implements AuthHandlerInterface {
             if (empty($data) || isset($data['error']) || !isset($data['access_token'])) {
                 throw new Exception('Invalid access_token response');
             }
-            $authCreds = $this->mapInfoToAuthCredentials($params['code'], $this->getUserInfo($data['access_token']));
-            $authHandler = new AuthenticationRedirectionFilter($authCreds);
-            return $authHandler->execute();
+            return $data;
         }
-        throw new Exception ("Bad response from oauth provider: {$response->getStatusCode()}");
+        throw new Exception('Failed to get token response');
     }
 
     /**
-     * @param $token
-     * @return array|null
+     * @throws Exception
      */
-    private function getUserInfo($token) {
-        $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
+    private function getUserInfo(string $accessToken): array {
+        $client = $this->getHttpClient();
         $response = $client->get("$this->apiBase/users/@me", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Authorization' => "Bearer $token"
+                'Authorization' => "Bearer $accessToken"
             ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
-            return json_decode((string) $response->getBody(), true);
+            $info = json_decode((string)$response->getBody(), true);
+            if (empty($info) ) {
+                throw new Exception ('Invalid user info response');
+            }
+            return $info;
         }
-        return null;
+        throw new Exception ('Invalid user info response');
     }
 
     /**
-     * @param string $code
-     * @param array $data
-     * @return AuthenticationCredentials
      * @throws Exception
      */
-    public function mapInfoToAuthCredentials($code, array $data) {
-        if (empty ($data) || !isset ($data ['id']) || empty ($data ['id'])) {
+    function mapTokenResponse(array $token): OAuthResponse {
+        $data = $this->getUserInfo($token['access_token']);
+        if (!isset($data['username']) || empty($data['username'])) {
             throw new Exception ('Authorization failed, invalid user data');
         }
-        if (!isset($data['verified']) || empty($data['verified']) || $data['verified'] != 1) {
-            throw new Exception (' You must have a verified email address for your registration to complete successfully.');
-        }
+        return new OAuthResponse([
+            'accessToken' => $token['access_token'],
+            'refreshToken' => $token['refresh_token'] ?? '',
+            'authProvider' => $this->authProvider,
+            'username' => $data['username'],
+            'authId' => (string) $data['id'],
+            'authDetail' => $data['username'],
+            'authEmail' => $data['email'],
+            'verified' => true,
+            'discriminator' => (string) $data ['discriminator'],
+        ]);
+    }
 
-        $authService = AuthenticationService::instance();
-        $authService->validateEmail($data['email']);
-
-        $arr = [];
-        $arr ['username'] = $data ['username'];
-        $arr ['authProvider'] = $this->authProvider;
-        $arr ['authCode'] = $code;
-        $arr ['authId'] = $data ['id'];
-        $arr ['authDetail'] = $data ['username'];// . '#' . $data ['discriminator'];
-        $arr ['authEmail'] = $data ['email'];
-        return new AuthenticationCredentials ($arr);
+    /**
+     * @throws Exception
+     */
+    function renewToken(string $refreshToken): array {
+        throw new Exception("Not implemented");
+        // TODO Implement
     }
 
 }

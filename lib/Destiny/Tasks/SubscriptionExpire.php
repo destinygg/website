@@ -3,13 +3,13 @@ namespace Destiny\Tasks;
 
 use DateTime;
 use Destiny\Chat\ChatRedisService;
+use Destiny\Commerce\SubscriptionsService;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
-use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Authentication\AuthenticationService;
-use Destiny\Common\Log;
 use Destiny\Common\Cron\TaskInterface;
+use Destiny\Common\Log;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
@@ -22,7 +22,6 @@ use PDO;
 class SubscriptionExpire implements TaskInterface {
 
     /**
-     * @return mixed|void
      * @throws DBALException
      */
     public function execute() {
@@ -53,7 +52,7 @@ class SubscriptionExpire implements TaskInterface {
                     'status' => SubscriptionStatus::ACTIVE
                 ]);
                 $this->sendResubscribeBroadcast($subscription);
-                $users[] = $subscription ['userId'];
+                $users[] = $subscription['userId'];
             } catch (Exception $e) {
                 Log::critical("Could not roll over subscription", $subscription);
             }
@@ -79,16 +78,12 @@ class SubscriptionExpire implements TaskInterface {
 
         // Clean-up old unfinished subscriptions (where users have aborted the process)
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-          DELETE FROM `dfl_users_subscriptions`
-          WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 1 HOUR)
-        ');
+        $stmt = $conn->prepare('DELETE FROM `dfl_users_subscriptions` WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 1 HOUR)');
         $stmt->bindValue('status', SubscriptionStatus::_NEW, PDO::PARAM_STR);
         $stmt->execute();
     }
 
     /**
-     * @param array $subscription
      * @throws DBALException
      */
     private function sendResubscribeBroadcast(array $subscription) {

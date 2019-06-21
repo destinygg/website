@@ -45,5 +45,4 @@ class RoutesTest extends PHPUnit\Framework\TestCase {
         }
         self::assertTrue(count($routes) > 0);
     }
-
 }

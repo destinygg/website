@@ -27,11 +27,9 @@ abstract class Country {
 
     /**
      * Return a cached list of countries
-     *
-     * @return array
      */
-    public static function getCountries() {
-        if (self::$countries == null) {
+    public static function getCountries(): array {
+        if (self::$countries === null) {
             $cache = Application::getNsCache();
             $countries = $cache->fetch('geodata');
             if (empty ($countries)) {
@@ -52,14 +50,12 @@ abstract class Country {
 
     /**
      * Return a country by code, if none exists throw an exception
-     * @param $code
-     * @return mixed|null
      * @throws Exception
      */
-    public static function getCountryByCode($code) {
+    public static function getCountryByCode(string $code) {
         $countries = self::getCountries();
         $code = strtolower($code);
-        if (!isset (self::$codeIndex[$code])) {
+        if (!isset(self::$codeIndex[$code])) {
             throw new Exception ('Invalid country');
         }
         return $countries[self::$codeIndex[$code]];

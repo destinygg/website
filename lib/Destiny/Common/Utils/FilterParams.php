@@ -9,12 +9,9 @@ class FilterParams {
     /**
      * Make sure a parameter is set and not empty
      * Does a white-space trim
-     *
-     * @param array $params
-     * @param string $identifier
      * @throws FilterParamsException
      */
-    public static function required(array $params, $identifier) {
+    public static function required(array $params, string $identifier = '') {
         if (self::isEmpty($params, $identifier)) {
             throw new FilterParamsException (sprintf('Required field missing %s', $identifier));
         }
@@ -22,12 +19,9 @@ class FilterParams {
 
     /**
      * Make sure a parameter has been declared
-     *
-     * @param array $params
-     * @param string $identifier
      * @throws FilterParamsException
      */
-    public static function declared(array $params, $identifier) {
+    public static function declared(array $params, string $identifier = '') {
         if (!is_array($params) || !isset ($params[$identifier])) {
             throw new FilterParamsException (sprintf('Field not set %s', $identifier));
         }
@@ -35,12 +29,9 @@ class FilterParams {
 
     /**
      * Make sure a parameter has been declared and is an array
-     *
-     * @param array $params
-     * @param string $identifier
      * @throws FilterParamsException
      */
-    public static function requireArray(array $params, $identifier) {
+    public static function requireArray(array $params, string $identifier = '') {
         if (!is_array($params) || !isset ($params[$identifier]) || !is_array($params[$identifier])) {
             throw new FilterParamsException (sprintf('Field not set or not an array %s', $identifier));
         }
@@ -48,29 +39,15 @@ class FilterParams {
 
     /**
      * Make sure the parameter is set and not empty
-     *
-     * @param array $params
-     * @param $identifier
-     * @return bool
      */
-    public static function isEmpty(array $params, $identifier) {
-        if (!is_array($params) || !isset($params [$identifier]) || strlen($params [$identifier]) == 0 || trim($params [$identifier]) == '') {
-            return true;
-        }
-        return false;
+    public static function isEmpty(array $params, string $identifier = ''): bool {
+        return (!is_array($params) || !isset($params[$identifier]) || strlen($params [$identifier]) == 0 || trim($params [$identifier]) == '');
     }
 
     /**
      * Make sure the parameter is set and an array
-     *
-     * @param array $params
-     * @param $identifier
-     * @return bool
      */
-    public static function isArray(array $params, $identifier) {
-        if (!is_array($params) || !isset($params[$identifier]) || !is_array($params[$identifier])) {
-            return false;
-        }
-        return true;
+    public static function isArray(array $params, string $identifier = ''): bool {
+        return !(!is_array($params) || !isset($params[$identifier]) || !is_array($params[$identifier]));
     }
 }

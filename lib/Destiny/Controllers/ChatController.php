@@ -2,23 +2,24 @@
 namespace Destiny\Controllers;
 
 use Destiny\Chat\ChatBanService;
+use Destiny\Chat\ChatRedisService;
+use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\ResponseBody;
+use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
+use Destiny\Common\Response;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
-use Destiny\Common\Annotation\Controller;
-use Destiny\Common\Annotation\Route;
-use Destiny\Common\Response;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
-use Destiny\Chat\ChatRedisService;
 use Doctrine\DBAL\DBALException;
-use GuzzleHttp\Client;
 
 /**
  * @Controller
@@ -30,10 +31,9 @@ class ChatController {
      * @HttpMethod ({"GET"})
      * @ResponseBody
      *
-     * @param Response $response
-     * @return array
+     * @return array|null
      */
-    public function getBacklog(Response $response){
+    public function getBacklog(Response $response) {
         $redisService = ChatRedisService::instance();
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'no-cache, max-age=0, must-revalidate, no-store');
         return $redisService->getChatLog();
@@ -44,11 +44,9 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
-     * @return array
      * @throws DBALException
      */
-    public function getUser(){
+    public function getUser(): array {
         $userService = UserService::instance();
         $creds = Session::getCredentials ();
         $data = $creds->getData();
@@ -60,8 +58,6 @@ class ChatController {
      * @Route ("/api/chat/me/settings")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
-     *
-     * @param Request $request
      * @throws Exception
      * @throws DBALException
      */
@@ -81,10 +77,9 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
      * @throws DBALException
      */
-    public function getChatSettings(){
+    public function getChatSettings(): array {
         $userService = UserService::instance();
         $userId = Session::getCredentials ()->getUserId();
         return $userService->fetchChatSettings($userId);
@@ -107,8 +102,6 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
-     * @param Request $request
      * @return array|string
      * @throws DBALException
      */
@@ -129,13 +122,10 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
-     * @param array $params
-     * @param Response $response
      * @return array|mixed|string
      */
     public function stalk(array $params, Response $response) {
-        if (!isset($params['username']) || preg_match('/^[A-Za-z0-9_]{3,20}$/', $params['username']) === 0) {
+        if (!isset($params['username']) || preg_match(AuthenticationService::REGEX_VALID_USERNAME, $params['username']) === 0) {
             $response->setStatus(Http::STATUS_ERROR);
             return 'invalidnick';
         }
@@ -148,9 +138,8 @@ class ChatController {
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         try {
-            $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $client = HttpClient::instance();
             $r = $client->get(self::$LOGS_ENDPOINT['stalk'] . urlencode($params['username']) . '.json', [
-                'http_errors' => false,
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => ['limit' => $limit]
             ]);
@@ -172,13 +161,10 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
-     * @param array $params
-     * @param Response $response
      * @return array|mixed|string
      */
     public function mentions(array $params, Response $response) {
-        if (!isset($params['username']) || preg_match('/^[A-Za-z0-9_]{3,20}$/', $params['username']) === 0) {
+        if (!isset($params['username']) || preg_match(AuthenticationService::REGEX_VALID_USERNAME, $params['username']) === 0) {
             $response->setStatus(Http::STATUS_ERROR);
             return 'invalidnick';
         }
@@ -191,9 +177,8 @@ class ChatController {
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         try {
-            $client = new Client(['timeout' => 10, 'connect_timeout' => 5]);
+            $client = HttpClient::instance();
             $r = $client->get(self::$LOGS_ENDPOINT['mentions'] . urlencode($params['username']) . '.json', [
-                'http_errors' => false,
                 'headers' => ['User-Agent' => Config::userAgent()],
                 'query' => ['limit' => $limit]
             ]);

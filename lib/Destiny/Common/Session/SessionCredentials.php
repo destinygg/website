@@ -7,19 +7,22 @@ use JsonSerializable;
 
 class SessionCredentials implements JsonSerializable {
 
-    protected $userId = null;
-    protected $authProvider = '';
-    protected $username = '';
-    protected $userStatus = '';
-    protected $country = '';
-    protected $createdDate;
-    protected $roles = [];
-    protected $features = [];
+    /**
+     * @var int|null
+     */
+    public $userId = null;
+    public $authProvider = '';
+    public $username = '';
+    public $userStatus = '';
+    public $country = '';
+    public $createdDate;
+    public $roles = [];
+    public $features = [];
 
     /**
      * @var array
      */
-    protected $subscription;
+    public $subscription;
 
     /**
      * @param array $params
@@ -36,28 +39,28 @@ class SessionCredentials implements JsonSerializable {
     public function setData(array $params) {
         if (!empty ($params)) {
             if (!FilterParams::isEmpty($params, 'userId')) {
-                $this->setUserId($params ['userId']);
-            }
-            if (!FilterParams::isEmpty($params, 'username')) {
-                $this->setUsername($params ['username']);
-            }
-            if (!FilterParams::isEmpty($params, 'country')) {
-                $this->setCountry($params ['country']);
+                $this->userId = $params['userId'];
             }
             if (!FilterParams::isEmpty($params, 'authProvider')) {
-                $this->setAuthProvider($params ['authProvider']);
+                $this->authProvider = $params['authProvider'];
+            }
+            if (!FilterParams::isEmpty($params, 'username')) {
+                $this->username = $params['username'];
             }
             if (!FilterParams::isEmpty($params, 'userStatus')) {
-                $this->setUserStatus($params ['userStatus']);
+                $this->userStatus = $params['userStatus'];
+            }
+            if (!FilterParams::isEmpty($params, 'country')) {
+                $this->country = $params['country'];
             }
             if (!FilterParams::isEmpty($params, 'createdDate')) {
-                $this->setCreatedDate(Date::getDateTime($params ['createdDate'])->format(Date::FORMAT));
-            }
-            if (FilterParams::isArray($params, 'features')) {
-                $this->setFeatures(array_unique($params ['features']));
+                $this->createdDate = Date::getDateTime($params['createdDate'])->format(Date::FORMAT);
             }
             if (FilterParams::isArray($params, 'roles')) {
-                $this->setRoles(array_unique($params ['roles']));
+                $this->roles = array_unique($params['roles']);
+            }
+            if (FilterParams::isArray($params, 'features')) {
+                $this->features = array_unique($params['features']);
             }
         }
     }
@@ -74,14 +77,14 @@ class SessionCredentials implements JsonSerializable {
      */
     public function jsonSerialize() {
         return [
-            'nick' => $this->getUsername(),
-            'username' => $this->getUsername(),
-            'userId' => $this->getUserId(),
-            'status' => $this->getUserStatus(),
-            'createdDate' => $this->getCreatedDate(),
-            'roles' => $this->getRoles(),
-            'features' => $this->getFeatures(),
-            'subscription' => $this->getSubscription()
+            'nick' => $this->username,
+            'username' => $this->username,
+            'userId' => $this->userId,
+            'status' => $this->userStatus,
+            'createdDate' => $this->createdDate,
+            'roles' => $this->roles,
+            'features' => $this->features,
+            'subscription' => $this->subscription
         ];
     }
 
@@ -90,16 +93,16 @@ class SessionCredentials implements JsonSerializable {
      */
     public function getData() {
         return [
-            'nick' => $this->getUsername(),
-            'username' => $this->getUsername(),
-            'userId' => $this->getUserId(),
-            'userStatus' => $this->getUserStatus(),
-            'createdDate' => $this->getCreatedDate(),
-            'country' => $this->getCountry(),
-            'roles' => $this->getRoles(),
-            'authProvider' => $this->getAuthProvider(),
-            'features' => $this->getFeatures(),
-            'subscription' => $this->getSubscription()
+            'nick' => $this->username,
+            'username' => $this->username,
+            'userId' => $this->userId,
+            'userStatus' => $this->userStatus,
+            'createdDate' => $this->createdDate,
+            'country' => $this->country,
+            'roles' => $this->roles,
+            'authProvider' => $this->authProvider,
+            'features' => $this->features,
+            'subscription' => $this->subscription
         ];
     }
 
@@ -127,16 +130,8 @@ class SessionCredentials implements JsonSerializable {
         return $this->username;
     }
 
-    public function setUsername($username) {
-        $this->username = $username;
-    }
-
     public function getRoles() {
         return $this->roles;
-    }
-
-    public function setRoles(array $roles) {
-        $this->roles = $roles;
     }
 
     /**
@@ -155,22 +150,10 @@ class SessionCredentials implements JsonSerializable {
     }
 
     /**
-     * @param string $role
-     */
-    public function removeRole($role) {
-        for ($i = 0; $i < count($this->roles); ++$i) {
-            if ($this->roles [$i] == $role) {
-                unset ($this->roles [$i]);
-                break;
-            }
-        }
-    }
-
-    /**
      * @param string $roleId
      * @return bool
      */
-    public function hasRole($roleId) {
+    public function hasRole($roleId): bool {
         foreach ($this->roles as $role) {
             if (strcasecmp($role, $roleId) === 0) {
                 return true;
@@ -183,16 +166,8 @@ class SessionCredentials implements JsonSerializable {
         return $this->country;
     }
 
-    public function setCountry($country) {
-        $this->country = $country;
-    }
-
     public function getUserId() {
         return $this->userId;
-    }
-
-    public function setUserId($userId) {
-        $this->userId = $userId;
     }
 
     public function getAuthProvider() {
@@ -207,24 +182,26 @@ class SessionCredentials implements JsonSerializable {
         return $this->userStatus;
     }
 
-    public function setUserStatus($userStatus) {
-        $this->userStatus = $userStatus;
-    }
-
     public function getFeatures() {
         return $this->features;
-    }
-
-    public function setFeatures(array $features) {
-        $this->features = $features;
     }
 
     public function getCreatedDate() {
         return $this->createdDate;
     }
 
-    public function setCreatedDate($createdDate) {
-        $this->createdDate = $createdDate;
+    /**
+     * @return array
+     */
+    public function getSubscription() {
+        return $this->subscription;
+    }
+
+    /**
+     * @param array $subscription
+     */
+    public function setSubscription($subscription) {
+        $this->subscription = $subscription;
     }
 
     /**
@@ -255,33 +232,5 @@ class SessionCredentials implements JsonSerializable {
         } elseif (!in_array($features, $this->features)) {
             $this->features [] = $features;
         }
-    }
-
-    /**
-     * Remove a feature
-     *
-     * @param string $feature
-     */
-    public function removeFeature($feature) {
-        for ($i = 0; $i < count($this->features); ++$i) {
-            if ($this->features [$i] == $feature) {
-                unset ($this->features [$i]);
-                break;
-            }
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getSubscription() {
-        return $this->subscription;
-    }
-
-    /**
-     * @param array $subscription
-     */
-    public function setSubscription($subscription) {
-        $this->subscription = $subscription;
     }
 }

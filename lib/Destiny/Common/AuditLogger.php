@@ -4,13 +4,12 @@ namespace Destiny\Common;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\Date;
 
-class AuditLogger {
+/**
+ * @method static AuditLogger instance()
+ */
+class AuditLogger extends Service {
 
-    /**
-     * @param Request $request
-     * @return bool
-     */
-    public function logRequest(Request $request){
+    public function logRequest(Request $request): bool {
         try {
             $session = Session::instance();
             if ($session !== null) {
