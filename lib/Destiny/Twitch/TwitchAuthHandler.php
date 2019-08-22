@@ -79,6 +79,7 @@ class TwitchAuthHandler implements AuthHandlerInterface {
         $client = new Client(['timeout' => 15, 'connect_timeout' => 10, 'http_errors' => false]);
         $response = $client->get("$this->apiBase/user", [
             'headers' => [
+                'Accept' => 'application/vnd.twitchtv.v5+json',
                 'User-Agent' => Config::userAgent(),
                 'Client-ID' => $conf['client_id'],
                 'Authorization' => "OAuth $access_token",
