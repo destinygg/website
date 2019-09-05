@@ -255,6 +255,8 @@ class UserService extends Service {
               ELSE 3
               END, u.username
             ';
+        } else {
+            $orders[] = ' ORDER BY u.userId DESC ';
         }
 
         if (!empty($params['feature'])) {
