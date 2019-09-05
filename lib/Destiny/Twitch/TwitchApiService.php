@@ -54,6 +54,7 @@ class TwitchApiService extends Service {
         $response = $client->get("$this->tmiBase/hosts", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
+                'Accept' => 'application/vnd.twitchtv.v5+json',
                 'Client-ID' => $conf['client_id']
             ],
             'query' => [
@@ -83,6 +84,7 @@ class TwitchApiService extends Service {
         $response = $client->get("$this->apiBase/channels/$channelId/videos", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
+                'Accept' => 'application/vnd.twitchtv.v5+json',
                 'Client-ID' => $conf['client_id']
             ],
             'query' => [
@@ -110,6 +112,7 @@ class TwitchApiService extends Service {
         $response = $client->get("$this->apiBase/streams/$channelId", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
+                'Accept' => 'application/vnd.twitchtv.v5+json',
                 'Client-ID' => $conf['client_id']
             ]
         ]);
@@ -136,6 +139,7 @@ class TwitchApiService extends Service {
         $response = $client->get("$this->apiBase/channels/$channelId", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
+                'Accept' => 'application/vnd.twitchtv.v5+json',
                 'Client-ID' => $conf['client_id'],
             ]
         ]);
