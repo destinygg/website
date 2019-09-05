@@ -53,7 +53,7 @@ use Destiny\Common\Utils\Date;
                             <option value="" <?=(!$this->feature ? 'selected':'')?>>Any</option>
                             <?php foreach ($this->features as $feature): ?>
                                 <?php if(!in_array($feature['featureName'], UserFeature::$UNASSIGNABLE)): ?>
-                                <option <?=($feature['featureName'] == $this->feature) ? 'selected':''?> value="<?=Tpl::out($feature['featureName'])?>"><?=Tpl::out($feature['featureLabel'])?></option>
+                                <option <?=($feature['featureId'] == $this->feature) ? 'selected':''?> value="<?=Tpl::out($feature['featureId'])?>"><?=Tpl::out($feature['featureLabel'])?></option>
                                 <?php endif; ?>
                             <?php endforeach; ?>
                         </select>
