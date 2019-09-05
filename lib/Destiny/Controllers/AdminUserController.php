@@ -380,7 +380,6 @@ class AdminUserController {
             Session::setSuccessBag('Subscription created!');
         }
 
-
         $authService = AuthenticationService::instance();
         $authService->flagUserForUpdate($params['id']);
 
@@ -576,6 +575,7 @@ class AdminUserController {
         }
 
         $userService = UserService::instance();
+        $authService = AuthenticationService::instance();
         $user = $userService->getUserById($userId);
 
         if (empty($user)) {
@@ -584,6 +584,7 @@ class AdminUserController {
         }
 
         $userService->allButDeleteUser($user);
+        $authService->flagUserForUpdate($userId);
 
         $editUrl = Http::getBaseUrl() ."/admin/user/$userId/edit";
         $creds = Session::getCredentials();

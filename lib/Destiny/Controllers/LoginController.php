@@ -1,12 +1,12 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Authentication\AuthenticationHandler;
 use Destiny\Common\Authentication\AuthenticationRedirectionFilter;
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Authentication\DggOAuthService;
 use Destiny\Common\Exception;
@@ -97,11 +97,7 @@ class LoginController {
      * @Route ("/logout")
      */
     public function logout(): string {
-        if (Session::isStarted()) {
-            $redis = ChatRedisService::instance();
-            $redis->removeChatSession(Session::getSessionId());
-            Session::destroy();
-        }
+        AuthenticationService::instance()->removeWebSession();
         return 'redirect: /';
     }
 

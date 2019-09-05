@@ -250,6 +250,40 @@ class AuthenticationService extends Service {
     }
 
     /**
+     * @throws Exception
+     */
+    public function updateWebSession(array $user, string $provider = '') {
+        try {
+            $credentials = $this->buildUserCredentials($user, $provider);
+            //
+            $session = Session::instance();
+            foreach ($credentials->getData() as $name => $value) {
+                $session->set($name, $value);
+            }
+            $session->setCredentials($credentials);
+            //
+            $redisService = ChatRedisService::instance();
+            $sessionId = Session::getSessionId();
+            if (boolval($user['allowChatting'])) {
+                $redisService->setChatSession($credentials, $sessionId);
+                $redisService->sendRefreshUser($credentials);
+            } else {
+                $redisService->removeChatSession($sessionId);
+            }
+        } catch (\Exception $e) {
+            throw new Exception("Cannot update web session.", $e);
+        }
+    }
+
+    public function removeWebSession() {
+        if (Session::isStarted()) {
+            $redis = ChatRedisService::instance();
+            $redis->removeChatSession(Session::getSessionId());
+            Session::destroy();
+        }
+    }
+
+    /**
      * Flag a user session for update
      * So that on their next request, the session data is updated.
      * Also does a chat session refresh
@@ -282,32 +316,6 @@ class AuthenticationService extends Service {
     private function setUserUpdateFlag(int $userId) {
         $cache = Application::getNsCache();
         $cache->save("refreshusersession-$userId", time(), intval(ini_get('session.gc_maxlifetime')));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function updateWebSession(array $user, string $provider = '') {
-        try {
-            $credentials = $this->buildUserCredentials($user, $provider);
-            //
-            $session = Session::instance();
-            foreach ($credentials->getData() as $name => $value) {
-                $session->set($name, $value);
-            }
-            $session->setCredentials($credentials);
-            //
-            $redisService = ChatRedisService::instance();
-            $sessionId = Session::getSessionId();
-            if (boolval($user['allowChatting'])) {
-                $redisService->setChatSession($credentials, $sessionId);
-                $redisService->sendRefreshUser($credentials);
-            } else {
-                $redisService->removeChatSession($sessionId);
-            }
-        } catch (\Exception $e) {
-            throw new Exception("Cannot update web session.", $e);
-        }
     }
 
     private function getEmotesForValidation(): array {

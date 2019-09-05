@@ -99,7 +99,8 @@ class ProfileController {
      * @throws DBALException
      */
     public function changeUsername(array $params): string {
-        $userId = Session::getCredentials()->getUserId();
+        $credentials = Session::getCredentials();
+        $userId = $credentials->getUserId();
         try {
             FilterParams::required($params, 'username');
             $username = $params['username'];
@@ -113,6 +114,7 @@ class ProfileController {
                     'allowNameChange' => false,
                     'allowChatting' => true // TODO
                 ]);
+                $authService->updateWebSession($user, $credentials->getAuthProvider());
                 Session::setSuccessBag("Your username is now $username, excellent choice!");
             } else {
                 Session::setErrorBag("You aren't allowed to change your username.");

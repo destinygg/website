@@ -90,6 +90,11 @@ return [
             'client_secret' => '',
             'redirect_uri' => ''
         ],
+        'twitchbroadcaster' => [
+            'client_id' => '',
+            'client_secret' => '',
+            'redirect_uri' => ''
+        ],
         'streamelements' => [
             'client_id' => '',
             'client_secret' => '',
