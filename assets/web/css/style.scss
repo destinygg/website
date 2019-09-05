@@ -1936,3 +1936,11 @@ td.selector {
   cursor: pointer;
   width: 15px;
 }
+
+table[data-sort] {
+  thead td[data-sort]:hover,
+  thead td[data-sort].active {
+    cursor: pointer;
+    color: $text-color1;
+  }
+}

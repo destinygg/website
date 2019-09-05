@@ -246,19 +246,16 @@ class UserService extends Service {
               )
             ';
             $orders[] = '
-              ORDER BY CASE
+              CASE
                 WHEN u.username LIKE :wildcard2 THEN 0
                 WHEN u.username LIKE :wildcard3 THEN 1
                 WHEN u.username LIKE :wildcard4 THEN 2
                 WHEN u.username LIKE :wildcard4 THEN 4
                 WHEN u.username LIKE :wildcard4 THEN 5
               ELSE 3
-              END, u.username
+              END
             ';
-        } else {
-            $orders[] = ' ORDER BY u.userId DESC ';
         }
-
         if (!empty($params['feature'])) {
             $joins[] = ' INNER JOIN dfl_users_features f ON f.userId = u.userId AND f.featureId = :featureId ';
         }
@@ -269,6 +266,22 @@ class UserService extends Service {
             $clauses[] = ' u.userStatus = :userStatus ';
         }
 
+        if (!empty($params['sort'])) {
+            $sort = $params['sort'];
+            $order = $params['order'] ?? 'DESC';
+            switch (strtolower($sort)) {
+                case 'id' :
+                    $orders[] = " u.userId $order ";
+                    break;
+                case 'username' :
+                    $orders[] = " u.username $order ";
+                    break;
+                case 'status' :
+                    $orders[] = " u.userStatus $order ";
+                    break;
+            }
+        }
+
         $q = 'SELECT SQL_CALC_FOUND_ROWS u.userId, u.username, u.email, u.userStatus, u.createdDate FROM dfl_users AS u ';
         $q .= ' ' . join(PHP_EOL, $joins);
         if (count($clauses) > 0) {
@@ -277,7 +290,9 @@ class UserService extends Service {
         if (count($joins) > 0) {
             $q .= ' GROUP BY u.userId ';
         }
-        $q .= ' ' . join(PHP_EOL, $orders);
+        if (count($orders) > 0) {
+            $q .= ' ORDER BY ' . join(', ', $orders);
+        }
         $q .= ' LIMIT :start, :limit ';
 
         $conn = Application::getDbConn();

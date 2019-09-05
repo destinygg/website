@@ -65,6 +65,29 @@ import {debounce} from 'throttle-debounce'
             form.submit();
             return false;
         });
+
+        form.find('table[data-sort]').each(function(){
+            const tbl = $(this), sort = tbl.data('sort'),
+                columns = tbl.find(`thead td[data-sort]`),
+                column = tbl.find(`thead td[data-sort="${sort}"]`),
+                caret = $(`<i class="fas fa-caret-up mr-1"></i>`);
+            let order = tbl.data('order');
+            const applyCaret = order => {
+                return order === 'ASC' ? caret.removeClass('fa-caret-down').addClass('fa-caret-up') : caret.removeClass('fa-caret-up').addClass('fa-caret-down')
+            };
+            tbl.on('click', 'td[data-sort]', function(){
+                const $this = $(this);
+                if ($this.hasClass('active')) {
+                    order = order === 'ASC' ? 'DESC':'ASC';
+                }
+                form.find('input[name="sort"]').val($this.data('sort'));
+                form.find('input[name="order"]').val(order);
+                form.submit();
+                return false;
+            });
+            column.prepend(applyCaret(order)).addClass('active');
+        });
+
     });
 
     $('#flairs-selection').each(function(){

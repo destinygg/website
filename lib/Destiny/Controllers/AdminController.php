@@ -143,6 +143,12 @@ class AdminController {
         if (empty($params ['status'])) {
             $params['status'] = '';
         }
+        if (empty($params ['sort'])) {
+            $params['sort'] = 'id';
+        }
+        if (empty($params ['order'])) {
+            $params['order'] = 'DESC';
+        }
         $userService = UserService::instance();
         $model->user = Session::getCredentials()->getData();
         $model->features = $userService->getAllFeatures();
@@ -152,6 +158,8 @@ class AdminController {
         $model->sizes = [20, 60, 120, 250];
         $model->size = $params ['size'];
         $model->page = $params ['page'];
+        $model->sort = $params ['sort'];
+        $model->order = $params ['order'];
         $model->search = $params ['search'];
         $model->feature = $params ['feature'];
         $model->role = $params ['role'];

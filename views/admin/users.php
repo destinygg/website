@@ -18,7 +18,11 @@ use Destiny\Common\Utils\Date;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <form id="user-search-form" class="filter-form" role="form">
+        <form class="filter-form" role="form">
+
+            <input type="hidden" name="page" value="1" />
+            <input type="hidden" name="sort" value="<?=Tpl::out($this->sort)?>" />
+            <input type="hidden" name="order" value="<?=Tpl::out($this->order)?>" />
 
             <div class="content content-dark mb-3">
                 <div class="form-inline filters">
@@ -65,7 +69,6 @@ use Destiny\Common\Utils\Date;
                 <div data-size="<?=Tpl::out($this->size)?>" data-page="<?=Tpl::out($this->page)?>" class="stream stream-grid" style="width:100%;">
 
                     <div class="ds-block" style="display: flex;">
-                        <input type="hidden" name="page" value="1" />
 
                         <div class="form-inline" role="form" style="flex: 1;">
                             <?php if($this->users['totalpages'] > 1): ?>
@@ -98,12 +101,12 @@ use Destiny\Common\Utils\Date;
 
                     </div>
 
-                    <table class="grid">
+                    <table class="grid" data-sort="<?=Tpl::out($this->sort)?>" data-order="<?=Tpl::out($this->order)?>">
                         <thead>
                         <tr>
-                            <td>User <small>(<?=$this->users['total']?>)</small></td>
-                            <td>Status</td>
-                            <td>Created on</td>
+                            <td data-sort="username">User <small>(<?=$this->users['total']?>)</small></td>
+                            <td data-sort="status">Status</td>
+                            <td data-sort="id">Created on</td>
                         </tr>
                         </thead>
                         <tbody>
