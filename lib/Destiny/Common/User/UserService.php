@@ -297,7 +297,7 @@ class UserService extends Service {
         }
 
         $stmt->bindValue('start', ($params['page'] - 1) * $params['size'], PDO::PARAM_INT);
-        $stmt->bindValue('limit', $params['size'], PDO::PARAM_INT);
+        $stmt->bindValue('limit', (int) $params['size'], PDO::PARAM_INT);
         $stmt->execute();
 
         $pagination = [];
