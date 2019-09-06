@@ -88,7 +88,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
      */
     function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
-        if (empty($data) || !isset($data['preferred_username']) || empty($data['email'])) {
+        if (empty($data) || !isset($data['preferred_username'])) {
             throw new Exception ('Authorization failed, invalid user data');
         }
         return new OAuthResponse([
@@ -98,7 +98,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
             'username' => $data['preferred_username'],
             'authId' => (string) $data['sub'],
             'authDetail' => $data['preferred_username'],
-            'authEmail' => $data['email'],
+            'authEmail' => $data['email'] ?? '',
             'verified' => boolval($data['email_verified'] ?? false),
         ]);
     }
