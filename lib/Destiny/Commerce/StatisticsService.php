@@ -37,18 +37,18 @@ class StatisticsService extends Service {
      */
     public function getRevenueLastXMonths(int $months): array {
         $conn = Application::getDbConn();
-        $stmt = $conn->prepare ( '
+        $stmt = $conn->prepare('
             SELECT COUNT(*) `total`, SUM(amount) `sum`, DATE_FORMAT(paymentDate, \'%Y-%m-01\') `date`
             FROM `dfl_orders_payments`
             WHERE paymentStatus = :status
             AND paymentDate BETWEEN CURDATE()-INTERVAL :months MONTH AND CURDATE() + INTERVAL 1 DAY
             GROUP BY DATE_FORMAT(paymentDate, \'%Y%m\')
             ORDER BY paymentDate ASC
-        ' );
-        $stmt->bindValue ( 'months', $months, PDO::PARAM_INT );
-        $stmt->bindValue ( 'status', PaymentStatus::COMPLETED, PDO::PARAM_STR );
-        $stmt->execute ();
-        return $stmt->fetchAll ();
+        ');
+        $stmt->bindValue('months', $months, PDO::PARAM_INT);
+        $stmt->bindValue('status', PaymentStatus::COMPLETED, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     /**
@@ -102,7 +102,7 @@ class StatisticsService extends Service {
             ORDER BY s.createdDate ASC
         ');
         $stmt->bindValue('fromDate', $fromDate->format(Date::FORMAT), PDO::PARAM_STR);
-        $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_INT);
+        $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -121,7 +121,7 @@ class StatisticsService extends Service {
             ORDER BY d.timestamp ASC
         ');
         $stmt->bindValue('fromDate', $fromDate->format(Date::FORMAT), PDO::PARAM_STR);
-        $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_INT);
+        $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }
