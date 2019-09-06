@@ -96,7 +96,7 @@ class DiscordAuthHandler extends AbstractAuthHandler {
             'username' => $data['username'],
             'authId' => (string) $data['id'],
             'authDetail' => $data['username'],
-            'authEmail' => $data['email'],
+            'authEmail' => $data['email'] ?? '',
             'verified' => true,
             'discriminator' => (string) $data ['discriminator'],
         ]);

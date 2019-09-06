@@ -109,7 +109,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
             'authProvider' => $this->authProvider,
             'accessToken' => $token['access_token'],
             'refreshToken' => $token['refresh_token'] ?? '',
-            'username' => $data['streamlabs']['display_name'],
+            'username' => (string) $data['streamlabs']['display_name'],
             'authId' => (string) $data['streamlabs']['id'],
             'authDetail' => '',
             'authEmail' => '',

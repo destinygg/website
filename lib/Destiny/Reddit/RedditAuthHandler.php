@@ -91,9 +91,9 @@ class RedditAuthHandler extends AbstractAuthHandler {
             'accessToken' => $token['access_token'],
             'refreshToken' => $token['refresh_token'] ?? '',
             'authProvider' => $this->authProvider,
-            'username' => $data['name'],
+            'username' => $data['name'] ?? '',
             'authId' => (string) $data['id'],
-            'authDetail' => $data['name'],
+            'authDetail' => $data['name'] ?? '',
             'authEmail' => '',
             'verified' => boolval($data['has_verified_email'] ?? false),
         ]);

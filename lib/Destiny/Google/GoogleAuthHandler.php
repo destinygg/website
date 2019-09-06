@@ -91,8 +91,8 @@ class GoogleAuthHandler extends AbstractAuthHandler {
             'authProvider' => $this->authProvider,
             'username' => '',
             'authId' => (string) $data['id'],
-            'authDetail' => $data['hd'],
-            'authEmail' => $data['email'],
+            'authDetail' => $data['hd'] ?? '',
+            'authEmail' => $data['email'] ?? '',
             'verified' => boolval($data['verified_email'] ?? true),
         ]);
     }

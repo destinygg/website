@@ -109,10 +109,10 @@ class TwitterAuthHandler extends AbstractAuthHandler {
             'authProvider' => $this->authProvider,
             'accessToken' => $token['oauth_token'],
             'refreshToken' => '',
-            'username' => $data['screen_name'],
+            'username' => $data['screen_name'] ?? '',
             'authId' => $data['id_str'],
-            'authDetail' => $data['screen_name'],
-            'authEmail' => $data['email'],
+            'authDetail' => $data['screen_name'] ?? '',
+            'authEmail' => $data['email'] ?? '',
             'verified' => true //$data['verified'], this is not email verified
         ]);
     }
