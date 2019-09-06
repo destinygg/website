@@ -18,8 +18,9 @@ class LastFmFeed implements TaskInterface {
         if (!empty ($json)) {
             foreach ($json ['recenttracks'] ['track'] as $i => $track) {
                 $path = ImageDownloadUtil::download($track['image'][1]['#text']);
-                if (!empty($path))
+                if (!empty($path)) {
                     $json ['recenttracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdni() . '/' . $path;
+                }
             }
             $cache = Application::getNsCache();
             $cache->save('recenttracks', $json);
@@ -28,8 +29,9 @@ class LastFmFeed implements TaskInterface {
         if (!empty ($json)) {
             foreach ($json ['toptracks'] ['track'] as $i => $track) {
                 $path = ImageDownloadUtil::download($track['image'][1]['#text']);
-                if (!empty($path))
+                if (!empty($path)) {
                     $json ['toptracks'] ['track'] [$i] ['image'][1]['#text'] = Config::cdni() . '/' . $path;
+                }
             }
             $cache = Application::getNsCache();
             $cache->save('toptracks', $json);
