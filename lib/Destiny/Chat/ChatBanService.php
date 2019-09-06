@@ -15,7 +15,7 @@ class ChatBanService extends Service {
      * @return array|false
      * @throws DBALException
      */
-    public function getUserActiveBan(int $userId, string $ipaddress = "") {
+    public function getUserActiveBan(int $userId, string $ipaddress = null) {
         $conn = Application::getDbConn();
         if(empty($ipaddress)) {
             $stmt = $conn->prepare('

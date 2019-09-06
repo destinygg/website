@@ -11,7 +11,7 @@ class Tpl {
         return json_encode($var, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
     }
 
-    public static function out($var, string $default = ''): string {
+    public static function out($var, string $default = null): string {
         if ($var instanceof Exception) {
             $var = $var->getMessage();
         }
@@ -32,7 +32,7 @@ class Tpl {
         return "<title>$str</title>\r\n";
     }
 
-    public static function moment(DateTime $date, string $format = '', string $momentFormat = 'MMMM Do, h:mm:ss a, YYYY'): string {
+    public static function moment(DateTime $date, string $format = null, string $momentFormat = 'MMMM Do, h:mm:ss a, YYYY'): string {
         return sprintf('<time title="%s" data-moment="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $momentFormat, $date->format($format));
     }
 
