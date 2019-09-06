@@ -10,6 +10,7 @@ use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Authentication\DggOAuthService;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
@@ -117,6 +118,7 @@ class LoginController {
             return $redirectFilter->execute();
         } catch (\Exception $e) {
             Session::setErrorBag($e->getMessage());
+            Log::error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return 'redirect: /login';
         }
     }
