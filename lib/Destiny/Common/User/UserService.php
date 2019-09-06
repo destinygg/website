@@ -242,6 +242,7 @@ class UserService extends Service {
                 u.username LIKE :wildcard1
                 OR u.email LIKE :wildcard1
                 OR a.authDetail LIKE :wildcard1
+                OR a.authEmail LIKE :wildcard1
                 OR a.authId LIKE :wildcard1
               )
             ';
