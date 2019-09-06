@@ -94,8 +94,8 @@ class AuthenticationRedirectionFilter {
             }
             $userId = $userService->addUser([
                 'username' => $username,
-                'allowChatting' => false,
-                'allowNameChange' => true,
+                'allowChatting' => 0,
+                'allowNameChange' => 1,
                 'userStatus' => UserStatus::ACTIVE,
             ]);
 

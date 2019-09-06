@@ -111,8 +111,8 @@ class ProfileController {
                 $authService->validateUsername($username);
                 $userService->updateUser($userId, [
                     'username' => $username,
-                    'allowNameChange' => false,
-                    'allowChatting' => true // TODO
+                    'allowNameChange' => 0,
+                    'allowChatting' => 1 // TODO
                 ]);
                 $authService->updateWebSession($user, $credentials->getAuthProvider());
                 Session::setSuccessBag("Your username is now $username, excellent choice!");
