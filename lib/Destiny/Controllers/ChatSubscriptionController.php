@@ -92,7 +92,7 @@ class ChatSubscriptionController {
                 'messageid' => $message['id'],
                 'message' => $message['message'],
                 'username' => $user['username'],
-                'userid' => $user['userId'],
+                //'userid' => $user['userId'], // TODO
                 'targetusername' => $targetuser['username'],
                 'targetuserid' => $targetuser['userId']
             ]);
