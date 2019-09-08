@@ -118,8 +118,10 @@ class ProfileController {
                 ]);
                 $authService->updateWebSession($user, $creds->getAuthProvider());
                 Session::setSuccessBag("Your username is now $username, excellent choice!");
-                $messenger = DiscordMessenger::instance();
-                $messenger->send("{user} has updated their username from $original.", [], $user);
+                if ($original == $username) {
+                    $messenger = DiscordMessenger::instance();
+                    $messenger->send("{user} has changed their username from $original.", [], $user);
+                }
             } else {
                 Session::setErrorBag("You aren't allowed to change your username.");
             }

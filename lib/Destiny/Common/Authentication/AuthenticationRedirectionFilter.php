@@ -101,8 +101,7 @@ class AuthenticationRedirectionFilter {
 
             $messenger = DiscordMessenger::instance();
             $messenger->send("{user} created a new account.", [['fields' => [
-                ['title' => 'Provider', 'value' => $provider, 'short' => false],
-                ['title' => 'Email', 'value' => $email, 'short' => true],
+                ['title' => 'Provider', 'value' => $provider, 'short' => true],
                 ['title' => 'Username', 'value' => $username, 'short' => true],
             ]]], ['userId' => $userId, 'username' => $username]);
 
