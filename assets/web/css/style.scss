@@ -112,6 +112,12 @@ label small {
   border-top-color: black;
   border-left-color: black;
 }
+select.form-control {
+  box-shadow: inset 0px -4px 10px rgba(0, 0, 0, 0.2);
+  border-top-color: #2D2D2D;
+  border-left-color: #2D2D2D;
+  border-bottom-color: #333333;
+}
 .form-control:focus {
   background-color: #1B1B1B;
   border-color: #007bff;
@@ -131,6 +137,7 @@ fieldset[disabled] .form-control {
 .form-control:focus::placeholder {
   color: $text-color2;
 }
+
 
 form.form-alt {
   .form-control,alerts-container
@@ -1437,12 +1444,19 @@ img.img_64x64 {
     justify-content: center;
     align-items: center;
     position: relative;
+    flex-direction: column;
 
-    img {
+    a, img {
+      display: block;
       max-height: 100%;
       max-width: 100%;
       width: auto;
       height: auto;
+    }
+
+    img.is-loading,
+    img.is-invalid {
+      padding: 1em;
     }
     .fa {
       color: $text-color-disabled;
@@ -1487,11 +1501,30 @@ body.drag-over .image-view {
   flex-wrap: wrap;
   margin: -1rem -1rem 0 -1rem;
 
+  .preview-icon {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    i {
+      font-size: 1.5em;
+    }
+    &:hover i {
+      color: $text-color;
+      cursor: pointer;
+    }
+  }
+
   .image-grid-item {
     display: flex;
     border-radius: 5px;
     flex-direction: column;
     width: 12.5%;
+    &:hover {
+      .preview-icon {
+        display: block;
+      }
+    }
   }
   .image-view {
     margin: 1rem 1rem 0 1rem;
@@ -1506,6 +1539,22 @@ body.drag-over .image-view {
     i {
       color: $text-color3;
     }
+    img.is-loading,
+    img.is-invalid {
+      padding: 1em;
+      border-radius: 5px;
+      opacity: 0.75;
+    }
+  }
+  .image-view > a {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    cursor: pointer;
   }
 
   .image-info {
@@ -1943,4 +1992,8 @@ table[data-sort] {
     cursor: pointer;
     color: $text-color1;
   }
+}
+
+.bad-image-placeholder {
+  background-image: url("../img/image-bad.svg");
 }

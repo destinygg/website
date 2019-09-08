@@ -58,6 +58,13 @@ class TestApi extends PHPUnit\Framework\TestCase {
         self::assertNotEmpty($json);
     }
 
+    public function testTwitchBroadcastStatus() {
+        $apiService = TwitchApiService::instance();
+        $json = $apiService->getPastBroadcasts(Config::$a['twitch']['id'], 4);
+        echo json_encode($json, JSON_PRETTY_PRINT);
+        self::assertNotEmpty($json);
+    }
+
     public function testTwitchApiLive() {
         $apiService = TwitchApiService::instance();
         $json = $apiService->getStreamLiveDetails(Config::$a['twitch']['id']);

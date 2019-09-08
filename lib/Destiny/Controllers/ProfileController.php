@@ -99,14 +99,16 @@ class ProfileController {
      * @throws DBALException
      */
     public function changeUsername(array $params): string {
-        $credentials = Session::getCredentials();
-        $userId = $credentials->getUserId();
+        $creds = Session::getCredentials();
+        $userId = $creds->getUserId();
         try {
             FilterParams::required($params, 'username');
             $username = $params['username'];
             $userService = UserService::instance();
             $user = $userService->getUserById($userId);
             if (boolval($user['allowNameChange'])) {
+                $original = $user['username'];
+                $user['username'] = $username;
                 $authService = AuthenticationService::instance();
                 $authService->validateUsername($username);
                 $userService->updateUser($userId, [
@@ -114,8 +116,10 @@ class ProfileController {
                     'allowNameChange' => 0,
                     'allowChatting' => 1 // TODO
                 ]);
-                $authService->updateWebSession($user, $credentials->getAuthProvider());
+                $authService->updateWebSession($user, $creds->getAuthProvider());
                 Session::setSuccessBag("Your username is now $username, excellent choice!");
+                $messenger = DiscordMessenger::instance();
+                $messenger->send("{user} has updated their username from $original.", [], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
             } else {
                 Session::setErrorBag("You aren't allowed to change your username.");
             }
@@ -578,7 +582,7 @@ class ProfileController {
             $redis->removeChatSession(Session::getSessionId());
 
             $messenger = DiscordMessenger::instance();
-            $messenger->send("<". Http::getBaseUrl() ."/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has requested account deletion.");
+            $messenger->send("{user} has requested account deletion.", [], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
 
             Session::destroy();
             return 'profile/deleted';

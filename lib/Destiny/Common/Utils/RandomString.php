@@ -10,10 +10,11 @@ namespace Destiny\Common\Utils;
  */
 class RandomString {
 
-    protected static $alphabetFull = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._~=$|![]#%@+<>/';
-    protected static $alphabetAlphaNumeric = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    public static $alphabetFull = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._~=$|![]#%@+<>/';
+    public static $alphabetAlphaNumeric = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    public static $alphabetOnly = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-    private static function guid(int $length, string $alphabet): string {
+    public static function guid(int $length, string $alphabet): string {
         $token = '';
         for ($i = 0; $i < $length; $i++) {
             $token .= $alphabet[self::getRandomInteger(0, strlen($alphabet))];

@@ -118,7 +118,7 @@ class LoginController {
             return $redirectFilter->execute();
         } catch (\Exception $e) {
             Session::setErrorBag($e->getMessage());
-            Log::error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::warn($e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return 'redirect: /login';
         }
     }

@@ -586,10 +586,9 @@ class AdminUserController {
         $userService->allButDeleteUser($user);
         $authService->flagUserForUpdate($userId);
 
-        $editUrl = Http::getBaseUrl() ."/admin/user/$userId/edit";
         $creds = Session::getCredentials();
         $messenger = DiscordMessenger::instance();
-        $messenger->send("<$editUrl|{$user['username']}> account has been deleted by {$creds->getUsername()}.");
+        $messenger->send("{user} account has been deleted by {$creds->getUsername()}.", [], ['userId' => $userId, 'username' => $user['username']]);
 
         Session::setSuccessBag('User deleted');
         return "redirect: /admin/user/$userId/edit";

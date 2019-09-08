@@ -284,6 +284,17 @@ CREATE TABLE `users_deleted` (
   KEY `userid` (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `themes` (
+  `id` int(14) NOT NULL AUTO_INCREMENT,
+  `prefix` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `label` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `active` tinyint(1) DEFAULT '0',
+  `color` varchar(14) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `createdDate` datetime DEFAULT NULL,
+  `modifiedDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

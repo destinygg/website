@@ -24,7 +24,7 @@ class ImageService extends Service {
     /**
      * @throws DBALException
      */
-    function addImage(array $img, string $tag = ''): int {
+    function insertImage(array $img, string $tag = ''): int {
         $conn = Application::getDbConn();
         $conn->insert('images', [
             'label' => $img ['label'],
@@ -78,8 +78,15 @@ class ImageService extends Service {
         return $stmt->fetchAll();
     }
 
-    function removeImageFile(string $name, string $destination): bool {
-        return unlink($destination . $name);
+    function removeImageFile(array $image, string $path): bool {
+        return unlink($path . $image['name']);
+    }
+
+    function copyImageFile(array $image, string $path): string {
+        $ext = array_search($image['type'], self::ALLOW_TYPES, true);
+        $newName = uniqid() . ".$ext";
+        copy($path . $image['name'], $path . $newName);
+        return $newName;
     }
 
     function upload(array $upload, string $destination = null): array {

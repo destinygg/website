@@ -29,6 +29,7 @@ class EmoteService extends Service {
             'twitch' => $emote['twitch'],
             'draft' => $emote['draft'],
             'styles' => $emote['styles'],
+            'theme' => $emote['theme'],
             'modifiedDate' => Date::getSqlDateTime()
         ], ['id' => $id]);
     }
@@ -44,6 +45,7 @@ class EmoteService extends Service {
             'twitch' => $emote['twitch'],
             'draft' => $emote['draft'],
             'styles' => $emote['styles'],
+            'theme' => $emote['theme'],
             'createdDate' => Date::getSqlDateTime(),
             'modifiedDate' => Date::getSqlDateTime()
         ]);
@@ -61,6 +63,47 @@ class EmoteService extends Service {
 
     /**
      * @throws DBALException
+     * @throws InvalidArgumentException
+     */
+    function removeEmoteByTheme(int $themeId) {
+        $conn = Application::getDbConn();
+        $conn->delete('emotes', ['theme' => $themeId]);
+    }
+
+    /**
+     * @throws DBALException
+     */
+    function findAllEmotesWithTheme($themeId = null, $publishedOnly = false): array {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('
+            SELECT
+              e2.*, 
+              i.name as `imageName`, 
+              i.label as `imageLabel`, 
+              i.type as `imageType`, 
+              i.size, 
+              i.width, 
+              i.height 
+            FROM (
+              SELECT e.prefix, MAX(e.theme) \'theme\' FROM emotes e
+              WHERE e.theme = :theme OR e.theme = :base
+              '. ($publishedOnly ? ' AND e.draft = 0 ' : '' ) .'
+              GROUP BY e.prefix
+            ) e
+            JOIN emotes e2 ON e2.prefix = e.prefix 
+            AND (e2.theme = e.theme OR e2.theme = :base AND e.theme = :base)
+            LEFT JOIN images i ON i.id = e2.imageId
+            '. ($publishedOnly ? ' WHERE e2.draft = 0 ' : '' ) .'
+            ORDER BY e2.twitch ASC, e2.prefix ASC, e2.id DESC
+         ');
+        $stmt->bindValue('theme', (int) $themeId, PDO::PARAM_INT);
+        $stmt->bindValue('base', ThemeService::BASE_THEME_ID, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * @throws DBALException
      */
     function findAllEmotes(): array {
         $conn = Application::getDbConn();
@@ -69,6 +112,7 @@ class EmoteService extends Service {
               e.*, 
               i.name as `imageName`, 
               i.label as `imageLabel`, 
+              i.type as `imageType`, 
               i.size, 
               i.width, 
               i.height 
@@ -84,30 +128,6 @@ class EmoteService extends Service {
      * @return array|false
      * @throws DBALException
      */
-    function findEmoteByPrefix(string $prefix) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT 
-              e.*, 
-              i.name as `imageName`, 
-              i.label as `imageLabel`, 
-              i.size, 
-              i.width, 
-              i.height 
-             FROM emotes e 
-             LEFT JOIN images i ON i.id = e.imageId
-             WHERE e.prefix = :prefix
-             LIMIT 0,1
-         ');
-        $stmt->bindValue('prefix', $prefix, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
-     * @return array|false
-     * @throws DBALException
-     */
     function findEmoteById(int $id) {
         $conn = Application::getDbConn();
         $stmt = $conn->prepare('
@@ -115,6 +135,7 @@ class EmoteService extends Service {
               e.*, 
               i.name as `imageName`, 
               i.label as `imageLabel`, 
+              i.type as `imageType`, 
               i.size, 
               i.width, 
               i.height 
@@ -129,91 +150,35 @@ class EmoteService extends Service {
     }
 
     /**
-     * @throws DBALException
-     */
-    public function getPublicEmotes(): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT 
-              e.prefix, 
-              e.twitch, 
-              e.styles,
-              i.name as `image`, 
-              i.type as `mime`, 
-              i.width, 
-              i.height 
-             FROM emotes e 
-             LEFT JOIN images i ON i.id = e.imageId
-             WHERE e.draft = 0
-             ORDER BY e.id DESC
-         ');
-        $stmt->execute();
-        return array_map(function($v) {
-            return [
-                'prefix' => $v['prefix'],
-                'twitch' => boolval($v['twitch']),
-                'styles' => $v['styles'],
-                'image' => [[
-                    'url' => Config::cdnv() . '/emotes/' . $v['image'],
-                    'name' => $v['image'],
-                    'mime' => $v['mime'],
-                    'height' => intval($v['height']),
-                    'width' => intval($v['width']),
-                ]],
-            ];
-        }, $stmt->fetchAll());
-    }
-
-    /**
      * Save the css and json files set the cache key.
      */
     public function saveStaticFiles() {
-        $cache = Application::getNsCache();
-        $cacheKey = round(microtime(true) * 1000) . "." . rand(1000,9999);
-        $this->saveStaticCss($cacheKey);
-        $this->saveStaticJson($cacheKey);
-        $cache->save('chatCacheKey', $cacheKey);
+        try {
+            $cache = Application::getNsCache();
+            $cacheKey = round(microtime(true) * 1000) . "." . rand(1000,9999);
+
+            $themeService = ThemeService::instance();
+            $theme = $themeService->getActiveTheme();
+            $emotes = $this->findAllEmotesWithTheme($theme['id']);
+
+            $this->saveStaticCss($cacheKey, $emotes);
+            $this->saveStaticJson($cacheKey, $emotes);
+            $cache->save('chatCacheKey', $cacheKey);
+        } catch (Exception $e) {
+            Log::critical($e->getMessage());
+        }
     }
 
-    /**
-     * Save the static css file
-     */
-    private function saveStaticCss(string $cacheKey) {
+    private function saveStaticCss(string $cacheKey, array $emotes) {
         try {
             $filename = self::EMOTES_DIR . 'emotes.css.' . $cacheKey;
             $file = fopen($filename,'w+');
-
-            $emotes = array_filter($this->getPublicEmotes(), function($v) {
-                return !empty($v['prefix']);
-            });
-            $styles = array_filter($emotes, function($v) {
-                return !empty($v['styles']);
-            });
-
-            // Emote
             foreach ($emotes as $v) {
-                $name = $v['prefix'];
-                $img = $v['image'][0];
-                $marginTop = -intval($img['height']);
-                $offsetTop = intval($img['height']) * 0.25;
-                $c = ".emote.$name {\n";
-                $c .= "  background-image: url(\"{$img['name']}\");\n";
-                $c .= "  height: {$img['height']}px;\n";
-                $c .= "  width: {$img['width']}px;\n";
-                $c .= "}\n";
-                $c .= ".msg-chat .emote.$name {\n";
-                $c .= "  margin-top: {$marginTop}px;\n";
-                $c .= "  top: {$offsetTop}px;\n";
-                $c .= "}\n";
-                fwrite($file, $c);
+                fwrite($file, $this->buildEmoteCSS($v));
             }
-
-            // Styles
-            foreach ($styles as $v) {
-                $c = str_replace('{PREFIX}', $v['prefix'], $v['styles']) . PHP_EOL;
-                fwrite($file, $c);
+            foreach (array_filter($emotes, function($v) { return !empty($v['styles']); }) as $v) {
+                fwrite($file, $this->buildEmoteStyleCSS($v));
             }
-
             fclose($file);
             rename($filename, self::EMOTES_DIR . 'emotes.css');
         } catch (Exception $e) {
@@ -221,21 +186,66 @@ class EmoteService extends Service {
         }
     }
 
-    /**
-     * Save the static json file
-     */
-    private function saveStaticJson(string $cacheKey) {
+    private function saveStaticJson(string $cacheKey, array $emotes) {
         try {
             $filename = self::EMOTES_DIR . 'emotes.json.' . $cacheKey;
             $file = fopen($filename,'w+');
-            fwrite($file, json_encode(array_map(function($v){
-                unset($v['styles']);
-                return $v;
-            }, $this->getPublicEmotes())));
+            fwrite($file, json_encode(array_map(function($emote){ return [
+                'prefix' => $emote['prefix'],
+                'twitch' => boolval($emote['twitch']),
+                'theme' => $emote['theme'],
+                'image' => [[
+                    'url' => Config::cdnv() . '/emotes/' . $emote['imageName'],
+                    'name' => $emote['imageName'],
+                    'mime' => $emote['imageType'],
+                    'height' => intval($emote['height']),
+                    'width' => intval($emote['width']),
+                ]]
+            ]; }, $emotes)));
             fclose($file);
             rename($filename, self::EMOTES_DIR . 'emotes.json');
         } catch (Exception $e) {
             Log::critical($e->getMessage());
         }
+    }
+
+    function buildEmoteStyleCSS(array $emote): string {
+        return str_replace('{PREFIX}', $emote['prefix'], $emote['styles']) . PHP_EOL;
+    }
+
+    function buildEmoteCSS(array $emote, bool $relative = true): string {
+        $name = $emote['prefix'];
+        $img = is_array($emote['image'] ?? null) ? $emote['image'][0] : [
+            'name' => $emote['imageName'],
+            'height' => $emote['height'],
+            'width' => $emote['width']
+        ];
+        $url = $relative ? $img['name'] : Config::cdnv() . '/emotes/' . $img['name'];
+        $marginTop = -intval($img['height']);
+        $offsetTop = intval($img['height']) * 0.25;
+        $cssClass = ".emote.$name";
+        $c = "$cssClass {\n";
+        $c .= "  background-image: url(\"$url\");\n";
+        $c .= "  height: {$img['height']}px;\n";
+        $c .= "  width: {$img['width']}px;\n";
+        $c .= "}\n";
+        $c .= ".msg-chat $cssClass {\n";
+        $c .= "  margin-top: {$marginTop}px;\n";
+        $c .= "  top: {$offsetTop}px;\n";
+        $c .= "}\n";
+        return $c;
+    }
+
+    /**
+     * @throws DBALException
+     */
+    public function isPrefixTaken(string $prefix, int $theme, $exclude = null): bool {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare('SELECT COUNT(*) FROM emotes e WHERE e.prefix = :prefix AND e.theme = :theme AND e.id != :exclude');
+        $stmt->bindValue('exclude', $exclude, PDO::PARAM_INT);
+        $stmt->bindValue('prefix', $prefix, PDO::PARAM_STR);
+        $stmt->bindValue('theme', $theme, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
     }
 }

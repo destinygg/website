@@ -31,7 +31,7 @@ const $document = $(document),
 
     const getRootContainer = function(e) {
         return $('#alerts-container')
-    }
+    };
 
     const addAutoHideTimer = function($e, delay = 7000) {
         setTimeout(function(){
@@ -39,21 +39,21 @@ const $document = $(document),
                 $e.detach().remove()
             }
         }, delay)
-    }
+    };
 
     const ensureContainerLimit = function($c) {
         const alerts = $c.find('.alert-container');
         if (alerts.length > 2) {
             alerts.last().fadeOut(500, function(){ $(this).detach() });
         }
-    }
+    };
 
     const addToRootContainer = function(root, alert) {
         alert.prependTo(root);
         addAutoHideTimer(alert);
         ensureContainerLimit(root);
         setTimeout(() => { alert.addClass('show') }, 1);
-    }
+    };
 
     $.fn.alertSuccess = function(message){
         const root = getRootContainer(),
@@ -111,9 +111,14 @@ const $document = $(document),
             clone.one('load', function () {
                 img.replaceWith(clone);
             });
-            clone.removeClass('img_320x240 img_64x64')
+            clone.one('error', function () {
+                img.removeClass('is-loading')
+                    .addClass('is-invalid');
+            });
+            clone.removeClass('img_320x240 img_64x64 is-loading')
                 .removeAttr('data-src')
                 .attr('src', url);
+            img.addClass('is-loading');
         }
     });
 

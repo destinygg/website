@@ -88,7 +88,7 @@ use Destiny\Common\Utils\Date;
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" class="btn">Cancel</a>
+                    <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" class="btn btn-dark">Cancel</a>
                 </div>
 
             </form>

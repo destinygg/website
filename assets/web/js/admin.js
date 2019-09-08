@@ -137,7 +137,6 @@ import {debounce} from 'throttle-debounce'
         });
     });
 
-
     $('#emote-search').each(function(){
         const emoteSearch = $(this),
             emoteGrid = $('#emote-grid'),
@@ -151,8 +150,23 @@ import {debounce} from 'throttle-debounce'
             } else {
                 emotes.removeClass('hidden');
             }
-        })
-        emoteSearch.on('keydown', e => debounced(e))
+        });
+        emoteSearch.on('keydown', e => debounced(e));
+
+        $('.preview-icon').on('click', function(){
+            const emoteId = $(this).data('id');
+            const modal = $('#emotePreviewModal').modal({show: false});
+            $.ajax({
+                method: 'get',
+                url: '/admin/emotes/'+ emoteId +'/preview',
+                success: function(data) {
+                    const frame = $(data);
+                    modal.find('.modal-body').empty().append(frame);
+                    modal.modal({show: true});
+                }
+            });
+        });
+
     });
 
     $('#flair-search').each(function(){
@@ -168,8 +182,26 @@ import {debounce} from 'throttle-debounce'
             } else {
                 emotes.removeClass('hidden');
             }
-        })
-        emoteSearch.on('keydown', e => debounced(e))
+        });
+        emoteSearch.on('keydown', e => debounced(e));
+    });
+
+    $('#emoteEditPreviewBtn').on('click', function(){
+        const form = $(this).closest('form'),
+            modal = $('#emotePreviewModal').modal({show: false}),
+            prefix = form.find('#inputPrefix').val(),
+            styles = form.find('#inputStyles').val(),
+            imageId = form.find('#inputImage').val();
+        $.ajax({
+            method: 'post',
+            url: '/admin/emotes/preview',
+            data: {prefix, styles, imageId},
+            success: function(data) {
+                const frame = $(data);
+                modal.find('.modal-body').empty().append(frame);
+                modal.modal({show: true});
+            }
+        });
     });
 
     $(document)
@@ -273,19 +305,19 @@ $(function(){
 
         let mustCheckPrefix = true;
         const inputPrefix = $('#inputPrefix'),
+            inputTheme = $('#inputTheme'),
             emoteForm = $('#emote-form');
 
         function validateEmote() {
-            const prefixGroup = inputPrefix.closest('.form-group');
-            prefixGroup.removeClass('has-error');
+            inputPrefix.removeClass('is-invalid');
             $.ajax({
                 url: '/admin/emotes/prefix',
-                data: {id: emoteid, prefix: inputPrefix.val()},
+                data: {id: emoteid, theme: inputTheme.val(), prefix: inputPrefix.val()},
                 method: 'post',
                 success: res => {
-                    if (res['error']) {
+                    if (res['exists']) {
                         mustCheckPrefix = true;
-                        prefixGroup.addClass('has-error');
+                        inputPrefix.addClass('is-invalid');
                     } else {
                         mustCheckPrefix = false;
                         emoteForm.submit();
@@ -293,7 +325,7 @@ $(function(){
                 },
                 error: () => {
                     mustCheckPrefix = true;
-                    prefixGroup.addClass('has-error');
+                    inputPrefix.addClass('is-invalid');
                 }
             });
         }
@@ -310,12 +342,23 @@ $(function(){
     });
 
     $('#flair-content').each(function(){
-
         $('.delete-item').on('click', () => {
             if (confirm('This cannot be undone. Are you sure?')) {
                 $('#delete-form').submit();
             }
         });
-
     });
+
+    $('#theme-content').each(function(){
+        $('.delete-item').on('click', () => {
+            if (confirm('This cannot be undone. Are you sure?')) {
+                $('#delete-form').submit();
+            }
+        });
+    });
+
+    $('#themeSelect').on('change', function(){
+        window.location.href = '/admin/emotes?theme=' + $(this).val();
+    });
+
 });

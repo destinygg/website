@@ -147,7 +147,7 @@ use Destiny\Commerce\SubscriptionStatus;
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Update</button>
-                    <a href="/admin/users" class="btn">Cancel</a>
+                    <a href="/admin/users" class="btn btn-dark">Cancel</a>
                 </div>
 
             </form>

@@ -33,16 +33,15 @@ use Destiny\Common\Config;
 
                     <div class="image-view-group">
                         <div class="image-view image-view-upload" data-upload="/admin/flairs/upload" data-cdn="<?=Tpl::out(Config::cdnv())?>/flairs/">
+                            <input id="inputImage" name="imageId" type="hidden" value="<?=$this->flair['imageId']?>" />
                             <?php if(!empty($this->flair['imageName'])): ?>
-                                <img alt="<?=Tpl::out($this->flair['imageName'])?>" width="<?=Tpl::out($this->flair['width'])?>" height="<?=Tpl::out($this->flair['height'])?>" src="<?=Config::cdnv()?>/flairs/<?=Tpl::out($this->flair['imageName'])?>" />
+                                <img class="is-loading" alt="<?=Tpl::out($this->flair['imageName'])?>" width="<?=Tpl::out($this->flair['width'])?>" height="<?=Tpl::out($this->flair['height'])?>" src="<?=Config::cdnv()?>/img/image-bad.svg" data-src="<?=Config::cdnv()?>/flairs/<?=Tpl::out($this->flair['imageName'])?>" />
                             <?php else: ?>
                                 <i class="fas fa-fw fa-upload fa-3x"></i>
                             <?php endif; ?>
                             <i class="fas fa-fw fa-cog fa-spin fa-3x"></i>
-                            <input name="imageId" type="hidden" value="<?=$this->flair['imageId']?>" />
                         </div>
                     </div>
-
 
                     <p class="ds-block text-muted">
                         <?php if(!empty($this->emote['imageName'])): ?>
@@ -114,9 +113,9 @@ use Destiny\Common\Config;
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="/admin/flairs" class="btn">Cancel</a>
+                    <a href="/admin/flairs" class="btn btn-dark">Cancel</a>
                     <?php if(!empty($this->flair['featureId']) && $this->flair['locked'] == 0): ?>
-                        <a class="btn btn-danger float-right delete-item">Delete</a>
+                        <button type="button" class="btn btn-danger float-right delete-item">Delete</button>
                     <?php endif; ?>
                 </div>
             </form>

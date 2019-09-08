@@ -47,13 +47,14 @@ class AdminFlairsController {
      *
      * @throws FilterParamsException
      * @throws DBALException
+     * @throws Exception
      */
     public function editFlair(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
         $flairsService = FlairService::instance();
         $flair = $flairsService->findFlairById($params['id']);
         if (empty($flair)) {
-            throw new RuntimeException('Flair not found.');
+            throw new Exception('Flair not found.');
         }
         $model->title = 'Flair';
         $model->flair = $flair;
@@ -165,7 +166,7 @@ class AdminFlairsController {
         return array_map(function($file) {
             $imageService = ImageService::instance();
             $upload = $imageService->upload($file, FlairService::FLAIRS_DIR);
-            return $imageService->findImageById($imageService->addImage($upload, 'flairs'));
+            return $imageService->findImageById($imageService->insertImage($upload, 'flairs'));
         }, ImageService::diverseArray($_FILES['files']));
     }
 
@@ -191,7 +192,7 @@ class AdminFlairsController {
             }
             $flairsService->removeFlairById($flair['featureId']);
             $image = $imageService->findImageById($flair['imageId']);
-            $imageService->removeImageFile($image['name'], FlairService::FLAIRS_DIR);
+            $imageService->removeImageFile($image, FlairService::FLAIRS_DIR);
             $imageService->removeImageById($image['id']);
         }
         Session::setSuccessBag('Flair '. $flair['featureLabel'] .' deleted.');

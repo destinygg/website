@@ -334,7 +334,6 @@ class UserService extends Service {
      */
     public function findByNewBDay(): array {
         $conn = Application::getDbConn();
-        $featureId = $this->getFeatureIdByName(UserFeature::DGGBDAY);
         $stmt = $conn->prepare("
             SELECT DISTINCT u.userId, u.createdDate, TIMESTAMPDIFF(YEAR, u.createdDate, CURDATE())+1 `years` FROM dfl_users u 
             LEFT JOIN dfl_users_features uf ON (uf.userId = u.userId AND uf.featureId = :featureId)
@@ -343,7 +342,7 @@ class UserService extends Service {
             AND TIMESTAMPDIFF(YEAR, u.createdDate, CURDATE()) > 0
             AND uf.featureId IS NULL
          ");
-        $stmt->bindValue('featureId', $featureId, PDO::PARAM_INT);
+        $stmt->bindValue('featureId', $this->getFeatureIdByName(UserFeature::DGGBDAY), PDO::PARAM_INT);
         $stmt->bindValue('userStatus', UserStatus::ACTIVE, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();

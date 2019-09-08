@@ -17,7 +17,7 @@ class CleanImageUploads implements TaskInterface {
             $imageService = ImageService::instance();
             $images = $imageService->getAllOrphanedImages();
             foreach ($images as $image) {
-                $imageService->removeImageFile($image['name'], _BASEDIR . '/static/'. $image['tag'] .'/');
+                $imageService->removeImageFile($image, _BASEDIR . '/static/'. $image['tag'] .'/');
                 $imageService->removeImageById($image['id']);
             }
         } catch (Exception $e) {

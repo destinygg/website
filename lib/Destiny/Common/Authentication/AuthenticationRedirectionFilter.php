@@ -100,7 +100,11 @@ class AuthenticationRedirectionFilter {
             ]);
 
             $messenger = DiscordMessenger::instance();
-            $messenger->send("<" . Http::getBaseUrl() . "/admin/user/$userId/edit|$username> has registered a new user");
+            $messenger->send("{user} created a new account.", [['fields' => [
+                ['title' => 'Provider', 'value' => $provider, 'short' => false],
+                ['title' => 'Email', 'value' => $email, 'short' => true],
+                ['title' => 'Username', 'value' => $username, 'short' => true],
+            ]]], ['userId' => $userId, 'username' => $username]);
 
             $user = $userService->getUserById($userId);
         } else {

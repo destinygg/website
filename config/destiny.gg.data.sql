@@ -38,3 +38,8 @@ INSERT INTO `dfl_features` (`featureId`, `featureName`, `featureLabel`) VALUES
    (20,	'flair19',	'DGG Shirt Designer'),
    (21,	'flair13',	'Subscriber Tier 1'),
    (22,	'flair9',	'Twitch Subscriber');
+
+INSERT  INTO `themes`(`id`,`prefix`,`label`,`active`,`color`,`createdDate`,`modifiedDate`) VALUES
+(1,'destiny','Dgg',1,'#1e1e1e','2019-09-07 09:54:41','2019-09-08 18:06:24'),
+(2,'xmas','Xmas',0,'#EE1F1F','2019-09-07 22:19:50','2019-09-08 18:06:15'),
+(3,'halloween','Halloween',0,'#E79015','2019-09-07 12:38:02','2019-09-08 18:06:24');

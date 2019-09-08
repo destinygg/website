@@ -147,7 +147,7 @@ class SubscriptionController {
             $note = $params['message'] ?? '';
             if (!empty($message)) {
                 $messenger = DiscordMessenger::instance();
-                $messenger->send("<" . Http::getBaseUrl() . "/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has cancelled a subscription. Note: $note");
+                $messenger->send("{user} has cancelled a subscription.", [['text' => $note]], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
             }
 
             $authService->flagUserForUpdate($subscription ['userId']);
@@ -474,23 +474,18 @@ class SubscriptionController {
             if (!empty($subscribeMessage) && !empty(trim($subscribeMessage))) {
                 $message = mb_substr($broadcastMessage, 0, 250);
                 $messenger = DiscordMessenger::instance();
-                $messenger->send("<" . Http::getBaseUrl() . "/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}> has subscribed. Note: $message");
+                $messenger->send("{user} has subscribed.", [['text' => $message]], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
             }
 
-        } catch (\Exception $e) {
-            $n = new Exception("Error sending subscription broadcast.", $e);
-            Log::error($n);
+        } catch (Exception $e) {
+            Log::error("Error sending subscription broadcast. {$e->getMessage()}");
         }
 
         // Update the user
-        try {
-            $authService->flagUserForUpdate($user['userId']);
-        } catch (\Exception $e) {
-            Log::error($e);
-        }
+        $authService->flagUserForUpdate($user['userId']);
 
         // Redirect to completion page
-        return 'redirect: /subscription/' . urlencode($subscription['subscriptionId']) . '/complete';
+        return "redirect: /subscription/{$subscription['subscriptionId']}/complete";
     }
 
     /**

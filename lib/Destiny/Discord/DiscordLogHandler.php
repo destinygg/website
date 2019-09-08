@@ -22,7 +22,6 @@ class DiscordLogHandler extends AbstractProcessingHandler {
             $username = !empty($creds) && $creds->isValid() ? "<". Http::getBaseUrl() ."/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : 'None';
             //
             $url = $_SERVER['REQUEST_URI'] ?? '';
-            $address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '';
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
             $fields = [];
             if (!empty($url)) {
@@ -39,16 +38,9 @@ class DiscordLogHandler extends AbstractProcessingHandler {
                     'short' => false
                 ];
             }
-            if (!empty($address)) {
-                $fields[] = [
-                    'title' => 'Address',
-                    'value' => $address,
-                    'short' => true
-                ];
-            }
             $attachment = [
                 'color' => $color,
-                'text' => $record['context']['trace'] ?? 'No stack trace.',
+                //'text' => $record['context']['trace'] ?? 'No stack trace.',
                 'fields' => $fields
             ];
 
