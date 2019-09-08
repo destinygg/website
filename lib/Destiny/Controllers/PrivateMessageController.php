@@ -108,7 +108,7 @@ class PrivateMessageController {
                     'messageid' => $message['id'],
                     'message' => $message['message'],
                     'username' => $sessionCredentials->getUsername(), // non-lowercase
-                    //'userid' => $userId, // TODO
+                    'userid' => $userId, // TODO
                     'targetusername' => $targetuser['username'],
                     'targetuserid' => $targetuser['userId']
                 ]);

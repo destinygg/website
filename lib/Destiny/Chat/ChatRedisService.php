@@ -108,7 +108,7 @@ class ChatRedisService extends Service {
             'messageid' => $d['messageid'],
             'message' => $d['message'],
             'username' => $d['username'],
-            'userid' => $d['userid'],
+            //'userid' => $d['userid'],
             'targetusername' => $d['targetusername'],
             'targetuserid' => $d['targetuserid']
         ]));
