@@ -125,7 +125,7 @@ class ProfileController {
             }
         } catch (Exception $e) {
             Session::setErrorBag("Failed to change username. {$e->getMessage()}");
-            Log::error("Failed to change username $userId. {$e->getMessage()}");
+            Log::warn("Failed to change username $userId. {$e->getMessage()}");
         }
         return 'redirect: /profile';
     }

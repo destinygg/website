@@ -105,12 +105,12 @@ class ChatRedisService extends Service {
 
     public function publishPrivateMessage(array $d): int {
         return $this->redis->publish("privmsg-$this->redisdb", json_encode([
-            'messageid' => $d['messageid'],
+            'messageid' => "{$d['messageid']}",
             'message' => $d['message'],
             'username' => $d['username'],
             //'userid' => $d['userid'],
-            'targetusername' => $d['targetusername'],
-            'targetuserid' => $d['targetuserid']
+            //'targetusername' => $d['targetusername'],
+            'targetuserid' => "{$d['targetuserid']}"
         ]));
     }
 
