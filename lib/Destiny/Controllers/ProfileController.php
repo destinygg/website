@@ -120,7 +120,7 @@ class ProfileController {
                 Session::setSuccessBag("Your username is now $username, excellent choice!");
                 if ($original != $username) {
                     $messenger = DiscordMessenger::instance();
-                    $messenger->send("{user} has changed their username from $original.", [], $user);
+                    $messenger->send("{user} has changed their username from $original.", [], []);
                 }
             } else {
                 Session::setErrorBag("You aren't allowed to change your username.");

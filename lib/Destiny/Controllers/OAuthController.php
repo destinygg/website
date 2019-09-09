@@ -43,7 +43,7 @@ class OAuthController {
             $params['code_challenge_method'] = isset($params['code_challenge_method']) ? $params['code_challenge_method'] : 'S256';
 
             $oauthService = DggOAuthService::instance();
-            $client = $oauthService->ensureAuthClient($params['client_id']);
+            $client = $oauthService->ensureAuthClient((string) $params['client_id']);
 
             if ($params['response_type'] != 'code') {
                 throw new Exception("response_type must be 'code'");
@@ -121,7 +121,7 @@ class OAuthController {
         FilterParams::required($params, 'code_verifier');   // The code verifier for the PKCE request, that the app originally generated before the authorization request.
 
         $oauthService = DggOAuthService::instance();
-        $client = $oauthService->ensureAuthClient($params['client_id']);
+        $client = $oauthService->ensureAuthClient((string) $params['client_id']);
         $data = $oauthService->getFlashStore($params['code'], 'code');
 
         $codeVerifier = $params['code_verifier'] . $client['clientSecret'];
@@ -163,7 +163,7 @@ class OAuthController {
         FilterParams::required($params, 'refresh_token');   // The refresh token from the original /oauth/authorize request
 
         $oauthService = DggOAuthService::instance();
-        $client = $oauthService->ensureAuthClient($params['client_id']);
+        $client = $oauthService->ensureAuthClient((string) $params['client_id']);
         $auth = $oauthService->getAccessTokenByRefreshAndClientId($params['refresh_token'], $client['clientId']);
 
         if (empty($auth)) {

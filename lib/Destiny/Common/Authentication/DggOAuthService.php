@@ -18,7 +18,7 @@ class DggOAuthService extends Service {
      * @throws Exception
      * @throws DBALException
      */
-    public function ensureAuthClient(int $clientId): array {
+    public function ensureAuthClient(string $clientId): array {
         $data = $this->getAuthClientByCode($clientId);
         if (empty($data)) {
             throw new Exception('Invalid client_id');
