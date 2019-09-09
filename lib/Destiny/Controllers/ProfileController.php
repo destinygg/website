@@ -103,10 +103,10 @@ class ProfileController {
         $userId = $creds->getUserId();
         try {
             FilterParams::required($params, 'username');
-            $username = $params['username'];
             $userService = UserService::instance();
             $user = $userService->getUserById($userId);
             if (boolval($user['allowNameChange'])) {
+                $username = $params['username'];
                 $original = $user['username'];
                 $user['username'] = $username;
                 $authService = AuthenticationService::instance();
@@ -118,7 +118,7 @@ class ProfileController {
                 ]);
                 $authService->updateWebSession($user, $creds->getAuthProvider());
                 Session::setSuccessBag("Your username is now $username, excellent choice!");
-                if ($original == $username) {
+                if ($original != $username) {
                     $messenger = DiscordMessenger::instance();
                     $messenger->send("{user} has changed their username from $original.", [], $user);
                 }
