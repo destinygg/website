@@ -237,7 +237,7 @@ class AdminEmotesController {
      *
      * @throws DBALException
      */
-    public function emoteCopy(array $params, ViewModel $model): string {
+    public function emoteCopy(array $params): string {
         try {
             FilterParams::required($params, 'id');
             FilterParams::required($params, 'theme');

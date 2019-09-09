@@ -23,7 +23,6 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Discord\DiscordMessenger;
 use Destiny\Google\GoogleRecaptchaHandler;

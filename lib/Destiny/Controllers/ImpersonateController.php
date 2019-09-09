@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Controllers;
 
-use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;

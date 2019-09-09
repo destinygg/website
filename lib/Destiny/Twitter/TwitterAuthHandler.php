@@ -82,7 +82,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    private function getUserInfo(string $accessToken): array {
+    private function getUserInfo(): array {
         $response = $this->getHttpClient()->get("$this->apiBase/account/verify_credentials.json?include_email=true&include_entities=false&skip_status=true", [
             'headers' => ['User-Agent' => Config::userAgent()],
             'auth' => 'oauth',
@@ -101,7 +101,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
      * @throws Exception
      */
     function mapTokenResponse(array $token): OAuthResponse {
-        $data = $this->getUserInfo($token['oauth_token']);
+        $data = $this->getUserInfo();
         if (empty($data) || !isset($data['id_str']) || empty($data['id_str'])) {
             throw new Exception ('Authorization failed, invalid user data');
         }

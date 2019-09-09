@@ -444,41 +444,35 @@ class SubscriptionController {
         }
 
         // Broadcast
-        try {
 
-            // Broadcast the subscription
-            if (!empty($subscription['gifter'])) {
-                $gifter = $userService->getUserById($subscription['gifter']);
-                $gifternick = $gifter['username'];
-                $message = sprintf("%s gifted %s a %s subscription!", $gifter['username'], $user['username'], $subscriptionType ['tierLabel']);
-            } else {
-                $gifternick = $user['username'];
-                $message = sprintf("%s is now a %s subscriber!", $user['username'], $subscriptionType ['tierLabel']);
+        // Broadcast the subscription
+        if (!empty($subscription['gifter'])) {
+            $gifter = $userService->getUserById($subscription['gifter']);
+            $gifternick = $gifter['username'];
+            $message = sprintf("%s gifted %s a %s subscription!", $gifter['username'], $user['username'], $subscriptionType ['tierLabel']);
+        } else {
+            $gifternick = $user['username'];
+            $message = sprintf("%s is now a %s subscriber!", $user['username'], $subscriptionType ['tierLabel']);
+        }
+        $redisService->sendBroadcast($message);
+
+        // Broadcast message
+        if (!empty($broadcastMessage) && !empty(trim($broadcastMessage))) {
+            $message = mb_substr($broadcastMessage, 0, 250);
+            $redisService->sendBroadcast("$gifternick said... $message");
+            if (Config::$a[AuthProvider::STREAMLABS]['alert_subscriptions']) {
+                StreamLabsService::instance()->sendAlert([
+                    'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
+                    'message' => $message
+                ]);
             }
-            $redisService->sendBroadcast($message);
+        }
 
-
-            // Broadcast message
-            if (!empty($broadcastMessage) && !empty(trim($broadcastMessage))) {
-                $message = mb_substr($broadcastMessage, 0, 250);
-                $redisService->sendBroadcast("$gifternick said... $message");
-                if (Config::$a[AuthProvider::STREAMLABS]['alert_subscriptions']) {
-                    StreamLabsService::instance()->sendAlert([
-                        'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-                        'message' => $message
-                    ]);
-                }
-            }
-
-            // Sub message
-            if (!empty($subscribeMessage) && !empty(trim($subscribeMessage))) {
-                $message = mb_substr($broadcastMessage, 0, 250);
-                $messenger = DiscordMessenger::instance();
-                $messenger->send("{user} has subscribed.", [['text' => $message]], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
-            }
-
-        } catch (Exception $e) {
-            Log::error("Error sending subscription broadcast. {$e->getMessage()}");
+        // Sub message
+        if (!empty($subscribeMessage) && !empty(trim($subscribeMessage))) {
+            $message = mb_substr($broadcastMessage, 0, 250);
+            $messenger = DiscordMessenger::instance();
+            $messenger->send("{user} has subscribed.", [['text' => $message]], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
         }
 
         // Update the user

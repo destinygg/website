@@ -22,10 +22,9 @@ class StreamElementsService extends AbstractAuthService {
     }
 
     /**
-     * @param array $args
      * @return ResponseInterface|null
      */
-    public function sendAlert(array $args) {
+    public function sendAlert() {
         $token = $this->getValidAccessToken();
         if (!empty($token)) {
             // TODO implement

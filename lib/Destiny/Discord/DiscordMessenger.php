@@ -41,6 +41,7 @@ class DiscordMessenger extends Service {
                     'attachments' => $attachments
                 ],
             ]);
+            // TODO error checking
         }
         return null;
     }

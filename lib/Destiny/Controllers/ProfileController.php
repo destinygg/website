@@ -23,7 +23,6 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserStatus;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
 use Destiny\Common\ViewModel;
 use Destiny\Discord\DiscordAuthHandler;
@@ -117,10 +116,12 @@ class ProfileController {
                     'allowChatting' => 1 // TODO
                 ]);
                 $authService->updateWebSession($user, $creds->getAuthProvider());
-                Session::setSuccessBag("Your username is now $username, excellent choice!");
                 if ($original != $username) {
                     $messenger = DiscordMessenger::instance();
-                    $messenger->send("{user} has changed their username from $original.", [], []);
+                    $messenger->send("{user} has changed their username from $original.", [], $user);
+                    Session::setSuccessBag("Your username is now $username, excellent choice!");
+                } else {
+                    Session::setSuccessBag("Your username is confirmed, you are welcome!");
                 }
             } else {
                 Session::setErrorBag("You aren't allowed to change your username.");

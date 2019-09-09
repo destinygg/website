@@ -8,7 +8,6 @@ use Destiny\Common\User\UserAuthService;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserStatus;
-use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
 use Destiny\Discord\DiscordMessenger;
 use Doctrine\DBAL\DBALException;
