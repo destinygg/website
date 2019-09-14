@@ -86,7 +86,6 @@ class IpnController {
                     if (number_format($payment ['amount'], 2) != number_format($data ['mc_gross'], 2)) {
                         throw new Exception ('Amount for payment do not match');
                     }
-                    $subscription = $subscriptionsService->findById($payment ['subscriptionId']);
                     try {
                         // Update the payment status and subscription paymentStatus to active (may have been pending)
                         $conn->beginTransaction();
@@ -94,11 +93,18 @@ class IpnController {
                             'paymentId' => $payment ['paymentId'],
                             'paymentStatus' => $data ['payment_status']
                         ]);
-                        if (!empty ($subscription)) {
-                            $subscriptionsService->updateSubscription([
-                                'subscriptionId' => $subscription['subscriptionId'],
-                                'paymentStatus' => PaymentStatus::ACTIVE
-                            ]);
+                        if (!empty($payment['subscriptionId'])) {
+                            $subscription = $subscriptionsService->findById($payment['subscriptionId']);
+                            if (!empty ($subscription)) {
+                                $subscriptionsService->updateSubscription([
+                                    'subscriptionId' => $subscription['subscriptionId'],
+                                    'paymentStatus' => PaymentStatus::ACTIVE
+                                ]);
+                            } else {
+                                Log::info("Payment subscription invalid ${payment['paymentId']}", $payment);
+                            }
+                        } else {
+                            Log::info("Payment subscription id invalid ${payment['paymentId']}", $payment);
                         }
                         $conn->commit();
                     } catch (DBALException $e) {
