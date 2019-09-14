@@ -6,6 +6,7 @@ use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Authentication\OAuthResponse;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
 
 /**
@@ -35,9 +36,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
      * @throws Exception
      */
     function getToken(array $params): array {
-        if (!isset($params['code']) || empty($params['code'])) {
-            throw new Exception ('Authentication failed, invalid or empty code.');
-        }
+        FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $client = $this->getHttpClient();
         $response = $client->post("$this->apiBase/access_token", [
@@ -54,9 +53,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
-            if (empty($data) || isset($data['error']) || !isset($data['access_token'])) {
-                throw new Exception('Invalid access_token response');
-            }
+            FilterParams::required($data, 'access_token');
             return $data;
         }
         throw new Exception("Failed to get token response");
@@ -84,9 +81,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
      */
     function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
-        if (empty($data) || !isset($data['id']) || empty($data['id'])) {
-            throw new Exception ('Authorization failed, invalid user data');
-        }
+        FilterParams::required($data, 'id');
         return new OAuthResponse([
             'accessToken' => $token['access_token'],
             'refreshToken' => $token['refresh_token'] ?? '',

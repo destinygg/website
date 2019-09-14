@@ -3,12 +3,12 @@ namespace Destiny\Chat;
 
 use Destiny\Common\Application;
 use Destiny\Common\Config;
+use Destiny\Common\DBException;
+use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
-use Exception;
 use PDO;
 
 /**
@@ -20,46 +20,54 @@ class FlairService extends Service {
 
     /**
      * @param $id
-     * @param array $flair
-     * @throws DBALException
+     * @throws DBException
      */
     public function updateFlair($id, array $flair) {
-        $conn = Application::getDbConn();
-        $conn->update('dfl_features', [
-            'featureLabel' => $flair['featureLabel'],
-            'imageId' => $flair['imageId'],
-            'hidden' => $flair['hidden'],
-            'color' => $flair['color'],
-            'priority' => $flair['priority'],
-            'modifiedDate' => Date::getSqlDateTime()
-        ], ['featureId' => $id]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->update('dfl_features', [
+                'featureLabel' => $flair['featureLabel'],
+                'imageId' => $flair['imageId'],
+                'hidden' => $flair['hidden'],
+                'color' => $flair['color'],
+                'priority' => $flair['priority'],
+                'modifiedDate' => Date::getSqlDateTime()
+            ], ['featureId' => $id]);
+        } catch (DBALException $e) {
+            throw new DBException("Error updating flair.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function insertFlair(array $flair): int {
-        $conn = Application::getDbConn();
-        $conn->insert('dfl_features', [
-            'featureLabel' => $flair['featureLabel'],
-            'featureName' => $flair['featureName'],
-            'imageId' => $flair['imageId'],
-            'locked' => $flair['locked'],
-            'hidden' => $flair['hidden'],
-            'color' => $flair['color'],
-            'priority' => $flair['priority'],
-            'createdDate' => Date::getSqlDateTime(),
-            'modifiedDate' => Date::getSqlDateTime()
-        ]);
-        return intval($conn->lastInsertId());
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('dfl_features', [
+                'featureLabel' => $flair['featureLabel'],
+                'featureName' => $flair['featureName'],
+                'imageId' => $flair['imageId'],
+                'locked' => $flair['locked'],
+                'hidden' => $flair['hidden'],
+                'color' => $flair['color'],
+                'priority' => $flair['priority'],
+                'createdDate' => Date::getSqlDateTime(),
+                'modifiedDate' => Date::getSqlDateTime()
+            ]);
+            return intval($conn->lastInsertId());
+        } catch (DBALException $e) {
+            throw new DBException("Error inserting flair.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function getPublicFlairs(): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
             SELECT 
               f.featureLabel as `label`, 
               f.featureName as `name`, 
@@ -74,91 +82,109 @@ class FlairService extends Service {
              LEFT JOIN images i ON i.id = f.imageId
              ORDER BY f.priority ASC, f.featureId DESC
          ');
-        $stmt->execute();
-        return array_map(function($v) {
-            return [
-                'label' => $v['label'],
-                'name' => $v['name'],
-                'hidden' => boolval($v['hidden']),
-                'priority' => intval($v['priority']),
-                'color' => $v['color'],
-                'image' => [[
-                    'url' => Config::cdnv() . '/flairs/' . $v['image'],
-                    'name' => $v['image'],
-                    'mime' => $v['mime'],
-                    'height' => intval($v['height']),
-                    'width' => intval($v['width']),
-                ]],
-            ];
-        }, $stmt->fetchAll());
+            $stmt->execute();
+            return array_map(function($v) {
+                return [
+                    'label' => $v['label'],
+                    'name' => $v['name'],
+                    'hidden' => boolval($v['hidden']),
+                    'priority' => intval($v['priority']),
+                    'color' => $v['color'],
+                    'image' => [[
+                        'url' => Config::cdnv() . '/flairs/' . $v['image'],
+                        'name' => $v['image'],
+                        'mime' => $v['mime'],
+                        'height' => intval($v['height']),
+                        'width' => intval($v['width']),
+                    ]],
+                ];
+            }, $stmt->fetchAll());
+        } catch (DBALException $e) {
+            throw new DBException("Error loading flairs.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     function getAllFlairNames(): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT featureName FROM dfl_features');
-        $stmt->execute();
-        return array_map(function($v){ return $v['featureName']; }, $stmt->fetchAll());
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('SELECT featureName FROM dfl_features');
+            $stmt->execute();
+            return array_map(function($v){ return $v['featureName']; }, $stmt->fetchAll());
+        } catch (DBALException $e) {
+            throw new DBException("Error loading flairs.", $e);
+        }
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws DBALException
+     * @throws DBException
      */
     function removeFlairById(int $id) {
-        $conn = Application::getDbConn();
-        $conn->delete('dfl_features', ['featureId' => $id]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->delete('dfl_features', ['featureId' => $id]);
+        } catch (DBALException $e) {
+            throw new DBException("Error removing theme.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     function findAllFlairs(): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT 
-              f.*, 
-              i.name as `imageName`, 
-              i.label as `imageLabel`, 
-              i.size, 
-              i.width, 
-              i.height 
-             FROM dfl_features f 
-             LEFT JOIN images i ON i.id = f.imageId
-             ORDER BY f.priority ASC, f.featureLabel ASC
-         ');
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT 
+                  f.*, 
+                  i.name as `imageName`, 
+                  i.label as `imageLabel`, 
+                  i.size, 
+                  i.width, 
+                  i.height 
+                 FROM dfl_features f 
+                 LEFT JOIN images i ON i.id = f.imageId
+                 ORDER BY f.priority ASC, f.featureLabel ASC
+             ');
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading themes.", $e);
+        }
     }
 
     /**
      * @return array|false
-     * @throws DBALException
+     * @throws DBException
      */
     function findFlairById(int $id) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT 
-              f.*, 
-              i.name as `imageName`, 
-              i.label as `imageLabel`, 
-              i.size, 
-              i.width, 
-              i.height 
-             FROM dfl_features f 
-             LEFT JOIN images i ON i.id = f.imageId
-             WHERE f.featureId = :id
-             LIMIT 0,1
-         ');
-        $stmt->bindValue('id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT 
+                  f.*, 
+                  i.name as `imageName`, 
+                  i.label as `imageLabel`, 
+                  i.size, 
+                  i.width, 
+                  i.height 
+                 FROM dfl_features f 
+                 LEFT JOIN images i ON i.id = f.imageId
+                 WHERE f.featureId = :id
+                 LIMIT 0,1
+             ');
+            $stmt->bindValue('id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading themes.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     function findAvailableFlairNames(): array {
         $features = $this->getAllFlairNames();
@@ -189,7 +215,10 @@ class FlairService extends Service {
     private function saveStaticCss(string $cacheKey) {
         try {
             $filename = self::FLAIRS_DIR . 'flairs.css.' . $cacheKey;
-            $file = fopen($filename,'w+');
+            $fp = fopen($filename,'w+');
+            if (!$fp) {
+               throw new Exception("Could not open file $filename");
+            }
             $flairs = array_reverse($this->getPublicFlairs());
             foreach ($flairs as $v) {
                 $name = $v['name'];
@@ -213,12 +242,12 @@ class FlairService extends Service {
                     $c .= "}\n";
                 }
                 $c .= PHP_EOL;
-                fwrite($file, $c);
+                fwrite($fp, $c);
             }
-            fclose($file);
+            fclose($fp);
             rename($filename, self::FLAIRS_DIR . 'flairs.css');
         } catch (Exception $e) {
-            Log::critical($e->getMessage());
+            Log::error("Error saving static css {$e->getMessage()}");
         }
     }
 
@@ -228,12 +257,15 @@ class FlairService extends Service {
     private function saveStaticJson(string $cacheKey) {
         try {
             $filename = self::FLAIRS_DIR . 'flairs.json.' . $cacheKey;
-            $file = fopen($filename,'w+');
-            fwrite($file, json_encode($this->getPublicFlairs()));
-            fclose($file);
+            $fp = fopen($filename,'w+');
+            if (!$fp) {
+                throw new Exception("Could not open file $filename");
+            }
+            fwrite($fp, json_encode($this->getPublicFlairs()));
+            fclose($fp);
             rename($filename, self::FLAIRS_DIR . 'flairs.json');
         } catch (Exception $e) {
-            Log::critical($e->getMessage());
+            Log::error("Error saving static json {$e->getMessage()}");
         }
     }
 }

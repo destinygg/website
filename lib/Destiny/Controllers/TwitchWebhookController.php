@@ -28,9 +28,7 @@ class TwitchWebhookController {
             $webhookService = TwitchWebHookService::instance();
             return $webhookService->handleIncomingNotify($request);
         } catch (Exception $e) {
-            Log::warn('Error handling twitch webhook notify. ' . $e->getMessage());
-        } catch (\Exception $e) {
-            Log::error('Error handling twitch webhook notify. ' . $e->getMessage());
+            Log::error("Error handling twitch webhook notify. {$e->getMessage()}");
         }
         return 'error';
     }
@@ -48,9 +46,7 @@ class TwitchWebhookController {
             $webhookService = TwitchWebHookService::instance();
             return $webhookService->handleIncomingWebhook($request);
         } catch (Exception $e) {
-            Log::warn('Error handling twitch webhook callback. ' . $e->getMessage());
-        } catch (\Exception $e) {
-            Log::error('Error handling twitch webhook callback. ' . $e->getMessage());
+            Log::error("Error handling twitch webhook callback. {$e->getMessage()}");
         }
         return 'error';
     }

@@ -10,7 +10,6 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserStatus;
 use Destiny\Common\Utils\RandomString;
 use Destiny\Discord\DiscordMessenger;
-use Doctrine\DBAL\DBALException;
 
 class AuthenticationRedirectionFilter {
 
@@ -35,7 +34,6 @@ class AuthenticationRedirectionFilter {
     }
 
     /**
-     * @throws DBALException
      * @throws Exception
      */
     public function execute(): string {
@@ -92,17 +90,20 @@ class AuthenticationRedirectionFilter {
                 }
             }
             $userId = $userService->addUser([
-                'username' => $username,
-                'allowChatting' => 0,
-                'allowNameChange' => 1,
                 'userStatus' => UserStatus::ACTIVE,
+                'username' => $username,
+                'allowNameChange' => 1,
+                'allowChatting' => 0
             ]);
 
-            $messenger = DiscordMessenger::instance();
-            $messenger->send("{user} created a new account.", [['fields' => [
-                ['title' => 'Provider', 'value' => $authResponse->getAuthProvider(), 'short' => true],
-                ['title' => 'Username', 'value' => $authResponse->getUsername(), 'short' => true],
-            ]]], ['userId' => $userId, 'username' => $username]);
+            DiscordMessenger::send('New account', [
+                'fields' => [
+                    ['title' => 'User', 'value' => DiscordMessenger::userLink($userId, $username), 'short' => false],
+                    ['title' => 'Provider', 'value' => $authResponse->getAuthProvider(), 'short' => true],
+                    ['title' => 'Username', 'value' => $authResponse->getUsername(), 'short' => true],
+                    ['title' => 'Email', 'value' => $authResponse->getAuthEmail(), 'short' => true],
+                ]
+            ]);
 
             $user = $userService->getUserById($userId);
         } else {
@@ -150,17 +151,17 @@ class AuthenticationRedirectionFilter {
         } else {
 
             // Renew the session upon successful login, makes it slightly harder to hijack
-            Session::instance()->renew();
+            $session = Session::instance();
+            if ($session != null) {
+                $session->renew();
+            }
             $authService->updateWebSession($user, $provider);
-
             if ($rememberme) {
                 $authService->setRememberMe($user);
             }
-
             if (boolval($user['allowNameChange'])) {
                 return 'redirect: /profile';
             }
-
             Session::setSuccessBag('Login successful!');
             return (!empty($follow) && substr($follow, 0, 1) == '/') ? 'redirect: ' . $follow : 'redirect: /profile';
         }

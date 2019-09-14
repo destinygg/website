@@ -13,12 +13,6 @@ abstract class Session {
         return Application::instance()->getSession();
     }
 
-    public static function hasSessionCookie(): bool {
-        $session = self::instance();
-        $sid = $session->getSessionCookie()->getValue();
-        return !empty($sid);
-    }
-
     public static function start(): bool {
         $session = self::instance();
         return (!$session->isStarted()) ? $session->start() : true;
@@ -37,11 +31,6 @@ abstract class Session {
      */
     public static function getCredentials() {
         return self::instance()->getCredentials();
-    }
-
-    public static function destroy() {
-        $session = self::instance();
-        $session->destroy();
     }
 
     public static function get(string $name) {

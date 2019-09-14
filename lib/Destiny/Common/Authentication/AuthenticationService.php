@@ -16,7 +16,13 @@ use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\CryptoOpenSSL;
 use Destiny\Common\Utils\Date;
-use Doctrine\DBAL\DBALException;
+use Destiny\Discord\DiscordAuthHandler;
+use Destiny\Google\GoogleAuthHandler;
+use Destiny\Reddit\RedditAuthHandler;
+use Destiny\StreamElements\StreamElementsAuthHandler;
+use Destiny\StreamLabs\StreamLabsAuthHandler;
+use Destiny\Twitch\TwitchAuthHandler;
+use Destiny\Twitter\TwitterAuthHandler;
 
 /**
  * @method static AuthenticationService instance()
@@ -97,17 +103,26 @@ class AuthenticationService extends Service {
      * Also updates the session if the user is flagged for it.
      * TODO this method is a mess
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function startSession() {
         $redisService = ChatRedisService::instance();
         $userService = UserService::instance();
 
         // If the session has a cookie, start it
-        if (Session::hasSessionCookie() && Session::start() && Session::hasRole(UserRole::USER)) {
+        $app = Application::instance();
+        $session = $app->getSession();
+        $cookie = $app->getSessionCookie();
+        if (!empty($session) || !empty($cookie)) {
+            $session->setupCookie($cookie);
+        }
+        //
+
+        $sid = $cookie->getValue();
+        if (!empty($sid) && Session::start() && Session::hasRole(UserRole::USER)) {
             $sessionId = Session::getSessionId();
             if (!empty($sessionId)) {
-                $redisService->renewChatSessionExpiration(Session::getSessionId());
+                $redisService->renewChatSessionExpiration($sessionId);
             }
         }
 
@@ -134,7 +149,7 @@ class AuthenticationService extends Service {
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function buildUserCredentials(array $user, string $authProvider = ''): SessionCredentials {
         $userService = UserService::instance();
@@ -193,39 +208,39 @@ class AuthenticationService extends Service {
      * Note the rememberme cookie has a long expiry unlike the session cookie
      */
     public function setRememberMe(array $user) {
-        try {
-            $cookie = Session::instance()->getRememberMeCookie();
-            $rawData = $cookie->getValue();
-            if (!empty ($rawData)) {
-                $cookie->clearCookie();
-            }
-            $expires = Date::getDateTime(time() + mt_rand(0, 2419200)); // 0-28 days
-            $expires->add(new DateInterval('P1M'));
-            $data = CryptoOpenSSL::encrypt(serialize([
-                'userId' => $user['userId'],
-                'expires' => $expires->getTimestamp()
-            ]));
-            $cookie->setValue($data, Date::getDateTime('NOW + 2 MONTHS')->getTimestamp());
-        } catch (\Exception $e) {
-            Log::error(new Exception('Failed to create remember me cookie.', $e));
+        $app = Application::instance();
+        $cookie = $app->getRememberMeCookie();
+        if (empty($cookie)) {
+            return;
         }
+        $rawData = $cookie->getValue();
+        if (!empty($rawData)) {
+            $cookie->clearCookie();
+        }
+        $expires = Date::getDateTime(time() + mt_rand(0, 2419200)); // 0-28 days
+        $expires->add(new DateInterval('P1M'));
+        $data = CryptoOpenSSL::encrypt(serialize([
+            'userId' => $user['userId'],
+            'expires' => $expires->getTimestamp()
+        ]));
+        $cookie->setValue($data, Date::getDateTime('NOW + 2 MONTHS')->getTimestamp());
     }
 
     /**
      * Returns the user record associated with a remember me cookie
      * @return array|null
-     *
-     * @throws \Exception
      */
     protected function getRememberMe() {
-        $cookie = Session::instance()->getRememberMeCookie();
-        $rawData = $cookie->getValue();
+        $app = Application::instance();
         $user = null;
-        if (empty($rawData))
-            goto end;
 
-        if (strlen($rawData) < 64)
-            goto cleanup;
+        $cookie = $app->getRememberMeCookie();
+        if (!$cookie) goto end;
+
+        $rawData = $cookie->getValue();
+        if (empty($rawData)) goto end;
+
+        if (strlen($rawData) < 64) goto cleanup;
 
         $data = CryptoOpenSSL::decrypt($rawData);
 
@@ -240,7 +255,12 @@ class AuthenticationService extends Service {
         if ($expires <= Date::getDateTime())
             goto cleanup;
 
-        $user = UserService::instance()->getUserById(intval($data['userId']));
+        try {
+            $userService = UserService::instance();
+            $user = $userService->getUserById(intval($data['userId']));
+        } catch (Exception $e) {
+            Log::error("Error getting remember me user. {$e->getMessage()}");
+        }
         goto end;
 
         cleanup:
@@ -270,16 +290,22 @@ class AuthenticationService extends Service {
             } else {
                 $redisService->removeChatSession($sessionId);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new Exception("Cannot update web session.", $e);
         }
     }
 
     public function removeWebSession() {
         if (Session::isStarted()) {
-            $redis = ChatRedisService::instance();
-            $redis->removeChatSession(Session::getSessionId());
-            Session::destroy();
+            $session = Session::instance();
+            if (!empty($session)) {
+                $app = Application::instance();
+                $app->getSessionCookie()->clearCookie();
+                $app->getRememberMeCookie()->clearCookie();
+                $redis = ChatRedisService::instance();
+                $redis->removeChatSession($session->getSessionId());
+                $session->destroy();
+            }
         }
     }
 
@@ -290,14 +316,15 @@ class AuthenticationService extends Service {
      */
     public function flagUserForUpdate(int $userId) {
         try {
-            $user = UserService::instance()->getUserById($userId);
+            $userService = UserService::instance();
+            $user = $userService->getUserById($userId);
             if (!empty($user)) {
                 $creds = $this->buildUserCredentials($user);
                 $this->setUserUpdateFlag($userId);
                 $redisService = ChatRedisService::instance();
                 $redisService->sendRefreshUser($creds);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error flagging user for update. {$e->getMessage()}");
         }
     }
@@ -321,9 +348,42 @@ class AuthenticationService extends Service {
     private function getEmotesForValidation(): array {
         try {
             return EmoteService::instance()->findAllEmotes();
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             Log::error("Emote failed to load. {$e->getMessage()}");
         }
         return [];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getLoginAuthHandlerByType(string $type): AuthenticationHandler {
+        $authHandler = null;
+        switch (strtolower($type)) {
+            case AuthProvider::TWITCH:
+                $authHandler = new TwitchAuthHandler();
+                break;
+            case AuthProvider::TWITTER:
+                $authHandler = new TwitterAuthHandler();
+                break;
+            case AuthProvider::GOOGLE:
+                $authHandler = new GoogleAuthHandler();
+                break;
+            case AuthProvider::REDDIT:
+                $authHandler = new RedditAuthHandler();
+                break;
+            case AuthProvider::DISCORD:
+                $authHandler = new DiscordAuthHandler();
+                break;
+            case AuthProvider::STREAMELEMENTS:
+                $authHandler = new StreamElementsAuthHandler();
+                break;
+            case AuthProvider::STREAMLABS:
+                $authHandler = new StreamLabsAuthHandler();
+                break;
+            default:
+                throw new Exception('No authentication handler found.');
+        }
+        return $authHandler;
     }
 }

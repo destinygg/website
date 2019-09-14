@@ -6,6 +6,7 @@ use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Authentication\OAuthResponse;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
@@ -60,9 +61,8 @@ class TwitterAuthHandler extends AbstractAuthHandler {
      * @throws Exception
      */
     function getToken(array $params): array {
-        if ((!isset($params['oauth_token']) || empty($params['oauth_token'])) || !isset($params['oauth_verifier']) || empty($params['oauth_verifier'])) {
-            throw new Exception ('Authentication failed');
-        }
+        FilterParams::required($params, 'oauth_token');
+        FilterParams::required($params, 'oauth_verifier');
         $response = $this->getHttpClient()->post("$this->authBase/access_token", [
             'headers' => ['User-Agent' => Config::userAgent()],
             'form_params' => [
@@ -102,9 +102,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
      */
     function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo();
-        if (empty($data) || !isset($data['id_str']) || empty($data['id_str'])) {
-            throw new Exception ('Authorization failed, invalid user data');
-        }
+        FilterParams::required($data, 'id_str');
         return new OAuthResponse([
             'authProvider' => $this->authProvider,
             'accessToken' => $token['oauth_token'],

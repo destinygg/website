@@ -2,11 +2,11 @@
 namespace Destiny\Common\Authentication;
 
 use Destiny\Common\Application;
+use Destiny\Common\DBException;
 use Destiny\Common\Exception;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
 use PDO;
 
 /**
@@ -16,7 +16,6 @@ class DggOAuthService extends Service {
 
     /**
      * @throws Exception
-     * @throws DBALException
      */
     public function ensureAuthClient(string $clientId): array {
         $data = $this->getAuthClientByCode($clientId);
@@ -57,209 +56,263 @@ class DggOAuthService extends Service {
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function addAuthClient(array $client) {
-        $conn = Application::getDbConn();
-        $conn->insert('oauth_client_details', [
-            'clientCode' => $client['clientCode'],
-            'clientSecret' => $client['clientSecret'],
-            'clientName' => $client['clientName'],
-            'redirectUrl' => $client['redirectUrl'],
-            'ownerId' => $client['ownerId'],
-            'createdDate' => Date::getSqlDateTime(),
-            'modifiedDate' => Date::getSqlDateTime()
-        ], [
-            PDO::PARAM_STR,
-            PDO::PARAM_STR,
-            PDO::PARAM_STR,
-            PDO::PARAM_INT,
-            PDO::PARAM_STR,
-            PDO::PARAM_STR
-        ]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('oauth_client_details', [
+                'clientCode' => $client['clientCode'],
+                'clientSecret' => $client['clientSecret'],
+                'clientName' => $client['clientName'],
+                'redirectUrl' => $client['redirectUrl'],
+                'ownerId' => $client['ownerId'],
+                'createdDate' => Date::getSqlDateTime(),
+                'modifiedDate' => Date::getSqlDateTime()
+            ], [
+                PDO::PARAM_STR,
+                PDO::PARAM_STR,
+                PDO::PARAM_STR,
+                PDO::PARAM_INT,
+                PDO::PARAM_STR,
+                PDO::PARAM_STR
+            ]);
+        } catch (DBALException $e) {
+            throw new DBException("Failed to add auth client.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function updateAuthClient(string $clientId, array $client) {
-        $conn = Application::getDbConn();
-        $auth ['modifiedDate'] = Date::getSqlDateTime();
-        $conn->update('oauth_client_details', $client, ['clientId' => $clientId]);
+        try {
+            $conn = Application::getDbConn();
+            $auth ['modifiedDate'] = Date::getSqlDateTime();
+            $conn->update('oauth_client_details', $client, ['clientId' => $clientId]);
+        } catch (DBALException $e) {
+            throw new DBException("Failed to update auth client.", $e);
+        }
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws DBALException
+     * @throws DBException
      */
     public function removeAuthClient(int $clientId) {
-        $conn = Application::getDbConn();
-        $conn->delete('oauth_client_details', ['clientId' => $clientId]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->delete('oauth_client_details', ['clientId' => $clientId]);
+        } catch (DBALException $e) {
+            throw new DBException("Failed to remove auth client.", $e);
+        }
     }
 
     /**
      * @return array|null
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAuthClientById(int $clientId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT * FROM oauth_client_details
-            WHERE clientId = :clientId
-            LIMIT 1
-        ");
-        $stmt->bindValue('clientId', $clientId, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("
+                SELECT * FROM oauth_client_details
+                WHERE clientId = :clientId
+                LIMIT 1
+            ");
+            $stmt->bindValue('clientId', $clientId, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth client.", $e);
+        }
     }
 
     /**
      * @return array|null
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAuthClientByCode(string $clientCode) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT * FROM oauth_client_details
-            WHERE clientCode = :clientCode
-            LIMIT 1
-        ");
-        $stmt->bindValue('clientCode', $clientCode, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("
+                SELECT * FROM oauth_client_details
+                WHERE clientCode = :clientCode
+                LIMIT 1
+            ");
+            $stmt->bindValue('clientCode', $clientCode, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth client.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAuthClientsByUserId(int $userId): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("SELECT * FROM oauth_client_details WHERE ownerId = :ownerId");
-        $stmt->bindValue('ownerId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("SELECT * FROM oauth_client_details WHERE ownerId = :ownerId");
+            $stmt->bindValue('ownerId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth client.", $e);
+        }
     }
 
     /**
      * @return array|null
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAccessTokenById(int $tokenId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("
             SELECT t.*, c.clientName FROM oauth_access_tokens t
             LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
             WHERE t.tokenId = :tokenId
             LIMIT 1");
-        $stmt->bindValue('tokenId', $tokenId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
+            $stmt->bindValue('tokenId', $tokenId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth access token.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAccessTokensByClientId(int $clientId): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT t.*, c.clientName FROM oauth_access_tokens t
-            LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
-            WHERE t.clientId = :clientId
-            ORDER BY t.clientId ASC, t.tokenId DESC");
-        $stmt->bindValue('clientId', $clientId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("
+                SELECT t.*, c.clientName FROM oauth_access_tokens t
+                LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
+                WHERE t.clientId = :clientId
+                ORDER BY t.clientId ASC, t.tokenId DESC");
+            $stmt->bindValue('clientId', $clientId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth access token.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAccessTokensByUserId(int $userId): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT t.*, c.clientName FROM oauth_access_tokens t
-            LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
-            WHERE t.userId = :userId
-            ORDER BY t.clientId ASC, t.tokenId DESC");
-        $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("
+                SELECT t.*, c.clientName FROM oauth_access_tokens t
+                LEFT JOIN oauth_client_details c ON c.clientId = t.clientId
+                WHERE t.userId = :userId
+                ORDER BY t.clientId ASC, t.tokenId DESC");
+            $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth access token.", $e);
+        }
     }
 
     /**
      * @return array|null
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAccessTokenByRefreshAndClientId(string $refreshToken, int $clientId) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT * FROM oauth_access_tokens
-            WHERE refresh = :refresh AND clientId = :clientId
-            LIMIT 1
-        ");
-        $stmt->bindValue('refresh', $refreshToken, PDO::PARAM_STR);
-        $stmt->bindValue('clientId', $clientId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("
+                SELECT * FROM oauth_access_tokens
+                WHERE refresh = :refresh AND clientId = :clientId
+                LIMIT 1
+            ");
+            $stmt->bindValue('refresh', $refreshToken, PDO::PARAM_STR);
+            $stmt->bindValue('clientId', $clientId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth access token.", $e);
+        }
     }
 
     /**
      * @return array|null
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAccessTokenByToken(string $token) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare("
-            SELECT * FROM oauth_access_tokens
-            WHERE token = :token
-            LIMIT 1
-        ");
-        $stmt->bindValue('token', $token, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare("
+                SELECT * FROM oauth_access_tokens
+                WHERE token = :token
+                LIMIT 1
+            ");
+            $stmt->bindValue('token', $token, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Failed to load auth access token.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function addAccessToken(array $data) {
-        $conn = Application::getDbConn();
-        $conn->insert('oauth_access_tokens', [
-            'clientId' => $data['clientId'],
-            'userId' => $data['userId'],
-            'token' => $data['token'],
-            'refresh' => $data['refresh'],
-            'scope' => $data['scope'],
-            'expireIn' => $data['expireIn'],
-            'createdDate' => Date::getSqlDateTime()
-        ], [
-            PDO::PARAM_INT,
-            PDO::PARAM_INT,
-            PDO::PARAM_STR,
-            PDO::PARAM_INT,
-            PDO::PARAM_STR
-        ]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('oauth_access_tokens', [
+                'clientId' => $data['clientId'],
+                'userId' => $data['userId'],
+                'token' => $data['token'],
+                'refresh' => $data['refresh'],
+                'scope' => $data['scope'],
+                'expireIn' => $data['expireIn'],
+                'createdDate' => Date::getSqlDateTime()
+            ], [
+                PDO::PARAM_INT,
+                PDO::PARAM_INT,
+                PDO::PARAM_STR,
+                PDO::PARAM_INT,
+                PDO::PARAM_STR
+            ]);
+        } catch (DBALException $e) {
+            throw new DBException("Failed to add auth access token.", $e);
+        }
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws DBALException
+     * @throws DBException
      */
     public function removeAccessToken(int $tokenId) {
-        $conn = Application::getDbConn();
-        $conn->delete('oauth_access_tokens', ['tokenId' => $tokenId]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->delete('oauth_access_tokens', ['tokenId' => $tokenId]);
+        } catch (DBALException $e) {
+            throw new DBException("Failed to remove auth access token.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function renewAccessToken(string $accessToken, string $renewToken, int $tokenId) {
-        $conn = Application::getDbConn();
-        $conn->update('oauth_access_tokens', [
-            'token' => $accessToken,
-            'refresh' => $renewToken,
-            'createdDate' => Date::getSqlDateTime()
-        ], ['tokenId' => $tokenId]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->update('oauth_access_tokens', [
+                'token' => $accessToken,
+                'refresh' => $renewToken,
+                'createdDate' => Date::getSqlDateTime()
+            ], ['tokenId' => $tokenId]);
+        } catch (DBALException $e) {
+            throw new DBException("Failed to renew auth access token.", $e);
+        }
     }
 
     public function hasAccessTokenExpired(array $token): bool {

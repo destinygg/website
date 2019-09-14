@@ -4,7 +4,6 @@ namespace Destiny\PayPal;
 use DateTime;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
-use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use PayPal\CoreComponentTypes\BasicAmountType;
@@ -45,7 +44,7 @@ class PayPalApiService extends Service {
 
     /**
      * @param $paymentProfileId : The unique identifier paypal sending with payment responses.
-     * @throws \Exception
+     * @throws Exception
      */
     public function cancelPaymentProfile(string $paymentProfileId) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
@@ -53,71 +52,70 @@ class PayPalApiService extends Service {
         $getRPPDetailsRequest->ProfileID = $paymentProfileId;
         $getRPPDetailsReq = new GetRecurringPaymentsProfileDetailsReq ();
         $getRPPDetailsReq->GetRecurringPaymentsProfileDetailsRequest = $getRPPDetailsRequest;
-        $getRPPDetailsResponse = $paypalService->GetRecurringPaymentsProfileDetails ( $getRPPDetailsReq );
-        if (empty ( $getRPPDetailsResponse ) || $getRPPDetailsResponse->Ack != 'Success') {
-           throw new Exception ( 'Error retrieving payment profile status' );
-        }
-        $profileStatus = $getRPPDetailsResponse->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus;
 
+        try {
+            $getRPPDetailsResponse = $paypalService->GetRecurringPaymentsProfileDetails($getRPPDetailsReq);
+            if (empty($getRPPDetailsResponse) || $getRPPDetailsResponse->Ack != 'Success') {
+                throw new Exception ('Error retrieving payment profile status');
+            }
+        } catch (\Exception $e) {
+            throw new Exception("Error cancelling payment profile.", $e);
+        }
+
+        $profileStatus = $getRPPDetailsResponse->GetRecurringPaymentsProfileDetailsResponseDetails->ProfileStatus;
         // Active profile, send off the cancel
-        if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVE_PROFILE ) === 0 || strcasecmp ( $profileStatus, PaymentProfileStatus::CANCELLED_PROFILE ) === 0) {
-            if (strcasecmp ( $profileStatus, PaymentProfileStatus::ACTIVE_PROFILE ) === 0) {
+        if (strcasecmp($profileStatus, PaymentProfileStatus::ACTIVE_PROFILE) === 0 || strcasecmp($profileStatus, PaymentProfileStatus::CANCELLED_PROFILE) === 0) {
+            if (strcasecmp($profileStatus, PaymentProfileStatus::ACTIVE_PROFILE) === 0) {
                 // Do we have a payment profile, we need to cancel it with paypal
-                $manageRPPStatusRequestDetails = new ManageRecurringPaymentsProfileStatusRequestDetailsType ();
-                $manageRPPStatusRequestDetails->Action = 'Cancel';
-                $manageRPPStatusRequestDetails->ProfileID = $paymentProfileId;
-                $manageRPPStatusRequest = new ManageRecurringPaymentsProfileStatusRequestType ();
-                $manageRPPStatusRequest->ManageRecurringPaymentsProfileStatusRequestDetails = $manageRPPStatusRequestDetails;
-                $manageRPPStatusReq = new ManageRecurringPaymentsProfileStatusReq ();
-                $manageRPPStatusReq->ManageRecurringPaymentsProfileStatusRequest = $manageRPPStatusRequest;
-                $manageRPPStatusResponse = $paypalService->ManageRecurringPaymentsProfileStatus ( $manageRPPStatusReq );
-                if (! isset ( $manageRPPStatusResponse ) || $manageRPPStatusResponse->Ack != 'Success') {
-                    throw new Exception ( $manageRPPStatusResponse->Errors [0]->LongMessage );
+                $statusRequestType = new ManageRecurringPaymentsProfileStatusRequestType();
+                $statusRequestType->ManageRecurringPaymentsProfileStatusRequestDetails = new ManageRecurringPaymentsProfileStatusRequestDetailsType($paymentProfileId, 'Cancel');
+                $statusRequest = new ManageRecurringPaymentsProfileStatusReq();
+                $statusRequest->ManageRecurringPaymentsProfileStatusRequest = $statusRequestType;
+                try {
+                    $res = $paypalService->ManageRecurringPaymentsProfileStatus($statusRequest);
+                } catch (\Exception $e) {
+                    throw new Exception("Could not cancel active profile.", $e);
+                }
+                if (!$res || $res->Ack != 'Success') {
+                    throw new Exception($res->Errors[0]->LongMessage);
                 }
             }
         }
-      
     }
 
     /**
      * @return string|mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function createSubscriptionPaymentProfile(string $token, string $reference, string $subscriberName, DateTime $billingStartDate, array $subscriptionType = []) {
-        $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
+        $paypalService = new PayPalAPIInterfaceServiceService($this->getConfig());
         $paymentProfileId = null;
         $amount = $subscriptionType ['amount'];
         $agreement = $subscriptionType ['agreement'];
         $currency = Config::$a ['commerce'] ['currency'];
 
-        $RPProfileDetails = new RecurringPaymentsProfileDetailsType ();
+        $RPProfileDetails = new RecurringPaymentsProfileDetailsType($billingStartDate->format(DateTime::ATOM));
         $RPProfileDetails->SubscriberName = $subscriberName;
-        $RPProfileDetails->BillingStartDate = $billingStartDate->format ( DateTime::ATOM );
         $RPProfileDetails->ProfileReference = $reference;
-        
-        $paymentBillingPeriod = new BillingPeriodDetailsType ();
-        $paymentBillingPeriod->BillingFrequency = $subscriptionType ['billingFrequency'];
-        $paymentBillingPeriod->BillingPeriod = $subscriptionType ['billingPeriod'];
-        $paymentBillingPeriod->Amount = new BasicAmountType ( $currency, $amount );
-        
-        $scheduleDetails = new ScheduleDetailsType ();
-        $scheduleDetails->Description = $agreement;
-        $scheduleDetails->PaymentPeriod = $paymentBillingPeriod;
 
-        $createRPProfileRequestDetail = new CreateRecurringPaymentsProfileRequestDetailsType ();
+        $paymentBillingPeriod = new BillingPeriodDetailsType($subscriptionType ['billingPeriod'], $subscriptionType ['billingFrequency'], new BasicAmountType ($currency, $amount));
+        $scheduleDetails = new ScheduleDetailsType($agreement, $paymentBillingPeriod);
+
+        $createRPProfileRequestDetail = new CreateRecurringPaymentsProfileRequestDetailsType($RPProfileDetails, $scheduleDetails);
         $createRPProfileRequestDetail->Token = $token;
-        $createRPProfileRequestDetail->ScheduleDetails = $scheduleDetails;
-        $createRPProfileRequestDetail->RecurringPaymentsProfileDetails = $RPProfileDetails;
-        
-        $createRPProfileRequest = new CreateRecurringPaymentsProfileRequestType ();
+
+        $createRPProfileRequest = new CreateRecurringPaymentsProfileRequestType();
         $createRPProfileRequest->CreateRecurringPaymentsProfileRequestDetails = $createRPProfileRequestDetail;
-        $createRPProfileReq = new CreateRecurringPaymentsProfileReq ();
+        $createRPProfileReq = new CreateRecurringPaymentsProfileReq();
         $createRPProfileReq->CreateRecurringPaymentsProfileRequest = $createRPProfileRequest;
 
-        $createRPProfileResponse = $paypalService->CreateRecurringPaymentsProfile ( $createRPProfileReq );
-
-        if ( isset ( $createRPProfileResponse ) && $createRPProfileResponse->Ack == 'Success'){
-            $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
+        try {
+            $createRPProfileResponse = $paypalService->CreateRecurringPaymentsProfile($createRPProfileReq);
+            if (!empty($createRPProfileResponse) && $createRPProfileResponse->Ack == 'Success') {
+                $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
+            }
+        } catch (\Exception $e) {
+            throw new Exception("Error creating subscription payment.", $e);
         }
 
         return $paymentProfileId;
@@ -126,17 +124,17 @@ class PayPalApiService extends Service {
     /**
      * Create an ExpressCheckout @ paypal before doing a 302 redirect
      * @return null|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
 
         $token = null;
-        $amount = $subscriptionType ['amount'];
-        $agreement = $subscriptionType ['agreement'];
-        $currency = Config::$a ['commerce'] ['currency'];
+        $amount = $subscriptionType['amount'];
+        $agreement = $subscriptionType['agreement'];
+        $currency = Config::$a['commerce']['currency'];
 
-        $details = new SetExpressCheckoutRequestDetailsType ();
+        $details = new SetExpressCheckoutRequestDetailsType();
         $details->BrandName = Config::$a['meta']['title'];
         $details->SolutionType = 'Sole';
         $details->ReqConfirmShipping = 0;
@@ -147,46 +145,47 @@ class PayPalApiService extends Service {
 
         if ($recurring) {
             // Create billing agreement for recurring payment
-            $billingAgreementDetails = new BillingAgreementDetailsType ( 'RecurringPayments' );
+            $billingAgreementDetails = new BillingAgreementDetailsType('RecurringPayments');
             $billingAgreementDetails->BillingAgreementDescription = $agreement;
-            $details->BillingAgreementDetails [0] = $billingAgreementDetails;
+            $details->BillingAgreementDetails[0] = $billingAgreementDetails;
         }
 
-        $payment = new PaymentDetailsType ();
+        $payment = new PaymentDetailsType();
         $payment->PaymentAction = 'Sale';
         $payment->NotifyURL = Config::$a['paypal']['endpoint_ipn'];
-        $payment->OrderTotal = new BasicAmountType ( $currency, $amount );
-        $payment->ItemTotal = new BasicAmountType ( $currency, $amount );
+        $payment->OrderTotal = new BasicAmountType($currency, $amount);
+        $payment->ItemTotal = new BasicAmountType($currency, $amount);
         $payment->Recurring = 0;
         $details->PaymentDetails [0] = $payment;
 
-        $item = new PaymentDetailsItemType ();
+        $item = new PaymentDetailsItemType();
         $item->Name = $subscriptionType ['itemLabel'];
-        $item->Amount = new BasicAmountType ( $currency, $amount );
+        $item->Amount = new BasicAmountType($currency, $amount);
         $item->Quantity = 1;
         $item->ItemCategory = 'Physical'; // or 'Physical'. TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
         $item->Number = $subscriptionType ['id'];
         $payment->PaymentDetailsItem [0] = $item;
-        
-        // Execute checkout
-        $setECReqType = new SetExpressCheckoutRequestType ();
-        $setECReqType->SetExpressCheckoutRequestDetails = $details;
-        $setECReq = new SetExpressCheckoutReq ();
-        $setECReq->SetExpressCheckoutRequest = $setECReqType;
-        $response = $paypalService->SetExpressCheckout ( $setECReq );
-        if ($response->Ack == 'Success') {
-            $token = $response->Token;
-        } else {
-            Log::critical("Error getting checkout response: " . $response->Errors->ShortMessage );
-        }
 
-        return $token;
+        // Execute checkout
+        $setECReqType = new SetExpressCheckoutRequestType($details);
+        $setECReq = new SetExpressCheckoutReq();
+        $setECReq->SetExpressCheckoutRequest = $setECReqType;
+
+        try {
+            $response = $paypalService->SetExpressCheckout($setECReq);
+            if (empty($response) || $response->Ack != 'Success') {
+                throw new Exception("Error getting checkout response: " . $response->Errors->ShortMessage);
+            }
+            return $response->Token;
+        } catch (\Exception $e) {
+            throw new Exception("Error creating subscription payment request", $e);
+        }
     }
 
     /**
      * Create an ExpressCheckout @ paypal before doing a 302 redirect
      * @return null|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function createDonateECRequest(string $returnUrl, string $cancelUrl, array $donation = []){
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
@@ -194,14 +193,14 @@ class PayPalApiService extends Service {
         $amount = $donation ['amount'];
         $currency = Config::$a ['commerce'] ['currency'];
 
-        $item = new PaymentDetailsItemType ();
+        $item = new PaymentDetailsItemType();
         $item->Name = "$amount donation";
-        $item->Amount = new BasicAmountType ($currency, $amount);
+        $item->Amount = new BasicAmountType($currency, $amount);
         $item->Quantity = 1;
         $item->ItemCategory = 'Physical'; // or 'Physical'. TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
         $item->Number = $donation['id'];
 
-        $payment = new PaymentDetailsType ();
+        $payment = new PaymentDetailsType();
         $payment->PaymentAction = 'Sale';
         $payment->ItemTotal = new BasicAmountType ($currency, $amount);
         $payment->NotifyURL = Config::$a['paypal']['endpoint_ipn'];
@@ -209,7 +208,7 @@ class PayPalApiService extends Service {
         $payment->ItemTotal = new BasicAmountType ($currency, $amount);
         $payment->PaymentDetailsItem[0] = $item;
 
-        $details = new SetExpressCheckoutRequestDetailsType ();
+        $details = new SetExpressCheckoutRequestDetailsType();
         $details->BrandName = Config::$a['meta']['title'];
         $details->SolutionType = 'Sole';
         $details->ReqConfirmShipping = 0;
@@ -221,56 +220,67 @@ class PayPalApiService extends Service {
         $details->PaymentDetails[0] = $payment;
 
         // Execute checkout
-        $requestType = new SetExpressCheckoutRequestType ();
-        $requestType->SetExpressCheckoutRequestDetails = $details;
-        $request = new SetExpressCheckoutReq ();
-        $request->SetExpressCheckoutRequest = $requestType;
-        $response = $paypalService->SetExpressCheckout($request);
-        if ($response->Ack == 'Success') {
-            $token = $response->Token;
-        } else {
-            $errors = $response->Errors;
-            Log::critical("Error getting checkout response: " . $errors->ShortMessage);
+        $response = null;
+        try {
+            $requestType = new SetExpressCheckoutRequestType($details);
+            $request = new SetExpressCheckoutReq();
+            $request->SetExpressCheckoutRequest = $requestType;
+            $response = $paypalService->SetExpressCheckout($request);
+            if (!empty($response) && $response->Ack == 'Success') {
+                return $response->Token;
+            }
+            throw new Exception($response->Errors->ShortMessage);
+        } catch (\Exception $e) {
+            throw new Exception("Error getting checkout response. {$e->getMessage()}");
         }
-        return $token;
     }
 
     /**
      * Retrieve the checkout instance from paypal
-     * @return null|GetExpressCheckoutDetailsResponseType
-     * @throws \Exception
+     * @return GetExpressCheckoutDetailsResponseType
+     * @throws Exception
      */
     public function retrieveCheckoutInfo(string $token) {
-        $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
-        $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq ();
-        $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType ($token);
-        $response = $paypalService->GetExpressCheckoutDetails($getExpressCheckoutReq);
-        return (isset ($response) && $response->Ack == 'Success') ? $response : null;
+        try {
+            $paypalService = new PayPalAPIInterfaceServiceService($this->getConfig());
+            $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq();
+            $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType($token);
+            $response = $paypalService->GetExpressCheckoutDetails($getExpressCheckoutReq);
+            if (!empty($response) && $response->Ack == 'Success') {
+                return $response;
+            }
+        } catch (\Exception $e) {
+            throw new Exception("Error retrieving check-out information. {$e->getMessage()}");
+        }
+        throw new Exception("Error retrieving check-out information.");
     }
 
     /**
      * Get express checkout payment request response
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCheckoutPaymentResponse(string $payerId, string $token, $amount): DoExpressCheckoutPaymentResponseType {
-        $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
-        $currency = Config::$a ['commerce'] ['currency'];
+        $paypalService = new PayPalAPIInterfaceServiceService($this->getConfig());
+        $currency = Config::$a['commerce']['currency'];
 
-        $DoECRequestDetails = new DoExpressCheckoutPaymentRequestDetailsType ();
+        $DoECRequestDetails = new DoExpressCheckoutPaymentRequestDetailsType();
         $DoECRequestDetails->PayerID = $payerId;
         $DoECRequestDetails->Token = $token;
         $DoECRequestDetails->PaymentAction = 'Sale';
 
-        $paymentDetails = new PaymentDetailsType ();
-        $paymentDetails->OrderTotal = new BasicAmountType ($currency, $amount);
+        $paymentDetails = new PaymentDetailsType();
+        $paymentDetails->OrderTotal = new BasicAmountType($currency, $amount);
         $paymentDetails->NotifyURL = Config::$a['paypal']['endpoint_ipn'];
-        $DoECRequestDetails->PaymentDetails [0] = $paymentDetails;
+        $DoECRequestDetails->PaymentDetails[0] = $paymentDetails;
 
-        $DoECRequest = new DoExpressCheckoutPaymentRequestType ();
-        $DoECRequest->DoExpressCheckoutPaymentRequestDetails = $DoECRequestDetails;
-        $DoECReq = new DoExpressCheckoutPaymentReq ();
+        $DoECRequest = new DoExpressCheckoutPaymentRequestType($DoECRequestDetails);
+        $DoECReq = new DoExpressCheckoutPaymentReq();
         $DoECReq->DoExpressCheckoutPaymentRequest = $DoECRequest;
-        return $paypalService->DoExpressCheckoutPayment($DoECReq);
+        try {
+            return $paypalService->DoExpressCheckoutPayment($DoECReq);
+        } catch (\Exception $e) {
+            throw new Exception("Error getting checkout response.", $e);
+        }
     }
 
     public function getCheckoutResponsePayments(DoExpressCheckoutPaymentResponseType $DoECResponse): array {

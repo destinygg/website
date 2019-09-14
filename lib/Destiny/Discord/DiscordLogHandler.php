@@ -19,7 +19,6 @@ class DiscordLogHandler extends AbstractProcessingHandler {
             // We may be running within the command line, no session object is instantiated
             $session = Session::instance();
             $creds = !empty($session) ? $session->getCredentials() : null;
-            $username = !empty($creds) && $creds->isValid() ? "<". Http::getBaseUrl() ."/admin/user/{$creds->getUserId()}/edit|{$creds->getUsername()}>" : 'None';
             //
             $url = $_SERVER['REQUEST_URI'] ?? '';
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
@@ -31,21 +30,22 @@ class DiscordLogHandler extends AbstractProcessingHandler {
                     'short' => false
                 ];
             }
-            if (!empty($username)) {
+            if (!empty($creds)) {
                 $fields[] = [
                     'title' => 'User',
-                    'value' => $username,
+                    'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()),
                     'short' => false
                 ];
             }
-            $attachment = [
-                'color' => $color,
-                //'text' => $record['context']['trace'] ?? 'No stack trace.',
-                'fields' => $fields
+            $fields[] = [
+                'title' => 'Message',
+                'value' => $record['message'],
+                'short' => false
             ];
-
-            $messenger = DiscordMessenger::instance();
-            $messenger->send($record['message'], [$attachment]);
+            DiscordMessenger::send('Error occurred.', [
+                'color' => $color,
+                'fields' => $fields
+            ]);
 
         } catch (Exception $e) {
             // Recursion

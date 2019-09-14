@@ -19,7 +19,6 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -44,7 +43,7 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     * @throws DBALException
+     * @throws Exception
      */
     public function getUser(): array {
         $userService = UserService::instance();
@@ -59,7 +58,6 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
      * @throws Exception
-     * @throws DBALException
      */
     public function saveChatSettings(Request $request){
         $data = $request->getBody();
@@ -77,7 +75,7 @@ class ChatController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     * @throws DBALException
+     * @throws Exception
      */
     public function getChatSettings(): array {
         $userService = UserService::instance();
@@ -89,7 +87,7 @@ class ChatController {
      * @Route ("/api/chat/me/settings")
      * @Secure ({"USER"})
      * @HttpMethod ({"DELETE"})
-     * @throws DBALException
+     * @throws Exception
      */
     public function clearChatSettings(){
         $userService = UserService::instance();
@@ -103,7 +101,7 @@ class ChatController {
      * @HttpMethod ({"GET"})
      * @ResponseBody
      * @return array|string
-     * @throws DBALException
+     * @throws Exception
      */
     public function banInfo(Request $request){
         $chatBanService = ChatBanService::instance();
@@ -137,20 +135,16 @@ class ChatController {
         Session::set('chat_ucd_stalks', time() + 10);
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
-        try {
-            $client = HttpClient::instance();
-            $r = $client->get(self::$LOGS_ENDPOINT['stalk'] . urlencode($params['username']) . '.json', [
-                'headers' => ['User-Agent' => Config::userAgent()],
-                'query' => ['limit' => $limit]
-            ]);
-            if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
-                $response->setStatus(Http::STATUS_OK);
-                return json_decode($r->getBody(), true);
-            } else {
-                Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
-            }
-        } catch (\Exception $e) {
-            Log::warn('Failed to return valid response for chat stalk', ['message' => $e->getMessage()]);
+        $client = HttpClient::instance();
+        $r = $client->get(self::$LOGS_ENDPOINT['stalk'] . urlencode($params['username']) . '.json', [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'query' => ['limit' => $limit]
+        ]);
+        if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
+            $response->setStatus(Http::STATUS_OK);
+            return json_decode($r->getBody(), true);
+        } else {
+            Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
         }
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';
@@ -176,20 +170,16 @@ class ChatController {
         Session::set('chat_ucd_mentions', time() + 10);
         $limit = isset($params['limit']) ? intval($params['limit']) : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
-        try {
-            $client = HttpClient::instance();
-            $r = $client->get(self::$LOGS_ENDPOINT['mentions'] . urlencode($params['username']) . '.json', [
-                'headers' => ['User-Agent' => Config::userAgent()],
-                'query' => ['limit' => $limit]
-            ]);
-            if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
-                $response->setStatus(Http::STATUS_OK);
-                return json_decode($r->getBody(), true);
-            } else {
-                Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
-            }
-        } catch (\Exception $e) {
-            Log::warn('Failed to return valid response for chat mentions', ['message' => $e->getMessage()]);
+        $client = HttpClient::instance();
+        $r = $client->get(self::$LOGS_ENDPOINT['mentions'] . urlencode($params['username']) . '.json', [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'query' => ['limit' => $limit]
+        ]);
+        if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
+            $response->setStatus(Http::STATUS_OK);
+            return json_decode($r->getBody(), true);
+        } else {
+            Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
         }
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';

@@ -25,15 +25,23 @@ class DiscordMessenger extends Service {
         $this->guzzle = HttpClient::instance();
     }
 
+    public static function userLink(int $userId, string $username): string {
+        return '<' . Http::getBaseUrl() . "/admin/user/{$userId}/edit|{$username}>";
+    }
+
     /**
      * @return ResponseInterface|null
      */
-    public function send(string $text, array $attachments = [], array $user = []) {
+    public static function send(string $text, array $attachment = []) {
+        return self::instance()->sendMessage($text, [$attachment]);
+    }
+
+    /**
+     * @return ResponseInterface|null
+     */
+    protected function sendMessage(string $text, array $attachments = []) {
         $webhook = Config::$a[AuthProvider::DISCORD]['webhook'] ?? '';
         if (!empty($webhook)) {
-            if (!empty($user)) {
-                $text = str_replace("{user}", "<" . Http::getBaseUrl() . "/admin/user/{$user['userId']}/edit|{$user['username']}>", $text);
-            }
             $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
                     'text' => $text,

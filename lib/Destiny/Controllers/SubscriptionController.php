@@ -41,7 +41,7 @@ class SubscriptionController {
 
     /**
      * @Route ("/subscribe")
-     * @throws DBALException
+     * @throws Exception
      */
     public function subscribe(ViewModel $model): string {
         $subscriptionsService = SubscriptionsService::instance();
@@ -61,7 +61,6 @@ class SubscriptionController {
      * @Route ("/subscription/{id}/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
-     * @throws DBALException
      * @throws Exception
      */
     public function subscriptionCancel(array $params, ViewModel $model): string {
@@ -83,7 +82,6 @@ class SubscriptionController {
      * @Route ("/subscription/gift/{id}/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
-     * @throws DBALException
      * @throws Exception
      */
     public function subscriptionGiftCancel(array $params, ViewModel $model): string {
@@ -110,7 +108,6 @@ class SubscriptionController {
      * @Route ("/subscription/cancel")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
-     * @throws DBALException
      * @throws Exception
      */
     public function subscriptionCancelProcess(array $params, Request $request): string {
@@ -146,8 +143,12 @@ class SubscriptionController {
 
             $note = $params['message'] ?? '';
             if (!empty($message)) {
-                $messenger = DiscordMessenger::instance();
-                $messenger->send("{user} has cancelled a subscription.", [['text' => $note]], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
+                DiscordMessenger::send('Subscription cancelled', [
+                    'fields' => [
+                        ['title' => 'User', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false],
+                        ['title' => 'Message', 'value' => $note, 'short' => false],
+                    ]
+                ]);
             }
 
             $authService->flagUserForUpdate($subscription ['userId']);
@@ -160,7 +161,7 @@ class SubscriptionController {
 
     /**
      * @Route ("/subscription/confirm")
-     * @throws DBALException
+     * @throws Exception
      */
     public function subscriptionConfirm(array $params, ViewModel $model): string {
         try {
@@ -213,8 +214,8 @@ class SubscriptionController {
     /**
      * @Route ("/subscription/create")
      * @Secure ({"USER"})
-     * @throws DBALException
      * @throws Exception
+     * @throws DBALException
      */
     public function subscriptionCreate(array $params, ViewModel $model): string {
         FilterParams::required($params, 'subscription');
@@ -299,12 +300,9 @@ class SubscriptionController {
             $returnUrl = Http::getBaseUrl() . '/subscription/process?success=true&subscriptionId=' . urlencode($subscriptionId);
             $cancelUrl = Http::getBaseUrl() . '/subscription/process?success=false&subscriptionId=' . urlencode($subscriptionId);
             $token = $payPalApiService->createSubscribeECRequest($returnUrl, $cancelUrl, $subscriptionType, $recurring);
-            if (empty ($token)) {
-                throw new Exception ("Error getting paypal response");
-            }
             $conn->commit();
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $conn->rollBack();
             throw new Exception("Error creating order", $e);
         }
@@ -365,9 +363,7 @@ class SubscriptionController {
 
             // Create the payment profile
             try {
-                if (!$payPalApiService->retrieveCheckoutInfo($params ['token'])) {
-                    throw new Exception ('Failed to retrieve express checkout details');
-                }
+                /*$info = */$payPalApiService->retrieveCheckoutInfo($params['token']);
                 // Payment date is 1 day before subscription rolls over.
                 if ($subscription['recurring'] == 1 || $subscription['recurring'] == true) {
                     $startPaymentDate = Date::getDateTime();
@@ -388,7 +384,7 @@ class SubscriptionController {
                 // we put the subscription into "PENDING" state if a payment is found not completed
                 $DoECResponse = $payPalApiService->getCheckoutPaymentResponse($params ['PayerID'], $params ['token'], $subscriptionType['amount']);
                 $payments = $payPalApiService->getCheckoutResponsePayments($DoECResponse);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $n = new Exception("Error processing paypal checkout response", $e);
                 Log::error($n);
                 throw $n;
@@ -438,9 +434,8 @@ class SubscriptionController {
             if (empty ($ban) or (!empty($ban ['endtimestamp']) or $subscriptionType['tier'] >= 2)) {
                 $redisService->sendUnban($user['userId']);
             }
-        } catch (DBALException $e) {
-            $n = new Exception("Could not unban user {userId}", $e);
-            Log::error($n, $user);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
         }
 
         // Broadcast
@@ -469,10 +464,13 @@ class SubscriptionController {
         }
 
         // Sub message
-        if (!empty($subscribeMessage) && !empty(trim($subscribeMessage))) {
-            $message = mb_substr($broadcastMessage, 0, 250);
-            $messenger = DiscordMessenger::instance();
-            $messenger->send("{user} has subscribed.", [['text' => $message]], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
+        if (!empty(trim($subscribeMessage ?? ''))) {
+            DiscordMessenger::send('New subscriber', [
+                'fields' => [
+                    ['title' => 'User', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false],
+                    ['title' => 'Message', 'value' => mb_substr($broadcastMessage ?? 'No message', 0, 250), 'short' => false],
+                ]
+            ]);
         }
 
         // Update the user
@@ -485,7 +483,6 @@ class SubscriptionController {
     /**
      * @Route ("/subscription/{subscriptionId}/complete")
      * @Secure ({"USER"})
-     * @throws DBALException
      * @throws Exception
      */
     public function subscriptionComplete(array $params, ViewModel $model): string {
@@ -514,7 +511,6 @@ class SubscriptionController {
     /**
      * @Route ("/subscription/{subscriptionId}/error")
      * @Secure ({"USER"})
-     * @throws DBALException
      * @throws Exception
      */
     public function subscriptionError(array $params, ViewModel $model): string {
@@ -536,7 +532,6 @@ class SubscriptionController {
      * @Route ("/api/info/giftcheck")
      * @Secure ({"USER"})
      * @ResponseBody
-     * @throws DBALException
      * @throws Exception
      */
     public function giftCheckUser(array $params): array {

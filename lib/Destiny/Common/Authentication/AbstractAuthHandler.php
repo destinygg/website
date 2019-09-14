@@ -22,11 +22,7 @@ abstract class AbstractAuthHandler extends Service implements AuthenticationHand
      * @throws Exception
      */
     public function exchangeCode(array $params): OAuthResponse {
-        try {
-            return $this->mapTokenResponse($this->getToken($params));
-        } catch (\Exception $e) {
-            throw new Exception("Error exchanging code. {$e->getMessage()}", $e);
-        }
+        return $this->mapTokenResponse($this->getToken($params));
     }
 
     public function getHttpClient(array $options = null): Client {

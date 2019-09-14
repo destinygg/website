@@ -10,6 +10,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Authentication\DggOAuthService;
+use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Response;
@@ -19,8 +20,6 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Utils\Http;
-use Doctrine\DBAL\DBALException;
-use Exception;
 
 /**
  * @Controller
@@ -31,8 +30,9 @@ class ApiController {
      * @Route("/api/userinfo")
      * @ResponseBody
      *
-     * @throws Exception
+     * @param array $params
      * @return SessionCredentials|array
+     * @throws Exception
      */
     public function userInfo(array $params) {
         FilterParams::required($params, 'token');
@@ -87,8 +87,8 @@ class ApiController {
      * @PrivateKey ({"api","reddit","minecraft"})
      * @ResponseBody
      *
-     * @throws DBALException
      * @return array|SessionCredentials
+     * @throws Exception
      */
     public function apiUserByField(Response $response, Request $request, array $params) {
         $userid = null;
@@ -186,7 +186,7 @@ class ApiController {
      * @PrivateKey ({"api","chat"})
      *
      * @return SessionCredentials|array
-     * @throws DBALException
+     * @throws Exception
      */
     public function userByAuthToken(Response $response, array $params) {
         if (!isset ($params ['authtoken']) || empty ($params ['authtoken'])) {

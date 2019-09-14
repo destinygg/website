@@ -9,6 +9,7 @@ use Destiny\Common\Annotation\Schedule;
 use Destiny\Common\Application;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Cron\TaskInterface;
+use Destiny\Common\DBException;
 use Destiny\Common\Log;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
@@ -22,7 +23,7 @@ use PDO;
 class SubscriptionExpire implements TaskInterface {
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function execute() {
         $authService = AuthenticationService::instance();
@@ -76,15 +77,20 @@ class SubscriptionExpire implements TaskInterface {
             $authService->flagUserForUpdate($id);
         }
 
-        // Clean-up old unfinished subscriptions (where users have aborted the process)
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('DELETE FROM `dfl_users_subscriptions` WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 1 HOUR)');
-        $stmt->bindValue('status', SubscriptionStatus::_NEW, PDO::PARAM_STR);
-        $stmt->execute();
+        try {
+            // Clean-up old unfinished subscriptions (where users have aborted the process)
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('DELETE FROM `dfl_users_subscriptions` WHERE `status` = :status AND `createdDate` < (NOW() - INTERVAL 1 HOUR)');
+            $stmt->bindValue('status', SubscriptionStatus::_NEW, PDO::PARAM_STR);
+            $stmt->execute();
+        } catch (DBALException $e) {
+            throw new DBException("Error expiring old subscriptions.", $e);
+        }
+
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     private function sendResubscribeBroadcast(array $subscription) {
         $userService = UserService::instance();

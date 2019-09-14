@@ -2,10 +2,10 @@
 namespace Destiny\Common\Images;
 
 use Destiny\Common\Application;
+use Destiny\Common\DBException;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
 use PDO;
 use RuntimeException;
 
@@ -22,60 +22,75 @@ class ImageService extends Service {
     ];
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     function insertImage(array $img, string $tag = ''): int {
-        $conn = Application::getDbConn();
-        $conn->insert('images', [
-            'label' => $img ['label'],
-            'name' => $img ['name'],
-            'hash' => $img ['hash'],
-            'size' => $img ['size'],
-            'type' => $img ['type'],
-            'width' => $img ['width'],
-            'height' => $img ['height'],
-            'tag' => $tag,
-            'createdDate' => Date::getSqlDateTime(),
-            'modifiedDate' => Date::getSqlDateTime(),
-        ]);
-        return intval($conn->lastInsertId());
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('images', [
+                'label' => $img ['label'],
+                'name' => $img ['name'],
+                'hash' => $img ['hash'],
+                'size' => $img ['size'],
+                'type' => $img ['type'],
+                'width' => $img ['width'],
+                'height' => $img ['height'],
+                'tag' => $tag,
+                'createdDate' => Date::getSqlDateTime(),
+                'modifiedDate' => Date::getSqlDateTime(),
+            ]);
+            return intval($conn->lastInsertId());
+        } catch (DBALException $e) {
+            throw new DBException("Error inserting image.", $e);
+        }
     }
 
     /**
      * @return array|false
-     * @throws DBALException
+     * @throws DBException
      */
     function findImageById(int $id) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM `images` WHERE `id` = :id LIMIT 1');
-        $stmt->bindValue('id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('SELECT * FROM `images` WHERE `id` = :id LIMIT 1');
+            $stmt->bindValue('id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading image.", $e);
+        }
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws DBALException
+     * @throws DBException
      */
     function removeImageById($id) {
-        $conn = Application::getDbConn();
-        $conn->delete('images', ['id' => $id]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->delete('images', ['id' => $id]);
+        } catch (DBALException $e) {
+            throw new DBException("Error removing image.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function getAllOrphanedImages(): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT i.* FROM images i 
-            LEFT JOIN emotes e ON e.imageId = i.id
-            LEFT JOIN dfl_features f ON f.imageId = i.id
-            WHERE e.id IS NULL AND f.featureId IS NULL
-            AND i.createdDate <= (NOW() - INTERVAL 1 HOUR)
-        ');
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT i.* FROM images i 
+                LEFT JOIN emotes e ON e.imageId = i.id
+                LEFT JOIN dfl_features f ON f.imageId = i.id
+                WHERE e.id IS NULL AND f.featureId IS NULL
+                AND i.createdDate <= (NOW() - INTERVAL 1 HOUR)
+            ');
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading orphaned images.", $e);
+        }
     }
 
     function removeImageFile(array $image, string $path): bool {

@@ -10,7 +10,7 @@ abstract class Service {
 
     public static function instance() {
         $class = get_called_class();
-        if ( !isset( static::$_instances[$class] ) ){
+        if (!isset(static::$_instances[$class])) {
             static::$_instances[$class] = new static;
             static::$_instances[$class]->afterConstruct();
         }

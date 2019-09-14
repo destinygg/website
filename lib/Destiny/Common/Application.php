@@ -3,6 +3,7 @@ namespace Destiny\Common;
 
 use Destiny\Common\Routing\Route;
 use Destiny\Common\Routing\Router;
+use Destiny\Common\Session\Cookie;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\Session\SessionInstance;
@@ -12,8 +13,10 @@ use Destiny\Common\Utils\RandomString;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use Error;
+use InvalidArgumentException;
 use Redis;
 use ReflectionClass;
+use ReflectionException;
 use function GuzzleHttp\json_encode;
 
 /**
@@ -44,6 +47,12 @@ class Application extends Service {
     
     /** @var callable */
     public $loader;
+
+    /** @var Cookie */
+    protected $rememberMeCookie = null;
+
+    /** @var Cookie */
+    protected $sessionCookie = null;
 
     /** @return Connection */
     public static function getDbConn(){
@@ -170,7 +179,7 @@ class Application extends Service {
             Http::header(Http::HEADER_CONTENT_TYPE, MimeType::JSON);
             try {
                 $body = json_encode($body);
-            } catch (\Exception $e) {
+            } catch (InvalidArgumentException $e) {
                 $n = new Exception('Invalid response body.', $e);
                 Log::error($n);
             }
@@ -184,13 +193,13 @@ class Application extends Service {
     /**
      * Runs a controller method
      * Does some magic around what parameters are passed in.
-     * @throws \Exception
      * @return mixed|null
+     * @throws ReflectionException
      */
     private function executeController(Route $route, Request $request, Response $response, ViewModel $model) {
         $className = $route->getClass();
         $classMethod = $route->getClassMethod();
-        $classReflection = new ReflectionClass ($className);
+        $classReflection = new ReflectionClass($className);
         $classInstance = $classReflection->newInstance();
         $methodReflection = $classReflection->getMethod($classMethod);
         $methodParams = $methodReflection->getParameters();
@@ -243,7 +252,7 @@ class Application extends Service {
 
     /**
      * Include a template and return the contents
-     * @throws \Exception
+     * @throws ViewModelException
      */
     protected function template(string $filename, ViewModel $model) {
         return $model->getContent($filename);
@@ -255,7 +264,7 @@ class Application extends Service {
     protected function errorTemplate(ViewModel $model, bool $useResponseAsBody = false) {
         try {
             return $useResponseAsBody ? $model : $model->getContent('error.php');
-        } catch (\Exception $e) {
+        } catch (ViewModelException $e) {
             return $e;
         }
     }
@@ -334,4 +343,19 @@ class Application extends Service {
         $this->auditLogger = $auditLogger;
     }
 
+    public function setRememberMeCookie(Cookie $cookie) {
+        $this->rememberMeCookie = $cookie;
+    }
+
+    public function getRememberMeCookie(): Cookie {
+        return $this->rememberMeCookie;
+    }
+
+    public function setSessionCookie(Cookie $cookie) {
+        $this->sessionCookie = $cookie;
+    }
+
+    public function getSessionCookie(): Cookie {
+        return $this->sessionCookie;
+    }
 }

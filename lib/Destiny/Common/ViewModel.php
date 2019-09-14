@@ -24,7 +24,7 @@ class ViewModel extends stdClass implements JsonSerializable {
 
     /**
      * TODO figure a way to remove this
-     * @throws \Exception
+     * @throws ViewModelException
      */
     public function getContent(string $filename): string {
         $path = _BASEDIR . '/views/' . $filename;

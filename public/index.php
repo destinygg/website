@@ -36,12 +36,12 @@ try {
     $app->setRouter($router);
 
     // Setup user session
-    $session = new SessionInstance();
-    $session->setSessionCookie(new Cookie('sid', Config::$a['cookie']));
-    $session->setRememberMeCookie(new Cookie('rememberme', Config::$a['cookie']));
-    $session->setCredentials(new SessionCredentials());
-    $app->setSession($session);
-    AuthenticationService::instance()->startSession();
+    $app->setSession(new SessionInstance());
+    $app->setSessionCookie(new Cookie('sid', Config::$a['cookie']));
+    $app->setRememberMeCookie(new Cookie('rememberme', Config::$a['cookie']));
+
+    $authService = AuthenticationService::instance();
+    $authService->startSession();
 
     // Attempts to find a route and execute it
     $app->executeRequest(new Request([

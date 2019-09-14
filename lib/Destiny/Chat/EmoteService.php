@@ -3,11 +3,11 @@ namespace Destiny\Chat;
 
 use Destiny\Common\Application;
 use Destiny\Common\Config;
+use Destiny\Common\DBException;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Utils\Date;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Exception;
 use PDO;
 
@@ -19,134 +19,160 @@ class EmoteService extends Service {
     const EMOTES_DIR = _BASEDIR . '/static/emotes/';
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function updateEmote($id, array $emote) {
-        $conn = Application::getDbConn();
-        $conn->update('emotes', [
-            'imageId' => $emote['imageId'],
-            'prefix' => $emote['prefix'],
-            'twitch' => $emote['twitch'],
-            'draft' => $emote['draft'],
-            'styles' => $emote['styles'],
-            'theme' => $emote['theme'],
-            'modifiedDate' => Date::getSqlDateTime()
-        ], ['id' => $id]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->update('emotes', [
+                'imageId' => $emote['imageId'],
+                'prefix' => $emote['prefix'],
+                'twitch' => $emote['twitch'],
+                'draft' => $emote['draft'],
+                'styles' => $emote['styles'],
+                'theme' => $emote['theme'],
+                'modifiedDate' => Date::getSqlDateTime()
+            ], ['id' => $id]);
+        } catch (DBALException $e) {
+            throw new DBException("Error updating emote.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function insertEmote(array $emote): int {
-        $conn = Application::getDbConn();
-        $conn->insert('emotes', [
-            'imageId' => $emote['imageId'],
-            'prefix' => $emote['prefix'],
-            'twitch' => $emote['twitch'],
-            'draft' => $emote['draft'],
-            'styles' => $emote['styles'],
-            'theme' => $emote['theme'],
-            'createdDate' => Date::getSqlDateTime(),
-            'modifiedDate' => Date::getSqlDateTime()
-        ]);
-        return intval($conn->lastInsertId());
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('emotes', [
+                'imageId' => $emote['imageId'],
+                'prefix' => $emote['prefix'],
+                'twitch' => $emote['twitch'],
+                'draft' => $emote['draft'],
+                'styles' => $emote['styles'],
+                'theme' => $emote['theme'],
+                'createdDate' => Date::getSqlDateTime(),
+                'modifiedDate' => Date::getSqlDateTime()
+            ]);
+            return intval($conn->lastInsertId());
+        } catch (DBALException $e) {
+            throw new DBException("Error inserting emote.", $e);
+        }
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws DBALException
+     * @throws DBException
      */
     function removeEmoteById(int $id) {
-        $conn = Application::getDbConn();
-        $conn->delete('emotes', ['id' => $id]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->delete('emotes', ['id' => $id]);
+        } catch (DBALException $e) {
+            throw new DBException("Error removing emote.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
-     * @throws InvalidArgumentException
+     * @throws DBException
      */
     function removeEmoteByTheme(int $themeId) {
-        $conn = Application::getDbConn();
-        $conn->delete('emotes', ['theme' => $themeId]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->delete('emotes', ['theme' => $themeId]);
+        } catch (DBALException $e) {
+            throw new DBException("Error removing emote.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     function findAllEmotesWithTheme($themeId = null, $publishedOnly = false): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT
-              e2.*, 
-              i.name as `imageName`, 
-              i.label as `imageLabel`, 
-              i.type as `imageType`, 
-              i.size, 
-              i.width, 
-              i.height 
-            FROM (
-              SELECT e.prefix, MAX(e.theme) \'theme\' FROM emotes e
-              WHERE e.theme = :theme OR e.theme = :base
-              '. ($publishedOnly ? ' AND e.draft = 0 ' : '' ) .'
-              GROUP BY e.prefix
-            ) e
-            JOIN emotes e2 ON e2.prefix = e.prefix 
-            AND (e2.theme = e.theme OR e2.theme = :base AND e.theme = :base)
-            LEFT JOIN images i ON i.id = e2.imageId
-            '. ($publishedOnly ? ' WHERE e2.draft = 0 ' : '' ) .'
-            ORDER BY e2.twitch ASC, e2.prefix ASC, e2.id DESC
-         ');
-        $stmt->bindValue('theme', (int) $themeId, PDO::PARAM_INT);
-        $stmt->bindValue('base', ThemeService::BASE_THEME_ID, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT
+                  e2.*, 
+                  i.name as `imageName`, 
+                  i.label as `imageLabel`, 
+                  i.type as `imageType`, 
+                  i.size, 
+                  i.width, 
+                  i.height 
+                FROM (
+                  SELECT e.prefix, MAX(e.theme) \'theme\' FROM emotes e
+                  WHERE e.theme = :theme OR e.theme = :base
+                  '. ($publishedOnly ? ' AND e.draft = 0 ' : '' ) .'
+                  GROUP BY e.prefix
+                ) e
+                JOIN emotes e2 ON e2.prefix = e.prefix 
+                AND (e2.theme = e.theme OR e2.theme = :base AND e.theme = :base)
+                LEFT JOIN images i ON i.id = e2.imageId
+                '. ($publishedOnly ? ' WHERE e2.draft = 0 ' : '' ) .'
+                ORDER BY e2.twitch ASC, e2.prefix ASC, e2.id DESC
+             ');
+            $stmt->bindValue('theme', (int) $themeId, PDO::PARAM_INT);
+            $stmt->bindValue('base', ThemeService::BASE_THEME_ID, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error searching emotes.", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     function findAllEmotes(): array {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT 
-              e.*, 
-              i.name as `imageName`, 
-              i.label as `imageLabel`, 
-              i.type as `imageType`, 
-              i.size, 
-              i.width, 
-              i.height 
-             FROM emotes e 
-             LEFT JOIN images i ON i.id = e.imageId
-             ORDER BY e.twitch ASC, e.prefix ASC, e.id DESC
-         ');
-        $stmt->execute();
-        return $stmt->fetchAll();
+       try {
+           $conn = Application::getDbConn();
+           $stmt = $conn->prepare('
+                SELECT 
+                  e.*, 
+                  i.name as `imageName`, 
+                  i.label as `imageLabel`, 
+                  i.type as `imageType`, 
+                  i.size, 
+                  i.width, 
+                  i.height 
+                 FROM emotes e 
+                 LEFT JOIN images i ON i.id = e.imageId
+                 ORDER BY e.twitch ASC, e.prefix ASC, e.id DESC
+             ');
+           $stmt->execute();
+           return $stmt->fetchAll();
+       } catch (DBALException $e) {
+           throw new DBException("Error searching emotes.", $e);
+       }
     }
 
     /**
      * @return array|false
-     * @throws DBALException
+     * @throws DBException
      */
     function findEmoteById(int $id) {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('
-            SELECT 
-              e.*, 
-              i.name as `imageName`, 
-              i.label as `imageLabel`, 
-              i.type as `imageType`, 
-              i.size, 
-              i.width, 
-              i.height 
-             FROM emotes e 
-             LEFT JOIN images i ON i.id = e.imageId
-             WHERE e.id = :id
-             LIMIT 0,1
-         ');
-        $stmt->bindValue('id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch();
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT 
+                  e.*, 
+                  i.name as `imageName`, 
+                  i.label as `imageLabel`, 
+                  i.type as `imageType`, 
+                  i.size, 
+                  i.width, 
+                  i.height 
+                 FROM emotes e 
+                 LEFT JOIN images i ON i.id = e.imageId
+                 WHERE e.id = :id
+                 LIMIT 0,1
+             ');
+            $stmt->bindValue('id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading emote.", $e);
+        }
     }
 
     /**
@@ -237,15 +263,19 @@ class EmoteService extends Service {
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     public function isPrefixTaken(string $prefix, int $theme, $exclude = null): bool {
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT COUNT(*) FROM emotes e WHERE e.prefix = :prefix AND e.theme = :theme AND e.id != :exclude');
-        $stmt->bindValue('exclude', $exclude, PDO::PARAM_INT);
-        $stmt->bindValue('prefix', $prefix, PDO::PARAM_STR);
-        $stmt->bindValue('theme', $theme, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchColumn() > 0;
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('SELECT COUNT(*) FROM emotes e WHERE e.prefix = :prefix AND e.theme = :theme AND e.id != :exclude');
+            $stmt->bindValue('exclude', $exclude, PDO::PARAM_INT);
+            $stmt->bindValue('prefix', $prefix, PDO::PARAM_STR);
+            $stmt->bindValue('theme', $theme, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+        } catch (DBALException $e) {
+            throw new DBException("Error checking emote prefix.", $e);
+        }
     }
 }

@@ -3,6 +3,7 @@ namespace Destiny\Common\Cron;
 
 use DateTime;
 use Destiny\Common\Application;
+use Destiny\Common\DBException;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
@@ -48,8 +49,8 @@ class Scheduler {
                     }
                     Log::info('Execute start {action}', $task);
                     $this->getTaskClass($task)->execute();
-                } catch (\Exception $e) {
-                    Log::error('Error executing task: ' . serialize($task) . ' ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                } catch (Exception $e) {
+                    Log::error("Error executing task: $task {$e->getMessage()}", ['trace' => $e->getTraceAsString()]);
                 }
                 Log::info('Execute end {action}', $task);
             } else {
@@ -61,19 +62,23 @@ class Scheduler {
 
     /**
      * Load tasks from db, and sync with current schedule
-     * @throws DBALException
+     * @throws DBException
      */
     public function loadTasks(){
-        $conn = Application::getDbConn();
-        $stmt = $conn->prepare('SELECT * FROM dfl_scheduled_tasks');
-        $stmt->execute();
-        foreach ($stmt->fetchAll() as $data) {
-            if(isset($this->schedule[$data['action']])) {
-                $task = &$this->schedule[$data['action']];
-                $task = array_merge($task, $data);
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('SELECT * FROM dfl_scheduled_tasks');
+            $stmt->execute();
+            foreach ($stmt->fetchAll() as $data) {
+                if(isset($this->schedule[$data['action']])) {
+                    $task = &$this->schedule[$data['action']];
+                    $task = array_merge($task, $data);
+                }
             }
+            Log::info('Schedule loaded ['. join(',', array_keys($this->schedule)) .']');
+        } catch (DBALException $e) {
+            throw new DBException("Error loading tasks", $e);
         }
-        Log::info('Schedule loaded ['. join(',', array_keys($this->schedule)) .']');
     }
 
     public function addTask(string $action, array $task) {
@@ -81,41 +86,49 @@ class Scheduler {
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     protected function updateTask(array $task) {
-        $conn = Application::getDbConn();
-        $conn->update('dfl_scheduled_tasks', [
-            'lastExecuted' => $task ['lastExecuted'],
-            'executeCount' => $task ['executeCount']
-        ], [
-            'action' => $task ['action']
-        ], [
-            PDO::PARAM_INT,
-            PDO::PARAM_STR,
-            PDO::PARAM_STR
-        ]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->update('dfl_scheduled_tasks', [
+                'lastExecuted' => $task ['lastExecuted'],
+                'executeCount' => $task ['executeCount']
+            ], [
+                'action' => $task ['action']
+            ], [
+                PDO::PARAM_INT,
+                PDO::PARAM_STR,
+                PDO::PARAM_STR
+            ]);
+        } catch (DBALException $e) {
+            throw new DBException("Error updating tasks", $e);
+        }
     }
 
     /**
-     * @throws DBALException
+     * @throws DBException
      */
     protected function insertTask(array $task) {
-        $conn = Application::getDbConn();
-        $conn->insert('dfl_scheduled_tasks', [
-            'action' => $task ['action'],
-            'lastExecuted' => $task ['lastExecuted'],
-            'frequency' => $task ['frequency'],
-            'period' => $task ['period'],
-            'executeCount' => $task ['executeCount']
-        ], [
-            PDO::PARAM_STR,
-            PDO::PARAM_STR,
-            PDO::PARAM_INT,
-            PDO::PARAM_STR,
-            PDO::PARAM_INT,
-            PDO::PARAM_INT
-        ]);
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('dfl_scheduled_tasks', [
+                'action' => $task ['action'],
+                'lastExecuted' => $task ['lastExecuted'],
+                'frequency' => $task ['frequency'],
+                'period' => $task ['period'],
+                'executeCount' => $task ['executeCount']
+            ], [
+                PDO::PARAM_STR,
+                PDO::PARAM_STR,
+                PDO::PARAM_INT,
+                PDO::PARAM_STR,
+                PDO::PARAM_INT,
+                PDO::PARAM_INT
+            ]);
+        } catch (DBALException $e) {
+            throw new DBException("Error inserting task", $e);
+        }
     }
 
     /**

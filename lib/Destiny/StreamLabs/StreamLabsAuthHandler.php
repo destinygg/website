@@ -6,6 +6,7 @@ use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Authentication\OAuthResponse;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
+use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
 
 /**
@@ -30,9 +31,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
      * @throws Exception
      */
     function getToken(array $params): array {
-        if (!isset($params['code']) || empty($params['code'])) {
-            throw new Exception ('Authentication failed, invalid or empty code.');
-        }
+        FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $response = $this->getHttpClient()->post("$this->authBase/token", [
             'headers' => ['User-Agent' => Config::userAgent()],
@@ -46,9 +45,8 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
         ]);
         if ($response->getStatusCode() == Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
-            if (empty($data) || !isset($data['access_token']) || !isset($data['refresh_token'])) {
-                throw new Exception ('Invalid token response');
-            }
+            FilterParams::required($data, 'access_token');
+            FilterParams::declared($data, 'refresh_token');
             return $data;
         }
         throw new Exception ('Invalid token response');
@@ -71,9 +69,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
         ]);
         if (!empty($response) && $response->getStatusCode() == Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
-            if (empty($data) || !isset($data['access_token']) || !isset($data['refresh_token'])) {
-                throw new Exception ('Invalid token response');
-            }
+            FilterParams::required($data, 'access_token');
             return $data;
         }
         throw new Exception("Failed to refresh access token");
@@ -102,9 +98,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
      */
     function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
-        if (empty($data) || !isset($data['streamlabs'])) {
-            throw new Exception ('Authorization failed, invalid user data');
-        }
+        FilterParams::required($data, 'streamlabs');
         return new OAuthResponse([
             'authProvider' => $this->authProvider,
             'accessToken' => $token['access_token'],

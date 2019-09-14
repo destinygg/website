@@ -23,7 +23,6 @@ use Destiny\Common\User\UserStatus;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\ViewModel;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -68,13 +67,9 @@ class AdminController {
      * @Route ("/admin/subscriptions")
      * @Secure ({"FINANCE"})
      *
-     * @param ViewModel $model
-     * @param array $params
-     * @return string
-     *
-     * @throws DBALException
+     * @throws Exception
      */
-    public function listSubscriptions(ViewModel $model, array $params) {
+    public function listSubscriptions(ViewModel $model, array $params): string {
         if (empty($params['page'])) {
             $params['page'] = 1;
         }
@@ -118,13 +113,9 @@ class AdminController {
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET","POST"})
      *
-     * @param array $params
-     * @param ViewModel $model
-     * @return string
-     *
-     * @throws DBALException
+     * @throws Exception
      */
-    public function listUsers(array $params, ViewModel $model) {
+    public function listUsers(array $params, ViewModel $model): string {
         if (empty($params ['page'])) {
             $params['page'] = 1;
         }
@@ -172,12 +163,9 @@ class AdminController {
      * @Route ("/admin/bans")
      * @Secure ({"MODERATOR"})
      *
-     * @param ViewModel $model
-     * @return string
-     *
-     * @throws DBALException
+     * @throws Exception
      */
-    public function adminBans(ViewModel $model) {
+    public function adminBans(ViewModel $model): string {
         $model->activeBans = ChatBanService::instance()->getActiveBans();
         $model->title = 'Active Bans';
         return 'admin/bans';
@@ -188,9 +176,9 @@ class AdminController {
      * @Secure ({"MODERATOR"})
      * @Audit
      *
-     * @throws DBALException
+     * @throws Exception
      */
-    public function adminPurgeBans() {
+    public function adminPurgeBans(): string {
         ChatRedisService::instance()->sendPurgeBans();
         ChatBanService::instance()->purgeBans();
         return 'redirect: /admin/bans';
@@ -201,18 +189,15 @@ class AdminController {
      * @Secure ({"FINANCE"})
      * @ResponseBody
      *
-     * @param array $params
-     * @return array|false|mixed
-     *
-     * @throws Exception
+     * @return array|false
      */
     public function chartData(array $params){
-        FilterParams::required($params, 'type');
-        $graphType = strtoupper($params['type']);
         $statisticsService = StatisticsService::instance();
         $cacheDriver = Application::getNsCache();
         $data = [];
         try {
+            FilterParams::required($params, 'type');
+            $graphType = strtoupper($params['type']);
             switch ($graphType) {
                 case 'REVENUELASTXDAYS':
                     FilterParams::required($params, 'days');
@@ -303,7 +288,7 @@ class AdminController {
                     }
                     break;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error loading graph data. ' . $e->getMessage());
         }
         return $data;
@@ -313,12 +298,9 @@ class AdminController {
      * @Route ("/admin/audit")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
-     *
-     * @param ViewModel $model
-     * @return string
-     * @throws DBALException
+     * @throws Exception
      */
-    public function auditLogList(ViewModel $model) {
+    public function auditLogList(ViewModel $model): string {
         $userService = UserService::instance();
         $model->logs = $userService->getAuditLog();
         return 'admin/auditlog';

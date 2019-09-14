@@ -14,10 +14,8 @@ use Destiny\Common\Exception;
 use Destiny\Common\Images\ImageService;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
 
 /**
  * @Controller
@@ -29,7 +27,7 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function emotes(ViewModel $model, array $params): string {
         $emoteService = EmoteService::instance();
@@ -50,7 +48,6 @@ class AdminEmotesController {
      * @HttpMethod ({"POST"})
      * @ResponseBody
      * @Audit
-     * @throws DBALException
      */
     public function checkPrefix(array $params): array {
         try {
@@ -73,7 +70,6 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
      * @throws Exception
-     * @throws DBALException
      */
     public function editEmote(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
@@ -95,7 +91,7 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/new")
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
-     * @throws DBALException
+     * @throws Exception
      */
     public function newEmote(ViewModel $model): string {
         $themeService = ThemeService::instance();
@@ -121,8 +117,6 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
      * @Audit
-     *
-     * @throws DBALException
      */
     public function newEmotePost(array $params): string {
         try {
@@ -155,7 +149,6 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
      * @Audit
-     * @throws DBALException
      */
     public function editEmotePost(array $params): string {
         try {
@@ -209,9 +202,7 @@ class AdminEmotesController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
-     * @throws FilterParamsException
-     * @throws InvalidArgumentException
+     * @throws Exception
      */
     public function deleteEmote(array $params): string {
         FilterParams::required($params, 'id');
@@ -234,8 +225,6 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"POST"})
      * @Audit
-     *
-     * @throws DBALException
      */
     public function emoteCopy(array $params): string {
         try {
@@ -271,6 +260,9 @@ class AdminEmotesController {
             $conn->commit();
             Session::setSuccessBag("Emote copied. Set to 'draft' automatically.");
             return "redirect: /admin/emotes/$emoteId/edit";
+        } catch (DBALException $e) {
+            Session::setErrorBag("Could not copy emote {$e->getMessage()} .");
+            return "redirect: /admin/emotes";
         } catch (Exception $e) {
             Session::setErrorBag("Could not copy emote {$e->getMessage()} .");
             return "redirect: /admin/emotes";
@@ -281,7 +273,6 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/{id}/preview")
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
-     * @throws DBALException
      */
     function emotePreview(array $params, ViewModel $model): string {
         try {
@@ -306,8 +297,7 @@ class AdminEmotesController {
      * @Route ("/admin/emotes/preview")
      * @Secure ({"EMOTES"})
      *
-     * @throws DBALException
-     * @throws FilterParamsException
+     * @throws Exception
      */
     function emotePreviewUnsaved(array $params, ViewModel $model): string {
         FilterParams::required($params, 'prefix');

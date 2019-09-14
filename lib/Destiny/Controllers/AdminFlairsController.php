@@ -12,11 +12,8 @@ use Destiny\Common\Exception;
 use Destiny\Common\Images\ImageService;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\ViewModel;
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
 use RuntimeException;
 
 /**
@@ -29,8 +26,7 @@ class AdminFlairsController {
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"GET","POST"})
      *
-     * @return string
-     * @throws DBALException
+     * @throws Exception
      */
     public function flairs(ViewModel $model): string {
         $flairsService = FlairService::instance();
@@ -45,8 +41,6 @@ class AdminFlairsController {
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"GET"})
      *
-     * @throws FilterParamsException
-     * @throws DBALException
      * @throws Exception
      */
     public function editFlair(array $params, ViewModel $model): string {
@@ -68,7 +62,7 @@ class AdminFlairsController {
      * @Secure ({"FLAIRS"})
      * @HttpMethod ({"GET"})
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function newFlair(ViewModel $model): string {
         $flairsService = FlairService::instance();
@@ -95,8 +89,7 @@ class AdminFlairsController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws FilterParamsException
-     * @throws DBALException
+     * @throws Exception
      */
     public function editFeaturePost(array $params): string {
         FilterParams::required($params, 'id');
@@ -129,8 +122,7 @@ class AdminFlairsController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws FilterParamsException
-     * @throws DBALException
+     * @throws Exception
      */
     public function newFlairPost(array $params): string {
         FilterParams::required($params, 'imageId');
@@ -176,9 +168,6 @@ class AdminFlairsController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
-     * @throws FilterParamsException
-     * @throws InvalidArgumentException
      * @throws Exception
      */
     public function deleteFlair(array $params): string {

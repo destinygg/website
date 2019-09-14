@@ -11,7 +11,6 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\ViewModel;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -45,7 +44,6 @@ class ChatAdminController {
      * @Route ("/admin/chat/ip")
      * @Secure ({"MODERATOR"})
      * @throws Exception
-     * @throws DBALException
      */
     public function adminChatIp(array $params, ViewModel $model): string {
         $model->title = 'Chat';

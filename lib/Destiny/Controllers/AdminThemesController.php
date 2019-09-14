@@ -12,9 +12,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -26,7 +24,7 @@ class AdminThemesController {
      * @Secure ({"EMOTES","FLAIRS"})
      * @HttpMethod ({"GET"})
      *
-     * @throws DBALException
+     * @throws Exception
      */
     public function themes(ViewModel $model): string {
         $themeService = ThemeService::instance();
@@ -40,8 +38,6 @@ class AdminThemesController {
      * @Secure ({"EMOTES","FLAIRS"})
      * @HttpMethod ({"GET"})
      *
-     * @throws DBALException
-     * @throws FilterParamsException
      * @throws Exception
      */
     public function editTheme(array $params, ViewModel $model): string {
@@ -75,8 +71,7 @@ class AdminThemesController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws FilterParamsException
-     * @throws DBALException
+     * @throws Exception
      */
     public function newThemePost(array $params): string {
         FilterParams::required($params, 'prefix');
@@ -108,8 +103,7 @@ class AdminThemesController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
-     * @throws FilterParamsException
+     * @throws Exception
      */
     public function editThemePost(array $params): string {
         FilterParams::required($params, 'id');
@@ -161,8 +155,8 @@ class AdminThemesController {
             $themeService->removeThemeById((int) $params['id']);
             $emoteService->removeEmoteByTheme((int) $params['id']);
             Session::setSuccessBag("Deleted theme successfully!");
-        } catch (\Exception $e) {
-            Session::setErrorBag("Could not delete theme");
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
             Log::error("Could not delete theme. {$e->getMessage()}");
         }
         return "redirect: /admin/themes";

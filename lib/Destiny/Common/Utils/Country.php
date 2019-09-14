@@ -53,11 +53,9 @@ abstract class Country {
      * @throws Exception
      */
     public static function getCountryByCode(string $code) {
-        $countries = self::getCountries();
         $code = strtolower($code);
-        if (!isset(self::$codeIndex[$code])) {
-            throw new Exception ('Invalid country');
-        }
+        $countries = self::getCountries();
+        FilterParams::required(self::$codeIndex, $code);
         return $countries[self::$codeIndex[$code]];
     }
 

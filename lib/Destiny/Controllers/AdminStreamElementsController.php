@@ -6,7 +6,6 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
-use Destiny\Common\Config;
 use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
 use Destiny\Common\ViewModel;
@@ -62,9 +61,9 @@ class AdminStreamElementsController extends AdminIntegrationController {
      */
     public function alertTest(): string {
         try {
-            $response = StreamElementsService::instance()->sendAlert([
+            $response = StreamElementsService::instance()->sendAlert(/*[
                 'message' => '*' . Config::$a['meta']['shortName'] . '* connected...'
-            ]);
+            ]*/);
             $b = json_decode($response->getBody(), true);
             if (isset($b['channel_id']) && !empty($b['channel_id'])) {
                 Session::setSuccessBag('Test was successful');

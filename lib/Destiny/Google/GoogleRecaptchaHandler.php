@@ -26,47 +26,41 @@ class GoogleRecaptchaHandler {
      * @throws Exception
      */
     public function resolve(string $token, Request $request): bool {
-        try {
-            $response = HttpClient::instance()->get('https://www.google.com/recaptcha/api/siteverify', [
-                'headers' => ['User-Agent' => Config::userAgent()],
-                'query' => [
-                    'response' => $token,
-                    'remoteip' => $request->address(),
-                    'secret' => Config::$a ['g-recaptcha'] ['secret']
-                ]
-            ]);
-            if ($response->getStatusCode() == Http::STATUS_OK) {
-                $data = json_decode($response->getBody(), true);
-                if (empty($data)) {
+        $response = HttpClient::instance()->get('https://www.google.com/recaptcha/api/siteverify', [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'query' => [
+                'response' => $token,
+                'remoteip' => $request->address(),
+                'secret' => Config::$a ['g-recaptcha'] ['secret']
+            ]
+        ]);
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            $data = json_decode($response->getBody(), true);
+            if (empty($data)) {
+                throw new Exception('Failed to resolve captcha.');
+            }
+            if (!$data['success']) {
+                if (isset($data['error-codes'])) {
+                    switch ($data['error-codes']) {
+                        case 'missing-input-secret':
+                            throw new Exception('The secret parameter is missing.');
+                        case 'invalid-input-secret':
+                            throw new Exception('The secret parameter is invalid or malformed.');
+                        case 'missing-input-response':
+                            throw new Exception('The response parameter is missing.');
+                        case 'invalid-input-response':
+                            throw new Exception('The response parameter is invalid or malformed.');
+                        default:
+                            throw new Exception('Failed to resolve captcha.');
+                    }
+                } else {
                     throw new Exception('Failed to resolve captcha.');
                 }
-                if (!$data['success']) {
-                    if (isset($data['error-codes'])) {
-                        switch ($data['error-codes']) {
-                            case 'missing-input-secret':
-                                throw new Exception('The secret parameter is missing.');
-                            case 'invalid-input-secret':
-                                throw new Exception('The secret parameter is invalid or malformed.');
-                            case 'missing-input-response':
-                                throw new Exception('The response parameter is missing.');
-                            case 'invalid-input-response':
-                                throw new Exception('The response parameter is invalid or malformed.');
-                            default:
-                                throw new Exception('Failed to resolve captcha.');
-                        }
-                    } else {
-                        throw new Exception('Failed to resolve captcha.');
-                    }
-                }
             }
-        } catch (Exception $e) {
-            throw $e;
-        } catch (\Exception $e) {
-            $n = new Exception("Error resolving captcha", $e);
-            Log::error($n);
-            throw $n;
+            return true;
         }
-        return true;
+        Log::error("Error resolving captcha none 200 result. {$response->getStatusCode()}");
+        throw new Exception('Failed to resolve captcha.');
     }
 
 }

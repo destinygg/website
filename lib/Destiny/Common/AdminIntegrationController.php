@@ -57,7 +57,7 @@ abstract class AdminIntegrationController {
             $res = $this->authHandler->exchangeCode($params);
             UserAuthService::instance()->saveUserAuthWithOAuth($res, $user['userId']);
             Session::setSuccessBag("Authorization completed successfully!");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
         }
         return "redirect: $this->index";

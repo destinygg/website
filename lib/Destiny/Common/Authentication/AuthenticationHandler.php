@@ -1,12 +1,23 @@
 <?php
 namespace Destiny\Common\Authentication;
 
+use Destiny\Common\Exception;
+
 interface AuthenticationHandler {
 
     function getAuthProviderId(): string;
     function getAuthorizationUrl($scope = [], $claims = ''): string;
-    function getToken(array $params): array;
+
     function renewToken(string $refreshToken): array;
+
+    /**
+     * @throws Exception
+     */
     function exchangeCode(array $params): OAuthResponse;
+
+    /**
+     * @throws Exception
+     */
+    function getToken(array $params): array;
 
 }

@@ -15,7 +15,6 @@ use Destiny\Common\Request;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
-use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
 use PayPal\IPN\PPIPNMessage;
 
@@ -37,34 +36,29 @@ class IpnController {
                 $response->setStatus(Http::STATUS_BAD_REQUEST);
                 return 'invalid_ipn';
             }
-            try {
-                $data = $ipnMessage->getRawData();
-                Log::info('Got a valid IPN [txn_id: {txn_id}, txn_type: {txn_type}]', $data);
-                $orderService = OrdersService::instance();
-                $orderService->addIpnRecord([
-                    'ipnTrackId' => $data ['ipn_track_id'],
-                    'ipnTransactionId' => $data ['txn_id'],
-                    'ipnTransactionType' => $data ['txn_type'],
-                    'ipnData' => json_encode($data, JSON_UNESCAPED_UNICODE)
-                ]);
-            } catch (\Exception $e) {
-                Log::critical('Could not save IPN Record');
-                throw $e;
-            }
+
+            $data = $ipnMessage->getRawData();
+            Log::info('Got a valid IPN [txn_id: {txn_id}, txn_type: {txn_type}]', $data);
+            $orderService = OrdersService::instance();
+            $orderService->addIpnRecord([
+                'ipnTrackId' => $data ['ipn_track_id'],
+                'ipnTransactionId' => $data ['txn_id'],
+                'ipnTransactionType' => $data ['txn_type'],
+                'ipnData' => json_encode($data, JSON_UNESCAPED_UNICODE)
+            ]);
             // Handle the IPN
             // TODO should be handled asynchronously
             $this->handleIPNTransaction($data);
             //
         } catch (Exception $e) {
-            Log::error($e);
+            Log::error("Error handling IPN. {$e->getMessage()}");
         } catch (\Exception $e) {
-            Log::critical($e);
+            Log::critical("Error handling IPN. {$e->getMessage()}");
         }
         return 'ok';
     }
 
     /**
-     * @throws ConnectionException
      * @throws DBALException
      * @throws Exception
      */
@@ -109,7 +103,7 @@ class IpnController {
                         $conn->commit();
                     } catch (DBALException $e) {
                         $conn->rollBack();
-                        throw $e;
+                        throw new Exception('Failed to insert payment record.', $e);
                     }
                 } else {
                     Log::warn('Express checkout IPN called, but no payment found {txn_id}', $data);
@@ -147,7 +141,7 @@ class IpnController {
                     $conn->commit();
                 } catch (DBALException $e) {
                     $conn->rollBack();
-                    throw $e;
+                    throw new Exception('Failed to insert payment record.', $e);
                 }
                 Log::notice('Added order payment {recurring_payment_id} status {profile_status}', $data);
                 break;
@@ -206,7 +200,6 @@ class IpnController {
     }
 
     /**
-     * @throws DBALException
      * @throws Exception
      */
     protected function getSubscriptionByPaymentProfileData(array $data): array {
@@ -224,7 +217,6 @@ class IpnController {
 
     /**
      * @return array|null
-     * @throws DBALException
      */
     protected function findSubscriptionByPaymentProfileData(array $data) {
         try {

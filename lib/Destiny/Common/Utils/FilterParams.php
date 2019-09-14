@@ -41,7 +41,16 @@ class FilterParams {
      * Make sure the parameter is set and not empty
      */
     public static function isEmpty(array $params, string $identifier = ''): bool {
-        return (!is_array($params) || !isset($params[$identifier]) || strlen($params [$identifier]) == 0 || trim($params [$identifier]) == '');
+        if (is_array($params) && isset($params[$identifier])) {
+            if (is_array($params[$identifier]) && sizeof($params[$identifier]) === 0)
+                return true;
+            if (is_string($params[$identifier]) && trim($params[$identifier]) == '')
+                return true;
+            if (empty($params[$identifier]))
+                return true;
+            return false;
+        }
+        return true;
     }
 
     /**

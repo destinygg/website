@@ -15,10 +15,8 @@ use Destiny\Common\Session\SessionCredentials;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
-use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
 use Destiny\Messages\PrivateMessageService;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -117,9 +115,10 @@ class PrivateMessageController {
             $result['message'] = 'Message sent';
             $result['success'] = true;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $result['success'] = false;
             $result['message'] = $e->getMessage();
+            Log::error("Error saving private message. {$e->getMessage()}");
         }
         return $result;
     }
@@ -129,7 +128,6 @@ class PrivateMessageController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @throws Exception
-     * @throws DBALException
      */
     public function profileMessages(array $params, ViewModel $viewModel): string {
         FilterParams::required($params, 'targetuserid');
@@ -150,7 +148,6 @@ class PrivateMessageController {
      * @Route ("/profile/messages/delete")
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
-     * @throws DBALException
      */
     public function deleteMessages(array $params): string {
         try {
@@ -163,7 +160,7 @@ class PrivateMessageController {
                 );
             }
             Session::setSuccessBag('Messages deleted');
-        } catch (FilterParamsException $e) {
+        } catch (Exception $e) {
             Session::setErrorBag('Could not open messages. ' . $e->getMessage());
         }
         return 'redirect: /profile/messages';
@@ -173,7 +170,6 @@ class PrivateMessageController {
      * @Route ("/profile/messages/read")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
      */
     public function readMessages(array $params): string {
         try {
@@ -186,7 +182,7 @@ class PrivateMessageController {
                 );
             }
             Session::setSuccessBag('Messages read');
-        } catch (FilterParamsException $e) {
+        } catch (Exception $e) {
             Session::setErrorBag('Could not open messages. ' . $e->getMessage());
         }
         return 'redirect: /profile/messages';
@@ -205,7 +201,7 @@ class PrivateMessageController {
             $userId = Session::getCredentials ()->getUserId ();
             $privateMessageService = PrivateMessageService::instance();
             return $this->applyUTCTimestamp($privateMessageService->getUnreadConversations($userId, 50));
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         }
         return null;
@@ -216,7 +212,7 @@ class PrivateMessageController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     * @throws DBALException
+     * @throws Exception
      */
     public function messagesInbox(array $params): array {
         $userId = Session::getCredentials ()->getUserId ();
@@ -231,10 +227,7 @@ class PrivateMessageController {
      * @Secure ({"USER"})
      * @HttpMethod ({"GET"})
      * @ResponseBody
-     *
-     * @param array $params
-     * @return array
-     * @throws DBALException
+     * @throws Exception
      */
     public function messagesUserInbox(array $params): array {
         $userService = UserService::instance();
@@ -252,7 +245,7 @@ class PrivateMessageController {
      * @Route ("/api/messages/open")
      * @Secure ({"USER"})
      * @ResponseBody
-     * @throws DBALException
+     * @throws Exception
      */
     public function markAllConversationsRead(): array {
         $userId = Session::getCredentials()->getUserId();
@@ -266,7 +259,6 @@ class PrivateMessageController {
      * @Secure ({"USER"})
      * @HttpMethod ({"POST"})
      * @ResponseBody
-     * @throws DBALException
      */
     public function markConversationRead(array $params): array {
         try {
@@ -275,8 +267,6 @@ class PrivateMessageController {
             if (!$privateMessageService->markMessageRead(intval($params['id']), Session::getCredentials()->getUserId())) {
                 throw new Exception('Invalid message');
             }
-        } catch (FilterParamsException $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
         } catch (Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
         }

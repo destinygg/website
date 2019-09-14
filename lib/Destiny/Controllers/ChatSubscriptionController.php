@@ -10,6 +10,7 @@ use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Authentication\AuthProvider;
+use Destiny\Common\DBException;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
@@ -20,7 +21,6 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
 use Destiny\Messages\PrivateMessageService;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -40,8 +40,6 @@ class ChatSubscriptionController {
      *     message=string
      *     userid=999
      *     targetuserid=999
-     *
-     * @throws DBALException
      */
     public function sendMessage(Response $response, array $params): array {
         $privateMessageService = PrivateMessageService::instance();
@@ -87,7 +85,7 @@ class ChatSubscriptionController {
                 'isread' => 0
             ];
 
-            $message['id'] = $privateMessageService->addMessage( $message );
+            $message['id'] = $privateMessageService->addMessage($message);
             $redisService->publishPrivateMessage([
                 'messageid' => $message['id'],
                 'message' => $message['message'],
@@ -113,7 +111,7 @@ class ChatSubscriptionController {
      * Expects the following REQUEST params:
      *     privatekey=XXXXXXXX
      *
-     * @throws DBALException
+     * @throws DBException
      */
     public function getSubscription(Response $response): array {
         $userService = UserService::instance();
@@ -130,12 +128,13 @@ class ChatSubscriptionController {
      * @return array|null
      */
     public function postSubscription(Response $response, Request $request) {
-        try {
-            $subs = json_decode($request->getBody(), true);
-            $redisService = ChatRedisService::instance();
-            $authService = AuthenticationService::instance();
-            $userService = UserService::instance();
-            if (is_array($subs) && count($subs) > 0) {
+
+        $subs = json_decode($request->getBody(), true);
+        $redisService = ChatRedisService::instance();
+        $authService = AuthenticationService::instance();
+        $userService = UserService::instance();
+        if (is_array($subs) && count($subs) > 0) {
+            try {
                 $users = $userService->updateTwitchSubscriptions($subs);
                 foreach ($users as $user) {
                     $authService->flagUserForUpdate($user['userId']);
@@ -143,13 +142,13 @@ class ChatSubscriptionController {
                         $redisService->sendBroadcast(sprintf("%s is now a Twitch subscriber!", $user['username']));
                     }
                 }
+            } catch (Exception $e) {
+                Log::error('Error posting subscriptions. ' . $e->getMessage());
+                $response->setStatus(Http::STATUS_BAD_REQUEST);
+                return ['success' => false, 'error' => $e->getMessage()];
             }
-            $response->setStatus(Http::STATUS_NO_CONTENT);
-        } catch (\Exception $e) {
-            Log::error('Error posting subscriptions. ' . $e->getMessage());
-            $response->setStatus(Http::STATUS_BAD_REQUEST);
-            return ['success' => false, 'error' => $e->getMessage()];
         }
+        $response->setStatus(Http::STATUS_NO_CONTENT);
         return null;
     }
 
@@ -222,7 +221,7 @@ class ChatSubscriptionController {
             }
             $response->setStatus(Http::STATUS_NO_CONTENT);
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return ['success' => false, 'error' => $e->getMessage()];
         }
@@ -230,7 +229,7 @@ class ChatSubscriptionController {
 
     /**
      * Set a users twitch flag to 1 and "flag" user for update.
-     * @throws DBALException
+     * @throws DBException
      */
     private function updateUserTwitchSub(int $userId) {
         UserService::instance()->updateUser($userId, ['istwitchsubscriber' => 1]);

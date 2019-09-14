@@ -32,7 +32,6 @@ use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -43,15 +42,16 @@ class ProfileController {
      * @Route ("/profile")
      * @HttpMethod ({"GET"})
      * @Secure ({"USER"})
-     * @throws DBALException
+     * @throws Exception
      */
     public function profile(ViewModel $model): string {
         $userService = UserService::instance();
         $userAuthService = UserAuthService::instance();
         $chatBanService = ChatBanService::instance();
         $subscriptionsService = SubscriptionsService::instance();
-        $userId = Session::getCredentials()->getUserId();
-        $model->credentials = Session::instance()->getCredentials()->getData();
+        $creds = Session::getCredentials();
+        $userId = $creds->getUserId();
+        $model->credentials = $creds->getData();
         $model->ban = $chatBanService->getUserActiveBan($userId);
         $model->user = $userService->getUserById($userId);
         $model->gifts = $subscriptionsService->findByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
@@ -68,34 +68,22 @@ class ProfileController {
      * @ResponseBody
      */
     public function checkUsername(array $params): array {
-        $userId = Session::getCredentials()->getUserId();
         try {
             FilterParams::declared($params, 'username');
-            $username = $params['username'];
-            if (!empty(trim($username))) {
-                try {
-                    AuthenticationService::instance()->validateUsername($username);
-                } catch (Exception $e) {
-                    return ['success' => false, 'error' => "Invalid username, try another! {$e->getMessage()}"];
-                }
-                try {
-                    UserService::instance()->checkUsernameTaken($username, $userId);
-                } catch (Exception $e) {
-                    return ['success' => false, 'error' => 'Username already exists, try another!'];
-                }
-                return ['success' => true];
-            }
-        } catch (\Exception $e) {
+            $username = (string) $params['username'];
+            $userId = Session::getCredentials()->getUserId();
+            AuthenticationService::instance()->validateUsername($username);
+            UserService::instance()->checkUsernameTaken($username, $userId);
+        } catch (Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
         }
-        return ['success' => false, 'error' => 'No username specified'];
+        return ['success' => true];
     }
 
     /**
      * @Route ("/profile/usernamechange")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
      */
     public function changeUsername(array $params): string {
         $creds = Session::getCredentials();
@@ -117,8 +105,12 @@ class ProfileController {
                 ]);
                 $authService->updateWebSession($user, $creds->getAuthProvider());
                 if ($original != $username) {
-                    $messenger = DiscordMessenger::instance();
-                    $messenger->send("{user} has changed their username from $original.", [], $user);
+                    DiscordMessenger::send('Username changed', [
+                        'fields' => [
+                            ['title' => 'User', 'value' => DiscordMessenger::userLink($user['userId'], $user['username']), 'short' => false],
+                            ['title' => 'Original', 'value' => DiscordMessenger::userLink($user['userId'], $original), 'short' => false],
+                        ]
+                    ]);
                     Session::setSuccessBag("Your username is now $username, excellent choice!");
                 } else {
                     Session::setSuccessBag("Your username is confirmed, you are welcome!");
@@ -138,7 +130,6 @@ class ProfileController {
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @throws Exception
-     * @throws DBALException
      */
     public function profileSave(array $params): string {
         $userService = UserService::instance();
@@ -165,13 +156,9 @@ class ProfileController {
     /**
      * @Route("/profile/developer")
      * @Secure ({"USER"})
-     *
-     * @param ViewModel $model
-     * @return string
-     *
-     * @throws DBALException
+     * @throws Exception
      */
-    public function profileDeveloper(ViewModel $model) {
+    public function profileDeveloper(ViewModel $model): string {
         $userId = Session::getCredentials()->getUserId();
         $oauthService = DggOAuthService::instance();
         $userService = UserService::instance();
@@ -185,7 +172,7 @@ class ProfileController {
     /**
      * @Route ("/profile/authentication")
      * @Secure ({"USER"})
-     * @throws DBALException
+     * @throws Exception
      */
     public function profileAuthentication(ViewModel $model): string {
         $userService = UserService::instance();
@@ -204,7 +191,6 @@ class ProfileController {
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @ResponseBody
-     * @throws DBALException
      */
     public function appSecretUpdate(array $params): array {
         try {
@@ -230,7 +216,6 @@ class ProfileController {
      * @Route ("/profile/app/create")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
      */
     public function appCreate(array $params, Request $request): string {
         try {
@@ -273,7 +258,6 @@ class ProfileController {
      * @Route ("/profile/app/update")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
      */
     public function appUpdate(array $params): string {
         try {
@@ -311,7 +295,6 @@ class ProfileController {
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @throws Exception
-     * @throws DBALException
      */
     public function appDelete(array $params): string {
         FilterParams::required($params, 'id');
@@ -339,7 +322,6 @@ class ProfileController {
      * @Route ("/profile/authtoken/create")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
      */
     public function accessTokenCreate(Request $request): string {
         try {
@@ -377,7 +359,6 @@ class ProfileController {
      * @Route ("/profile/authtoken/{tokenId}/delete")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
      * @throws Exception
      */
     public function accessTokenDelete(array $params): string {
@@ -439,7 +420,7 @@ class ProfileController {
      * @Route ("/profile/remove")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
+     * @throws Exception
      */
     public function removeAuthProfiles(array $params): string {
         $userId = Session::getCredentials()->getUserId();
@@ -456,7 +437,7 @@ class ProfileController {
      * @Route ("/profile/gifts")
      * @HttpMethod ({"GET"})
      * @Secure ({"USER"})
-     * @throws DBALException
+     * @throws Exception
      */
     function gifts(ViewModel $model): string {
         $userId = Session::getCredentials ()->getUserId ();
@@ -469,7 +450,7 @@ class ProfileController {
      * @Route ("/profile/donations")
      * @HttpMethod ({"GET"})
      * @Secure ({"USER"})
-     * @throws DBALException
+     * @throws Exception
      */
     function donations(ViewModel $model): string {
         $userId = Session::getCredentials ()->getUserId ();
@@ -482,7 +463,7 @@ class ProfileController {
      * @Route ("/profile/subscriptions")
      * @HttpMethod ({"GET"})
      * @Secure ({"USER"})
-     * @throws DBALException
+     * @throws Exception
      */
     function subscriptions(ViewModel $model): string {
         $userId = Session::getCredentials ()->getUserId ();
@@ -496,7 +477,6 @@ class ProfileController {
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @throws Exception
-     * @throws DBALException
      */
     public function updateDiscord(array $params): string {
         $userService = UserService::instance();
@@ -524,7 +504,6 @@ class ProfileController {
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
      * @throws Exception
-     * @throws DBALException
      */
     public function updateMinecraft(array $params): string {
         $userService = UserService::instance();
@@ -569,14 +548,13 @@ class ProfileController {
      * @Route ("/profile/delete")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})
-     * @throws DBALException
      */
     public function deleteAccount(Request $request): string {
         try {
             $googleRecaptchaHandler = new GoogleRecaptchaHandler();
             $googleRecaptchaHandler->resolveWithRequest($request);
-            $userId = Session::getCredentials()->getUserId();
-            $creds = Session::instance()->getCredentials();
+            $creds = Session::getCredentials();
+            $userId = $creds->getUserId();
 
             $userServer = UserService::instance();
             $userServer->updateUser($userId, ['userStatus' => UserStatus::REDACTED]);
@@ -584,10 +562,9 @@ class ProfileController {
             $redis = ChatRedisService::instance();
             $redis->removeChatSession(Session::getSessionId());
 
-            $messenger = DiscordMessenger::instance();
-            $messenger->send("{user} has requested account deletion.", [], ['userId' => $creds->getUserId(), 'username' => $creds->getUsername()]);
+            DiscordMessenger::send('Account deletion request', ['fields' => [['title' => 'User', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false]]]);
 
-            Session::destroy();
+            AuthenticationService::instance()->removeWebSession();
             return 'profile/deleted';
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());

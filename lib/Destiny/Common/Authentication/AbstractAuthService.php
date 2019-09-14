@@ -2,12 +2,12 @@
 namespace Destiny\Common\Authentication;
 
 use Destiny\Common\Config;
+use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\User\UserAuthService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
-use Doctrine\DBAL\DBALException;
 
 /**
  * Operates with an API with some authentication state
@@ -48,7 +48,7 @@ abstract class AbstractAuthService extends Service {
             if ($this->defaultAuth == null) {
                 $this->defaultAuth = UserAuthService::instance()->getByUserIdAndProvider($this->getDefaultUserId(), $this->provider);
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             Log::error("Error getting default auth profile. {$e->getMessage()}");
         }
         return $this->defaultAuth;
@@ -62,7 +62,7 @@ abstract class AbstractAuthService extends Service {
             if ($this->defaultUser == null) {
                 $this->defaultUser = UserService::instance()->getUserById($this->getDefaultUserId());
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             Log::error("Error getting default user. {$e->getMessage()}");
         }
         return $this->defaultUser;
@@ -84,7 +84,7 @@ abstract class AbstractAuthService extends Service {
                         'createdDate' => Date::getSqlDateTime(),
                         'modifiedDate' => Date::getSqlDateTime()
                     ]);
-                } catch (DBALException $e) {
+                } catch (Exception $e) {
                     Log::error("Error saving access token.", $auth);
                 }
                 return (string) $data['access_token'];

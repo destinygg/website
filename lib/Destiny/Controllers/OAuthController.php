@@ -12,7 +12,6 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\Utils\RandomString;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -29,7 +28,6 @@ class OAuthController {
      * @see https://www.oauth.com/oauth2-servers/pkce/authorization-request/
      * @Route("/oauth/authorize")
      * @HttpMethod({"GET"})
-     * @throws DBALException
      */
     public function authorize(array $params): string {
         try {
@@ -80,7 +78,6 @@ class OAuthController {
      * @see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/
      * @Route("/oauth/token")
      * @ResponseBody
-     * @throws DBALException
      */
     public function token(Response $response, array $params): array {
         try {
@@ -111,7 +108,6 @@ class OAuthController {
     }
 
     /**
-     * @throws DBALException
      * @throws Exception
      */
     private function tokenExchange(array $params): array {
@@ -155,7 +151,6 @@ class OAuthController {
     }
 
     /**
-     * @throws DBALException
      * @throws Exception
      */
     private function tokenRenew(array $params): array {

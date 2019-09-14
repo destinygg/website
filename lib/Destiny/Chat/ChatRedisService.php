@@ -79,16 +79,16 @@ class ChatRedisService extends Service {
         $this->redis->set("CHAT:session-$sessionId", json_encode($credentials->getData()), $this->maxlife);
     }
 
-    public function removeChatSession(string $sessionId) {
-        $this->redis->delete("CHAT:session-$sessionId");
+    public function removeChatSession(string $sessionId): int {
+        return $this->redis->delete("CHAT:session-$sessionId");
     }
 
-    public function sendRefreshUser(SessionCredentials $credentials) {
-        $this->redis->publish("refreshuser-$this->redisdb", json_encode($credentials->getData()));
+    public function sendRefreshUser(SessionCredentials $credentials): int {
+        return $this->redis->publish("refreshuser-$this->redisdb", json_encode($credentials->getData()));
     }
 
-    public function sendBroadcast(string $message) {
-        $this->redis->publish("broadcast-$this->redisdb", json_encode(['data' => $message], JSON_FORCE_OBJECT));
+    public function sendBroadcast(string $message): int {
+        return $this->redis->publish("broadcast-$this->redisdb", json_encode(['data' => $message], JSON_FORCE_OBJECT));
     }
 
     public function sendUnban(int $userId) {

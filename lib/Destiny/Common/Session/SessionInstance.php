@@ -16,21 +16,12 @@ class SessionInstance {
     protected $sessionId = '';
     
     /**
-     * @var Cookie
-     */
-    protected $sessionCookie = null;
-    
-    /**
-     * @var Cookie
-     */
-    protected $rememberMeCookie = null;
-    
-    /**
      * @var SessionCredentials
      */
     protected $credentials = null;
 
     public function __construct(array $params = null) {
+        $this->credentials = new SessionCredentials();
         if (!empty($params)) {
             Options::setOptions($this, $params);
         }
@@ -46,6 +37,17 @@ class SessionInstance {
         $credentials = $this->getCredentials();
         $credentials->setData($_SESSION);
         return $this->started;
+    }
+
+    public function setupCookie(Cookie $sessionCookie) {
+        session_set_cookie_params(
+            $sessionCookie->getLife(),
+            $sessionCookie->getPath(),
+            $sessionCookie->getDomain(),
+            $sessionCookie->getSecure(),
+            $sessionCookie->getHttpOnly()
+        );
+        session_name($sessionCookie->getName());
     }
 
     /**
@@ -64,8 +66,6 @@ class SessionInstance {
      * Deletes the session and recreates the session Id
      */
     public function destroy() {
-        $this->getSessionCookie()->clearCookie();
-        $this->getRememberMeCookie()->clearCookie();
         if ($this->isStarted()) {
             $_SESSION = [];
             session_regenerate_id(false);
@@ -82,36 +82,6 @@ class SessionInstance {
 
     public function setCredentials(SessionCredentials $credentials) {
         $this->credentials = $credentials;
-    }
-
-    /**
-     * @return Cookie|null
-     */
-    public function getSessionCookie() {
-        return $this->sessionCookie;
-    }
-
-    public function setSessionCookie(Cookie $sessionCookie) {
-        $this->sessionCookie = $sessionCookie;
-        session_set_cookie_params(
-            $sessionCookie->getLife(),
-            $sessionCookie->getPath(),
-            $sessionCookie->getDomain(),
-            $sessionCookie->getSecure(),
-            $sessionCookie->getHttpOnly()
-        );
-        session_name($sessionCookie->getName());
-    }
-
-    /**
-     * @return Cookie|null
-     */
-    public function getRememberMeCookie() {
-        return $this->rememberMeCookie;
-    }
-
-    public function setRememberMeCookie(Cookie $sessionCookie) {
-        $this->rememberMeCookie = $sessionCookie;
     }
 
     public function getSessionId(): string {

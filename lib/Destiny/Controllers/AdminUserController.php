@@ -14,8 +14,8 @@ use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Application;
 use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Config;
+use Destiny\Common\DBException;
 use Destiny\Common\Exception;
-use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserAuthService;
@@ -27,7 +27,6 @@ use Destiny\Common\ViewModel;
 use Destiny\Discord\DiscordMessenger;
 use Destiny\Google\GoogleRecaptchaHandler;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
 
 /**
  * @Controller
@@ -37,7 +36,7 @@ class AdminUserController {
     /**
      * Get only roles that your security level allows for you to
      * apply to other users.
-     * @throws DBALException
+     * @throws DBException
      */
     private function getAllowedRoles() {
         $userService = UserService::instance();
@@ -52,9 +51,7 @@ class AdminUserController {
      * @Route ("/admin/user/{id}/edit")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
-     *
      * @throws Exception
-     * @throws DBALException
      */
     public function adminUserEdit(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
@@ -108,8 +105,8 @@ class AdminUserController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
      * @throws Exception
+     * @throws DBALException
      */
     public function adminUserEditProcess(array $params): string {
         FilterParams::required($params, 'id');
@@ -118,6 +115,7 @@ class AdminUserController {
 
         $user = $userService->getUserById($params['id']);
         $userId = $user['userId'];
+
         if (empty ($user)) {
             Session::setErrorBag('Invalid user');
             return 'redirect: /admin';
@@ -202,9 +200,8 @@ class AdminUserController {
             $authService->flagUserForUpdate($user['userId']);
             $conn->commit();
         } catch (DBALException $e) {
-            Log::critical("Error updating user", $user);
             $conn->rollBack();
-            throw $e;
+            throw new DBException("Failed to update user. {$e->getMessage()}");
         }
 
         Session::setSuccessBag('User profile updated');
@@ -217,7 +214,6 @@ class AdminUserController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
      * @throws Exception
      */
     public function toggleUserFlair(array $params) {
@@ -243,7 +239,6 @@ class AdminUserController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
      * @throws Exception
      */
     public function toggleUserRole(array $params) {
@@ -269,7 +264,6 @@ class AdminUserController {
      * @HttpMethod ({"GET"})
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function subscriptionAdd(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
@@ -296,7 +290,6 @@ class AdminUserController {
      * @HttpMethod ({"GET"})
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function subscriptionEdit(array $params, ViewModel $model): string {
         FilterParams::required($params, 'id');
@@ -330,7 +323,6 @@ class AdminUserController {
      * @Audit
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function subscriptionSave(array $params): string {
         FilterParams::required($params, 'subscriptionType');
@@ -391,7 +383,7 @@ class AdminUserController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
+     * @throws DBException
      */
     public function deleteAuthProfile(array $params): string {
         $userId = (int) $params['id'];
@@ -408,25 +400,19 @@ class AdminUserController {
      * @HttpMethod ({"GET"})
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function addBan(array $params, ViewModel $model): string {
-        $model->title = 'New Ban';
-        if (!isset ($params['userId']) || empty ($params['userId'])) {
-            throw new Exception ('userId required');
-        }
-
+        FilterParams::required($params, 'userId');
         $userService = UserService::instance();
         $user = $userService->getUserById($params['userId']);
         if (empty ($user)) {
             throw new Exception ('User was not found');
         }
-
+        $model->title = 'New Ban';
         $model->user = $user;
-        $time = Date::getDateTime('NOW');
         $model->ban = [
             'reason' => '',
-            'starttimestamp' => $time->format('Y-m-d H:i:s'),
+            'starttimestamp' => Date::getSqlDateTime(),
             'endtimestamp' => ''
         ];
         return 'admin/userban';
@@ -439,17 +425,14 @@ class AdminUserController {
      * @Audit
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function insertBan(array $params): string {
-        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
-            throw new Exception ('userId required');
-        }
+        FilterParams::required($params, 'userId');
         $ban = [];
         $ban['reason'] = $params ['reason'];
         $ban['userid'] = Session::getCredentials()->getUserId();
         $ban['ipaddress'] = '';
-        $ban['targetuserid'] = (int) $params['userId'];
+        $ban['targetuserid'] = (int)$params['userId'];
         $ban['starttimestamp'] = Date::getDateTime($params ['starttimestamp'])->format('Y-m-d H:i:s');
         if (!empty ($params ['endtimestamp'])) {
             $ban['endtimestamp'] = Date::getDateTime($params ['endtimestamp'])->format('Y-m-d H:i:s');
@@ -467,24 +450,17 @@ class AdminUserController {
      * @HttpMethod ({"GET"})
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function editBan(array $params, ViewModel $model): string {
-        $model->title = 'Update Ban';
-        if (!isset ($params ['id']) || empty ($params ['id'])) {
-            throw new Exception ('id required');
-        }
-        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
-            throw new Exception ('userId required');
-        }
-
+        FilterParams::required($params, 'userId');
+        FilterParams::required($params, 'id');
         $userService = UserService::instance();
         $chatBanService = ChatBanService::instance();
         $user = $userService->getUserById($params ['userId']);
         if (empty ($user)) {
             throw new Exception ('User was not found');
         }
-
+        $model->title = 'Update Ban';
         $model->user = $user;
         $model->ban = $chatBanService->getBanById($params ['id']);
         return 'admin/userban';
@@ -497,15 +473,10 @@ class AdminUserController {
      * @Audit
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function updateBan(array $params): string {
-        if (!isset ($params ['id']) || empty ($params ['id'])) {
-            throw new Exception ('id required');
-        }
-        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
-            throw new Exception ('userId required');
-        }
+        FilterParams::required($params, 'id');
+        FilterParams::required($params, 'userId');
 
         $chatBanService = ChatBanService::instance();
         $authService = AuthenticationService::instance();
@@ -533,12 +504,9 @@ class AdminUserController {
      * @Audit
      *
      * @throws Exception
-     * @throws DBALException
      */
     public function removeBan(array $params): string {
-        if (!isset ($params ['userId']) || empty ($params ['userId'])) {
-            throw new Exception ('userId required');
-        }
+        FilterParams::required($params, 'userId');
 
         $chatBanService = ChatBanService::instance();
         $authService = AuthenticationService::instance();
@@ -560,8 +528,7 @@ class AdminUserController {
      * @HttpMethod ({"POST"})
      * @Audit
      *
-     * @throws DBALException
-     * @throws InvalidArgumentException
+     * @throws DBException
      */
     public function deleteUser(array $params, Request $request): string {
         $userId = intval($params['userId']);
@@ -586,9 +553,12 @@ class AdminUserController {
         $authService->flagUserForUpdate($userId);
 
         $creds = Session::getCredentials();
-        $messenger = DiscordMessenger::instance();
-        $messenger->send("{user} account has been deleted by {$creds->getUsername()}.", [], ['userId' => $userId, 'username' => $user['username']]);
-
+        DiscordMessenger::send('User deleted', [
+            'fields' => [
+                ['title' => 'User', 'value' => DiscordMessenger::userLink($userId, $user['username']), 'short' => false],
+                ['title' => 'By', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false],
+            ]
+        ]);
         Session::setSuccessBag('User deleted');
         return "redirect: /admin/user/$userId/edit";
     }

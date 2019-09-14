@@ -11,7 +11,6 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserStatus;
 use Destiny\Common\Utils\FilterParamsException;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -21,7 +20,6 @@ class ImpersonateController {
     /**
      * @Route ("/impersonate")
      * @HttpMethod ({"GET"})
-     * @throws DBALException
      */
     public function impersonate(array $params): string {
         try {
@@ -33,14 +31,14 @@ class ImpersonateController {
             }
             $userId = $params ['userId'] ?? '';
             $username = $params ['username'] ?? '';
-            if (!empty ($userId)) {
+            if (!empty($userId)) {
                 $user = $userService->getUserById($userId);
-            } else if (!empty ($username)) {
+            } else if (!empty($username)) {
                 $user = $userService->getUserByUsername($username);
             } else {
                 throw new FilterParamsException('Invalid userId or username');
             }
-            if (empty ($user)) {
+            if (empty($user)) {
                 throw new FilterParamsException ('User not found. Try a different userId or username');
             }
             if ($user['userStatus'] != UserStatus::ACTIVE) {

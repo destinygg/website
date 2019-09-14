@@ -18,8 +18,6 @@ namespace Destiny\Common\Utils;
  */
 
 use Destiny\Common\Config;
-use Exception;
-use InvalidArgumentException;
 
 class CryptoOpenSSL {
 
@@ -34,7 +32,6 @@ class CryptoOpenSSL {
      * we always generate a separate random IV for every single message
      * when providing the data, try to avoid using something easily guessable
      * so maybe include something random
-     * @throws Exception
      */
     static public function encrypt(string $data): string {
         $seed = Config::$a['crypto']['seed'];
@@ -51,9 +48,6 @@ class CryptoOpenSSL {
         return base64_encode($crypteddata);
     }
 
-    /**
-     * @throws Exception
-     */
     static public function decrypt(string $data): string {
         $seed = Config::$a['crypto']['seed'];
         $key = Config::$a['crypto']['key'];
@@ -84,7 +78,7 @@ class CryptoOpenSSL {
 
     static protected function constantTimeCompare(string $known = null, string $given = null): bool {
         if (strlen($known) == 0) {
-            throw new InvalidArgumentException("This function cannot safely compare against an empty given string");
+            return false;
         }
         $res = strlen($given) ^ strlen($known);
         $glen = strlen($given);

@@ -8,6 +8,7 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\PrivateKey;
 use Destiny\Common\Annotation\ResponseBody;
 use Destiny\Common\Annotation\Route;
+use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Response;
 use Destiny\Common\User\UserFeature;
@@ -15,7 +16,6 @@ use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
 use Destiny\Minecraft\MineCraftService;
-use Doctrine\DBAL\DBALException;
 
 /**
  * @Controller
@@ -28,7 +28,8 @@ class MinecraftAuthController {
      * @PrivateKey ({"minecraft"})
      * @ResponseBody
      * @return array|string
-     * @throws DBALException
+     *
+     * @throws Exception
      */
     public function authMinecraftGET(Response $response, array $params) {
         Log::info('Minecraft auth [GET]', $params);
@@ -88,7 +89,8 @@ class MinecraftAuthController {
      * @PrivateKey ({"minecraft"})
      * @ResponseBody
      * @return array|string
-     * @throws DBALException
+     *
+     * @throws Exception
      */
     public function authMinecraftPOST(Response $response, array $params) {
         Log::info("Minecraft auth [POST]", $params);
@@ -164,7 +166,7 @@ class MinecraftAuthController {
                     return 'uuidAlreadySet';
                 }
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             Log::info("duplicateUUID");
             $response->setStatus(Http::STATUS_BAD_REQUEST);
             return 'duplicateUUID';
@@ -183,7 +185,7 @@ class MinecraftAuthController {
      * @PrivateKey ({"minecraft"})
      * @ResponseBody
      * @return array|string
-     * @throws DBALException
+     * @throws Exception
      * TODO remove this, minecraft plugin having issues sending post requests.
      */
     public function authMinecraftProcess(Response $response, array $params) {

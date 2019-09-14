@@ -25,6 +25,7 @@ use Destiny\PayPal\PayPalApiService;
 use Destiny\StreamLabs\StreamLabsAlertsType;
 use Destiny\StreamLabs\StreamLabsService;
 use Doctrine\DBAL\ConnectionException;
+use Doctrine\DBAL\DBALException;
 use PayPal\CoreComponentTypes\BasicAmountType;
 
 /**
@@ -82,9 +83,6 @@ class DonateController {
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
             return 'redirect: /donate';
-        } catch (\Exception $e) {
-            Session::setErrorBag('You must specify a username if you are not signed in.');
-            return 'redirect: /donate';
         }
 
         try {
@@ -98,7 +96,7 @@ class DonateController {
 
             $conn->beginTransaction();
             $donationService = DonationService::instance();
-            $donation = $donationService->addDonation([
+            $donation = [
                 'userid' => $userid,
                 'username' => $username,
                 'currency' => Config::$a ['commerce'] ['currency'],
@@ -107,21 +105,24 @@ class DonateController {
                 'message' => mb_substr($params['message'], 0, 200),
                 'invoiceId' => RandomString::makeUrlSafe(32),
                 'timestamp' => Date::getDateTime()->format('Y-m-d H:i:s')
-            ]);
+            ];
+            $donation['id'] = $donationService->addDonation($donation);
 
             $payPalApiService = PayPalApiService::instance();
             $returnUrl = Http::getBaseUrl() . '/donate/process?success=true&donationid=' . urlencode($donation['id']);
             $cancelUrl = Http::getBaseUrl() . '/donate/process?success=false&donationid=' . urlencode($donation['id']);
             $token = $payPalApiService->createDonateECRequest($returnUrl, $cancelUrl, $donation);
-            if (empty ($token)) {
-                throw new Exception ('Error getting paypal response');
-            }
             $conn->commit();
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $conn->rollBack();
-            Log::error('Error processing donation. ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            Session::setErrorBag('Error processing donation.');
+            Log::error("Error processing donation. {$e->getMessage()}", ['trace' => $e->getTraceAsString()]);
+            Session::setErrorBag("Error processing donation. {$e->getMessage()}");
+            return 'redirect: /donate';
+        } catch (DBALException $e) {
+            $conn->rollBack();
+            Log::error("Error saving donation. {$e->getMessage()}", ['trace' => $e->getTraceAsString()]);
+            Session::setErrorBag("Error processing donation. {$e->getMessage()}");
             return 'redirect: /donate';
         }
     }
@@ -129,12 +130,16 @@ class DonateController {
     /**
      * @Route("/donate/process")
      * @HttpMethod({"GET"})
-     * @throws Exception
      */
     public function donateProcess(array $params): string {
-        FilterParams::required($params, 'donationid');
-        FilterParams::required($params, 'token');
-        FilterParams::declared($params, 'success');
+        try {
+            FilterParams::required($params, 'donationid');
+            FilterParams::required($params, 'token');
+            FilterParams::declared($params, 'success');
+        } catch (FilterParamsException $e) {
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /donate';
+        }
         try {
             $donationService = DonationService::instance();
             $donation = $donationService->findById($params['donationid']);
@@ -152,9 +157,6 @@ class DonateController {
             try {
                 $payPalApiService = PayPalApiService::instance();
                 $checkinfo = $payPalApiService->retrieveCheckoutInfo($params ['token']);
-                if ($checkinfo === null) {
-                    throw new Exception ('Failed to retrieve express checkout details');
-                }
 
                 /** @var BasicAmountType $total */
                 $total = $checkinfo->GetExpressCheckoutDetailsResponseDetails->PaymentDetails[0]->OrderTotal;
@@ -175,38 +177,36 @@ class DonateController {
 
                 $donationService->updateDonation($params['donationid'], ['status' => DonationStatus::COMPLETED]);
                 Session::setSuccessBag('Your donation was successful, thanks!');
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $donationService->updateDonation($params['donationid'], ['status' => DonationStatus::ERROR]);
                 throw new Exception ('Invalid payment result', $e);
             }
-            try {
-                $message = $donation['message'];
-                $symbol = $donation['currency'] === 'USD' ? '$': $donation['currency']; // todo hokey currency symbol lookup
-                $amount = $symbol . number_format($donation['amount'], 2);
-                $redisService = ChatRedisService::instance();
-                $redisService->sendBroadcast(sprintf("%s has donated %s!", $username, $amount));
-                if(!empty($message)) {
-                    $redisService->sendBroadcast("$username said... $message");
-                }
-                if(Config::$a[AuthProvider::STREAMLABS]['alert_donations']) {
-                    StreamLabsService::instance()->sendAlert([
-                        'type' => StreamLabsAlertsType::ALERT_DONATION,
-                        'message' => sprintf("*%s* has donated *%s*!", $username, $amount)
-                    ]);
-                }
-                if(Config::$a[AuthProvider::STREAMLABS]['send_donations']) {
-                    StreamLabsService::instance()->sendDonation([
-                        'name'          => $username,
-                        'message'       => $donation['message'],
-                        'identifier'    => $username .'#' . $userid,
-                        'amount'        => number_format($donation['amount'], 2),
-                        'currency'      => $donation['currency']
-                    ]);
-                }
-            } catch (\Exception $e) {
-                Log::error('Error sending donation broadcast. ' . $e->getMessage());
+
+            $message = $donation['message'];
+            $symbol = $donation['currency'] === 'USD' ? '$': $donation['currency']; // todo hokey currency symbol lookup
+            $amount = $symbol . number_format($donation['amount'], 2);
+            $redisService = ChatRedisService::instance();
+            $redisService->sendBroadcast(sprintf("%s has donated %s!", $username, $amount));
+            if(!empty($message)) {
+                $redisService->sendBroadcast("$username said... $message");
             }
-        } catch (\Exception $e) {
+            if(Config::$a[AuthProvider::STREAMLABS]['alert_donations']) {
+                StreamLabsService::instance()->sendAlert([
+                    'type' => StreamLabsAlertsType::ALERT_DONATION,
+                    'message' => sprintf("*%s* has donated *%s*!", $username, $amount)
+                ]);
+            }
+            if(Config::$a[AuthProvider::STREAMLABS]['send_donations']) {
+                StreamLabsService::instance()->sendDonation([
+                    'name'          => $username,
+                    'message'       => $donation['message'],
+                    'identifier'    => $username .'#' . $userid,
+                    'amount'        => number_format($donation['amount'], 2),
+                    'currency'      => $donation['currency']
+                ]);
+            }
+
+        } catch (Exception $e) {
             Log::error('Error processing donation. ' . $e->getMessage());
             Session::setErrorBag('Error processing donation.');
             return 'redirect: /donate/error';
