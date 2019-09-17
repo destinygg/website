@@ -159,7 +159,7 @@ class EmoteService extends Service {
 
             $themeService = ThemeService::instance();
             $theme = $themeService->getActiveTheme();
-            $emotes = $this->findAllEmotesWithTheme($theme['id']);
+            $emotes = $this->findAllEmotesWithTheme($theme['id'], true);
 
             $this->saveStaticCss($cacheKey, $emotes);
             $this->saveStaticJson($cacheKey, $emotes);
