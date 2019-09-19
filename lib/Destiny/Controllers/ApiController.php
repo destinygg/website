@@ -34,7 +34,7 @@ class ApiController {
      * @throws Exception
      * @return SessionCredentials|array
      */
-    public function userInfo(array $params): array {
+    public function userInfo(array $params) {
         FilterParams::required($params, 'token');
         $token = trim($params['token']);
         $oauthService = DggOAuthService::instance();
