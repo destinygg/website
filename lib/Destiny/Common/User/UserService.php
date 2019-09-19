@@ -597,7 +597,7 @@ class UserService extends Service {
             'deletedby' => $deletedBy,
             'timestamp' => Date::getSqlDateTime(),
             'usernamehash' => $this->hashEmail($user['username']),
-            'emailhash' => $this->hashUsername($user['email']),
+            'emailhash' => !empty($user['email']) ? $this->hashUsername($user['email']) : '',
         ]);
 
         $conn->update('dfl_users', [
