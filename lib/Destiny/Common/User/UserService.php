@@ -234,18 +234,8 @@ class UserService extends Service {
         $joins = [];
         $clauses = [];
         $orders = [];
-
         if (!empty($params['search'])) {
-            $joins[] = ' LEFT JOIN dfl_users_auth a ON a.userId = u.userId ';
-            $clauses[] = '
-              (
-                u.username LIKE :wildcard1
-                OR u.email LIKE :wildcard1
-                OR a.authDetail LIKE :wildcard1
-                OR a.authEmail LIKE :wildcard1
-                OR a.authId LIKE :wildcard1
-              )
-            ';
+            $clauses[] = '(u.username LIKE :wildcard1 OR u.email LIKE :wildcard1 OR u.userId IN (SELECT a.userId FROM dfl_users_auth a WHERE a.authDetail LIKE :wildcard1 OR a.authEmail LIKE :wildcard1))';
             $orders[] = '
               CASE
                 WHEN u.username LIKE :wildcard2 THEN 0
@@ -266,7 +256,6 @@ class UserService extends Service {
         if (!empty($params['status'])) {
             $clauses[] = ' u.userStatus = :userStatus ';
         }
-
         if (!empty($params['sort'])) {
             $sort = $params['sort'];
             $order = $params['order'] ?? 'DESC';
@@ -282,7 +271,6 @@ class UserService extends Service {
                     break;
             }
         }
-
         $q = 'SELECT SQL_CALC_FOUND_ROWS u.userId, u.username, u.email, u.userStatus, u.createdDate FROM dfl_users AS u ';
         $q .= ' ' . join(PHP_EOL, $joins);
         if (count($clauses) > 0) {
@@ -295,7 +283,6 @@ class UserService extends Service {
             $q .= ' ORDER BY ' . join(', ', $orders);
         }
         $q .= ' LIMIT :start, :limit ';
-
         $conn = Application::getDbConn();
         $stmt = $conn->prepare($q);
         if (!empty($params['search'])) {
