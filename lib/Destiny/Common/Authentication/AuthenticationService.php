@@ -71,7 +71,7 @@ class AuthenticationService extends Service {
                 continue;
             }
             $shortuname = substr($normalizeduname, 0, strlen($emote));
-            if ($front == substr($emote, 0, 2) and levenshtein($emote, $shortuname) <= 2) {
+            if ($front == substr($emote, 0, 3) and levenshtein($emote, $shortuname) <= 3) {
                 throw new Exception ("Username too similar to an emote $prefix, try changing the first characters");
             }
         }
