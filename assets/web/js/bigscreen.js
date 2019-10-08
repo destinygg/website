@@ -116,7 +116,7 @@ import $ from 'jquery'
     // Embedding, hosting and "navhostpill"
     const initUrl = document.location.href // important this is stored before any work is done that may change this value
     let streamframe = $body.find('#stream-panel iframe')
-    const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube)\/([A-z0-9_\-]{3,64})$/
+    const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube|angelthump)\/([A-z0-9_\-]{3,64})$/
     const streamInfo = {live: false, host: null, preview: null},
         embedInfo = {embed: false, platform: 'twitch', title: 'Bigscreen', name: 'destiny', id: null, url: '/bigscreen'},
         defaultEmbedInfo = Object.assign({}, embedInfo),
@@ -142,6 +142,9 @@ import $ from 'jquery'
                 break;
             case 'youtube':
                 src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
+                break;
+            case 'angelthump':
+                src = 'https://player.angelthump.com/?channel=' + encodeURIComponent(embedInfo.name)
                 break;
         }
         if (src !== '' && streamframe.attr('src') !== src) { // avoids a flow issue when in
