@@ -55,4 +55,12 @@ class Tpl {
         return "<link$str href=\"$url\">\r\n";
     }
 
+    public static function ipLookupLink($ip): array {
+        return array_map(function($n) use ($ip) {
+            $url = str_replace('{IP_ADDRESS}', urlencode($ip), $n['url']);
+            $n['link'] = $url;
+            return $n;
+        }, Config::$a['iplookupservices']);
+    }
+
 }

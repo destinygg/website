@@ -91,13 +91,22 @@ class ProfileController {
         try {
             FilterParams::required($params, 'username');
             $userService = UserService::instance();
+            $authService = AuthenticationService::instance();
             $user = $userService->getUserById($userId);
             if (boolval($user['allowNameChange'])) {
                 $username = $params['username'];
+
+                try {
+                    $userService->checkUsernameTaken($username, $userId);
+                    $authService->validateUsername($username);
+                } catch (Exception $e) {
+                    Session::setErrorBag("Username taken... stop cheating. {$e->getMessage()}");
+                    Log::warn("Failed to change username $userId. {$e->getMessage()}");
+                    return 'redirect: /profile';
+                }
+
                 $original = $user['username'];
                 $user['username'] = $username;
-                $authService = AuthenticationService::instance();
-                $authService->validateUsername($username);
                 $userService->updateUser($userId, [
                     'username' => $username,
                     'allowNameChange' => 0,

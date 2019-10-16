@@ -14,7 +14,7 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/nav.php' ?>
     <?php include 'seg/admin.nav.php' ?>
 
-    <section class="container">
+    <!--<section class="container">
         <h3 class="collapsed" data-toggle="collapse" data-target="#remove-bans-content">Remove Bans</h3>
         <div id="remove-bans-content" class="content content-dark clearfix collapse">
             <div class="ds-block">
@@ -22,7 +22,7 @@ use Destiny\Common\Utils\Tpl;
                 <a onclick="return confirm('Are you sure?');" class="btn btn-danger" href="/admin/bans/purgeall">Remove all bans</a>
             </div>
         </div>
-    </section>
+    </section>-->
 
     <section class="container">
         <h3 class="in" data-toggle="collapse" data-target="#details-content"><?=Tpl::out( sprintf('Active bans (%d)', count( $this->activeBans ) ) )?></h3>

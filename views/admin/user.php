@@ -343,7 +343,16 @@ use Destiny\Commerce\SubscriptionStatus;
                     <tbody>
                     <?php foreach($this->user['ips'] as $ip): ?>
                         <tr>
-                            <td><a target="_blank" href="http://www.iplocation.net/?query=<?=rawurlencode($ip)?>"><?=Tpl::out($ip)?></a></td>
+                            <td>
+                                <div class="dropdown mt-1 mb-1">
+                                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?=Tpl::out($ip)?></button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <?php foreach (Tpl::ipLookupLink($this->ban['ipaddress']) as $v): ?>
+                                            <a target="_blank" class="dropdown-item" href="<?=$v['link']?>"><?=Tpl::out($v['label'])?></a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -372,13 +381,19 @@ use Destiny\Commerce\SubscriptionStatus;
 
             <?php else: ?>
                 <div class="ds-block">
-                    <p>
-                        <?php if(!empty($this->ban['ipaddress'])): ?>
-                            Ip: <a target="_blank" href="http://freegeoip.net/json/<?=$this->ban['ipaddress']?>"><?=$this->ban['ipaddress']?></a>
-                        <?php else: ?>
-                            Ip: Not set
-                        <?php endif ?>
-                    </p>
+                    <?php if(!empty($this->ban['ipaddress'])): ?>
+                        <div class="dropdown mt-1 mb-1">
+                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?=Tpl::out($ip)?></button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <?php foreach (Tpl::ipLookupLink($this->ban['ipaddress']) as $v): ?>
+                                    <a target="_blank" class="dropdown-item" href="<?=$v['link']?>"><?=Tpl::out($v['label'])?></a>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <p>Ip: Not set</p>
+                    <?php endif ?>
+
                     <p>
                         <?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT)?>
                         <?php if(!empty($this->ban['endtimestamp'])): ?>

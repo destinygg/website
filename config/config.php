@@ -302,5 +302,11 @@ return [
                 'billingPeriod'     => 'Month'
             ]
         ]
+    ],
+
+    'iplookupservices' => [
+        ['label' => 'iplocation.net', 'url' => 'https://www.iplocation.net/?query={IP_ADDRESS}'],
+        ['label' => 'greynoise.io','url' => 'https://viz.greynoise.io/ip/{IP_ADDRESS}'],
+        ['label' => 'shodan.io','url' => 'https://www.shodan.io/host/{IP_ADDRESS}'],
     ]
 ];
