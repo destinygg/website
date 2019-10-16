@@ -49,7 +49,7 @@ class Scheduler {
                     }
                     Log::info('Execute start {action}', $task);
                     $this->getTaskClass($task)->execute();
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     Log::error("Error executing task: $task {$e->getMessage()}", ['trace' => $e->getTraceAsString()]);
                 }
                 Log::info('Execute end {action}', $task);

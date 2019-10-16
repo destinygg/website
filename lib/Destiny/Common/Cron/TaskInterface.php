@@ -1,7 +1,7 @@
 <?php
 namespace Destiny\Common\Cron;
 
-use Destiny\Common\Exception;
+use Exception;
 
 interface TaskInterface {
 
