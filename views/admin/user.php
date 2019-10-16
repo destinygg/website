@@ -335,11 +335,6 @@ use Destiny\Commerce\SubscriptionStatus;
             </div>
             <?php if(!empty($this->user['ips'])): ?>
                 <table class="grid">
-                    <thead>
-                    <tr>
-                        <td>IP</td>
-                    </tr>
-                    </thead>
                     <tbody>
                     <?php foreach($this->user['ips'] as $ip): ?>
                         <tr>
@@ -347,7 +342,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                 <div class="dropdown mt-1 mb-1">
                                     <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?=Tpl::out($ip)?></button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <?php foreach (Tpl::ipLookupLink($this->ban['ipaddress']) as $v): ?>
+                                        <?php foreach (Tpl::ipLookupLink($ip) as $v): ?>
                                             <a target="_blank" class="dropdown-item" href="<?=$v['link']?>"><?=Tpl::out($v['label'])?></a>
                                         <?php endforeach; ?>
                                     </div>
