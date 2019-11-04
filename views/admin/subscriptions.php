@@ -94,12 +94,12 @@ use Destiny\Common\Utils\Tpl;
                     <table class="grid">
                         <thead>
                             <tr>
-                                <td style="width: 200px;">User</td>
-                                <td style="width: 100px;">Tier</td>
-                                <td style="width: 100px;">Status</td>
-                                <td style="width: 100px;">Recurring</td>
-                                <td style="width: 80px;">Created on</td>
-                                <td style="width: 80px;">Ends on</td>
+                                <td style="width: 300px;">User</td>
+                                <td>Tier</td>
+                                <td>Status</td>
+                                <td>Recurring</td>
+                                <td>Created on</td>
+                                <td>Ends on</td>
                             </tr>
                         </thead>
                         <tbody>

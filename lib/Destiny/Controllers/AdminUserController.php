@@ -161,11 +161,6 @@ class AdminUserController {
         else if (mb_strlen($discorduuid) > 36)
             $discorduuid = mb_substr($discorduuid, 0, 36);
 
-        if (!empty ($country)) {
-            $countryArr = Country::getCountryByCode($country);
-            $country = $countryArr['alpha-2'];
-        }
-
         $mUid = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
         if ($minecraftname != null && !empty($mUid) && intval($mUid) !== intval($user['userId'])) {
             Session::setErrorBag('Minecraft name already in use #');
@@ -426,22 +421,65 @@ class AdminUserController {
      *
      * @throws Exception
      */
-    public function insertBan(array $params): string {
+    public function banUser(array $params): string {
         FilterParams::required($params, 'userId');
+        $userId = intval($params['userId']);
         $ban = [];
+        $ban['ipaddress'] = '';
         $ban['reason'] = $params ['reason'];
         $ban['userid'] = Session::getCredentials()->getUserId();
-        $ban['ipaddress'] = '';
-        $ban['targetuserid'] = (int)$params['userId'];
-        $ban['starttimestamp'] = Date::getDateTime($params ['starttimestamp'])->format('Y-m-d H:i:s');
-        if (!empty ($params ['endtimestamp'])) {
-            $ban['endtimestamp'] = Date::getDateTime($params ['endtimestamp'])->format('Y-m-d H:i:s');
-        }
+        $ban['targetuserid'] = $userId;
+        $ban['starttimestamp'] = Date::getSqlDateTime($params['starttimestamp']);
+        $ban['endtimestamp'] = !empty($params ['endtimestamp']) ? Date::getSqlDateTime($params['endtimestamp']) : null;
         $chatBanService = ChatBanService::instance();
         $authService = AuthenticationService::instance();
-        $ban['id'] = $chatBanService->insertBan($ban);
+        $banId = $chatBanService->insertBan($ban);
         $authService->flagUserForUpdate($ban['targetuserid']);
-        return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $ban['id'] . '/edit';
+        return "redirect: /admin/user/$userId/ban/$banId/edit";
+    }
+
+    /**
+     * @Route ("/admin/users/ban")
+     * @Secure ({"MODERATOR"})
+     * @HttpMethod ({"POST"})
+     * @Audit
+     *
+     * @throws DBException
+     */
+    public function banUsers(array $params) {
+
+        try {
+            FilterParams::isArray($params, 'selected');
+            FilterParams::required($params, 'reason');
+            FilterParams::declared($params, 'duration');
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /admin/users';
+        }
+
+        $chatBanService = ChatBanService::instance();
+        $authService = AuthenticationService::instance();
+        $creds = Session::getCredentials();
+
+        $selected = $params['selected'];
+        $start = Date::getSqlDateTime();
+        $end = !empty($params['duration']) ? Date::getSqlDateTimePlusSeconds('NOW', intval($params['duration'])) : null;
+        $reason = $params['reason'] ?? "Mass ban";
+
+        foreach ($selected as $userId) {
+            $ban = [];
+            $ban['ipaddress'] = '';
+            $ban['reason'] = $reason;
+            $ban['userid'] = $creds->getUserId();
+            $ban['targetuserid'] = intval($userId);
+            $ban['starttimestamp'] = $start;
+            $ban['endtimestamp'] = $end;
+            $chatBanService->insertBan($ban);
+            $authService->flagUserForUpdate($ban['targetuserid']);
+        }
+
+        Session::setSuccessBag('Banned users');
+        return 'redirect: /admin/users';
     }
 
     /**
@@ -488,10 +526,10 @@ class AdminUserController {
         $ban['userid'] = $eBan['userid'];
         $ban['ipaddress'] = $eBan['ipaddress'];
         $ban['targetuserid'] = $eBan['targetuserid'];
-        $ban['starttimestamp'] = Date::getDateTime($params ['starttimestamp'])->format('Y-m-d H:i:s');
+        $ban['starttimestamp'] = Date::getSqlDateTime($params ['starttimestamp']);
         $ban['endtimestamp'] = '';
         if (!empty ($params ['endtimestamp'])) {
-            $ban['endtimestamp'] = Date::getDateTime($params ['endtimestamp'])->format('Y-m-d H:i:s');
+            $ban['endtimestamp'] = Date::getSqlDateTime($params ['endtimestamp']);
         }
         $chatBanService->updateBan($ban);
         $authService->flagUserForUpdate($ban ['targetuserid']);
@@ -555,12 +593,60 @@ class AdminUserController {
         $creds = Session::getCredentials();
         DiscordMessenger::send('User deleted', [
             'fields' => [
-                ['title' => 'User', 'value' => DiscordMessenger::userLink($userId, $user['username']), 'short' => false],
+                ['title' => 'User', 'value' => DiscordMessenger::userLink($user['userId'], $user['username']), 'short' => false],
                 ['title' => 'By', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false],
             ]
         ]);
+
         Session::setSuccessBag('User deleted');
-        return "redirect: /admin/user/$userId/edit";
+        return 'redirect: /admin/user/$userId/edit';
+    }
+
+    /**
+     * @Route ("/admin/users/delete")
+     * @Secure ({"MODERATOR"})
+     * @HttpMethod ({"POST"})
+     * @Audit
+     *
+     * @throws DBException
+     */
+    public function deleteUsers(array $params, Request $request) {
+        try {
+            $googleRecaptchaHandler = new GoogleRecaptchaHandler();
+            $googleRecaptchaHandler->resolveWithRequest($request);
+            FilterParams::isArray($params, 'selected');
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /admin/users';
+        }
+
+        $userService = UserService::instance();
+        $authService = AuthenticationService::instance();
+        $users = array_map(function($v) use($userService) {
+            return $userService->getUserById((int) $v);
+        }, $params['selected']);
+
+        $fields = [];
+        foreach ($users as $user) {
+            if (empty($user)) {
+                Session::setErrorBag('Invalid user');
+                return 'redirect: /admin/users';
+            }
+            $userService->allButDeleteUser($user);
+            $authService->flagUserForUpdate($user['userId']);
+            $fields[] = [
+                'title' => 'User',
+                'value' => DiscordMessenger::userLink($user['userId'], $user['username']),
+                'short' => true
+            ];
+        }
+
+        $creds = Session::getCredentials();
+        $fields = ['title' => 'By', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false];
+        DiscordMessenger::send('Users deleted', ['fields' => $fields]);
+
+        Session::setSuccessBag('Users deleted');
+        return 'redirect: /admin/users';
     }
 
 }

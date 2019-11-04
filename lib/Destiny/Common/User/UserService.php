@@ -680,8 +680,8 @@ class UserService extends Service {
                 'userid' => $userId,
                 'deletedby' => $deletedBy,
                 'timestamp' => Date::getSqlDateTime(),
-                'usernamehash' => $this->hashEmail($user['username']),
-                'emailhash' => !empty($user['email']) ? $this->hashUsername($user['email']) : '',
+                'usernamehash' => $this->hashUserProperty($user['username']),
+                'emailhash' => !empty($user['email']) ? $this->hashUserProperty($user['email']) : '',
             ]);
 
             $conn->update('dfl_users', [
@@ -696,12 +696,8 @@ class UserService extends Service {
         }
     }
 
-    private function hashUsername(string $username): string {
-        return base64_encode(hash('sha256', $username . Config::$a['deleted_user_hash']));
-    }
-
-    private function hashEmail(string $email): string {
-        return base64_encode(hash('sha256', $email . Config::$a['deleted_user_hash']));
+    private function hashUserProperty(string $value): string {
+        return base64_encode(hash('sha256', $value . Config::$a['deleted_user_hash']));
     }
 
     /**

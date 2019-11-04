@@ -91,7 +91,7 @@ class AdminController {
         $subService = SubscriptionsService::instance();
         $model->title = 'Subscribers';
         $model->subscriptions = $subService->searchAll($params);
-        $model->sizes = [20, 60, 120, 250];
+        $model->sizes = [50, 100, 250, 500];
         $model->search = $params['search'];
         $model->recurring = $params['recurring'];
         $model->status = $params['status'];
@@ -132,7 +132,7 @@ class AdminController {
             $params['role'] = '';
         }
         if (empty($params ['status'])) {
-            $params['status'] = '';
+            $params['status'] = 'Active';
         }
         if (empty($params ['sort'])) {
             $params['sort'] = 'id';
@@ -140,13 +140,16 @@ class AdminController {
         if (empty($params ['order'])) {
             $params['order'] = 'DESC';
         }
+        if ($params ['status'] == 'All') {
+            $params ['status'] = '';
+        }
         $userService = UserService::instance();
         $model->user = Session::getCredentials()->getData();
         $model->features = $userService->getAllFeatures();
         $model->roles = $userService->getAllRoles();
-        $model->statuses = [UserStatus::ACTIVE, UserStatus::DELETED, UserStatus::REDACTED];
+        $model->statuses = ['All', UserStatus::ACTIVE, UserStatus::REDACTED, UserStatus::DELETED];
         $model->users = $userService->searchAll($params);
-        $model->sizes = [20, 60, 120, 250];
+        $model->sizes = [50, 100, 250, 500];
         $model->size = $params ['size'];
         $model->page = $params ['page'];
         $model->sort = $params ['sort'];

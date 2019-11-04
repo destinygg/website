@@ -52,8 +52,7 @@ use Destiny\Commerce\SubscriptionStatus;
                             as any mutes (there are no permanent mutes, maximum 6 days long).<br/>
                             This is not meant to be a cash grab, rather a tool for those who would
                             not like to wait for a manual unban or for the ban to naturally expire
-                            and are willing to pay for it.<br />
-                            Feel free to evade the ban if you have da skillz.
+                            and are willing to pay for it. Please email <a href="mailto:unbans@destiny.gg">unbans@destiny.gg</a> to appeal.<br />
                         </p>
                     </div>
                 </div>
@@ -181,17 +180,13 @@ use Destiny\Commerce\SubscriptionStatus;
                         <label for="country">Nationality:
                             <br><small>The country you identify with</small>
                         </label>
-                        <select class="form-control" name="country" id="country">
+                        <?php $countries = Country::getCountries(); ?>
+                        <?php $code = $this->user['country']; ?>
+                        <select name="country" id="country" class="form-control">
                             <option value="">Select your country</option>
-                            <?php $countries = Country::getCountries(); ?>
                             <option value="">&nbsp;</option>
-                            <option value="US" <?php if($this->user['country'] == 'US'):?>
-                                selected="selected" <?php endif ?>>United States</option>
-                            <option value="GB" <?php if($this->user['country'] == 'GB'):?>
-                                selected="selected" <?php endif ?>>United Kingdom</option>
-                            <option value="">&nbsp;</option>
-                            <?php foreach($countries as $country):?>
-                                <option value="<?=$country['alpha-2']?>" <?php if($this->user['country'] != 'US' && $this->user['country'] != 'GB' && $this->user['country'] == $country['alpha-2']):?>selected="selected"<?php endif;?>><?=Tpl::out($country['name'])?></option>
+                            <?php foreach($countries as $country): ?>
+                                <option value="<?=$country['code']?>" <?php if($code == $country['code']): ?>selected="selected" <?php endif;?>><?=Tpl::out($country['label'])?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

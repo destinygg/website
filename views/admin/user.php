@@ -23,7 +23,6 @@ use Destiny\Commerce\SubscriptionStatus;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-
         <h3 class="collapsed" data-toggle="collapse" data-target="#details-content" style="display:flex; align-items: center;">
             <span style="flex: 1;">Details <small>(<?=Tpl::out($this->user['username'])?>)</small></span>
             <a class="btn-show-all" style="font-size: 1rem; margin: 0.5em 1em;">Show all</a>
@@ -58,17 +57,13 @@ use Destiny\Commerce\SubscriptionStatus;
 
                     <div class="form-group">
                         <label>Country</label>
+                        <?php $countries = Country::getCountries(); ?>
+                        <?php $code = $this->user['country']; ?>
                         <select name="country" class="form-control">
                             <option value="">Select your country</option>
-                            <?php $countries = Country::getCountries(); ?>
-                            <option value="">&nbsp;</option>
-                            <option value="US" <?php if($this->user['country'] == 'US'): ?>
-                                selected="selected" <?php endif;?>>United States</option>
-                            <option value="GB" <?php if($this->user['country'] == 'GB'): ?>
-                                selected="selected" <?php endif;?>>United Kingdom</option>
                             <option value="">&nbsp;</option>
                             <?php foreach($countries as $country): ?>
-                                <option value="<?=$country['alpha-2']?>" <?php if($this->user['country'] != 'US' && $this->user['country'] != 'GB' && $this->user['country'] == $country['alpha-2']):?>selected="selected" <?php endif;?>><?=Tpl::out($country['name'])?></option>
+                            <option value="<?=$country['code']?>" <?php if($code == $country['code']): ?>selected="selected" <?php endif;?>><?=Tpl::out($country['label'])?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -365,17 +360,12 @@ use Destiny\Commerce\SubscriptionStatus;
         <div id="ban-content" class="content content-dark clearfix collapse">
 
             <?php if(empty($this->ban)): ?>
-
-                <div class="ds-block">
-                    <p>No active bans found</p>
-                </div>
-
                 <div class="form-actions">
                     <a href="/admin/user/<?=$this->user['userId']?>/ban" class="btn btn-danger">Ban user</a>
                 </div>
-
             <?php else: ?>
                 <div class="ds-block">
+
                     <?php if(!empty($this->ban['ipaddress'])): ?>
                         <div class="dropdown mt-1 mb-1">
                             <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?=Tpl::out($ip)?></button>
@@ -385,19 +375,21 @@ use Destiny\Commerce\SubscriptionStatus;
                                 <?php endforeach; ?>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <p>Ip: Not set</p>
                     <?php endif ?>
 
                     <p>
-                        <?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT)?>
+                        Banned on <strong><?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT_YEAR)?></strong>
                         <?php if(!empty($this->ban['endtimestamp'])): ?>
-                            - <?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT)?>
+                            , ends on <strong><?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT_YEAR)?></strong>
+                        <?php else: ?>
+                        <span class="badge badge-danger">PERMANENT</span>
                         <?php endif ?>
                     </p>
-                    <blockquote>
+
+                    <blockquote class="blockquote">
                         <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($this->ban['reason'])?></p>
-                        <small><?=Tpl::out((!empty($this->ban['username'])) ? $this->ban['username']:'System')?></small>
+                        <footer class="blockquote-footer">Banned by <cite><?=Tpl::out((!empty($this->ban['username'])) ? $this->ban['username']:'System')?></cite></footer>
+                        <small></small>
                     </blockquote>
                 </div>
 

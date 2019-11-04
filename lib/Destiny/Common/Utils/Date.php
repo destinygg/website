@@ -42,6 +42,10 @@ abstract class Date {
         return $date;
     }
 
+    public static function getSqlDateTimePlusSeconds($time = 'NOW', int $seconds = 0): string {
+        return self::getDateTimePlusSeconds($time, $seconds)->format('Y-m-d H:i:s');
+    }
+
     public static function getSqlDateTime($time = 'NOW'): string {
         return self::getDateTime($time)->format('Y-m-d H:i:s');
     }

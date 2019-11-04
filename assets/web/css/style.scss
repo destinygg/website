@@ -686,11 +686,14 @@ body.no-contain #footer {
 table.grid {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   padding: 0;
 
   td {
     white-space: nowrap;
     padding-left: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   td.wrap {
     white-space: normal;
@@ -739,6 +742,20 @@ table.grid {
     margin-right: 5px;
   }
 }
+
+td.selector {
+  cursor: pointer;
+  width: 37px;
+}
+
+table[data-sort] {
+  thead td[data-sort]:hover,
+  thead td[data-sort].active {
+    cursor: pointer;
+    color: $text-color1;
+  }
+}
+
 i.td-fill {
   opacity:0.5;
   height:23px;
@@ -1978,19 +1995,6 @@ form#nameForm {
     left: 0;
     right: 0;
     bottom: 0;
-  }
-}
-
-td.selector {
-  cursor: pointer;
-  width: 15px;
-}
-
-table[data-sort] {
-  thead td[data-sort]:hover,
-  thead td[data-sort].active {
-    cursor: pointer;
-    color: $text-color1;
   }
 }
 

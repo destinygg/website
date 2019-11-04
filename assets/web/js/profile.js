@@ -184,7 +184,7 @@ const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatte
             };
 
             const getActiveSelectors = function() {
-                return $inboxTable.find('td.selector.active').toArray()
+                return $inboxTable.find('tbody td.selector.active').toArray()
             };
 
             const activateSelector = function(){
@@ -238,7 +238,7 @@ const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatte
                     .on('mouseup', 'tbody tr', releasedTableRow)
             });
 
-            $btnToggle.on('click touch', function(e){
+            $btnToggle.on('click touch', function(){
                 $inboxTable.find('.selector').each(function(){
                     const self = $(this)
                     if (self.hasClass('active')) {
@@ -444,9 +444,7 @@ const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatte
 
     const $connTable = $('#connections-content'),
         $btnToggle = $('#connectSelectToggleBtn'),
-        $btnConnect = $('#connectNewConnBtn'),
         $btnRemove = $('#connectRemoveBtn'),
-        $connectModal = $('#connectModal'),
         $connectToolsForm = $('#connectToolsForm');
 
     if ($connTable.length > 0) {
@@ -457,7 +455,7 @@ const formatters = [new HtmlTextFormatter(),new UrlFormatter(),new EmoteFormatte
         };
 
         const getActiveSelectors = function() {
-            return $connTable.find('td.selector.active').toArray()
+            return $connTable.find('tbody td.selector.active').toArray()
         };
 
         const activateSelector = function(){

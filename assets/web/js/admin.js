@@ -68,7 +68,6 @@ import {debounce} from 'throttle-debounce'
 
         form.find('table[data-sort]').each(function(){
             const tbl = $(this), sort = tbl.data('sort'),
-                columns = tbl.find(`thead td[data-sort]`),
                 column = tbl.find(`thead td[data-sort="${sort}"]`),
                 caret = $(`<i class="fas fa-caret-up mr-1"></i>`);
             let order = tbl.data('order');
@@ -87,7 +86,96 @@ import {debounce} from 'throttle-debounce'
             });
             column.prepend(applyCaret(order)).addClass('active');
         });
+    });
 
+    $('#users-table').each(function(){
+        const $banUserBtn = $('#ban-users-btn'),
+            $banUsersModal = $('#ban-users-modal'),
+            $deleteUserBtn = $('#delete-users-btn'),
+            $deleteUsersModal = $('#delete-users-modal'),
+            $tbl = $(this);
+        let selected = [];
+
+        const getActiveSelectors = function() {
+            return $tbl.find('tbody td.selector.active').toArray()
+        };
+
+        const toggleToolsBasedOnSelection = function() {
+            selected = getActiveSelectors();
+            const someSelected = selected.length > 0
+            $banUserBtn.toggleClass('disabled', !someSelected);
+            $deleteUserBtn.toggleClass('disabled', !someSelected);
+        };
+
+        const activateSelector = function($el){
+            $el.addClass('active')
+                .find('i')
+                .attr('class', 'far fa-dot-circle');
+            toggleToolsBasedOnSelection()
+        };
+
+        const deactivateSelector = function($el) {
+            $el.removeClass('active')
+                .find('i')
+                .attr('class', 'far fa-circle');
+            toggleToolsBasedOnSelection()
+        };
+
+        const toggleRowSelector = function() {
+            const $td = $(this)
+            if ($td.hasClass('active')) {
+                deactivateSelector($td)
+            } else {
+                activateSelector($td)
+            }
+            return false
+        };
+
+        const toggleAllRowSelector = function(e) {
+            $tbl.find('.selector').each(function(){
+                const $el = $(this);
+                if ($el.hasClass('active')) {
+                    deactivateSelector($el)
+                } else {
+                    activateSelector($el)
+                }
+            });
+            return false
+        };
+
+        $tbl.on('click', 'tbody td.selector', toggleRowSelector)
+            .on('click', 'thead td.selector', toggleAllRowSelector);
+        toggleToolsBasedOnSelection()
+
+        $banUsersModal.find('form').on('submit', function(){
+            $banUsersModal.find('button').addClass('disabled');
+            $(this).append(selected.map(e => $(e).data('id')).map(e => `<input type="hidden" name="selected[]" value="${e}" />`));
+        });
+        $banUsersModal.on('show.bs.modal', function(){
+            $banUsersModal.find('.modal-message')
+                .html(`Do you want to Ban <strong>${selected.length}</strong> users? This cannot be undone.`);
+            $banUsersModal.find('[name="reason"]').focus()
+        });
+        $banUsersModal.on('shown.bs.modal', () => $banUsersModal.find('[name="reason"]').focus());
+        $banUserBtn.on('click', function(){
+            $(this).parent().toggleClass('show');
+            $banUsersModal.modal('show');
+            return false;
+        });
+
+        $deleteUsersModal.find('form').on('submit', function(){
+            $deleteUsersModal.find('button').addClass('disabled');
+            $(this).append(selected.map(e => $(e).data('id')).map(e => `<input type="hidden" name="selected[]" value="${e}" />`));
+        });
+        $deleteUsersModal.on('show.bs.modal', function(){
+            $deleteUsersModal.find('.modal-message')
+                .html(`Do you want to Delete <strong>${selected.length}</strong> users? This cannot be undone.`);
+        });
+        $deleteUserBtn.on('click', function(){
+            $(this).parent().toggleClass('show');
+            $deleteUsersModal.modal('show');
+            return false;
+        });
     });
 
     $('#flairs-selection').each(function(){

@@ -1,5 +1,5 @@
 <?php
-
+use Destiny\Common\Config;
 use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Date;
@@ -32,7 +32,6 @@ use Destiny\Common\Utils\Date;
                     <div class="form-group">
                         <label class="mr-2">Status</label>
                         <select name="status" class="form-control">
-                            <option value="" <?=(!$this->status ? 'selected':'')?>>Any</option>
                             <?php foreach ($this->statuses as $status): ?>
                                 <option <?=($status == $this->status) ? 'selected':''?> value="<?=Tpl::out($status)?>"><?=Tpl::out($status)?></option>
                             <?php endforeach; ?>
@@ -70,6 +69,14 @@ use Destiny\Common\Utils\Date;
 
                     <div class="ds-block" style="display: flex;">
 
+                        <div class="dropdown mr-3">
+                            <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown"></button>
+                            <div class="dropdown-menu">
+                                <a id="ban-users-btn" class="dropdown-item" href="#">Ban</a>
+                                <a id="delete-users-btn" class="dropdown-item" href="#">Delete</a>
+                            </div>
+                        </div>
+
                         <div class="form-inline" role="form" style="flex: 1;">
                             <?php if($this->users['totalpages'] > 1): ?>
                             <ul class="pagination" style="margin: 0 15px 0 0;">
@@ -90,10 +97,10 @@ use Destiny\Common\Utils\Date;
 
                         <div class="form-inline" role="form">
                             <div class="form-group">
-                                <label for="gridSize" class="text-muted">Showing (<?=count($this->users['list'])?>)</label>
+                                <label for="gridSize" class="text-muted">Showing (<?=Tpl::number(count($this->users['list']))?> of <?=Tpl::number($this->users['total'])?>)</label>
                                 <select id="gridSize" name="size" class="form-control ml-2">
                                     <?php foreach ($this->sizes as $size): ?>
-                                        <option value="<?=$size?>"><?=$size?></option>
+                                        <option value="<?=$size?>" <?= $this->size == $size ? " selected":""?>><?=$size?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -101,17 +108,19 @@ use Destiny\Common\Utils\Date;
 
                     </div>
 
-                    <table class="grid" data-sort="<?=Tpl::out($this->sort)?>" data-order="<?=Tpl::out($this->order)?>">
+                    <table id="users-table" class="grid" data-sort="<?=Tpl::out($this->sort)?>" data-order="<?=Tpl::out($this->order)?>">
                         <thead>
-                        <tr>
-                            <td data-sort="username">User <small>(<?=$this->users['total']?>)</small></td>
-                            <td data-sort="status">Status</td>
-                            <td data-sort="id">Created on</td>
-                        </tr>
+                            <tr>
+                                <td class="selector"><i class="far fa-circle"></i></td>
+                                <td style="width: 300px;" data-sort="username">User</td>
+                                <td data-sort="status">Status</td>
+                                <td data-sort="id">Created on</td>
+                            </tr>
                         </thead>
                         <tbody>
                         <?php foreach($this->users['list'] as $user): ?>
                             <tr>
+                                <td data-id="<?=$user['userId']?>" class="selector"><i class="far fa-circle"></i></td>
                                 <td>
                                     <a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a>
                                     <?php if(!empty($user['email'])): ?>(<?=Tpl::out($user['email'])?>)<?php endif; ?>
@@ -130,6 +139,55 @@ use Destiny\Common\Utils\Date;
     </section>
 </div>
 
+<div class="modal fade" id="delete-users-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="/admin/users/delete" method="post">
+                <div class="modal-body">
+                    <p class="modal-message" style="color: #797979;">Delete some users?</p>
+                    <div class="g-recaptcha" data-sitekey="<?=Tpl::out(Config::$a['g-recaptcha']['key'])?>"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ban-users-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="/admin/users/ban" method="post">
+                <div class="modal-body">
+                    <p class="modal-message" style="color: #797979;">Ban some users?</p>
+                    <div class="mt-3">
+                        <div class="form-group">
+                            <input class="form-control" type="text" name="reason" value="Mass ban" placeholder="Reason ..." />
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" name="duration">
+                                <option value="600">10 minutes</option>
+                                <option value="1800">30 minutes</option>
+                                <option value="3600" selected>1 hours</option>
+                                <option value="21600">6 hours</option>
+                                <option value="86400">1 day</option>
+                                <option value="108000">30 day</option>
+                                <option value="">Permanent</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Ban</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
@@ -137,6 +195,7 @@ use Destiny\Common\Utils\Date;
 <?=Tpl::manifestScript('common.vendor.js')?>
 <?=Tpl::manifestScript('web.js')?>
 <?=Tpl::manifestScript('admin.js')?>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 
 </body>
 </html>

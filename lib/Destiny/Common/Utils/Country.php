@@ -3,60 +3,67 @@ namespace Destiny\Common\Utils;
 
 use Destiny\Common\Application;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
+use Doctrine\DBAL\DBALException;
 
 /**
  * This class is weird
  */
 abstract class Country {
-    
+
+    public static $countriesLoaded = false;
+
     /**
      * List of countries e.g.
-     * [{"name":"Afghanistan","alpha-2":"AF","country-code":"004"},...] countries
+     * [["AF" => "Afghanistan"], [ ... ] ...] countries
      *
-     * @var array
+     * @var array|null
      */
-    public static $countries = null;
-    
+    public static $countries = [];
     /**
-     * List of countries by code e.g.
-     * {"AF":"Afghanistan"} countries
-     *
-     * @var array
+     * @var array|null
      */
-    public static $codeIndex = null;
+    public static $codes = [];
 
     /**
      * Return a cached list of countries
      */
     public static function getCountries(): array {
-        if (self::$countries === null) {
+        if (!self::$countriesLoaded) {
+            self::$countriesLoaded = true;
             $cache = Application::getNsCache();
-            $countries = $cache->fetch('geodata');
-            if (empty ($countries)) {
-                $countries = \GuzzleHttp\json_decode(file_get_contents(_BASEDIR . '/assets/countries.json'), true);
-                $cache->save('geodata', $countries);
-            }
-            if (is_array($countries)) {
-                self::$countries = $countries;
-            }
-        }
-        if (empty (self::$codeIndex)) {
-            foreach (self::$countries as $i => $country) {
-                self::$codeIndex [strtolower($country ['alpha-2'])] = $i;
+            $countries = $cache->fetch('countries');
+            if (!$countries) {
+                try {
+                    self::$countries = self::fetchCountries();
+                    self::$codes = array_column(self::$countries, 'code');
+                    $cache->save('countries', self::$countries);
+                } catch (\Exception $e) {
+                    Log::error("Error loading countries. {$e->getMessage()}");
+                }
             }
         }
         return self::$countries;
     }
 
     /**
+     * @throws DBALException
+     */
+    protected static function fetchCountries(): array {
+        $conn = Application::getDbConn();
+        $stmt = $conn->prepare("SELECT * FROM countries ORDER BY FIELD(`code`, 'GB', 'US') DESC, label ASC");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Return a country by code, if none exists throw an exception
-     * @throws Exception
+     * @return array|null
      */
     public static function getCountryByCode(string $code) {
-        $code = strtolower($code);
         $countries = self::getCountries();
-        FilterParams::required(self::$codeIndex, $code);
-        return $countries[self::$codeIndex[$code]];
+        $index = array_search(strtoupper($code), self::$codes);
+        return !$index ? null : $countries[$index];
     }
 
 }

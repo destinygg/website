@@ -154,7 +154,7 @@ class ProfileController {
         $userData = [
             'email' => $email,
             'allowGifting' => $allowGifting,
-            'country' => !empty($country) ? Country::getCountryByCode($country)['alpha-2'] : '',
+            'country' => $country,
         ];
         $userService->updateUser($user['userId'], $userData);
         $authService->flagUserForUpdate($user['userId']);
