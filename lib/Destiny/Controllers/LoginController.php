@@ -34,10 +34,6 @@ class LoginController {
      * @HttpMethod ({"GET"})
      */
     public function login(array $params, ViewModel $model): string {
-        if (Session::hasRole(UserRole::USER)) {
-            Session::setErrorBag('You are already signed in');
-            return 'redirect: /profile';
-        }
         Session::remove('isConnectingAccount');
         $grant = isset($params['grant']) ? $params['grant'] : null;
         $follow = (isset($params ['follow'])) ? $params ['follow'] : '';
@@ -53,6 +49,10 @@ class LoginController {
                 return 'redirect: /profile';
             }
         } else {
+            if (Session::hasRole(UserRole::USER)) {
+                Session::setErrorBag('You are already signed in');
+                return 'redirect: /profile';
+            }
             $app = [];
         }
 
