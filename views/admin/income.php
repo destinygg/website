@@ -16,11 +16,11 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <h3 id="income-dates">
-                <span id="date-selector">
-                    <a href='#'><i class='fas fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fas fa-arrow-right'></i></a>
-                </span>
+            <span id="date-selector">
+                <a href='#'><i class='fas fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fas fa-arrow-right'></i></a>
+            </span>
         </h3>
-        <div class="row">
+        <div class="row" id="income-graphs">
             <div class="col-md-6 col-sm-12">
                 <div id="graph4">
                     <div class="graph-outer">

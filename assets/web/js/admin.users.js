@@ -4,7 +4,7 @@ import Chart from 'chart.js'
 
 (function($){
 
-    $('#income-graphs').each(function(){
+    $('#moderation-graphs').each(function(){
 
         const currDate = moment()
         const dates = $('#income-dates')
@@ -54,12 +54,10 @@ import Chart from 'chart.js'
                 const fromDate = moment(selectedDate.format('YYYY-MM-DD')).startOf('month'),
                     toDate = moment(selectedDate.format('YYYY-MM-DD')).endOf('month');
                 $.ajax({
-                    url: '/admin/chart/finance/NewTieredSubscribersLastXDays.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
+                    url: '/admin/chart/users/NewUsersAndBansLastXDays.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
                     success: function(data){
                         const dataSet1 = [],
                             dataSet2 = [],
-                            dataSet3 = [],
-                            dataSet4 = [],
                             dataLabels = [],
                             dates = [];
                         for (let m = fromDate; m.isBefore(toDate) || m.isSame(toDate); m.add(1, 'days')) {
@@ -67,25 +65,22 @@ import Chart from 'chart.js'
                             dataLabels.push(m.format('D'));
                             dataSet1.push(0);
                             dataSet2.push(0);
-                            dataSet3.push(0);
-                            dataSet4.push(0);
                         }
-                        for(let i=0; i<data.length; ++i){
-                            const x = dates.indexOf(data[i].date);
-                            if(x !== -1){
-                                switch(data[i]['subscriptionTier']){
-                                    case "1":
-                                        dataSet1[x] = parseInt(data[i]['total']);
-                                        break;
-                                    case "2":
-                                        dataSet2[x] = parseInt(data[i]['total']);
-                                        break;
-                                    case "3":
-                                        dataSet3[x] = parseInt(data[i]['total']);
-                                        break;
-                                    case "4":
-                                        dataSet4[x] = parseInt(data[i]['total']);
-                                        break;
+
+                        for(let y=0; y<data.length; ++y){
+                            for(let i=0; i<data[y].length; ++i) {
+
+                                const x = dates.indexOf(data[y][i].date);
+                                console.log(data[y][i], x);
+                                if (x !== -1) {
+                                    switch (y) {
+                                        case 0:
+                                            dataSet1[x] = parseInt(data[y][i]['total']);
+                                            break;
+                                        case 1:
+                                            dataSet2[x] = parseInt(data[y][i]['total']);
+                                            break;
+                                    }
                                 }
                             }
                         }
@@ -93,7 +88,7 @@ import Chart from 'chart.js'
                         currChart.data.labels = dataLabels;
                         currChart.data.datasets = [
                             {
-                                label: "Tier 1",
+                                label: "Users",
                                 data: dataSet1,
                                 borderWidth: 0.4,
                                 backgroundColor: "rgba(51, 122, 183,0.6)",
@@ -102,31 +97,13 @@ import Chart from 'chart.js'
                                 pointBackgroundColor: "rgba(51, 122, 183,1)"
                             },
                             {
-                                label: "Tier 2",
+                                label: "Bans",
                                 data: dataSet2,
-                                borderWidth: 0.4,
-                                backgroundColor: "rgba(0,220,0,0.6)",
-                                borderColor: "rgba(0,220,0,1)",
-                                pointBorderColor: "rgba(0,220,0,1)",
-                                pointBackgroundColor: "#fff"
-                            },
-                            {
-                                label: "Tier 3",
-                                data: dataSet3,
                                 borderWidth: 0.4,
                                 backgroundColor: "rgba(220,0,0,0.6)",
                                 borderColor: "rgba(220,0,0,1)",
                                 pointBorderColor: "rgba(220,0,0,1)",
                                 pointBackgroundColor: "rgba(220,0,0,1)"
-                            },
-                            {
-                                label: "Tier 4",
-                                data: dataSet4,
-                                borderWidth: 0.4,
-                                backgroundColor: "rgba(220,0,220,0.6)",
-                                borderColor: "rgba(220,0,220,1)",
-                                pointBorderColor: "rgba(220,0,220,1)",
-                                pointBackgroundColor: "rgba(220,0,220,1)"
                             }
                         ];
                         currChart.update();
@@ -140,11 +117,13 @@ import Chart from 'chart.js'
 
         $('#graph1').each(function(){
             const graph = $(this),
-                label = "Revenue Last "+ days +" Days";
+                label = "Users Last "+ days +" Days";
+            const fromDate = moment(currDate.format('YYYY-MM-DD')).subtract('days', days),
+                toDate = moment(currDate.format('YYYY-MM-DD'));
             $.ajax({
-                url: '/admin/chart/finance/RevenueLastXDays.json?days='+days,
+                url: '/admin/chart/users/NewUsersLastXDays.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
                 success: function(data){
-                    data = GraphUtil.prepareGraphData(data, 'sum', days, 'days');
+                    data = GraphUtil.prepareGraphData(data, 'total', days, 'days');
                     new Chart(graph.find('canvas').get(0).getContext("2d"), {
                         type: 'bar',
                         data: {
@@ -165,15 +144,14 @@ import Chart from 'chart.js'
                             tooltips: {
                                 callbacks: {
                                     label: function(tooltipItem) {
-                                        return GraphUtil.formatCurrency(tooltipItem.yLabel);
+                                        return tooltipItem.yLabel;
                                     }
                                 }
                             },
                             scales: {
                                 yAxes: [{
                                     ticks: {
-                                        beginAtZero: true,
-                                        callback: GraphUtil.formatCurrency
+                                        beginAtZero: true
                                     }
                                 }]
                             }
@@ -185,11 +163,13 @@ import Chart from 'chart.js'
 
         $('#graph2').each(function(){
             const graph = $(this),
-                label = "Revenue Last "+ months +" Months";
+                label = "Users Last "+ months +" Months";
+            const fromDate = moment(currDate.format('YYYY-MM-DD')).subtract('months', months),
+                toDate = moment(currDate.format('YYYY-MM-DD'));
             $.ajax({
-                url: '/admin/chart/finance/RevenueLastXMonths.json?months='+months,
+                url: '/admin/chart/users/NewUsersLastXMonths.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
                 success: function(data){
-                    data = GraphUtil.prepareGraphData(data, 'sum', months, 'months');
+                    data = GraphUtil.prepareGraphData(data, 'total', months, 'months');
                     new Chart(graph.find('canvas').get(0).getContext("2d"), {
                         type: 'bar',
                         data: {
@@ -210,15 +190,14 @@ import Chart from 'chart.js'
                             tooltips: {
                                 callbacks: {
                                     label: function(tooltipItem) {
-                                        return GraphUtil.formatCurrency(tooltipItem.yLabel);
+                                        return tooltipItem.yLabel;
                                     }
                                 }
                             },
                             scales: {
                                 yAxes: [{
                                     ticks: {
-                                        beginAtZero: true,
-                                        callback: GraphUtil.formatCurrency
+                                        beginAtZero: true
                                     }
                                 }]
                             }
@@ -231,11 +210,13 @@ import Chart from 'chart.js'
         $('#graph3').each(function(){
             const years = 5,
                 graph = $(this),
-                label = "Revenue Last "+ years +" Years";
+                label = "Users "+ years +" Years";
+            const fromDate = moment(currDate.format('YYYY-MM-DD')).subtract('years', years),
+                toDate = moment(currDate.format('YYYY-MM-DD'));
             $.ajax({
-                url: '/admin/chart/finance/RevenueLastXYears.json?years='+years,
+                url: '/admin/chart/users/NewUsersLastXYears.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
                 success: function(data){
-                    data = GraphUtil.prepareGraphData(data, 'sum', years, 'years');
+                    data = GraphUtil.prepareGraphData(data, 'total', years, 'years');
                     new Chart(graph.find('canvas').get(0).getContext("2d"), {
                         type: 'bar',
                         data: {
@@ -256,15 +237,14 @@ import Chart from 'chart.js'
                             tooltips: {
                                 callbacks: {
                                     label: function(tooltipItem) {
-                                        return GraphUtil.formatCurrency(tooltipItem.yLabel);
+                                        return tooltipItem.yLabel;
                                     }
                                 }
                             },
                             scales: {
                                 yAxes: [{
                                     ticks: {
-                                        beginAtZero: true,
-                                        callback: GraphUtil.formatCurrency
+                                        beginAtZero: true
                                     }
                                 }]
                             }
@@ -272,72 +252,6 @@ import Chart from 'chart.js'
                     });
                 }
             })
-        });
-
-        $('#graph5').each(function(){
-            const graph = $(this)
-            const currChart = new Chart(graph.find('canvas').get(0).getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: [],
-                    datasets: []
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    tooltips: {
-                        callbacks: {
-                            label: function(t) {
-                                return GraphUtil.formatCurrency(t['yLabel']);
-                            }
-                        }
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                                callback: GraphUtil.formatCurrency
-                            }
-                        }]
-                    }
-                }
-            });
-            const updateGraph5 = function(selectedDate) {
-                const fromDate = moment(selectedDate.format('YYYY-MM-DD')).startOf('month'),
-                    toDate = moment(selectedDate.format('YYYY-MM-DD')).endOf('month');
-                $.ajax({
-                    url: '/admin/chart/finance/NewDonationsLastXDays.json?fromDate='+ fromDate.format('YYYY-MM-DD') +'&toDate='+ toDate.format('YYYY-MM-DD'),
-                    success: function (data) {
-                        const label = "Donations "+ currDate.format('MMMM YYYY');
-                        const dataSet = [],
-                            dataLabels = [],
-                            dates = [];
-                        for (let m = fromDate; m.isBefore(toDate) || m.isSame(toDate); m.add(1, 'days')) {
-                            dates.push(m.format('YYYY-MM-DD'));
-                            dataLabels.push(m.format('D'));
-                            dataSet.push(0);
-                        }
-                        for(let i=0; i<data.length; ++i) {
-                            const x = dates.indexOf(data[i].date);
-                            dataSet[x] = parseInt(data[i]['total'])
-                        }
-                        currChart.label = label;
-                        currChart.data.labels = dataLabels;
-                        currChart.data.datasets = [{
-                            label: label,
-                            borderWidth: 0.4,
-                            backgroundColor: "rgba(220,220,220,0.2)",
-                            borderColor: "rgba(220,220,220,1)",
-                            pointBorderColor: "rgba(220,220,220,1)",
-                            pointBackgroundColor: "#fff",
-                            pointBorderWidth: 1,
-                            data: dataSet
-                        }];
-                        currChart.update();
-                    }
-                })
-            }
-            dates.on('date', () => updateGraph5(currDate))
-            updateGraph5(currDate);
         });
 
     });

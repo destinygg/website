@@ -194,4 +194,91 @@ class StatisticsService extends Service {
         }
     }
 
+    /**
+     * @throws DBException
+     */
+    public function getNewUsersLastXDays(DateTime $fromDate, DateTime $toDate): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT COUNT(*) `total`, DATE(d.createdDate) `date`
+                FROM `dfl_users` d
+                WHERE d.createdDate BETWEEN :fromDate AND :toDate
+                GROUP BY DATE(d.createdDate)
+                ORDER BY d.createdDate ASC
+            ');
+            $stmt->bindValue('fromDate', $fromDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading revenue data.", $e);
+        }
+    }
+
+    /**
+     * @throws DBException
+     */
+    public function getBansLastXDays(DateTime $fromDate, DateTime $toDate): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT COUNT(*) `total`, DATE(d.starttimestamp) `date`
+                FROM `bans` d
+                WHERE d.starttimestamp BETWEEN :fromDate AND :toDate
+                GROUP BY DATE(d.starttimestamp)
+                ORDER BY d.starttimestamp ASC
+            ');
+            $stmt->bindValue('fromDate', $fromDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading revenue data.", $e);
+        }
+    }
+
+    /**
+     * @throws DBException
+     */
+    public function getNewUsersLastXMonths(DateTime $fromDate, DateTime $toDate): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT COUNT(*) `total`, DATE_FORMAT(d.createdDate, \'%Y-%m-01\') `date` FROM `dfl_users` d
+                WHERE d.createdDate BETWEEN :fromDate AND :toDate
+                GROUP BY DATE_FORMAT(d.createdDate, \'%Y%m\')
+                ORDER BY d.createdDate ASC
+            ');
+            $stmt->bindValue('fromDate', $fromDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading revenue data.", $e);
+        }
+    }
+
+    /**
+     * @throws DBException
+     */
+    public function getNewUsersLastXYears(DateTime $fromDate, DateTime $toDate): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT COUNT(*) `total`, DATE_FORMAT(d.createdDate, \'%Y-01-01\') `date` FROM `dfl_users` d
+                WHERE d.createdDate BETWEEN :fromDate AND :toDate
+                GROUP BY DATE_FORMAT(d.createdDate, \'%Y\')
+                ORDER BY d.createdDate ASC
+            ');
+            $stmt->bindValue('fromDate', $fromDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->bindValue('toDate', $toDate->format(Date::FORMAT), PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error loading subscriptions.", $e);
+        }
+    }
+
+
 }

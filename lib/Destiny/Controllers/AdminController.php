@@ -39,7 +39,7 @@ class AdminController {
         if (Session::hasRole(UserRole::FINANCE))
             return 'redirect: /admin/income';
         else if (Session::hasRole(UserRole::MODERATOR))
-            return 'redirect: /admin/users';
+            return 'redirect: /admin/moderation';
         else if (Session::hasRole(UserRole::EMOTES))
             return 'redirect: /admin/emotes';
         else if (Session::hasRole(UserRole::FLAIRS))
@@ -61,6 +61,19 @@ class AdminController {
     public function income(ViewModel $model) {
         $model->title = 'Income';
         return 'admin/income';
+    }
+
+    /**
+     * @Route ("/admin/moderation")
+     * @Secure ({"MODERATOR"})
+     * @HttpMethod ({"GET","POST"})
+     *
+     * @param ViewModel $model
+     * @return string
+     */
+    public function moderation(ViewModel $model) {
+        $model->title = 'Moderation';
+        return 'admin/moderation';
     }
 
     /**
@@ -188,13 +201,92 @@ class AdminController {
     }
 
     /**
-     * @Route ("/admin/chart/{type}")
+     * @Route ("/admin/chart/users/{type}")
+     * @Secure ({"MODERATOR"})
+     * @ResponseBody
+     */
+    public function chartUsersData(array $params) {
+        $statisticsService = StatisticsService::instance();
+        $cacheDriver = Application::getNsCache();
+        $data = [];
+        try {
+            FilterParams::required($params, 'type');
+            $graphType = strtoupper($params['type']);
+            switch ($graphType) {
+                case 'NEWUSERSLASTXDAYS':
+                    FilterParams::required($params, 'fromDate');
+                    FilterParams::required($params, 'toDate');
+                    $fromDate = Date::getDateTime($params['fromDate']);
+                    $toDate = Date::getDateTime($params['toDate']);
+                    $toDate->setTime(23, 59, 59);
+                    $key = $graphType . $fromDate->format('Ymdhis') . $toDate->format('Ymdhis');
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewUsersLastXDays($fromDate, $toDate);
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWUSERSANDBANSLASTXDAYS':
+                    FilterParams::required($params, 'fromDate');
+                    FilterParams::required($params, 'toDate');
+                    $fromDate = Date::getDateTime($params['fromDate']);
+                    $toDate = Date::getDateTime($params['toDate']);
+                    $toDate->setTime(23, 59, 59);
+                    $key = $graphType . $fromDate->format('Ymdhis') . $toDate->format('Ymdhis');
+                    if (!$cacheDriver->contains($key)) {
+                        $data = [
+                            $statisticsService->getNewUsersLastXDays($fromDate, $toDate),
+                            $statisticsService->getBansLastXDays($fromDate, $toDate),
+                        ];
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWUSERSLASTXMONTHS':
+                    FilterParams::required($params, 'fromDate');
+                    FilterParams::required($params, 'toDate');
+                    $fromDate = Date::getDateTime($params['fromDate']);
+                    $toDate = Date::getDateTime($params['toDate']);
+                    $toDate->setTime(23, 59, 59);
+                    $key = $graphType . $fromDate->format('Ymdhis') . $toDate->format('Ymdhis');
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewUsersLastXMonths($fromDate, $toDate);
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+                case 'NEWUSERSLASTXYEARS':
+                    FilterParams::required($params, 'fromDate');
+                    FilterParams::required($params, 'toDate');
+                    $fromDate = Date::getDateTime($params['fromDate']);
+                    $toDate = Date::getDateTime($params['toDate']);
+                    $toDate->setTime(23, 59, 59);
+                    $key = $graphType . $fromDate->format('Ymdhis') . $toDate->format('Ymdhis');
+                    if (!$cacheDriver->contains($key)) {
+                        $data = $statisticsService->getNewUsersLastXYears($fromDate, $toDate);
+                        $cacheDriver->save($key, $data, 30);
+                    } else {
+                        $data = $cacheDriver->fetch($key);
+                    }
+                    break;
+            }
+        } catch (Exception $e) {
+            Log::error('Error loading graph data. ' . $e->getMessage());
+        }
+        return $data;
+    }
+
+    /**
+     * @Route ("/admin/chart/finance/{type}")
      * @Secure ({"FINANCE"})
      * @ResponseBody
      *
      * @return array|false
      */
-    public function chartData(array $params){
+    public function chartFinanceData(array $params) {
         $statisticsService = StatisticsService::instance();
         $cacheDriver = Application::getNsCache();
         $data = [];

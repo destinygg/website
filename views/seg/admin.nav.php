@@ -6,6 +6,7 @@ use Destiny\Common\User\UserRole;
     <ol class="breadcrumb" style="margin-bottom:0; font-size: 110%;">
 
         <?php if(Session::hasRole(UserRole::MODERATOR)): ?>
+            <li class="breadcrumb-item"><a href="/admin/moderation">Moderation</a></li>
             <li class="breadcrumb-item"><a href="/admin/users">Users</a></li>
             <li class="breadcrumb-item"><a href="/admin/bans">Bans</a></li>
             <li class="breadcrumb-item"><a href="/admin/chat">Chat</a></li>
