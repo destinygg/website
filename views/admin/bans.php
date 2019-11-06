@@ -30,18 +30,20 @@ use Destiny\Common\Utils\Tpl;
             <table class="grid">
                 <thead>
                 <tr>
-                    <td style="width:200px;">User</td>
+                    <td style="width:280px;">User</td>
                     <td>Reason</td>
-                    <td>Created on</td>
-                    <td>Ends on</td>
-                    <td style="width:110px;"></td>
+                    <td style="width:280px;">By</td>
+                    <td style="width:300px;">Created on</td>
+                    <td style="width:300px;">Ends on</td>
+                    <td style="width:100px;"></td>
                 </tr>
                 </thead>
                 <tbody>
                 <?php foreach($this->activeBans as $ban): ?>
                     <tr>
                         <td class="nowrap"><a href="/admin/user/<?=$ban['targetuserid']?>/edit"><?=Tpl::out($ban['targetusername'])?></a></td>
-                        <td class="nowrap">Banned by <?=Tpl::out($ban['banningusername'])?> with reason: <?=Tpl::out($ban['reason'])?></td>
+                        <td><div class="nowrap" title="<?=Tpl::out($ban['reason'])?>"><?=Tpl::out($ban['reason'])?></div></td>
+                        <td><a href="/admin/user/<?=$ban['banninguserid']?>/edit"><?=Tpl::out($ban['banningusername'])?></a></a></td>
                         <td><?=Tpl::moment(Date::getDateTime($ban['starttimestamp']), Date::STRING_FORMAT)?></td>
                         <td>
                             <?php if ( !$ban['endtimestamp'] )

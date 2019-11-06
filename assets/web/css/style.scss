@@ -690,8 +690,11 @@ table.grid {
   padding: 0;
 
   td {
-    white-space: nowrap;
     padding-left: 20px;
+  }
+  td.nowrap,
+  div.nowrap {
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }

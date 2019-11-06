@@ -410,10 +410,10 @@ use Destiny\Commerce\SubscriptionStatus;
                     <table class="grid">
                         <thead>
                         <tr>
-                            <td>Type</td>
-                            <td></td>
+                            <td style="width:100px;">Type</td>
+                            <td style="width:200px;">Provider</td>
                             <td>Detail</td>
-                            <td style="width:100%;">Email</td>
+                            <td>Email</td>
                             <td>Created</td>
                             <td>Modified</td>
                         </tr>

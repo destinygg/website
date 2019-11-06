@@ -20,7 +20,7 @@ See [LICENSE.md](LICENSE.md)
 
 ### Running
 
-[nginx](http://httpd.apache.org/), [php 5.6+](http://php.net/), [mysql 5](http://dev.mysql.com/), [Redis](http://redis.io/download)
+[nginx](http://httpd.apache.org/), [php 7.1+](http://php.net/), [mysql 5](http://dev.mysql.com/), [Redis](http://redis.io/download)
 
 
 ## Getting Started

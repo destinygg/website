@@ -90,7 +90,7 @@ use Destiny\Common\Config;
                 <table class="grid" style="width:100%">
                     <thead>
                     <tr>
-                        <td style="width:100%;">Application</td>
+                        <td>Application</td>
                         <td>Created</td>
                         <td></td>
                     </tr>

@@ -31,7 +31,7 @@ use Destiny\Common\Utils\Tpl;
                     <table class="grid">
                         <thead>
                         <tr>
-                            <td></td>
+                            <td class="selector"></td>
                             <td>Provider</td>
                             <td>Detail</td>
                             <td>Created</td>
