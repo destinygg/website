@@ -599,7 +599,7 @@ class AdminUserController {
         ]);
 
         Session::setSuccessBag('User deleted');
-        return 'redirect: /admin/user/$userId/edit';
+        return "redirect: /admin/user/$userId/edit";
     }
 
     /**
