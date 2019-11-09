@@ -39,7 +39,7 @@ use Destiny\Common\Utils\Date;
                 <div class="ds-block">
                     <div class="form-group">
                         <label>IP Address:
-                            <br /><small>Search for users by an IP address</small>
+                            <br /><small>Search for users by an IP address. Use * to indicate a wildcard search e.g 192.168.*</small>
                         </label>
                         <input name="ip" type="text" class="form-control" value="<?=Tpl::out($this->searchIp)?>" placeholder="192.168.0.1" />
                     </div>

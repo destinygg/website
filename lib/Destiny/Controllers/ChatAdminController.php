@@ -47,8 +47,13 @@ class ChatAdminController {
      */
     public function adminChatIp(array $params, ViewModel $model): string {
         $model->title = 'Chat';
+        $max = 100;
         FilterParams::required($params, 'ip');
-        $ids = ChatRedisService::instance()->findUserIdsByIP($params['ip']);
+        $ids = ChatRedisService::instance()->findUserIdsByIPWildcard($params['ip']);
+        $ids = array_unique($ids);
+        if (count($ids) > $max) {
+            $ids = array_slice($ids, 0, $max);
+        }
         $model->usersByIp = UserService::instance()->getUsersByUserIds($ids);
         $model->searchIp = $params ['ip'];
         return 'admin/chat';

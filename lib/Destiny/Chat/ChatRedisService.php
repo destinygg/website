@@ -36,11 +36,7 @@ class ChatRedisService extends Service {
         $this->redis = Application::instance()->getRedis();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function findUserIdsByUsersIp(int $userid): array {
-        $keys = RedisUtils::callScript('check-sameip-users', [$userid]);
+    private function stripRedisUserIpPrefixes(array $keys) {
         return array_filter(array_map(function($n) {
             return intval(substr($n, strlen('CHAT:userips-')));
         }, $keys), function($n){
@@ -49,15 +45,30 @@ class ChatRedisService extends Service {
     }
 
     /**
+     * Finds all users who share the same IP
+     * @throws Exception
+     */
+    public function findUserIdsByUsersIp(int $userid): array {
+        $keys = RedisUtils::callScript('check-sameip-users', [$userid]);
+        return $this->stripRedisUserIpPrefixes($keys);
+    }
+
+    /**
+     * Find all users by ip
      * @throws Exception
      */
     public function findUserIdsByIP(string $ipaddress): array {
         $keys = RedisUtils::callScript('check-ip', [$ipaddress]);
-        return array_filter(array_map(function($n) {
-            return intval(substr($n, strlen('CHAT:userips-')));
-        }, $keys), function($n){
-            return $n != null && $n > 0;
-        });
+        return $this->stripRedisUserIpPrefixes($keys);
+    }
+
+    /**
+     * Find all users by ip (wildcard)
+     * @throws Exception
+     */
+    public function findUserIdsByIPWildcard(string $ipaddress): array {
+        $keys = RedisUtils::callScript('check-ip-wildcard', [$ipaddress]);
+        return $this->stripRedisUserIpPrefixes($keys);
     }
 
     /**
