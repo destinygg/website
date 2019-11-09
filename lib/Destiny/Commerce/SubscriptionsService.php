@@ -269,15 +269,15 @@ class SubscriptionsService extends Service {
                 $item['type'] = $this->getSubscriptionType($item['subscriptionType']);
                 return $item;
             }, $stmt->fetchAll());
-
-            $pagination = [];
-            $pagination ['list'] = $items;
-            $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
-            $pagination ['totalpages'] = ceil($pagination ['total'] / $params['size']);
-            $pagination ['pages'] = 5;
-            $pagination ['page'] = $params['page'];
-            $pagination ['limit'] = $params['size'];
-            return $pagination;
+            $total = $conn->fetchColumn('SELECT FOUND_ROWS()');
+            return [
+                'list' => $items,
+                'total' => $total,
+                'totalpages' => ceil($total/$params['size']),
+                'pages' => 5,
+                'page' => $params['page'],
+                'limit' => $params['size'],
+            ];
         } catch (DBALException $e) {
             throw new DBException("Error searching subscriptions.", $e);
         }

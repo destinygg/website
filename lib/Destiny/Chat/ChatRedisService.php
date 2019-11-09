@@ -68,7 +68,7 @@ class ChatRedisService extends Service {
      */
     public function findUserIdsByIPWildcard(string $ipaddress): array {
         $keys = RedisUtils::callScript('check-ip-wildcard', [$ipaddress]);
-        return $this->stripRedisUserIpPrefixes($keys);
+        return array_unique($this->stripRedisUserIpPrefixes($keys));
     }
 
     /**

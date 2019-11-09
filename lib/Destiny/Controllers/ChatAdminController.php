@@ -7,9 +7,11 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\Exception;
+use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\FilterParams;
+use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\ViewModel;
 
 /**
@@ -47,15 +49,38 @@ class ChatAdminController {
      */
     public function adminChatIp(array $params, ViewModel $model): string {
         $model->title = 'Chat';
-        $max = 100;
-        FilterParams::required($params, 'ip');
-        $ids = ChatRedisService::instance()->findUserIdsByIPWildcard($params['ip']);
-        $ids = array_unique($ids);
-        if (count($ids) > $max) {
-            $ids = array_slice($ids, 0, $max);
+        try {
+            FilterParams::declared($params, 'ip');
+            if (empty($params['page'])) {
+                $params['page'] = 1;
+            }
+            if (empty($params['size'])) {
+                $params['size'] = 100;
+            }
+            $ids = ChatRedisService::instance()->findUserIdsByIPWildcard($params['ip']);
+            $total = count($ids);
+            if ($total > $params['size']) {
+                $ids = array_slice($ids, ($params['page'] - 1) * $params['size'], (int)$params['size']);
+            }
+            $users = UserService::instance()->getUsersByUserIds($ids);
+            $model->sizes = [100, 250, 500];
+            $model->searchIp = $params['ip'];
+            $model->users = [
+                'pages' => 5,
+                'list' => $users,
+                'total' => $total,
+                'totalpages' => ceil($total / $params['size']),
+                'page' => $params['page'],
+                'limit' => $params['size'],
+            ];
+        } catch (FilterParamsException $e) {
+            Session::setErrorBag($e->getMessage());
+            return 'redirect: /admin/chat';
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            Log::error($e);
+            return 'redirect: /admin/chat';
         }
-        $model->usersByIp = UserService::instance()->getUsersByUserIds($ids);
-        $model->searchIp = $params ['ip'];
         return 'admin/chat';
     }
 

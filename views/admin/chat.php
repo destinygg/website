@@ -16,8 +16,8 @@ use Destiny\Common\Utils\Date;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <h3 class="in" data-toggle="collapse" data-target="#broadcast-content">Broadcast</h3>
-        <div id="broadcast-content" class="content content-dark collapse show">
+        <h3 class="collapsed" data-toggle="collapse" data-target="#broadcast-content">Broadcast</h3>
+        <div id="broadcast-content" class="content content-dark collapse">
             <form class="form" action="/admin/chat/broadcast" role="form">
                 <div class="ds-block">
                     <div class="form-group">
@@ -52,7 +52,33 @@ use Destiny\Common\Utils\Date;
     <?php if(!empty($this->searchIp)): ?>
         <section class="container">
             <div class="content content-dark clearfix">
-                <?php if(!empty($this->usersByIp)): ?>
+                <?php if(!empty($this->users)): ?>
+
+                    <div class="ds-block filter-form" style="display: flex;">
+                        <div class="form-inline" role="form" style="flex: 1;">
+                            <?php if($this->users['totalpages'] > 1): ?>
+                                <ul class="pagination" style="margin: 0 15px 0 0;">
+                                    <li class="page-item">
+                                        <a class="page-link" data-page="1" href="?page=0">First</a>
+                                    </li>
+                                    <?php for($i = max(1, $this->users['page'] - 2); $i <= min($this->users['page'] + 2, $this->users['totalpages']); $i++): ?>
+                                        <li class="page-item <?=($this->users['page'] == $i) ? 'active':''?>">
+                                            <a class="page-link" data-page="<?=$i?>" href="?page=<?=$i?>&amp;ip=<?=Tpl::out($this->searchIp)?>"><?=$i?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <li class="page-item">
+                                        <a class="page-link" data-page="<?=$this->users['totalpages']?>" href="?page=<?=$this->users['totalpages']?>">Last</a>
+                                    </li>
+                                </ul>
+                            <?php endif ?>
+                        </div>
+                        <div class="form-inline" role="form">
+                            <div class="form-group">
+                                <label for="gridSize" class="text-muted">Showing (<?=Tpl::number(count($this->users['list']))?> of <?=Tpl::number($this->users['total'])?>)</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <table class="grid">
                         <thead>
                         <tr>
@@ -61,7 +87,7 @@ use Destiny\Common\Utils\Date;
                         </tr>
                         </thead>
                         <tbody>
-                        <?php foreach($this->usersByIp as $user): ?>
+                        <?php foreach($this->users['list'] as $user): ?>
                             <tr>
                                 <td><a href="/admin/user/<?=$user['userId']?>/edit"><?=Tpl::out($user['username'])?></a></td>
                                 <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
@@ -77,6 +103,7 @@ use Destiny\Common\Utils\Date;
             </div>
         </section>
     <?php endif ?>
+
 </div>
 
 <?php include 'seg/alerts.php' ?>
