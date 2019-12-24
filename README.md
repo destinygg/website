@@ -27,7 +27,7 @@ See [LICENSE.md](LICENSE.md)
 
 ## Getting Started
 
-1. Create the configuration file `cp config/config.dgg.conf config/config.local.conf` and override what you need.
+1. Create the configuration file `cp config/config.local.conf.example config/config.local.conf` and override anything you want to.
 2. Install `docker-compose up -d`
 3. Create and load the database using `docker-compose exec -T db mysql -uroot -pdgg dgg < destiny.gg.sql`
 4. Load Seed Data `docker-compose exec -T db mysql -uroot -pdgg dgg < destiny.gg.data.sql`
