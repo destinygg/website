@@ -23,8 +23,8 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "9380:80"
-      - "9443:443"
+      - "9380:80" # website
+      - "9880:8080" # cdn
     volumes:
       - ./:/var/www
       - ./config/nginx/local/:/etc/nginx/conf.d/

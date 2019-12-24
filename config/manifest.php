@@ -1,5 +1,5 @@
 <?php
-// auto-generated: 1577215046812
+// auto-generated: 1577215467603
 return [
 	"common.vendor.js" => "common.vendor.577ea20b04af95464fb9.js",
 	"runtime.js" => "runtime.60aabece63b63766f770.js",
