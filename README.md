@@ -31,6 +31,7 @@ See [LICENSE.md](LICENSE.md)
 2. Install `docker-compose up -d`
 3. Create and load the database using `docker-compose exec -T db mysql -uroot -pdgg dgg < destiny.gg.sql`
 4. Load Seed Data `docker-compose exec -T db mysql -uroot -pdgg dgg < destiny.gg.data.sql`
+5. Hit `http://127.0.0.1:9380` in your browser
 
 ### Using Docker
 
