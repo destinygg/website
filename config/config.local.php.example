@@ -77,4 +77,9 @@ return [
         'user' => 'root',
         'password' => 'dgg',
     ],
+
+    'cdn' => [
+        'domain' => '127.0.0.1:9880',
+        'protocol' => 'http://'
+    ],
 ];
