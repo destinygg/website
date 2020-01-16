@@ -38,6 +38,7 @@ See [LICENSE.md](LICENSE.md)
 * You can spin down the stack with `docker-compose down`
 * You can boot the stack with `docker-compose up -d`
 * You can see useful nginx & php output with `docker-compose logs -f`
+* You can connect to mysql with `docker-compose exec dgg_mysql mysql -pdgg dgg`
 
 ### Dependencies
 
