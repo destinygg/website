@@ -1,0 +1,75 @@
+version: '3'
+services:
+
+  #PHP Service
+  dgg_php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dgg_php
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - dgg-network
+
+  #Nginx Service
+  dgg_web:
+    image: nginx:alpine
+    container_name: dgg_web
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "9380:80" # website
+      - "9880:8080" # cdn
+    volumes:
+      - ./:/var/www
+      - ./config/nginx/local/:/etc/nginx/conf.d/
+    networks:
+      - dgg-network
+
+  #MySQL Service
+  dgg_mysql:
+    image: mysql:5.7.22
+    container_name: dgg_mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "9306:3306"
+    environment:
+      MYSQL_DATABASE: dgg
+      MYSQL_ROOT_PASSWORD: dgg 
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdatamysql:/var/lib/mysql/
+      - ./config/local.mysql.cnf:/etc/mysql/my.cnf
+    networks:
+      - dgg-network
+        
+  #Redis Service
+  dgg_redis:
+    container_name: dgg_redis
+    image: redis
+    ports:
+      - "9379:6379"
+    volumes:
+      - dbdataredis:/data
+    restart: always
+    networks:
+      - dgg-network
+
+#Docker Networks
+networks:
+  dgg-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdatamysql:
+    driver: local
+  dbdataredis:
+    driver: local

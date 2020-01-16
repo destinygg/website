@@ -10,6 +10,8 @@ See [LICENSE.md](LICENSE.md)
 
 ### Building
 
+[docker](https://www.docker.com/) Docker
+
 [nodejs](http://nodejs.org/) Dependency manager
 
 [webpack](https://webpack.github.io/) Project builder
@@ -25,11 +27,18 @@ See [LICENSE.md](LICENSE.md)
 
 ## Getting Started
 
+1. Create the configuration file `cp config/config.local.conf.example config/config.local.conf` and override anything you want to.
+2. Install `docker-compose up -d`
+3. Create and load the database using `docker-compose exec -T db mysql -uroot -pdgg dgg < destiny.gg.sql`
+4. Load Seed Data `docker-compose exec -T db mysql -uroot -pdgg dgg < destiny.gg.data.sql`
+5. Hit `http://127.0.0.1:9380` in your browser
 
-Create the configuration file "config/config.local.php" and override what you need.
+### Using Docker
 
-Create and load the database using `destiny.gg.sql`
-
+* You can spin down the stack with `docker-compose down`
+* You can boot the stack with `docker-compose up -d`
+* You can see useful nginx & php output with `docker-compose logs -f`
+* You can connect to mysql with `docker-compose exec dgg_mysql mysql -pdgg dgg`
 
 ### Dependencies
 
