@@ -70,32 +70,32 @@ return [
     'merch' => [
         [
             'title' => 'DuckerZ Shirt',
-            'image' => 'dbh-duckerz',
+            'image' => 'merch-duckerz-shirt',
             'url' => 'https://dggstore.com/products/copy-of-cinnabonnelli-shirt-unisex-short-sleeve-tee',
         ],
         [
             'title' => 'WeebiDesti Shirt',
-            'image' => 'dbh-cocoa',
+            'image' => 'merch-weebidesti-shirt',
             'url' => 'https://dggstore.com/products/weebidesti-unisex-short-sleeve-tee',
         ],
         [
             'title' => 'The Original Memer Shirt',
-            'image' => 'dbh-hood1',
+            'image' => 'merch-the-original-memer-shirt',
             'url' => 'https://dggstore.com/products/the-original-memer-unisex-short-sleeve-tee',
         ],
         [
             'title' => 'Destinygg Hoodie',
-            'image' => 'dbh-shirt2',
+            'image' => 'merch-destinygg-hoodie',
             'url' => 'https://dggstore.com/products/destiny-unisex-full-zip-hooded-sweatshirt',
         ],
         [
             'title' => 'CinnaBonnelli Shirt',
-            'image' => 'dbh-shirt1',
+            'image' => 'merch-cinnabonnelli-shirt',
             'url' => 'https://dggstore.com/products/cinnabonnelli-shirt-unisex-short-sleeve-tee',
         ],
         [
             'title' => 'LeRuse Shirt',
-            'image' => 'dbh-shirt3',
+            'image' => 'merch-leruse-shirt',
             'url' => 'https://dggstore.com/products/leruse-unisex-short-sleeve-tee',
         ],
     ]
