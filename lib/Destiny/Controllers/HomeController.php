@@ -16,39 +16,6 @@ use Destiny\Twitch\TwitchWebHookService;
  */
 class HomeController {
 
-    private $merchandise = [
-        [
-            'title' => 'DuckerZ Shirt',
-            'image' => 'dbh-duckerz',
-            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/duckerz-shirt/1101862/',
-        ],
-        [
-            'title' => 'Hot Cocoa Shirt!',
-            'image' => 'dbh-cocoa',
-            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/hot-cocoa-shirt/1081128/',
-        ],
-        [
-            'title' => 'The CinnaBonnelli Hoodie',
-            'image' => 'dbh-hood1',
-            'url' => 'https://www.designbyhumans.com/shop/pullover-hoodie/the-cinnabonnelli-hoodie/1052252/',
-        ],
-        [
-            'title' => 'The Original Memer Shirt',
-            'image' => 'dbh-shirt2',
-            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/the-original-memer-shirt/1046704/',
-        ],
-        [
-            'title' => 'CinnaBonnelli Shirt!',
-            'image' => 'dbh-shirt1',
-            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/cinnabonnelli-shirt/1051248/',
-        ],
-        [
-            'title' => 'The Leruse',
-            'image' => 'dbh-shirt3',
-            'url' => 'https://www.designbyhumans.com/shop/t-shirt/men/the-leruse/1046720/',
-        ],
-    ];
-
     /**
      * @Route ("/")
      * @Route ("/home")
@@ -61,7 +28,7 @@ class HomeController {
         $model->playlist = $cache->fetch ( 'youtubeplaylist' );
         $model->broadcasts = $cache->fetch ( 'pastbroadcasts' );
         $model->libsynfeed = $cache->fetch ( 'libsynfeed' );
-        $model->merchandise = $this->merchandise;
+        $model->merchandise = Config::$a['merch'];
         return 'home';
     }
 
