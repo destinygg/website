@@ -65,5 +65,38 @@ return [
         '/podcastrss' => 'https://destiny.libsyn.com/rss',
         '/shop' => 'https://www.designbyhumans.com/shop/Destiny',
         '/discord' => 'https://discordapp.com/invite/destiny',
+    ],
+
+    'merch' => [
+        [
+            'title' => 'DuckerZ Shirt',
+            'image' => 'merch-duckerz-shirt',
+            'url' => 'https://dggstore.com/products/copy-of-cinnabonnelli-shirt-unisex-short-sleeve-tee',
+        ],
+        [
+            'title' => 'WeebiDesti Shirt',
+            'image' => 'merch-weebidesti-shirt',
+            'url' => 'https://dggstore.com/products/weebidesti-unisex-short-sleeve-tee',
+        ],
+        [
+            'title' => 'The Original Memer Shirt',
+            'image' => 'merch-the-original-memer-shirt',
+            'url' => 'https://dggstore.com/products/the-original-memer-unisex-short-sleeve-tee',
+        ],
+        [
+            'title' => 'Destinygg Hoodie',
+            'image' => 'merch-destinygg-hoodie',
+            'url' => 'https://dggstore.com/products/destiny-unisex-full-zip-hooded-sweatshirt',
+        ],
+        [
+            'title' => 'CinnaBonnelli Shirt',
+            'image' => 'merch-cinnabonnelli-shirt',
+            'url' => 'https://dggstore.com/products/cinnabonnelli-shirt-unisex-short-sleeve-tee',
+        ],
+        [
+            'title' => 'LeRuse Shirt',
+            'image' => 'merch-leruse-shirt',
+            'url' => 'https://dggstore.com/products/leruse-unisex-short-sleeve-tee',
+        ],
     ]
 ];
