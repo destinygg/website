@@ -15,9 +15,17 @@ use Destiny\Common\Utils\Http;
  * @method static TwitchAuthHandler instance()
  */
 class TwitchAuthHandler extends AbstractAuthHandler {
+
+    const GRANT_TYPE_USER = 'authorization_code';
+    const GRANT_TYPE_APP = 'client_credentials';
   
     private $authBase = 'https://id.twitch.tv/oauth2';
     public $authProvider = AuthProvider::TWITCH;
+
+    public function exchangeCode(array $params): OAuthResponse {
+        $params['grant_type'] = self::GRANT_TYPE_USER;
+        return $this->mapTokenResponse($this->getToken($params));
+    }
 
     public function getAuthorizationUrl($scope = ['openid', 'user:read:email'], $claims = '{"userinfo":{"picture":null, "email":null, "email_verified":null, "preferred_username": null}}'): string {
         $conf = $this->getAuthProviderConf();
@@ -35,21 +43,32 @@ class TwitchAuthHandler extends AbstractAuthHandler {
      * @throws Exception
      */
     function getToken(array $params): array {
-        FilterParams::required($params, 'code');
+        FilterParams::required($params, 'grant_type');
+
         $conf = $this->getAuthProviderConf();
         $client = $this->getHttpClient();
+
+        # Baseline params for both user and app tokens.
+        $form_params = [
+            'grant_type' => $params['grant_type'],
+            'client_id' => $conf['client_id'],
+            'client_secret' => $conf['client_secret']
+        ];
+
+        if ($params['grant_type'] == self::GRANT_TYPE_USER) {
+            FilterParams::required($params, 'code');
+            $form_params += [
+                'redirect_uri' => $conf['redirect_uri'],
+                'code' => $params['code']
+            ];
+        }
+
         $response = $client->post("$this->authBase/token", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
                 'Client-ID' => $conf['client_id']
             ],
-            'form_params' => [
-                'grant_type' => 'authorization_code',
-                'client_id' => $conf['client_id'],
-                'client_secret' => $conf['client_secret'],
-                'redirect_uri' => $conf['redirect_uri'],
-                'code' => $params['code']
-            ]
+            'form_params' => $form_params
         ]);
         if($response->getStatusCode() == Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
