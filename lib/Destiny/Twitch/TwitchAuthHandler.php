@@ -125,4 +125,21 @@ class TwitchAuthHandler extends AbstractAuthHandler {
         // TODO Implement
     }
 
+    /**
+     * Validates a token using the `/validate` OAuth endpoint. A response with
+     * status code `200` indicates the token is valid.
+     *
+     * @see https://dev.twitch.tv/docs/authentication/#validating-requests
+     */
+    function validateToken(string $accessToken): bool {
+        $client = $this->getHttpClient();
+        $response = $client->get("$this->authBase/validate", [
+            'headers' => [
+                'User-Agent' => Config::userAgent(),
+                'Authorization' => 'OAuth ' . $accessToken
+            ]
+        ]);
+
+        return $response->getStatusCode() == Http::STATUS_OK;
+    }
 }
