@@ -11,6 +11,8 @@ interface AuthenticationHandler {
     function renewToken(string $refreshToken): array;
 
     /**
+     * Exchange an OAuth code for a user access token.
+     *
      * @throws Exception
      */
     function exchangeCode(array $params): OAuthResponse;
