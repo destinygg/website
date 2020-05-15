@@ -11,6 +11,7 @@ use Destiny\Common\Service;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Utils\Http;
+use Destiny\Twitch\TwitchAuthHandler;
 use function GuzzleHttp\json_decode;
 
 /**
@@ -33,6 +34,7 @@ class TwitchWebHookService extends Service {
 
     const CACHE_KEY_PREFIX = 'twitch.stream.';
     const CACHE_KEY_STREAM_STATUS = 'streamstatus';
+    const CACHE_KEY_ACCESS_TOKEN = 'accesstoken';
 
     /**
      * @see https://dev.twitch.tv/docs/api/webhooks-reference/#subscribe-tounsubscribe-from-events
@@ -50,7 +52,8 @@ class TwitchWebHookService extends Service {
         $response = $client->post(self::API_BASE . '/webhooks/hub', [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Client-ID' => $conf['client_id']
+                'Client-ID' => $conf['client_id'],
+                'Authorization' => 'Bearer ' . $this->getAppAccessToken()
             ],
             'form_params' => [
                 'hub.mode' => $mode,
@@ -169,7 +172,23 @@ class TwitchWebHookService extends Service {
         return $gets['hub_challenge'] ?? 'none';
     }
 
+    /**
+     * Returns an app access token. If not in cache or expired, gets a new one and caches it.
+     */
+    private function getAppAccessToken(): string {
+        $cache = Application::getNsCache();
+        $twitchAuthHandler = TwitchAuthHandler::instance();
 
+        $accessToken = $cache->fetch(self::CACHE_KEY_ACCESS_TOKEN);
+        if (!$accessToken || !($twitchAuthHandler->validateToken($accessToken))) {
+            Log::info('App access token not in cache or expired. Getting a new one.');
+            $response = $twitchAuthHandler->getToken(['grant_type' => TwitchAuthHandler::GRANT_TYPE_APP]);
+            $accessToken = $response['access_token'];
+            $cache->save(self::CACHE_KEY_ACCESS_TOKEN, $accessToken);
+        }
+
+        return $accessToken;
+    }
 }
 
 class TwitchWebHookException extends Exception {}
