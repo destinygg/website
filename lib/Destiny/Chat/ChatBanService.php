@@ -183,6 +183,7 @@ class ChatBanService extends Service {
                     ) AND
                     b.userid       = u.userId AND
                     b.targetuserid = tu.userId
+                GROUP BY targetuserid
                 ORDER BY b.id DESC
             ");
             $stmt->execute();
