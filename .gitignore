@@ -10,6 +10,7 @@ config/config.local.php
 
 /config/cert_key.pem
 /config/sdk_config.ini
+/config/manifest.php
 
 /composer.lock
 /deployment.properties
@@ -25,13 +26,9 @@ config/config.local.php
 /config/nick.blacklist.php
 /composer.phar
 /phpunit.phar
-/package-lock.json
 /config/cert.pem
 
-/static/img
-/static/cache
-/static/emotes
-/static/flairs
+/static/
 
 /config/*.pem
 /config/*.csr
