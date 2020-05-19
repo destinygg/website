@@ -33,108 +33,120 @@ use Destiny\Commerce\SubscriptionStatus;
                 <input type="hidden" name="id" value="<?=Tpl::out($this->user['userId'])?>" />
 
                 <div class="ds-block">
-                    <div class="form-group">
-                        <label class="control-label" for="inputUsername">Status</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="status" id="inputStatus" value="<?=Tpl::out($this->user['userStatus'])?>" placeholder="status" disabled>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label class="control-label" for="inputUsername">Status</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" name="status" id="inputStatus" value="<?=Tpl::out($this->user['userStatus'])?>" placeholder="status" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label" for="inputEmail">Email</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->user['email'])?>" placeholder="email">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label" for="inputUsername">Username / Nickname</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" name="username" id="inputUsername" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username">
+                                    <span class="help-block">Normally the requirements are that the nick should not begin with a letter that an emote begins with, plus it can contain only A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters. Admins do not have such restrictions.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Country</label>
+                                <?php $countries = Country::getCountries(); ?>
+                                <?php $code = $this->user['country']; ?>
+                                <select name="country" class="form-control">
+                                    <option value="">Select your country</option>
+                                    <option value="">&nbsp;</option>
+                                    <?php foreach($countries as $country): ?>
+                                    <option value="<?=$country['code']?>" <?php if($code == $country['code']): ?>selected="selected" <?php endif;?>><?=Tpl::out($country['label'])?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label>Twitch Subscriber</label>
+                                <select class="form-control" name="istwitchsubscriber">
+                                    <option value="1"<?php if($this->user['istwitchsubscriber'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                                    <option value="0"<?php if($this->user['istwitchsubscriber'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                                </select>
+                                <span class="help-block">Under normal conditions this is set automatically.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Allow Chatting</label>
+                                <select class="form-control" name="allowChatting">
+                                    <option value="1"<?php if($this->user['allowChatting'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                                    <option value="0"<?php if($this->user['allowChatting'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                                </select>
+                                <span class="help-block">If 'No' the user will not automatically login to chat. (One can still use Login keys)</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Allow (a) Name Change</label>
+                                <select class="form-control" name="allowNameChange">
+                                    <option value="1"<?php if($this->user['allowNameChange'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
+                                    <option value="0"<?php if($this->user['allowNameChange'] == 0):?> selected="selected"<?php endif;?>>No</option>
+                                </select>
+                                <span class="help-block">If 'Yes' the user will be prompted to change their username in their profile; after a name change is done, this value is set to 'No'.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Accept Gifts</label>
+                                <select class="form-control" name="allowGifting">
+                                    <option value="1"<?php if($this->user['allowGifting'] == 1):?> selected="selected"<?php endif;?>>Yes, accept gifts</option>
+                                    <option value="0"<?php if($this->user['allowGifting'] == 0):?> selected="selected"<?php endif;?>>No, do not accept gifts</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="control-label" for="inputEmail">Email</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->user['email'])?>" placeholder="email">
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <h4 style="margin: 2em 0 0 0;">Discord</h4>
+                            <hr style="margin-top: 0.3em;" />
+
+                            <div class="form-group">
+                                <label class="control-label" for="inputEmail">Discord name</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" name="discordname" id="inputDiscordname" value="<?=Tpl::out($this->user['discordname'])?>" placeholder="Discord name">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label" for="inputEmail">Discord UUID</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" name="discorduuid" id="inputDiscorduuid" value="<?=Tpl::out($this->user['discorduuid'])?>" placeholder="Discord UUID">
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="control-label" for="inputUsername">Username / Nickname</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="username" id="inputUsername" value="<?=Tpl::out($this->user['username'])?>" placeholder="Username">
-                            <span class="help-block">Normally the requirements are that the nick should not begin with a letter that an emote begins with, plus it can contain only A-z 0-9 and underscores. Must contain at least 3 and at most 20 characters. Admins do not have such restrictions.</span>
-                        </div>
-                    </div>
+                        <div class="col-sm-12 col-md-6">
+                            <h4 style="margin: 2em 0 0 0;">Minecraft</h4>
+                            <hr style="margin-top: 0.3em;" />
 
-                    <div class="form-group">
-                        <label>Country</label>
-                        <?php $countries = Country::getCountries(); ?>
-                        <?php $code = $this->user['country']; ?>
-                        <select name="country" class="form-control">
-                            <option value="">Select your country</option>
-                            <option value="">&nbsp;</option>
-                            <?php foreach($countries as $country): ?>
-                            <option value="<?=$country['code']?>" <?php if($code == $country['code']): ?>selected="selected" <?php endif;?>><?=Tpl::out($country['label'])?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                            <div class="form-group">
+                                <label class="control-label" for="inputEmail">Minecraft name</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" name="minecraftname" id="inputMinecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name">
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label>Twitch Subscriber</label>
-                        <select class="form-control" name="istwitchsubscriber">
-                            <option value="1"<?php if($this->user['istwitchsubscriber'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
-                            <option value="0"<?php if($this->user['istwitchsubscriber'] == 0):?> selected="selected"<?php endif;?>>No</option>
-                        </select>
-                        <span class="help-block">Under normal conditions this is set automatically.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Allow Chatting</label>
-                        <select class="form-control" name="allowChatting">
-                            <option value="1"<?php if($this->user['allowChatting'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
-                            <option value="0"<?php if($this->user['allowChatting'] == 0):?> selected="selected"<?php endif;?>>No</option>
-                        </select>
-                        <span class="help-block">If 'No' the user will not automatically login to chat. (One can still use Login keys)</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Allow (a) Name Change</label>
-                        <select class="form-control" name="allowNameChange">
-                            <option value="1"<?php if($this->user['allowNameChange'] == 1):?> selected="selected"<?php endif;?>>Yes</option>
-                            <option value="0"<?php if($this->user['allowNameChange'] == 0):?> selected="selected"<?php endif;?>>No</option>
-                        </select>
-                        <span class="help-block">If 'Yes' the user will be prompted to change their username in their profile; after a name change is done, this value is set to 'No'.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Accept Gifts</label>
-                        <select class="form-control" name="allowGifting">
-                            <option value="1"<?php if($this->user['allowGifting'] == 1):?> selected="selected"<?php endif;?>>Yes, accept gifts</option>
-                            <option value="0"<?php if($this->user['allowGifting'] == 0):?> selected="selected"<?php endif;?>>No, do not accept gifts</option>
-                        </select>
-                    </div>
-
-
-                    <h4 style="margin: 2em 0 0 0;">Discord</h4>
-                    <hr style="margin-top: 0.3em;" />
-
-                    <div class="form-group">
-                        <label class="control-label" for="inputEmail">Discord name</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="discordname" id="inputDiscordname" value="<?=Tpl::out($this->user['discordname'])?>" placeholder="Discord name">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label" for="inputEmail">Discord UUID</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="discorduuid" id="inputDiscorduuid" value="<?=Tpl::out($this->user['discorduuid'])?>" placeholder="Discord UUID">
-                        </div>
-                    </div>
-
-                    <h4 style="margin: 2em 0 0 0;">Minecraft</h4>
-                    <hr style="margin-top: 0.3em;" />
-
-                    <div class="form-group">
-                        <label class="control-label" for="inputEmail">Minecraft name</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="minecraftname" id="inputMinecraftname" value="<?=Tpl::out($this->user['minecraftname'])?>" placeholder="Minecraft name">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label" for="inputEmail">Minecraft UUID</label>
-                        <div class="controls">
-                            <input type="text" class="form-control" name="minecraftuuid" id="inputMinecraftuuid" value="<?=Tpl::out($this->user['minecraftuuid'])?>" placeholder="Minecraft UUID">
+                            <div class="form-group">
+                                <label class="control-label" for="inputEmail">Minecraft UUID</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" name="minecraftuuid" id="inputMinecraftuuid" value="<?=Tpl::out($this->user['minecraftuuid'])?>" placeholder="Minecraft UUID">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
