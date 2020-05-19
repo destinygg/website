@@ -150,6 +150,43 @@ use Destiny\Commerce\SubscriptionStatus;
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <h4 style="margin: 2em 0 0 0;">Flairs</h4>
+                            <hr style="margin-top: 0.3em;" />
+
+                            <div data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
+                                <?php foreach($this->features as $featureName => $f): ?>
+                                    <?php if(!in_array($f['featureName'], UserFeature::$UNASSIGNABLE)): ?>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" name="features[]" value="<?=$f['featureName']?>" <?=(in_array($featureName, $this->user['features']))?'checked="checked"':''?>>
+                                                <?=Tpl::out($f['featureLabel'])?>
+                                            </label>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-6">
+                            <h4 style="margin: 2em 0 0 0;">Roles</h4>
+                            <hr style="margin-top: 0.3em;" />
+
+                            <div data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
+                                <?php foreach($this->roles as $role): ?>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" name="roles[]" value="<?=$role['roleName']?>" <?=(in_array($role['roleName'], $this->user['roles']))?'checked="checked"':''?> <?= !Session::hasRole(UserRole::ADMIN) ? 'disabled' : '' ?>>
+                                            <?=Tpl::out($role['roleLabel'])?>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                                <span class="help-block">Only admins can assign roles.</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="form-actions">
@@ -160,46 +197,6 @@ use Destiny\Commerce\SubscriptionStatus;
             </form>
         </div>
     </section>
-
-    <section class="container">
-        <h3 class="collapsed" data-toggle="collapse" data-target="#flairs-content">Flairs</h3>
-        <div id="flairs-content" class="content content-dark clearfix collapse">
-            <div class="ds-block">
-                <div id="flairs-selection" data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
-                    <?php foreach($this->features as $featureName => $f): ?>
-                        <?php if(!in_array($f['featureName'], UserFeature::$UNASSIGNABLE)): ?>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="features[]" value="<?=$f['featureName']?>" <?=(in_array($featureName, $this->user['features']))?'checked="checked"':''?>>
-                                    <?=Tpl::out($f['featureLabel'])?>
-                                </label>
-                            </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <?php if(Session::hasRole(UserRole::ADMIN)): ?>
-        <section class="container">
-            <h3 class="collapsed" data-toggle="collapse" data-target="#roles-content">Roles</h3>
-            <div id="roles-content" class="content content-dark clearfix collapse">
-                <div class="ds-block">
-                    <div id="roles-selection" data-user="<?=Tpl::out($this->user['userId'])?>" class="form-group">
-                        <?php foreach($this->roles as $role): ?>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="roles[]" value="<?=$role['roleName']?>" <?=(in_array($role['roleName'], $this->user['roles']))?'checked="checked"':''?>>
-                                    <?=Tpl::out($role['roleLabel'])?>
-                                </label>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
 
     <section class="container">
         <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscriptions</h3>
