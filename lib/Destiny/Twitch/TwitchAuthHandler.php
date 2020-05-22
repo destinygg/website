@@ -21,6 +21,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
   
     private $authBase = 'https://id.twitch.tv/oauth2';
     public $authProvider = AuthProvider::TWITCH;
+    public $userProfileBaseUrl = 'https://www.twitch.tv';
 
     public function exchangeCode(array $params): OAuthResponse {
         $params['grant_type'] = self::GRANT_TYPE_USER;

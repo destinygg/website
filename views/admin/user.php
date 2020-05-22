@@ -432,7 +432,7 @@ use Destiny\Commerce\SubscriptionStatus;
                             <tr>
                                 <td><a onclick="return confirm('Are you sure?')" href="/admin/user/<?=$this->user['userId']?>/auth/<?= $auth['id'] ?>/delete" class="btn btn-danger btn-sm btn-post">Delete</a></td>
                                 <td><?= $auth['authProvider'] ?></td>
-                                <td><?= (!empty($auth['authDetail'])) ? Tpl::out($auth['authDetail']):Tpl::out($auth['authId']) ?></td>
+                                <td><?= !empty($auth['authDetail']) ? Tpl::userProfileElement($auth['authProvider'], $auth['authDetail']) : Tpl::out($auth['authId']) ?></td>
                                 <td><?=Tpl::out($auth['authEmail'])?></td>
                                 <td><?=Tpl::moment(Date::getDateTime($auth['createdDate']), Date::STRING_FORMAT_YEAR)?></td>
                                 <td><?=Tpl::moment(Date::getDateTime($auth['modifiedDate']), Date::STRING_FORMAT_YEAR)?></td>

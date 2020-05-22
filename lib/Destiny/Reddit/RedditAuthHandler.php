@@ -17,6 +17,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
     private $apiBase = 'https://ssl.reddit.com/api/v1';
     private $authBase = 'https://oauth.reddit.com/api/v1';
     public $authProvider = AuthProvider::REDDIT;
+    public $userProfileBaseUrl = 'https://www.reddit.com/u';
 
     /**
      * @return string

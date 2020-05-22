@@ -2,6 +2,7 @@
 namespace Destiny\Common\Utils;
 
 use DateTime;
+use Destiny\Common\Authentication\AuthenticationService;
 use Destiny\Common\Config;
 use Exception;
 
@@ -71,6 +72,17 @@ class Tpl {
             $n['link'] = $url;
             return $n;
         }, Config::$a['iplookupservices']);
+    }
+
+    public static function userProfileElement(string $authProviderName, string $username): string {
+        $authService = AuthenticationService::instance();
+        $authHandler = $authService->getLoginAuthHandlerByType($authProviderName);
+
+        $sanitizedUsername = htmlentities($username);
+        $profileUrl = $authHandler->getUserProfileUrl($sanitizedUsername);
+
+        // No need to use link tags if there is no profile URL.
+        return !empty($profileUrl) ? "<a href=\"$profileUrl\" target=\"_blank\">$sanitizedUsername</a>" : $sanitizedUsername;
     }
 
 }

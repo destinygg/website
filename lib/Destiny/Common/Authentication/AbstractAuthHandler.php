@@ -12,6 +12,7 @@ abstract class AbstractAuthHandler extends Service implements AuthenticationHand
 
     private $httpClient;
     public $authProvider;
+    public $userProfileBaseUrl;
 
     /**
      * @throws Exception
@@ -50,6 +51,11 @@ abstract class AbstractAuthHandler extends Service implements AuthenticationHand
 
     public function isTokenExpired(array $auth): bool {
         return Date::getDateTimePlusSeconds($auth['createdDate'], intval($auth['expiresIn'] ?? '3600')) < Date::now();
+    }
+
+    public function getUserProfileUrl(string $username): string {
+        // Assume the authenticator doesn't have profile pages if `$userProfileBaseUrl` is empty.
+        return !empty($this->userProfileBaseUrl) ? "$this->userProfileBaseUrl/$username" : null;
     }
 
 }
