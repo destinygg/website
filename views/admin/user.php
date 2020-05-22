@@ -343,11 +343,12 @@ use Destiny\Commerce\SubscriptionStatus;
                     <?php foreach($this->user['ips'] as $ip): ?>
                         <tr>
                             <td>
-                                <div class="dropdown mt-1 mb-1">
-                                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?=Tpl::out($ip)?></button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <?php foreach (Tpl::ipLookupLink($ip) as $v): ?>
-                                            <a target="_blank" class="dropdown-item" href="<?=$v['link']?>"><?=Tpl::out($v['label'])?></a>
+                                <span class="mr-2"><?= Tpl::out($ip) ?></span>
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-search"></i></button>
+                                    <div class="dropdown-menu">
+                                        <?php foreach(Tpl::ipLookupLink($ip) as $lookup): ?>
+                                            <a class="dropdown-item" href="<?= Tpl::out($lookup['link']) ?>" target="_blank"><?= Tpl::out($lookup['label']) ?></a>
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
