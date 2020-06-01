@@ -76,7 +76,7 @@ class AdminUserController {
         $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($userId));
         $model->features = $userService->getAllFeatures();
         $model->roles = $this->getAllowedRoles();
-        $model->ban = $chatBanService->getUserActiveBan($userId);
+        $model->bans = $chatBanService->getBansForUser($userId, 10);
         $model->authSessions = $userAuthService->getByUserId($userId);
         $model->subscriptions = $subscriptionsService->findByUserId($userId);
         $model->gifts = $subscriptionsService->findCompletedByGifterId($userId);
