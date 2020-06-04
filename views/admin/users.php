@@ -42,7 +42,7 @@ use Destiny\Common\Utils\Date;
                         <select name="role" class="form-control">
                             <option value="" <?=(!$this->role ? 'selected':'')?>>Any</option>
                             <?php foreach ($this->roles as $role): ?>
-                                <option <?=($role['roleName'] == $this->role) ? 'selected':''?> value="<?=Tpl::out($role['roleName'])?>"><?=Tpl::out($role['roleLabel'])?></option>
+                                <option <?=($role['roleId'] == $this->role) ? 'selected':''?> value="<?=Tpl::out($role['roleId'])?>"><?=Tpl::out($role['roleLabel'])?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
