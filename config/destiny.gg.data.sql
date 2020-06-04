@@ -16,29 +16,29 @@ INSERT INTO `dfl_roles` (roleId, roleName, roleLabel) VALUES
 INSERT INTO `dfl_users_roles` (userId, roleId) VALUES
 (1, 1),(1, 2),(1, 3),(1, 6),(1, 7),(1, 8);
 
-INSERT INTO `dfl_features` (`featureId`, `featureName`, `featureLabel`) VALUES
-(1, 'protected', 'Protected'),
-(2, 'subscriber', 'Subscriber'),
-(3, 'vip', 'VIP'),
-(4, 'moderator', 'Moderator'),
-(5, 'admin', 'Admin'),
-(6, 'bot', 'Bot'),
-(7, 'flair1', 'Subscriber Tier 2'),
-(8, 'flair2', 'Notable'),
-(9, 'flair3', 'Subscriber Tier 3'),
-(10, 'flair4', 'Trusted'),
-(11, 'flair5', 'Contributor'),
-(12, 'flair6', 'Composition Winner'),
-(13, 'flair7', 'Eve'),
-(14, 'flair8', 'Subscriber Tier 4'),
-(15, 'flair10', 'StarCraft 2'),
-(16, 'flair11', 'Bot 2'),
-(17, 'flair12', 'Broadcaster'),
-(18, 'flair14', 'Minecraft VIP'),
-(19, 'flair15', 'DGG Bday'),
-(20, 'flair19', 'DGG Shirt Designer'),
-(21, 'flair13', 'Subscriber Tier 1'),
-(22, 'flair9', 'Twitch Subscriber');
+INSERT INTO `dfl_features` (`featureId`, `featureName`, `featureLabel`, `locked`, `hidden`, `priority`, `createdDate`, `modifiedDate`) VALUES
+(1, 'protected', 'Protected', 0, 1, 50, NOW(), NOW()),
+(2, 'subscriber', 'Subscriber', 0, 1, 50, NOW(), NOW()),
+(3, 'vip', 'VIP', 0, 1, 50, NOW(), NOW()),
+(4, 'moderator', 'Moderator', 0, 1, 50, NOW(), NOW()),
+(5, 'admin', 'Admin', 0, 1, 50, NOW(), NOW()),
+(6, 'bot', 'Bot', 0, 1, 50, NOW(), NOW()),
+(7, 'flair1', 'Subscriber Tier 2', 0, 1, 50, NOW(), NOW()),
+(8, 'flair2', 'Notable', 0, 1, 50, NOW(), NOW()),
+(9, 'flair3', 'Subscriber Tier 3', 0, 1, 50, NOW(), NOW()),
+(10, 'flair4', 'Trusted', 0, 1, 50, NOW(), NOW()),
+(11, 'flair5', 'Contributor', 0, 1, 50, NOW(), NOW()),
+(12, 'flair6', 'Composition Winner', 0, 1, 50, NOW(), NOW()),
+(13, 'flair7', 'Eve', 0, 1, 50, NOW(), NOW()),
+(14, 'flair8', 'Subscriber Tier 4', 0, 1, 50, NOW(), NOW()),
+(15, 'flair10', 'StarCraft 2', 0, 1, 50, NOW(), NOW()),
+(16, 'flair11', 'Bot 2', 0, 1, 50, NOW(), NOW()),
+(17, 'flair12', 'Broadcaster', 0, 1, 50, NOW(), NOW()),
+(18, 'flair14', 'Minecraft VIP', 0, 1, 50, NOW(), NOW()),
+(19, 'flair15', 'DGG Bday', 0, 1, 50, NOW(), NOW()),
+(20, 'flair19', 'DGG Shirt Designer', 0, 1, 50, NOW(), NOW()),
+(21, 'flair13', 'Subscriber Tier 1', 0, 1, 50, NOW(), NOW()),
+(22, 'flair9', 'Twitch Subscriber', 0, 1, 50, NOW(), NOW());
 
 INSERT INTO `themes` (`id`,`prefix`,`label`,`active`,`color`,`createdDate`,`modifiedDate`) VALUES
 (1,'destiny','Dgg',1,'#1e1e1e','2019-09-07 09:54:41','2019-09-08 18:06:24'),
