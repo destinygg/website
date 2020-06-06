@@ -405,8 +405,14 @@ use Destiny\Commerce\SubscriptionStatus;
                                     <?php endif; ?>
                                 </td>
                                 <td><?= Tpl::moment(Date::getDateTime($ban['starttimestamp']), Date::STRING_FORMAT) ?></td>
-                                <td><?= !$ban['endtimestamp'] ? 'Permanent' : Tpl::moment(Date::getDateTime($ban['endtimestamp']), Date::STRING_FORMAT) ?></td>
-                                <td><a class="btn btn-primary btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/<?= $ban['id'] ?>/edit">Edit</a><a class="btn btn-danger btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/remove" onclick="return confirm('Are you sure?');">Remove</a></td>
+                                <td>
+                                    <?= !$ban['endtimestamp'] ? 'Permanent' : Tpl::moment(Date::getDateTime($ban['endtimestamp']), Date::STRING_FORMAT) ?><br>
+                                </td>
+                                <td>
+                                    <?php if ($ban['active']): ?>
+                                        <a class="btn btn-primary btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/<?= $ban['id'] ?>/edit">Edit</a><a class="btn btn-danger btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/remove" onclick="return confirm('Are you sure?');">Remove</a>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -418,7 +424,10 @@ use Destiny\Commerce\SubscriptionStatus;
             <?php endif; ?>
 
             <div class="ds-block">
-                <a href="/admin/user/<?= $this->user['userId'] ?>/ban" class="btn btn-danger">Ban User</a>
+                <a href="/admin/user/<?= $this->user['userId'] ?>/ban" class="btn btn-danger mr-2 <?= $this->hasActiveBan ? 'disabled' : '' ?>">Ban User</a>
+                <?php if($this->hasActiveBan): ?>
+                    <span class="help-block">This user already has an active ban.</span>
+                <?php endif; ?>
             </div>
         </div>
     </section>

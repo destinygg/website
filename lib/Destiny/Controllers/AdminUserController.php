@@ -76,11 +76,14 @@ class AdminUserController {
         $model->smurfs = $userService->getUsersByUserIds($redisService->findUserIdsByUsersIp($userId));
         $model->features = $userService->getAllFeatures();
         $model->roles = $this->getAllowedRoles();
-        $model->bans = $chatBanService->getBansForUser($userId, 10);
         $model->authSessions = $userAuthService->getByUserId($userId);
         $model->subscriptions = $subscriptionsService->findByUserId($userId);
         $model->gifts = $subscriptionsService->findCompletedByGifterId($userId);
         $model->deleted = $userService->getUserDeletedByUserId($userId);
+
+        $bans = $chatBanService->getBansForUser($userId, 10);
+        $model->bans = $bans;
+        $model->hasActiveBan = !empty($bans) && (count(array_filter($bans, function($ban) { return $ban['active']; })) > 0);
 
         $gifters = [];
         $recipients = [];

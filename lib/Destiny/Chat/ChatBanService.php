@@ -231,7 +231,8 @@ class ChatBanService extends Service {
                     b.ipaddress,
                     b.reason,
                     b.starttimestamp,
-                    b.endtimestamp
+                    b.endtimestamp,
+                    IF(b.endtimestamp IS NULL OR b.endtimestamp >= NOW(), 1, 0) as active
                   FROM
                     bans AS b
                     INNER JOIN dfl_users AS u ON u.userId = b.userid
