@@ -410,7 +410,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                 </td>
                                 <td>
                                     <?php if ($ban['active']): ?>
-                                        <a class="btn btn-primary btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/<?= $ban['id'] ?>/edit">Edit</a><a class="btn btn-danger btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/remove" onclick="return confirm('Are you sure?');">Remove</a>
+                                        <a class="btn btn-primary btn-sm mr-2" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/<?= $ban['id'] ?>/edit"><i class="fas fa-fw fa-edit"></i></a><a class="btn btn-danger btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/remove" onclick="return confirm('Are you sure?');"><i class="fas fa-fw fa-trash"></i></a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -424,7 +424,7 @@ use Destiny\Commerce\SubscriptionStatus;
             <?php endif; ?>
 
             <div class="ds-block">
-                <a href="/admin/user/<?= $this->user['userId'] ?>/ban" class="btn btn-danger mr-2 <?= $this->hasActiveBan ? 'disabled' : '' ?>">Ban User</a>
+                <a href="/admin/user/<?= $this->user['userId'] ?>/ban" class="btn btn-danger mr-2 <?= $this->hasActiveBan ? 'disabled' : '' ?>"><i class="fas fa-fw fa-gavel"></i> Ban User</a>
                 <?php if($this->hasActiveBan): ?>
                     <span class="help-block">This user already has an active ban.</span>
                 <?php endif; ?>
