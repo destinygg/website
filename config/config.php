@@ -18,7 +18,10 @@ return [
     'allowImpersonation' => false,  // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
 
     'embed' => [
-        'stream' => '',
+        'stream' => [
+            'platform' => '',
+            'name' => ''
+        ],
         'chat' => '/embed/chat'
     ],
 

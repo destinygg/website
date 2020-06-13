@@ -117,8 +117,18 @@ import $ from 'jquery'
     const initUrl = document.location.href // important this is stored before any work is done that may change this value
     let streamframe = $body.find('#stream-panel iframe')
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube)\/([A-z0-9_\-]{3,64})$/
+
+    const streamWrap = $body.find('#stream-wrap')
+    const embedInfo = {
+        embed: false,
+        platform: streamWrap.data('platform'),
+        title: 'Bigscreen',
+        name: streamWrap.data('name'),
+        id: null,
+        url: '/bigscreen'
+    }
+
     const streamInfo = {live: false, host: null, preview: null},
-        embedInfo = {embed: false, platform: 'twitch', title: 'Bigscreen', name: 'destiny', id: null, url: '/bigscreen'},
         defaultEmbedInfo = Object.assign({}, embedInfo),
         navpillclasses = ['embedded','hidden','hosting','online','offline'],
         navhostpill = {container: $body.find('#nav-host-pill')},

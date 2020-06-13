@@ -17,8 +17,8 @@ use Destiny\Common\Config;
 
     <div id="bigscreen-layout">
         <div id="stream-panel">
-            <div id="stream-wrap">
-                <iframe seamless="seamless" src="<?= Config::$a['embed']['stream'] ?>" allowfullscreen></iframe>
+            <div id="stream-wrap" data-platform="<?= Config::$a['embed']['stream']['platform'] ?>" data-name="<?= Config::$a['embed']['stream']['name'] ?>">
+                <iframe seamless="seamless" allowfullscreen></iframe>
             </div>
         </div>
         <div id="chat-panel">
