@@ -125,7 +125,8 @@ import $ from 'jquery'
         title: 'Bigscreen',
         name: streamWrap.data('name'),
         id: null,
-        url: '/bigscreen'
+        url: '/bigscreen',
+        parents: streamWrap.data('twitch-parents')
     }
 
     const streamInfo = {live: false, host: null, preview: null},
@@ -142,13 +143,13 @@ import $ from 'jquery'
         let src = ''
         switch(embedInfo.platform) {
             case 'twitch':
-                src = 'https://player.twitch.tv/?channel=' + encodeURIComponent(embedInfo.name)
+                src = 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
                 break;
             case 'twitch-vod':
-                src = 'https://player.twitch.tv/?video=' + encodeURIComponent(embedInfo.name)
+                src = 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
                 break;
             case 'twitch-clip':
-                src = 'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(embedInfo.name)
+                src = 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
                 break;
             case 'youtube':
                 src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)

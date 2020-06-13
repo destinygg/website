@@ -20,7 +20,8 @@ return [
     'embed' => [
         'stream' => [
             'platform' => '',
-            'name' => ''
+            'name' => '',
+            'twitchParents' => [] // Domains that will embed the stream, e.g., 'www.example.com'. See https://discuss.dev.twitch.tv/t/twitch-embedded-player-updates-in-2020/23956 for more details.
         ],
         'chat' => '/embed/chat'
     ],
