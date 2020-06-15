@@ -22,6 +22,16 @@ class Tpl {
         return number_format($number);
     }
 
+    /**
+     * JSON-encodes and sanitizes an array for use in a `data-*` attribute.
+     */
+    public static function arrayOut(array $rawArray): string {
+        $encodedArray = json_encode($rawArray);
+        $sanitizedArray = htmlentities($encodedArray, ENT_QUOTES, 'UTF-8');
+
+        return $sanitizedArray;
+    }
+
     public static function title($title): string {
         $title = trim("$title");
         if (!empty($title)) {

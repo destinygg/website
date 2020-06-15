@@ -117,8 +117,19 @@ import $ from 'jquery'
     const initUrl = document.location.href // important this is stored before any work is done that may change this value
     let streamframe = $body.find('#stream-panel iframe')
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube)\/([A-z0-9_\-]{3,64})$/
+
+    const streamWrap = $body.find('#stream-wrap')
+    const embedInfo = {
+        embed: false,
+        platform: streamWrap.data('platform'),
+        title: 'Bigscreen',
+        name: streamWrap.data('name'),
+        id: null,
+        url: '/bigscreen',
+        parents: streamWrap.data('twitch-parents')
+    }
+
     const streamInfo = {live: false, host: null, preview: null},
-        embedInfo = {embed: false, platform: 'twitch', title: 'Bigscreen', name: 'destiny', id: null, url: '/bigscreen'},
         defaultEmbedInfo = Object.assign({}, embedInfo),
         navpillclasses = ['embedded','hidden','hosting','online','offline'],
         navhostpill = {container: $body.find('#nav-host-pill')},
@@ -132,13 +143,13 @@ import $ from 'jquery'
         let src = ''
         switch(embedInfo.platform) {
             case 'twitch':
-                src = 'https://player.twitch.tv/?channel=' + encodeURIComponent(embedInfo.name)
+                src = 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
                 break;
             case 'twitch-vod':
-                src = 'https://player.twitch.tv/?video=' + encodeURIComponent(embedInfo.name)
+                src = 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
                 break;
             case 'twitch-clip':
-                src = 'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(embedInfo.name)
+                src = 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
                 break;
             case 'youtube':
                 src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)

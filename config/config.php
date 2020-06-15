@@ -18,7 +18,11 @@ return [
     'allowImpersonation' => false,  // MUST BE OFF ON LIVE AT ALL TIMES. usage: /impersonate?user=Cene or /impersonate?userId=12
 
     'embed' => [
-        'stream' => '',
+        'stream' => [
+            'platform' => '',
+            'name' => '',
+            'twitchParents' => [] // Domains that will embed the stream, e.g., 'www.example.com'. See https://discuss.dev.twitch.tv/t/twitch-embedded-player-updates-in-2020/23956 for more details.
+        ],
         'chat' => '/embed/chat'
     ],
 
