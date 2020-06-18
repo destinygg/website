@@ -6,10 +6,10 @@
 ////////////////////////
 return [
 
-    'support_email' => 'steven.bonnell.ii@gmail.com',
+    'support_email' => 'contact@destiny.gg',
     'calendar'      => 'i54j4cu9pl4270asok3mqgdrhk@group.calendar.google.com',
     'commerce'      => ['receiver_email' => 'Steven.Bonnell.II@GMail.com'],
-    'embed'         => ['stream' => ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg']]],
+    'embed'         => ['stream' => 'https://player.twitch.tv/?channel=destiny&parent=destiny.gg&parent=www.destiny.gg&parent=stage.destiny.gg'],
     'reddit'        => ['threads' => 'https://www.reddit.com/r/destiny/hot.json'],
     'blog'          => ['feed' => 'https://blog.destiny.gg/feed/json'],
     'android'       => ['app' => 'gg.destiny.app.chat'],
@@ -44,7 +44,7 @@ return [
         '/ting' => 'https://ting.7eer.net/c/72409/87559/2020',
         '/eve' => 'https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy',
         '/schedule' => 'https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com',
-        '/shirt' => 'https://www.designbyhumans.com/shop/Destiny/',
+        '/shirt' => 'https://dggstore.com/',
         '/forge' => 'https://bit.ly/ForgeDestiny',
         '/facebook' => 'https://www.facebook.com/OmniDestiny',
         '/youtube' => 'https://www.youtube.com/user/Destiny',
@@ -63,8 +63,9 @@ return [
         '/instagram' => 'https://www.instagram.com/destiny/',
         '/podcast' => 'https://destiny.libsyn.com/',
         '/podcastrss' => 'https://destiny.libsyn.com/rss',
-        '/shop' => 'https://www.designbyhumans.com/shop/Destiny',
+        '/shop' => 'https://dggstore.com',
         '/discord' => 'https://discordapp.com/invite/destiny',
+	'/unban' => 'https://goo.gl/forms/iRwqtqPRvJYln2lf2',
     ],
 
     'merch' => [
