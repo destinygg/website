@@ -8,6 +8,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Session\Session;
+use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
 use Doctrine\DBAL\Connection;
@@ -107,6 +108,44 @@ class UserService extends Service {
     }
 
     /**
+     * Updates a user so they only have the target roles.
+     * 
+     * @throws Exception
+     */
+    public function updateUserRoles(int $userId, array $targetRoles) {
+        try {
+            $currentRoles = $this->getRolesByUserId($userId);
+
+            // All roles the user has right now that aren't target roles must be deleted.
+            $rolesToDelete = array_diff($currentRoles, $targetRoles);
+
+            // All target roles that the user doesn't have must be inserted.
+            $rolesToInsert = array_diff($targetRoles, $currentRoles);
+
+            // No changes need to be made if both arrays have the same values.
+            if ($rolesToDelete === $rolesToInsert) {
+                return;
+            }
+
+            $conn = Application::getDbConn();
+            foreach ($rolesToDelete as $role) {
+                $conn->delete(
+                    'dfl_users_roles',
+                    ['userId' => $userId, 'roleId' => $this->getRoleIdByName($role)]
+                );
+            }
+            foreach ($rolesToInsert as $role) {
+                $conn->insert(
+                    'dfl_users_roles',
+                    ['userId' => $userId, 'roleId' => $this->getRoleIdByName($role)]
+                );
+            }
+        } catch (DBALException $e) {
+            throw new DBException("Failed to update user roles.", $e);
+        }
+    }
+
+    /**
      * @throws Exception
      */
     public function getFeatureIdByName(string $featureName): int {
@@ -165,6 +204,46 @@ class UserService extends Service {
             $conn->delete('dfl_users_features', ['userId' => $userId, 'featureId' => $featureId]);
         } catch (DBALException $e) {
             throw new DBException("Failed to remove user feature.", $e);
+        }
+    }
+
+    /**
+     * Updates a user so they only have the target features.
+     * 
+     * @throws Exception
+     */
+    public function updateUserFeatures(int $userId, array $targetFeatures) {
+        try {
+            $currentFeatures = $this->getFeaturesByUserId($userId);
+
+            // Filter out unassignable features to avoid deleting them in the
+            // `foreach` loop below. The only feature to look out for is
+            // `UserFeature::DGGBDAY`, which is assigned anyway despite being
+            // unassignable.
+            $currentFeatures = array_diff($currentFeatures, UserFeature::$UNASSIGNABLE);
+
+            $featuresToDelete = array_diff($currentFeatures, $targetFeatures);
+            $featuresToInsert = array_diff($targetFeatures, $currentFeatures);
+
+            if ($featuresToDelete === $featuresToInsert) {
+                return;
+            }
+
+            $conn = Application::getDbConn();
+            foreach ($featuresToDelete as $feature) {
+                $conn->delete(
+                    'dfl_users_features',
+                    ['userId' => $userId, 'featureId' => $this->getFeatureIdByName($feature)]
+                );
+            }
+            foreach ($featuresToInsert as $feature) {
+                $conn->insert(
+                    'dfl_users_features',
+                    ['userId' => $userId, 'featureId' => $this->getFeatureIdByName($feature)]
+                );
+            }
+        } catch (DBALException $e) {
+            throw new DBException("Failed to update user features.", $e);
         }
     }
 

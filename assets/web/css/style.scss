@@ -1712,7 +1712,10 @@ body.no-brand #main-nav .brand {
   }
 }
 
-body.no-contain #page-wrap,
+body.no-contain #main-nav .container {
+  max-width: 100%;
+}
+
 body#bigscreen {
   .container,
   .container-fluid {

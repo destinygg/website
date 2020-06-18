@@ -20,6 +20,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
     private $authBase = 'https://api.twitter.com/oauth';
     private $apiBase = 'https://api.twitter.com/1.1';
     public $authProvider = AuthProvider::TWITTER;
+    public $userProfileBaseUrl = 'https://twitter.com';
 
     public function createHttpClient(array $params = null): Client {
         $conf = $this->getAuthProviderConf();

@@ -19,6 +19,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserAuthService;
+use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
@@ -133,6 +134,9 @@ class AdminUserController {
         $minecraftname = (isset ($params['minecraftname'])) ? $params['minecraftname'] : $user['minecraftname'];
         $minecraftuuid = (isset ($params['minecraftuuid'])) ? $params['minecraftuuid'] : $user['minecraftuuid'];
 
+        $features = (isset ($params['features'])) ? $params['features'] : [];
+        $roles = (isset ($params['roles'])) ? $params['roles'] : [];
+
         try {
             $authService->validateUsername($username);
             $userService->checkUsernameTaken($username, $user['userId']);
@@ -190,7 +194,15 @@ class AdminUserController {
         $conn = Application::getDbConn();
         try {
             $conn->beginTransaction();
+
             $userService->updateUser($user['userId'], $userData);
+            $userService->updateUserFeatures($user['userId'], $features);
+
+            # Only admins can update roles.
+            if (Session::hasRole(UserRole::ADMIN)) {
+                $userService->updateUserRoles($user['userId'], $roles);
+            }
+
             $user = $userService->getUserById($params['id']);
             $authService->flagUserForUpdate($user['userId']);
             $conn->commit();
