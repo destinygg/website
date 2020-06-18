@@ -9,7 +9,7 @@ return [
     'support_email' => 'contact@destiny.gg',
     'calendar'      => 'i54j4cu9pl4270asok3mqgdrhk@group.calendar.google.com',
     'commerce'      => ['receiver_email' => 'Steven.Bonnell.II@GMail.com'],
-    'embed'         => ['stream' => 'https://player.twitch.tv/?channel=destiny&parent=destiny.gg&parent=www.destiny.gg&parent=stage.destiny.gg'],
+    'embed'         => ['stream' => ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg','stage.destiny.gg']]],
     'reddit'        => ['threads' => 'https://www.reddit.com/r/destiny/hot.json'],
     'blog'          => ['feed' => 'https://blog.destiny.gg/feed/json'],
     'android'       => ['app' => 'gg.destiny.app.chat'],
