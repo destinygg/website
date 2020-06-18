@@ -55,7 +55,7 @@ abstract class AbstractAuthHandler extends Service implements AuthenticationHand
 
     public function getUserProfileUrl(string $username): string {
         // Assume the authenticator doesn't have profile pages if `$userProfileBaseUrl` is empty.
-        return !empty($this->userProfileBaseUrl) ? "$this->userProfileBaseUrl/$username" : null;
+        return !empty($this->userProfileBaseUrl) ? "$this->userProfileBaseUrl/$username" : '';
     }
 
 }
