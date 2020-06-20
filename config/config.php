@@ -106,18 +106,6 @@ return [
         ]
     ],
 
-    'twitch_webhooks' => [
-        'client_id' => '',
-        'callback' => '',
-        'secret' => '',
-    ],
-
-    'twitch_api' => [
-        'client_id' => '',
-        'client_secret' => '',
-        'redirect_uri' => ''
-    ],
-
     'cookie' => [
         'domain' => '',
         'path' => '/',
@@ -185,6 +173,7 @@ return [
     'twitch' => [
         'id' => -1,
         'user' => '',
+        'webhooks_callback' => '',
     ],
 
     'discord' => [

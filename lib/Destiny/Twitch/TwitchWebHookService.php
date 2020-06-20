@@ -47,7 +47,8 @@ class TwitchWebHookService extends Service {
      * @throws Exception
      */
     public function sendSubscriptionRequest(string $mode, string $key, string $topic, int $userId, int $ttl = 86400): bool {
-        $conf = Config::$a['twitch_webhooks'];
+        $conf = Config::$a['oauth_providers']['twitch'];
+        $callback = Config::$a['twitch']['webhooks_callback'];
         $client = HttpClient::instance();
         $response = $client->post(self::API_BASE . '/webhooks/hub', [
             'headers' => [
@@ -57,10 +58,10 @@ class TwitchWebHookService extends Service {
             ],
             'form_params' => [
                 'hub.mode' => $mode,
-                'hub.callback' => $conf['callback'] . '?'. self::GET_TOPIC_KEY. '=' . urlencode($key) .'&user_id=' . urlencode($userId),
+                'hub.callback' => $callback . '?'. self::GET_TOPIC_KEY. '=' . urlencode($key) .'&user_id=' . urlencode($userId),
                 'hub.topic' => $topic,
                 'hub.lease_seconds' => $ttl,
-                'hub.secret' => $conf['secret']
+                'hub.secret' => $conf['client_secret']
             ]
         ]);
         if ($response->getStatusCode() == Http::STATUS_ACCEPTED) {
@@ -73,13 +74,13 @@ class TwitchWebHookService extends Service {
      * @throws TwitchWebHookException
      */
     private function validateIncomingCallback(Request $request): bool {
-        $conf = Config::$a['twitch_webhooks'];
+        $conf = Config::$a['oauth_providers']['twitch'];
         // Returned as X-Hub-Signature sha256(secret, notification_bytes)
         $signature = $request->header('HTTP_X_HUB_SIGNATURE');
         if (empty($signature)) {
             throw new TwitchWebHookException('Empty signature');
         }
-        if ($signature != 'sha256=' . hash_hmac('sha256', $request->getBody(), $conf['secret'])) {
+        if ($signature != 'sha256=' . hash_hmac('sha256', $request->getBody(), $conf['client_secret'])) {
             throw new TwitchWebHookException('Invalid signature ' . $signature);
         }
         // Make sure the callback get param was returned

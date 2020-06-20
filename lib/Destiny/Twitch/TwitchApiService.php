@@ -18,7 +18,7 @@ class TwitchApiService extends Service {
     private $tmiBase = 'https://tmi.twitch.tv';
 
     public function getApiCredentials(): array {
-        return Config::$a['twitch_api'];
+        return Config::$a['oauth_providers']['twitch'];
     }
 
     /**
