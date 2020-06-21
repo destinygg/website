@@ -22,6 +22,7 @@ use Destiny\Reddit\RedditAuthHandler;
 use Destiny\StreamElements\StreamElementsAuthHandler;
 use Destiny\StreamLabs\StreamLabsAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
+use Destiny\Twitch\TwitchBroadcastAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
 
 /**
@@ -380,6 +381,9 @@ class AuthenticationService extends Service {
                 break;
             case AuthProvider::STREAMLABS:
                 $authHandler = new StreamLabsAuthHandler();
+                break;
+            case AuthProvider::TWITCHBROADCAST:
+                $authHandler = new TwitchBroadcastAuthHandler();
                 break;
             default:
                 throw new Exception('No authentication handler found.');
