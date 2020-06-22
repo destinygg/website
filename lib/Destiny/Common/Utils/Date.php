@@ -12,7 +12,7 @@ use Exception;
 abstract class Date {
     
     const STRING_FORMAT_YEAR = 'g:ia, D jS F Y e';
-    const STRING_FORMAT = 'D jS F Y, g:ia e';
+    const STRING_FORMAT = 'M jS, Y g:iA T';
     const FORMAT = DATE_ISO8601;
 
     public static function now(): DateTime {
