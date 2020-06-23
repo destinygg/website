@@ -106,18 +106,6 @@ return [
         ]
     ],
 
-    'twitch_webhooks' => [
-        'client_id' => '',
-        'callback' => '',
-        'secret' => '',
-    ],
-
-    'twitch_api' => [
-        'client_id' => '',
-        'client_secret' => '',
-        'redirect_uri' => ''
-    ],
-
     'cookie' => [
         'domain' => '',
         'path' => '/',
@@ -185,6 +173,7 @@ return [
     'twitch' => [
         'id' => -1,
         'user' => '',
+        'webhooks_callback' => '',
     ],
 
     'discord' => [
@@ -310,6 +299,7 @@ return [
 
     'iplookupservices' => [
         ['label' => 'iplocation.net', 'url' => 'https://www.iplocation.net/?query={IP_ADDRESS}'],
-        ['label' => 'greynoise.io','url' => 'https://viz.greynoise.io/query/?gnql=ip%3A{IP_ADDRESS}'],
+        ['label' => 'greynoise.io','url' => 'https://viz.greynoise.io/ip/{IP_ADDRESS}'],
+        ['label' => 'shodan.io','url' => 'https://www.shodan.io/host/{IP_ADDRESS}'],
     ]
 ];
