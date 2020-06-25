@@ -14,7 +14,7 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <h3>Ban / Mute <small>(<a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>)</small></h3>
+        <h3>Ban <small>(<a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>)</small></h3>
         <div class="content content-dark clearfix">
 
             <?php

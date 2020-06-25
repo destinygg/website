@@ -366,7 +366,7 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
 
     <section class="container">
-        <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Ban / Mute</h3>
+        <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Bans</h3>
         <div id="ban-content" class="content content-dark clearfix collapse">
             <?php if (!empty($this->bans)): ?>
                 <div class="table-responsive">
