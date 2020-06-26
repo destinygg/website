@@ -383,7 +383,7 @@ use Destiny\Commerce\SubscriptionStatus;
                         </thead>
                         <tbody>
                             <?php foreach ($this->bans as $ban): ?>
-                                <tr>
+                                <tr class="<?= !$ban['active'] ? 'expired' : '' ?>">
                                     <td>
                                         <?php if (!empty($ban['banninguserid'])): ?>
                                             <a href="/admin/user/<?= $ban['banninguserid'] ?>/edit"><?= Tpl::out($ban['banningusername']) ?></a>

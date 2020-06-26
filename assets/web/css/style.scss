@@ -2060,6 +2060,12 @@ form#nameForm {
     }
   }
 
+  tbody tr {
+    &.expired td {
+      color: #727272;
+    }
+  }
+
   tbody td {
     padding-top: 10px;
     padding-bottom: 10px;
