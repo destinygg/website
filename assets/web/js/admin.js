@@ -252,6 +252,10 @@ import {debounce} from 'throttle-debounce'
         });
     });
 
+    $('#delete-ban').click(function() {
+        return confirm('Are you sure?');
+    });
+
     $(document)
         .on('dragover', () => { $('body').addClass('drag-over') })
         .on('dragleave drop', () => { $('body').removeClass('drag-over') });
