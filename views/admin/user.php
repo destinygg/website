@@ -366,49 +366,71 @@ use Destiny\Commerce\SubscriptionStatus;
     </section>
 
     <section class="container">
-        <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Ban / Mute</h3>
+        <h3 class="collapsed" data-toggle="collapse" data-target="#ban-content">Bans</h3>
         <div id="ban-content" class="content content-dark clearfix collapse">
-
-            <?php if(empty($this->ban)): ?>
-                <div class="form-actions">
-                    <a href="/admin/user/<?=$this->user['userId']?>/ban" class="btn btn-danger">Ban user</a>
+            <?php if (!empty($this->bans)): ?>
+                <div class="table-responsive">
+                    <table id="bans-table" class="grid">
+                        <thead>
+                            <tr>
+                                <td>Banned by</td>
+                                <td>Reason</td>
+                                <td>IP address</td>
+                                <td>Date banned</td>
+                                <td>Expires on</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($this->bans as $ban): ?>
+                                <tr class="<?= !$ban['active'] ? 'expired' : '' ?>">
+                                    <td>
+                                        <?php if (!empty($ban['banninguserid'])): ?>
+                                            <a href="/admin/user/<?= $ban['banninguserid'] ?>/edit"><?= Tpl::out($ban['banningusername']) ?></a>
+                                        <?php else: ?>
+                                            System
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= Tpl::out($ban['reason']) ?></td>
+                                    <td>
+                                        <?php if (!empty($ban['ipaddress'])): ?>
+                                            <span class="mr-2"><?= Tpl::out($ban['ipaddress']) ?></span>
+                                            <div class="dropdown d-inline-block">
+                                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-search"></i></button>
+                                                <div class="dropdown-menu">
+                                                    <?php foreach (Tpl::ipLookupLink($ban['ipaddress']) as $lookup): ?>
+                                                        <a class="dropdown-item" href="<?= Tpl::out($lookup['link']) ?>" target="_blank"><?= Tpl::out($lookup['label']) ?></a>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= Tpl::moment(Date::getDateTime($ban['starttimestamp']), Date::STRING_FORMAT) ?></td>
+                                    <td>
+                                        <?= !$ban['endtimestamp'] ? 'Permanent' : Tpl::moment(Date::getDateTime($ban['endtimestamp']), Date::STRING_FORMAT) ?><br>
+                                    </td>
+                                    <td>
+                                        <?php if ($ban['active']): ?>
+                                            <a class="btn btn-primary btn-sm mr-2" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/<?= $ban['id'] ?>/edit"><i class="fas fa-fw fa-edit"></i></a><a id="delete-ban" class="btn btn-danger btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/remove"><i class="fas fa-fw fa-trash"></i></a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             <?php else: ?>
                 <div class="ds-block">
-
-                    <?php if(!empty($this->ban['ipaddress'])): ?>
-                        <div class="dropdown mt-1 mb-1">
-                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?=Tpl::out($ip)?></button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <?php foreach (Tpl::ipLookupLink($this->ban['ipaddress']) as $v): ?>
-                                    <a target="_blank" class="dropdown-item" href="<?=$v['link']?>"><?=Tpl::out($v['label'])?></a>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif ?>
-
-                    <p>
-                        Banned on <strong><?=Tpl::moment(Date::getDateTime($this->ban['starttimestamp']), Date::STRING_FORMAT_YEAR)?></strong>
-                        <?php if(!empty($this->ban['endtimestamp'])): ?>
-                            , ends on <strong><?=Tpl::moment(Date::getDateTime($this->ban['endtimestamp']), Date::STRING_FORMAT_YEAR)?></strong>
-                        <?php else: ?>
-                        <span class="badge badge-danger">PERMANENT</span>
-                        <?php endif ?>
-                    </p>
-
-                    <blockquote class="blockquote">
-                        <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?=Tpl::out($this->ban['reason'])?></p>
-                        <footer class="blockquote-footer">Banned by <cite><?=Tpl::out((!empty($this->ban['username'])) ? $this->ban['username']:'System')?></cite></footer>
-                        <small></small>
-                    </blockquote>
+                    <p>No bans found for this user.</p>
                 </div>
+            <?php endif; ?>
 
-                <div class="form-actions">
-                    <a href="/admin/user/<?=$this->user['userId']?>/ban/<?=$this->ban['id']?>/edit" class="btn btn-primary">Edit ban</a>
-                    <a onclick="return confirm('Are you sure?');" href="/admin/user/<?=$this->user['userId']?>/ban/remove" class="btn btn-danger">Remove ban</a>
-                </div>
-
-            <?php endif ?>
+            <div class="ds-block">
+                <a href="/admin/user/<?= $this->user['userId'] ?>/ban" class="btn btn-danger mr-2 <?= $this->hasActiveBan ? 'disabled' : '' ?>"><i class="fas fa-fw fa-gavel"></i> Ban User</a>
+                <?php if($this->hasActiveBan): ?>
+                    <span class="help-block">This user already has an active ban.</span>
+                <?php endif; ?>
+            </div>
         </div>
     </section>
 

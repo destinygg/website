@@ -209,4 +209,46 @@ class ChatBanService extends Service {
         }
     }
 
+    /**
+     * Returns all bans for a user, active and expired, sorted by ID (most
+     * recent first).
+     * 
+     * @param int $userId ID of the banned user.
+     * @param int $limit The max number of bans to get.
+     *
+     * @throws DBException
+     */
+    public function getBansForUser(int $userId, int $limit): array { 
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                  SELECT
+                    b.id,
+                    b.userid AS banninguserid,
+                    u.username AS banningusername,
+                    b.targetuserid targetuserid,
+                    u2.username AS targetusername,
+                    b.ipaddress,
+                    b.reason,
+                    b.starttimestamp,
+                    b.endtimestamp,
+                    IF(b.endtimestamp IS NULL OR b.endtimestamp >= NOW(), 1, 0) as active
+                  FROM
+                    bans AS b
+                    INNER JOIN dfl_users AS u ON u.userId = b.userid
+                    INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
+                  WHERE 
+                    b.targetuserid = :userId
+                  ORDER BY b.id DESC
+                  LIMIT :amount
+            ');
+            $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue('amount', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error getting bans for user.", $e);
+        }
+    }
+
 }

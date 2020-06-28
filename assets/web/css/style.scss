@@ -2025,3 +2025,49 @@ form#nameForm {
 .bad-image-placeholder {
   background-image: url("../img/image-bad.svg");
 }
+
+#bans-table {
+  thead tr {
+    td:first-child {
+      width: 200px;
+    }
+
+    // The `Reason` column can take up all remaining space unless we're smaller
+    // than `lg`, at which point we give it a fixed width to ensure it doesn't
+    // get squished.
+    td:nth-child(2) {
+      @include media-breakpoint-down(lg) { 
+        width: 240px;
+      }
+    }
+
+    td:nth-child(3) {
+      width: 160px;
+    }
+
+    td:nth-child(4), td:nth-child(5) {
+      @include media-breakpoint-up(xxl) { 
+        width: 260px;
+      }
+      // Make the two date columns narrow enough so dates split into two lines.
+      @include media-breakpoint-down(xl) { 
+        width: 160px;
+      }
+    }
+
+    td:nth-child(6), td:last-child {
+      width: 140px;
+    }
+  }
+
+  tbody tr {
+    &.expired td {
+      color: #727272;
+    }
+  }
+
+  tbody td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
