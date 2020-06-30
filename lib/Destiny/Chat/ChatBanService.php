@@ -228,7 +228,7 @@ class ChatBanService extends Service {
                     u.username AS banningusername,
                     b.targetuserid targetuserid,
                     u2.username AS targetusername,
-                    b.ipaddress,
+                    GROUP_CONCAT(b.ipaddress) as ipaddresses,
                     b.reason,
                     b.starttimestamp,
                     b.endtimestamp,
@@ -239,6 +239,7 @@ class ChatBanService extends Service {
                     INNER JOIN dfl_users AS u2 ON u2.userId = b.targetuserid
                   WHERE 
                     b.targetuserid = :userId
+                  GROUP BY b.reason, b.starttimestamp, b.endtimestamp
                   ORDER BY b.id DESC
                   LIMIT :amount
             ');

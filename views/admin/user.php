@@ -375,7 +375,7 @@ use Destiny\Commerce\SubscriptionStatus;
                             <tr>
                                 <td>Banned by</td>
                                 <td>Reason</td>
-                                <td>IP address</td>
+                                <td>IP addresses</td>
                                 <td>Date banned</td>
                                 <td>Expires on</td>
                                 <td></td>
@@ -393,16 +393,19 @@ use Destiny\Commerce\SubscriptionStatus;
                                     </td>
                                     <td><?= Tpl::out($ban['reason']) ?></td>
                                     <td>
-                                        <?php if (!empty($ban['ipaddress'])): ?>
-                                            <span class="mr-2"><?= Tpl::out($ban['ipaddress']) ?></span>
-                                            <div class="dropdown d-inline-block">
-                                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-search"></i></button>
-                                                <div class="dropdown-menu">
-                                                    <?php foreach (Tpl::ipLookupLink($ban['ipaddress']) as $lookup): ?>
-                                                        <a class="dropdown-item" href="<?= Tpl::out($lookup['link']) ?>" target="_blank"><?= Tpl::out($lookup['label']) ?></a>
-                                                    <?php endforeach; ?>
+                                        <?php if (!empty($ban['ipaddresses'])): ?>
+                                            <?php foreach (explode(',', $ban['ipaddresses']) as $ipaddress): ?>
+                                                <?php if (empty($ipaddress)) { continue; } ?>
+                                                <span class="mr-1"><?= Tpl::out($ipaddress) ?></span>
+                                                <div class="dropdown d-inline-block">
+                                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-search"></i></button>
+                                                    <div class="dropdown-menu">
+                                                        <?php foreach (Tpl::ipLookupLink($ipaddress) as $lookup): ?>
+                                                            <a class="dropdown-item" href="<?= Tpl::out($lookup['link']) ?>" target="_blank"><?= Tpl::out($lookup['label']) ?></a>
+                                                        <?php endforeach; ?>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            <?php endforeach; ?>
                                         <?php endif; ?>
                                     </td>
                                     <td><?= Tpl::moment(Date::getDateTime($ban['starttimestamp']), Date::STRING_FORMAT) ?></td>
