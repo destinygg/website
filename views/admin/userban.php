@@ -19,7 +19,7 @@ use Destiny\Common\Utils\Tpl;
 
             <?php
             if(!empty($this->ban['id'])):
-                $href='/admin/user/'. Tpl::out($this->user['userId']) .'/ban/'. Tpl::out($this->ban['id']) .'/update';
+                $href='/admin/user/'. Tpl::out($this->user['userId']) .'/ban/update';
             else:
                 $href='/admin/user/'. Tpl::out($this->user['userId']) .'/ban';
             endif;

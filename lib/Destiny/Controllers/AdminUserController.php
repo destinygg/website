@@ -452,7 +452,7 @@ class AdminUserController {
         $authService->flagUserForUpdate($ban['targetuserid']);
 
         Session::setSuccessBag('User has been banned!');
-        return "redirect: /admin/user/$userId/ban/$banId/edit";
+        return "redirect: /admin/user/$userId/ban/edit";
     }
 
     /**
@@ -500,7 +500,7 @@ class AdminUserController {
     }
 
     /**
-     * @Route ("/admin/user/{userId}/ban/{id}/edit")
+     * @Route ("/admin/user/{userId}/ban/edit")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
@@ -508,7 +508,6 @@ class AdminUserController {
      */
     public function editBan(array $params, ViewModel $model): string {
         FilterParams::required($params, 'userId');
-        FilterParams::required($params, 'id');
         $userService = UserService::instance();
         $chatBanService = ChatBanService::instance();
         $user = $userService->getUserById($params ['userId']);
@@ -517,12 +516,12 @@ class AdminUserController {
         }
         $model->title = 'Update Ban';
         $model->user = $user;
-        $model->ban = $chatBanService->getBanById($params ['id']);
+        $model->ban = $chatBanService->getUserActiveBan($params ['userId']);
         return 'admin/userban';
     }
 
     /**
-     * @Route ("/admin/user/{userId}/ban/{id}/update")
+     * @Route ("/admin/user/{userId}/ban/update")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
      * @Audit
@@ -531,9 +530,8 @@ class AdminUserController {
      */
     public function updateBan(array $params): string {
         FilterParams::required($params, 'userId');
-        FilterParams::required($params, 'id');
 
-        $redirect = "redirect: /admin/user/{$params['userId']}/ban/{$params['id']}/edit";
+        $redirect = "redirect: /admin/user/{$params['userId']}/ban/edit";
 
         try {
             FilterParams::required($params, 'reason');

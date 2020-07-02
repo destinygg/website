@@ -414,7 +414,7 @@ use Destiny\Commerce\SubscriptionStatus;
                                     </td>
                                     <td>
                                         <?php if ($ban['active']): ?>
-                                            <a class="btn btn-primary btn-sm mr-2" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/<?= $ban['id'] ?>/edit"><i class="fas fa-fw fa-edit"></i></a><a id="delete-ban" class="btn btn-danger btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/remove"><i class="fas fa-fw fa-trash"></i></a>
+                                            <a class="btn btn-primary btn-sm mr-2" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/edit"><i class="fas fa-fw fa-edit"></i></a><a id="delete-ban" class="btn btn-danger btn-sm" href="/admin/user/<?= $ban['targetuserid'] ?>/ban/remove"><i class="fas fa-fw fa-trash"></i></a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
