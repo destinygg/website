@@ -122,6 +122,43 @@ class ChatBanService extends Service {
     }
 
     /**
+     * Updates all active bans for a user.
+     *
+     * IP bans may result in multiple active bans for a single user in the
+     * `bans` table (one for each IP address they ever connected with). They
+     * should always have the same `reason`, `starttimestamp`, and
+     * `endtimestamp` for proper enforcement. This function provides a
+     * convenient way of updating all of them at once.
+     *
+     * @throws DBException
+     */
+    public function updateActiveBansForUser(int $userId, string $reason, string $startTimestamp, string $endTimestamp = null) {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+              UPDATE
+                bans
+              SET
+                reason = :reason,
+                starttimestamp = :startTimestamp,
+                endtimestamp = :endTimestamp
+              WHERE
+                targetuserid = :userId AND
+                (endtimestamp IS NULL OR endtimestamp >= NOW())
+            ');
+
+            $stmt->bindValue('reason', $reason, PDO::PARAM_STR);
+            $stmt->bindValue('startTimestamp', $startTimestamp, PDO::PARAM_STR);
+            $stmt->bindValue('endTimestamp', $endTimestamp, PDO::PARAM_STR);
+            $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+
+            $stmt->execute();
+        } catch (DBALException $e) {
+            throw new DBException("Error updating active user bans.", $e);
+        }
+    }
+
+    /**
      * @return array|false
      * @throws DBException
      */

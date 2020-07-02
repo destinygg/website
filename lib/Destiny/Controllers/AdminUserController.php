@@ -530,29 +530,32 @@ class AdminUserController {
      * @throws Exception
      */
     public function updateBan(array $params): string {
-        FilterParams::required($params, 'id');
         FilterParams::required($params, 'userId');
+        FilterParams::required($params, 'id');
+
+        $redirect = "redirect: /admin/user/{$params['userId']}/ban/{$params['id']}/edit";
+
+        try {
+            FilterParams::required($params, 'reason');
+            FilterParams::required($params, 'starttimestamp');
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            return $redirect;
+        }
 
         $chatBanService = ChatBanService::instance();
         $authService = AuthenticationService::instance();
-        $eBan = $chatBanService->getBanById($params['id']);
 
-        $ban = [];
-        $ban['id'] = $eBan['id'];
-        $ban['reason'] = $params ['reason'];
-        $ban['userid'] = $eBan['userid'];
-        $ban['ipaddress'] = $eBan['ipaddress'];
-        $ban['targetuserid'] = $eBan['targetuserid'];
-        $ban['starttimestamp'] = Date::getSqlDateTime($params ['starttimestamp']);
-        $ban['endtimestamp'] = '';
-        if (!empty ($params ['endtimestamp'])) {
-            $ban['endtimestamp'] = Date::getSqlDateTime($params ['endtimestamp']);
-        }
-        $chatBanService->updateBan($ban);
-        $authService->flagUserForUpdate($ban ['targetuserid']);
+        $chatBanService->updateActiveBansForUser(
+            $params['userId'],
+            $params['reason'],
+            Date::getSqlDateTime($params['starttimestamp']),
+            !empty($params['endtimestamp']) ? Date::getSqlDateTime($params['endtimestamp']) : null
+        );
+        $authService->flagUserForUpdate($params['userId']);
 
         Session::setSuccessBag('Ban updated!');
-        return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit';
+        return $redirect;
     }
 
     /**
