@@ -70,6 +70,7 @@ use Destiny\Common\Utils\Tpl;
 
 </div>
 
+<?php include 'seg/alerts.php' ?>
 <?php include 'seg/foot.php' ?>
 <?php include 'seg/tracker.php' ?>
 <?=Tpl::manifestScript('runtime.js')?>

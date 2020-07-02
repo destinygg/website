@@ -450,6 +450,8 @@ class AdminUserController {
         $authService = AuthenticationService::instance();
         $banId = $chatBanService->insertBan($ban);
         $authService->flagUserForUpdate($ban['targetuserid']);
+
+        Session::setSuccessBag('User has been banned!');
         return "redirect: /admin/user/$userId/ban/$banId/edit";
     }
 
@@ -548,6 +550,8 @@ class AdminUserController {
         }
         $chatBanService->updateBan($ban);
         $authService->flagUserForUpdate($ban ['targetuserid']);
+
+        Session::setSuccessBag('Ban updated!');
         return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit';
     }
 
@@ -572,6 +576,7 @@ class AdminUserController {
         if (isset($params['follow']) and substr($params['follow'], 0, 1) == '/')
             return 'redirect: ' . $params['follow'];
 
+        Session::setSuccessBag('Ban removed!');
         return 'redirect: /admin/user/' . $params ['userId'] . '/edit';
     }
 
