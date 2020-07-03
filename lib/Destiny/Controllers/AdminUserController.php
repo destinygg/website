@@ -450,7 +450,9 @@ class AdminUserController {
         $authService = AuthenticationService::instance();
         $banId = $chatBanService->insertBan($ban);
         $authService->flagUserForUpdate($ban['targetuserid']);
-        return "redirect: /admin/user/$userId/ban/$banId/edit";
+
+        Session::setSuccessBag('User has been banned!');
+        return "redirect: /admin/user/$userId/ban/edit";
     }
 
     /**
@@ -498,7 +500,7 @@ class AdminUserController {
     }
 
     /**
-     * @Route ("/admin/user/{userId}/ban/{id}/edit")
+     * @Route ("/admin/user/{userId}/ban/edit")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"GET"})
      *
@@ -506,7 +508,6 @@ class AdminUserController {
      */
     public function editBan(array $params, ViewModel $model): string {
         FilterParams::required($params, 'userId');
-        FilterParams::required($params, 'id');
         $userService = UserService::instance();
         $chatBanService = ChatBanService::instance();
         $user = $userService->getUserById($params ['userId']);
@@ -515,12 +516,12 @@ class AdminUserController {
         }
         $model->title = 'Update Ban';
         $model->user = $user;
-        $model->ban = $chatBanService->getBanById($params ['id']);
+        $model->ban = $chatBanService->getUserActiveBan($params ['userId']);
         return 'admin/userban';
     }
 
     /**
-     * @Route ("/admin/user/{userId}/ban/{id}/update")
+     * @Route ("/admin/user/{userId}/ban/update")
      * @Secure ({"MODERATOR"})
      * @HttpMethod ({"POST"})
      * @Audit
@@ -528,27 +529,31 @@ class AdminUserController {
      * @throws Exception
      */
     public function updateBan(array $params): string {
-        FilterParams::required($params, 'id');
         FilterParams::required($params, 'userId');
+
+        $redirect = "redirect: /admin/user/{$params['userId']}/ban/edit";
+
+        try {
+            FilterParams::required($params, 'reason');
+            FilterParams::required($params, 'starttimestamp');
+        } catch (Exception $e) {
+            Session::setErrorBag($e->getMessage());
+            return $redirect;
+        }
 
         $chatBanService = ChatBanService::instance();
         $authService = AuthenticationService::instance();
-        $eBan = $chatBanService->getBanById($params['id']);
 
-        $ban = [];
-        $ban['id'] = $eBan['id'];
-        $ban['reason'] = $params ['reason'];
-        $ban['userid'] = $eBan['userid'];
-        $ban['ipaddress'] = $eBan['ipaddress'];
-        $ban['targetuserid'] = $eBan['targetuserid'];
-        $ban['starttimestamp'] = Date::getSqlDateTime($params ['starttimestamp']);
-        $ban['endtimestamp'] = '';
-        if (!empty ($params ['endtimestamp'])) {
-            $ban['endtimestamp'] = Date::getSqlDateTime($params ['endtimestamp']);
-        }
-        $chatBanService->updateBan($ban);
-        $authService->flagUserForUpdate($ban ['targetuserid']);
-        return 'redirect: /admin/user/' . $params ['userId'] . '/ban/' . $params ['id'] . '/edit';
+        $chatBanService->updateActiveBansForUser(
+            $params['userId'],
+            $params['reason'],
+            Date::getSqlDateTime($params['starttimestamp']),
+            !empty($params['endtimestamp']) ? Date::getSqlDateTime($params['endtimestamp']) : null
+        );
+        $authService->flagUserForUpdate($params['userId']);
+
+        Session::setSuccessBag('Ban updated!');
+        return $redirect;
     }
 
     /**
@@ -572,6 +577,7 @@ class AdminUserController {
         if (isset($params['follow']) and substr($params['follow'], 0, 1) == '/')
             return 'redirect: ' . $params['follow'];
 
+        Session::setSuccessBag('Ban removed!');
         return 'redirect: /admin/user/' . $params ['userId'] . '/edit';
     }
 
