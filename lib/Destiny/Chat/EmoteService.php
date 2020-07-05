@@ -17,6 +17,7 @@ use PDO;
 class EmoteService extends Service {
 
     const EMOTES_DIR = _BASEDIR . '/static/emotes/';
+    const LUL_EMOTE_PREFIX = 'LUL';
 
     /**
      * @throws DBException
