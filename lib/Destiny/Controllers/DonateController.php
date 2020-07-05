@@ -78,7 +78,6 @@ class DonateController {
             }
             if (!Session::hasRole(UserRole::USER)) {
                 FilterParams::required($params, 'username');
-                $authService->validateUsername($params['username']);
             }
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
