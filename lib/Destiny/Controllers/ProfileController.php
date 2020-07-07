@@ -140,6 +140,26 @@ class ProfileController {
     }
 
     /**
+     * @Route ("/profile/username/similaremotes")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     * @ResponseBody
+     */
+    public function emotesTooSimilarToUsername(array $params): array {
+        try {
+            FilterParams::declared($params, 'username');
+            $username = $params['username'];
+
+            $authService = AuthenticationService::instance();
+            $emotes = $authService->getEmotesTooSimilarToUsername($username);
+
+            return ['data' => ['emotes' => $emotes]];
+        } catch (Exception $e) {
+            return ['error' => ['message' => $e->getMessage()]];
+        }
+    }
+
+    /**
      * @Route ("/profile/update")
      * @HttpMethod ({"POST"})
      * @Secure ({"USER"})

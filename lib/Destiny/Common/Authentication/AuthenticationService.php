@@ -115,6 +115,25 @@ class AuthenticationService extends Service {
     }
 
     /**
+     * Gets emote prefixes that are "too similar" to a username.
+     *
+     * @return array Contains all emote prefixes that are too similar to the supplied username.
+     */
+    public function getEmotesTooSimilarToUsername(string $username): array {
+        $conflictingEmotes = [];
+        foreach ($this->getEmotesForValidation() as $emote) {
+            $prefix = $emote['prefix'];
+            try {
+                $this->checkUsernameForSimilarityToEmote($username, $prefix);
+            } catch (Exception $e) {
+                $conflictingEmotes[] = $prefix;
+            }
+        }
+
+        return $conflictingEmotes;
+    }
+
+    /**
      * @throws Exception
      */
     public function validateEmail(string $email) {
