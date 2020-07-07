@@ -142,6 +142,7 @@ class AdminUserController {
 
         try {
             $authService->validateUsername($username);
+            $authService->checkUsernameForSimilarityToAllEmotes($username);
             $userService->checkUsernameTaken($username, $user['userId']);
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
