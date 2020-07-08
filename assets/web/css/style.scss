@@ -2071,3 +2071,13 @@ form#nameForm {
     padding-bottom: 10px;
   }
 }
+
+#username-warning-modal {
+  .modal-content, .modal-header {
+    background-color: #282828;
+  }
+
+  button.close {
+    color: #DEDEDE;
+  }
+}

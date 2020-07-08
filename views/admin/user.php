@@ -29,7 +29,7 @@ use Destiny\Commerce\SubscriptionStatus;
         </h3>
         <div id="details-content" class="content content-dark clearfix collapse">
 
-            <form action="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" method="post">
+            <form id="user-details" action="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit" method="post">
                 <input type="hidden" name="id" value="<?=Tpl::out($this->user['userId'])?>" />
 
                 <div class="ds-block">
@@ -186,6 +186,8 @@ use Destiny\Commerce\SubscriptionStatus;
                             </div>
                         </div>
                     </div>
+
+                    <input type="hidden" name="skipEmoteCheck" id="skipEmoteCheck">
 
                 </div>
 
@@ -503,6 +505,24 @@ use Destiny\Commerce\SubscriptionStatus;
     <?php endif ?>
 
 
+</div>
+
+<div class="modal" id="username-warning-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Username warning</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>The username <span class="font-italic username"></span> is too similar to the following emotes: <span class="font-italic emotes"></span>.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                <button id="update-anyway" type="button" class="btn btn-secondary">Update Anyway</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?php include 'seg/alerts.php' ?>
