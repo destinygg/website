@@ -414,3 +414,40 @@ $(function(){
     });
 
 });
+
+$(function() {
+    const $userDetailsForm = $('form#user-details');
+    const $usernameWarningModal = $('#username-warning-modal');
+    const $usernameInput = $('#inputUsername');
+
+    $userDetailsForm.submit(function(event) {
+        event.preventDefault();
+
+        $.get({
+            url: '/profile/username/similaremotes',
+            data: { 'username': $usernameInput.val() },
+            success: function(response) {
+                if ('error' in response) {
+                    $(document).alertDanger(response['error']['message'], {delay: 3000});
+                    return;
+                }
+
+                const emotes = response['data']['emotes'];
+                if (emotes.length) {
+                    // Display modal that warns the user if there are similar emotes.
+                    $usernameWarningModal.find('.modal-body p .username').text($usernameInput.val());
+                    $usernameWarningModal.find('.modal-body p .emotes').text(emotes.join(', '));
+                    $usernameWarningModal.modal('show');
+                } else {
+                    // Remove this submit handler and submit the form normally.
+                    $userDetailsForm.off('submit').submit();
+                }
+            }
+        });
+    });
+
+    $usernameWarningModal.find('button#update-anyway').click(function() {
+        $('input#skipEmoteCheck').val('true');
+        $userDetailsForm.off('submit').submit();
+    });
+});

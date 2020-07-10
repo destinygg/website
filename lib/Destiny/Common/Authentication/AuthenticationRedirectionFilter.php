@@ -83,6 +83,7 @@ class AuthenticationRedirectionFilter {
                 $username = $this->sanitizeUsername($username);
                 try {
                     $authService->validateUsername($username);
+                    $authService->checkUsernameForSimilarityToAllEmotes($username);
                     $userService->checkUsernameTaken($username);
                 } catch (Exception $e) {
                     $username = $this->buildTempUsername();

@@ -55,34 +55,82 @@ class AuthenticationService extends Service {
             throw new Exception ('Number ratio is too high in username');
         }
 
-        $normalizeduname = strtolower($username);
-        $front = substr($normalizeduname, 0, 2);
+        $normalizedUsername = strtolower($username);
 
         // nick blacklists
         $blacklist = array_merge([], include _BASEDIR . '/config/nick.blacklist.php');
-        if (in_array($normalizeduname, $blacklist)) {
+        if (in_array($normalizedUsername, $blacklist)) {
             throw new Exception ('Username is blacklisted');
         }
+    }
 
-        // nick-to-emote similarity heuristics, not perfect sadly ;(
-        foreach ($this->getEmotesForValidation() as $v) {
-            $prefix = $v['prefix'];
-            $emote = strtolower($v['prefix']);
-            if (strcasecmp($normalizeduname, $emote) === 0) {
-                throw new Exception ("Username too similar to emote $prefix, try changing the first characters");
-            }
-            if (strpos($normalizeduname, $emote) === 0) {
-                throw new Exception ("Username cannot start with emote $prefix, try changing the first characters");
-            }
-            if ($emote == 'lul') { // TODO remove this static reference
-                continue;
-            }
-            $shortuname = substr($normalizeduname, 0, strlen($emote));
-            if ($front == substr($emote, 0, 2) and levenshtein($emote, $shortuname) <= 2) {
-                throw new Exception ("Username too similar to an emote $prefix, try changing the first characters");
+    /**
+     * Checks if a username is "too similar" to an emote prefix.
+     *
+     * @throws Exception
+     */
+    public function checkUsernameForSimilarityToEmote(string $username, string $emotePrefix) {
+        $normalizedUsername = strtolower($username);
+        $normalizedPrefix = strtolower($emotePrefix);
+
+        // Ensure the username doesn't match the emote exactly. The username
+        // `Jamstiny` fails validation if an emote with prefix `JAMSTINY`
+        // exists.
+        if (strcmp($normalizedUsername, $normalizedPrefix) === 0) {
+            throw new Exception("Username is invalid because it matches the emote $emotePrefix.");
+        }
+
+        // Ensure the beginning of the username doesn't contain the entire emote
+        // prefix. `Jamstinycakes` fails if `JAMSTINY` exists.
+        if (strpos($normalizedUsername, $normalizedPrefix) === 0) {
+            throw new Exception("Username is invalid because it starts with the emote $emotePrefix.");
+        }
+
+        // Don't perform the check below for the `LUL` emote.
+        if ($normalizedPrefix == strtolower(EmoteService::LUL_EMOTE_PREFIX)) {
+            return;
+        }
+
+        // If the first two letters of the username and the emote prefix match,
+        // ensure the Levenshtein distance between the first `n` letters of the
+        // username (where `n` is the length of the emote prefix) and the emote
+        // prefix is <= 2. `Japstiny` fails because the distance between
+        // `japstiny` and `jamstiny` is 1. Only one letter has to be
+        // replaced/inserted/deleted to change `japstiny` to `jamstiny`.
+        $usernamePrefix = substr($normalizedUsername, 0, strlen($normalizedPrefix));
+        if (substr($normalizedUsername, 0, 2) == substr($normalizedPrefix, 0, 2) && levenshtein($normalizedPrefix, $usernamePrefix) <= 2) {
+            throw new Exception("Username is invalid because it has too many like characters to the emote $emotePrefix.");
+        }
+    }
+
+    /**
+     * Checks if a username is "too similar" to any/all available emote prefixes.
+     *
+     * @throws Exception
+     */
+    public function checkUsernameForSimilarityToAllEmotes(string $username) {
+        foreach ($this->getEmotesForValidation() as $emote) {
+            $this->checkUsernameForSimilarityToEmote($username, $emote['prefix']);
+        }
+    }
+
+    /**
+     * Gets emote prefixes that are "too similar" to a username.
+     *
+     * @return array Contains all emote prefixes that are too similar to the supplied username.
+     */
+    public function getEmotesTooSimilarToUsername(string $username): array {
+        $conflictingEmotes = [];
+        foreach ($this->getEmotesForValidation() as $emote) {
+            $prefix = $emote['prefix'];
+            try {
+                $this->checkUsernameForSimilarityToEmote($username, $prefix);
+            } catch (Exception $e) {
+                $conflictingEmotes[] = $prefix;
             }
         }
 
+        return $conflictingEmotes;
     }
 
     /**

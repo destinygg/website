@@ -72,7 +72,11 @@ class ProfileController {
             FilterParams::declared($params, 'username');
             $username = (string) $params['username'];
             $userId = Session::getCredentials()->getUserId();
-            AuthenticationService::instance()->validateUsername($username);
+
+            $authService = AuthenticationService::instance();
+            $authService->validateUsername($username);
+            $authService->checkUsernameForSimilarityToAllEmotes($username);
+
             UserService::instance()->checkUsernameTaken($username, $userId);
         } catch (Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
@@ -99,6 +103,7 @@ class ProfileController {
                 try {
                     $userService->checkUsernameTaken($username, $userId);
                     $authService->validateUsername($username);
+                    $authService->checkUsernameForSimilarityToAllEmotes($username);
                 } catch (Exception $e) {
                     Session::setErrorBag("Username taken... stop cheating. {$e->getMessage()}");
                     Log::warn("Failed to change username $userId. {$e->getMessage()}");
@@ -132,6 +137,26 @@ class ProfileController {
             Log::warn("Failed to change username $userId. {$e->getMessage()}");
         }
         return 'redirect: /profile';
+    }
+
+    /**
+     * @Route ("/profile/username/similaremotes")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     * @ResponseBody
+     */
+    public function emotesTooSimilarToUsername(array $params): array {
+        try {
+            FilterParams::declared($params, 'username');
+            $username = $params['username'];
+
+            $authService = AuthenticationService::instance();
+            $emotes = $authService->getEmotesTooSimilarToUsername($username);
+
+            return ['data' => ['emotes' => $emotes]];
+        } catch (Exception $e) {
+            return ['error' => ['message' => $e->getMessage()]];
+        }
     }
 
     /**

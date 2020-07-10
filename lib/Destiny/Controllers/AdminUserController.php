@@ -140,8 +140,13 @@ class AdminUserController {
         $features = (isset ($params['features'])) ? $params['features'] : [];
         $roles = (isset ($params['roles'])) ? $params['roles'] : [];
 
+        $skipEmoteCheck = !empty($params['skipEmoteCheck']);
+
         try {
             $authService->validateUsername($username);
+            if (!$skipEmoteCheck) {
+                $authService->checkUsernameForSimilarityToAllEmotes($username);
+            }
             $userService->checkUsernameTaken($username, $user['userId']);
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
