@@ -43,6 +43,21 @@ use Destiny\Commerce\SubscriptionStatus;
                             </div>
 
                             <div class="form-group">
+                                <label class="control-label" for="inputCreatedDate">Date Created</label>
+                                <div class="controls">
+                                    <?php
+                                        if (!empty($this->user['createdDate'])) {
+                                            $createdDate = Date::getDateTime($this->user['createdDate']);
+                                            $createdDateDesc = sprintf('%s (%s)', $createdDate->format(Date::STRING_FORMAT), Date::getElapsedTime($createdDate));
+                                        } else {
+                                            $createdDateDesc = 'Unknown';
+                                        }
+                                    ?>
+                                    <input type="text" class="form-control" name="createdDate" id="inputCreatedDate" value="<?= $createdDateDesc ?>" placeholder="Date Created" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="control-label" for="inputEmail">Email</label>
                                 <div class="controls">
                                     <input type="text" class="form-control" name="email" id="inputEmail" value="<?=Tpl::out($this->user['email'])?>" placeholder="email">
