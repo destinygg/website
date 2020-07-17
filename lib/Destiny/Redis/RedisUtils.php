@@ -16,11 +16,16 @@ class RedisUtils {
     public static function callScript(string $scriptname, array $argument = []) {
         $redis = Application::instance()->getRedis();
         $dir = Config::$a['redis']['scriptdir'];
-        $hash = file_get_contents($dir . $scriptname . '.hash');
-        if ($hash) {
-            $ret = $redis->evalSha($hash, $argument);
-            if ($ret) return $ret;
+
+        $hashFilename = $dir . $scriptname . '.hash';
+        if (file_exists($hashFilename)) {
+            $hash = file_get_contents($hashFilename);
+            if ($hash) {
+                $ret = $redis->evalSha($hash, $argument);
+                if ($ret) return $ret;
+            }
         }
+
         $hash = $redis->script('load', file_get_contents($dir . $scriptname . '.lua'));
         if (!$hash) {
             throw new Exception('Unable to load script');
