@@ -401,7 +401,7 @@ use Destiny\Commerce\SubscriptionStatus;
                         <tbody>
                             <?php foreach ($this->bans as $ban): ?>
                                 <tr class="<?= !$ban['active'] ? 'expired' : '' ?>">
-                                    <td><?= Tpl::out($ban['banningusername']) ?></td>
+                                    <td><?= Tpl::out($ban['banningusername']) ?><?= !empty($ban['botban']) ? '<i title="This ban was issued via Bot. *Beep Boop*" class="ml-1 fas fa-robot"></i>' : '' ?></td>
                                     <td><?= Tpl::out($ban['reason']) ?></td>
                                     <td>
                                         <?php if (!empty($ban['ipaddresses'])): ?>
