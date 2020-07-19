@@ -261,7 +261,6 @@ class ChatBanService extends Service {
             $stmt = $conn->prepare('
                   SELECT
                     b.id,
-                    b.userid AS banninguserid,
                     u.username AS banningusername,
                     b.targetuserid targetuserid,
                     u2.username AS targetusername,
