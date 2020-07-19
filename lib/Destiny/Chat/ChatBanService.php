@@ -283,7 +283,11 @@ class ChatBanService extends Service {
             $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
             $stmt->bindValue('amount', $limit, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll();
+
+            $bans = $stmt->fetchAll();
+            $bans = array_map(array($this, 'parseBotBanReason'), $bans);
+
+            return $bans;
         } catch (DBALException $e) {
             throw new DBException("Error getting bans for user.", $e);
         }
