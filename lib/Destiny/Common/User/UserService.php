@@ -366,10 +366,23 @@ class UserService extends Service {
                     u.username,
                     u.email,
                     u.userStatus,
-                    u.createdDate
+                    u.createdDate,
+                    IF(b.id IS NULL, 0, 1) as banned
                 FROM
                     dfl_users AS u
             ';
+
+            // Join on `bans` to evaluate whether or not the user is banned.
+            $joins[] = '
+                LEFT JOIN
+                    bans b
+                ON
+                    b.targetuserid = u.userId AND (b.endtimestamp > NOW() OR b.endtimestamp IS NULL)
+            ';
+
+            // Grouping by `userId` removes duplicate records that may show up
+            // when filtering by feature or role and fetching ban status.
+            $groupBys[] = 'u.userId';
 
             // When filtering users by a feature.
             if (!empty($params['feature'])) {
@@ -389,12 +402,6 @@ class UserService extends Service {
                     ON
                         r.userId = u.userId AND r.roleId = :roleId
                 ';
-            }
-
-            // Grouping by `userId` removes duplicate records that may show up
-            // when filtering by feature or role.
-            if (!empty($params['feature']) || !empty($params['role'])) {
-                $groupBys[] = 'u.userId';
             }
 
             // When searching for a user by username or email (or auth
