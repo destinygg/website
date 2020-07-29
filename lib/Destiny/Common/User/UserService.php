@@ -458,6 +458,9 @@ class UserService extends Service {
                 case 'status':
                     $orderBys[] = "u.userStatus $direction";
                     break;
+                case 'banned':
+                    $orderBys[] = "banned $direction";
+                    break;
             }
 
 

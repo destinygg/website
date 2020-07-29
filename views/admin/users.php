@@ -115,6 +115,7 @@ use Destiny\Common\Utils\Date;
                                 <td style="width: 300px;" data-sort="username">User</td>
                                 <td data-sort="status">Status</td>
                                 <td data-sort="id">Created on</td>
+                                <td data-sort="banned">Banned</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,6 +128,7 @@ use Destiny\Common\Utils\Date;
                                 </td>
                                 <td><?=$user['userStatus']?></td>
                                 <td><?=Tpl::moment(Date::getDateTime($user['createdDate']), Date::STRING_FORMAT)?></td>
+                                <td><?= $user['banned'] ? '<i id="banned-icon" class="fas fa-ban" title="This user is banned."></i>' : '' ?></td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
