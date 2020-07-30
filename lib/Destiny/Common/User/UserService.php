@@ -350,6 +350,28 @@ class UserService extends Service {
     }
 
     /**
+     * Search for users.
+     *
+     * @param array $params An array of parameters.
+     *     $params = [
+     *         'search' => (string) String to search for in usernames, emails, and auth details.
+     *         'feature' => (int) ID of the feature users must have.
+     *         'role' => (int) ID of the role users must have.
+     *         'sort' => (string) Which property to sort found users by. One of `id`, `username`, `status`, or `banned`.
+     *         'order' => (string) How to sort the users. `ASC` for ascending or `DESC` for descending.
+     *         'page' => (int) Which page of users to return.
+     *         'size' => (int) Users per page.
+     *     ]
+     *
+     * @return array $pagination An array of return values.
+     *     $pagination = [
+     *         'list' => (array) The found users.
+     *         'total' => (int) Total number of found users.
+     *         'totalpages' => (int) Number of pages of found users.
+     *         'page' => (int) Current page.
+     *         'limit' => (int) Users per page.
+     *     ]
+     *
      * @throws DBException
      */
     public function searchAll(array $params): array {
