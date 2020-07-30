@@ -507,7 +507,6 @@ class UserService extends Service {
             $pagination['list'] = $stmt->fetchAll();
             $pagination['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
             $pagination['totalpages'] = ceil($pagination['total'] / $params['size']);
-            $pagination['pages'] = 5;
             $pagination['page'] = $params['page'];
             $pagination['limit'] = $params['size'];
 
