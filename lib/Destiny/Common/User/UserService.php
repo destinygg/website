@@ -350,91 +350,188 @@ class UserService extends Service {
     }
 
     /**
+     * Search for users.
+     *
+     * @param array $params An array of parameters.
+     *     $params = [
+     *         'search' => (string) String to search for in usernames, emails, and auth details.
+     *         'feature' => (int) ID of the feature users must have.
+     *         'role' => (int) ID of the role users must have.
+     *         'sort' => (string) Which property to sort found users by. One of `id`, `username`, `status`, or `banned`.
+     *         'order' => (string) How to sort the users. `ASC` for ascending or `DESC` for descending.
+     *         'page' => (int) Which page of users to return.
+     *         'size' => (int) Users per page.
+     *     ]
+     *
+     * @return array $pagination An array of return values.
+     *     $pagination = [
+     *         'list' => (array) The found users.
+     *         'total' => (int) Total number of found users.
+     *         'totalpages' => (int) Number of pages of found users.
+     *         'page' => (int) Current page.
+     *         'limit' => (int) Users per page.
+     *     ]
+     *
      * @throws DBException
      */
     public function searchAll(array $params): array {
         try {
             $joins = [];
-            $clauses = [];
-            $orders = [];
-        if (!empty($params['search'])) {
-            $clauses[] = '(u.username LIKE :wildcard1 OR u.email LIKE :wildcard1 OR u.userId IN (SELECT a.userId FROM dfl_users_auth a WHERE a.authDetail LIKE :wildcard1 OR a.authEmail LIKE :wildcard1))';
-            $orders[] = '
-              CASE
-                WHEN u.username LIKE :wildcard2 THEN 0
-                WHEN u.username LIKE :wildcard3 THEN 1
-                WHEN u.username LIKE :wildcard4 THEN 2
-                WHEN u.username LIKE :wildcard4 THEN 4
-                WHEN u.username LIKE :wildcard4 THEN 5
-              ELSE 3
-              END
+            $wheres = [];
+            $groupBys = [];
+            $orderBys = [];
+
+            $query = '
+                SELECT
+                    SQL_CALC_FOUND_ROWS
+                    u.userId,
+                    u.username,
+                    u.email,
+                    u.userStatus,
+                    u.createdDate,
+                    IF(b.id IS NULL, 0, 1) as banned
+                FROM
+                    dfl_users AS u
             ';
-            }
+
+            // Join on `bans` to evaluate whether or not the user is banned.
+            $joins[] = '
+                LEFT JOIN
+                    bans b
+                ON
+                    b.targetuserid = u.userId AND (b.endtimestamp > NOW() OR b.endtimestamp IS NULL)
+            ';
+
+            // Grouping by `userId` removes duplicate records that may show up
+            // when filtering by feature or role and fetching ban status.
+            $groupBys[] = 'u.userId';
+
+            // When filtering users by a feature.
             if (!empty($params['feature'])) {
-                $joins[] = ' INNER JOIN dfl_users_features f ON f.userId = u.userId AND f.featureId = :featureId ';
+                $joins[] = '
+                    INNER JOIN
+                        dfl_users_features f
+                    ON
+                        f.userId = u.userId AND f.featureId = :featureId
+                ';
             }
+
+            // When filtering users by a role.
             if (!empty($params['role'])) {
-                $joins[] = ' INNER JOIN dfl_users_roles r ON r.userId = u.userId AND r.roleId = :roleId  ';
+                $joins[] = '
+                    INNER JOIN
+                        dfl_users_roles r
+                    ON
+                        r.userId = u.userId AND r.roleId = :roleId
+                ';
             }
-            if (!empty($params['status'])) {
-                $clauses[] = ' u.userStatus = :userStatus ';
-            }
-            if (!empty($params['sort'])) {
-                $sort = $params['sort'];
-                $order = $params['order'] ?? 'DESC';
-                switch (strtolower($sort)) {
-                    case 'id' :
-                        $orders[] = " u.userId $order ";
-                        break;
-                    case 'username' :
-                        $orders[] = " u.username $order ";
-                        break;
-                    case 'status' :
-                        $orders[] = " u.userStatus $order ";
-                        break;
-                }
-            }
-            $q = 'SELECT SQL_CALC_FOUND_ROWS u.userId, u.username, u.email, u.userStatus, u.createdDate FROM dfl_users AS u ';
-            $q .= ' ' . join(PHP_EOL, $joins);
-            if (count($clauses) > 0) {
-                $q .= ' WHERE ' . join(' AND ', $clauses);
-            }
-            if (count($joins) > 0) {
-                $q .= ' GROUP BY u.userId ';
-            }
-            if (count($orders) > 0) {
-                $q .= ' ORDER BY ' . join(', ', $orders);
-            }
-            $q .= ' LIMIT :start, :limit ';
-            $conn = Application::getDbConn();
-            $stmt = $conn->prepare($q);
+
+            // When searching for a user by username or email (or auth
+            // username).
             if (!empty($params['search'])) {
-                $stmt->bindValue('wildcard1', '%' . $params['search'] . '%', PDO::PARAM_STR);
-                $stmt->bindValue('wildcard2', $params['search'] . ' %', PDO::PARAM_STR);
-                $stmt->bindValue('wildcard3', $params['search'] . '%', PDO::PARAM_STR);
-                $stmt->bindValue('wildcard4', '% %' . $params['search'] . '% %', PDO::PARAM_STR);
+                $wheres[] = '
+                    (
+                        u.username LIKE :containsMatch OR
+                        u.email LIKE :containsMatch OR
+                        u.userId IN (
+                            SELECT
+                                a.userId
+                            FROM
+                                dfl_users_auth a
+                            WHERE
+                                a.authDetail LIKE :containsMatch OR
+                                a.authEmail LIKE :containsMatch
+                        )
+                    )
+                ';
+
+                // When ordering results, take into account where the search
+                // string occurs in the username. For example, an exact match is
+                // sorted above matches that simply contain the word.
+                $orderBys[] = '
+                    CASE
+                        WHEN u.username LIKE :exactMatch THEN 0
+                        WHEN u.username LIKE :beginsMatch THEN 1
+                        WHEN u.username LIKE :containsMatch THEN 2
+                    ELSE 3
+                    END
+                ';
             }
+
+            // When filtering users by status.
+            if (!empty($params['status'])) {
+                $wheres[] = 'u.userStatus = :userStatus';
+            }
+
+            // Order by direction doesn't work with `bindValue()`, so we insert
+            // it directly into the query, but not before confirming that it's a
+            // whitelisted value to prevent SQL injection.
+            $directionWhitelist = ['ASC', 'DESC'];
+            $direction = !empty($params['order']) && in_array($params['order'], $directionWhitelist) ? $params['order'] : 'DESC';
+
+            $sort = $params['sort'] ?? 'id';
+            switch ($sort) {
+                case 'id':
+                    $orderBys[] = "u.userId $direction";
+                    break;
+                case 'username':
+                    $orderBys[] = "u.username $direction";
+                    break;
+                case 'status':
+                    $orderBys[] = "u.userStatus $direction";
+                    break;
+                case 'banned':
+                    $orderBys[] = "banned $direction";
+                    break;
+            }
+
+
+            // Combine clauses.
+            if (!empty($joins)) {
+                $query .= implode(' ', $joins);
+            }
+            if (!empty($wheres)) {
+                $query .= ' WHERE ' . implode(' AND ', $wheres);
+            }
+            if (!empty($groupBys)) {
+                $query .= ' GROUP BY ' . implode(', ', $groupBys);
+            }
+            if (!empty($orderBys)) {
+                $query .= ' ORDER BY ' . implode(', ', $orderBys);
+            }
+            $query .= ' LIMIT :start, :limit';
+
+
+            // Bind values and execute.
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare($query);
+
             if (!empty($params['feature'])) {
                 $stmt->bindValue('featureId', $params['feature'], PDO::PARAM_INT);
             }
             if (!empty($params['role'])) {
                 $stmt->bindValue('roleId', $params['role'], PDO::PARAM_INT);
             }
+            if (!empty($params['search'])) {
+                $stmt->bindValue('exactMatch', $params['search'], PDO::PARAM_STR);
+                $stmt->bindValue('beginsMatch', $params['search'] . '%', PDO::PARAM_STR);
+                $stmt->bindValue('containsMatch', '%' . $params['search'] . '%', PDO::PARAM_STR);
+            }
             if (!empty($params['status'])) {
                 $stmt->bindValue('userStatus', $params['status'], PDO::PARAM_STR);
             }
 
             $stmt->bindValue('start', ($params['page'] - 1) * $params['size'], PDO::PARAM_INT);
-            $stmt->bindValue('limit', (int) $params['size'], PDO::PARAM_INT);
+            $stmt->bindValue('limit', intval($params['size']), PDO::PARAM_INT);
             $stmt->execute();
 
             $pagination = [];
-            $pagination ['list'] = $stmt->fetchAll();
-            $pagination ['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
-            $pagination ['totalpages'] = ceil($pagination ['total'] / $params['size']);
-            $pagination ['pages'] = 5;
-            $pagination ['page'] = $params['page'];
-            $pagination ['limit'] = $params['size'];
+            $pagination['list'] = $stmt->fetchAll();
+            $pagination['total'] = $conn->fetchColumn('SELECT FOUND_ROWS()');
+            $pagination['totalpages'] = ceil($pagination['total'] / $params['size']);
+            $pagination['page'] = $params['page'];
+            $pagination['limit'] = $params['size'];
+
             return $pagination;
         } catch (DBALException $e) {
             throw new DBException("Failed to search users.", $e);

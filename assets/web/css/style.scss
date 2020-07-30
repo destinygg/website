@@ -2072,6 +2072,28 @@ form#nameForm {
   }
 }
 
+#users-table {
+  thead tr {
+    @include media-breakpoint-down(lg) {
+      td.username {
+        width: 360px;
+      }
+
+      td.status {
+        width: 100px;
+      }
+
+      td.banned {
+        width: 100px;
+      }
+
+      td.created-on {
+        width: 300px;
+      }
+    }
+  }
+}
+
 #username-warning-modal {
   .modal-content, .modal-header {
     background-color: #282828;
@@ -2080,4 +2102,8 @@ form#nameForm {
   button.close {
     color: #DEDEDE;
   }
+}
+
+#banned-icon {
+  color: #ff3636;
 }
