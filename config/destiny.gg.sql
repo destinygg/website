@@ -13,7 +13,9 @@ CREATE TABLE `bans` (
   `reason` text NOT NULL,
   `starttimestamp` datetime NOT NULL,
   `endtimestamp` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `targetuserid` (`targetuserid`),
+  KEY `endtimestamp` (`endtimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dfl_features` (
