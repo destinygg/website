@@ -111,7 +111,8 @@ module.exports = {
     },
     resolve: {
         alias: { jquery: 'jquery/src/jquery' },
-        extensions: ['.js']
+        extensions: ['.js'],
+        symlinks: false,
     },
     context: __dirname,
     devtool: false
