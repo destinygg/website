@@ -37,7 +37,7 @@
     "@fortawesome/fontawesome-free": "^5.10.2",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.8.0",
-    "dgg-chat-gui": "git://github.com/destinygg/chat-gui.git#9f07cab1c982801ac1c48517b9797cad32f5c6e8",
+    "dgg-chat-gui": "^2.3.4",
     "jquery": "^3.4.1",
     "jquery-validation": "^1.19.1",
     "moment": "^2.24.0",
