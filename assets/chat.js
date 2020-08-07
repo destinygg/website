@@ -7,7 +7,8 @@ const chat = new Chat({
     url: `ws${location.protocol === 'https:' ? 's' : ''}://${location.host}/ws`,
     api: {base: `${location.protocol}//${location.host}`},
     cdn: {base: script.getAttribute('data-cdn')},
-    cacheKey: script.getAttribute('data-cache-key')
+    cacheKey: script.getAttribute('data-cache-key'),
+    banAppealUrl: script.getAttribute('data-ban-appeal-url')
 });
 
 chat.withGui(require('dgg-chat-gui/assets/views/embed.html'))
