@@ -35,6 +35,7 @@ return [
     'support_email' => '',
     'google-verification' => '',
     'calendar' => '',
+    'merch' => [],
 
     'privateKeys' => [
         'reddit' => '',
