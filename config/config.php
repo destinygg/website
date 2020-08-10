@@ -32,9 +32,11 @@ return [
     'android' => ['app' => ''],
     'meta' => [],
     'links' => [],
+    'banAppealUrl' => '',
     'support_email' => '',
     'google-verification' => '',
     'calendar' => '',
+    'merch' => [],
 
     'privateKeys' => [
         'reddit' => '',

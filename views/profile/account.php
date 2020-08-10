@@ -5,6 +5,7 @@ use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
 use Destiny\Commerce\SubscriptionStatus;
+use Destiny\Common\Config;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,11 +49,11 @@ use Destiny\Commerce\SubscriptionStatus;
                         </dl>
                         <hr/>
                         <p>
-                            Any non-permanent bans are removed when subscribing as well
-                            as any mutes (there are no permanent mutes, maximum 6 days long).<br/>
-                            This is not meant to be a cash grab, rather a tool for those who would
-                            not like to wait for a manual unban or for the ban to naturally expire
-                            and are willing to pay for it. Please email <a href="mailto:unbans@destiny.gg">unbans@destiny.gg</a> to appeal.<br />
+                            Any non-permanent bans are removed when subscribing as well as any mutes (there are no permanent mutes, maximum 6 days long).<br>
+                            This is not meant to be a cash grab, rather a tool for those who would not like to wait for a manual unban or for the ban to naturally expire and are willing to pay for it.<br>
+                            <?php if(!empty(Config::$a['banAppealUrl'])): ?>
+                                Please visit <a target="_blank" href="<?= Config::$a['banAppealUrl'] ?>"><?= Config::$a['banAppealUrl'] ?></a> to appeal your ban.
+                            <?php endif; ?>
                         </p>
                     </div>
                 </div>

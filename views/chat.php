@@ -17,7 +17,8 @@ use Destiny\Common\Config;
 <?=Tpl::manifestScript('chat.js', [
     'id' => 'chat-include',
     'data-cache-key' => $this->cacheKey,
-    'data-cdn' => Config::cdnv()
+    'data-cdn' => Config::cdnv(),
+    'data-ban-appeal-url' => Config::$a['banAppealUrl']
 ])?>
 <?php include 'seg/tracker.php' ?>
 </body>
