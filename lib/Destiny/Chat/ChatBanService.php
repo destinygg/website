@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Chat;
 
+use Destiny\Chat\BanReasonParserFactory;
 use Destiny\Common\Application;
 use Destiny\Common\DBException;
 use Destiny\Common\Service;
@@ -284,40 +285,13 @@ class ChatBanService extends Service {
             $stmt->execute();
 
             $bans = $stmt->fetchAll();
-            $bans = array_map(array($this, 'parseBotBanReason'), $bans);
+
+            $parser = BanReasonParserFactory::create();
+            $bans = array_map(function($b) use ($parser) { return $parser->transformBan($b); }, $bans);
 
             return $bans;
         } catch (DBALException $e) {
             throw new DBException("Error getting bans for user.", $e);
         }
-    }
-
-    /**
-     * Split up a Bot-generated `reason` into its respective fields.
-     *
-     * A ban by Bot always has a reason in the following format:
-     * `<targetusername> banned through bot by <banningusername>. Reason:
-     * <reason>`. This function modifies a ban to make `banningusername` the
-     * username of the actual banner, not Bot, and `reason` the actual reason,
-     * not the Bot-generated reason. Non-Bot-bans are returned unmodified.
-     * 
-     * @return array The modified ban.
-     */
-    private function parseBotBanReason(array $ban): array {
-        if ($ban['banningusername'] == 'Bot') {
-            $parsed = preg_split('/ banned through bot by |\. Reason: /', $ban['reason']);
-
-            // Assume the reason was in the expected format and parsed
-            // successfully if exactly three strings were returned.
-            if (count($parsed) == 3) {
-                // Ignore `targetusername` because it may be outdated. 
-                list($_, $ban['banningusername'], $ban['reason']) = $parsed;
-
-                // Toggle this value so we still know it's a Bot ban.
-                $ban['botban'] = true;
-            }
-        }
-
-        return $ban;
     }
 }
