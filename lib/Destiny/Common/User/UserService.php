@@ -513,9 +513,12 @@ class UserService extends Service {
                 $stmt->bindValue('roleId', $params['role'], PDO::PARAM_INT);
             }
             if (!empty($params['search'])) {
-                $stmt->bindValue('exactMatch', $params['search'], PDO::PARAM_STR);
-                $stmt->bindValue('beginsMatch', $params['search'] . '%', PDO::PARAM_STR);
-                $stmt->bindValue('containsMatch', '%' . $params['search'] . '%', PDO::PARAM_STR);
+                // Treat all underscores as literal underscores.
+                $modifiedSearch = str_replace('_', '\_', $params['search']);
+
+                $stmt->bindValue('exactMatch', $modifiedSearch, PDO::PARAM_STR);
+                $stmt->bindValue('beginsMatch', $modifiedSearch . '%', PDO::PARAM_STR);
+                $stmt->bindValue('containsMatch', '%' . $modifiedSearch . '%', PDO::PARAM_STR);
             }
             if (!empty($params['status'])) {
                 $stmt->bindValue('userStatus', $params['status'], PDO::PARAM_STR);
