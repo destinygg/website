@@ -3,7 +3,7 @@
         <div id="footer-copyright">
             <h4>Destiny.gg <small><sup>&copy;</sup></small></h4>
             <p> www.destiny.gg
-                <br /><a href="mailto:contact@destiny.gg" title="Email Destiny"contact@destiny.gg</a>
+                <br /><a href="mailto:contact@destiny.gg" title="Email Destiny">contact@destiny.gg</a>
                 <br /><a href="/twitch" title="Destiny @ Twitch.tv">twitch.tv/destiny</a>
             </p>
         </div>
