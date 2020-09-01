@@ -8,7 +8,7 @@ return [
 
     'support_email' => 'contact@destiny.gg',
     'calendar'      => 'i54j4cu9pl4270asok3mqgdrhk@group.calendar.google.com',
-    'commerce'      => ['receiver_email' => 'contact@destiny.gg'],
+    'commerce'      => ['receiver_email' => 'steven.bonnell.ii@gmail.com'],
     'embed'         => ['stream' => ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg','stage.destiny.gg']]],
     'reddit'        => ['threads' => 'https://www.reddit.com/r/destiny/hot.json'],
     'blog'          => ['feed' => 'https://blog.destiny.gg/feed/json'],
