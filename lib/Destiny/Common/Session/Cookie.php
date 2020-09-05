@@ -11,6 +11,7 @@ class Cookie {
     public $domain = '';
     public $secure = false;
     public $httponly = true;
+    public $samesite = 'lax';
 
     public function __construct($name, array $params = null) {
         $this->setName($name);
@@ -47,6 +48,10 @@ class Cookie {
         return $this->httponly;
     }
 
+    public function getSameSite(): string {
+        return $this->samesite;
+    }
+
     public function getValue() {
         if (isset ($_COOKIE[$this->name])) {
             return $_COOKIE[$this->name];
@@ -64,7 +69,8 @@ class Cookie {
                 'path' => $this->getPath(),
                 'domain' => $this->getDomain(),
                 'secure' => $this->getSecure(),
-                'httponly' => $this->getHttpOnly()
+                'httponly' => $this->getHttpOnly(),
+                'samesite' => $this->getSameSite()
             ]
         );
     }
@@ -81,7 +87,8 @@ class Cookie {
                 'path' => $this->getPath(),
                 'domain' => $this->getDomain(),
                 'secure' => $this->getSecure(),
-                'httponly' => $this->getHttpOnly()
+                'httponly' => $this->getHttpOnly(),
+                'samesite' => $this->getSameSite()
             ]
         );
     }

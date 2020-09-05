@@ -113,6 +113,7 @@ return [
         'path' => '/',
         'secure' => false,
         'httponly' => true,
+        'samesite' => 'lax'
     ],
 
     'db' => [

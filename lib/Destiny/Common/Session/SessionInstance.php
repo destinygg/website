@@ -45,7 +45,8 @@ class SessionInstance {
             'path' => $sessionCookie->getPath(),
             'domain' => $sessionCookie->getDomain(),
             'secure' => $sessionCookie->getSecure(),
-            'httponly' => $sessionCookie->getHttpOnly()
+            'httponly' => $sessionCookie->getHttpOnly(),
+            'samesite' => $sessionCookie->getSameSite()
         ]);
         session_name($sessionCookie->getName());
     }
