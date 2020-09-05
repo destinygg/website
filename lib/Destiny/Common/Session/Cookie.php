@@ -56,14 +56,34 @@ class Cookie {
 
     public function setValue($value, $expiry) {
         $_COOKIE[$this->name] = $value;
-        setcookie($this->name, $value, $expiry, $this->getPath(), $this->getDomain(), $this->getSecure(), $this->getHttpOnly());
+        setcookie(
+            $this->name,
+            $value,
+            [
+                'expires' => $expiry,
+                'path' => $this->getPath(),
+                'domain' => $this->getDomain(),
+                'secure' => $this->getSecure(),
+                'httponly' => $this->getHttpOnly()
+            ]
+        );
     }
 
     public function clearCookie() {
         if (isset ($_COOKIE[$this->name])) {
             unset ($_COOKIE[$this->name]);
         }
-        setcookie($this->name, '', time() - 3600, $this->getPath(), $this->getDomain(), $this->getSecure(), $this->getHttpOnly());
+        setcookie(
+            $this->name,
+            '',
+            [
+                'expires' => time() - 3600,
+                'path' => $this->getPath(),
+                'domain' => $this->getDomain(),
+                'secure' => $this->getSecure(),
+                'httponly' => $this->getHttpOnly()
+            ]
+        );
     }
 
 }
