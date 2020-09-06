@@ -40,13 +40,14 @@ class SessionInstance {
     }
 
     public function setupCookie(Cookie $sessionCookie) {
-        session_set_cookie_params(
-            $sessionCookie->getLife(),
-            $sessionCookie->getPath(),
-            $sessionCookie->getDomain(),
-            $sessionCookie->getSecure(),
-            $sessionCookie->getHttpOnly()
-        );
+        session_set_cookie_params([
+            'lifetime' => $sessionCookie->getLife(),
+            'path' => $sessionCookie->getPath(),
+            'domain' => $sessionCookie->getDomain(),
+            'secure' => $sessionCookie->getSecure(),
+            'httponly' => $sessionCookie->getHttpOnly(),
+            'samesite' => $sessionCookie->getSameSite()
+        ]);
         session_name($sessionCookie->getName());
     }
 

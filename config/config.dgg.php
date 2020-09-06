@@ -29,6 +29,12 @@ return [
         'dgg_user' => 10
     ],
 
+    'cookie' => [
+        'domain' => 'www.destiny.gg',
+        'secure' => true,
+        'samesite' => 'none'
+    ],
+
     'meta' => [
         'shortName'      => 'Destiny.gg',
         'title'          => 'Destiny - Steven Bonnell II',
