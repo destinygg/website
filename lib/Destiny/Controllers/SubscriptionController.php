@@ -432,7 +432,7 @@ class SubscriptionController {
         try {
             $ban = $chatBanService->getUserActiveBan($user['userId']);
             if (empty ($ban) or (!empty($ban ['endtimestamp']) or $subscriptionType['tier'] >= 2)) {
-                $redisService->sendUnban($user['userId']);
+                $redisService->sendUnbanAndUnmute($user['userId']);
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
