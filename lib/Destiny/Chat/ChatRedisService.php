@@ -72,6 +72,13 @@ class ChatRedisService extends Service {
     }
 
     /**
+     * @throws Exception
+     */
+    public function cacheIPForUser(int $userId, string $ipAddress) {
+        $keys = RedisUtils::callScript('cache-ip', ["CHAT:userips-$userId", $ipAddress], 1);
+    }
+
+    /**
      * @return array $ipaddresses The addresses found
      */
     public function getIPByUserId(int $userid): array {

@@ -13,7 +13,7 @@ class RedisUtils {
      * @return mixed
      * @throws Exception
      */
-    public static function callScript(string $scriptname, array $argument = []) {
+    public static function callScript(string $scriptname, array $arguments = [], $numKeys = 0) {
         $redis = Application::instance()->getRedis();
         $dir = Config::$a['redis']['scriptdir'];
 
@@ -21,7 +21,7 @@ class RedisUtils {
         if (file_exists($hashFilename)) {
             $hash = file_get_contents($hashFilename);
             if ($hash) {
-                $ret = $redis->evalSha($hash, $argument);
+                $ret = $redis->evalSha($hash, $arguments, $numKeys);
                 if ($ret) return $ret;
             }
         }
@@ -33,7 +33,7 @@ class RedisUtils {
         if (!file_put_contents($dir . $scriptname . '.hash', $hash)) {
             throw new Exception('Unable to save hash');
         }
-        return $redis->evalSha($hash, $argument);
+        return $redis->evalSha($hash, $arguments, $numKeys);
     }
 
 }

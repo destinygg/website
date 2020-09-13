@@ -48,7 +48,7 @@ try {
         'uri' => $_SERVER['REQUEST_URI'],
         'method' => $_SERVER['REQUEST_METHOD'],
         'headers' => Http::extractHeaders($_SERVER),
-        'ipAddress' => Http::extractIpAddress($_SERVER),
+        'address' => Http::extractIpAddress($_SERVER),
         'get' => $_GET,
         'post' => $_POST
     ]));

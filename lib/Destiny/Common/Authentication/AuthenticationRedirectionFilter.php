@@ -1,8 +1,10 @@
 <?php
 namespace Destiny\Common\Authentication;
 
+use Destiny\Chat\ChatRedisService;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
+use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserAuthService;
 use Destiny\Common\User\UserRole;
@@ -19,14 +21,20 @@ class AuthenticationRedirectionFilter {
     private $authResponse;
 
     /**
+     * @var Request
+     */
+    private $request;
+
+    /**
      * @throws Exception
      */
-    function __construct(OAuthResponse $authResponse) {
+    function __construct(OAuthResponse $authResponse, Request $request) {
         if (empty($authResponse) || !$authResponse->isValid()) {
             Log::error('Error validating auth response {creds}', ['creds' => var_export($authResponse, true)]);
             throw new Exception ('Invalid auth credentials');
         }
         $this->authResponse = $authResponse;
+        $this->request = $request;
     }
 
     private function buildTempUsername(): string {
@@ -105,6 +113,12 @@ class AuthenticationRedirectionFilter {
                     ['title' => 'Email', 'value' => $authResponse->getAuthEmail(), 'short' => true],
                 ]
             ]);
+
+            // Cache the IP address the new user signed up with.
+            $r = $this->request;
+            if (!empty($r->address())) {
+                ChatRedisService::instance()->cacheIPForUser($userId, $r->address());
+            }
 
             $user = $userService->getUserById($userId);
         } else {

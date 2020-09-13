@@ -85,7 +85,7 @@ class LoginController {
             $authService = AuthenticationService::instance();
             $authHandler = $authService->getLoginAuthHandlerByType($type);
             $response = $authHandler->exchangeCode($params);
-            $redirectFilter = new AuthenticationRedirectionFilter($response);
+            $redirectFilter = new AuthenticationRedirectionFilter($response, $request);
             return $redirectFilter->execute();
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
