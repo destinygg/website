@@ -103,7 +103,7 @@ class DonateController {
                 'currency' => Config::$a ['commerce'] ['currency'],
                 'amount' => $params['amount'],
                 'status' => DonationStatus::PENDING,
-                'message' => mb_substr($params['message'], 0, 200),
+                'message' => mb_substr($params['message'], 0, 255),
                 'invoiceId' => RandomString::makeUrlSafe(32),
                 'timestamp' => Date::getDateTime()->format('Y-m-d H:i:s')
             ];

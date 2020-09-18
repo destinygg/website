@@ -52,7 +52,7 @@ use Destiny\Common\Utils\Tpl;
                     </div>
                 </div>
                 <div class="ds-block text-message">
-                    <textarea name="message" autocomplete="off" maxlength="200" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
+                    <textarea name="message" autocomplete="off" maxlength="255" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
