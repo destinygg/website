@@ -109,7 +109,8 @@ class ChatRedisService extends Service {
         return $this->redis->publish("broadcast-$this->redisdb", json_encode(['data' => $message], JSON_FORCE_OBJECT));
     }
 
-    public function sendUnban(int $userId) {
+    public function sendUnbanAndUnmute(int $userId) {
+        // Publishing to this channel unbans *and* unmutes.
         $this->redis->publish("unbanuserid-$this->redisdb", "$userId");
     }
 

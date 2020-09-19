@@ -1,5 +1,6 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Config;
 use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\Tpl;
@@ -47,10 +48,11 @@ use Destiny\Common\Utils\Tpl;
                         <label class="sr-only" for="amount">Amount (in dollars)</label>
                         <input class="form-control required number" id="amount" name="amount" placeholder="5.00" autofocus />
                         <div id="donation-amount-currency">$</div>
+                        <span class="help-block">Donate $<?= Config::$a['commerce']['minimum_donation_for_unban'] ?> or more remove a non-permanent ban or mute in chat.</span>
                     </div>
                 </div>
                 <div class="ds-block text-message">
-                    <textarea name="message" autocomplete="off" maxlength="200" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
+                    <textarea name="message" autocomplete="off" maxlength="255" rows="3" class="form-control" placeholder="Write a message ..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>

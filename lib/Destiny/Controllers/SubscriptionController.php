@@ -427,12 +427,10 @@ class SubscriptionController {
             return 'redirect: /subscription/' . urlencode($subscription ['subscriptionId']) . '/error';
         }
 
-        // only unban the user if the ban is non-permanent or the tier of the subscription is >= 2
-        // we unban the user if no ban is found because it also unmute's
         try {
             $ban = $chatBanService->getUserActiveBan($user['userId']);
-            if (empty ($ban) or (!empty($ban ['endtimestamp']) or $subscriptionType['tier'] >= 2)) {
-                $redisService->sendUnban($user['userId']);
+            if (empty($ban) || !$chatBanService->isPermanentBan($ban)) {
+                $redisService->sendUnbanAndUnmute($user['userId']);
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());

@@ -174,6 +174,7 @@ class ChatSubscriptionController {
             $userService = UserService::instance();
             $userAuthService = UserAuthService::instance();
             $redisService = ChatRedisService::instance();
+            $chatBanService = ChatBanService::instance();
             $submessage = isset($data['sub_message']) && !empty($data['sub_message']) ? $data['sub_message']['message'] : '';
             $months = isset($data['months']) && !empty($data['months']) && $data['months'] > 0 ? ($data['months'] > 1 ? ' active for ' . $data['months'] . ' months' : ' active for ' . $data['months'] . ' month') : '';
 
@@ -219,6 +220,16 @@ class ChatSubscriptionController {
                     break;
 
             }
+
+            try {
+                $ban = $chatBanService->getUserActiveBan($user['userId']);
+                if (empty($ban) || !$chatBanService->isPermanentBan($ban)) {
+                    $redisService->sendUnbanAndUnmute($user['userId']);
+                }
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
+
             $response->setStatus(Http::STATUS_NO_CONTENT);
             return null;
         } catch (Exception $e) {

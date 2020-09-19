@@ -1,6 +1,7 @@
 <?php
 namespace Destiny\Controllers;
 
+use Destiny\Chat\ChatBanService;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\DonationStatus;
@@ -102,7 +103,7 @@ class DonateController {
                 'currency' => Config::$a ['commerce'] ['currency'],
                 'amount' => $params['amount'],
                 'status' => DonationStatus::PENDING,
-                'message' => mb_substr($params['message'], 0, 200),
+                'message' => mb_substr($params['message'], 0, 255),
                 'invoiceId' => RandomString::makeUrlSafe(32),
                 'timestamp' => Date::getDateTime()->format('Y-m-d H:i:s')
             ];
@@ -204,6 +205,22 @@ class DonateController {
                     'amount'        => number_format($donation['amount'], 2),
                     'currency'      => $donation['currency']
                 ]);
+            }
+
+            // `$userid` is set to `-1` above if the donator isn't logged in. If
+            // the user isn't logged in, issuing an unban/unmute is unnecessary.
+            if ($userid !== -1) {
+                try {
+                    $chatBanService = ChatBanService::instance();
+
+                    $ban = $chatBanService->getUserActiveBan($userid);
+                    $minimumDonationRequirementMet = $donation['amount'] >= Config::$a['commerce']['minimum_donation_for_unban'];
+                    if ((empty($ban) || !$chatBanService->isPermanentBan($ban)) && $minimumDonationRequirementMet) {
+                        $redisService->sendUnbanAndUnmute($userid);
+                    }
+                } catch (Exception $e) {
+                    Log::error($e->getMessage());
+                }
             }
 
         } catch (Exception $e) {

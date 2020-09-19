@@ -49,7 +49,7 @@ use Destiny\Common\Config;
                         </dl>
                         <hr/>
                         <p>
-                            Any non-permanent bans are removed when subscribing as well as any mutes (there are no permanent mutes, maximum 6 days long).<br>
+                            Non-permanent bans and mutes are removed when you subscribe or donate. Mutes are always temporary.<br>
                             This is not meant to be a cash grab, rather a tool for those who would not like to wait for a manual unban or for the ban to naturally expire and are willing to pay for it.<br>
                             <?php if(!empty(Config::$a['banAppealUrl'])): ?>
                                 Please visit <a target="_blank" href="<?= Config::$a['banAppealUrl'] ?>"><?= Config::$a['banAppealUrl'] ?></a> to appeal your ban.

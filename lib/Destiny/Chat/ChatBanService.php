@@ -294,4 +294,9 @@ class ChatBanService extends Service {
             throw new DBException("Error getting bans for user.", $e);
         }
     }
+
+    public function isPermanentBan(array $ban): bool {
+        // Permanent bans don't have an `endtimestamp`.
+        return empty($ban['endtimestamp']);
+    }
 }
