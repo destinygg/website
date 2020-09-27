@@ -420,6 +420,29 @@ class SubscriptionsService extends Service {
     }
 
     /**
+     * Get users who accept gift subs.
+     *
+     * Note that this query doesn't exclude users who are already subscribed.
+     *
+     * @throws DBException
+     */
+    public function findGiftableUsersByUsernames(array $usernames): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery(
+                'SELECT *
+                FROM dfl_users
+                WHERE username IN (?)',
+                [$usernames],
+                [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]
+            );
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error finding giftable users.", $e);
+        }
+    }
+
+    /**
      * @return array|false
      * @throws DBException
      */
