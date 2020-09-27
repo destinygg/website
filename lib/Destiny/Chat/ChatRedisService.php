@@ -85,6 +85,34 @@ class ChatRedisService extends Service {
         $redis = Application::instance()->getRedis();
         return $redis->zRange('CHAT:userips-' . $userid, 0, -1);
     }
+
+    /**
+     * Gets users connected to chat.
+     *
+     * @return array An integer-indexed array of arrays, or an empty array if no users are connected. Each nested array is structured as follows.
+     *     $user = [
+     *         'nick' => (string) The user's username.
+     *         'features' => (array) An array of features that belong to the user (as `featureName` strings).
+     *     ]
+     *
+     * @throws Exception
+     */
+    public function getChatConnectedUsers(): array {
+        $redis = Application::instance()->getRedis();
+
+        $namesCache = $redis->get('CHAT:connectedUsers');
+
+        // `Redis->get()` returns `false` if the key doesn't exist. If the key
+        // doesn't exist, return an empty array to indicate no users are
+        // connected.
+        if (!$namesCache) {
+            return [];
+        }
+
+        // This key contains a JSON-encoded string.
+        $decoded_namesCache = json_decode($namesCache, true);
+        return $decoded_namesCache['users'];
+    }
     
     /**
      * Updates the session ttl so it does not expire
