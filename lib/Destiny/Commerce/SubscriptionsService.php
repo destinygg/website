@@ -486,4 +486,27 @@ class SubscriptionsService extends Service {
             throw new DBException("Error searching subscriptions.", $e);
         }
     }
+
+    /**
+     * @return array|false
+     * @throws DBException
+     */
+    public function getSubscriptionsByPaymentId(int $paymentId): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT subs.*
+                FROM dfl_users_subscriptions AS subs
+                INNER JOIN dfl_payments_purchases AS purchases
+                ON purchases.subscriptionId = subs.subscriptionId
+                    AND purchases.paymentId = :paymentId
+            ');
+            $stmt->bindValue('paymentId', $paymentId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException('Error loading payment', $e);
+        }
+    }
+
 }

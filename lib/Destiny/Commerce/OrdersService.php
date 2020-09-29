@@ -66,8 +66,8 @@ class OrdersService extends Service {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('
                 SELECT p.* FROM dfl_orders_payments `p`
-                INNER JOIN dfl_users_subscriptions `s` ON (s.subscriptionId = p.subscriptionId)
-                WHERE p.subscriptionId = :subscriptionId
+                INNER JOIN dfl_payments_purchases `s` ON (s.paymentId = p.paymentId)
+                WHERE s.subscriptionId = :subscriptionId
                 ORDER BY p.paymentDate ASC
                 LIMIT :start,:limit
             ');
@@ -88,7 +88,6 @@ class OrdersService extends Service {
         try {
             $conn = Application::getDbConn();
             $conn->insert ( 'dfl_orders_payments', [
-                'subscriptionId' => $payment ['subscriptionId'],
                 'amount' => $payment ['amount'],
                 'currency' => $payment ['currency'],
                 'transactionId' => $payment ['transactionId'],
@@ -102,6 +101,36 @@ class OrdersService extends Service {
             return intval($conn->lastInsertId());
         } catch (DBALException $e) {
             throw new DBException("Error adding payment", $e);
+        }
+    }
+
+    /**
+     * @throws DBException
+     */
+    public function addPurchaseOfSubscription(int $paymentId, int $subscriptionId) {
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('dfl_payments_purchases', [
+                'paymentId' => $paymentId,
+                'subscriptionId' => $subscriptionId
+            ]);
+        } catch (DBALException $e) {
+            throw new DBException('Error adding new purchase of subscription.', $e);
+        }
+    }
+
+    /**
+     * @throws DBException
+     */
+    public function addPurchaseOfDonation(int $paymentId, int $donationId) {
+        try {
+            $conn = Application::getDbConn();
+            $conn->insert('dfl_payments_purchases', [
+                'paymentId' => $paymentId,
+                'donationId' => $donationId
+            ]);
+        } catch (DBALException $e) {
+            throw new DBException('Error adding new purchase of donation.', $e);
         }
     }
 

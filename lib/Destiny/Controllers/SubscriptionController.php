@@ -395,9 +395,9 @@ class SubscriptionController {
                 if (count($payments) > 0) {
                     $subscription['status'] = SubscriptionStatus::ACTIVE;
                     foreach ($payments as $payment) {
-                        $payment['subscriptionId'] = $subscription ['subscriptionId'];
                         $payment['payerId'] = $params ['PayerID'];
-                        $ordersService->addPayment($payment);
+                        $paymentId = $ordersService->addPayment($payment);
+                        $ordersService->addPurchaseOfSubscription($paymentId, $subscription['subscriptionId']);
                     }
                 } else {
                     $subscription['status'] = SubscriptionStatus::PENDING;

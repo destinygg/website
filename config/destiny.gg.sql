@@ -45,8 +45,6 @@ CREATE TABLE `dfl_orders_ipn` (
 
 CREATE TABLE `dfl_orders_payments` (
   `paymentId` int(14) NOT NULL AUTO_INCREMENT,
-  `donationId` int(14) DEFAULT NULL,
-  `subscriptionId` int(14) DEFAULT NULL,
   `amount` float DEFAULT NULL,
   `currency` varchar(4) DEFAULT NULL,
   `transactionId` varchar(50) DEFAULT NULL,
@@ -306,6 +304,17 @@ CREATE TABLE `countries` (
   UNIQUE KEY `code` (`code`),
   KEY `label` (`label`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `dfl_payments_purchases` (
+    `id` int(14) NOT NULL AUTO_INCREMENT,
+    `paymentId` int(14) NOT NULL,
+    `subscriptionId` int(14) DEFAULT NULL,
+    `donationId` int(14) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `dfl_payments_purchases_ibfk_1` FOREIGN KEY (`paymentId`) REFERENCES `dfl_orders_payments` (`paymentId`),
+    CONSTRAINT `dfl_payments_purchases_ibfk_2` FOREIGN KEY (`subscriptionId`) REFERENCES `dfl_users_subscriptions` (`subscriptionId`),
+    CONSTRAINT `dfl_payments_purchases_ibfk_3` FOREIGN KEY (`donationId`) REFERENCES `donations` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

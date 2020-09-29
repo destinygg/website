@@ -28,30 +28,6 @@ class DonationService extends Service {
     /**
      * @throws DBException
      */
-    public function addPayment(array $payment): int {
-        try {
-            $conn = Application::getDbConn();
-            $conn->insert ( 'dfl_orders_payments', [
-                'donationId' => $payment ['donationId'],
-                'amount' => $payment ['amount'],
-                'currency' => $payment ['currency'],
-                'transactionId' => $payment ['transactionId'],
-                'transactionType' => $payment ['transactionType'],
-                'paymentType' => $payment ['paymentType'],
-                'payerId' => $payment ['payerId'],
-                'paymentStatus' => $payment ['paymentStatus'],
-                'paymentDate' => $payment ['paymentDate'],
-                'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
-            ]);
-            return intval($conn->lastInsertId());
-        } catch (DBALException $e) {
-            throw new DBException("Error adding payment.", $e);
-        }
-    }
-
-    /**
-     * @throws DBException
-     */
     public function updateDonation(int $id, array $donation){
         try {
             $conn = Application::getDbConn();
