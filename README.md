@@ -1,3 +1,5 @@
+*********************HEY FOLKS , WELCOME HERE********************* 
+
 # Destiny.gg
 Source code for the website [www.destiny.gg](http://www.destiny.gg/)
 This is a work in progress!
