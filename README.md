@@ -33,7 +33,7 @@ Create and load the database using `destiny.gg.sql`
 
 ### Dependencies
 
-Then download and install [glue](http://glue.readthedocs.org/) and [composer](http://getcomposer.org/).
+Then download and install [glue](http://glue.readthedocs.org/) and [Composer](http://getcomposer.org/).
 
 #### Install the node dependencies
 
