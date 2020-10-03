@@ -126,13 +126,14 @@ class PayPalApiService extends Service {
      * @return null|string
      * @throws Exception
      */
-    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false) {
+    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false, int $quantity = 1) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
 
         $token = null;
         $amount = $subscriptionType['amount'];
         $agreement = $subscriptionType['agreement'];
         $currency = Config::$a['commerce']['currency'];
+        $totalAmount = number_format($amount * $quantity, 2);
 
         $details = new SetExpressCheckoutRequestDetailsType();
         $details->BrandName = Config::$a['meta']['title'];
@@ -153,15 +154,15 @@ class PayPalApiService extends Service {
         $payment = new PaymentDetailsType();
         $payment->PaymentAction = 'Sale';
         $payment->NotifyURL = Config::$a['paypal']['endpoint_ipn'];
-        $payment->OrderTotal = new BasicAmountType($currency, $amount);
-        $payment->ItemTotal = new BasicAmountType($currency, $amount);
+        $payment->OrderTotal = new BasicAmountType($currency, $totalAmount);
+        $payment->ItemTotal = new BasicAmountType($currency, $totalAmount);
         $payment->Recurring = 0;
         $details->PaymentDetails [0] = $payment;
 
         $item = new PaymentDetailsItemType();
         $item->Name = $subscriptionType ['itemLabel'];
-        $item->Amount = new BasicAmountType($currency, $amount);
-        $item->Quantity = 1;
+        $item->Amount = new BasicAmountType($currency, $amount); // The cost of a single subscription.
+        $item->Quantity = $quantity;
         $item->ItemCategory = 'Physical'; // or 'Physical'. TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
         $item->Number = $subscriptionType ['id'];
         $payment->PaymentDetailsItem [0] = $item;
