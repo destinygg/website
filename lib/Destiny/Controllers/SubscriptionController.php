@@ -363,7 +363,6 @@ class SubscriptionController {
 
             // Create the payment profile
             try {
-                /*$info = */$payPalApiService->retrieveCheckoutInfo($params['token']);
                 // Payment date is 1 day before subscription rolls over.
                 if ($subscription['recurring'] == 1 || $subscription['recurring'] == true) {
                     $startPaymentDate = Date::getDateTime();
@@ -382,8 +381,9 @@ class SubscriptionController {
                 }
                 // Record the payments as well as check if any are not in the completed state
                 // we put the subscription into "PENDING" state if a payment is found not completed
-                $DoECResponse = $payPalApiService->getCheckoutPaymentResponse($params ['PayerID'], $params ['token'], $subscriptionType['amount']);
-                $payments = $payPalApiService->getCheckoutResponsePayments($DoECResponse);
+                $checkoutDetails = $payPalApiService->retrieveCheckoutInfo($params['token']);
+                $doECResponse = $payPalApiService->completeSubscribeECTransaction($checkoutDetails);
+                $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
             } catch (Exception $e) {
                 $n = new Exception("Error processing paypal checkout response", $e);
                 Log::error($n);

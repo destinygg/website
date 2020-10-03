@@ -184,6 +184,35 @@ class PayPalApiService extends Service {
     }
 
     /**
+     * Complete a PayPal Express Checkout subscription transaction.
+     *
+     * @param GetExpressCheckoutDetailsResponseType $checkoutInfo The details of the transaction. Obtain this value with `PayPalApiService->retrieveCheckoutInfo()`.
+     * @return DoExpressCheckoutPaymentResponseType An object with details on the completed transaction.
+     * @throws Exception
+     */
+    public function completeSubscribeECTransaction(GetExpressCheckoutDetailsResponseType $checkoutInfo) {
+        $paypalService = new PayPalAPIInterfaceServiceService($this->getConfig());
+
+        $responseDetails = $checkoutInfo->GetExpressCheckoutDetailsResponseDetails;
+
+        $doECRequestDetails = new DoExpressCheckoutPaymentRequestDetailsType();
+        $doECRequestDetails->PayerID = $responseDetails->PayerInfo->PayerID;
+        $doECRequestDetails->Token = $responseDetails->Token;
+        $doECRequestDetails->PaymentAction = $responseDetails->PaymentDetails[0]->PaymentAction;
+        $doECRequestDetails->PaymentDetails = $responseDetails->PaymentDetails;
+
+        $doECRequest = new DoExpressCheckoutPaymentRequestType($doECRequestDetails);
+        $doECReq = new DoExpressCheckoutPaymentReq();
+        $doECReq->DoExpressCheckoutPaymentRequest = $doECRequest;
+
+        try {
+            return $paypalService->DoExpressCheckoutPayment($doECReq);
+        } catch (\Exception $e) {
+            throw new Exception("Error completing subscription checkout transaction.", $e);
+        }
+    }
+
+    /**
      * Create an ExpressCheckout @ paypal before doing a 302 redirect
      * @return null|string
      * @throws Exception
