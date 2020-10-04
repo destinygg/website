@@ -1,4 +1,4 @@
-# Destiny.gg Amezing Site
+# Destiny.gg Amezing Site 
 Source code for the website [www.destiny.gg](http://www.destiny.gg/)
 This is a work in progress!
 
