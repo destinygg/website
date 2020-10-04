@@ -37,10 +37,17 @@ use Destiny\Common\Config;
                 <div class="ds-block">
                     <p>
                         Your order was successful.<br>
-                        The PayPal transaction ID for your payment is <em><?= $this->transactionId ?></em>.<br>
+
+                        <?php if (!empty($this->transactionId)): ?>
+                            The PayPal transaction ID for your payment is <em><?= $this->transactionId ?></em>.<br>
+                        <?php else: ?>
+                            The PayPal transaction is still pending. Your sub will activate when it's processed.<br>
+                        <?php endif; ?>
+
                         <?php if (!empty(Config::$a['support_email'])): ?>
                             Please email <a href="mailto:<?= Config::$a['support_email'] ?>"><?= Config::$a['support_email'] ?></a> if you have any questions or concerns.<br>
                         <?php endif; ?>
+
                         <br>
                         Thank you for your support!
                     </p>

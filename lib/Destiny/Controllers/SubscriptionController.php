@@ -474,7 +474,9 @@ class SubscriptionController {
         // Update the user
         $authService->flagUserForUpdate($user['userId']);
 
-        // Redirect to completion page
+        // We pass the token rather than the transaction ID to handle scenarios
+        // where the payment is still pending and there is no transaction ID. A
+        // token expires after three hours.
         return "redirect: /subscription/complete?token=" . $params['token'];
     }
 
@@ -494,7 +496,8 @@ class SubscriptionController {
 
         $model->title = 'Subscription Complete';
         $model->quantity = $paymentDetails->PaymentDetailsItem[0]->Quantity;
-        $model->transactionId = $paymentDetails->TransactionId;
+        // There is no `TransactionId` if the transaction is pending.
+        $model->transactionId = $paymentDetails->TransactionId ?? null;
         $model->orderTotal = $paymentDetails->OrderTotal->value;
         $model->subscriptionType = $subscriptionType;
         return 'subscribe/complete';
