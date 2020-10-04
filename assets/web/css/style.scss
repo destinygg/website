@@ -2107,3 +2107,25 @@ form#nameForm {
 #banned-icon {
   color: #ff3636;
 }
+
+table#transaction-summary {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+
+  col.quantity, col.price {
+    width: 140px;
+  }
+
+  th, td {
+    padding: 14px;
+  }
+
+  th {
+    font-size: 0.9em;
+  }
+
+  td {
+    background: rgba(255, 255, 255, 0.04);
+  }
+}

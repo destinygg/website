@@ -333,5 +333,4 @@ class PayPalApiService extends Service {
         }
         return $payments;
     }
-
 }

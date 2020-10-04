@@ -475,34 +475,28 @@ class SubscriptionController {
         $authService->flagUserForUpdate($user['userId']);
 
         // Redirect to completion page
-        return "redirect: /subscription/{$subscription['subscriptionId']}/complete";
+        return "redirect: /subscription/complete?token=" . $params['token'];
     }
 
     /**
-     * @Route ("/subscription/{subscriptionId}/complete")
+     * @Route ("/subscription/complete")
      * @Secure ({"USER"})
      * @throws Exception
      */
     public function subscriptionComplete(array $params, ViewModel $model): string {
-        FilterParams::required($params, 'subscriptionId');
+        FilterParams::required($params, 'token');
 
-        $subscriptionsService = SubscriptionsService::instance();
-        $userService = UserService::instance();
-        $userId = Session::getCredentials()->getUserId();
-        $subscription = $subscriptionsService->findById($params ['subscriptionId']);
-
-        if (empty ($subscription) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId)) {
-            throw new Exception ('Invalid subscription record');
-        }
-
-        if (!empty($subscription['gifter'])) {
-            $giftee = $userService->getUserById($subscription['userId']);
-            $model->giftee = $giftee;
-        }
+        $checkoutDetails = PayPalApiService::instance()->retrieveCheckoutInfo($params['token']);
+        $paymentDetails = $checkoutDetails->GetExpressCheckoutDetailsResponseDetails->PaymentDetails[0];
+        $subscriptionType = SubscriptionsService::instance()->getSubscriptionType(
+            $paymentDetails->PaymentDetailsItem[0]->Number
+        );
 
         $model->title = 'Subscription Complete';
-        $model->subscription = $subscription;
-        $model->subscriptionType = $subscriptionsService->getSubscriptionType($subscription ['subscriptionType']);
+        $model->quantity = $paymentDetails->PaymentDetailsItem[0]->Quantity;
+        $model->transactionId = $paymentDetails->TransactionId;
+        $model->orderTotal = $paymentDetails->OrderTotal->value;
+        $model->subscriptionType = $subscriptionType;
         return 'subscribe/complete';
     }
 
