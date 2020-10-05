@@ -355,63 +355,51 @@ class SubscriptionController {
             Session::remove('token');
 
             // Create the payment profile
-            try {
-                // Payment date is 1 day before subscription rolls over.
-                if ($subscription['recurring'] == 1 || $subscription['recurring'] == true) {
-                    $startPaymentDate = Date::getDateTime();
-                    $nextPaymentDate = Date::getDateTime();
-                    $nextPaymentDate->modify('+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower($subscriptionType ['billingPeriod']));
-                    $nextPaymentDate->modify('-1 DAY');
-                    $reference = $subscription ['userId'] . '-' . $subscription ['subscriptionId'];
-                    $paymentProfileId = $payPalApiService->createSubscriptionPaymentProfile($params ['token'], $reference, $user['username'], $nextPaymentDate, $subscriptionType);
-                    if (empty ($paymentProfileId)) {
-                        throw new Exception ('Invalid recurring payment profileId returned from Paypal');
-                    }
-                    $subscription['paymentStatus'] = PaymentStatus::ACTIVE;
-                    $subscription['paymentProfileId'] = $paymentProfileId;
-                    $subscription['billingStartDate'] = $startPaymentDate->format('Y-m-d H:i:s');
-                    $subscription['billingNextDate'] = $nextPaymentDate->format('Y-m-d H:i:s');
+            // Payment date is 1 day before subscription rolls over.
+            if ($subscription['recurring'] == 1 || $subscription['recurring'] == true) {
+                $startPaymentDate = Date::getDateTime();
+                $nextPaymentDate = Date::getDateTime();
+                $nextPaymentDate->modify('+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower($subscriptionType ['billingPeriod']));
+                $nextPaymentDate->modify('-1 DAY');
+                $reference = $subscription ['userId'] . '-' . $subscription ['subscriptionId'];
+                $paymentProfileId = $payPalApiService->createSubscriptionPaymentProfile($params ['token'], $reference, $user['username'], $nextPaymentDate, $subscriptionType);
+                if (empty ($paymentProfileId)) {
+                    throw new Exception ('Invalid recurring payment profileId returned from Paypal');
                 }
-                // Record the payments as well as check if any are not in the completed state
-                // we put the subscription into "PENDING" state if a payment is found not completed
-                $checkoutDetails = $payPalApiService->retrieveCheckoutInfo($params['token']);
-                $doECResponse = $payPalApiService->completeSubscribeECTransaction($checkoutDetails);
-                $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
-            } catch (Exception $e) {
-                $n = new Exception("Error processing paypal checkout response", $e);
-                Log::error($n);
-                throw $n;
+                $subscription['paymentStatus'] = PaymentStatus::ACTIVE;
+                $subscription['paymentProfileId'] = $paymentProfileId;
+                $subscription['billingStartDate'] = $startPaymentDate->format('Y-m-d H:i:s');
+                $subscription['billingNextDate'] = $nextPaymentDate->format('Y-m-d H:i:s');
             }
+            // Record the payments as well as check if any are not in the completed state
+            // we put the subscription into "PENDING" state if a payment is found not completed
+            $checkoutDetails = $payPalApiService->retrieveCheckoutInfo($params['token']);
+            $doECResponse = $payPalApiService->completeSubscribeECTransaction($checkoutDetails);
+            $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
+
             // Update subscription
-            try {
-                $conn->beginTransaction();
-                if (count($payments) > 0) {
-                    $subscription['status'] = SubscriptionStatus::ACTIVE;
-                    foreach ($payments as $payment) {
-                        $payment['payerId'] = $params ['PayerID'];
-                        $paymentId = $ordersService->addPayment($payment);
-                        $ordersService->addPurchaseOfSubscription($paymentId, $subscription['subscriptionId']);
-                    }
-                } else {
-                    $subscription['status'] = SubscriptionStatus::PENDING;
+            $conn->beginTransaction();
+            if (count($payments) > 0) {
+                $subscription['status'] = SubscriptionStatus::ACTIVE;
+                foreach ($payments as $payment) {
+                    $payment['payerId'] = $params ['PayerID'];
+                    $paymentId = $ordersService->addPayment($payment);
+                    $ordersService->addPurchaseOfSubscription($paymentId, $subscription['subscriptionId']);
                 }
-                $subscriptionsService->updateSubscription([
-                    'subscriptionId' => $subscription['subscriptionId'],
-                    'paymentStatus' => $subscription['paymentStatus'],
-                    'paymentProfileId' => $subscription['paymentProfileId'],
-                    'billingStartDate' => $subscription['billingStartDate'],
-                    'billingNextDate' => $subscription['billingNextDate'],
-                    'status' => $subscription['status']
-                ]);
-                $conn->commit();
-            } catch (DBALException $e) {
-                $n = new Exception("Failed to update subscription", $e);
-                Log::error($n);
-                $conn->rollBack();
-                throw $n;
+            } else {
+                $subscription['status'] = SubscriptionStatus::PENDING;
             }
-            //
+            $subscriptionsService->updateSubscription([
+                'subscriptionId' => $subscription['subscriptionId'],
+                'paymentStatus' => $subscription['paymentStatus'],
+                'paymentProfileId' => $subscription['paymentProfileId'],
+                'billingStartDate' => $subscription['billingStartDate'],
+                'billingNextDate' => $subscription['billingNextDate'],
+                'status' => $subscription['status']
+            ]);
+            $conn->commit();
         } catch (Exception $e) {
+            $conn->rollBack();
             Log::critical("Error processing subscription. " . $e->getMessage(), $subscription);
             $subscriptionsService->updateSubscription([
                 'subscriptionId' => $subscription ['subscriptionId'],
