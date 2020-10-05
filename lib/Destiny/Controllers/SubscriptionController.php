@@ -253,23 +253,6 @@ class SubscriptionController {
             return 'subscribe/error';
         }
 
-        // Create the NEW subscription
-        $start = Date::getDateTime();
-        $end = Date::getDateTime();
-        $end->modify('+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower($subscriptionType ['billingPeriod']));
-
-        $subscription = [
-            'userId'             => $userId,
-            'subscriptionSource' => Config::$a ['subscriptionType'],
-            'subscriptionType'   => $subscriptionType ['id'],
-            'subscriptionTier'   => $subscriptionType ['tier'],
-            'createdDate'        => $start->format ( 'Y-m-d H:i:s' ),
-            'endDate'            => $end->format ( 'Y-m-d H:i:s' ),
-            'recurring'          => ($recurring) ? 1:0,
-            'status'             => SubscriptionStatus::_NEW
-        ];
-
-
         // Send a message to discord containing the sub note
         // We are not store this value
         $note = $params['sub-note'] ?? '';
@@ -285,23 +268,17 @@ class SubscriptionController {
             Session::set('broadcastMessage', $message);
         }
 
-        // If this is a gift, change the user and the gifter
-        if (!empty($giftReceiver)) {
-            $subscription['userId'] = $giftReceiver['userId'];
-            $subscription['gifter'] = $userId;
-        }
-
-        $conn = Application::getDbConn();
         try {
-            $conn->beginTransaction();
-            $subscriptionId = $subService->addSubscription($subscription);
-            $returnUrl = Http::getBaseUrl() . '/subscription/process?subscriptionId=' . urlencode($subscriptionId);
+            $returnUrl = Http::getBaseUrl() . '/subscription/process?' . http_build_query([
+                'subTypeId' => $params['subscription'],
+                'giftee' => !empty($giftReceiver) ? $giftReceiver['userId'] : null,
+                'recurring' => $recurring
+            ]);
             $cancelUrl = Http::getBaseUrl() . '/subscribe';
+
             $token = $payPalApiService->createSubscribeECRequest($returnUrl, $cancelUrl, $subscriptionType, $recurring);
-            $conn->commit();
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (Exception $e) {
-            $conn->rollBack();
             throw new Exception("Error creating order", $e);
         }
     }
@@ -318,7 +295,7 @@ class SubscriptionController {
      * @throws Exception
      */
     public function subscriptionProcess(array $params): string {
-        FilterParams::required($params, 'subscriptionId');
+        FilterParams::required($params, 'subTypeId');
         FilterParams::required($params, 'token');
 
         $subscribeMessage = Session::getAndRemove('subscribeMessage');
@@ -335,26 +312,39 @@ class SubscriptionController {
         $authService = AuthenticationService::instance();
         $conn = Application::getDbConn();
 
-        $subscription = $subscriptionsService->findById($params ['subscriptionId']);
-        if (empty ($subscription) || strcasecmp($subscription ['status'], SubscriptionStatus::_NEW) !== 0) {
-            throw new Exception ('Invalid subscription state');
-        }
-        $subscriptionType = $subscriptionsService->getSubscriptionType($subscription ['subscriptionType']);
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subTypeId']);
         if (empty($subscriptionType)) {
             throw new Exception("Invalid subscription type");
         }
 
-        $user = $userService->getUserById($subscription['userId']);
-        if ($user['userId'] != $userId && $subscription['gifter'] != $userId) {
-            throw new Exception ('Invalid subscription');
-        }
-
         try {
+            $conn->beginTransaction();
             FilterParams::required($params, 'PayerID'); // if the order status is an error, the payerID is not returned
+
+            // Create the NEW subscription
+            $start = Date::getDateTime();
+            $end = Date::getDateTime();
+            $end->modify('+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower($subscriptionType ['billingPeriod']));
+
+            $subscription = [
+                'userId'             => $params['giftee'] ?? $userId,
+                'gifter'             => !empty($params['giftee']) ? $userId : null,
+                'subscriptionSource' => Config::$a['subscriptionType'],
+                'subscriptionType'   => $subscriptionType['id'],
+                'subscriptionTier'   => $subscriptionType['tier'],
+                'createdDate'        => $start->format('Y-m-d H:i:s'),
+                'endDate'            => $end->format('Y-m-d H:i:s'),
+                'recurring'          => intval($params['recurring'] ?? false),
+                'status'             => SubscriptionStatus::_NEW
+            ];
+            $subscriptionId = $subscriptionsService->addSubscription($subscription);
+            $subscription['subscriptionId'] = $subscriptionId;
+
+            $user = $userService->getUserById($subscription['userId']);
 
             // Create the payment profile
             // Payment date is 1 day before subscription rolls over.
-            if ($subscription['recurring'] == 1 || $subscription['recurring'] == true) {
+            if ($params['recurring'] == 1 || $params['recurring'] == true) {
                 $startPaymentDate = Date::getDateTime();
                 $nextPaymentDate = Date::getDateTime();
                 $nextPaymentDate->modify('+' . $subscriptionType ['billingFrequency'] . ' ' . strtolower($subscriptionType ['billingPeriod']));
@@ -376,7 +366,6 @@ class SubscriptionController {
             $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
 
             // Update subscription
-            $conn->beginTransaction();
             if (count($payments) > 0) {
                 $subscription['status'] = SubscriptionStatus::ACTIVE;
                 foreach ($payments as $payment) {
@@ -398,18 +387,14 @@ class SubscriptionController {
             $conn->commit();
         } catch (Exception $e) {
             $conn->rollBack();
-            Log::critical("Error processing subscription. " . $e->getMessage(), $subscription);
-            $subscriptionsService->updateSubscription([
-                'subscriptionId' => $subscription ['subscriptionId'],
-                'status' => SubscriptionStatus::ERROR
-            ]);
+            Log::critical("Error processing subscription. {$e}");
             return 'redirect: /subscription/error';
         }
 
         try {
-            $ban = $chatBanService->getUserActiveBan($user['userId']);
+            $ban = $chatBanService->getUserActiveBan($subscription['userId']);
             if (empty($ban) || !$chatBanService->isPermanentBan($ban)) {
-                $redisService->sendUnbanAndUnmute($user['userId']);
+                $redisService->sendUnbanAndUnmute($subscription['userId']);
             }
         } catch (Exception $e) {
             Log::error($e->getMessage());
