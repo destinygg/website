@@ -351,8 +351,6 @@ class SubscriptionController {
 
         try {
             FilterParams::required($params, 'PayerID'); // if the order status is an error, the payerID is not returned
-            Session::remove('subscriptionId');
-            Session::remove('token');
 
             // Create the payment profile
             // Payment date is 1 day before subscription rolls over.
