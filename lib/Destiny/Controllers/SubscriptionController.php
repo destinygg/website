@@ -250,8 +250,6 @@ class SubscriptionController {
             }
         } catch (Exception $e) {
             $model->title = 'Subscription Error';
-            $model->subscription = null;
-            $model->error = $e;
             return 'subscribe/error';
         }
 
@@ -419,7 +417,7 @@ class SubscriptionController {
                 'subscriptionId' => $subscription ['subscriptionId'],
                 'status' => SubscriptionStatus::ERROR
             ]);
-            return 'redirect: /subscription/' . urlencode($subscription ['subscriptionId']) . '/error';
+            return 'redirect: /subscription/error';
         }
 
         try {
@@ -499,22 +497,12 @@ class SubscriptionController {
     }
 
     /**
-     * @Route ("/subscription/{subscriptionId}/error")
+     * @Route ("/subscription/error")
      * @Secure ({"USER"})
      * @throws Exception
      */
     public function subscriptionError(array $params, ViewModel $model): string {
-        FilterParams::required($params, 'subscriptionId');
-
-        $subscriptionsService = SubscriptionsService::instance ();
-        $userId = Session::getCredentials ()->getUserId ();
-
-        $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
-        if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) )
-            throw new Exception ( 'Invalid subscription record' );
-
         $model->title = 'Subscription Error';
-        $model->subscription = $subscription;
         return 'subscribe/error';
     }
 
