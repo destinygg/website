@@ -297,8 +297,8 @@ class SubscriptionController {
         try {
             $conn->beginTransaction();
             $subscriptionId = $subService->addSubscription($subscription);
-            $returnUrl = Http::getBaseUrl() . '/subscription/process?success=true&subscriptionId=' . urlencode($subscriptionId);
-            $cancelUrl = Http::getBaseUrl() . '/subscription/process?success=false&subscriptionId=' . urlencode($subscriptionId);
+            $returnUrl = Http::getBaseUrl() . '/subscription/process?subscriptionId=' . urlencode($subscriptionId);
+            $cancelUrl = Http::getBaseUrl() . '/subscribe';
             $token = $payPalApiService->createSubscribeECRequest($returnUrl, $cancelUrl, $subscriptionType, $recurring);
             $conn->commit();
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
@@ -312,7 +312,7 @@ class SubscriptionController {
      * @Route ("/subscription/process")
      * @Secure ({"USER"})
      *
-     * We were redirected here from PayPal after the buyer approved/cancelled the payment
+     * We were redirected here from PayPal after the buyer approved the payment
      * TODO this method is massive
      *
      * @throws ConnectionException
@@ -322,7 +322,6 @@ class SubscriptionController {
     public function subscriptionProcess(array $params): string {
         FilterParams::required($params, 'subscriptionId');
         FilterParams::required($params, 'token');
-        FilterParams::declared($params, 'success');
 
         $subscribeMessage = Session::getAndRemove('subscribeMessage');
         $broadcastMessage = Session::getAndRemove('broadcastMessage');
@@ -353,10 +352,6 @@ class SubscriptionController {
         }
 
         try {
-            if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {
-                throw new Exception ('Order request failed');
-            }
-
             FilterParams::required($params, 'PayerID'); // if the order status is an error, the payerID is not returned
             Session::remove('subscriptionId');
             Session::remove('token');
