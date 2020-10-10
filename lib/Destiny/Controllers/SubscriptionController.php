@@ -44,15 +44,8 @@ class SubscriptionController {
      * @throws Exception
      */
     public function subscribe(ViewModel $model): string {
-        $subscriptionsService = SubscriptionsService::instance();
-        if (Session::hasRole(UserRole::USER)) {
-            $userId = Session::getCredentials()->getUserId();
-            // Active subscription
-            $model->subscription = $subscriptionsService->getUserActiveSubscription($userId);
-            // Pending subscription
-            $model->pending = $subscriptionsService->findByUserIdAndStatus($userId, SubscriptionStatus::PENDING);
-        }
         $model->title = 'Subscribe';
+        $model->tiers = Config::$a['commerce']['tiers'];
         $model->subscriptions = Config::$a ['commerce'] ['subscriptions'];
         return 'subscribe';
     }

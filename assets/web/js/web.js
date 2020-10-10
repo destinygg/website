@@ -178,108 +178,6 @@ const $document = $(document),
 
 (function(){
 
-    let usrSearch = $('#usersearchmodal'),
-        usrInput = usrSearch.find('input#userSearchInput'),
-        usrSelectBtn = usrSearch.find('button#userSearchSelect'),
-        usrSearchForm = usrSearch.find('form#userSearchForm'),
-        giftMsgInput = usrSearch.find('textarea#giftmessage'),
-        hasErrors = false,
-        giftUsername = '';
-
-    const checkUser = function(username, success){
-        $.ajax({
-            url: '/api/info/giftcheck',
-            data: {s: username},
-            type: 'GET',
-            success: function(data){
-                success.call(this, data);
-            },
-            error: function(){
-                showLookupError('Error looking up user. Try again');
-            }
-        });
-    };
-
-    const showLookupError = function(message){
-        hasErrors = true;
-        usrSelectBtn.button('reset').attr('disabled', true);
-        usrSearch.find('label.error').text(message).removeClass('hidden');
-    };
-
-    const cancelUserSelect = function(){
-        usrSearch.modal('hide');
-        usrInput.val('');
-        giftMsgInput.val('');
-        $('#subscriptionGiftUsername').text('');
-        $('#giftSubscriptionConfirm').addClass('hidden');
-        $('#giftSubscriptionSelect').removeClass('hidden');
-        $('input[name="gift"]').val('');
-        $('input[name="gift-message"]').val('');
-    };
-
-    const selectUser = function(username){
-        usrSelectBtn.button('loading');
-        checkUser(username, function(response){
-            if(response['valid'] && response['cangift']){
-                giftUsername = username;
-                if(giftMsgInput.val() === '')
-                    giftMsgInput.focus();
-                else
-                    usrSearchForm.submit();
-                usrSelectBtn.button('reset').attr('disabled', false);
-                hasErrors = false;
-            }else if(!response['valid']){
-                showLookupError('This user was not found. Try again.');
-            }else if(!response['cangift']){
-                showLookupError('This user is not eligible for a gift.');
-            }
-        });
-    };
-
-    usrInput.on('keydown change', function(){
-        usrSelectBtn.attr('disabled', $(this).val() === '');
-        usrSearch.find('label.error').addClass('hidden');
-    });
-
-    usrSearchForm.on('submit', function(){
-        usrSearch.find('label.error').addClass('hidden');
-        if(giftUsername !== usrInput.val()) {
-            selectUser(usrInput.val());
-        } else {
-            $('#subscriptionGiftUsername').text(usrInput.val());
-            $('#giftSubscriptionConfirm').removeClass('hidden');
-            $('#giftSubscriptionSelect').addClass('hidden');
-            $('input[name="gift"]').val(usrInput.val());
-            $('input[name="gift-message"]').val(giftMsgInput.val());
-            usrSearch.modal('hide');
-        }
-        return false;
-    });
-
-    usrSearch.on('shown.bs.modal', function () {
-        usrInput.focus();
-    });
-
-    usrSearch.on('hidden.bs.modal', function () {
-        if(hasErrors){
-            hasErrors = false;
-            giftUsername = '';
-            usrInput.val('');
-            giftMsgInput.val('');
-            usrSearch.find('label.error').addClass('hidden');
-        }
-    });
-
-    $('#cancelGiftSubscription').on('click', function(){
-        usrSearch.find('label.error').addClass('hidden');
-        cancelUserSelect();
-        return false;
-    });
-
-})();
-
-(function(){
-
     $('#stream-status').each(function(){
         const el = $(this),
             end = el.find('#stream-status-end'),
@@ -431,5 +329,184 @@ const $document = $(document),
         return false;
     });
 })();
+
+// For `/subscribe`.
+(function(){
+    const $searchUserForm = $('form#search-user')
+    const $searchUserUsernameInput = $searchUserForm.find('#username-input')
+    const $searchUserValidFeedback = $searchUserForm.find('.valid-feedback')
+    const $searchUserInvalidFeedback = $searchUserForm.find('.invalid-feedback')
+    const $searchUserConfirmButton = $searchUserForm.find(' > button:last-child')
+
+    const $myselfSelectable = $('#myself .selectable')
+    const $directGiftSelectable = $('#direct-gift .selectable')
+    const $directGiftExpansionArrow = $('#direct-gift .expansion-arrow')
+    const $gifteeField = $('#direct-gift .value')
+
+    const $continueForm = $('#continue-form')
+    const $subscriptionInput = $continueForm.find('input:first-child')
+    const $giftInput = $continueForm.find('input:nth-child(2)')
+    const $continueButton = $continueForm.find('button')
+    const $continueFormInvalidFeedback = $continueForm.find('.invalid-feedback')
+
+    // Convert an element into a jQuery object if it isn't one already.
+    const makeDollar = function(element) {
+        return element instanceof $ ? element : $(element)
+    }
+
+    const selectSelectableElement = function(element) {
+        // Imitate the functionality of radio buttons. If a selectable is
+        // clicked, toggle it on and toggle off all other selectables in its
+        // group.
+        const $element = makeDollar(element)
+
+        if (!$element.hasClass('selected')) {
+            const group = $element.data('select-group')
+            $(`.selected[data-select-group="${group}"]`).removeClass('selected')
+            $element.removeClass('considering')
+            $element.addClass('selected')
+        }
+    }
+
+    const toggleExpandingElementForArrow = function(clickedArrow) {
+        // Imitate Bootstrap's collapsible component.
+        const $clickedArrow = makeDollar(clickedArrow)
+        const $target = $($clickedArrow.data('expansion-target'))
+
+        if ($target.is(':visible')) {
+            // Change arrow direction depending on if the element is expanded or
+            // collapsed.
+            $clickedArrow.removeClass('fa-arrow-up')
+            $clickedArrow.addClass('fa-arrow-down')
+        } else {
+            $clickedArrow.removeClass('fa-arrow-down')
+            $clickedArrow.addClass('fa-arrow-up')
+        }
+
+        $target.slideToggle(200)
+    }
+
+    const setSearchUserSuccess = function(message) {
+        $searchUserValidFeedback.text(message)
+        $searchUserUsernameInput.addClass('is-valid')
+        $searchUserConfirmButton.prop('disabled', false)
+    }
+
+    const setSearchUserError = function(message) {
+        $searchUserInvalidFeedback.text(message)
+        $searchUserUsernameInput.addClass('is-invalid')
+        $searchUserConfirmButton.prop('disabled', true)
+    }
+
+    const clearSearchUserMessage = function() {
+        $searchUserUsernameInput.removeClass('is-valid is-invalid')
+        $searchUserConfirmButton.prop('disabled', true)
+    }
+
+    const confirmGiftee = function(giftee) {
+        $gifteeField.text(giftee)
+        $gifteeField.data('giftee-username', giftee)
+        $gifteeField.addClass('badge badge-light')
+        toggleExpandingElementForArrow($directGiftExpansionArrow)
+        clearContinueFormErrorMessage()
+    }
+
+    const setContinueFormErrorMesage = function(message) {
+        $continueFormInvalidFeedback.text(message)
+        $continueButton.addClass('is-invalid')
+    }
+
+    const clearContinueFormErrorMessage = function() {
+        $continueButton.removeClass('is-invalid')
+    }
+
+    $('.selectable').click(function() {
+        selectSelectableElement(this)
+    })
+
+    $('.expansion-arrow').click(function() {
+        toggleExpandingElementForArrow(this)
+    })
+
+    $searchUserForm.submit(function(event) {
+        event.preventDefault()
+
+        const username = $searchUserUsernameInput.val().trim()
+        $searchUserUsernameInput.val(username)
+        if (username === '') {
+            return
+        }
+
+        $.ajax({
+            url: '/api/info/giftcheck',
+            data: {s: username},
+            type: 'GET',
+            success: function(data) {
+                if (data['valid'] && data['cangift']) {
+                    setSearchUserSuccess('This user can accept gift subs!')
+                } else if (!data['valid'] && !data['cangift']) {
+                    setSearchUserError('This user doesn\'t exist.')
+                } else if (data['valid'] && !data['cangift']) {
+                    setSearchUserError('This user can\'t accept gift subs.')
+                } else if (!data['valid'] && data['cangift']) {
+                    setSearchUserError('YEE NEVA EVA LOSE.')
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 403) {
+                    // This is required because of a server-side check that
+                    // prevents the user from gifting a sub to themselves.
+                    setSearchUserError('Sorry, you have to be logged in to search for users.')
+                } else {
+                    setSearchUserError('Something went wrong. Please try again later.')
+                }
+            }
+        })
+    })
+
+    $searchUserUsernameInput.keydown(function() {
+        clearSearchUserMessage()
+    })
+
+    $searchUserConfirmButton.click(function() {
+        confirmGiftee($searchUserUsernameInput.val())
+    })
+
+    $myselfSelectable.click(function() {
+        clearContinueFormErrorMessage()
+    })
+
+    $directGiftExpansionArrow.click(function() {
+        selectSelectableElement($directGiftSelectable)
+    })
+
+    $directGiftSelectable.click(function() {
+        toggleExpandingElementForArrow($directGiftExpansionArrow)
+    })
+
+    $continueForm.submit(function() {
+        const $selectedSub = $('.selected[data-select-group="sub-tier"]')
+        $subscriptionInput.val($selectedSub.data('select-id'))
+
+        const $selectedRecipient = $('.selected[data-select-group="recipient"]')
+        switch ($selectedRecipient.data('select-id')) {
+            case 'myself':
+                $giftInput.val('')
+                break
+            case 'direct-gift':
+                const username = $gifteeField.data('giftee-username')
+                if (username === '') {
+                    setContinueFormErrorMesage('You haven\'t picked a recipient for your gift sub.')
+                    return false
+                }
+
+                $giftInput.val(username)
+                break
+        }
+
+        // Submit form normally after updating inputs.
+        return true
+    })
+})()
 
 window.showLoginModal = () => $('#loginmodal').modal("show")
