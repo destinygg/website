@@ -18,15 +18,10 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/nav.php' ?>
 
     <section class="container">
-
-        <h1 class="title" style="display: flex; align-items: center;">
-            <span>Donate</span>
-            <small>&nbsp;(send a message too)</small>
-            <span style="flex: 2; display: flex; justify-content: flex-end; align-items: center;">
-                <small>prefer? &nbsp;</small>
-                <a href="https://streamlabs.com/destiny" class="streamlabs-logo"></a>
-            </span>
-        </h1>
+        <div class="title d-flex align-items-center">
+            <h1>Donate</h1>
+            <span>&nbsp;(send a message too)</span>
+        </div>
 
         <div class="content content-dark clearfix">
             <form id="donateform" class="validate" action="/donate" method="post">
@@ -62,7 +57,12 @@ use Destiny\Common\Utils\Tpl;
         </div>
 
         <p class="agreement">By clicking the &quot;Continue&quot; button, you are confirming that this purchase is what you wanted and that you have read the <a href="/agreement">user agreement</a>.</p>
-
+        </br>
+        <div class="d-flex align-items-center justify-content-end">
+            <span>prefer &nbsp;</span>
+            <a href="https://streamlabs.com/destiny" class="streamlabs-logo"></a>
+            <span>&nbsp;?</span>
+        </div>
     </section>
 
 </div>
