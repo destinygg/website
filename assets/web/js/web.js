@@ -338,14 +338,27 @@ const $document = $(document),
     const $searchUserInvalidFeedback = $searchUserForm.find('.invalid-feedback')
     const $searchUserConfirmButton = $searchUserForm.find(' > button:last-child')
 
+    const $pricingOptionsSelectables = $('.periods .selectable')
     const $myselfSelectable = $('#myself .selectable')
     const $directGiftSelectable = $('#direct-gift .selectable')
+    const $massGiftSelectable = $('#mass-gift .selectable')
+
     const $directGiftExpansionArrow = $('#direct-gift .expansion-arrow')
     const $gifteeField = $('#direct-gift .value')
+
+    const $massGiftExpansionArrow = $('#mass-gift .expansion-arrow')
+    const $quantityField = $('#mass-gift .value')
+
+    const $quantitySelector = $('#quantity-selector')
+    const $quantityButtons = $quantitySelector.find('.two-tone-button')
+    const $staticQuantityButtons = $quantitySelector.find('#static-quantity-buttons .two-tone-button')
+    const $customQuantityButton = $quantitySelector.find('#custom-quantity-button .two-tone-button')
+    const $quantityInput = $quantitySelector.find('#quantity')
 
     const $continueForm = $('#continue-form')
     const $subscriptionInput = $continueForm.find('input:first-child')
     const $giftInput = $continueForm.find('input:nth-child(2)')
+    const $continueFormQuantityInput = $continueForm.find('input:nth-child(3)')
     const $continueButton = $continueForm.find('button')
     const $continueFormInvalidFeedback = $continueForm.find('.invalid-feedback')
 
@@ -420,12 +433,48 @@ const $document = $(document),
         $continueButton.removeClass('is-invalid')
     }
 
+    const updateQuantityButtonCosts = function() {
+        const $selectedSub = $('.selected[data-select-group="sub-tier"]')
+        const selectedSubPrice = parseInt($selectedSub.data('select-price'))
+
+        $quantityButtons.each(function() {
+            updateQuantityButton(this, null, selectedSubPrice)
+        })
+    }
+
+    const updateQuantityButton = function(button, quantity = null, subPrice = null) {
+        const $button = makeDollar(button)
+        const $numberOfSubsField = $button.find('div:first-child > p')
+        const $costField = $button.find('div:last-child > p')
+
+        if (!quantity) {
+            quantity = $button.data('quantity')
+        }
+
+        if (!subPrice) {
+            const $selectedSub = $('.selected[data-select-group="sub-tier"]')
+            subPrice = parseInt($selectedSub.data('select-price'))
+        }
+
+        $numberOfSubsField.text(`${quantity} Sub`)
+        if (quantity > 1) {
+            $numberOfSubsField.text($numberOfSubsField.text() + 's')
+        }
+
+        $button.data('quantity', quantity)
+        $costField.text(`$${quantity * subPrice}`)
+    }
+
     $('.selectable').click(function() {
         selectSelectableElement(this)
     })
 
     $('.expansion-arrow').click(function() {
         toggleExpandingElementForArrow(this)
+    })
+
+    $pricingOptionsSelectables.click(function() {
+        updateQuantityButtonCosts()
     })
 
     $searchUserForm.submit(function(event) {
@@ -484,6 +533,52 @@ const $document = $(document),
         toggleExpandingElementForArrow($directGiftExpansionArrow)
     })
 
+    $massGiftSelectable.click(function() {
+        toggleExpandingElementForArrow($massGiftExpansionArrow)
+    })
+
+    $massGiftExpansionArrow.click(function() {
+        selectSelectableElement($massGiftSelectable)
+    })
+
+    $quantityInput.on('keyup change', function() {
+        // No negatives allowed.
+        if (event.type === 'keyup' && event.which === 189) {
+            return false
+        }
+
+        let quantity = parseInt($quantityInput.val())
+        if (isNaN(quantity)) {
+            return
+        }
+
+        if (quantity < 1) {
+            quantity = 1
+            $quantityInput.val(quantity);
+        } else if (quantity > 100) {
+            quantity = 100
+            $quantityInput.val(quantity);
+        }
+
+        updateQuantityButton($customQuantityButton, quantity, null)
+    });
+
+    $quantityInput.select(function(event) {
+        const selection = $quantityInput.val().substring(this.selectionStart, this.selectionEnd);
+        console.log(selection)
+    })
+
+    $quantityButtons.click(function() {
+        const $clickedButton = $(this)
+        const $numberOfSubsField = $clickedButton.find('div:first-child > p')
+
+        $quantityField.text($numberOfSubsField.text().toLowerCase())
+        $quantityField.data('quantity', $clickedButton.data('quantity'))
+        $quantityField.addClass('badge badge-light')
+
+        toggleExpandingElementForArrow($massGiftExpansionArrow)
+    })
+
     $continueForm.submit(function() {
         const $selectedSub = $('.selected[data-select-group="sub-tier"]')
         $subscriptionInput.val($selectedSub.data('select-id'))
@@ -501,6 +596,15 @@ const $document = $(document),
                 }
 
                 $giftInput.val(username)
+                break
+            case 'mass-gift':
+                const quantity = parseInt($quantityField.data('quantity'))
+                if (isNaN(quantity)) {
+                    setContinueFormErrorMesage('You haven\'t selected how many subs to gift.')
+                    return false
+                }
+
+                $continueFormQuantityInput.val(quantity)
                 break
         }
 

@@ -48,12 +48,12 @@ use Destiny\Common\User\UserRole;
                     </div>
                     <div class="periods">
                         <?php $sub = $this->subscriptions['1-MONTH-SUB']; $price = floatval($sub['amount']); ?>
-                        <div class="selectable selected" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable selected" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= $price ?>" data-select-group="sub-tier">
                             <h3>$<?= $price ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
                         <?php $sub = $this->subscriptions['3-MONTH-SUB']; ?>
-                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= floatval($sub['amount']) ?>" data-select-group="sub-tier">
                             <h3><strike>$<?= $price * $sub['billingFrequency'] ?></strike> $<?= floatval($sub['amount']) ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
@@ -81,12 +81,12 @@ use Destiny\Common\User\UserRole;
                     </div>
                     <div class="periods">
                         <?php $sub = $this->subscriptions['1-MONTH-SUB2']; $price = floatval($sub['amount']); ?>
-                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= $price ?>" data-select-group="sub-tier">
                             <h3>$<?= $price ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
                         <?php $sub = $this->subscriptions['3-MONTH-SUB2']; ?>
-                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= floatval($sub['amount']) ?>" data-select-group="sub-tier">
                             <h3><strike>$<?= $price * $sub['billingFrequency'] ?></strike> $<?= floatval($sub['amount']) ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
@@ -114,12 +114,12 @@ use Destiny\Common\User\UserRole;
                     </div>
                     <div class="periods">
                         <?php $sub = $this->subscriptions['1-MONTH-SUB3']; $price = floatval($sub['amount']); ?>
-                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= $price ?>" data-select-group="sub-tier">
                             <h3>$<?= $price ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
                         <?php $sub = $this->subscriptions['3-MONTH-SUB3']; ?>
-                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= floatval($sub['amount']) ?>" data-select-group="sub-tier">
                             <h3><strike>$<?= $price * $sub['billingFrequency'] ?></strike> $<?= floatval($sub['amount']) ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
@@ -147,12 +147,12 @@ use Destiny\Common\User\UserRole;
                     </div>
                     <div class="periods">
                         <?php $sub = $this->subscriptions['1-MONTH-SUB4']; $price = floatval($sub['amount']); ?>
-                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= $price ?>" data-select-group="sub-tier">
                             <h3>$<?= $price ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
                         <?php $sub = $this->subscriptions['3-MONTH-SUB4']; ?>
-                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-group="sub-tier">
+                        <div class="selectable" data-select-id="<?= $sub['id'] ?>" data-select-price="<?= floatval($sub['amount']) ?>" data-select-group="sub-tier">
                             <h3><strike>$<?= $price * $sub['billingFrequency'] ?></strike> $<?= floatval($sub['amount']) ?></h3>
                             <small><?= $sub['billingFrequency'] ?> <?= $sub['billingPeriod'] ?></small>
                         </div>
@@ -198,6 +198,55 @@ use Destiny\Common\User\UserRole;
                     <i class="fas fa-arrow-down expansion-arrow" data-expansion-target="form#search-user"></i>
                 </div>
             </div>
+            <div class="col-auto mt-2">
+                <div id="mass-gift" class="recipient">
+                    <div class="selectable" data-select-id="mass-gift" data-select-group="recipient">
+                        <i class="fas fa-gifts fa-3x"></i>
+                        <p>Any oil princes?<br>(Gift <span class="value" data-quantity>one or more subs</span> to random users.)</p>
+                    </div>
+                    <div id="quantity-selector" style="display: none;">
+                        <label>How many subs?</label>
+                        <div id="static-quantity-buttons" class="mb-3">
+                            <div class="two-tone-button" data-quantity="1">
+                                <div><p>1 Sub</p></div>
+                                <div><p>$5</p></div>
+                            </div>
+                            <div class="two-tone-button" data-quantity="5">
+                                <div><p>5 Subs</p></div>
+                                <div><p>$25</p></div>
+                            </div>
+                            <div class="two-tone-button" data-quantity="10">
+                                <div><p>10 Subs</p></div>
+                                <div><p>$50</p></div>
+                            </div>
+                            <div class="two-tone-button" data-quantity="20">
+                                <div><p>20 Subs</p></div>
+                                <div><p>$100</p></div>
+                            </div>
+                            <div class="two-tone-button" data-quantity="50">
+                                <div><p>50 Subs</p></div>
+                                <div><p>$250</p></div>
+                            </div>
+                            <div class="two-tone-button" data-quantity="100">
+                                <div><p>100 Subs</p></div>
+                                <div><p>$500</p></div>
+                            </div>
+                        </div>
+                        <label class="align-self-start">Custom amount</label>
+                        <div id="custom-quantity-button">
+                            <div class="form-group">
+                                <input id="quantity" class="form-control" type="number" min="1" max="100" value="1">
+                                <small class="form-text text-muted ml-1">Max 100</small>
+                            </div>
+                            <div class="two-tone-button" data-quantity="1">
+                                <div><p>1 Sub</p></div>
+                                <div><p>$5</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fas fa-arrow-down expansion-arrow" data-expansion-target="div#quantity-selector"></i>
+                </div>
+            </div>
         </div>
 
         <div class="row d-flex justify-content-center mt-5">
@@ -205,6 +254,7 @@ use Destiny\Common\User\UserRole;
                 <form id="continue-form" class="d-flex flex-column align-items-center justify-content-center" action="/subscription/confirm" method="post">
                     <input type="hidden" name="subscription" value="">
                     <input type="hidden" name="gift" value="">
+                    <input type="hidden" name="quantity" value="1">
                     <button type="Submit" class="btn btn-primary btn-lg">Continue <i class="fas fa-arrow-right"></i></button>
                     <div class="invalid-feedback"></div>
                 </form>
