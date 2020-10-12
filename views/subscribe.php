@@ -36,7 +36,7 @@ use Destiny\Common\User\UserRole;
                     <div class="perks">
                         <p>"Get access to chat features and be eligible for future subscriber events!" ―Destiny</p>
                         <ul>
-                            <li>Exquisite chat flair</li>
+                            <li>Exquisite chat <img class='tier-1-flair'></img> flair</li>
                             <li>A colorful <span class="colored-username t1">username</span></li>
                             <li>The ability to <span class="greentext">&gt;greentext</span></li>
                             <li>Subscriber role in Discord</li>
@@ -69,7 +69,7 @@ use Destiny\Common\User\UserRole;
                     <div class="perks">
                         <p>"Got a bit more to contribute? Probably the best investment of all time." ―Destiny</p>
                         <ul>
-                            <li>Exquisite chat flair</li>
+                            <li>Exquisite chat <img class='tier-2-flair'></img> flair</li>
                             <li>A colorful <span class="colored-username t2">username</span></li>
                             <li>The ability to <span class="greentext">&gt;greentext</span></li>
                             <li>Subscriber role in Discord</li>
@@ -102,7 +102,7 @@ use Destiny\Common\User\UserRole;
                     <div class="perks">
                         <p>"Wow such value so prestige you should purchase immediately." ―Destiny</p>
                         <ul>
-                            <li>Exquisite chat flair</li>
+                            <li>Exquisite chat <img class='tier-3-flair'></img> flair</li>
                             <li>A colorful <span class="colored-username t3">username</span></li>
                             <li>The ability to <span class="greentext">&gt;greentext</span></li>
                             <li>Subscriber role in Discord</li>
@@ -135,7 +135,7 @@ use Destiny\Common\User\UserRole;
                     <div class="perks">
                         <p>"Know in your heart you have made the right choice here." ―Destiny</p>
                         <ul>
-                            <li>Exquisite chat flair</li>
+                            <li>Exquisite chat <img class='tier-4-flair'></img> flair</li>
                             <li>A colorful <span class="colored-username t4">username</span></li>
                             <li>The ability to <span class="greentext">&gt;greentext</span></li>
                             <li>Subscriber role in Discord</li>
