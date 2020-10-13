@@ -51,7 +51,7 @@ return [
     ],
 
     'redis' => [
-        'host' => 'localhost',
+        'host' => 'redis',
         'port' => 6379,
         'database' => 0,
         'scriptdir' => _BASEDIR . '/scripts/redis/',
@@ -118,7 +118,7 @@ return [
 
     'db' => [
         'driver'        => 'pdo_mysql',
-        'host'          => 'localhost',
+        'host'          => 'mariadb',
         'user'          => '',
         'dbname'        => '',
         'password'      => '',
@@ -210,7 +210,6 @@ return [
         'receiver_email' => '',
         'currency' => 'USD',
         'minimum_donation' => 5,
-        'minimum_donation_for_unban' => 5,
         'tiers' => [
             ['tier' => 1, 'tierLabel' => 'Tier I'],
             ['tier' => 2, 'tierLabel' => 'Tier II'],
