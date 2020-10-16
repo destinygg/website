@@ -161,9 +161,6 @@ class SubscriptionController {
             FilterParams::required($params, 'subscription');
             FilterParams::required($params, 'quantity');
 
-            $isDirectGift = !empty($params['gift']);
-            $isMassGift = $params['quantity'] > 1;
-
             // If the user isn't logged in, save their selection and redirect to
             // the login screen. After logging in, they're redirected back to
             // this page.
@@ -181,37 +178,25 @@ class SubscriptionController {
                 return "redirect: $loginUrl";
             }
 
-            $userId = Session::getCredentials()->getUserId();
-
-            // Validate the request.
-            $subscriptionsService = SubscriptionsService::instance();
-            $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscription']);
-            if (empty($subscriptionType)) {
-                throw new Exception('Invalid subscription type.');
-            } else if ($isDirectGift && $isMassGift) {
-                throw new Exception('A sub cannot be a direct gift and mass gift at once.');
-            } else if ($params['quantity'] > 100 || $params['quantity'] < 1) {
-                throw new Exception('You can only mass gift between 1 and 100 subs.');
-            } else if ($isDirectGift) {
-                $giftReceiver = UserService::instance()->getUserByUsername($params['gift']);
-                if (empty($giftReceiver)) {
-                    throw new Exception('Invalid giftee: no such user exists.');
-                } else if ($giftReceiver['userId'] === $userId) {
-                    throw new Exception('Invalid giftee: you cannot gift yourself a sub.');
-                } else if (!$subscriptionsService->canUserReceiveGift($userId, $giftReceiver['userId'])) {
-                    throw new Exception('Invalid giftee: this user can\'t accept gift subs.');
-                }
-            }
+            $this->validateSubscriptionParameters($params);
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
             return 'redirect: /subscribe';
         }
 
+        $subscriptionsService = SubscriptionsService::instance();
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscription']);
+
         // If this isn't a direct gift or a mass gift, we need to check the
         // user's current subscription and warn them if they're already
         // subscribed.
+        $isDirectGift = !empty($params['gift']);
+        $isMassGift = $params['quantity'] > 1;
+
         if (!$isDirectGift && !$isMassGift) {
+            $userId = Session::getCredentials()->getUserId();
             $currentSubscription = $subscriptionsService->getUserActiveSubscription($userId);
+
             if (!empty($currentSubscription)) {
                 $currentSubType = $subscriptionsService->getSubscriptionType($currentSubscription['subscriptionType']);
                 $warningMessage = "You already have a {$currentSubType['tierLabel']} subscription! You can sub again, but only your highest tier sub will be visible.";
@@ -233,68 +218,48 @@ class SubscriptionController {
      * @throws DBALException
      */
     public function subscriptionCreate(array $params, ViewModel $model): string {
-        FilterParams::required($params, 'subscription');
-
-        $userService = UserService::instance();
-        $subService = SubscriptionsService::instance();
-        $payPalApiService = PayPalApiService::instance();
-        $creds = Session::getCredentials();
-        $userId = $creds->getUserId();
-
-        $subscriptionType = $subService->getSubscriptionType($params ['subscription']);
-        if (empty($subscriptionType)) {
-            throw new Exception("Invalid subscription type");
-        }
-
-        $recurring = (isset ($params ['renew']) && $params ['renew'] == '1');
-        $giftReceiverUsername = (isset($params['gift']) && !empty($params['gift'])) ? $params['gift'] : null;
-        $giftReceiver = null;
-
         try {
-            if (!empty($giftReceiverUsername)) {
-                $giftReceiver = $userService->getUserByUsername($giftReceiverUsername);
-                if (empty($giftReceiver)) {
-                    throw new Exception ('Invalid giftee (user not found)');
-                }
-                if ($userId == $giftReceiver['userId']) {
-                    throw new Exception ('Invalid giftee (cannot gift yourself)');
-                }
-                if (!$subService->canUserReceiveGift($userId, $giftReceiver['userId'])) {
-                    throw new Exception ('Invalid giftee (user does not accept gifts)');
-                }
-            }
+            FilterParams::required($params, 'subscription');
+            FilterParams::required($params, 'quantity');
+
+            $this->validateSubscriptionParameters($params);
         } catch (Exception $e) {
             $model->title = 'Subscription Error';
             return 'subscribe/error';
         }
 
-        // Send a message to discord containing the sub note
-        // We are not store this value
-        $note = $params['sub-note'] ?? '';
-        if (!empty($note)) {
-            Session::set('subscribeMessage', $note);
+        // How the user heard of the streamer or why they're subscribing. We
+        // pass this and the broadcast message to `/subscribe/complete` via the
+        // user's session.
+        if (!empty($params['sub-note'])) {
+            Session::set('subscribeMessage', $params['sub-note']);
         }
 
-        // We set a session variable for the broadcastMessage
-        // Since this is not stored on the subscription itself, and we only want
-        // to action the message on SUCCESSFUL authentication
-        $message = $params['sub-message'] ?? '';
-        if (!empty($message)) {
-            Session::set('broadcastMessage', $message);
+        if (!empty($params['sub-message'])) {
+            Session::set('broadcastMessage', $params['sub-message']);
         }
 
         try {
-            $returnUrl = Http::getBaseUrl() . '/subscription/process?' . http_build_query([
+            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subscription']);
+            $recurring = !empty($params['renew']) ? $params['renew'] === '1' : false;
+            $returnUrl = Http::getBaseUrl() . '/subscription/process' . '?' . http_build_query([
                 'subTypeId' => $params['subscription'],
-                'giftee' => !empty($giftReceiver) ? $giftReceiver['userId'] : null,
+                'giftee' => $params['gift'] ?? null,
+                'quantity' => $params['quantity'],
                 'recurring' => $recurring
             ]);
             $cancelUrl = Http::getBaseUrl() . '/subscribe';
 
-            $token = $payPalApiService->createSubscribeECRequest($returnUrl, $cancelUrl, $subscriptionType, $recurring);
+            $token = PayPalApiService::instance()->createSubscribeECRequest(
+                $returnUrl,
+                $cancelUrl,
+                $subscriptionType,
+                $recurring,
+                $params['quantity']
+            );
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (Exception $e) {
-            throw new Exception("Error creating order", $e);
+            throw new Exception('Error creating order.', $e);
         }
     }
 
@@ -526,6 +491,37 @@ class SubscriptionController {
             $data['valid'] = true;
         }
         return $data;
+    }
+
+    /**
+     * Validate the parameters in a subscription request.
+     *
+     * @throws Exception
+     */
+    private function validateSubscriptionParameters(array $params) {
+        $isDirectGift = !empty($params['gift']);
+        $isMassGift = $params['quantity'] > 1;
+
+        $userId = Session::getCredentials()->getUserId();
+
+        $subscriptionsService = SubscriptionsService::instance();
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscription']);
+        if (empty($subscriptionType)) {
+            throw new Exception('Invalid subscription type.');
+        } else if ($isDirectGift && $isMassGift) {
+            throw new Exception('A sub cannot be a direct gift and mass gift at once.');
+        } else if ($params['quantity'] > 100 || $params['quantity'] < 1) {
+            throw new Exception('You can only mass gift between 1 and 100 subs.');
+        } else if ($isDirectGift) {
+            $giftReceiver = UserService::instance()->getUserByUsername($params['gift']);
+            if (empty($giftReceiver)) {
+                throw new Exception('Invalid giftee: no such user exists.');
+            } else if ($giftReceiver['userId'] === $userId) {
+                throw new Exception('Invalid giftee: you cannot gift yourself a sub.');
+            } else if (!$subscriptionsService->canUserReceiveGift($userId, $giftReceiver['userId'])) {
+                throw new Exception('Invalid giftee: this user can\'t accept gift subs.');
+            }
+        }
     }
   
 }
