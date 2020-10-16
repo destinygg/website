@@ -10,13 +10,13 @@ See [LICENSE.md](LICENSE.md)
 
 ### Building
 
-[nodejs](http://nodejs.org/) Dependency manager
+[nodejs](http://nodejs.org/) Dependency Manager
 
-[webpack](https://webpack.github.io/) Project builder
+[webpack](https://webpack.github.io/) Project Builder
 
 [composer](http://getcomposer.org/) PHP dependency manager
 
-[glue](http://glue.readthedocs.org/) Glue is a simple command line tool to generate CSS sprites
+[glue](http://glue.readthedocs.org/) Glue is a simple command line tool to generate CSS sprites.
 
 ### Running
 
