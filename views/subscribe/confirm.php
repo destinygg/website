@@ -38,15 +38,36 @@ use Destiny\Common\Utils\Tpl;
 
                         <input type="hidden" name="subscription" value="<?= $this->subscriptionType['id'] ?>">
                         <input type="hidden" name="gift" value="<?= $this->gift ?>">
+                        <input type="hidden" name="quantity" value="<?= $this->quantity ?>">
 
-                        <div class="subscription-tier ds-block">
-                            <div class="subscription">
-                                <h2><?=$this->subscriptionType['tierLabel']?></h2>
-                                <?php if(!empty($this->gift)): ?>
-                                    <p><i class="fas fa-gift"></i> You are gifting this to <span class="badge badge-danger"><?=Tpl::out($this->gift)?></span></p>
-                                <?php endif ?>
-                                <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
-                            </div>
+                        <div class="ds-block">
+                            <h4>Summary</h4>
+                            <table id="transaction-summary">
+                                <colgroup>
+                                    <col class="quantity">
+                                    <col>
+                                    <col class="price">
+                                </colgroup>
+                                <tr>
+                                    <th>Quantity</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                </tr>
+                                <tr>
+                                    <td><?= $this->quantity ?></td>
+                                    <td>
+                                        <?= $this->subscriptionType['itemLabel'] ?>
+                                        <?php if (!empty($this->gift)): ?>
+                                            <span class="badge badge-danger"><i class="fas fa-gift"></i> <?= Tpl::out($this->gift) ?></span>
+                                        <?php endif ?>
+                                    </td>
+                                    <td>$<?= $this->subscriptionType['amount'] ?></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" class="text-right">Order Total</th>
+                                    <td class="font-weight-bold">$<?= number_format(floatval($this->subscriptionType['amount']) * $this->quantity, 2) ?></td>
+                                </tr>
+                            </table>
                         </div>
 
                         <div class="ds-block text-message">

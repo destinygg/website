@@ -159,8 +159,10 @@ class SubscriptionController {
     public function subscriptionConfirm(array $params, ViewModel $model): string {
         try {
             FilterParams::required($params, 'subscription');
+            FilterParams::required($params, 'quantity');
 
             $isDirectGift = !empty($params['gift']);
+            $isMassGift = $params['quantity'] > 1;
 
             // If the user isn't logged in, save their selection and redirect to
             // the login screen. After logging in, they're redirected back to
@@ -168,6 +170,7 @@ class SubscriptionController {
             if (!Session::hasRole(UserRole::USER)) {
                 $confirmUrl = '/subscription/confirm' . '?' . http_build_query([
                     'subscription' => $params['subscription'],
+                    'quantity' => $params['quantity'],
                     'gift' => $params['gift'] ?? null
                 ]);
 
@@ -185,6 +188,10 @@ class SubscriptionController {
             $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscription']);
             if (empty($subscriptionType)) {
                 throw new Exception('Invalid subscription type.');
+            } else if ($isDirectGift && $isMassGift) {
+                throw new Exception('A sub cannot be a direct gift and mass gift at once.');
+            } else if ($params['quantity'] > 100 || $params['quantity'] < 1) {
+                throw new Exception('You can only mass gift between 1 and 100 subs.');
             } else if ($isDirectGift) {
                 $giftReceiver = UserService::instance()->getUserByUsername($params['gift']);
                 if (empty($giftReceiver)) {
@@ -203,7 +210,7 @@ class SubscriptionController {
         // If this isn't a direct gift or a mass gift, we need to check the
         // user's current subscription and warn them if they're already
         // subscribed.
-        if (!$isDirectGift) {
+        if (!$isDirectGift && !$isMassGift) {
             $currentSubscription = $subscriptionsService->getUserActiveSubscription($userId);
             if (!empty($currentSubscription)) {
                 $currentSubType = $subscriptionsService->getSubscriptionType($currentSubscription['subscriptionType']);
@@ -213,6 +220,7 @@ class SubscriptionController {
         }
 
         $model->subscriptionType = $subscriptionType;
+        $model->quantity = $params['quantity'];
         $model->gift = $params['gift'] ?? null;
         $model->title = 'Subscribe Confirm';
         return 'subscribe/confirm';
