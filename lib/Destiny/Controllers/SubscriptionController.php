@@ -160,46 +160,60 @@ class SubscriptionController {
         try {
             FilterParams::required($params, 'subscription');
 
-            // If there is no user, save the selection, and go to the login screen
+            $isDirectGift = !empty($params['gift']);
+
+            // If the user isn't logged in, save their selection and redirect to
+            // the login screen. After logging in, they're redirected back to
+            // this page.
             if (!Session::hasRole(UserRole::USER)) {
-                $url = '/subscription/confirm?subscription=' . $params ['subscription'];
-                if (isset($params ['gift']) && !empty($params ['gift'])) {
-                    $url .= '&gift=' . $params ['gift'];
-                }
-                return 'redirect: /login?follow=' . urlencode($url);
+                $confirmUrl = '/subscription/confirm' . '?' . http_build_query([
+                    'subscription' => $params['subscription'],
+                    'gift' => $params['gift'] ?? null
+                ]);
+
+                $loginUrl = '/login' . '?' . http_build_query([
+                    'follow' => $confirmUrl
+                ]);
+
+                return "redirect: $loginUrl";
             }
 
             $userId = Session::getCredentials()->getUserId();
-            $subscriptionsService = SubscriptionsService::instance();
-            $subscriptionType = $subscriptionsService->getSubscriptionType($params ['subscription']);
-            if (empty($subscriptionType)) {
-                throw new Exception("Invalid subscription type");
-            }
 
+            // Validate the request.
+            $subscriptionsService = SubscriptionsService::instance();
+            $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscription']);
+            if (empty($subscriptionType)) {
+                throw new Exception('Invalid subscription type.');
+            } else if ($isDirectGift) {
+                $giftReceiver = UserService::instance()->getUserByUsername($params['gift']);
+                if (empty($giftReceiver)) {
+                    throw new Exception('Invalid giftee: no such user exists.');
+                } else if ($giftReceiver['userId'] === $userId) {
+                    throw new Exception('Invalid giftee: you cannot gift yourself a sub.');
+                } else if (!$subscriptionsService->canUserReceiveGift($userId, $giftReceiver['userId'])) {
+                    throw new Exception('Invalid giftee: this user can\'t accept gift subs.');
+                }
+            }
         } catch (Exception $e) {
             Session::setErrorBag($e->getMessage());
             return 'redirect: /subscribe';
         }
 
-        // If this is a gift, there is no need to check the current subscription
-        if (isset($params['gift']) && !empty($params['gift'])) {
-            $model->gift = $params['gift'];
-        }
-        // Existing subscription check
-        else {
+        // If this isn't a direct gift or a mass gift, we need to check the
+        // user's current subscription and warn them if they're already
+        // subscribed.
+        if (!$isDirectGift) {
             $currentSubscription = $subscriptionsService->getUserActiveSubscription($userId);
-            if (!empty ($currentSubscription)) {
-                $model->currentSubscription = $currentSubscription;
-                $model->currentSubscriptionType = $subscriptionsService->getSubscriptionType($currentSubscription ['subscriptionType']);
-                // Warn about identical subscription overwrite
-                if ($model->currentSubscriptionType['id'] == $subscriptionType ['id']) {
-                    // Too verbose?
-                    $model->warning = new Exception('Already subscribed. Your highest tier subscription will be shown.');
-                }
+            if (!empty($currentSubscription)) {
+                $currentSubType = $subscriptionsService->getSubscriptionType($currentSubscription['subscriptionType']);
+                $warningMessage = "You already have a {$currentSubType['tierLabel']} subscription! You can sub again, but only your highest tier sub will be visible.";
+                $model->warning = new Exception($warningMessage);
             }
         }
 
         $model->subscriptionType = $subscriptionType;
+        $model->gift = $params['gift'] ?? null;
         $model->title = 'Subscribe Confirm';
         return 'subscribe/confirm';
     }
