@@ -273,7 +273,7 @@ class PayPalApiService extends Service {
     public function retrieveCheckoutInfo(string $token) {
         try {
             $paypalService = new PayPalAPIInterfaceServiceService($this->getConfig());
-            $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq();
+            $getExpressCheckoutReq = @(new GetExpressCheckoutDetailsReq());
             $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType($token);
             $response = $paypalService->GetExpressCheckoutDetails($getExpressCheckoutReq);
             if (!empty($response) && $response->Ack == 'Success') {
