@@ -442,6 +442,28 @@ class SubscriptionsService extends Service {
         }
     }
 
+    public function findRecentlyModifiedGiftableUsers(int $limit, array $exclusionUserIds = []): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery(
+                'SELECT u.*
+                FROM dfl_users AS u
+                LEFT JOIN dfl_users_subscriptions AS s
+                ON u.userId = s.userId AND s.status = ? 
+                WHERE u.userId NOT IN (?)
+                    AND u.allowGifting = 1
+                    AND s.subscriptionId IS NULL
+                ORDER BY u.modifiedDate
+                LIMIT ?',
+                [SubscriptionStatus::ACTIVE, $exclusionUserIds, $limit],
+                [PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY, PDO::PARAM_INT]
+            );
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error finding recently modified giftable users.", $e);
+        }
+    }
+
     /**
      * @return array|false
      * @throws DBException

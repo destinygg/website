@@ -20,6 +20,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
 use Destiny\Common\Session\Session;
+use Destiny\Common\User\UserFeature;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
@@ -550,5 +551,59 @@ class SubscriptionController {
         $redisService->sendBroadcast($message);
 
         AuthenticationService::instance()->flagUserForUpdate($receivingUser['userId']);
+    }
+
+    /**
+     * Returns an array of random users as winners of the gift subs. Only those
+     * who accept gift subs and aren't currently subbed can qualify. If there is
+     * an insufficient number of qualifying users among those connected to chat,
+     * we pull from users who aren't in chat until we have enough.
+     */
+    private function pickMassGiftWinnersFromChat(int $quantity, array $buyingUser): array {
+        $connectedUsers = ChatRedisService::instance()->getChatConnectedUsers();
+
+        // Users who have the `subscriber` flair are already subscribed and
+        // don't qualify. Exclude the buyer because they can't gift themselves a
+        // sub.
+        $qualifiedUsers = array_filter(
+            $connectedUsers,
+            function($user) use ($buyingUser) {
+                return $user['nick'] !== $buyingUser['username'] && !in_array(UserFeature::SUBSCRIBER, $user['features']);
+            }
+        );
+        $qualifiedUsernames = array_map(function($user) { return $user['nick']; }, $qualifiedUsers);
+        $giftableUsers = SubscriptionsService::instance()->findGiftableUsersByUsernames($qualifiedUsernames);
+
+        shuffle($giftableUsers);
+        $winners = array_slice($giftableUsers, 0, $quantity);
+
+        // If there aren't enough winners, we pull giftable, recently-modified
+        // users who aren't in chat until there are.
+        if (count($winners) < $quantity) {
+            $numberNeeded = $quantity - count($winners);
+
+            // Exclude users that already won.
+            $userIdsToExclude = array_map(function($user) { return $user['userId']; }, $winners);
+            $userIdsToExclude[] = $buyingUser['userId'];
+
+            $moreWinners = SubscriptionsService::instance()->findRecentlyModifiedGiftableUsers($numberNeeded, $userIdsToExclude);
+            $winners = array_merge($winners, $moreWinners);
+        }
+
+        // If there still aren't enough winners, then nearly every registered
+        // user must be a sub. Pop open a bottle of champagne to celebrate the
+        // streamer's success, process the mass gift anyway, and apologize to
+        // the buyer/issue a refund if they notice they got scamazed.
+        if (count($winners) < $quantity) {
+            Log::critical(sprintf(
+                '%s (ID: %d) mass gifted %d subs, but only %d qualifying recipients were found.',
+                $buyingUser['username'],
+                $buyingUser['userId'],
+                $quantity,
+                count($winners)
+            ));
+        }
+
+        return $winners;
     }
 }
