@@ -451,6 +451,7 @@ class SubscriptionController {
     private function validateSubscriptionParameters(array $params) {
         $isDirectGift = !empty($params['giftee']);
         $isMassGift = $params['quantity'] > 1;
+        $isRecurring = boolval($params['recurring'] ?? '0');
 
         $userId = Session::getCredentials()->getUserId();
 
@@ -462,6 +463,8 @@ class SubscriptionController {
             throw new Exception('A sub cannot be a direct gift and mass gift at once.');
         } else if ($params['quantity'] > 100 || $params['quantity'] < 1) {
             throw new Exception('You can only mass gift between 1 and 100 subs.');
+        } else if ($isMassGift && $isRecurring) {
+            throw new Exception('A mass gift cannot be recurring.');
         } else if ($isDirectGift) {
             $giftReceiver = UserService::instance()->getUserByUsername($params['giftee']);
             if (empty($giftReceiver)) {

@@ -80,14 +80,16 @@ use Destiny\Common\Utils\Tpl;
                             <textarea name="sub-message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder=""></textarea>
                         </div>
 
-                        <div class="ds-block">
-                            <div class="checkbox">
-                                <label for="recurring">
-                                    <span><input id="recurring" type="checkbox" name="recurring" value="1" /> <strong>Recurring subscription</strong></span>
-                                    <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
-                                </label>
+                        <?php if ($this->quantity == 1): ?>
+                            <div class="ds-block">
+                                <div class="checkbox">
+                                    <label for="recurring">
+                                        <span><input id="recurring" type="checkbox" name="recurring" value="1" /> <strong>Recurring subscription</strong></span>
+                                        <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
 
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
