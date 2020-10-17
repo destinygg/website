@@ -281,6 +281,7 @@ class SubscriptionController {
             FilterParams::required($params, 'PayerID');
             FilterParams::required($params, 'subTypeId');
             FilterParams::required($params, 'token');
+            FilterParams::required($params, 'quantity');
 
             $userService = UserService::instance();
 
@@ -311,16 +312,23 @@ class SubscriptionController {
                 }
             }
 
-            // If there is no giftee, the recipient is the buyer.
-            $receivingUser = !empty($params['giftee']) ? $userService->getUserByUsername($params['giftee']) : $buyingUser;
-            $this->createNewSubscription(
-                $subscriptionType,
-                $receivingUser,
-                $buyingUser,
-                $paymentIds,
-                $params['token'],
-                boolval($params['recurring'] ?? '0')
-            );
+            $receivingUsers = [];
+            if ($params['quantity'] > 1) {
+                $receivingUsers = $this->pickMassGiftWinnersFromChat($params['quantity'], $buyingUser);
+            } else {
+                $receivingUsers[] = !empty($params['giftee']) ? $userService->getUserByUsername($params['giftee']) : $buyingUser;
+            }
+
+            foreach ($receivingUsers as $receivingUser) {
+                $this->createNewSubscription(
+                    $subscriptionType,
+                    $receivingUser,
+                    $buyingUser,
+                    $paymentIds,
+                    $params['token'],
+                    boolval($params['recurring'] ?? '0')
+                );
+            }
 
             $db->commit();
         } catch (Exception $e) {
@@ -332,13 +340,20 @@ class SubscriptionController {
             return 'redirect: /subscription/error';
         }
 
-        $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser);
+        foreach ($receivingUsers as $receivingUser) {
+            $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser);
+        }
+
+        $redisService = ChatRedisService::instance();
+        if ($params['quantity'] > 1) {
+            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$params['quantity']} {$subscriptionType['tierLabel']} subs to the community!");
+        }
 
         // Display an alert on stream and in chat.
         $broadcastMessage = Session::getAndRemove('broadcastMessage');
         $broadcastMessage = mb_substr(trim($broadcastMessage), 0, 250);
         if ($broadcastMessage !== '') {
-            ChatRedisService::instance()->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
+            $redisService->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
 
             if (Config::$a[AuthProvider::STREAMLABS]['alert_subscriptions']) {
                 StreamLabsService::instance()->sendAlert([
