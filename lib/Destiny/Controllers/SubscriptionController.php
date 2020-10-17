@@ -159,7 +159,7 @@ class SubscriptionController {
      */
     public function subscriptionConfirm(array $params, ViewModel $model): string {
         try {
-            FilterParams::required($params, 'subscription');
+            FilterParams::required($params, 'subscriptionId');
             FilterParams::required($params, 'quantity');
 
             // If the user isn't logged in, save their selection and redirect to
@@ -167,9 +167,9 @@ class SubscriptionController {
             // this page.
             if (!Session::hasRole(UserRole::USER)) {
                 $confirmUrl = '/subscription/confirm' . '?' . http_build_query([
-                    'subscription' => $params['subscription'],
+                    'subscriptionId' => $params['subscriptionId'],
                     'quantity' => $params['quantity'],
-                    'gift' => $params['gift'] ?? null
+                    'giftee' => $params['giftee'] ?? null
                 ]);
 
                 $loginUrl = '/login' . '?' . http_build_query([
@@ -186,12 +186,12 @@ class SubscriptionController {
         }
 
         $subscriptionsService = SubscriptionsService::instance();
-        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscription']);
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscriptionId']);
 
         // If this isn't a direct gift or a mass gift, we need to check the
         // user's current subscription and warn them if they're already
         // subscribed.
-        $isDirectGift = !empty($params['gift']);
+        $isDirectGift = !empty($params['giftee']);
         $isMassGift = $params['quantity'] > 1;
 
         if (!$isDirectGift && !$isMassGift) {
@@ -207,7 +207,7 @@ class SubscriptionController {
 
         $model->subscriptionType = $subscriptionType;
         $model->quantity = $params['quantity'];
-        $model->gift = $params['gift'] ?? null;
+        $model->giftee = $params['giftee'] ?? null;
         $model->title = 'Subscribe Confirm';
         return 'subscribe/confirm';
     }
@@ -220,7 +220,7 @@ class SubscriptionController {
      */
     public function subscriptionCreate(array $params, ViewModel $model): string {
         try {
-            FilterParams::required($params, 'subscription');
+            FilterParams::required($params, 'subscriptionId');
             FilterParams::required($params, 'quantity');
 
             $this->validateSubscriptionParameters($params);
@@ -241,11 +241,11 @@ class SubscriptionController {
         }
 
         try {
-            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subscription']);
-            $recurring = !empty($params['renew']) ? $params['renew'] === '1' : false;
+            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subscriptionId']);
+            $recurring = !empty($params['recurring']) ? $params['recurring'] === '1' : false;
             $returnUrl = Http::getBaseUrl() . '/subscription/process' . '?' . http_build_query([
-                'subTypeId' => $params['subscription'],
-                'giftee' => $params['gift'] ?? null,
+                'subscriptionId' => $params['subscriptionId'],
+                'giftee' => $params['giftee'] ?? null,
                 'quantity' => $params['quantity'],
                 'recurring' => $recurring
             ]);
@@ -279,13 +279,13 @@ class SubscriptionController {
             // No `PayerId` is provided if there was an issue setting up
             // payment.
             FilterParams::required($params, 'PayerID');
-            FilterParams::required($params, 'subTypeId');
+            FilterParams::required($params, 'subscriptionId');
             FilterParams::required($params, 'token');
             FilterParams::required($params, 'quantity');
 
             $userService = UserService::instance();
 
-            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subTypeId']);
+            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subscriptionId']);
             if (empty($subscriptionType)) {
                 throw new Exception('Invalid subscription type.');
             }
@@ -449,13 +449,13 @@ class SubscriptionController {
      * @throws Exception
      */
     private function validateSubscriptionParameters(array $params) {
-        $isDirectGift = !empty($params['gift']);
+        $isDirectGift = !empty($params['giftee']);
         $isMassGift = $params['quantity'] > 1;
 
         $userId = Session::getCredentials()->getUserId();
 
         $subscriptionsService = SubscriptionsService::instance();
-        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscription']);
+        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscriptionId']);
         if (empty($subscriptionType)) {
             throw new Exception('Invalid subscription type.');
         } else if ($isDirectGift && $isMassGift) {
@@ -463,7 +463,7 @@ class SubscriptionController {
         } else if ($params['quantity'] > 100 || $params['quantity'] < 1) {
             throw new Exception('You can only mass gift between 1 and 100 subs.');
         } else if ($isDirectGift) {
-            $giftReceiver = UserService::instance()->getUserByUsername($params['gift']);
+            $giftReceiver = UserService::instance()->getUserByUsername($params['giftee']);
             if (empty($giftReceiver)) {
                 throw new Exception('Invalid giftee: no such user exists.');
             } else if ($giftReceiver['userId'] === $userId) {

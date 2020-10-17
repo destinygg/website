@@ -36,8 +36,8 @@ use Destiny\Common\Utils\Tpl;
                 <div style="width: 100%;" class="clearfix stream">
                     <form id="subscribe-form" action="/subscription/create" method="post">
 
-                        <input type="hidden" name="subscription" value="<?= $this->subscriptionType['id'] ?>">
-                        <input type="hidden" name="gift" value="<?= $this->gift ?>">
+                        <input type="hidden" name="subscriptionId" value="<?= $this->subscriptionType['id'] ?>">
+                        <input type="hidden" name="giftee" value="<?= $this->giftee ?>">
                         <input type="hidden" name="quantity" value="<?= $this->quantity ?>">
 
                         <div class="ds-block">
@@ -57,8 +57,8 @@ use Destiny\Common\Utils\Tpl;
                                     <td><?= $this->quantity ?></td>
                                     <td>
                                         <?= $this->subscriptionType['itemLabel'] ?>
-                                        <?php if (!empty($this->gift)): ?>
-                                            <span class="badge badge-danger"><i class="fas fa-gift"></i> <?= Tpl::out($this->gift) ?></span>
+                                        <?php if (!empty($this->giftee)): ?>
+                                            <span class="badge badge-danger"><i class="fas fa-gift"></i> <?= Tpl::out($this->giftee) ?></span>
                                         <?php endif ?>
                                     </td>
                                     <td>$<?= $this->subscriptionType['amount'] ?></td>
@@ -82,8 +82,8 @@ use Destiny\Common\Utils\Tpl;
 
                         <div class="ds-block">
                             <div class="checkbox">
-                                <label for="renew">
-                                    <span><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></span>
+                                <label for="recurring">
+                                    <span><input id="recurring" type="checkbox" name="recurring" value="1" /> <strong>Recurring subscription</strong></span>
                                     <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
                                 </label>
                             </div>

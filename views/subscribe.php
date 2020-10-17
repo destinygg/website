@@ -252,8 +252,8 @@ use Destiny\Common\User\UserRole;
         <div class="row d-flex justify-content-center mt-5">
             <div class="col-auto">
                 <form id="continue-form" class="d-flex flex-column align-items-center justify-content-center" action="/subscription/confirm" method="post">
-                    <input type="hidden" name="subscription" value="">
-                    <input type="hidden" name="gift" value="">
+                    <input type="hidden" name="subscriptionId" value="">
+                    <input type="hidden" name="giftee" value="">
                     <input type="hidden" name="quantity" value="1">
                     <button type="Submit" class="btn btn-primary btn-lg">Continue <i class="fas fa-arrow-right"></i></button>
                     <div class="invalid-feedback"></div>
