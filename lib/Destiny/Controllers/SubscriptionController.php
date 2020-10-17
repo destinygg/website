@@ -268,146 +268,77 @@ class SubscriptionController {
      * @Secure ({"USER"})
      *
      * We were redirected here from PayPal after the buyer approved the payment
-     * TODO this method is massive
      *
      * @throws ConnectionException
      * @throws DBALException
      * @throws Exception
      */
     public function subscriptionProcess(array $params): string {
-        FilterParams::required($params, 'subTypeId');
-        FilterParams::required($params, 'token');
-
-        $userService = UserService::instance();
-        $subscriptionsService = SubscriptionsService::instance();
-        $payPalApiService = PayPalApiService::instance();
-        $redisService = ChatRedisService::instance();
-        $ordersService = OrdersService::instance();
-        $db = Application::getDbConn();
-
-        $subscriptionType = $subscriptionsService->getSubscriptionType($params['subTypeId']);
-        if (empty($subscriptionType)) {
-            throw new Exception('Invalid subscription type.');
-        }
-
-        // The logged in user is the one buying the sub.
-        $userId = Session::getCredentials()->getUserId();
-        $buyingUser = $userService->getUserById($userId);
-
-        // If there is no giftee, the recipient is the buyer.
-        if (!empty($params['giftee'])) {
-            $receivingUser = $userService->getUserByUsername($params['giftee']);
-        } else {
-            $receivingUser = $buyingUser;
-        }
-
         try {
-            $db->beginTransaction();
-
             // No `PayerId` is provided if there was an issue setting up
             // payment.
             FilterParams::required($params, 'PayerID');
+            FilterParams::required($params, 'subTypeId');
+            FilterParams::required($params, 'token');
 
-            // Create a new subscription.
-            $startDate = Date::getDateTime();
-            $endDate = Date::getDateTime();
-            $endDate->modify("+{$subscriptionDetails['billingFrequency']} {$subscriptionDetails['billingPeriod']}");
+            $userService = UserService::instance();
 
-            $subscription = [
-                'userId'             => $receivingUser['userId'],
-                'gifter'             => $receivingUser['userId'] !== $buyingUser['userId'] ? $buyingUser['userId'] : null,
-                'subscriptionSource' => Config::$a['subscriptionType'],
-                'subscriptionType'   => $subscriptionType['id'],
-                'subscriptionTier'   => $subscriptionType['tier'],
-                'createdDate'        => $startDate->format('Y-m-d H:i:s'),
-                'endDate'            => $endDate->format('Y-m-d H:i:s'),
-                'recurring'          => intval($params['recurring'] ?? false),
-                'status'             => SubscriptionStatus::_NEW
-            ];
-            $subscription['subscriptionId'] = $subscriptionsService->addSubscription($subscription);
-
-            // Create a recurring payment profile for recurring subs.
-            if (boolval($params['recurring'] ?? 0)) {
-                $startPaymentDate = $startDate;
-                // The next payment date is one day before the sub expires.
-                $nextPaymentDate = (clone $endDate)->modify('-1 day');
-                $reference = "{$receivingUser['userId']}-{$subscription['subscriptionId']}";
-
-                $paymentProfileId = $payPalApiService->createSubscriptionPaymentProfile(
-                    $params['token'],
-                    $reference,
-                    $receivingUser['username'],
-                    $nextPaymentDate,
-                    $subscriptionType
-                );
-                if (empty($paymentProfileId)) {
-                    throw new Exception('Invalid recurring payment profile ID returned from PayPal.');
-                }
-
-                $subscription['paymentStatus'] = PaymentStatus::ACTIVE;
-                $subscription['paymentProfileId'] = $paymentProfileId;
-                $subscription['billingStartDate'] = $startPaymentDate->format('Y-m-d H:i:s');
-                $subscription['billingNextDate'] = $nextPaymentDate->format('Y-m-d H:i:s');
+            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subTypeId']);
+            if (empty($subscriptionType)) {
+                throw new Exception('Invalid subscription type.');
             }
 
-            // Retrieve checkout info created in `/subscription/create` and
-            // complete the transaction.
+            // The logged in user is the one buying the sub.
+            $userId = Session::getCredentials()->getUserId();
+            $buyingUser = $userService->getUserById($userId);
+
+            // Retrieve checkout info and complete the transaction.
+            $payPalApiService = PayPalApiService::instance();
             $checkoutDetails = $payPalApiService->retrieveCheckoutInfo($params['token']);
             $doECResponse = $payPalApiService->completeSubscribeECTransaction($checkoutDetails);
             $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
 
-            // If there are no payments, assume the transaction is pending. We
-            // mark the sub as pending until we receive an IPN from PayPal.
+            $db = Application::getDbConn();
+            $dbTransactionInProgress = $db->beginTransaction();
+
+            $paymentIds = [];
             if (count($payments) > 0) {
-                $subscription['status'] = SubscriptionStatus::ACTIVE;
                 foreach ($payments as $payment) {
                     $payment['payerId'] = $params['PayerID'];
-                    $paymentId = $ordersService->addPayment($payment);
-                    $ordersService->addPurchaseOfSubscription($paymentId, $subscription['subscriptionId']);
+                    $paymentId = OrdersService::instance()->addPayment($payment);
+                    $paymentIds[] = $paymentId;
                 }
-            } else {
-                $subscription['status'] = SubscriptionStatus::PENDING;
             }
 
-            $subscriptionsService->updateSubscription([
-                'subscriptionId' => $subscription['subscriptionId'],
-                'paymentStatus' => $subscription['paymentStatus'],
-                'paymentProfileId' => $subscription['paymentProfileId'],
-                'billingStartDate' => $subscription['billingStartDate'],
-                'billingNextDate' => $subscription['billingNextDate'],
-                'status' => $subscription['status']
-            ]);
+            // If there is no giftee, the recipient is the buyer.
+            $receivingUser = !empty($params['giftee']) ? $userService->getUserByUsername($params['giftee']) : $buyingUser;
+            $this->createNewSubscription(
+                $subscriptionType,
+                $receivingUser,
+                $buyingUser,
+                $paymentIds,
+                $params['token'],
+                boolval($params['recurring'] ?? '0')
+            );
+
             $db->commit();
         } catch (Exception $e) {
-            $db->rollBack();
+            if (!empty($db) && $dbTransactionInProgress ?? false) {
+                $db->rollBack();
+            }
+
             Log::critical("Error processing subscription. {$e}");
             return 'redirect: /subscription/error';
         }
 
-        // Unban/unmute the newly-subscribed user.
-        try {
-            $chatBanService = ChatBanService::instance();
-            $ban = $chatBanService->getUserActiveBan($receivingUser['userId']);
-            if (empty($ban) || !$chatBanService->isPermanentBan($ban)) {
-                $redisService->sendUnbanAndUnmute($receivingUser['userId']);
-            }
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-        }
-
-        // Broadcast the subscription in chat.
-        if ($receivingUser['userId'] !== $buyingUser['userId']) {
-            $message = "{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionDetails['tierLabel']} subscription!";
-        } else {
-            $message = "{$receivingUser['username']} is now a {$subscriptionDetails['tierLabel']} subscriber!";
-        }
-        $redisService->sendBroadcast($message);
+        $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser);
 
         // Display an alert on stream and in chat.
         $broadcastMessage = Session::getAndRemove('broadcastMessage');
         $broadcastMessage = mb_substr(trim($broadcastMessage), 0, 250);
         if ($broadcastMessage !== '') {
-            $redisService->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
+            ChatRedisService::instance()->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
+
             if (Config::$a[AuthProvider::STREAMLABS]['alert_subscriptions']) {
                 StreamLabsService::instance()->sendAlert([
                     'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
@@ -427,8 +358,6 @@ class SubscriptionController {
                 ]
             ]);
         }
-
-        AuthenticationService::instance()->flagUserForUpdate($receivingUser['userId']);
 
         // We pass the token rather than the transaction ID to handle scenarios
         // where the payment is still pending and there is no transaction ID. A
@@ -523,5 +452,103 @@ class SubscriptionController {
             }
         }
     }
-  
+
+    /**
+     * @throws Exception
+     */
+    private function createNewSubscription(array $subscriptionDetails, array $receivingUser, array $buyingUser, array $paymentIds, string $token, bool $recurring = false) {
+        $subscriptionsService = SubscriptionsService::instance();
+        $payPalApiService = PayPalApiService::instance();
+        $ordersService = OrdersService::instance();
+
+        // Create a new subscription.
+        $startDate = Date::getDateTime();
+        $endDate = Date::getDateTime();
+        $endDate->modify("+{$subscriptionDetails['billingFrequency']} {$subscriptionDetails['billingPeriod']}");
+
+        $subscription = [
+            'userId'             => $receivingUser['userId'],
+            'gifter'             => $receivingUser['userId'] !== $buyingUser['userId'] ? $buyingUser['userId'] : null,
+            'subscriptionSource' => Config::$a['subscriptionType'],
+            'subscriptionType'   => $subscriptionDetails['id'],
+            'subscriptionTier'   => $subscriptionDetails['tier'],
+            'createdDate'        => $startDate->format('Y-m-d H:i:s'),
+            'endDate'            => $endDate->format('Y-m-d H:i:s'),
+            'recurring'          => intval($recurring),
+            'status'             => SubscriptionStatus::_NEW
+        ];
+        $subscription['subscriptionId'] = $subscriptionsService->addSubscription($subscription);
+
+        // If there are no payments, assume the transaction is pending. We mark
+        // the sub as pending until we receive an IPN from PayPal.
+        if (!empty($paymentIds)) {
+            $subscription['status'] = SubscriptionStatus::ACTIVE;
+            foreach ($paymentIds as $paymentId) {
+                $ordersService->addPurchaseOfSubscription($paymentId, $subscription['subscriptionId']);
+            }
+        } else {
+            $subscription['status'] = SubscriptionStatus::PENDING;
+        }
+
+        // Create a recurring payment profile for recurring subs.
+        if ($recurring) {
+            $startPaymentDate = $startDate;
+            // The next payment date is one day before the sub expires.
+            $nextPaymentDate = (clone $endDate)->modify('-1 day');
+            $reference = "{$receivingUser['userId']}-{$subscription['subscriptionId']}";
+
+            $paymentProfileId = $payPalApiService->createSubscriptionPaymentProfile(
+                $token,
+                $reference,
+                $receivingUser['username'],
+                $nextPaymentDate,
+                $subscriptionDetails
+            );
+            if (empty($paymentProfileId)) {
+                throw new Exception('Invalid recurring payment profile ID returned from PayPal.');
+            }
+
+            $subscription['paymentStatus'] = PaymentStatus::ACTIVE;
+            $subscription['paymentProfileId'] = $paymentProfileId;
+            $subscription['billingStartDate'] = $startPaymentDate->format('Y-m-d H:i:s');
+            $subscription['billingNextDate'] = $nextPaymentDate->format('Y-m-d H:i:s');
+        }
+
+        $subscriptionsService->updateSubscription([
+            'subscriptionId' => $subscription['subscriptionId'],
+            'paymentStatus' => $subscription['paymentStatus'] ?? null,
+            'paymentProfileId' => $subscription['paymentProfileId'] ?? null,
+            'billingStartDate' => $subscription['billingStartDate'] ?? null,
+            'billingNextDate' => $subscription['billingNextDate'] ?? null,
+            'status' => $subscription['status']
+        ]);
+    }
+
+    /**
+     * Unban the newly-subscribed user and display a sub alert in chat.
+     */
+    private function performPostSubscriptionActions(array $subscriptionDetails, array $receivingUser, array $buyingUser) {
+        $redisService = ChatRedisService::instance();
+
+        // Unban/unmute the newly-subscribed user.
+        try {
+            $chatBanService = ChatBanService::instance();
+            $ban = $chatBanService->getUserActiveBan($receivingUser['userId']);
+            if (empty($ban) || !$chatBanService->isPermanentBan($ban)) {
+                $redisService->sendUnbanAndUnmute($receivingUser['userId']);
+            }
+        } catch (Exception $e) {
+            Log::error('Error unbanning/unmuting user. ', $e->getMessage());
+        }
+
+        // Broadcast the subscription in chat.
+        if ($receivingUser['userId'] !== $buyingUser['userId']) {
+            $message = "{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionDetails['tierLabel']} subscription!";
+        } else {
+            $message = "{$receivingUser['username']} is now a {$subscriptionDetails['tierLabel']} subscriber!";
+        }
+        $redisService->sendBroadcast($message);
+
+        AuthenticationService::instance()->flagUserForUpdate($receivingUser['userId']);
+    }
 }
