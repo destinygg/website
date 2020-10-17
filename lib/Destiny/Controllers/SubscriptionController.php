@@ -389,18 +389,23 @@ class SubscriptionController {
     public function subscriptionComplete(array $params, ViewModel $model): string {
         FilterParams::required($params, 'token');
 
-        $checkoutDetails = PayPalApiService::instance()->retrieveCheckoutInfo($params['token']);
-        $paymentDetails = $checkoutDetails->GetExpressCheckoutDetailsResponseDetails->PaymentDetails[0];
+        $checkoutResponse = PayPalApiService::instance()->retrieveCheckoutInfo($params['token']);
+        $checkoutDetails = $checkoutResponse->GetExpressCheckoutDetailsResponseDetails;
+        $paymentDetails = $checkoutDetails->PaymentDetails[0];
         $subscriptionType = SubscriptionsService::instance()->getSubscriptionType(
             $paymentDetails->PaymentDetailsItem[0]->Number
         );
 
         $model->title = 'Subscription Complete';
-        $model->quantity = $paymentDetails->PaymentDetailsItem[0]->Quantity;
         // There is no `TransactionId` if the transaction is pending.
         $model->transactionId = $paymentDetails->TransactionId ?? null;
+        $model->quantity = $paymentDetails->PaymentDetailsItem[0]->Quantity;
+        // Somehow this property is a string despite the DocBlock saying it's a
+        // bool.
+        $model->recurring = ($checkoutDetails->BillingAgreementAcceptedStatus ?? 'false') === 'true';
         $model->orderTotal = $paymentDetails->OrderTotal->value;
         $model->subscriptionType = $subscriptionType;
+
         return 'subscribe/complete';
     }
 

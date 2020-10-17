@@ -68,7 +68,12 @@ use Destiny\Common\Config;
                         </tr>
                         <tr>
                             <td><?= $this->quantity ?></td>
-                            <td><?= $this->subscriptionType['itemLabel'] ?></td>
+                            <td>
+                                <?= $this->subscriptionType['itemLabel'] ?>
+                                <?php if ($this->recurring): ?>
+                                    <span class="badge badge-danger"> Recurring</span>
+                                <?php endif; ?>
+                            </td>
                             <td>$<?= $this->subscriptionType['amount'] ?></td>
                         </tr>
                         <tr>
