@@ -126,7 +126,7 @@ class PayPalApiService extends Service {
      * @return null|string
      * @throws Exception
      */
-    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false, int $quantity = 1) {
+    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false, int $quantity = 1, string $giftee = null) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
 
         $token = null;
@@ -143,6 +143,10 @@ class PayPalApiService extends Service {
         $details->AllowNote = 0;
         $details->ReturnURL = $returnUrl;
         $details->CancelURL = $cancelUrl;
+
+        if (!empty($giftee)) {
+            $details->Custom = json_encode(['g' => $giftee]);
+        }
 
         if ($recurring) {
             // Create billing agreement for recurring payment
@@ -332,5 +336,29 @@ class PayPalApiService extends Service {
             }
         }
         return $payments;
+    }
+
+    public function extractSubscriptionInfoFromCheckoutResponse(GetExpressCheckoutDetailsResponseType $checkoutResponse): array {
+        $subscriptionInfo = [];
+
+        $checkoutDetails = $checkoutResponse->GetExpressCheckoutDetailsResponseDetails;
+        $paymentDetails = $checkoutDetails->PaymentDetails[0];
+
+        // Somehow this property is a string despite the DocBlock saying it's a
+        // bool.
+        $subscriptionInfo['recurring'] = ($checkoutDetails->BillingAgreementAcceptedStatus ?? 'false') === 'true';
+
+        // Extract the username of the giftee if it exists.
+        if (!empty($checkoutDetails->Custom)) {
+            $customField = json_decode($checkoutDetails->Custom, true);
+            if (!empty($customField['g'])) {
+                $subscriptionInfo['giftee'] = $customField['g'];
+            }
+        }
+
+        $subscriptionInfo['subscriptionId'] = $paymentDetails->PaymentDetailsItem[0]->Number;
+        $subscriptionInfo['quantity'] = $paymentDetails->PaymentDetailsItem[0]->Quantity;
+
+        return $subscriptionInfo;
     }
 }

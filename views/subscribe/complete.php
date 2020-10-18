@@ -70,6 +70,9 @@ use Destiny\Common\Config;
                             <td><?= $this->quantity ?></td>
                             <td>
                                 <?= $this->subscriptionType['itemLabel'] ?>
+                                <?php if (!empty($this->giftee)): ?>
+                                    <span class="badge badge-danger"><i class="fas fa-gift"></i> <?= Tpl::out($this->giftee) ?></span>
+                                <?php endif ?>
                                 <?php if ($this->recurring): ?>
                                     <span class="badge badge-danger"> Recurring</span>
                                 <?php endif; ?>

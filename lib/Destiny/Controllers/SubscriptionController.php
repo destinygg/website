@@ -243,12 +243,7 @@ class SubscriptionController {
         try {
             $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subscriptionId']);
             $recurring = !empty($params['recurring']) ? $params['recurring'] === '1' : false;
-            $returnUrl = Http::getBaseUrl() . '/subscription/process' . '?' . http_build_query([
-                'subscriptionId' => $params['subscriptionId'],
-                'giftee' => $params['giftee'] ?? null,
-                'quantity' => $params['quantity'],
-                'recurring' => $recurring
-            ]);
+            $returnUrl = Http::getBaseUrl() . '/subscription/process';
             $cancelUrl = Http::getBaseUrl() . '/subscribe';
 
             $token = PayPalApiService::instance()->createSubscribeECRequest(
@@ -256,7 +251,8 @@ class SubscriptionController {
                 $cancelUrl,
                 $subscriptionType,
                 $recurring,
-                $params['quantity']
+                $params['quantity'],
+                $params['giftee'] ?? null
             );
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (Exception $e) {
@@ -279,26 +275,23 @@ class SubscriptionController {
             // No `PayerId` is provided if there was an issue setting up
             // payment.
             FilterParams::required($params, 'PayerID');
-            FilterParams::required($params, 'subscriptionId');
-            FilterParams::required($params, 'token');
-            FilterParams::required($params, 'quantity');
 
-            $userService = UserService::instance();
+            // Retrieve checkout info and complete the transaction.
+            $payPalApiService = PayPalApiService::instance();
+            $checkoutResponse = $payPalApiService->retrieveCheckoutInfo($params['token']);
+            $doECResponse = $payPalApiService->completeSubscribeECTransaction($checkoutResponse);
+            $subInfo = $payPalApiService->extractSubscriptionInfoFromCheckoutResponse($checkoutResponse);
+            $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
 
-            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($params['subscriptionId']);
+            $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($subInfo['subscriptionId']);
             if (empty($subscriptionType)) {
                 throw new Exception('Invalid subscription type.');
             }
 
             // The logged in user is the one buying the sub.
+            $userService = UserService::instance();
             $userId = Session::getCredentials()->getUserId();
             $buyingUser = $userService->getUserById($userId);
-
-            // Retrieve checkout info and complete the transaction.
-            $payPalApiService = PayPalApiService::instance();
-            $checkoutDetails = $payPalApiService->retrieveCheckoutInfo($params['token']);
-            $doECResponse = $payPalApiService->completeSubscribeECTransaction($checkoutDetails);
-            $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
 
             $db = Application::getDbConn();
             $dbTransactionInProgress = $db->beginTransaction();
@@ -313,10 +306,10 @@ class SubscriptionController {
             }
 
             $receivingUsers = [];
-            if ($params['quantity'] > 1) {
-                $receivingUsers = $this->pickMassGiftWinnersFromChat($params['quantity'], $buyingUser);
+            if ($subInfo['quantity'] > 1) {
+                $receivingUsers = $this->pickMassGiftWinnersFromChat($subInfo['quantity'], $buyingUser);
             } else {
-                $receivingUsers[] = !empty($params['giftee']) ? $userService->getUserByUsername($params['giftee']) : $buyingUser;
+                $receivingUsers[] = !empty($subInfo['giftee']) ? $userService->getUserByUsername($subInfo['giftee']) : $buyingUser;
             }
 
             foreach ($receivingUsers as $receivingUser) {
@@ -326,7 +319,7 @@ class SubscriptionController {
                     $buyingUser,
                     $paymentIds,
                     $params['token'],
-                    boolval($params['recurring'] ?? '0')
+                    boolval($subInfo['recurring'] ?? '0')
                 );
             }
 
@@ -345,8 +338,8 @@ class SubscriptionController {
         }
 
         $redisService = ChatRedisService::instance();
-        if ($params['quantity'] > 1) {
-            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$params['quantity']} {$subscriptionType['tierLabel']} subs to the community!");
+        if ($subInfo['quantity'] > 1) {
+            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$subInfo['quantity']} {$subscriptionType['tierLabel']} subs to the community!");
         }
 
         // Display an alert on stream and in chat.
@@ -389,20 +382,20 @@ class SubscriptionController {
     public function subscriptionComplete(array $params, ViewModel $model): string {
         FilterParams::required($params, 'token');
 
-        $checkoutResponse = PayPalApiService::instance()->retrieveCheckoutInfo($params['token']);
+        $payPalApiService = PayPalApiService::instance();
+        $checkoutResponse = $payPalApiService->retrieveCheckoutInfo($params['token']);
+        $subInfo = $payPalApiService->extractSubscriptionInfoFromCheckoutResponse($checkoutResponse);
         $checkoutDetails = $checkoutResponse->GetExpressCheckoutDetailsResponseDetails;
         $paymentDetails = $checkoutDetails->PaymentDetails[0];
-        $subscriptionType = SubscriptionsService::instance()->getSubscriptionType(
-            $paymentDetails->PaymentDetailsItem[0]->Number
-        );
+
+        $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($subInfo['subscriptionId']);
 
         $model->title = 'Subscription Complete';
         // There is no `TransactionId` if the transaction is pending.
         $model->transactionId = $paymentDetails->TransactionId ?? null;
-        $model->quantity = $paymentDetails->PaymentDetailsItem[0]->Quantity;
-        // Somehow this property is a string despite the DocBlock saying it's a
-        // bool.
-        $model->recurring = ($checkoutDetails->BillingAgreementAcceptedStatus ?? 'false') === 'true';
+        $model->quantity = $subInfo['quantity'];
+        $model->recurring = $subInfo['recurring'];
+        $model->giftee = $subInfo['giftee'] ?? null;
         $model->orderTotal = $paymentDetails->OrderTotal->value;
         $model->subscriptionType = $subscriptionType;
 
