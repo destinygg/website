@@ -188,19 +188,25 @@ class SubscriptionController {
         $subscriptionsService = SubscriptionsService::instance();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscriptionId']);
 
-        // If this isn't a direct gift or a mass gift, we need to check the
-        // user's current subscription and warn them if they're already
-        // subscribed.
+        // If this isn't a direct gift or a mass gift, we need to warn the user
+        // if they already have an active or pending subscription.
         $isDirectGift = !empty($params['giftee']);
         $isMassGift = $params['quantity'] > 1;
 
         if (!$isDirectGift && !$isMassGift) {
             $userId = Session::getCredentials()->getUserId();
-            $currentSubscription = $subscriptionsService->getUserActiveSubscription($userId);
+            $currentSubscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
 
-            if (!empty($currentSubscription)) {
+            if (!empty($currentSubscriptions)) {
+                $currentSubscription = $currentSubscriptions[0];
                 $currentSubType = $subscriptionsService->getSubscriptionType($currentSubscription['subscriptionType']);
-                $warningMessage = "You already have a {$currentSubType['tierLabel']} subscription! You can sub again, but only your highest tier sub will be visible.";
+
+                if ($currentSubscription['status'] === SubscriptionStatus::ACTIVE) {
+                    $warningMessage = "You already have a {$currentSubType['tierLabel']} subscription! You can sub again, but only your highest tier sub will be visible.";    
+                } else { // SubscriptionStatus::PENDING
+                    $warningMessage = "You already have a pending {$currentSubType['tierLabel']} subscription! Pending subs become active when their payment is processed.";
+                }
+
                 $model->warning = new Exception($warningMessage);
             }
         }
