@@ -5,6 +5,7 @@ use Destiny\Chat\ChatBanService;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\OrdersService;
 use Destiny\Commerce\PaymentStatus;
+use Destiny\Commerce\SubPurchaseType;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Commerce\SubscriptionStatus;
 use Destiny\Common\Annotation\Controller;
@@ -449,31 +450,44 @@ class SubscriptionController {
      * @throws Exception
      */
     private function validateSubscriptionParameters(array $params) {
-        $isDirectGift = !empty($params['giftee']);
-        $isMassGift = $params['quantity'] > 1;
-        $isRecurring = boolval($params['recurring'] ?? '0');
-
-        $userId = Session::getCredentials()->getUserId();
-
         $subscriptionsService = SubscriptionsService::instance();
         $subscriptionType = $subscriptionsService->getSubscriptionType($params['subscriptionId']);
         if (empty($subscriptionType)) {
             throw new Exception('Invalid subscription type.');
-        } else if ($isDirectGift && $isMassGift) {
-            throw new Exception('A sub cannot be a direct gift and mass gift at once.');
-        } else if ($params['quantity'] > 100 || $params['quantity'] < 1) {
-            throw new Exception('You can only mass gift between 1 and 100 subs.');
-        } else if ($isMassGift && $isRecurring) {
-            throw new Exception('A mass gift cannot be recurring.');
-        } else if ($isDirectGift) {
-            $giftReceiver = UserService::instance()->getUserByUsername($params['giftee']);
-            if (empty($giftReceiver)) {
-                throw new Exception('Invalid giftee: no such user exists.');
-            } else if ($giftReceiver['userId'] === $userId) {
-                throw new Exception('Invalid giftee: you cannot gift yourself a sub.');
-            } else if (!$subscriptionsService->canUserReceiveGift($userId, $giftReceiver['userId'])) {
-                throw new Exception('Invalid giftee: this user can\'t accept gift subs.');
-            }
+        }
+
+        switch ($params['purchaseType']) {
+            case SubPurchaseType::_SELF:
+                if ($params['quantity'] != 1) {
+                    throw new Exception('You can only buy one sub for yourself at a time.');
+                }
+                break;
+            case SubPurchaseType::DIRECT_GIFT:
+                FilterParams::required($params, 'giftee');
+
+                $userId = Session::getCredentials()->getUserId();
+                $giftReceiver = UserService::instance()->getUserByUsername($params['giftee']);
+
+                if ($params['quantity'] != 1) {
+                    throw new Exception('You can only gift one sub to a specific user at a time.');
+                } else if (empty($giftReceiver)) {
+                    throw new Exception('Invalid giftee: no such user exists.');
+                } else if ($giftReceiver['userId'] === $userId) {
+                    throw new Exception('Invalid giftee: you cannot gift yourself a sub.');
+                } else if (!$subscriptionsService->canUserReceiveGift($userId, $giftReceiver['userId'])) {
+                    throw new Exception('Invalid giftee: this user can\'t accept gift subs.');
+                }
+                break;
+            case SubPurchaseType::MASS_GIFT:
+                $isRecurring = boolval($params['recurring'] ?? '0');
+                if ($params['quantity'] > 100 || $params['quantity'] < 1) {
+                    throw new Exception('You can only mass gift between 1 and 100 subs.');
+                } else if ($isRecurring) {
+                    throw new Exception('A mass gift cannot be recurring.');
+                }
+                break;
+            default:
+                throw new Exception('Invalid sub purchase type.');
         }
     }
 
