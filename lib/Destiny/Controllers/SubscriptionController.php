@@ -221,6 +221,7 @@ class SubscriptionController {
     /**
      * @Route ("/subscription/create")
      * @Secure ({"USER"})
+     * @HttpMethod ({"POST"})
      * @throws Exception
      * @throws DBALException
      */
