@@ -126,7 +126,7 @@ class PayPalApiService extends Service {
      * @return null|string
      * @throws Exception
      */
-    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false, int $quantity = 1, string $giftee = null) {
+    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, string $purchaseType, array $subscriptionType = [], $recurring = false, int $quantity = 1, string $giftee = null) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
 
         $token = null;
@@ -143,10 +143,7 @@ class PayPalApiService extends Service {
         $details->AllowNote = 0;
         $details->ReturnURL = $returnUrl;
         $details->CancelURL = $cancelUrl;
-
-        if (!empty($giftee)) {
-            $details->Custom = json_encode(['g' => $giftee]);
-        }
+        $details->Custom = json_encode(['purchaseType' => $purchaseType, 'giftee' => $giftee]);
 
         if ($recurring) {
             // Create billing agreement for recurring payment
@@ -348,12 +345,10 @@ class PayPalApiService extends Service {
         // bool.
         $subscriptionInfo['recurring'] = ($checkoutDetails->BillingAgreementAcceptedStatus ?? 'false') === 'true';
 
-        // Extract the username of the giftee if it exists.
+        // Extract the purchase type and username of the giftee.
         if (!empty($checkoutDetails->Custom)) {
-            $customField = json_decode($checkoutDetails->Custom, true);
-            if (!empty($customField['g'])) {
-                $subscriptionInfo['giftee'] = $customField['g'];
-            }
+            $customFields = json_decode($checkoutDetails->Custom, true);
+            $subscriptionInfo = array_merge($subscriptionInfo, $customFields);
         }
 
         $subscriptionInfo['subscriptionId'] = $paymentDetails->PaymentDetailsItem[0]->Number;
