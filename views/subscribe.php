@@ -168,8 +168,8 @@ use Destiny\Common\User\UserRole;
         </div>
         <div class="row d-flex align-items-start justify-content-center">
             <div class="col-auto mt-1">
-                <div id="myself" class="recipient">
-                    <div class="selectable selected" data-select-id="myself" data-select-group="recipient">
+                <div id="self" class="recipient">
+                    <div class="selectable selected" data-select-id="self" data-select-group="recipient">
                         <i class="fas fa-smile fa-3x"></i>
                         <p>Please notice me, Senpai.<br>(This sub is for me.)</p>
                     </div>

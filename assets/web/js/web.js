@@ -338,8 +338,8 @@ const $document = $(document),
     const $searchUserInvalidFeedback = $searchUserForm.find('.invalid-feedback')
     const $searchUserConfirmButton = $searchUserForm.find(' > button:last-child')
 
-    const $pricingOptionsSelectables = $('.periods .selectable')
-    const $myselfSelectable = $('#myself .selectable')
+    const $periodsSelectables = $('.periods .selectable')
+    const $selfSelectable = $('#self .selectable')
     const $directGiftSelectable = $('#direct-gift .selectable')
     const $massGiftSelectable = $('#mass-gift .selectable')
 
@@ -353,12 +353,12 @@ const $document = $(document),
     const $quantityButtons = $quantitySelector.find('.two-tone-button')
     const $staticQuantityButtons = $quantitySelector.find('#static-quantity-buttons .two-tone-button')
     const $customQuantityButton = $quantitySelector.find('#custom-quantity-button .two-tone-button')
-    const $quantityInput = $quantitySelector.find('#quantity')
+    const $quantitySelectorInput = $quantitySelector.find('#quantity')
 
     const $continueForm = $('#continue-form')
     const $subscriptionInput = $continueForm.find('input:first-child')
-    const $giftInput = $continueForm.find('input:nth-child(2)')
-    const $continueFormQuantityInput = $continueForm.find('input:nth-child(3)')
+    const $gifteeInput = $continueForm.find('input:nth-child(2)')
+    const $quantityInput = $continueForm.find('input:nth-child(3)')
     const $continueButton = $continueForm.find('button')
     const $continueFormInvalidFeedback = $continueForm.find('.invalid-feedback')
 
@@ -473,7 +473,7 @@ const $document = $(document),
         toggleExpandingElementForArrow(this)
     })
 
-    $pricingOptionsSelectables.click(function() {
+    $periodsSelectables.click(function() {
         updateQuantityButtonCosts()
     })
 
@@ -521,7 +521,7 @@ const $document = $(document),
         confirmGiftee($searchUserUsernameInput.val())
     })
 
-    $myselfSelectable.click(function() {
+    $selfSelectable.click(function() {
         clearContinueFormErrorMessage()
     })
 
@@ -541,30 +541,30 @@ const $document = $(document),
         selectSelectableElement($massGiftSelectable)
     })
 
-    $quantityInput.on('keyup change', function() {
+    $quantitySelectorInput.on('keyup change', function() {
         // No negatives allowed.
         if (event.type === 'keyup' && event.which === 189) {
             return false
         }
 
-        let quantity = parseInt($quantityInput.val())
+        let quantity = parseInt($quantitySelectorInput.val())
         if (isNaN(quantity)) {
             return
         }
 
         if (quantity < 1) {
             quantity = 1
-            $quantityInput.val(quantity);
+            $quantitySelectorInput.val(quantity)
         } else if (quantity > 100) {
             quantity = 100
-            $quantityInput.val(quantity);
+            $quantitySelectorInput.val(quantity)
         }
 
         updateQuantityButton($customQuantityButton, quantity, null)
-    });
+    })
 
-    $quantityInput.select(function(event) {
-        const selection = $quantityInput.val().substring(this.selectionStart, this.selectionEnd);
+    $quantitySelectorInput.select(function(event) {
+        const selection = $quantitySelectorInput.val().substring(this.selectionStart, this.selectionEnd)
         console.log(selection)
     })
 
@@ -585,8 +585,8 @@ const $document = $(document),
 
         const $selectedRecipient = $('.selected[data-select-group="recipient"]')
         switch ($selectedRecipient.data('select-id')) {
-            case 'myself':
-                $giftInput.val('')
+            case 'self':
+                $gifteeInput.val('')
                 break
             case 'direct-gift':
                 const username = $gifteeField.data('giftee-username')
@@ -595,7 +595,7 @@ const $document = $(document),
                     return false
                 }
 
-                $giftInput.val(username)
+                $gifteeInput.val(username)
                 break
             case 'mass-gift':
                 const quantity = parseInt($quantityField.data('quantity'))
@@ -604,7 +604,7 @@ const $document = $(document),
                     return false
                 }
 
-                $continueFormQuantityInput.val(quantity)
+                $quantityInput.val(quantity)
                 break
         }
 
