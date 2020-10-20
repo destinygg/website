@@ -1,5 +1,6 @@
 <?php
 namespace Destiny;
+use Destiny\Commerce\SubPurchaseType;
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
@@ -35,7 +36,7 @@ use Destiny\Common\Utils\Tpl;
 
                 <div style="width: 100%;" class="clearfix stream">
                     <form id="subscribe-form" action="/subscription/create" method="post">
-
+                        <input type="hidden" name="purchaseType" value="<?= $this->purchaseType ?>">
                         <input type="hidden" name="subscriptionId" value="<?= $this->subscriptionType['id'] ?>">
                         <input type="hidden" name="giftee" value="<?= $this->giftee ?>">
                         <input type="hidden" name="quantity" value="<?= $this->quantity ?>">
@@ -80,7 +81,7 @@ use Destiny\Common\Utils\Tpl;
                             <textarea name="sub-message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder=""></textarea>
                         </div>
 
-                        <?php if ($this->quantity == 1): ?>
+                        <?php if ($this->purchaseType !== SubPurchaseType::MASS_GIFT): ?>
                             <div class="ds-block">
                                 <div class="checkbox">
                                     <label for="recurring">

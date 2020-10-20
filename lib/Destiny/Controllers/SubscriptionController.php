@@ -161,6 +161,7 @@ class SubscriptionController {
     public function subscriptionConfirm(array $params, ViewModel $model): string {
         try {
             FilterParams::required($params, 'subscriptionId');
+            FilterParams::required($params, 'purchaseType');
             FilterParams::required($params, 'quantity');
 
             // If the user isn't logged in, save their selection and redirect to
@@ -169,6 +170,7 @@ class SubscriptionController {
             if (!Session::hasRole(UserRole::USER)) {
                 $confirmUrl = '/subscription/confirm' . '?' . http_build_query([
                     'subscriptionId' => $params['subscriptionId'],
+                    'purchaseType' => $params['purchaseType'],
                     'quantity' => $params['quantity'],
                     'giftee' => $params['giftee'] ?? null
                 ]);
@@ -191,10 +193,7 @@ class SubscriptionController {
 
         // If this isn't a direct gift or a mass gift, we need to warn the user
         // if they already have an active or pending subscription.
-        $isDirectGift = !empty($params['giftee']);
-        $isMassGift = $params['quantity'] > 1;
-
-        if (!$isDirectGift && !$isMassGift) {
+        if ($params['purchaseType'] === SubPurchaseType::_SELF) {
             $userId = Session::getCredentials()->getUserId();
             $currentSubscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
 
@@ -213,6 +212,7 @@ class SubscriptionController {
         }
 
         $model->subscriptionType = $subscriptionType;
+        $model->purchaseType = $params['purchaseType'];
         $model->quantity = $params['quantity'];
         $model->giftee = $params['giftee'] ?? null;
         $model->title = 'Subscribe Confirm';
@@ -229,6 +229,7 @@ class SubscriptionController {
     public function subscriptionCreate(array $params, ViewModel $model): string {
         try {
             FilterParams::required($params, 'subscriptionId');
+            FilterParams::required($params, 'purchaseType');
             FilterParams::required($params, 'quantity');
 
             $this->validateSubscriptionParameters($params);
@@ -257,6 +258,7 @@ class SubscriptionController {
             $token = PayPalApiService::instance()->createSubscribeECRequest(
                 $returnUrl,
                 $cancelUrl,
+                $params['purchaseType'],
                 $subscriptionType,
                 $recurring,
                 $params['quantity'],
@@ -314,7 +316,7 @@ class SubscriptionController {
             }
 
             $receivingUsers = [];
-            if ($subInfo['quantity'] > 1) {
+            if ($subInfo['purchaseType'] === SubPurchaseType::MASS_GIFT) {
                 $receivingUsers = $this->pickMassGiftWinnersFromChat($subInfo['quantity'], $buyingUser);
             } else {
                 $receivingUsers[] = !empty($subInfo['giftee']) ? $userService->getUserByUsername($subInfo['giftee']) : $buyingUser;
@@ -346,7 +348,7 @@ class SubscriptionController {
         }
 
         $redisService = ChatRedisService::instance();
-        if ($subInfo['quantity'] > 1) {
+        if ($subInfo['purchaseType'] === SubPurchaseType::MASS_GIFT) {
             $redisService->sendBroadcast("{$buyingUser['username']} gifted {$subInfo['quantity']} {$subscriptionType['tierLabel']} subs to the community!");
         }
 
