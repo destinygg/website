@@ -198,7 +198,7 @@ use Destiny\Common\User\UserRole;
                     <i class="fas fa-arrow-down expansion-arrow" data-expansion-target="form#search-user"></i>
                 </div>
             </div>
-            <div class="col-auto mt-2">
+            <div class="col-auto mt-1">
                 <div id="mass-gift" class="recipient">
                     <div class="selectable" data-select-id="mass-gift" data-select-group="recipient">
                         <i class="fas fa-gifts fa-3x"></i>
