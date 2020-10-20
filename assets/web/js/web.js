@@ -357,8 +357,9 @@ const $document = $(document),
 
     const $continueForm = $('#continue-form')
     const $subscriptionInput = $continueForm.find('input:first-child')
-    const $gifteeInput = $continueForm.find('input:nth-child(2)')
-    const $quantityInput = $continueForm.find('input:nth-child(3)')
+    const $purchaseTypeInput = $continueForm.find('input:nth-child(2)')
+    const $gifteeInput = $continueForm.find('input:nth-child(3)')
+    const $quantityInput = $continueForm.find('input:nth-child(4)')
     const $continueButton = $continueForm.find('button')
     const $continueFormInvalidFeedback = $continueForm.find('.invalid-feedback')
 
@@ -584,9 +585,12 @@ const $document = $(document),
         $subscriptionInput.val($selectedSub.data('select-id'))
 
         const $selectedRecipient = $('.selected[data-select-group="recipient"]')
-        switch ($selectedRecipient.data('select-id')) {
+        $purchaseTypeInput.val($selectedRecipient.data('select-id'));
+
+        switch ($purchaseTypeInput.val()) {
             case 'self':
                 $gifteeInput.val('')
+                $quantityInput.val(1)
                 break
             case 'direct-gift':
                 const username = $gifteeField.data('giftee-username')
@@ -596,6 +600,7 @@ const $document = $(document),
                 }
 
                 $gifteeInput.val(username)
+                $quantityInput.val(1)
                 break
             case 'mass-gift':
                 const quantity = parseInt($quantityField.data('quantity'))
@@ -604,6 +609,7 @@ const $document = $(document),
                     return false
                 }
 
+                $gifteeInput.val('')
                 $quantityInput.val(quantity)
                 break
         }
