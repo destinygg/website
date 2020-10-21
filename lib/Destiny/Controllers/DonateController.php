@@ -5,6 +5,7 @@ use Destiny\Chat\ChatBanService;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Commerce\DonationService;
 use Destiny\Commerce\DonationStatus;
+use Destiny\Commerce\OrdersService;
 use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
@@ -143,6 +144,7 @@ class DonateController {
         }
         try {
             $donationService = DonationService::instance();
+            $ordersService = OrdersService::instance();
             $donation = $donationService->findById($params['donationid']);
             if (empty($donation) || $donation['status'] !== DonationStatus::PENDING) {
                 throw new Exception ('Invalid donation');
@@ -170,9 +172,9 @@ class DonateController {
                 $payments = $payPalApiService->getCheckoutResponsePayments($DoECResponse);
                 if (count($payments) > 0) {
                     foreach ($payments as $payment) {
-                        $payment['donationId'] = $params['donationid'];
                         $payment['payerId'] = $params ['PayerID'];
-                        $donationService->addPayment($payment);
+                        $paymentId = $ordersService->addPayment($payment);
+                        $ordersService->addPurchaseOfDonation($paymentId, $params['donationid']);
                     }
                 }
 

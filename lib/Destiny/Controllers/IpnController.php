@@ -87,18 +87,17 @@ class IpnController {
                             'paymentId' => $payment ['paymentId'],
                             'paymentStatus' => $data ['payment_status']
                         ]);
-                        if (!empty($payment['subscriptionId'])) {
-                            $subscription = $subscriptionsService->findById($payment['subscriptionId']);
-                            if (!empty ($subscription)) {
+                        $subs = $subscriptionsService->getSubscriptionsByPaymentId($payment['paymentId']);
+
+                        if (!empty($subs)) {
+                            foreach ($subs as $sub) {
                                 $subscriptionsService->updateSubscription([
-                                    'subscriptionId' => $subscription['subscriptionId'],
+                                    'subscriptionId' => $sub['subscriptionId'],
                                     'paymentStatus' => PaymentStatus::ACTIVE
                                 ]);
-                            } else {
-                                Log::info("Payment subscription invalid ${payment['paymentId']}", $payment);
                             }
                         } else {
-                            Log::info("Payment subscription id invalid ${payment['paymentId']}", $payment);
+                            Log::info("Payment has no subscriptions {$payment['paymentId']}", $payment);
                         }
                         $conn->commit();
                     } catch (DBALException $e) {
@@ -127,8 +126,7 @@ class IpnController {
                         'billingNextDate' => $nextPaymentDate->format('Y-m-d H:i:s'),
                         'paymentStatus' => PaymentStatus::ACTIVE
                     ]);
-                    $orderService->addPayment([
-                        'subscriptionId' => $subscription ['subscriptionId'],
+                    $paymentId = $orderService->addPayment([
                         'payerId' => $data ['payer_id'],
                         'amount' => $data ['mc_gross'],
                         'currency' => $data ['mc_currency'],
@@ -138,6 +136,7 @@ class IpnController {
                         'paymentStatus' => $data ['payment_status'],
                         'paymentDate' => Date::getDateTime($data ['payment_date'])->format('Y-m-d H:i:s'),
                     ]);
+                    $orderService->addPurchaseOfSubscription($paymentId, $subscription['subscriptionId']);
                     $conn->commit();
                 } catch (DBALException $e) {
                     $conn->rollBack();

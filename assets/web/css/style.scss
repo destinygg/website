@@ -559,70 +559,6 @@ body.no-contain #footer {
   }
 }
 
-.subfeature {
-  margin-bottom: 20px;
-  padding: 5px 20px;
-  background: $color-surface-dark1;
-  border-radius: 4px;
-  position: relative;
-  display: flex;
-  h1 {
-    margin-top: 10px;
-  }
-  p {
-    color: $text-color2;
-  }
-}
-.subfeature-options {
-  display: flex;
-  align-items: center;
-}
-.subfeature-t1 {
-  border-right: 1px dashed rgba(255,255,255,0.2);
-  padding-right: 20px;
-  margin-right: 20px;
-}
-.subfeature-t1,
-.subfeature-t2 {
-  form {
-    display: flex;
-  }
-}
-.subfeature-desc {
-  flex: 1;
-}
-.subfeature-info {
-  font-size: 1.4em;
-  .subfeature-period {
-    text-align: center;
-    white-space: nowrap;
-  }
-  button {
-    width: 100%;
-  }
-}
-.subfeature-price {
-  margin-right: 10px;
-  font-size: 2.6em;
-  line-height: 4rem;
-  color: $text-color;
-  text-shadow: 1px 2px 1px rgba(0,0,0,0.5);
-}
-@include media-breakpoint-down(md) {
-  .subfeature {
-    flex-direction: column;
-  }
-  .subfeature-options {
-    margin-bottom: 1em;
-  }
-  .subfeature-t1,
-  .subfeature-t2 {
-    form {
-      flex-direction: column;
-    }
-  }
-}
-
 .ui-step-legend {
   margin: 15px;
   ul {
@@ -1792,6 +1728,18 @@ img.merch-cinnabonnelli-shirt {
 img.merch-leruse-shirt {
   content: url("../img/merch-leruse-shirt.png");
 }
+img.tier-1-flair {
+  content: url("../img/flair13.png");
+}
+img.tier-2-flair {
+  content: url("../img/flair1.png");
+}
+img.tier-3-flair {
+  content: url("../img/flair3.png");
+}
+img.tier-4-flair {
+  content: url("../img/flair8.png");
+}
 
 #podcasts {
   .entries {
@@ -2106,4 +2054,282 @@ form#nameForm {
 
 #banned-icon {
   color: #ff3636;
+}
+
+table#transaction-summary {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+
+  col.quantity, col.price {
+    width: 140px;
+  }
+
+  th, td {
+    padding: 14px;
+  }
+
+  th {
+    font-size: 0.9em;
+  }
+
+  td {
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+div.sub-tier {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 570px;
+    border: 1px solid gray;
+    border-radius: 4px;
+    padding-top: 20px;
+    overflow: hidden;
+
+    background: $color-surface-dark1;
+
+    p.tier-numeral {
+        margin-top: -24px;
+
+        color: white;
+
+        text-align: center;
+        font-size: 6rem;
+    }
+
+    h2 {
+        text-align: center;
+    }
+}
+
+div.perks {
+    flex-grow: 1;
+    margin-top: -20px;
+
+    p {
+        color: $text-color2;
+
+        text-align: center;
+        font-style: italic;
+    }
+
+    @include media-breakpoint-only(xxl) { 
+        padding: 0 60px;
+    }
+
+    @include media-breakpoint-only(xl) { 
+        padding: 0 30px;
+
+        ul {
+            font-size: 0.9rem;
+            padding-left: 20px;
+        }
+    }
+
+    @include media-breakpoint-only(lg) { 
+        padding: 0 60px;
+    }
+
+    @include media-breakpoint-only(md) {
+        padding: 0 20px;
+    }
+
+    @include media-breakpoint-down(sm) { 
+        padding: 0 60px;
+    }
+}
+
+div.periods {
+    display: flex;
+    border-top: 1px solid gray;
+    height: 90px;
+
+    .selectable {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        flex-basis: 0;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+
+        &:first-child {
+            border-right: 1px dashed gray;
+        }
+
+        h3 {
+            margin-bottom: 0;
+        }
+
+        small {
+            color: $text-color;
+        }
+
+        strike {
+            color: #292929;
+        }
+    }
+}
+
+.recipient {
+    display: flex;
+    flex-direction: column;
+    flex-basis: auto;
+
+    border: 1px solid gray;
+    border-radius: 4px;
+
+    width: 320px;
+    background: $color-surface-dark1;
+    overflow: hidden;
+
+    i.fas {
+        color: white;
+        text-align: center;
+    }
+
+    &.last {
+        margin-right: 0px;
+    }
+
+    p {
+        text-align: center;
+        color: $text-color;
+        margin: 0;
+    }
+
+    div.selectable {
+        display: flex;
+        flex-direction: column;
+        height: 130px;
+        align-items: stretch;
+        padding-top: 20px;
+    }
+}
+
+.selectable {
+    cursor: pointer;
+
+    &.selected {
+        background: #007bff;
+    }
+
+    &:hover:not(.selected) {
+        background: #00202e;
+    }
+}
+
+.expansion-arrow {
+    height: 40px;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0px;
+    background: $color-surface-dark1;
+    border-width: 1px 0 0 0;
+    border-style: dashed;
+    border-color: gray;
+    cursor: pointer;
+}
+
+form#search-user {
+    padding: 10px 20px 20px 20px;
+}
+
+div#quantity-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 10px 20px 20px 20px;
+
+    #quantity {
+        width: 120px;
+    }
+
+    #static-quantity-buttons {
+        height: 180px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-content: space-between;
+        align-items: start;
+    }
+
+    #custom-quantity-button {
+        align-self: stretch;
+        display: flex;
+        justify-content: space-between;
+
+        input {
+            width: 130px;
+        }
+    }
+}
+
+span.colored-username {
+    font-weight: bold;
+
+    &.t1 {
+        color: #59AEEA;
+    }
+
+    &.t2 {
+        color: #2ADDC8;
+    }
+
+    &.t3 {
+        color: #4DB524;
+    }
+
+    &.t4 {
+        color: #DD29D2;
+    }
+}
+
+span.greentext {
+    color: #6CA528;
+}
+
+$top-color: theme-color("secondary");
+$bottom-color: darken($top-color, 10%);
+
+div.two-tone-button {
+    display: flex;
+    flex-direction: column;
+    height: 50px;
+    width: 130px;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+
+    div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+
+        &:first-child {
+            flex: 6;
+            background: $top-color;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        &:last-child {
+            flex: 4;
+            background: $bottom-color;
+            font-size: 0.9rem;
+        }
+    }
+
+    &:hover {
+        div:first-child {
+            background: lighten($top-color, 5%);
+        }
+
+        div:last-child {
+            background: lighten($bottom-color, 5%);
+        }
+    }
 }

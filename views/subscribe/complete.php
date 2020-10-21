@@ -1,5 +1,6 @@
 <?php
 namespace Destiny;
+use Destiny\Commerce\SubPurchaseType;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
 ?>
@@ -34,33 +35,64 @@ use Destiny\Common\Config;
                     </div>
                 </div>
 
-                <form action="/" method="GET">
+                <div class="ds-block">
+                    <p>
+                        Your order was successful.<br>
 
-                    <div class="ds-block">
-                        <p>Your order was successful, The order reference is <span class="badge badge-default">#<?=$this->subscription['subscriptionId']?></span>
-                            <br />Please email <a href="mailto:<?=Config::$a['support_email']?>"><?=Config::$a['support_email']?></a> for any queries or issues.<br /><br />
-                            Thank you for your support!</p>
-                    </div>
+                        <?php if (!empty($this->transactionId)): ?>
+                            The PayPal transaction ID for your payment is <em><?= $this->transactionId ?></em>.<br>
+                        <?php else: ?>
+                            The PayPal transaction is still pending. Your sub will activate when it's processed.<br>
+                        <?php endif; ?>
 
-                    <div class="subscription-tier ds-block">
-                        <div class="subscription" style="width: auto;">
-                            <h3><?=$this->subscriptionType['tierLabel']?></h3>
-                            <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
-                            <?php if($this->subscription['recurring'] == 1): ?>
-                                <p>Subscription is automatically renewed</p>
-                            <?php endif ?>
-                            <?php if(!empty($this->giftee)): ?>
-                                <p><i class="fas fa-gift"></i> You have gifted this to <span class="badge badge-danger"><?=Tpl::out($this->giftee['username'])?></span></p>
-                            <?php endif ?>
-                        </div>
-                    </div>
+                        <?php if (!empty(Config::$a['support_email'])): ?>
+                            Please email <a href="mailto:<?= Config::$a['support_email'] ?>"><?= Config::$a['support_email'] ?></a> if you have any questions or concerns.<br>
+                        <?php endif; ?>
 
-                    <div class="form-actions">
-                        <a href="/profile" class="btn btn-primary">Back to profile</a>
-                    </div>
+                        <br>
+                        Thank you for your support!
+                    </p>
+                </div>
 
-                </form>
+                <div class="ds-block">
+                    <h4>Summary</h4>
+                    <table id="transaction-summary">
+                        <colgroup>
+                            <col class="quantity">
+                            <col>
+                            <col class="price">
+                        </colgroup>
+                        <tr>
+                            <th>Quantity</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                        </tr>
+                        <tr>
+                            <td><?= $this->quantity ?></td>
+                            <td>
+                                <?= $this->subscriptionType['itemLabel'] ?>
+                                <?php if ($this->purchaseType === SubPurchaseType::MASS_GIFT): ?>
+                                    <span class="badge badge-danger"><i class="fas fa-gifts"></i></span>
+                                <?php endif ?>
+                                <?php if (!empty($this->giftee)): ?>
+                                    <span class="badge badge-danger"><i class="fas fa-gift"></i> <?= Tpl::out($this->giftee) ?></span>
+                                <?php endif ?>
+                                <?php if ($this->recurring): ?>
+                                    <span class="badge badge-danger"> Recurring</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>$<?= $this->subscriptionType['amount'] ?></td>
+                        </tr>
+                        <tr>
+                            <th colspan="2" class="text-right">Order Total</th>
+                            <td class="font-weight-bold">$<?= $this->orderTotal ?></td>
+                        </tr>
+                    </table>
+                </div>
 
+                <div class="ds-block">
+                    <a href="/profile" class="btn btn-primary">Back to profile</a>
+                </div>
             </div>
         </div>
     </section>

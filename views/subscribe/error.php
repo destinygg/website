@@ -36,19 +36,16 @@ use Destiny\Common\Config;
             </div>
 
             <div class="ds-block">
+                <p>
+                    There was an error processing your order.<br>
 
-                <p>An error has occurred during the subscription process.
-
-                    <?php if(!empty($this->subscription)): ?>
-                        <br />Your reference is #<?=Tpl::out($this->subscription['subscriptionId'])?>
-                    <?php endif ?>
-
-                    <br>Please start again or email <a href="mailto:<?=Config::$a['support_email']?>"><?=Config::$a['support_email']?></a> for queries.
+                    <?php if (!empty(Config::$a['support_email'])): ?>
+                        Please try again or email <a href="mailto:<?= Config::$a['support_email'] ?>"><?= Config::$a['support_email'] ?></a> for support.
+                    <?php endif; ?>
                 </p>
-
             </div>
 
-            <div class="form-actions">
+            <div class="ds-block">
                 <a href="/subscribe" class="btn btn-dark">Subscriptions</a>
                 <a href="/profile" class="btn btn-dark">Back to profile</a>
             </div>

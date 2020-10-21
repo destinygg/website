@@ -126,13 +126,14 @@ class PayPalApiService extends Service {
      * @return null|string
      * @throws Exception
      */
-    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, array $subscriptionType = [], $recurring = false) {
+    public function createSubscribeECRequest(string $returnUrl, string $cancelUrl, string $purchaseType, array $subscriptionType = [], $recurring = false, int $quantity = 1, string $giftee = null) {
         $paypalService = new PayPalAPIInterfaceServiceService ($this->getConfig());
 
         $token = null;
         $amount = $subscriptionType['amount'];
         $agreement = $subscriptionType['agreement'];
         $currency = Config::$a['commerce']['currency'];
+        $totalAmount = number_format($amount * $quantity, 2);
 
         $details = new SetExpressCheckoutRequestDetailsType();
         $details->BrandName = Config::$a['meta']['title'];
@@ -142,6 +143,7 @@ class PayPalApiService extends Service {
         $details->AllowNote = 0;
         $details->ReturnURL = $returnUrl;
         $details->CancelURL = $cancelUrl;
+        $details->Custom = json_encode(['purchaseType' => $purchaseType, 'giftee' => $giftee]);
 
         if ($recurring) {
             // Create billing agreement for recurring payment
@@ -153,15 +155,15 @@ class PayPalApiService extends Service {
         $payment = new PaymentDetailsType();
         $payment->PaymentAction = 'Sale';
         $payment->NotifyURL = Config::$a['paypal']['endpoint_ipn'];
-        $payment->OrderTotal = new BasicAmountType($currency, $amount);
-        $payment->ItemTotal = new BasicAmountType($currency, $amount);
+        $payment->OrderTotal = new BasicAmountType($currency, $totalAmount);
+        $payment->ItemTotal = new BasicAmountType($currency, $totalAmount);
         $payment->Recurring = 0;
         $details->PaymentDetails [0] = $payment;
 
         $item = new PaymentDetailsItemType();
         $item->Name = $subscriptionType ['itemLabel'];
-        $item->Amount = new BasicAmountType($currency, $amount);
-        $item->Quantity = 1;
+        $item->Amount = new BasicAmountType($currency, $amount); // The cost of a single subscription.
+        $item->Quantity = $quantity;
         $item->ItemCategory = 'Physical'; // or 'Physical'. TODO this should be 'Digital' but Paypal requires you to change your account to a digital good account, which is a las
         $item->Number = $subscriptionType ['id'];
         $payment->PaymentDetailsItem [0] = $item;
@@ -179,6 +181,35 @@ class PayPalApiService extends Service {
             return $response->Token;
         } catch (\Exception $e) {
             throw new Exception("Error creating subscription payment request", $e);
+        }
+    }
+
+    /**
+     * Complete a PayPal Express Checkout subscription transaction.
+     *
+     * @param GetExpressCheckoutDetailsResponseType $checkoutInfo The details of the transaction. Obtain this value with `PayPalApiService->retrieveCheckoutInfo()`.
+     * @return DoExpressCheckoutPaymentResponseType An object with details on the completed transaction.
+     * @throws Exception
+     */
+    public function completeSubscribeECTransaction(GetExpressCheckoutDetailsResponseType $checkoutInfo) {
+        $paypalService = new PayPalAPIInterfaceServiceService($this->getConfig());
+
+        $responseDetails = $checkoutInfo->GetExpressCheckoutDetailsResponseDetails;
+
+        $doECRequestDetails = new DoExpressCheckoutPaymentRequestDetailsType();
+        $doECRequestDetails->PayerID = $responseDetails->PayerInfo->PayerID;
+        $doECRequestDetails->Token = $responseDetails->Token;
+        $doECRequestDetails->PaymentAction = $responseDetails->PaymentDetails[0]->PaymentAction;
+        $doECRequestDetails->PaymentDetails = $responseDetails->PaymentDetails;
+
+        $doECRequest = new DoExpressCheckoutPaymentRequestType($doECRequestDetails);
+        $doECReq = new DoExpressCheckoutPaymentReq();
+        $doECReq->DoExpressCheckoutPaymentRequest = $doECRequest;
+
+        try {
+            return $paypalService->DoExpressCheckoutPayment($doECReq);
+        } catch (\Exception $e) {
+            throw new Exception("Error completing subscription checkout transaction.", $e);
         }
     }
 
@@ -243,7 +274,7 @@ class PayPalApiService extends Service {
     public function retrieveCheckoutInfo(string $token) {
         try {
             $paypalService = new PayPalAPIInterfaceServiceService($this->getConfig());
-            $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq();
+            $getExpressCheckoutReq = @(new GetExpressCheckoutDetailsReq());
             $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType($token);
             $response = $paypalService->GetExpressCheckoutDetails($getExpressCheckoutReq);
             if (!empty($response) && $response->Ack == 'Success') {
@@ -304,4 +335,25 @@ class PayPalApiService extends Service {
         return $payments;
     }
 
+    public function extractSubscriptionInfoFromCheckoutResponse(GetExpressCheckoutDetailsResponseType $checkoutResponse): array {
+        $subscriptionInfo = [];
+
+        $checkoutDetails = $checkoutResponse->GetExpressCheckoutDetailsResponseDetails;
+        $paymentDetails = $checkoutDetails->PaymentDetails[0];
+
+        // Somehow this property is a string despite the DocBlock saying it's a
+        // bool.
+        $subscriptionInfo['recurring'] = ($checkoutDetails->BillingAgreementAcceptedStatus ?? 'false') === 'true';
+
+        // Extract the purchase type and username of the giftee.
+        if (!empty($checkoutDetails->Custom)) {
+            $customFields = json_decode($checkoutDetails->Custom, true);
+            $subscriptionInfo = array_merge($subscriptionInfo, $customFields);
+        }
+
+        $subscriptionInfo['subscriptionId'] = $paymentDetails->PaymentDetailsItem[0]->Number;
+        $subscriptionInfo['quantity'] = $paymentDetails->PaymentDetailsItem[0]->Quantity;
+
+        return $subscriptionInfo;
+    }
 }

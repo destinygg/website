@@ -420,6 +420,51 @@ class SubscriptionsService extends Service {
     }
 
     /**
+     * Get users who accept gift subs.
+     *
+     * Note that this query doesn't exclude users who are already subscribed.
+     *
+     * @throws DBException
+     */
+    public function findGiftableUsersByUsernames(array $usernames): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery(
+                'SELECT *
+                FROM dfl_users
+                WHERE username IN (?)',
+                [$usernames],
+                [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]
+            );
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error finding giftable users.", $e);
+        }
+    }
+
+    public function findRecentlyModifiedGiftableUsers(int $limit, array $exclusionUserIds = []): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery(
+                'SELECT u.*
+                FROM dfl_users AS u
+                LEFT JOIN dfl_users_subscriptions AS s
+                ON u.userId = s.userId AND s.status = ? 
+                WHERE u.userId NOT IN (?)
+                    AND u.allowGifting = 1
+                    AND s.subscriptionId IS NULL
+                ORDER BY u.modifiedDate
+                LIMIT ?',
+                [SubscriptionStatus::ACTIVE, $exclusionUserIds, $limit],
+                [PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY, PDO::PARAM_INT]
+            );
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException("Error finding recently modified giftable users.", $e);
+        }
+    }
+
+    /**
      * @return array|false
      * @throws DBException
      */
@@ -463,4 +508,27 @@ class SubscriptionsService extends Service {
             throw new DBException("Error searching subscriptions.", $e);
         }
     }
+
+    /**
+     * @return array|false
+     * @throws DBException
+     */
+    public function getSubscriptionsByPaymentId(int $paymentId): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->prepare('
+                SELECT subs.*
+                FROM dfl_users_subscriptions AS subs
+                INNER JOIN dfl_payments_purchases AS purchases
+                ON purchases.subscriptionId = subs.subscriptionId
+                    AND purchases.paymentId = :paymentId
+            ');
+            $stmt->bindValue('paymentId', $paymentId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException('Error loading payment', $e);
+        }
+    }
+
 }

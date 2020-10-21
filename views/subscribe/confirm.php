@@ -1,5 +1,6 @@
 <?php
 namespace Destiny;
+use Destiny\Commerce\SubPurchaseType;
 use Destiny\Common\Utils\Tpl;
 ?>
 <!DOCTYPE html>
@@ -35,18 +36,42 @@ use Destiny\Common\Utils\Tpl;
 
                 <div style="width: 100%;" class="clearfix stream">
                     <form id="subscribe-form" action="/subscription/create" method="post">
+                        <input type="hidden" name="purchaseType" value="<?= $this->purchaseType ?>">
+                        <input type="hidden" name="subscriptionId" value="<?= $this->subscriptionType['id'] ?>">
+                        <input type="hidden" name="giftee" value="<?= $this->giftee ?>">
+                        <input type="hidden" name="quantity" value="<?= $this->quantity ?>">
 
-                        <input type="hidden" name="subscription" value="<?= $this->subscriptionType['id'] ?>">
-                        <input type="hidden" name="gift" value="<?= $this->gift ?>">
-
-                        <div class="subscription-tier ds-block">
-                            <div class="subscription">
-                                <h2><?=$this->subscriptionType['tierLabel']?></h2>
-                                <?php if(!empty($this->gift)): ?>
-                                    <p><i class="fas fa-gift"></i> You are gifting this to <span class="badge badge-danger"><?=Tpl::out($this->gift)?></span></p>
-                                <?php endif ?>
-                                <p><span class="sub-amount">$<?=$this->subscriptionType['amount']?></span> (<?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>)</p>
-                            </div>
+                        <div class="ds-block">
+                            <h4>Summary</h4>
+                            <table id="transaction-summary">
+                                <colgroup>
+                                    <col class="quantity">
+                                    <col>
+                                    <col class="price">
+                                </colgroup>
+                                <tr>
+                                    <th>Quantity</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                </tr>
+                                <tr>
+                                    <td><?= $this->quantity ?></td>
+                                    <td>
+                                        <?= $this->subscriptionType['itemLabel'] ?>
+                                        <?php if ($this->purchaseType === SubPurchaseType::MASS_GIFT): ?>
+                                            <span class="badge badge-danger"><i class="fas fa-gifts"></i></span>
+                                        <?php endif ?>
+                                        <?php if (!empty($this->giftee)): ?>
+                                            <span class="badge badge-danger"><i class="fas fa-gift"></i> <?= Tpl::out($this->giftee) ?></span>
+                                        <?php endif ?>
+                                    </td>
+                                    <td>$<?= $this->subscriptionType['amount'] ?></td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" class="text-right">Order Total</th>
+                                    <td class="font-weight-bold">$<?= number_format(floatval($this->subscriptionType['amount']) * $this->quantity, 2) ?></td>
+                                </tr>
+                            </table>
                         </div>
 
                         <div class="ds-block text-message">
@@ -59,14 +84,16 @@ use Destiny\Common\Utils\Tpl;
                             <textarea name="sub-message" autocomplete="off" maxlength="250" rows="3" class="form-control" placeholder=""></textarea>
                         </div>
 
-                        <div class="ds-block">
-                            <div class="checkbox">
-                                <label for="renew">
-                                    <span><input id="renew" type="checkbox" name="renew" value="1" /> <strong>Recurring subscription</strong></span>
-                                    <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
-                                </label>
+                        <?php if ($this->purchaseType !== SubPurchaseType::MASS_GIFT): ?>
+                            <div class="ds-block">
+                                <div class="checkbox">
+                                    <label for="recurring">
+                                        <span><input id="recurring" type="checkbox" name="recurring" value="1" /> <strong>Recurring subscription</strong></span>
+                                        <small>Automatically bill every <?=$this->subscriptionType['billingFrequency']?> <?=strtolower($this->subscriptionType['billingPeriod'])?>(s)</small>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
 
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Continue</button>
