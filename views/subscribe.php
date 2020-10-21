@@ -40,7 +40,7 @@ use Destiny\Common\User\UserRole;
                             <li>A colorful <span class="colored-username t1">username</span></li>
                             <li>The ability to <span class="greentext">&gt;greentext</span></li>
                             <li>Subscriber role in Discord</li>
-                            <li>Priority during viewer call-ins</li>
+                            <li>Participate in viewer call-ins</li>
                             <li>Cast 2 votes in sub-weighted polls</li>
                             <li>Mercy from the mod team</li>
                             <li>Destiny will call you "buddy"</li>
