@@ -349,7 +349,8 @@ class SubscriptionController {
 
         $redisService = ChatRedisService::instance();
         if ($subInfo['purchaseType'] === SubPurchaseType::MASS_GIFT) {
-            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$subInfo['quantity']} {$subscriptionType['tierLabel']} subs to the community!");
+            $subWord = $subInfo['quantity'] == 1 ? 'sub' : 'subs';
+            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$subInfo['quantity']} {$subscriptionType['tierLabel']} {$subWord} to the community!");
         }
 
         // Display an alert on stream and in chat.
