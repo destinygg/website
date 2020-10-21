@@ -404,6 +404,7 @@ class SubscriptionController {
         $model->title = 'Subscription Complete';
         // There is no `TransactionId` if the transaction is pending.
         $model->transactionId = $paymentDetails->TransactionId ?? null;
+        $model->purchaseType = $subInfo['purchaseType'];
         $model->quantity = $subInfo['quantity'];
         $model->recurring = $subInfo['recurring'];
         $model->giftee = $subInfo['giftee'] ?? null;

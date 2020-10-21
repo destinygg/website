@@ -58,6 +58,9 @@ use Destiny\Common\Utils\Tpl;
                                     <td><?= $this->quantity ?></td>
                                     <td>
                                         <?= $this->subscriptionType['itemLabel'] ?>
+                                        <?php if ($this->purchaseType === SubPurchaseType::MASS_GIFT): ?>
+                                            <span class="badge badge-danger"><i class="fas fa-gifts"></i></span>
+                                        <?php endif ?>
                                         <?php if (!empty($this->giftee)): ?>
                                             <span class="badge badge-danger"><i class="fas fa-gift"></i> <?= Tpl::out($this->giftee) ?></span>
                                         <?php endif ?>
