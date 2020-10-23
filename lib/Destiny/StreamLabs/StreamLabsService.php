@@ -67,4 +67,82 @@ class StreamLabsService extends AbstractAuthService {
         return null;
     }
 
+    public function sendSubAlert(array $subscriptionType, ?string $message, string $username) {
+        $this->sendAlert([
+            'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
+            'message' => $this->trimAlertMessage($message),
+            'user_message' => $this->buildEventMetadata(
+                SubAlertEvent::SUB,
+                [
+                    'user' => $username,
+                    'tier' => $subscriptionType['tier'],
+                    'tierLabel' => $subscriptionType['tierLabel']
+                ]
+            )
+        ]);
+    }
+
+    public function sendResubAlert(array $subscriptionType, ?string $message, string $username, int $streak) {
+        $this->sendAlert([
+            'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
+            'message' => $this->trimAlertMessage($message),
+            'user_message' => $this->buildEventMetadata(
+                SubAlertEvent::RESUB,
+                [
+                    'user' => $username,
+                    'tier' => $subscriptionType['tier'],
+                    'tierLabel' => $subscriptionType['tierLabel'],
+                    'streak' => $streak
+                ]
+            )
+        ]);
+    }
+
+    public function sendDirectGiftAlert(array $subscriptionType, ?string $message, string $username, string $giftee) {
+        $this->sendAlert([
+            'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
+            'message' => $this->trimAlertMessage($message),
+            'user_message' => $this->buildEventMetadata(
+                SubAlertEvent::DIRECT_GIFT,
+                [
+                    'user' => $username,
+                    'tier' => $subscriptionType['tier'],
+                    'tierLabel' => $subscriptionType['tierLabel'],
+                    'giftee' => $giftee
+                ]
+            )
+        ]);
+    }
+
+    public function sendMassGiftAlert(array $subscriptionType, ?string $message, string $username, int $quantity) {
+        $this->sendAlert([
+            'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
+            'message' => $this->trimAlertMessage($message),
+            'user_message' => $this->buildEventMetadata(
+                SubAlertEvent::MASS_GIFT,
+                [
+                    'user' => $username,
+                    'tier' => $subscriptionType['tier'],
+                    'tierLabel' => $subscriptionType['tierLabel'],
+                    'quantity' => $quantity
+                ]
+            )
+        ]);
+    }
+
+    /**
+     * Encodes additional alert data for use in StreamLabs' `/alerts` endpoint.
+     * Passed in via the `user_message` parameter.
+     */
+    private function buildEventMetadata(string $event, array $data) {
+        return json_encode([
+            'source' => 'dgg',
+            'event' => $event,
+            'data' => $data
+        ]);
+    }
+
+    private function trimAlertMessage(?string $message): string {
+        return mb_substr(trim($message), 0, 250);
+    }
 }
