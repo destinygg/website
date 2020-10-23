@@ -13,6 +13,7 @@ use Destiny\Common\DBException;
 use Destiny\Common\Log;
 use Destiny\Common\User\UserService;
 use Destiny\Common\Utils\Date;
+use Destiny\StreamLabs\StreamLabsService;
 use Doctrine\DBAL\DBALException;
 use Exception;
 use PDO;
@@ -52,7 +53,7 @@ class SubscriptionExpire implements TaskInterface {
                     'endDate' => $end->format('Y-m-d H:i:s'),
                     'status' => SubscriptionStatus::ACTIVE
                 ]);
-                $this->sendResubscribeBroadcast($subscription);
+                $this->sendResubscribeBroadcast($subscription, $subType);
                 $users[] = $subscription['userId'];
             } catch (Exception $e) {
                 Log::critical("Could not roll over subscription", $subscription);
@@ -92,17 +93,24 @@ class SubscriptionExpire implements TaskInterface {
     /**
      * @throws DBException
      */
-    private function sendResubscribeBroadcast(array $subscription) {
+    private function sendResubscribeBroadcast(array $subscription, array $subType) {
         $userService = UserService::instance();
         $user = $userService->getUserById($subscription['userId']);
         if (!empty($user)) {
             try {
                 // the subscription endDate has not been updated with the new subscription time
-                $months = max(1, Date::getDateTime($subscription['createdDate'])->diff(Date::getDateTime($subscription['endDate']))->m);
-                $months = $months > 1 ? $months . " months" : $months . " month";
+                $streak = max(1, Date::getDateTime($subscription['createdDate'])->diff(Date::getDateTime($subscription['endDate']))->m);
+                $months = $streak > 1 ? $streak . " months" : $streak . " month";
                 $message = sprintf("%s has resubscribed! active for %s", $user['username'], $months);
                 $redisService = ChatRedisService::instance();
                 $redisService->sendBroadcast($message);
+
+                StreamLabsService::instance()->sendResubAlert(
+                    $subType,
+                    null,
+                    $user['username'],
+                    $streak
+                );
             } catch (Exception $e) {
                 Log::critical('Could not send resubscribe broadcast', $subscription);
             }

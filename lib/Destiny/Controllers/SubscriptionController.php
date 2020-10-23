@@ -343,28 +343,21 @@ class SubscriptionController {
             return 'redirect: /subscription/error';
         }
 
-        foreach ($receivingUsers as $receivingUser) {
-            $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser);
-        }
-
         $redisService = ChatRedisService::instance();
         if ($subInfo['purchaseType'] === SubPurchaseType::MASS_GIFT) {
             $subWord = $subInfo['quantity'] == 1 ? 'sub' : 'subs';
             $redisService->sendBroadcast("{$buyingUser['username']} gifted {$subInfo['quantity']} {$subscriptionType['tierLabel']} {$subWord} to the community!");
+
+            StreamLabsService::instance()->sendMassGiftAlert(
+                $subscriptionType,
+                Session::getAndRemove('broadcastMessage'),
+                $buyingUser['username'],
+                $subInfo['quantity']
+            );
         }
 
-        // Display an alert on stream and in chat.
-        $broadcastMessage = Session::getAndRemove('broadcastMessage');
-        $broadcastMessage = mb_substr(trim($broadcastMessage), 0, 250);
-        if ($broadcastMessage !== '') {
-            $redisService->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
-
-            if (Config::$a[AuthProvider::STREAMLABS]['alert_subscriptions']) {
-                StreamLabsService::instance()->sendAlert([
-                    'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-                    'message' => $broadcastMessage
-                ]);
-            }
+        foreach ($receivingUsers as $receivingUser) {
+            $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser);
         }
 
         // Log the subscription event in Discord.
@@ -583,13 +576,25 @@ class SubscriptionController {
             Log::error('Error unbanning/unmuting user. ', $e->getMessage());
         }
 
-        // Broadcast the subscription in chat.
+        // Broadcast the subscription in chat and on stream.
         if ($receivingUser['userId'] !== $buyingUser['userId']) {
-            $message = "{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionDetails['tierLabel']} subscription!";
+            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionDetails['tierLabel']} subscription!");
+
+            StreamLabsService::instance()->sendDirectGiftAlert(
+                $subscriptionDetails,
+                Session::getAndRemove('broadcastMessage'),
+                $buyingUser['username'],
+                $receivingUser['username']
+            );
         } else {
-            $message = "{$receivingUser['username']} is now a {$subscriptionDetails['tierLabel']} subscriber!";
+            $redisService->sendBroadcast("{$receivingUser['username']} is now a {$subscriptionDetails['tierLabel']} subscriber!");
+
+            StreamLabsService::instance()->sendSubAlert(
+                $subscriptionDetails,
+                Session::getAndRemove('broadcastMessage'),
+                $receivingUser['username']
+            );
         }
-        $redisService->sendBroadcast($message);
 
         AuthenticationService::instance()->flagUserForUpdate($receivingUser['userId']);
     }
