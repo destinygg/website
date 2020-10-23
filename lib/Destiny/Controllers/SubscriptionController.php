@@ -266,7 +266,8 @@ class SubscriptionController {
             );
             return 'redirect: ' . Config::$a['paypal']['endpoint_checkout'] . urlencode($token);
         } catch (Exception $e) {
-            throw new Exception('Error creating order.', $e);
+            Log::critical("Error creating order. {$e}");
+            return 'redirect: /subscription/error';
         }
     }
 
