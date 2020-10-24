@@ -280,5 +280,29 @@ class StatisticsService extends Service {
         }
     }
 
-
+    /**
+     * Gets active subs grouped by type and recurring status.
+     *
+     * @throws DBException
+     */
+    public function getActiveSubCounts(): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery(
+                'SELECT
+                    `subscriptionType`, `recurring`, count(*) as `count`
+                FROM
+                    `dfl_users_subscriptions`
+                WHERE
+                    `status` = ?
+                GROUP BY
+                    `subscriptionType`, `recurring`',
+                [SubscriptionStatus::ACTIVE],
+                [PDO::PARAM_STR]
+            );
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException('Error getting active subs.', $e);
+        }
+    }
 }
