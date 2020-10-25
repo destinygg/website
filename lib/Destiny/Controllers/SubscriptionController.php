@@ -492,7 +492,7 @@ class SubscriptionController {
     /**
      * @throws Exception
      */
-    private function createNewSubscription(array $subscriptionDetails, array $receivingUser, array $buyingUser, array $paymentIds, string $token, bool $recurring = false) {
+    private function createNewSubscription(array $subscriptionType, array $receivingUser, array $buyingUser, array $paymentIds, string $token, bool $recurring = false) {
         $subscriptionsService = SubscriptionsService::instance();
         $payPalApiService = PayPalApiService::instance();
         $ordersService = OrdersService::instance();
@@ -500,14 +500,14 @@ class SubscriptionController {
         // Create a new subscription.
         $startDate = Date::getDateTime();
         $endDate = Date::getDateTime();
-        $endDate->modify("+{$subscriptionDetails['billingFrequency']} {$subscriptionDetails['billingPeriod']}");
+        $endDate->modify("+{$subscriptionType['billingFrequency']} {$subscriptionType['billingPeriod']}");
 
         $subscription = [
             'userId'             => $receivingUser['userId'],
             'gifter'             => $receivingUser['userId'] !== $buyingUser['userId'] ? $buyingUser['userId'] : null,
             'subscriptionSource' => Config::$a['subscriptionType'],
-            'subscriptionType'   => $subscriptionDetails['id'],
-            'subscriptionTier'   => $subscriptionDetails['tier'],
+            'subscriptionType'   => $subscriptionType['id'],
+            'subscriptionTier'   => $subscriptionType['tier'],
             'createdDate'        => $startDate->format('Y-m-d H:i:s'),
             'endDate'            => $endDate->format('Y-m-d H:i:s'),
             'recurring'          => intval($recurring),
@@ -538,7 +538,7 @@ class SubscriptionController {
                 $reference,
                 $receivingUser['username'],
                 $nextPaymentDate,
-                $subscriptionDetails
+                $subscriptionType
             );
             if (empty($paymentProfileId)) {
                 throw new Exception('Invalid recurring payment profile ID returned from PayPal.');
@@ -563,7 +563,7 @@ class SubscriptionController {
     /**
      * Unban the newly-subscribed user and display a sub alert in chat.
      */
-    private function performPostSubscriptionActions(array $subscriptionDetails, array $receivingUser, array $buyingUser) {
+    private function performPostSubscriptionActions(array $subscriptionType, array $receivingUser, array $buyingUser) {
         $redisService = ChatRedisService::instance();
 
         // Unban/unmute the newly-subscribed user.
@@ -579,19 +579,19 @@ class SubscriptionController {
 
         // Broadcast the subscription in chat and on stream.
         if ($receivingUser['userId'] !== $buyingUser['userId']) {
-            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionDetails['tierLabel']} subscription!");
+            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionType['tierLabel']} subscription!");
 
             StreamLabsService::instance()->sendDirectGiftAlert(
-                $subscriptionDetails,
+                $subscriptionType,
                 Session::getAndRemove('broadcastMessage'),
                 $buyingUser['username'],
                 $receivingUser['username']
             );
         } else {
-            $redisService->sendBroadcast("{$receivingUser['username']} is now a {$subscriptionDetails['tierLabel']} subscriber!");
+            $redisService->sendBroadcast("{$receivingUser['username']} is now a {$subscriptionType['tierLabel']} subscriber!");
 
             StreamLabsService::instance()->sendSubAlert(
-                $subscriptionDetails,
+                $subscriptionType,
                 Session::getAndRemove('broadcastMessage'),
                 $receivingUser['username']
             );
