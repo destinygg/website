@@ -15,6 +15,156 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
+        <div class="row">
+            <div class="col-xxl-3 col-lg-6 col-md-12">
+                <div>
+                    <h4>Tier I</h4>
+                    <table>
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tr>
+                            <th></th>
+                            <th>Not Recurring</th>
+                            <th>Recurring</th>
+                            <th>Total</th>
+                        </tr>
+                        <tr>
+                            <th>1 Month</th>
+                            <td data-sub-type="1-MONTH-SUB" data-recurring="0">0</td>
+                            <td data-sub-type="1-MONTH-SUB" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>3 Month</th>
+                            <td data-sub-type="3-MONTH-SUB" data-recurring="0">0</td>
+                            <td data-sub-type="3-MONTH-SUB" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-lg-6 col-md-12">
+                <div>
+                    <h4>Tier II</h4>
+                    <table>
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tr>
+                            <th></th>
+                            <th>Not Recurring</th>
+                            <th>Recurring</th>
+                            <th>Total</th>
+                        </tr>
+                        <tr>
+                            <th>1 Month</th>
+                            <td data-sub-type="1-MONTH-SUB2" data-recurring="0">0</td>
+                            <td data-sub-type="1-MONTH-SUB2" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>3 Month</th>
+                            <td data-sub-type="3-MONTH-SUB2" data-recurring="0">0</td>
+                            <td data-sub-type="3-MONTH-SUB2" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-lg-6 col-md-12">
+                <div>
+                    <h4>Tier III</h4>
+                    <table>
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tr>
+                            <th></th>
+                            <th>Not Recurring</th>
+                            <th>Recurring</th>
+                            <th>Total</th>
+                        </tr>
+                        <tr>
+                            <th>1 Month</th>
+                            <td data-sub-type="1-MONTH-SUB3" data-recurring="0">0</td>
+                            <td data-sub-type="1-MONTH-SUB3" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>3 Month</th>
+                            <td data-sub-type="3-MONTH-SUB3" data-recurring="0">0</td>
+                            <td data-sub-type="3-MONTH-SUB3" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-lg-6 col-md-12">
+                <div>
+                    <h4>Tier IV</h4>
+                    <table>
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tr>
+                            <th></th>
+                            <th>Not Recurring</th>
+                            <th>Recurring</th>
+                            <th>Total</th>
+                        </tr>
+                        <tr>
+                            <th>1 Month</th>
+                            <td data-sub-type="1-MONTH-SUB4" data-recurring="0">0</td>
+                            <td data-sub-type="1-MONTH-SUB4" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>3 Month</th>
+                            <td data-sub-type="3-MONTH-SUB4" data-recurring="0">0</td>
+                            <td data-sub-type="3-MONTH-SUB4" data-recurring="1">0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
         <h3 id="income-dates">
             <span id="date-selector">
                 <a href='#'><i class='fas fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fas fa-arrow-right'></i></a>

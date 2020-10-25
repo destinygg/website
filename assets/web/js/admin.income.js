@@ -340,6 +340,47 @@ import Chart from 'chart.js'
             updateGraph5(currDate);
         });
 
-    });
+        const updateActiveSubCountTables = data => {
+            data.forEach(countRecord => {
+                const {subscriptionType, recurring, count} = countRecord
+                $(`td[data-sub-type='${subscriptionType}'][data-recurring='${recurring}']`).text(count)
+            })
 
+            // Add values across each row.
+            $('td:last-child').each((_, e) => {
+                const $total = $(e)
+                $total.text(0)
+
+                let count = 0
+                $total.siblings('td').each((_, e) => {
+                    count += parseInt($(e).text())
+                })
+                $total.text(count)
+            })
+
+            // Add values down each column.
+            $('tr:last-child td').each((_, e) => {
+                const $total = $(e)
+                $total.text(0)
+
+                let count = 0
+                const $table = $total.parents('table')
+                $table.find(`td:nth-child(${$total.index() + 1})`).each((_, e) => {
+                    count += parseInt($(e).text())
+                })
+                $total.text(count)
+            })
+        }
+
+        const fetchActiveSubCounts = () => {
+            $.ajax({
+                url: '/admin/chart/finance/CurrentActiveSubs.json',
+                success: data => {
+                    updateActiveSubCountTables(data)
+                }
+            })
+        }
+
+        fetchActiveSubCounts()
+    });
 })(jQuery)

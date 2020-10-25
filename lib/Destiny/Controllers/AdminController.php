@@ -382,6 +382,9 @@ class AdminController {
                         $data = $cacheDriver->fetch($key);
                     }
                     break;
+                case 'CURRENTACTIVESUBS':
+                    $data = $statisticsService->getActiveSubCounts();
+                    break;
             }
         } catch (Exception $e) {
             Log::error('Error loading graph data. ' . $e->getMessage());
