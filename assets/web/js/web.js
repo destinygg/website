@@ -617,6 +617,26 @@ const $document = $(document),
         // Submit form normally after updating inputs.
         return true
     })
-})()
+})();
+
+// For `/subscription/confirm`.
+(function() {
+    const $confirmSubscriptionForm = $('form#subscribe-form')
+    const $submitButton = $confirmSubscriptionForm.find('button[type="submit"]')
+
+    const showLoadingIcon = () => {
+        const $icon = $submitButton.find('i')
+        $icon.removeClass('fa-shopping-cart')
+        $icon.addClass('fa-spinner fa-pulse')
+    }
+
+    // Ensure the button can only be clicked once.
+    $submitButton.click(() => {
+        $submitButton.prop('disabled', true)
+        showLoadingIcon()
+
+        $confirmSubscriptionForm.submit()
+    })
+})();
 
 window.showLoginModal = () => $('#loginmodal').modal("show")
