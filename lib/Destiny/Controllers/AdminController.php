@@ -385,6 +385,9 @@ class AdminController {
                 case 'CURRENTACTIVESUBS':
                     $data = $statisticsService->getActiveSubCounts();
                     break;
+                case 'HISTORICALACTIVESUBS':
+                    $data = $statisticsService->getHistoricalActiveSubs();
+                    break;
             }
         } catch (Exception $e) {
             Log::error('Error loading graph data. ' . $e->getMessage());

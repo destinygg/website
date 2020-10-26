@@ -340,6 +340,11 @@ import Chart from 'chart.js'
             updateGraph5(currDate);
         });
 
+        const TIERS = [1, 2, 3, 4]
+        const DAYS_BACK = 30
+        const now = moment()
+        const then = moment(now).subtract(DAYS_BACK, 'd')
+
         const updateActiveSubCountTables = data => {
             data.forEach(countRecord => {
                 const {subscriptionType, recurring, count} = countRecord
@@ -372,6 +377,57 @@ import Chart from 'chart.js'
             })
         }
 
+        const getCountsForTier = (data, tier) => {
+            // Create a new map of the last 30 days.
+            let counts = new Map()
+            for (let i = DAYS_BACK - 1; i >= 0; i--) {
+                const day = moment(now).subtract(i, 'd').format('YYYY-MM-DD')
+                counts.set(day, 0)
+            }
+
+            const filtered = data.filter(sub => sub['subscriptionTier'] === tier.toString())
+            filtered.forEach(sub => {
+                // Don't go beyond the earliest or latest days in the graph.
+                let start = moment(sub['createdDate'])
+                if (start.isBefore(then, 'd')) {
+                    start = moment(then)
+                }
+                let end = moment(sub['endDate'])
+                if (end.isAfter(now, 'd')) {
+                    end = moment(now)
+                }
+
+                // Account for subs that were canceled before their end date.
+                if (sub['cancelDate']) {
+                    const cancel = moment(sub['cancelDate'])
+                    if (end.isAfter(cancel, 'd')) {
+                        end = cancel
+                    }
+                }
+
+                for (let i = start; i.isSameOrBefore(end, 'd'); i.add(1, 'd')) {
+                    const day = i.format('YYYY-MM-DD')
+                    counts.set(day, counts.get(day) + 1)
+                }
+            })
+
+            return counts
+        }
+
+        const plotDataForTier = (data, tier) => {
+            const context = $(`canvas[data-tier='${tier}']`)
+            new Chart(context, {
+                type: 'line',
+                data: {
+                    labels: Array.from(data.keys()),
+                    datasets: [{
+                        label: `Tier ${tier} Subs`,
+                        data: Array.from(data.values())
+                    }]
+                }
+            })
+        }
+
         const fetchActiveSubCounts = () => {
             $.ajax({
                 url: '/admin/chart/finance/CurrentActiveSubs.json',
@@ -381,6 +437,19 @@ import Chart from 'chart.js'
             })
         }
 
+        const fetchHistoricalActiveSubs = () => {
+            $.ajax({
+                url: '/admin/chart/finance/HistoricalActiveSubs.json',
+                success: data => {
+                    TIERS.forEach(tier => {
+                        const counts = getCountsForTier(data, tier)
+                        plotDataForTier(counts, tier)
+                    })
+                }
+            })
+        }
+
         fetchActiveSubCounts()
+        fetchHistoricalActiveSubs()
     });
 })(jQuery)

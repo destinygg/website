@@ -51,6 +51,7 @@ use Destiny\Common\Utils\Tpl;
                             <td>0</td>
                         </tr>
                     </table>
+                    <canvas data-tier="1"></canvas>
                 </div>
             </div>
             <div class="col-xxl-3 col-lg-6 col-md-12">
@@ -88,6 +89,7 @@ use Destiny\Common\Utils\Tpl;
                             <td>0</td>
                         </tr>
                     </table>
+                    <canvas data-tier="2"></canvas>
                 </div>
             </div>
             <div class="col-xxl-3 col-lg-6 col-md-12">
@@ -125,6 +127,7 @@ use Destiny\Common\Utils\Tpl;
                             <td>0</td>
                         </tr>
                     </table>
+                    <canvas data-tier="3"></canvas>
                 </div>
             </div>
             <div class="col-xxl-3 col-lg-6 col-md-12">
@@ -162,6 +165,7 @@ use Destiny\Common\Utils\Tpl;
                             <td>0</td>
                         </tr>
                     </table>
+                    <canvas data-tier="4"></canvas>
                 </div>
             </div>
         </div>
