@@ -107,7 +107,7 @@ class SubscriptionExpire implements TaskInterface {
 
                 StreamLabsService::instance()->sendResubAlert(
                     $subType,
-                    null,
+                    '',
                     $user['username'],
                     $streak
                 );

@@ -67,10 +67,10 @@ class StreamLabsService extends AbstractAuthService {
         return null;
     }
 
-    public function sendSubAlert(array $subscriptionType, ?string $message, string $username) {
+    public function sendSubAlert(array $subscriptionType, string $message, string $username) {
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $this->trimAlertMessage($message),
+            'message' => $message,
             'user_message' => $this->buildEventMetadata(
                 SubAlertEvent::SUB,
                 [
@@ -82,10 +82,10 @@ class StreamLabsService extends AbstractAuthService {
         ]);
     }
 
-    public function sendResubAlert(array $subscriptionType, ?string $message, string $username, int $streak) {
+    public function sendResubAlert(array $subscriptionType, string $message, string $username, int $streak) {
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $this->trimAlertMessage($message),
+            'message' => $message,
             'user_message' => $this->buildEventMetadata(
                 SubAlertEvent::RESUB,
                 [
@@ -98,10 +98,10 @@ class StreamLabsService extends AbstractAuthService {
         ]);
     }
 
-    public function sendDirectGiftAlert(array $subscriptionType, ?string $message, string $username, string $giftee) {
+    public function sendDirectGiftAlert(array $subscriptionType, string $message, string $username, string $giftee) {
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $this->trimAlertMessage($message),
+            'message' => $message,
             'user_message' => $this->buildEventMetadata(
                 SubAlertEvent::DIRECT_GIFT,
                 [
@@ -114,10 +114,10 @@ class StreamLabsService extends AbstractAuthService {
         ]);
     }
 
-    public function sendMassGiftAlert(array $subscriptionType, ?string $message, string $username, int $quantity) {
+    public function sendMassGiftAlert(array $subscriptionType, string $message, string $username, int $quantity) {
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $this->trimAlertMessage($message),
+            'message' => $message,
             'user_message' => $this->buildEventMetadata(
                 SubAlertEvent::MASS_GIFT,
                 [
@@ -140,9 +140,5 @@ class StreamLabsService extends AbstractAuthService {
             'event' => $event,
             'data' => $data
         ]);
-    }
-
-    private function trimAlertMessage(?string $message): string {
-        return mb_substr(trim($message), 0, 250);
     }
 }

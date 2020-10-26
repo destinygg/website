@@ -344,26 +344,36 @@ class SubscriptionController {
             return 'redirect: /subscription/error';
         }
 
-        $redisService = ChatRedisService::instance();
+        $broadcastMessage = Session::getAndRemove('broadcastMessage');
+        $broadcastMessage = mb_substr(trim($broadcastMessage), 0, 250);
+
+        $subscribeMessage = Session::getAndRemove('subscribeMessage');
+        $subscribeMessage = mb_substr(trim($subscribeMessage), 0, 250);
+
+        // Mass gifts have an additional alert.
         if ($subInfo['purchaseType'] === SubPurchaseType::MASS_GIFT) {
+            $redisService = ChatRedisService::instance();
+
             $subWord = $subInfo['quantity'] == 1 ? 'sub' : 'subs';
             $redisService->sendBroadcast("{$buyingUser['username']} gifted {$subInfo['quantity']} {$subscriptionType['tierLabel']} {$subWord} to the community!");
+            if ($broadcastMessage !== '') {
+                $redisService->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
+            }
+
+            // Broadcast messages for mass gifts are printed with the mass gift
+            // notification broadcast. We empty the value to ensure it isn't
+            // printed for the direct gift alerts that follow.
+            $broadcastMessage = '';
 
             StreamLabsService::instance()->sendMassGiftAlert(
                 $subscriptionType,
-                Session::getAndRemove('broadcastMessage'),
+                $broadcastMessage,
                 $buyingUser['username'],
                 $subInfo['quantity']
             );
         }
 
-        foreach ($receivingUsers as $receivingUser) {
-            $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser);
-        }
-
         // Log the subscription event in Discord.
-        $subscribeMessage = Session::getAndRemove('subscribeMessage');
-        $subscribeMessage = mb_substr(trim($subscribeMessage), 0, 250);
         if ($subscribeMessage !== '') {
             DiscordMessenger::send('New subscriber', [
                 'fields' => [
@@ -371,6 +381,10 @@ class SubscriptionController {
                     ['title' => 'Message', 'value' => $subscribeMessage, 'short' => false],
                 ]
             ]);
+        }
+
+        foreach ($receivingUsers as $receivingUser) {
+            $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser, $broadcastMessage);
         }
 
         // We pass the token rather than the transaction ID to handle scenarios
@@ -492,7 +506,7 @@ class SubscriptionController {
     /**
      * @throws Exception
      */
-    private function createNewSubscription(array $subscriptionDetails, array $receivingUser, array $buyingUser, array $paymentIds, string $token, bool $recurring = false) {
+    private function createNewSubscription(array $subscriptionType, array $receivingUser, array $buyingUser, array $paymentIds, string $token, bool $recurring = false) {
         $subscriptionsService = SubscriptionsService::instance();
         $payPalApiService = PayPalApiService::instance();
         $ordersService = OrdersService::instance();
@@ -500,14 +514,14 @@ class SubscriptionController {
         // Create a new subscription.
         $startDate = Date::getDateTime();
         $endDate = Date::getDateTime();
-        $endDate->modify("+{$subscriptionDetails['billingFrequency']} {$subscriptionDetails['billingPeriod']}");
+        $endDate->modify("+{$subscriptionType['billingFrequency']} {$subscriptionType['billingPeriod']}");
 
         $subscription = [
             'userId'             => $receivingUser['userId'],
             'gifter'             => $receivingUser['userId'] !== $buyingUser['userId'] ? $buyingUser['userId'] : null,
             'subscriptionSource' => Config::$a['subscriptionType'],
-            'subscriptionType'   => $subscriptionDetails['id'],
-            'subscriptionTier'   => $subscriptionDetails['tier'],
+            'subscriptionType'   => $subscriptionType['id'],
+            'subscriptionTier'   => $subscriptionType['tier'],
             'createdDate'        => $startDate->format('Y-m-d H:i:s'),
             'endDate'            => $endDate->format('Y-m-d H:i:s'),
             'recurring'          => intval($recurring),
@@ -538,7 +552,7 @@ class SubscriptionController {
                 $reference,
                 $receivingUser['username'],
                 $nextPaymentDate,
-                $subscriptionDetails
+                $subscriptionType
             );
             if (empty($paymentProfileId)) {
                 throw new Exception('Invalid recurring payment profile ID returned from PayPal.');
@@ -563,7 +577,7 @@ class SubscriptionController {
     /**
      * Unban the newly-subscribed user and display a sub alert in chat.
      */
-    private function performPostSubscriptionActions(array $subscriptionDetails, array $receivingUser, array $buyingUser) {
+    private function performPostSubscriptionActions(array $subscriptionType, array $receivingUser, array $buyingUser, string $broadcastMessage) {
         $redisService = ChatRedisService::instance();
 
         // Unban/unmute the newly-subscribed user.
@@ -579,20 +593,26 @@ class SubscriptionController {
 
         // Broadcast the subscription in chat and on stream.
         if ($receivingUser['userId'] !== $buyingUser['userId']) {
-            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionDetails['tierLabel']} subscription!");
+            $redisService->sendBroadcast("{$buyingUser['username']} gifted {$receivingUser['username']} a {$subscriptionType['tierLabel']} subscription!");
+            if ($broadcastMessage !== '') {
+                $redisService->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
+            }
 
             StreamLabsService::instance()->sendDirectGiftAlert(
-                $subscriptionDetails,
-                Session::getAndRemove('broadcastMessage'),
+                $subscriptionType,
+                $broadcastMessage,
                 $buyingUser['username'],
                 $receivingUser['username']
             );
         } else {
-            $redisService->sendBroadcast("{$receivingUser['username']} is now a {$subscriptionDetails['tierLabel']} subscriber!");
+            $redisService->sendBroadcast("{$receivingUser['username']} is now a {$subscriptionType['tierLabel']} subscriber!");
+            if ($broadcastMessage !== '') {
+                $redisService->sendBroadcast("{$receivingUser['username']} said... $broadcastMessage");
+            }
 
             StreamLabsService::instance()->sendSubAlert(
-                $subscriptionDetails,
-                Session::getAndRemove('broadcastMessage'),
+                $subscriptionType,
+                $broadcastMessage,
                 $receivingUser['username']
             );
         }
