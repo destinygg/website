@@ -422,8 +422,39 @@ import Chart from 'chart.js'
                     labels: Array.from(data.keys()),
                     datasets: [{
                         label: `Tier ${tier} Subs`,
-                        data: Array.from(data.values())
+                        data: Array.from(data.values()),
+                        borderColor: 'rgba(51, 122, 183, 1)',
+                        pointBorderColor: 'rgba(51, 122, 183, 1)',
+                        pointBackgroundColor: 'rgba(51, 122, 183, 1)'
                     }]
+                },
+                options: {
+                    aspectRatio: 1.5,
+                    title: {
+                        display: true,
+                        text: `Active Tier ${tier} Subs`
+                    },
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            time: {
+                                parser: 'YYYY-MM-DD',
+                                tooltipFormat: 'MM/DD/YY',
+                                unit: 'day',
+                                displayFormats: {
+                                    'day': 'MM/DD'
+                                }
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                precision: 0
+                            }
+                        }]
+                    }
                 }
             })
         }

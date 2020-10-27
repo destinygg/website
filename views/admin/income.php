@@ -15,9 +15,9 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div>
+                <div class="active-sub-count graph-outer">
                     <h4>Tier I</h4>
                     <table>
                         <colgroup>
@@ -55,7 +55,7 @@ use Destiny\Common\Utils\Tpl;
                 </div>
             </div>
             <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div>
+                <div class="active-sub-count graph-outer">
                     <h4>Tier II</h4>
                     <table>
                         <colgroup>
@@ -93,7 +93,7 @@ use Destiny\Common\Utils\Tpl;
                 </div>
             </div>
             <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div>
+                <div class="active-sub-count graph-outer">
                     <h4>Tier III</h4>
                     <table>
                         <colgroup>
@@ -131,7 +131,7 @@ use Destiny\Common\Utils\Tpl;
                 </div>
             </div>
             <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div>
+                <div class="active-sub-count graph-outer">
                     <h4>Tier IV</h4>
                     <table>
                         <colgroup>
