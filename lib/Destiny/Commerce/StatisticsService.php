@@ -280,5 +280,63 @@ class StatisticsService extends Service {
         }
     }
 
+    /**
+     * Gets active subs grouped by type and recurring status.
+     *
+     * @throws DBException
+     */
+    public function getActiveSubCounts(): array {
+        try {
+            $conn = Application::getDbConn();
+            $stmt = $conn->executeQuery(
+                'SELECT
+                    `subscriptionType`, `recurring`, count(*) as `count`
+                FROM
+                    `dfl_users_subscriptions`
+                WHERE
+                    `status` = ?
+                GROUP BY
+                    `subscriptionType`, `recurring`',
+                [SubscriptionStatus::ACTIVE],
+                [PDO::PARAM_STR]
+            );
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException('Error getting active subs.', $e);
+        }
+    }
 
+    /**
+     * Gets active subs over the last 30 days.
+     *
+     * @throws DBException
+     */
+    public function getHistoricalActiveSubs(): array {
+        try {
+            $conn = Application::getDbConn();
+            $conn->executeQuery('SET @THIRTY_DAYS_AGO=DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 30 DAY), \'%Y-%m-%d\')');
+            $stmt = $conn->executeQuery(
+                'SELECT
+                    `subscriptionTier`,
+                    `createdDate`,
+                    `endDate`,
+                    `cancelDate`
+                FROM
+                    `dfl_users_subscriptions`
+                WHERE
+                    `status` IN (?) AND
+                    DATE_FORMAT(`endDate`, \'%Y-%m-%d\') > @THIRTY_DAYS_AGO AND
+                    (
+                        `cancelDate` IS NULL OR
+                        DATE_FORMAT(`cancelDate`, \'%Y-%m-%d\') > @THIRTY_DAYS_AGO
+                    )',
+                [[SubscriptionStatus::ACTIVE, SubscriptionStatus::EXPIRED, SubscriptionStatus::CANCELLED]],
+                [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]
+            );
+
+            return $stmt->fetchAll();
+        } catch (DBALException $e) {
+            throw new DBException('Error getting active subs.', $e);
+        }
+    }
 }

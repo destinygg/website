@@ -2333,3 +2333,49 @@ div.two-tone-button {
         }
     }
 }
+
+div.active-sub-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 20px;
+
+    h4 {
+        color: $text-color;
+    }
+
+    table {
+        background: #1d1d1d;
+        margin-bottom: 20px;
+        border-radius: 3px;
+
+        th, td {
+            padding: 8px;
+        }
+
+        th {
+            text-align: right;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: $text-color2;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        tr:not(:first-child) {
+            border-top: 1px dotted #383838;
+        }
+
+        col:not(:last-child) {
+            border-right: 1px dotted #383838;
+        }
+
+        tr:last-child td:last-child {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    }
+}

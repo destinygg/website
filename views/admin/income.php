@@ -15,6 +15,48 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
+        <div class="row mb-2">
+            <?php foreach ($this->subInfo as $key => $value): ?>
+                <div class="col-xxl-3 col-lg-6 col-md-12">
+                    <div class="active-sub-count graph-outer">
+                        <h4><?= $value['tierLabel'] ?></h4>
+                        <table>
+                            <colgroup>
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                            </colgroup>
+                            <tr>
+                                <th></th>
+                                <th>Not Recurring</th>
+                                <th>Recurring</th>
+                                <th>Total</th>
+                            </tr>
+                            <tr>
+                                <th>1 Month</th>
+                                <td data-sub-type="<?= $value['oneMonthSubId'] ?>" data-recurring="0">0</td>
+                                <td data-sub-type="<?= $value['oneMonthSubId'] ?>" data-recurring="1">0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <th>3 Month</th>
+                                <td data-sub-type="<?= $value['threeMonthSubId'] ?>" data-recurring="0">0</td>
+                                <td data-sub-type="<?= $value['threeMonthSubId'] ?>" data-recurring="1">0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <th>Total</th>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                        <canvas data-tier="<?= $key + 1 ?>"></canvas>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
         <h3 id="income-dates">
             <span id="date-selector">
                 <a href='#'><i class='fas fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fas fa-arrow-right'></i></a>

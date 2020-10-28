@@ -340,6 +340,151 @@ import Chart from 'chart.js'
             updateGraph5(currDate);
         });
 
-    });
+        const TIERS = [1, 2, 3, 4]
+        const DAYS_BACK = 30
+        const now = moment.utc()
+        const then = moment.utc(now).subtract(DAYS_BACK, 'd')
 
+        const updateActiveSubCountTables = data => {
+            data.forEach(countRecord => {
+                const {subscriptionType, recurring, count} = countRecord
+                $(`td[data-sub-type='${subscriptionType}'][data-recurring='${recurring}']`).text(count)
+            })
+
+            // Add values across each row.
+            $('td:last-child').each((_, e) => {
+                const $total = $(e)
+                $total.text(0)
+
+                let count = 0
+                $total.siblings('td').each((_, e) => {
+                    count += parseInt($(e).text())
+                })
+                $total.text(count)
+            })
+
+            // Add values down each column.
+            $('tr:last-child td').each((_, e) => {
+                const $total = $(e)
+                $total.text(0)
+
+                let count = 0
+                const $table = $total.parents('table')
+                $table.find(`td:nth-child(${$total.index() + 1})`).each((_, e) => {
+                    count += parseInt($(e).text())
+                })
+                $total.text(count)
+            })
+        }
+
+        const getCountsForTier = (data, tier) => {
+            // Create a new map of the last 30 days.
+            let counts = new Map()
+            for (let i = DAYS_BACK - 1; i >= 0; i--) {
+                const day = moment.utc(now).subtract(i, 'd').format('YYYY-MM-DD')
+                counts.set(day, 0)
+            }
+
+            const filtered = data.filter(sub => sub['subscriptionTier'] === tier.toString())
+            filtered.forEach(sub => {
+                // Don't go beyond the earliest or latest days in the graph.
+                let start = moment.utc(sub['createdDate'])
+                if (start.isBefore(then, 'd')) {
+                    start = moment.utc(then)
+                }
+                let end = moment.utc(sub['endDate'])
+                if (end.isAfter(now, 'd')) {
+                    end = moment.utc(now)
+                }
+
+                // Account for subs that were canceled before their end date.
+                if (sub['cancelDate']) {
+                    const cancel = moment.utc(sub['cancelDate'])
+                    if (end.isAfter(cancel, 'd')) {
+                        end = cancel
+                    }
+                }
+
+                for (let i = start; i.isSameOrBefore(end, 'd'); i.add(1, 'd')) {
+                    const day = i.format('YYYY-MM-DD')
+                    counts.set(day, counts.get(day) + 1)
+                }
+            })
+
+            return counts
+        }
+
+        const plotDataForTier = (data, tier) => {
+            const context = $(`canvas[data-tier='${tier}']`)
+            new Chart(context, {
+                type: 'line',
+                data: {
+                    labels: Array.from(data.keys()),
+                    datasets: [{
+                        label: `Tier ${tier} Subs`,
+                        data: Array.from(data.values()),
+                        borderColor: 'rgba(51, 122, 183, 1)',
+                        pointBorderColor: 'rgba(51, 122, 183, 1)',
+                        pointBackgroundColor: 'rgba(51, 122, 183, 1)'
+                    }]
+                },
+                options: {
+                    aspectRatio: 1.5,
+                    title: {
+                        display: true,
+                        text: `Active Tier ${tier} Subs`
+                    },
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'UTC'
+                            },
+                            type: 'time',
+                            time: {
+                                parser: 'YYYY-MM-DD',
+                                tooltipFormat: 'MM/DD/YY',
+                                unit: 'day',
+                                displayFormats: {
+                                    'day': 'MM/DD'
+                                }
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                precision: 0
+                            }
+                        }]
+                    }
+                }
+            })
+        }
+
+        const fetchActiveSubCounts = () => {
+            $.ajax({
+                url: '/admin/chart/finance/CurrentActiveSubs.json',
+                success: data => {
+                    updateActiveSubCountTables(data)
+                }
+            })
+        }
+
+        const fetchHistoricalActiveSubs = () => {
+            $.ajax({
+                url: '/admin/chart/finance/HistoricalActiveSubs.json',
+                success: data => {
+                    TIERS.forEach(tier => {
+                        const counts = getCountsForTier(data, tier)
+                        plotDataForTier(counts, tier)
+                    })
+                }
+            })
+        }
+
+        fetchActiveSubCounts()
+        fetchHistoricalActiveSubs()
+    });
 })(jQuery)

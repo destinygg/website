@@ -59,6 +59,28 @@ class AdminController {
      * @return string
      */
     public function income(ViewModel $model) {
+        $model->subInfo = [
+            [
+                'tierLabel' => 'Tier I',
+                'oneMonthSubId' => '1-MONTH-SUB',
+                'threeMonthSubId' => '3-MONTH-SUB'
+            ],
+            [
+                'tierLabel' => 'Tier II',
+                'oneMonthSubId' => '1-MONTH-SUB2',
+                'threeMonthSubId' => '3-MONTH-SUB2'
+            ],
+            [
+                'tierLabel' => 'Tier III',
+                'oneMonthSubId' => '1-MONTH-SUB3',
+                'threeMonthSubId' => '3-MONTH-SUB3'
+            ],
+            [
+                'tierLabel' => 'Tier IV',
+                'oneMonthSubId' => '1-MONTH-SUB4',
+                'threeMonthSubId' => '3-MONTH-SUB4'
+            ]
+        ];
         $model->title = 'Income';
         return 'admin/income';
     }
@@ -381,6 +403,12 @@ class AdminController {
                     } else {
                         $data = $cacheDriver->fetch($key);
                     }
+                    break;
+                case 'CURRENTACTIVESUBS':
+                    $data = $statisticsService->getActiveSubCounts();
+                    break;
+                case 'HISTORICALACTIVESUBS':
+                    $data = $statisticsService->getHistoricalActiveSubs();
                     break;
             }
         } catch (Exception $e) {
