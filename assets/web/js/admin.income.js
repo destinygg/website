@@ -342,8 +342,8 @@ import Chart from 'chart.js'
 
         const TIERS = [1, 2, 3, 4]
         const DAYS_BACK = 30
-        const now = moment()
-        const then = moment(now).subtract(DAYS_BACK, 'd')
+        const now = moment.utc()
+        const then = moment.utc(now).subtract(DAYS_BACK, 'd')
 
         const updateActiveSubCountTables = data => {
             data.forEach(countRecord => {
@@ -381,25 +381,25 @@ import Chart from 'chart.js'
             // Create a new map of the last 30 days.
             let counts = new Map()
             for (let i = DAYS_BACK - 1; i >= 0; i--) {
-                const day = moment(now).subtract(i, 'd').format('YYYY-MM-DD')
+                const day = moment.utc(now).subtract(i, 'd').format('YYYY-MM-DD')
                 counts.set(day, 0)
             }
 
             const filtered = data.filter(sub => sub['subscriptionTier'] === tier.toString())
             filtered.forEach(sub => {
                 // Don't go beyond the earliest or latest days in the graph.
-                let start = moment(sub['createdDate'])
+                let start = moment.utc(sub['createdDate'])
                 if (start.isBefore(then, 'd')) {
-                    start = moment(then)
+                    start = moment.utc(then)
                 }
-                let end = moment(sub['endDate'])
+                let end = moment.utc(sub['endDate'])
                 if (end.isAfter(now, 'd')) {
-                    end = moment(now)
+                    end = moment.utc(now)
                 }
 
                 // Account for subs that were canceled before their end date.
                 if (sub['cancelDate']) {
-                    const cancel = moment(sub['cancelDate'])
+                    const cancel = moment.utc(sub['cancelDate'])
                     if (end.isAfter(cancel, 'd')) {
                         end = cancel
                     }
@@ -439,6 +439,10 @@ import Chart from 'chart.js'
                     },
                     scales: {
                         xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'UTC'
+                            },
                             type: 'time',
                             time: {
                                 parser: 'YYYY-MM-DD',
