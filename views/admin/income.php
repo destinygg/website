@@ -16,158 +16,46 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <div class="row mb-2">
-            <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div class="active-sub-count graph-outer">
-                    <h4>Tier I</h4>
-                    <table>
-                        <colgroup>
-                            <col>
-                            <col>
-                            <col>
-                            <col>
-                        </colgroup>
-                        <tr>
-                            <th></th>
-                            <th>Not Recurring</th>
-                            <th>Recurring</th>
-                            <th>Total</th>
-                        </tr>
-                        <tr>
-                            <th>1 Month</th>
-                            <td data-sub-type="1-MONTH-SUB" data-recurring="0">0</td>
-                            <td data-sub-type="1-MONTH-SUB" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>3 Month</th>
-                            <td data-sub-type="3-MONTH-SUB" data-recurring="0">0</td>
-                            <td data-sub-type="3-MONTH-SUB" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>Total</th>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                    </table>
-                    <canvas data-tier="1"></canvas>
+            <?php foreach ($this->subInfo as $key => $value): ?>
+                <div class="col-xxl-3 col-lg-6 col-md-12">
+                    <div class="active-sub-count graph-outer">
+                        <h4><?= $value['tierLabel'] ?></h4>
+                        <table>
+                            <colgroup>
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                            </colgroup>
+                            <tr>
+                                <th></th>
+                                <th>Not Recurring</th>
+                                <th>Recurring</th>
+                                <th>Total</th>
+                            </tr>
+                            <tr>
+                                <th>1 Month</th>
+                                <td data-sub-type="<?= $value['oneMonthSubId'] ?>" data-recurring="0">0</td>
+                                <td data-sub-type="<?= $value['oneMonthSubId'] ?>" data-recurring="1">0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <th>3 Month</th>
+                                <td data-sub-type="<?= $value['threeMonthSubId'] ?>" data-recurring="0">0</td>
+                                <td data-sub-type="<?= $value['threeMonthSubId'] ?>" data-recurring="1">0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <th>Total</th>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                        <canvas data-tier="<?= $key + 1 ?>"></canvas>
+                    </div>
                 </div>
-            </div>
-            <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div class="active-sub-count graph-outer">
-                    <h4>Tier II</h4>
-                    <table>
-                        <colgroup>
-                            <col>
-                            <col>
-                            <col>
-                            <col>
-                        </colgroup>
-                        <tr>
-                            <th></th>
-                            <th>Not Recurring</th>
-                            <th>Recurring</th>
-                            <th>Total</th>
-                        </tr>
-                        <tr>
-                            <th>1 Month</th>
-                            <td data-sub-type="1-MONTH-SUB2" data-recurring="0">0</td>
-                            <td data-sub-type="1-MONTH-SUB2" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>3 Month</th>
-                            <td data-sub-type="3-MONTH-SUB2" data-recurring="0">0</td>
-                            <td data-sub-type="3-MONTH-SUB2" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>Total</th>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                    </table>
-                    <canvas data-tier="2"></canvas>
-                </div>
-            </div>
-            <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div class="active-sub-count graph-outer">
-                    <h4>Tier III</h4>
-                    <table>
-                        <colgroup>
-                            <col>
-                            <col>
-                            <col>
-                            <col>
-                        </colgroup>
-                        <tr>
-                            <th></th>
-                            <th>Not Recurring</th>
-                            <th>Recurring</th>
-                            <th>Total</th>
-                        </tr>
-                        <tr>
-                            <th>1 Month</th>
-                            <td data-sub-type="1-MONTH-SUB3" data-recurring="0">0</td>
-                            <td data-sub-type="1-MONTH-SUB3" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>3 Month</th>
-                            <td data-sub-type="3-MONTH-SUB3" data-recurring="0">0</td>
-                            <td data-sub-type="3-MONTH-SUB3" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>Total</th>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                    </table>
-                    <canvas data-tier="3"></canvas>
-                </div>
-            </div>
-            <div class="col-xxl-3 col-lg-6 col-md-12">
-                <div class="active-sub-count graph-outer">
-                    <h4>Tier IV</h4>
-                    <table>
-                        <colgroup>
-                            <col>
-                            <col>
-                            <col>
-                            <col>
-                        </colgroup>
-                        <tr>
-                            <th></th>
-                            <th>Not Recurring</th>
-                            <th>Recurring</th>
-                            <th>Total</th>
-                        </tr>
-                        <tr>
-                            <th>1 Month</th>
-                            <td data-sub-type="1-MONTH-SUB4" data-recurring="0">0</td>
-                            <td data-sub-type="1-MONTH-SUB4" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>3 Month</th>
-                            <td data-sub-type="3-MONTH-SUB4" data-recurring="0">0</td>
-                            <td data-sub-type="3-MONTH-SUB4" data-recurring="1">0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th>Total</th>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                    </table>
-                    <canvas data-tier="4"></canvas>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
         <h3 id="income-dates">
             <span id="date-selector">
