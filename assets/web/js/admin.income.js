@@ -341,9 +341,9 @@ import Chart from 'chart.js'
         });
 
         const TIERS = [1, 2, 3, 4]
-        const DAYS_BACK = 30
+        const DAYS_OF_HISTORY = 30
         const now = moment.utc()
-        const then = moment.utc(now).subtract(DAYS_BACK, 'd')
+        const then = moment.utc(now).subtract(DAYS_OF_HISTORY - 1, 'd')
 
         const updateActiveSubCountTables = data => {
             data.forEach(countRecord => {
@@ -380,7 +380,7 @@ import Chart from 'chart.js'
         const getCountsForTier = (data, tier) => {
             // Create a new map of the last 30 days.
             let counts = new Map()
-            for (let i = DAYS_BACK - 1; i >= 0; i--) {
+            for (let i = DAYS_OF_HISTORY - 1; i >= 0; i--) {
                 const day = moment.utc(now).subtract(i, 'd').format('YYYY-MM-DD')
                 counts.set(day, 0)
             }
