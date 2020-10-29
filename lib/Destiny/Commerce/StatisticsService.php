@@ -336,7 +336,7 @@ class StatisticsService extends Service {
 
             return $stmt->fetchAll();
         } catch (DBALException $e) {
-            throw new DBException('Error getting active subs.', $e);
+            throw new DBException('Error getting historical active subs.', $e);
         }
     }
 }

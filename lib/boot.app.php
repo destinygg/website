@@ -11,7 +11,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.22.0'); // auto-generated: 1603865348666
+define('_APP_VERSION', '2.22.1'); // auto-generated: 1603951446962
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
