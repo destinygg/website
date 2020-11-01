@@ -16,6 +16,7 @@ use Destiny\Common\Config;
 <?=Tpl::manifestScript('chat.vendor.js')?>
 <?=Tpl::manifestScript('chat.js', [
     'id' => 'chat-include',
+    'data-ws-url' => Config::$a['chatWebSocketUrl'],
     'data-cache-key' => $this->cacheKey,
     'data-cdn' => Config::cdnv(),
     'data-ban-appeal-url' => Config::$a['banAppealUrl']
