@@ -14,6 +14,7 @@ return [
     'blog'          => ['feed' => 'https://blog.destiny.gg/feed/json'],
     'android'       => ['app' => 'gg.destiny.app.chat'],
     'banAppealUrl'  => 'https://www.destiny.gg/unban',
+    'chatWebSocketUrl' => 'wss://chat.destiny.gg/ws',
 
     'twitch' => [
         'id' => 18074328,

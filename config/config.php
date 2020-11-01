@@ -26,6 +26,7 @@ return [
         'chat' => '/embed/chat'
     ],
 
+    'chatWebSocketUrl' => 'ws://localhost/ws',
     'cdn' => ['domain' => '','protocol' => 'https://'],
     'blog' => ['feed' => ''],
     'reddit' => ['threads' => ''],
