@@ -18,6 +18,7 @@ use Destiny\Common\Utils\CryptoOpenSSL;
 use Destiny\Common\Utils\Date;
 use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
+use Destiny\Google\YouTubeAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\StreamElements\StreamElementsAuthHandler;
 use Destiny\StreamLabs\StreamLabsAuthHandler;
@@ -427,6 +428,9 @@ class AuthenticationService extends Service {
                 break;
             case AuthProvider::GOOGLE:
                 $authHandler = new GoogleAuthHandler();
+                break;
+            case AuthProvider::YOUTUBE:
+                $authHandler = new YouTubeAuthHandler();
                 break;
             case AuthProvider::REDDIT:
                 $authHandler = new RedditAuthHandler();
