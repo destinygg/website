@@ -34,7 +34,7 @@ $app->setLoader($loader);
 // Logging
 try {
     Log::$log = new Logger ('web');
-    Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Logger::WARNING));
+    Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Config::$a['logLevel']));
     Log::$log->pushHandler(new DiscordLogHandler(Logger::ERROR));
     Log::$log->pushProcessor(new PsrLogMessageProcessor());
 } catch (Exception $e) {

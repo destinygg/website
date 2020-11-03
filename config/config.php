@@ -6,6 +6,7 @@
 //ini_set('date.timezone', 'UTC');
 
 use Destiny\Common\Authentication\AuthProvider;
+use Monolog\Logger;
 
 return [
     'cacheNamespace' => '_web18',
@@ -26,6 +27,7 @@ return [
         'chat' => '/embed/chat'
     ],
 
+    'logLevel' => Logger::WARNING,
     'chatWebSocketUrl' => 'ws://localhost/ws',
     'cdn' => ['domain' => '','protocol' => 'https://'],
     'blog' => ['feed' => ''],
