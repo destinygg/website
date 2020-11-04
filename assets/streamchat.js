@@ -4,7 +4,7 @@ import Chat from 'dgg-chat-gui/assets/chat/js/chat'
 
 const script = document.getElementById('chat-include')
 const chat = new Chat({
-    url: `ws${location.protocol === 'https:' ? 's' : ''}://${location.host}/ws`,
+    url: script.getAttribute('data-ws-url'),
     api: {base: `${location.protocol}//${location.host}`},
     cdn: {base: script.getAttribute('data-cdn')},
     cacheKey: script.getAttribute('data-cache-key'),
