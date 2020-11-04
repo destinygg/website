@@ -360,17 +360,17 @@ class SubscriptionController {
                 $redisService->sendBroadcast("{$buyingUser['username']} said... $broadcastMessage");
             }
 
-            // Broadcast messages for mass gifts are printed with the mass gift
-            // notification broadcast. We empty the value to ensure it isn't
-            // printed for the direct gift alerts that follow.
-            $broadcastMessage = '';
-
             StreamLabsService::instance()->sendMassGiftAlert(
                 $subscriptionType,
                 $broadcastMessage,
                 $buyingUser['username'],
                 $subInfo['quantity']
             );
+
+            // Broadcast messages for mass gifts are printed with the mass gift
+            // notification broadcast. We empty the value to ensure it isn't
+            // printed for the direct gift alerts that follow.
+            $broadcastMessage = '';
         }
 
         // Log the subscription event in Discord.
