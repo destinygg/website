@@ -171,7 +171,17 @@ class AuthenticationService extends Service {
         if (!empty($sid) && Session::start() && Session::hasRole(UserRole::USER)) {
             $sessionId = Session::getSessionId();
             if (!empty($sessionId)) {
-                $redisService->renewChatSessionExpiration($sessionId);
+                $success = $redisService->renewChatSessionExpiration($sessionId);
+
+                // If the renewal failed, then no chat session exists. A new
+                // session should be created if the user is allowed to chat.
+                if (!$success) {
+                    $creds = Session::getCredentials();
+                    $user = $userService->getUserById($creds->getUserId());
+                    if ($user['allowChatting']) {
+                        $redisService->setChatSession($creds, $sessionId);
+                    }
+                }
             }
         }
 

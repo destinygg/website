@@ -117,8 +117,8 @@ class ChatRedisService extends Service {
     /**
      * Updates the session ttl so it does not expire
      */
-    public function renewChatSessionExpiration(string $sessionId) {
-        $this->redis->expire("CHAT:session-$sessionId", $this->maxlife);
+    public function renewChatSessionExpiration(string $sessionId): bool {
+        return $this->redis->expire("CHAT:session-$sessionId", $this->maxlife);
     }
 
     public function setChatSession(SessionCredentials $credentials, string $sessionId) {

@@ -219,7 +219,7 @@ const $document = $(document),
                     } catch(ignored){}
                 }
             });
-        }, 15000);
+        }, 90000);
 
     });
 
