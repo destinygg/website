@@ -264,6 +264,6 @@ import $ from 'jquery'
     // When the browser navigation is changed, also happens when you change the hash in the browser
     window.addEventListener('popstate', handleHistoryPopState)
     // The stream status info, pinged every x seconds and on initial start up
-    fetchStreamInfo().always(() => window.setInterval(fetchStreamInfo, 15000))
+    fetchStreamInfo().always(() => window.setInterval(fetchStreamInfo, 90000))
 
 })();
