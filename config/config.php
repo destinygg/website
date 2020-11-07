@@ -159,7 +159,8 @@ return [
     'youtube' => [
         'apikey' => '',
         'playlistId' => '',
-        'user' => ''
+        'user' => '',
+        'dgg_user' => -1
     ],
 
     'analytics' => [

@@ -29,6 +29,9 @@ return [
     'twitchbroadcaster' => [
         'dgg_user' => 10
     ],
+    'youtube' => [
+        'dgg_user' => 10
+    ],
 
     'cookie' => [
         'domain' => 'www.destiny.gg',
