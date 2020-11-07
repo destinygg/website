@@ -22,7 +22,15 @@ class YouTubeAuthHandler extends GoogleAuthHandler {
         ],
         $claims = ''
     ): string {
-        return parent::getAuthorizationUrl($scope, $claims);
+        $conf = $this->getAuthProviderConf();
+        return "$this->authBase/auth?" . http_build_query([
+            'response_type' => 'code',
+            'scope' => join(' ', $scope),
+            'state' => 'security_token=' . Session::getSessionId(),
+            'client_id' => $conf['client_id'],
+            'redirect_uri' => sprintf($conf['redirect_uri'], $this->authProvider),
+            'access_type' => 'offline'
+        ], null, '&');
     }
 
     /**
