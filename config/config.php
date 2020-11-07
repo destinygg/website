@@ -72,47 +72,47 @@ return [
         'google' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/google'
         ],
         'youtube' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/admin/youtube/auth'
         ],
         'twitch' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/twitch'
         ],
         'twitter' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/twitter'
         ],
         'reddit' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/reddit'
         ],
         'discord' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/discord'
         ],
         'streamlabs' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/streamlabs'
         ],
         'twitchbroadcaster' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/admin/twitch/auth'
         ],
         'streamelements' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/admin/streamelements/auth'
         ]
     ],
 
