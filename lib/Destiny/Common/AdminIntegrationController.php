@@ -37,7 +37,7 @@ abstract class AdminIntegrationController {
 
     public function index(ViewModel $model) {
         $this->afterConstruct();
-        $model->title = 'StreamLabs';
+        $model->title = $this->title;
         $defaultUserId = $this->authenticatedService->getDefaultUserId();
         $defaultUser = $this->authenticatedService->getDefaultUser();
         $auth = $this->authenticatedService->getDefaultAuth();
