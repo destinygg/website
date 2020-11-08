@@ -40,7 +40,7 @@ class YouTubeAuthHandler extends GoogleAuthHandler {
         $client = $this->getHttpClient();
         $response = $client->get("$this->apiBase/channels", [
             'query' => [
-                'part' => 'snippet,id',
+                'part' => 'snippet,id,statistics',
                 'mine' => true
             ],
             'headers' => [
@@ -67,7 +67,20 @@ class YouTubeAuthHandler extends GoogleAuthHandler {
             throw new Exception('No YouTube channels exist.');
         }
 
-        $firstChannel = $data['items'][0];
+        // Sort the channels by decreasing sub count.
+        $channels = $data['items'];
+        usort($channels, function($a, $b) {
+            $aSubs = $a['statistics']['subscriberCount'];
+            $bSubs = $b['statistics']['subscriberCount'];
+
+            if ($aSubs === $bSubs) {
+                return 0;
+            }
+            return $aSubs < $bSubs ? 1 : -1;
+        });
+
+        // Get the channel with the most subs.
+        $firstChannel = $channels[0];
         return new OAuthResponse([
             'accessToken' => $token['access_token'],
             'refreshToken' => $token['refresh_token'],
