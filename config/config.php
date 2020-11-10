@@ -6,6 +6,7 @@
 //ini_set('date.timezone', 'UTC');
 
 use Destiny\Common\Authentication\AuthProvider;
+use Monolog\Logger;
 
 return [
     'cacheNamespace' => '_web18',
@@ -26,6 +27,7 @@ return [
         'chat' => '/embed/chat'
     ],
 
+    'logLevel' => Logger::WARNING,
     'chatWebSocketUrl' => 'ws://localhost/ws',
     'cdn' => ['domain' => '','protocol' => 'https://'],
     'blog' => ['feed' => ''],
@@ -70,42 +72,47 @@ return [
         'google' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/google'
+        ],
+        'youtube' => [
+            'client_id' => '',
+            'client_secret' => '',
+            'redirect_uri' => 'https://localhost/admin/youtube/auth'
         ],
         'twitch' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/twitch'
         ],
         'twitter' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/twitter'
         ],
         'reddit' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/reddit'
         ],
         'discord' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/discord'
         ],
         'streamlabs' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/auth/streamlabs'
         ],
         'twitchbroadcaster' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/admin/twitch/auth'
         ],
         'streamelements' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => ''
+            'redirect_uri' => 'https://localhost/admin/streamelements/auth'
         ]
     ],
 
@@ -152,7 +159,8 @@ return [
     'youtube' => [
         'apikey' => '',
         'playlistId' => '',
-        'user' => ''
+        'user' => '',
+        'dgg_user' => -1
     ],
 
     'analytics' => [

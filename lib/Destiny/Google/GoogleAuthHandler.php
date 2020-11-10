@@ -15,7 +15,7 @@ use Destiny\Common\Utils\Http;
  */
 class GoogleAuthHandler extends AbstractAuthHandler {
 
-    private $authBase = 'https://accounts.google.com/o/oauth2';
+    protected $authBase = 'https://accounts.google.com/o/oauth2';
     private $apiBase = 'https://www.googleapis.com/oauth2/v2';
     public $authProvider = AuthProvider::GOOGLE;
 

@@ -11,7 +11,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-define('_APP_VERSION', '2.23.2'); // auto-generated: 1604688697474
+define('_APP_VERSION', '2.24.1'); // auto-generated: 1604875093661
 define('_BASEDIR', realpath(__DIR__ . '/../'));
 
 $loader = require _BASEDIR . '/vendor/autoload.php';
@@ -34,7 +34,7 @@ $app->setLoader($loader);
 // Logging
 try {
     Log::$log = new Logger ('web');
-    Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Logger::WARNING));
+    Log::$log->pushHandler(new StreamHandler (_BASEDIR . '/log/web.log', Config::$a['logLevel']));
     Log::$log->pushHandler(new DiscordLogHandler(Logger::ERROR));
     Log::$log->pushProcessor(new PsrLogMessageProcessor());
 } catch (Exception $e) {

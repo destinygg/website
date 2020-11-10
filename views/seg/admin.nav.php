@@ -26,6 +26,7 @@ use Destiny\Common\User\UserRole;
             <?php endif; ?>
             <?php if(Session::hasRole(UserRole::ADMIN)): ?>
                 <li class="breadcrumb-item"><a href="/admin/twitch">Twitch</a></li>
+                <li class="breadcrumb-item"><a href="/admin/youtube">YouTube</a></li>
             <?php endif; ?>
         <?php endif; ?>
 
