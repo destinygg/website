@@ -92,4 +92,28 @@ class YouTubeAuthHandler extends GoogleAuthHandler {
             'verified' => true,
         ]);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function renewToken(string $refreshToken): array {
+        $conf = $this->getAuthProviderConf();
+        $response = $this->getHttpClient()->post("$this->authBase/token", [
+            'headers' => ['User-Agent' => Config::userAgent()],
+            'form_params' => [
+                'grant_type' => 'refresh_token',
+                'client_id' => $conf['client_id'],
+                'client_secret' => $conf['client_secret'],
+                'refresh_token' => $refreshToken
+            ]
+        ]);
+
+        if (!empty($response) && $response->getStatusCode() == Http::STATUS_OK) {
+            $data = json_decode($response->getBody(), true);
+            FilterParams::required($data, 'access_token');
+            return $data;
+        }
+
+        throw new Exception('Failed to refresh access token.');
+    }
 }
