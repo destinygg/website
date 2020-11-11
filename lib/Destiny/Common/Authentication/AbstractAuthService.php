@@ -80,7 +80,7 @@ abstract class AbstractAuthService extends Service {
                     $userAuthService = UserAuthService::instance();
                     $userAuthService->updateUserAuth($auth['id'], [
                         'accessToken' => $data['access_token'],
-                        'refreshToken' => $data['refresh_token'],
+                        'refreshToken' => $auth['refreshToken'],
                         'createdDate' => Date::getSqlDateTime(),
                         'modifiedDate' => Date::getSqlDateTime()
                     ]);
