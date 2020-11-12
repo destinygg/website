@@ -14,7 +14,7 @@ use Destiny\Youtube\YoutubeApiService;
 class YoutubeFeed implements TaskInterface {
 
     public function execute() {
-        $json = YoutubeApiService::instance()->getYoutubePlaylist();
+        $json = YoutubeApiService::instance()->getRecentYouTubeUploads();
         if (!empty ($json)) {
             foreach ($json ['items'] as $i => $item) {
                 $path = ImageDownloadUtil::download($json ['items'][$i]['snippet']['thumbnails']['high']['url']);

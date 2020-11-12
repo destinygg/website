@@ -17,7 +17,7 @@ use Destiny\Common\Utils\Date;
                             <?php $title = Tpl::out($vid['snippet']['title'])?>
                             <li>
                                 <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
-                                    <a href="https://www.youtube.com/watch?v=<?=$vid['id']['videoId']?>">
+                                    <a href="https://www.youtube.com/watch?v=<?=$vid['snippet']['resourceId']['videoId']?>">
                                         <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$title?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
                                     </a>
                                 </div>
