@@ -9,9 +9,9 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
 
-class YouTubeAuthHandler extends GoogleAuthHandler {
+class YouTubeBroadcasterAuthHandler extends GoogleAuthHandler {
     private $apiBase = 'https://www.googleapis.com/youtube/v3';
-    public $authProvider = AuthProvider::YOUTUBE;
+    public $authProvider = AuthProvider::YOUTUBE_BROADCASTER;
 
     function getAuthorizationUrl(
         $scope = [

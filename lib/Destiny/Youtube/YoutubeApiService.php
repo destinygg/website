@@ -9,7 +9,7 @@ use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
-use Destiny\Google\YouTubeAuthHandler;
+use Destiny\Google\YouTubeBroadcasterAuthHandler;
 use InvalidArgumentException;
 
 /**
@@ -19,11 +19,11 @@ class YoutubeApiService extends AbstractAuthService {
     const CACHE_KEY_UPLOADS_PLAYLIST_ID = 'ytUploadPlaylistId';
 
     private $apiBase = 'https://www.googleapis.com/youtube/v3';
-    public $provider = AuthProvider::YOUTUBE;
+    public $provider = AuthProvider::YOUTUBE_BROADCASTER;
 
     function afterConstruct() {
         parent::afterConstruct();
-        $this->authHandler = YouTubeAuthHandler::instance();
+        $this->authHandler = YouTubeBroadcasterAuthHandler::instance();
     }
 
     public function getRecentYouTubeUploads(int $limit = 4) {

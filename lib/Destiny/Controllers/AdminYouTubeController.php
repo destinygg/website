@@ -8,14 +8,14 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\ViewModel;
 use Destiny\Google\YouTubeAdminService;
-use Destiny\Google\YouTubeAuthHandler;
+use Destiny\Google\YouTubeBroadcasterAuthHandler;
 
 /**
  * @Controller
  */
 class AdminYouTubeController extends AdminIntegrationController {
     function afterConstruct() {
-        $this->authHandler = YouTubeAuthHandler::instance();
+        $this->authHandler = YouTubeBroadcasterAuthHandler::instance();
         $this->authenticatedService = YouTubeAdminService::instance();
         $this->title = 'YouTube Integration';
         $this->index = '/admin/youtube';

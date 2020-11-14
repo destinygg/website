@@ -20,7 +20,7 @@ use Destiny\Common\Utils\CryptoOpenSSL;
 use Destiny\Common\Utils\Date;
 use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
-use Destiny\Google\YouTubeAuthHandler;
+use Destiny\Google\YouTubeBroadcasterAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Reddit\RedditService;
 use Destiny\StreamElements\StreamElementsAuthHandler;
@@ -465,8 +465,8 @@ class AuthenticationService extends Service {
             case AuthProvider::GOOGLE:
                 $authHandler = new GoogleAuthHandler();
                 break;
-            case AuthProvider::YOUTUBE:
-                $authHandler = new YouTubeAuthHandler();
+            case AuthProvider::YOUTUBE_BROADCASTER:
+                $authHandler = new YouTubeBroadcasterAuthHandler();
                 break;
             case AuthProvider::REDDIT:
                 $authHandler = new RedditAuthHandler();

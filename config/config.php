@@ -77,7 +77,7 @@ return [
             'client_secret' => '',
             'redirect_uri' => 'https://localhost/auth/google'
         ],
-        'youtube' => [
+        'youtubebroadcaster' => [
             'client_id' => '',
             'client_secret' => '',
             'redirect_uri' => 'https://localhost/admin/youtube/auth'
@@ -161,7 +161,7 @@ return [
         ]
     ],
 
-    'youtube' => [
+    'youtubebroadcaster' => [
         'dgg_user' => -1
     ],
 

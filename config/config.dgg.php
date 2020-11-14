@@ -37,7 +37,7 @@ return [
     'twitchbroadcaster' => [
         'dgg_user' => 10
     ],
-    'youtube' => [
+    'youtubebroadcaster' => [
         'dgg_user' => 10
     ],
 
