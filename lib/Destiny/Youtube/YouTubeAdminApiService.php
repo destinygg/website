@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Google;
+namespace Destiny\Youtube;
 
 use Destiny\Common\Application;
 use Destiny\Common\Authentication\AbstractAuthService;

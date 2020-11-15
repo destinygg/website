@@ -6,7 +6,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Images\ImageDownloadUtil;
-use Destiny\Google\YouTubeAdminApiService;
+use Destiny\Youtube\YouTubeAdminApiService;
 
 /**
  * @Schedule(frequency=30,period="minute")

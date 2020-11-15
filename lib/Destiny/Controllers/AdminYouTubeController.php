@@ -7,8 +7,8 @@ use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
 use Destiny\Common\ViewModel;
-use Destiny\Google\YouTubeAdminApiService;
-use Destiny\Google\YouTubeBroadcasterAuthHandler;
+use Destiny\Youtube\YouTubeAdminApiService;
+use Destiny\Youtube\YouTubeBroadcasterAuthHandler;
 
 /**
  * @Controller
