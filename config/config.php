@@ -162,6 +162,7 @@ return [
     ],
 
     'youtubebroadcaster' => [
+        'channelId' => '',
         'dgg_user' => -1
     ],
 

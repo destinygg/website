@@ -23,9 +23,10 @@ class YouTubeAdminApiService extends AbstractAuthService {
 
     public function getRecentYouTubeUploads(int $limit = 4) {
         $authResponse = $this->getDefaultAuth();
+        $channelId = Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['channelId'];
         if (empty($authResponse)) {
             return null;
-        } else if (empty($authResponse['authId'])) {
+        } else if (empty($channelId)) {
             return null;
         }
         $accessToken = $this->getValidAccessToken();
@@ -34,7 +35,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         $uploadsPlaylistId = $cache->fetch(self::CACHE_KEY_UPLOADS_PLAYLIST_ID);
         if (empty($uploadsPlaylistId)) {
             Log::debug('No uploads playlist ID in cache.');
-            $uploadsPlaylistId = $this->getUploadsPlaylistIdForChannel($authResponse['authId'], $accessToken);
+            $uploadsPlaylistId = $this->getUploadsPlaylistIdForChannel($channelId, $accessToken);
             $cache->save(self::CACHE_KEY_UPLOADS_PLAYLIST_ID, $uploadsPlaylistId);
         }
 
