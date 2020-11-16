@@ -316,6 +316,27 @@ CREATE TABLE `dfl_payments_purchases` (
     CONSTRAINT `dfl_payments_purchases_ibfk_3` FOREIGN KEY (`donationId`) REFERENCES `donations` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `youtube_membership_levels` (
+    `membershipLevelId` varchar(255) NOT NULL,
+    `creatorChannelId` varchar(255) NOT NULL,
+    `name` varchar(255) NOT NULL,
+    PRIMARY KEY (`membershipLevelId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `youtube_members` (
+    `memberChannelId` varchar(255) NOT NULL,
+    `creatorChannelId` varchar(255) NOT NULL,
+    `membershipLevelId` varchar(255) NOT NULL,
+    PRIMARY KEY (`memberChannelId`, `creatorChannelId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `users_youtube_channel_ids` (
+    `userId` int(14) NOT NULL,
+    `channelId` varchar(255) NOT NULL,
+    PRIMARY KEY `channelId` (`channelId`),
+    CONSTRAINT `users_youtube_channel_ids_ibfk1` FOREIGN KEY (`userId`) REFERENCES `dfl_users` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
