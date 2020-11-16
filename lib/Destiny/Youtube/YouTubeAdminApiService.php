@@ -12,6 +12,7 @@ use Destiny\Common\Utils\Http;
 
 class YouTubeAdminApiService extends AbstractAuthService {
     const CACHE_KEY_UPLOADS_PLAYLIST_ID = 'ytUploadPlaylistId';
+    const CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN = 'ytMemberUpdatesToken';
 
     private $apiBase = 'https://www.googleapis.com/youtube/v3';
     public $provider = AuthProvider::YOUTUBE_BROADCASTER;
@@ -19,6 +20,100 @@ class YouTubeAdminApiService extends AbstractAuthService {
     function afterConstruct() {
         parent::afterConstruct();
         $this->authHandler = YouTubeBroadcasterAuthHandler::instance();
+    }
+
+    public function getMembershipLevels() {
+        $accessToken = $this->getValidAccessToken();
+
+        $client = HttpClient::instance();
+        $response = $client->get("$this->apiBase/membershipsLevels", [
+            'headers' => [
+                'User-Agent' => Config::userAgent(),
+                'Authorization' => "Bearer $accessToken"
+            ],
+            'query' => [
+                'part' => 'id,snippet'
+            ]
+        ]);
+
+        $json = json_decode($response->getBody(), true);
+        $membershipLevels = $json['items'];
+        if (count($membershipLevels) < 1) {
+            return null;
+        }
+
+        return $membershipLevels;
+    }
+
+    public function getAllMemberships() {
+        $accessToken = $this->getValidAccessToken();
+
+        $client = HttpClient::instance();
+        $memberships = [];
+        $pageToken = null;
+        do {
+            $response = $client->get("$this->apiBase/members", [
+                'headers' => [
+                    'User-Agent' => Config::userAgent(),
+                    'Authorization' => "Bearer $accessToken"
+                ],
+                'query' => [
+                    'part' => 'snippet',
+                    'mode' => 'all_current',
+                    'maxResults' => 1000,
+                    'pageToken' => $pageToken
+                ]
+            ]);
+
+            if ($response->getStatusCode() !== Http::STATUS_OK) {
+                return null;
+            }
+
+            $json = json_decode($response->getBody(), true);
+            $pageToken = $json['nextPageToken'] ?? null;
+            $memberships = array_merge($memberships, $json['items']);
+        } while (!empty($pageToken));
+
+        return $memberships;
+    }
+
+    public function getNewMemberships() {
+        $accessToken = $this->getValidAccessToken();
+
+        $cache = Application::getNsCache();
+        if ($cache->contains(self::CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN)) {
+            $pageToken = $cache->fetch(self::CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN);
+        } else {
+            $pageToken = null;
+        }
+
+        $client = HttpClient::instance();
+        $response = $client->get("$this->apiBase/members", [
+            'headers' => [
+                'User-Agent' => Config::userAgent(),
+                'Authorization' => "Bearer $accessToken"
+            ],
+            'query' => [
+                'part' => 'snippet',
+                'mode' => 'updates',
+                'maxResults' => 1000,
+                'pageToken' => $pageToken
+            ]
+        ]);
+
+        if ($response->getStatusCode() !== Http::STATUS_OK) {
+            return null;
+        }
+
+        $json = json_decode($response->getBody(), true);
+        $pageToken = $json['nextPageToken'] ?? null;
+        if (!empty($pageToken)) {
+            $cache->save(self::CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN, $pageToken);
+        } else {
+            $cache->delete(self::CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN);
+        }
+
+        return $json['items'];
     }
 
     public function getRecentYouTubeUploads(int $limit = 4) {
