@@ -22,52 +22,27 @@ class YouTubeAdminApiService extends AbstractAuthService {
         $this->authHandler = YouTubeBroadcasterAuthHandler::instance();
     }
 
-    public function getMembershipLevels() {
-        $accessToken = $this->getValidAccessToken();
-
-        $client = HttpClient::instance();
-        $response = $client->get("$this->apiBase/membershipsLevels", [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Authorization' => "Bearer $accessToken"
-            ],
-            'query' => [
-                'part' => 'id,snippet'
-            ]
+    public function getMembershipLevels(): array {
+        $response = $this->performGet('membershipsLevels', [
+            'part' => 'id,snippet'
         ]);
 
         $json = json_decode($response->getBody(), true);
-        $membershipLevels = $json['items'];
-        if (count($membershipLevels) < 1) {
-            return null;
-        }
-
-        return $membershipLevels;
+        return $json['items'];
     }
 
-    public function getAllMemberships() {
-        $accessToken = $this->getValidAccessToken();
-
-        $client = HttpClient::instance();
+    public function getAllMemberships(): array {
         $memberships = [];
         $pageToken = null;
-        do {
-            $response = $client->get("$this->apiBase/members", [
-                'headers' => [
-                    'User-Agent' => Config::userAgent(),
-                    'Authorization' => "Bearer $accessToken"
-                ],
-                'query' => [
-                    'part' => 'snippet',
-                    'mode' => 'all_current',
-                    'maxResults' => 1000,
-                    'pageToken' => $pageToken
-                ]
-            ]);
 
-            if ($response->getStatusCode() !== Http::STATUS_OK) {
-                return null;
-            }
+        // Keep fetching pages until we don't get a next page token.
+        do {
+            $response = $this->performGet('members', [
+                'part' => 'snippet',
+                'mode' => 'all_current',
+                'maxResults' => 1000, // The highest value permitted.
+                'pageToken' => $pageToken
+            ]);
 
             $json = json_decode($response->getBody(), true);
             $pageToken = $json['nextPageToken'] ?? null;
@@ -77,9 +52,10 @@ class YouTubeAdminApiService extends AbstractAuthService {
         return $memberships;
     }
 
-    public function getNewMemberships() {
-        $accessToken = $this->getValidAccessToken();
-
+    public function getNewMemberships(): array {
+        // Fetching a non-existent value from the cache returns `false`. We
+        // check to see if it exists to avoid mistakenly passing `false` into
+        // the members request.
         $cache = Application::getNsCache();
         if ($cache->contains(self::CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN)) {
             $pageToken = $cache->fetch(self::CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN);
@@ -87,22 +63,18 @@ class YouTubeAdminApiService extends AbstractAuthService {
             $pageToken = null;
         }
 
-        $client = HttpClient::instance();
-        $response = $client->get("$this->apiBase/members", [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Authorization' => "Bearer $accessToken"
-            ],
-            'query' => [
+        try {
+            $response = $this->performGet('members', [
                 'part' => 'snippet',
                 'mode' => 'updates',
-                'maxResults' => 1000,
+                'maxResults' => 1000, // The highest value permitted.
                 'pageToken' => $pageToken
-            ]
-        ]);
-
-        if ($response->getStatusCode() !== Http::STATUS_OK) {
-            return null;
+            ]);
+        } catch (Exception $e) {
+            // Clear the cached page token just in case to avoid potential
+            // errors on subsequent calls.
+            $cache->delete(self::CACHE_KEY_MEMBERSHIP_UPDATES_PAGE_TOKEN);
+            throw $e;
         }
 
         $json = json_decode($response->getBody(), true);
@@ -116,47 +88,31 @@ class YouTubeAdminApiService extends AbstractAuthService {
         return $json['items'];
     }
 
-    public function getRecentYouTubeUploads(int $limit = 4) {
-        $authResponse = $this->getDefaultAuth();
+    public function getRecentYouTubeUploads(int $limit = 4): array {
         $channelId = Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['channelId'];
-        if (empty($authResponse)) {
-            return null;
-        } else if (empty($channelId)) {
-            return null;
+        if (empty($channelId)) {
+            return [];
         }
-        $accessToken = $this->getValidAccessToken();
 
         $cache = Application::getNsCache();
         $uploadsPlaylistId = $cache->fetch(self::CACHE_KEY_UPLOADS_PLAYLIST_ID);
         if (empty($uploadsPlaylistId)) {
             Log::debug('No uploads playlist ID in cache.');
-            $uploadsPlaylistId = $this->getUploadsPlaylistIdForChannel($channelId, $accessToken);
+            $uploadsPlaylistId = $this->getUploadsPlaylistIdForChannel($channelId);
             $cache->save(self::CACHE_KEY_UPLOADS_PLAYLIST_ID, $uploadsPlaylistId);
         }
 
         if (empty($uploadsPlaylistId)) {
-            Log::warning('No uploads playlist ID found.');
-            return null;
+            throw Exception("No uploads playlist ID found for channel `{$channelId}`.");
         }
 
         Log::debug("Got ID of uploads playlist: `$uploadsPlaylistId`.");
 
-        $client = HttpClient::instance();
-        $response = $client->get("$this->apiBase/playlistItems", [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Authorization' => "Bearer $accessToken"
-            ],
-            'query' => [
-                'part' => 'snippet',
-                'playlistId' => $uploadsPlaylistId,
-                'maxResults' => $limit
-            ]
+        $response = $this->performGet('playlistItems', [
+            'part' => 'snippet',
+            'playlistId' => $uploadsPlaylistId,
+            'maxResults' => $limit
         ]);
-
-        if ($response->getStatusCode() !== Http::STATUS_OK) {
-            return null;
-        }
 
         Log::debug("Got playlist items: `{$response->getBody()}`.");
         $json = json_decode($response->getBody(), true);
@@ -167,28 +123,34 @@ class YouTubeAdminApiService extends AbstractAuthService {
         return $json;
     }
 
-    private function getUploadsPlaylistIdForChannel(string $channelId, string $accessToken): ?string {
-        $client = HttpClient::instance();
-        $response = $client->get("$this->apiBase/channels", [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Authorization' => "Bearer $accessToken"
-            ],
-            'query' => [
-                'part' => 'contentDetails',
-                'id' => $channelId
-            ]
+    private function getUploadsPlaylistIdForChannel(string $channelId): string {
+        $response = $this->performGet('channels', [
+            'part' => 'contentDetails',
+            'id' => $channelId
         ]);
-        if ($response->getStatusCode() !== Http::STATUS_OK) {
-            return null;
-        }
 
         $json = json_decode($response->getBody(), true);
         $channels = $json['items'];
         if (count($channels) < 1) {
-            return null;
+            throw Exception("No channel with ID `$channelId` found.");
         }
 
         return $channels[0]['contentDetails']['relatedPlaylists']['uploads'];
+    }
+
+    private function performGet(string $path, array $query) {
+        $accessToken = $this->getValidAccessToken();
+
+        $client = HttpClient::instance();
+        $response = $client->get("$this->apiBase/$path", [
+            'headers' => [
+                'User-Agent' => Config::userAgent(),
+                'Authorization' => "Bearer $accessToken"
+            ],
+            'query' => $query,
+            \GuzzleHttp\RequestOptions::HTTP_ERRORS => true
+        ]);
+
+        return $response;
     }
 }
