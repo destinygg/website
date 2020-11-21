@@ -95,11 +95,11 @@ class YouTubeAdminApiService extends AbstractAuthService {
         }
 
         $cache = Application::getNsCache();
-        $uploadsPlaylistId = $cache->fetch(self::CACHE_KEY_UPLOADS_PLAYLIST_ID);
+        $uploadsPlaylistId = $cache->fetch(self::CACHE_KEY_UPLOADS_PLAYLIST_ID . ':' . $channelId);
         if (empty($uploadsPlaylistId)) {
             Log::debug('No uploads playlist ID in cache.');
             $uploadsPlaylistId = $this->getUploadsPlaylistIdForChannel($channelId);
-            $cache->save(self::CACHE_KEY_UPLOADS_PLAYLIST_ID, $uploadsPlaylistId);
+            $cache->save(self::CACHE_KEY_UPLOADS_PLAYLIST_ID . ':' . $channelId, $uploadsPlaylistId);
         }
 
         if (empty($uploadsPlaylistId)) {
