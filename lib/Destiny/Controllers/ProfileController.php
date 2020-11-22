@@ -32,6 +32,9 @@ use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
+use Destiny\Youtube\YouTubeAuthHandler;
+use Destiny\Youtube\YouTubeApiService;
+use Destiny\YouTube\YouTubeMembershipService;
 
 /**
  * @Controller
@@ -557,6 +560,38 @@ class ProfileController {
         } else {
             Session::setErrorBag('Minecraft name already in use');
         }
+        return 'redirect: /profile';
+    }
+
+    /**
+     * @Route ("/profile/auth/youtube")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     */
+    public function authYouTube(): string {
+        return 'redirect: ' . YouTubeAuthHandler::instance()->getAuthorizationUrl();
+    }
+
+    /**
+     * @Route ("/profile/auth/youtube/cb")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     */
+    public function authYouTubeCallback(array $params): string {
+        $response = YouTubeAuthHandler::instance()->exchangeCode($params);
+        $userId = Session::getCredentials()->getUserId();
+        UserAuthService::instance()->saveUserAuthWithOAuth($response, $userId);
+
+        try {
+            $channelIds = YouTubeApiService::instance()->getChannelIdsForUserId($userId);
+            YouTubeMembershipService::instance()->addChannelIdsForUserId($channelIds, $userId);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            Session::setErrorBag('Error syncing YouTube channels. Please try again later.');
+            return 'redirect: /profile';
+        }
+
+        Session::setSuccessBag('Authorization completed successfully!');
         return 'redirect: /profile';
     }
 
