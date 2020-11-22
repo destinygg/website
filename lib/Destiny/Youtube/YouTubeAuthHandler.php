@@ -32,7 +32,7 @@ private $apiBase = 'https://www.googleapis.com/youtube/v3';
     public function mapTokenResponse(array $token): OAuthResponse {
         return new OAuthResponse([
             'accessToken' => $token['access_token'],
-            'refreshToken' => '',
+            'refreshToken' => $token['refresh_token'] ?? '',
             'authProvider' => $this->authProvider,
             'username' => '',
             'authId' => '',

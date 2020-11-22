@@ -2,16 +2,13 @@
 namespace Destiny\Youtube;
 
 use Destiny\Common\Authentication\AuthProvider;
-use Destiny\Common\Authentication\OAuthResponse;
 use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
-use Destiny\Google\GoogleAuthHandler;
 
-class YouTubeBroadcasterAuthHandler extends GoogleAuthHandler {
-    private $apiBase = 'https://www.googleapis.com/youtube/v3';
+class YouTubeBroadcasterAuthHandler extends YouTubeAuthHandler {
     public $authProvider = AuthProvider::YOUTUBE_BROADCASTER;
 
     function getAuthorizationUrl(
@@ -36,22 +33,6 @@ class YouTubeBroadcasterAuthHandler extends GoogleAuthHandler {
             'access_type' => 'offline',
             'include_granted_scopes' => 'true'
         ], null, '&');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function mapTokenResponse(array $token): OAuthResponse {
-        return new OAuthResponse([
-            'accessToken' => $token['access_token'],
-            'refreshToken' => $token['refresh_token'],
-            'authProvider' => $this->authProvider,
-            'username' => '',
-            'authId' => '',
-            'authDetail' => '',
-            'authEmail' => '',
-            'verified' => true,
-        ]);
     }
 
     /**
