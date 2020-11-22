@@ -17,12 +17,15 @@ class YouTubeBroadcasterAuthHandler extends GoogleAuthHandler {
     function getAuthorizationUrl(
         $scope = [
             'https://www.googleapis.com/auth/youtube',
-            'https://www.googleapis.com/auth/youtube.channel-memberships.creator',
             'https://www.googleapis.com/auth/youtube.force-ssl',
             'https://www.googleapis.com/auth/youtube.readonly'
         ],
         $claims = ''
     ): string {
+        if (Config::$a[$this->authProvider]['sync_memberships']) {
+            $scope[] = 'https://www.googleapis.com/auth/youtube.channel-memberships.creator';
+        }
+
         $conf = $this->getAuthProviderConf();
         return "$this->authBase/auth?" . http_build_query([
             'response_type' => 'code',
@@ -30,7 +33,8 @@ class YouTubeBroadcasterAuthHandler extends GoogleAuthHandler {
             'state' => 'security_token=' . Session::getSessionId(),
             'client_id' => $conf['client_id'],
             'redirect_uri' => sprintf($conf['redirect_uri'], $this->authProvider),
-            'access_type' => 'offline'
+            'access_type' => 'offline',
+            'include_granted_scopes' => 'true'
         ], null, '&');
     }
 

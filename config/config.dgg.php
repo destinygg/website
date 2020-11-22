@@ -38,6 +38,7 @@ return [
         'dgg_user' => 10
     ],
     'youtubebroadcaster' => [
+        'sync_memberships' => false,
         'dgg_user' => 10
     ],
 

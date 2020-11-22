@@ -162,6 +162,7 @@ return [
     ],
 
     'youtubebroadcaster' => [
+        'sync_memberships' => false,
         'channelId' => '',
         'dgg_user' => -1
     ],
