@@ -465,6 +465,9 @@ class AuthenticationService extends Service {
             case AuthProvider::GOOGLE:
                 $authHandler = new GoogleAuthHandler();
                 break;
+            case AuthProvider::YOUTUBE:
+                $authHandler = new YouTubeAuthHandler();
+                break;
             case AuthProvider::YOUTUBE_BROADCASTER:
                 $authHandler = new YouTubeBroadcasterAuthHandler();
                 break;

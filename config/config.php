@@ -77,6 +77,11 @@ return [
             'client_secret' => '',
             'redirect_uri' => 'https://localhost/auth/google'
         ],
+        'youtube' => [
+            'client_id' => '',
+            'client_secret' => '',
+            'redirect_uri' => ''
+        ],
         'youtubebroadcaster' => [
             'client_id' => '',
             'client_secret' => '',
