@@ -583,8 +583,8 @@ class ProfileController {
         UserAuthService::instance()->saveUserAuthWithOAuth($response, $userId);
 
         try {
-            $channelIds = YouTubeApiService::instance()->getChannelIdsForUserId($userId);
-            YouTubeMembershipService::instance()->addChannelIdsForUserId($channelIds, $userId);
+            $channels = YouTubeApiService::instance()->getChannelsForUserId($userId);
+            YouTubeMembershipService::instance()->addChannelsForUserId($channels, $userId);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             Session::setErrorBag('Error syncing YouTube channels. Please try again later.');

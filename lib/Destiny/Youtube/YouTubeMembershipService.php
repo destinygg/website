@@ -120,13 +120,13 @@ class YouTubeMembershipService extends Service {
      * @return string|false The level ID of the user's active membership, or `false` if the user isn't a member.
      * @throws Exception
      */
-    public function getMembershipStatusForUserId(int $userId) {
+    public function getMembershipDetailsForUserId(int $userId) {
         $db = Application::getDbConn();
         $stmt = $db->executeQuery(
-            'SELECT `youtube_members`.`membershipLevelId`
-            FROM `users_youtube_channel_ids`
+            'SELECT `youtube_members`.`membershipLevelId`, `users_youtube_channels`.`channelTitle`
+            FROM `users_youtube_channels`
             INNER JOIN `youtube_members`
-                ON `youtube_members`.`memberChannelId` = `users_youtube_channel_ids`.`channelId`
+                ON `youtube_members`.`memberChannelId` = `users_youtube_channels`.`channelId`
             WHERE `userId` = ?',
             [$userId],
             [PDO::PARAM_INT]
@@ -135,22 +135,23 @@ class YouTubeMembershipService extends Service {
     }
 
     /**
-     * @param array $channelIds An array of `youtube#channel` resource arrays.
+     * @param array $channels An array of `youtube#channel` resource arrays.
      * @throws Exception
      */
-    public function addChannelIdsForUserId(array $channelIds, int $userId) {
+    public function addChannelsForUserId(array $channels, int $userId) {
         $db = Application::getDbConn();
-        foreach ($channelIds as $channelId) {
+        foreach ($channels as $channel) {
             // Update `userId` when the `channelId` already exists to prevent
             // account sharing.
             $stmt = $db->prepare(
-                'INSERT INTO `users_youtube_channel_ids` (`userId`, `channelId`)
-                VALUES (:userId, :channelId)
+                'INSERT INTO `users_youtube_channels` (`userId`, `channelId`, `channelTitle`)
+                VALUES (:userId, :channelId, :channelTitle)
                 ON DUPLICATE KEY
-                UPDATE `userId` = :userId'
+                UPDATE `userId` = :userId, `channelTitle` = :channelTitle'
             );
             $stmt->bindValue('userId', $userId);
-            $stmt->bindValue('channelId', $channelId['id']);
+            $stmt->bindValue('channelId', $channel['id']);
+            $stmt->bindValue('channelTitle', $channel['snippet']['title']);
             $stmt->execute();
         }
     }
@@ -162,7 +163,7 @@ class YouTubeMembershipService extends Service {
         $db = Application::getDbConn();
         $stmt = $db->executeQuery(
             'SELECT DISTINCT `userId`
-            FROM `users_youtube_channel_ids`
+            FROM `users_youtube_channels`
             WHERE `channelId` IN (?)',
             [$channelIds],
             [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]

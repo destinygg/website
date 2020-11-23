@@ -333,6 +333,7 @@ CREATE TABLE `youtube_members` (
 CREATE TABLE IF NOT EXISTS `users_youtube_channel_ids` (
     `userId` int(14) NOT NULL,
     `channelId` varchar(255) NOT NULL,
+    `channelTitle` varchar(255) NOT NULL,
     PRIMARY KEY `channelId` (`channelId`),
     CONSTRAINT `users_youtube_channel_ids_ibfk1` FOREIGN KEY (`userId`) REFERENCES `dfl_users` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

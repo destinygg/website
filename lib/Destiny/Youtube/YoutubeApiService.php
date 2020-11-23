@@ -18,7 +18,7 @@ class YouTubeApiService extends Service {
     /**
      * @throws Exception
      */
-    public function getChannelIdsForUserId(int $userId): array {
+    public function getChannelsForUserId(int $userId): array {
         $oauthDetails = UserAuthService::instance()->getByUserIdAndProvider($userId, $this->provider);
         if (empty($oauthDetails)) {
             throw Exception("Error getting YT channel IDs because no OAuth details exist for user `$userId`.");
@@ -31,7 +31,7 @@ class YouTubeApiService extends Service {
                 'Authorization' => "Bearer {$oauthDetails['accessToken']}"
             ],
             'query' => [
-                'part' => 'id',
+                'part' => 'id,snippet',
                 'mine' => 'true'
             ]
         ]);
