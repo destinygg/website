@@ -1,6 +1,7 @@
 <?php
 namespace Destiny;
 use Destiny\Commerce\PaymentStatus;
+use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
@@ -65,23 +66,25 @@ use Destiny\Common\Config;
         <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>
         <div id="subscription-content" class="content collapse">
 
-            <div class="content-dark clearfix" style="margin-top: 10px;">
-                <div class="ds-block">
-                    <div class="subscription" style="width: auto;">
-                        <h3>YouTube</h3>
-                    </div>
-                    <?php if (!empty($this->youtubeAuthDetails)): ?>
-                        <?php if (!empty($this->youtubeMembership)): ?>
-                            <p>You have an active <em><?= Tpl::out($this->youtubeMembership['name']) ?></em> membership for your <em><?= Tpl::out($this->youtubeMembership['channelTitle']) ?></em> YouTube channel!</p>
+            <?php if (Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['sync_memberships']): ?>
+                <div class="content-dark clearfix" style="margin-top: 10px;">
+                    <div class="ds-block">
+                        <div class="subscription" style="width: auto;">
+                            <h3>YouTube</h3>
+                        </div>
+                        <?php if (!empty($this->youtubeAuthDetails)): ?>
+                            <?php if (!empty($this->youtubeMembership)): ?>
+                                <p>You have an active <em><?= Tpl::out($this->youtubeMembership['name']) ?></em> membership for your <em><?= Tpl::out($this->youtubeMembership['channelTitle']) ?></em> YouTube channel!</p>
+                            <?php else: ?>
+                                <p>You don't have an active YouTube membership. Membership status updates every 5 minutes.</p>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <p>You don't have an active YouTube membership. Membership status updates every 5 minutes.</p>
+                            <p>Log in with your YouTube account to sync your YouTube membership.</p>
+                            <a href="/profile/auth/youtube" class="btn btn-primary">Log in with YouTube</a>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <p>Log in with your YouTube account to sync your YouTube membership.</p>
-                        <a href="/profile/auth/youtube" class="btn btn-primary">Log in with YouTube</a>
-                    <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
 
             <?php if($this->user['istwitchsubscriber'] == 1): ?>
                 <div class="content-dark clearfix" style="margin-top: 10px;">
