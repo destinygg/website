@@ -60,6 +60,10 @@ class ProfileController {
         $model->gifts = $subscriptionsService->findByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
         $model->discordAuthProfile = $userAuthService->getByUserIdAndProvider($userId, AuthProvider::DISCORD);
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
+
+        $model->youtubeAuthDetails = $userAuthService->getByUserIdAndProvider($userId, AuthProvider::YOUTUBE);
+        $model->youtubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($userId);
+
         $model->title = 'Account';
         return 'profile/account';
     }
