@@ -72,7 +72,7 @@ use Destiny\Common\Config;
                     </div>
                     <?php if (!empty($this->youtubeAuthDetails)): ?>
                         <?php if (!empty($this->youtubeMembership)): ?>
-                            <p>You have an active membership for your <em><?= Tpl::out($this->youtubeMembership['channelTitle']) ?></em> YouTube channel!</p>
+                            <p>You have an active <em><?= Tpl::out($this->youtubeMembership['name']) ?></em> membership for your <em><?= Tpl::out($this->youtubeMembership['channelTitle']) ?></em> YouTube channel!</p>
                         <?php else: ?>
                             <p>You don't have an active YouTube membership. Membership status updates every 5 minutes.</p>
                         <?php endif; ?>

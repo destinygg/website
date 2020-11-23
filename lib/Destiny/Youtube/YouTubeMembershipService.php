@@ -123,10 +123,12 @@ class YouTubeMembershipService extends Service {
     public function getMembershipDetailsForUserId(int $userId) {
         $db = Application::getDbConn();
         $stmt = $db->executeQuery(
-            'SELECT `youtube_members`.`membershipLevelId`, `users_youtube_channels`.`channelTitle`
+            'SELECT `youtube_members`.`membershipLevelId`, `users_youtube_channels`.`channelTitle`, `youtube_membership_levels`.`name`
             FROM `users_youtube_channels`
             INNER JOIN `youtube_members`
                 ON `youtube_members`.`memberChannelId` = `users_youtube_channels`.`channelId`
+            INNER JOIN `youtube_membership_levels`
+                ON `youtube_membership_levels`.`membershipLevelId` = `youtube_members`.`membershipLevelId`
             WHERE `userId` = ?',
             [$userId],
             [PDO::PARAM_INT]
