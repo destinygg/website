@@ -10,7 +10,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 require __DIR__ . '/../lib/boot.app.php';
-Log::$log->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
+Log::$log->pushHandler(new StreamHandler('php://stdout', Logger::INFO));
 $app = Application::instance();
 
 try {
