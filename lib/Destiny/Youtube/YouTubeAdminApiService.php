@@ -9,6 +9,7 @@ use Destiny\Common\HttpClient;
 use Destiny\Common\Log;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Http;
+use Exception;
 
 class YouTubeAdminApiService extends AbstractAuthService {
     const CACHE_KEY_UPLOADS_PLAYLIST_ID = 'ytUploadPlaylistId';
@@ -103,7 +104,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         }
 
         if (empty($uploadsPlaylistId)) {
-            throw Exception("No uploads playlist ID found for channel `{$channelId}`.");
+            throw new Exception("No uploads playlist ID found for channel `{$channelId}`.");
         }
 
         Log::debug("Got ID of uploads playlist: `$uploadsPlaylistId`.");
@@ -132,7 +133,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         $json = json_decode($response->getBody(), true);
         $channels = $json['items'];
         if (count($channels) < 1) {
-            throw Exception("No channel with ID `$channelId` found.");
+            throw new Exception("No channel with ID `$channelId` found.");
         }
 
         return $channels[0]['contentDetails']['relatedPlaylists']['uploads'];

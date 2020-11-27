@@ -7,6 +7,7 @@ use Destiny\Common\HttpClient;
 use Destiny\Common\Service;
 use Destiny\Common\User\UserAuthService;
 use Destiny\Common\Utils\Http;
+use Exception;
 
 /**
  * @method static YoutubeApiService instance()
@@ -21,7 +22,7 @@ class YouTubeApiService extends Service {
     public function getChannelsForUserId(int $userId): array {
         $oauthDetails = UserAuthService::instance()->getByUserIdAndProvider($userId, $this->provider);
         if (empty($oauthDetails)) {
-            throw Exception("Error getting YT channel IDs because no OAuth details exist for user `$userId`.");
+            throw new Exception("Error getting YT channel IDs because no OAuth details exist for user `$userId`.");
         }
 
         $client = HttpClient::instance();
@@ -37,7 +38,7 @@ class YouTubeApiService extends Service {
         ]);
 
         if ($response->getStatusCode() !== Http::STATUS_OK) {
-            throw Exception("Got a non-200 response when fetching YouTube channels for user `$userId`: `$response->getBody()`.");
+            throw new Exception("Got a non-200 response when fetching YouTube channels for user `$userId`: `$response->getBody()`.");
         }
 
         $json = json_decode($response->getBody(), true);
