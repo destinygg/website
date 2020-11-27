@@ -595,6 +595,7 @@ class ProfileController {
             return 'redirect: /profile';
         }
 
+        AuthenticationService::instance()->flagUserForUpdate($userId);
         Session::setSuccessBag('Authorization completed successfully!');
         return 'redirect: /profile';
     }
