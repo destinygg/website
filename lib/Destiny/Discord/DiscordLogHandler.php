@@ -30,7 +30,7 @@ class DiscordLogHandler extends AbstractProcessingHandler {
                     'short' => false
                 ];
             }
-            if (!empty($creds)) {
+            if (!empty($creds) && !empty($creds->getUserId()) && !empty($creds->getUsername())) {
                 $fields[] = [
                     'title' => 'User',
                     'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()),
