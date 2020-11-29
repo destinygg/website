@@ -120,7 +120,6 @@ import $ from 'jquery'
 
     const streamWrap = $body.find('#stream-wrap')
     const defaultEmbedInfo = {
-        embed: false,
         platform: streamWrap.data('platform'),
         title: 'Bigscreen',
         name: streamWrap.data('name'),
@@ -128,7 +127,7 @@ import $ from 'jquery'
     }
 
     const streamInfo = {live: false, host: null, preview: null},
-        embedInfo = Object.assign({}, defaultEmbedInfo),
+        embedInfo = Object.assign({ embeddingOtherContent: false }, defaultEmbedInfo),
         navpillclasses = ['embedded','hidden','hosting','online','offline'],
         navhostpill = {container: $body.find('#nav-host-pill')},
         iconTwitch = '<i class="fab fa-fw fa-twitch"></i>',
@@ -163,7 +162,7 @@ import $ from 'jquery'
 
     const updateStreamPill = function(){
         navhostpill.container.removeClass(navpillclasses.join(' '))
-        if (!embedInfo.embed) {
+        if (!embedInfo.embeddingOtherContent) {
             if (streamInfo.host && !streamInfo.live) {
                 navhostpill.container.addClass('hosting');
                 navhostpill.left.text('HOSTING')
@@ -186,14 +185,14 @@ import $ from 'jquery'
     }
 
     const toggleEmbedHost = function() {
-        if (!embedInfo.embed && streamInfo.host) {
-            embedInfo.embed = true
+        if (!embedInfo.embeddingOtherContent && streamInfo.host) {
+            embedInfo.embeddingOtherContent = true
             embedInfo.platform = 'twitch'
             embedInfo.title = streamInfo.host['display_name']
             embedInfo.name = streamInfo.host['name']
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
-        } else if (embedInfo.embed) {
-            embedInfo.embed = false
+        } else if (embedInfo.embeddingOtherContent) {
+            embedInfo.embeddingOtherContent = false
             embedInfo.platform = defaultEmbedInfo.platform
             embedInfo.title = defaultEmbedInfo.title
             embedInfo.name = defaultEmbedInfo.name
@@ -241,7 +240,7 @@ import $ from 'jquery'
     const updateEmbedInfoWithBrowserLocationHash = function() {
         const parts = parseEmbedHash(window.location.hash)
         if (parts) {
-            embedInfo.embed = true
+            embedInfo.embeddingOtherContent = true
             embedInfo.platform = parts.platform
             embedInfo.title = parts.name
             embedInfo.name = parts.name
