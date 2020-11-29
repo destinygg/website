@@ -119,7 +119,7 @@ import $ from 'jquery'
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube)\/([A-z0-9_\-]{3,64})$/
 
     const streamWrap = $body.find('#stream-wrap')
-    const embedInfo = {
+    const defaultEmbedInfo = {
         embed: false,
         platform: streamWrap.data('platform'),
         title: 'Bigscreen',
@@ -128,7 +128,7 @@ import $ from 'jquery'
     }
 
     const streamInfo = {live: false, host: null, preview: null},
-        defaultEmbedInfo = Object.assign({}, embedInfo),
+        embedInfo = Object.assign({}, defaultEmbedInfo),
         navpillclasses = ['embedded','hidden','hosting','online','offline'],
         navhostpill = {container: $body.find('#nav-host-pill')},
         iconTwitch = '<i class="fab fa-fw fa-twitch"></i>',
