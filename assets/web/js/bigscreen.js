@@ -121,7 +121,6 @@ import $ from 'jquery'
     const streamWrap = $body.find('#stream-wrap')
     const defaultEmbedInfo = {
         platform: streamWrap.data('platform'),
-        title: 'Bigscreen',
         name: streamWrap.data('name'),
         parents: streamWrap.data('twitch-parents')
     }
@@ -176,7 +175,7 @@ import $ from 'jquery'
         } else {
             navhostpill.container.addClass('embedded');
             navhostpill.left.text('EMBED')
-            navhostpill.right.text(embedInfo.title)
+            navhostpill.right.text(embedInfo.name)
             navhostpill.icon.html(iconClose)
         }
         navhostpill.container
@@ -188,13 +187,11 @@ import $ from 'jquery'
         if (!embedInfo.embeddingOtherContent && streamInfo.host) {
             embedInfo.embeddingOtherContent = true
             embedInfo.platform = 'twitch'
-            embedInfo.title = streamInfo.host['display_name']
             embedInfo.name = streamInfo.host['name']
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
         } else if (embedInfo.embeddingOtherContent) {
             embedInfo.embeddingOtherContent = false
             embedInfo.platform = defaultEmbedInfo.platform
-            embedInfo.title = defaultEmbedInfo.title
             embedInfo.name = defaultEmbedInfo.name
             Object.assign(embedInfo, defaultEmbedInfo)
             window.history.pushState(embedInfo, null, `/bigscreen`)
@@ -242,7 +239,6 @@ import $ from 'jquery'
         if (parts) {
             embedInfo.embeddingOtherContent = true
             embedInfo.platform = parts.platform
-            embedInfo.title = parts.name
             embedInfo.name = parts.name
         }
     }
