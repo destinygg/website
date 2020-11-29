@@ -124,8 +124,6 @@ import $ from 'jquery'
         platform: streamWrap.data('platform'),
         title: 'Bigscreen',
         name: streamWrap.data('name'),
-        id: null,
-        url: '/bigscreen',
         parents: streamWrap.data('twitch-parents')
     }
 
@@ -193,14 +191,12 @@ import $ from 'jquery'
             embedInfo.platform = 'twitch'
             embedInfo.title = streamInfo.host['display_name']
             embedInfo.name = streamInfo.host['name']
-            embedInfo.id = streamInfo.host['id']
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
         } else if (embedInfo.embed) {
             embedInfo.embed = false
             embedInfo.platform = defaultEmbedInfo.platform
             embedInfo.title = defaultEmbedInfo.title
             embedInfo.name = defaultEmbedInfo.name
-            embedInfo.id = defaultEmbedInfo.id
             Object.assign(embedInfo, defaultEmbedInfo)
             window.history.pushState(embedInfo, null, `/bigscreen`)
         }
@@ -235,10 +231,9 @@ import $ from 'jquery'
         const hash = str || window.location.hash || ''
         if (hash.length > 0 && hashregex.test(hash)) {
             const res = hash.match(hashregex),
-                id = null,
                 platform = res[1],
                 name = res[2]
-            return {platform, name, id}
+            return {platform, name}
         }
         return null
     }
@@ -250,7 +245,6 @@ import $ from 'jquery'
             embedInfo.platform = parts.platform
             embedInfo.title = parts.name
             embedInfo.name = parts.name
-            embedInfo.id = parts.id
         }
     }
 
