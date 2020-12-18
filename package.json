@@ -1,6 +1,6 @@
 {
   "name": "dgg-website",
-  "version": "2.24.1",
+  "version": "2.24.2",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
