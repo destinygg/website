@@ -21,7 +21,7 @@
         "doctrine/cache": "1.8.x-dev",
         "doctrine/annotations": "1.7.x-dev",
         "doctrine/common": "2.10.x-dev",
-        "doctrine/dbal": "2.9.x-dev"
+        "doctrine/dbal": "2.9.x"
     },
     "autoload": {
         "psr-0": {"Destiny":"lib/"}
