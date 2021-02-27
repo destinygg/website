@@ -1785,12 +1785,6 @@ img.tier-4-flair {
   align-items: center;
 }
 
-
-#nav-host-pill-container {
-  margin: 0.3em 1em;
-  display: flex;
-}
-
 #nav-host-pill {
   display: none;
   cursor: default;
@@ -1808,6 +1802,9 @@ img.tier-4-flair {
   }
 
   #nav-host-pill-button {
+    margin: 0.3em 1em;
+    display: flex;
+
     transition: background-color 150ms linear;
     border: 1px solid #3b3b3b;
     border-top-color: #272727;

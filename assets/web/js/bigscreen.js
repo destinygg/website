@@ -127,11 +127,11 @@ import $ from 'jquery'
 
     const streamStatus = {live: false, host: null, preview: null},
         embedInfo = Object.assign({ embeddingOtherContent: false }, defaultEmbedInfo),
-        navhostpill = {container: $body.find('#nav-host-pill')},
+        navHostPill = $body.find('#nav-host-pill'),
         iconClose = '<i class="fas fa-fw fa-times-circle"></i>'
-    navhostpill.left = navhostpill.container.find('#nav-host-pill-type')
-    navhostpill.right = navhostpill.container.find('#nav-host-pill-name')
-    navhostpill.icon = navhostpill.container.find('#nav-host-pill-icon')
+    navHostPill.left = navHostPill.find('#nav-host-pill-type')
+    navHostPill.right = navHostPill.find('#nav-host-pill-name')
+    navHostPill.icon = navHostPill.find('#nav-host-pill-icon')
 
     const embedUrlForEmbedInfo = embedInfo => {
         switch (embedInfo.platform) {
@@ -175,22 +175,22 @@ import $ from 'jquery'
     }
 
     const updateStreamPill = function(){
-        navhostpill.container.removeClass('embedded hidden')
+        navHostPill.removeClass('embedded hidden')
         if (!embedInfo.embeddingOtherContent) {
             if (streamStatus.host && !streamStatus.live) {
-                navhostpill.left.text('HOSTING')
-                navhostpill.right.text(streamStatus.host.name)
-                navhostpill.icon.html(iconForPlatform('twitch'))
+                navHostPill.left.text('HOSTING')
+                navHostPill.right.text(streamStatus.host.name)
+                navHostPill.icon.html(iconForPlatform('twitch'))
             } else {
-                navhostpill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
-                navhostpill.right.text(defaultEmbedInfo.name)
-                navhostpill.icon.html(iconForPlatform(defaultEmbedInfo.platform))
+                navHostPill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
+                navHostPill.right.text(defaultEmbedInfo.name)
+                navHostPill.icon.html(iconForPlatform(defaultEmbedInfo.platform))
             }
         } else {
-            navhostpill.container.addClass('embedded');
-            navhostpill.left.text('EMBED')
-            navhostpill.right.text(embedInfo.name)
-            navhostpill.icon.html(iconClose)
+            navHostPill.addClass('embedded');
+            navHostPill.left.text('EMBED')
+            navHostPill.right.text(embedInfo.name)
+            navHostPill.icon.html(iconClose)
         }
     }
 
@@ -260,7 +260,7 @@ import $ from 'jquery'
     // Makes it so the browser navigation,
     window.history.replaceState(embedInfo, null, initUrl)
     // When someone clicks the nav UI element
-    navhostpill.container.on('click touch', toggleEmbedHost)
+    navHostPill.on('click touch', toggleEmbedHost)
     // When the browser navigation is changed, also happens when you change the hash in the browser
     window.addEventListener('popstate', handleHistoryPopState)
     // The stream status info, pinged every x seconds and on initial start up
