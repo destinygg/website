@@ -117,15 +117,19 @@ import $ from 'jquery'
     const initUrl = document.location.href // Important this is stored before any work is done that may change this value.
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube|youtube-live)\/([A-z0-9_\-]{3,64})$/
 
-    const streamDetails = $body.find('.stream-details')
-    const defaultEmbedInfo = {
-        platform: streamDetails.data('platform'),
-        name: streamDetails.data('name'),
-        parents: streamDetails.data('twitch-parents')
-    }
+    let activeStreamIndex = 0
+    const streams = []
+    $body.find('.stream-details').each(function() {
+        const $this = $(this)
+        streams.push({
+            platform: $this.data('platform'),
+            name: $this.data('name'),
+            parents: $this.data('twitch-parents')
+        })
+    })
 
     const streamStatus = { live: false, host: null, preview: null }
-    const embedInfo = { ...defaultEmbedInfo, embeddingOtherContent: false }
+    const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
 
     let streamFrame = $body.find('#stream-panel iframe')
     const closeIcon = '<i class="fas fa-fw fa-times-circle"></i>'
@@ -206,14 +210,31 @@ import $ from 'jquery'
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
         } else if (embedInfo.embeddingOtherContent) {
             embedInfo.embeddingOtherContent = false
-            embedInfo.platform = defaultEmbedInfo.platform
-            embedInfo.name = defaultEmbedInfo.name
+            embedInfo.platform = streams[activeStreamIndex].platform
+            embedInfo.name = streams[activeStreamIndex].name
 
             window.history.pushState(embedInfo, null, `/bigscreen`)
         }
 
         updateStreamFrame()
         updateStreamPill()
+
+        return false
+    }
+
+    const cycleThroughStreams = function() {
+        if (!streamStatus.live || embedInfo.embeddingOtherContent) {
+            return true // Pass the click event up to the host pill.
+        }
+
+        activeStreamIndex++
+        if (activeStreamIndex >= streams.length) {
+            activeStreamIndex = 0
+        }
+        Object.assign(embedInfo, streams[activeStreamIndex])
+
+        updateStreamPill()
+        updateStreamFrame()
 
         return false
     }
@@ -264,6 +285,7 @@ import $ from 'jquery'
     updateStreamFrame()
 
     hostPill.on('click touch', toggleEmbedHost)
+    hostPill.icon.on('click touch', cycleThroughStreams)
 
     // Makes it so the browser navigation...
     window.history.replaceState(embedInfo, null, initUrl)
