@@ -186,7 +186,7 @@ import $ from 'jquery'
     }
 
     const updateStreamPill = function(animateIcon = false) {
-        hostPill.removeClass('hidden embedded')
+        hostPill.removeClass('hidden hosting embedded')
 
         if (embedInfo.embeddingOtherContent) {
             hostPill.addClass('embedded');
@@ -195,6 +195,8 @@ import $ from 'jquery'
             hostPill.right.text(embedInfo.name)
             hostPill.icon.html(closeIcon)
         } else if (streamStatus.host) {
+            hostPill.addClass('hosting');
+
             hostPill.left.text('HOSTING')
             hostPill.right.text(streamStatus.host.name)
             hostPill.icon.html(iconForPlatform('twitch'))
@@ -268,7 +270,7 @@ import $ from 'jquery'
                 const { live, host, preview } = data
                 return Object.assign(streamStatus, { live, host, preview })
             })
-            .then(updateStreamPill())
+            .then(() => updateStreamPill())
     }
 
     const handleHistoryPopState = function() {
