@@ -125,7 +125,7 @@ import $ from 'jquery'
         parents: streamWrap.data('twitch-parents')
     }
 
-    const streamInfo = {live: false, host: null, preview: null},
+    const streamStatus = {live: false, host: null, preview: null},
         embedInfo = Object.assign({ embeddingOtherContent: false }, defaultEmbedInfo),
         navpillclasses = ['embedded','hidden','hosting','online','offline'],
         navhostpill = {container: $body.find('#nav-host-pill')},
@@ -165,13 +165,13 @@ import $ from 'jquery'
     const updateStreamPill = function(){
         navhostpill.container.removeClass(navpillclasses.join(' '))
         if (!embedInfo.embeddingOtherContent) {
-            if (streamInfo.host && !streamInfo.live) {
+            if (streamStatus.host && !streamStatus.live) {
                 navhostpill.container.addClass('hosting');
                 navhostpill.left.text('HOSTING')
-                navhostpill.right.text(streamInfo.host.name)
+                navhostpill.right.text(streamStatus.host.name)
                 navhostpill.icon.html(iconTwitch)
             } else {
-                navhostpill.left.text(streamInfo.live ? 'LIVE' : 'OFFLINE')
+                navhostpill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
                 navhostpill.right.text('Destiny')
                 navhostpill.icon.html(iconTwitch)
             }
@@ -182,15 +182,15 @@ import $ from 'jquery'
             navhostpill.icon.html(iconClose)
         }
         navhostpill.container
-            .toggleClass('online', streamInfo.live)
-            .toggleClass('offline', !!streamInfo.live)
+            .toggleClass('online', streamStatus.live)
+            .toggleClass('offline', !!streamStatus.live)
     }
 
     const toggleEmbedHost = function() {
-        if (!embedInfo.embeddingOtherContent && streamInfo.host) {
+        if (!embedInfo.embeddingOtherContent && streamStatus.host) {
             embedInfo.embeddingOtherContent = true
             embedInfo.platform = 'twitch'
-            embedInfo.name = streamInfo.host['name']
+            embedInfo.name = streamStatus.host['name']
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
         } else if (embedInfo.embeddingOtherContent) {
             embedInfo.embeddingOtherContent = false
@@ -199,7 +199,7 @@ import $ from 'jquery'
             Object.assign(embedInfo, defaultEmbedInfo)
             window.history.pushState(embedInfo, null, `/bigscreen`)
         }
-        updateStreamPill(streamInfo)
+        updateStreamPill(streamStatus)
         updateStreamFrame(embedInfo)
         return false
     }
@@ -208,7 +208,7 @@ import $ from 'jquery'
         return $.ajax({url: '/api/info/stream'})
             .then(data => {
                 const {live, host, preview} = data
-                return Object.assign(streamInfo, {live, host, preview})
+                return Object.assign(streamStatus, {live, host, preview})
             })
             .then(updateStreamPill)
     }
@@ -222,7 +222,7 @@ import $ from 'jquery'
             // else get the state from the history and update embedInfo
             Object.assign(embedInfo, state)
         }
-        updateStreamPill(streamInfo)
+        updateStreamPill(streamStatus)
         updateStreamFrame(embedInfo)
     }
 
