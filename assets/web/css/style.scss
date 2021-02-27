@@ -1829,10 +1829,14 @@ img.tier-4-flair {
     }
 
     #nav-host-pill-icon {
-      margin: 0 0.75em 0 0.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.25em;
+      height: 100%;
+      width: 32px;
       opacity: 0.5;
     }
-
   }
 
   &.embedded #nav-host-pill-button {
