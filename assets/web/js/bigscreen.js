@@ -138,6 +138,10 @@ import $ from 'jquery'
     hostPill.right = hostPill.find('#nav-host-pill-name')
     hostPill.icon = hostPill.find('#nav-host-pill-icon')
 
+    if (streams.length > 1) {
+        hostPill.icon.addClass('clickable')
+    }
+
     const embedUrlForEmbedInfo = embedInfo => {
         switch (embedInfo.platform) {
             case 'twitch':
@@ -242,7 +246,7 @@ import $ from 'jquery'
     }
 
     const cycleThroughStreams = function() {
-        if (!streamStatus.live || embedInfo.embeddingOtherContent) {
+        if (streams.length <= 1 || !streamStatus.live || embedInfo.embeddingOtherContent) {
             return true // Pass the click event up to the host pill.
         }
 

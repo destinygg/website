@@ -75,6 +75,7 @@ use Destiny\Common\Session\Session;
                     <div id="nav-host-pill-button">
                         <span id="nav-host-pill-type"></span>
                         <span id="nav-host-pill-name"></span>
+                        <div class="divider"></div>
                         <div id="nav-host-pill-icon"></div>
                     </div>
                 </li>

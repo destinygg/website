@@ -1816,7 +1816,7 @@ img.tier-4-flair {
     font-size: 0.9em;
 
     #nav-host-pill-name {
-      margin-left: 0.25em;
+      margin: 0 0.75em 0 0.5em;
       text-transform: uppercase;
       max-width: 110px;
       overflow: hidden;
@@ -1826,6 +1826,13 @@ img.tier-4-flair {
     #nav-host-pill-type {
       text-transform: uppercase;
       margin-left: 1em;
+      opacity: 0.5;
+    }
+
+    .divider {
+      height: 60%;
+      width: 1px;
+      background-color: white;
       opacity: 0.5;
     }
 
@@ -1841,6 +1848,14 @@ img.tier-4-flair {
         top: 50%;
         left: 48%;
         transform: translate(-50%, -50%);
+      }
+
+      &.clickable {
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+        }
       }
     }
 
