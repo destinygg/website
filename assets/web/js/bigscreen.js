@@ -135,26 +135,26 @@ import $ from 'jquery'
     navhostpill.right = navhostpill.container.find('#nav-host-pill-name')
     navhostpill.icon = navhostpill.container.find('#nav-host-pill-icon')
 
-    const updateStreamFrame = function(){
-        let src = ''
-        switch(embedInfo.platform) {
+    const embedUrlForEmbedInfo = embedInfo => {
+        switch (embedInfo.platform) {
             case 'twitch':
-                src = 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
-                break;
+                return 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
             case 'twitch-vod':
-                src = 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
-                break;
+                return 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
             case 'twitch-clip':
-                src = 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
-                break;
+                return 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
             case 'youtube':
-                src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
-                break;
+                return 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
             case 'youtube-live':
-                src = 'https://www.youtube.com/embed/live_stream?' + $.param({ channel: embedInfo.name })
-                break;
+                return 'https://www.youtube.com/embed/live_stream?' + $.param({ channel: embedInfo.name })
+            default: // unsupported platform
+                return null
         }
-        if (src !== '' && streamframe.attr('src') !== src) { // avoids a flow issue when in
+    }
+
+    const updateStreamFrame = function(){
+        const src = embedUrlForEmbedInfo(embedInfo)
+        if (src && streamframe.attr('src') !== src) { // avoids a flow issue when in
             const frame = streamframe.clone()
             frame.attr('src', src)
             streamframe.replaceWith(frame)
