@@ -181,7 +181,7 @@ import $ from 'jquery'
         }
     }
 
-    const updateStreamPill = function() {
+    const updateStreamPill = function(animateIcon = false) {
         hostPill.removeClass('hidden embedded')
 
         if (embedInfo.embeddingOtherContent) {
@@ -197,7 +197,26 @@ import $ from 'jquery'
         } else {
             hostPill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
             hostPill.right.text(embedInfo.name)
-            hostPill.icon.html(iconForPlatform(embedInfo.platform))
+
+            const newIcon = iconForPlatform(embedInfo.platform)
+            if (animateIcon) {
+                const $oldIcon = hostPill.icon.find('i')
+
+                const $newIcon = $(newIcon)
+                hostPill.icon.append($newIcon)
+
+                // Trigger animations.
+                $oldIcon.addClass('animate-icon remove')
+                $newIcon.addClass('animate-icon add')
+
+                // Remove unused class/icon after the animation ends.
+                setTimeout(function() {
+                    $newIcon.removeClass('animate-icon add')
+                    $oldIcon.remove()
+                }, 300)
+            } else {
+                hostPill.icon.html(newIcon)
+            }
         }
     }
 
@@ -233,7 +252,7 @@ import $ from 'jquery'
         }
         Object.assign(embedInfo, streams[activeStreamIndex])
 
-        updateStreamPill()
+        updateStreamPill(true)
         updateStreamFrame()
 
         return false
@@ -245,7 +264,7 @@ import $ from 'jquery'
                 const { live, host, preview } = data
                 return Object.assign(streamStatus, { live, host, preview })
             })
-            .then(updateStreamPill)
+            .then(updateStreamPill())
     }
 
     const handleHistoryPopState = function() {

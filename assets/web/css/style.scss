@@ -1788,6 +1788,7 @@ img.tier-4-flair {
 #nav-host-pill {
   display: none;
   cursor: default;
+  height: 42px;
 
   &.embedded,
   &.hosting {
@@ -1829,14 +1830,20 @@ img.tier-4-flair {
     }
 
     #nav-host-pill-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 0.25em;
+      position: relative;
       height: 100%;
-      width: 32px;
+      width: 35px;
       opacity: 0.5;
+      overflow: hidden;
+
+      & i {
+        position: absolute;
+        top: 50%;
+        left: 48%;
+        transform: translate(-50%, -50%);
+      }
     }
+
   }
 
   &.embedded #nav-host-pill-button {
@@ -1844,6 +1851,47 @@ img.tier-4-flair {
     border: 1px solid #212121;
     background-color: #aa1c1c;
     color: $color-light;
+  }
+}
+
+.animate-icon {
+  &.remove {
+    animation: slide-up-off-screen 300ms;
+  }
+
+  &.add {
+    animation: slide-up-on-screen 300ms;
+  }
+
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+@keyframes slide-up-off-screen {
+  0% {
+    top: 50%;
+    opacity: 1;
+  }
+  40% {
+    opacity: 0;
+  }
+  100% {
+    top: -50%;
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up-on-screen {
+  0% {
+    top: 150%;
+    opacity: 0;
+  }
+  40% {
+    opacity: 0;
+  }
+  100% {
+    top: 50%;
+    opacity: 1;
   }
 }
 
