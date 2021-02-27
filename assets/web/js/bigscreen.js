@@ -128,7 +128,6 @@ import $ from 'jquery'
     const streamStatus = {live: false, host: null, preview: null},
         embedInfo = Object.assign({ embeddingOtherContent: false }, defaultEmbedInfo),
         navhostpill = {container: $body.find('#nav-host-pill')},
-        iconTwitch = '<i class="fab fa-fw fa-twitch"></i>',
         iconClose = '<i class="fas fa-fw fa-times-circle"></i>'
     navhostpill.left = navhostpill.container.find('#nav-host-pill-type')
     navhostpill.right = navhostpill.container.find('#nav-host-pill-name')
@@ -151,6 +150,20 @@ import $ from 'jquery'
         }
     }
 
+    const iconForPlatform = platform => {
+        switch (platform) {
+            case 'twitch':
+            case 'twitch-vod':
+            case 'twitch-clip':
+                return '<i class="fab fa-fw fa-twitch"></i>'
+            case 'youtube':
+            case 'youtube-live':
+                return '<i class="fab fa-fw fa-youtube"></i>'
+            default: // unsupported platform
+                return null
+        }
+    }
+
     const updateStreamFrame = function(){
         const src = embedUrlForEmbedInfo(embedInfo)
         if (src && streamframe.attr('src') !== src) { // avoids a flow issue when in
@@ -167,11 +180,11 @@ import $ from 'jquery'
             if (streamStatus.host && !streamStatus.live) {
                 navhostpill.left.text('HOSTING')
                 navhostpill.right.text(streamStatus.host.name)
-                navhostpill.icon.html(iconTwitch)
+                navhostpill.icon.html(iconForPlatform('twitch'))
             } else {
                 navhostpill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
-                navhostpill.right.text('Destiny')
-                navhostpill.icon.html(iconTwitch)
+                navhostpill.right.text(defaultEmbedInfo.name)
+                navhostpill.icon.html(iconForPlatform(defaultEmbedInfo.platform))
             }
         } else {
             navhostpill.container.addClass('embedded');
