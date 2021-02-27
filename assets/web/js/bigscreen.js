@@ -118,11 +118,11 @@ import $ from 'jquery'
     let streamframe = $body.find('#stream-panel iframe')
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube|youtube-live)\/([A-z0-9_\-]{3,64})$/
 
-    const streamWrap = $body.find('#stream-wrap')
+    const streamDetails = $body.find('.stream-details')
     const defaultEmbedInfo = {
-        platform: streamWrap.data('platform'),
-        name: streamWrap.data('name'),
-        parents: streamWrap.data('twitch-parents')
+        platform: streamDetails.data('platform'),
+        name: streamDetails.data('name'),
+        parents: streamDetails.data('twitch-parents')
     }
 
     const streamStatus = {live: false, host: null, preview: null},
