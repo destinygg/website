@@ -127,7 +127,6 @@ import $ from 'jquery'
 
     const streamStatus = {live: false, host: null, preview: null},
         embedInfo = Object.assign({ embeddingOtherContent: false }, defaultEmbedInfo),
-        navpillclasses = ['embedded','hidden','hosting','online','offline'],
         navhostpill = {container: $body.find('#nav-host-pill')},
         iconTwitch = '<i class="fab fa-fw fa-twitch"></i>',
         iconClose = '<i class="fas fa-fw fa-times-circle"></i>'
@@ -163,10 +162,9 @@ import $ from 'jquery'
     }
 
     const updateStreamPill = function(){
-        navhostpill.container.removeClass(navpillclasses.join(' '))
+        navhostpill.container.removeClass('embedded hidden')
         if (!embedInfo.embeddingOtherContent) {
             if (streamStatus.host && !streamStatus.live) {
-                navhostpill.container.addClass('hosting');
                 navhostpill.left.text('HOSTING')
                 navhostpill.right.text(streamStatus.host.name)
                 navhostpill.icon.html(iconTwitch)
@@ -181,9 +179,6 @@ import $ from 'jquery'
             navhostpill.right.text(embedInfo.name)
             navhostpill.icon.html(iconClose)
         }
-        navhostpill.container
-            .toggleClass('online', streamStatus.live)
-            .toggleClass('offline', !!streamStatus.live)
     }
 
     const toggleEmbedHost = function() {
