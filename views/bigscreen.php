@@ -17,6 +17,7 @@ use Destiny\Common\Config;
 
     <div id="bigscreen-layout">
         <div id="stream-panel">
+            <div class="stream-display-name" data-display-name="<?= Config::$a['embed']['displayName'] ?>"></div>
             <?php foreach (Config::$a['embed']['stream'] as $streamDetails): ?>
                 <?php $twitchParents = !empty($streamDetails['twitchParents']) ? Tpl::arrayOut($streamDetails['twitchParents']) : ''; ?>
                 <div class="stream-details" data-platform="<?= $streamDetails['platform'] ?>" data-name="<?= $streamDetails['name'] ?>" data-twitch-parents="<?= $twitchParents ?>"></div>

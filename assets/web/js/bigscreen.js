@@ -128,6 +128,8 @@ import $ from 'jquery'
         })
     })
 
+    const displayName = $body.find('.stream-display-name').data('display-name')
+
     const streamStatus = { live: false, host: null, preview: null }
     const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
 
@@ -202,7 +204,7 @@ import $ from 'jquery'
             hostPill.icon.html(iconForPlatform('twitch'))
         } else {
             hostPill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
-            hostPill.right.text(embedInfo.name)
+            hostPill.right.text(displayName)
 
             const newIcon = iconForPlatform(embedInfo.platform)
             if (animateIcon) {

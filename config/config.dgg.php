@@ -16,6 +16,7 @@ return [
     'chatWebSocketUrl' => 'wss://chat.destiny.gg/ws',
 
     'embed' => [
+        'displayName' => 'destiny',
         'stream' => [
             ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg','stage.destiny.gg']],
             ['platform' => 'youtube-live', 'name' => 'UC554eY5jNUfDq3yDOJYirOQ']
