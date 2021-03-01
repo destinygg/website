@@ -113,157 +113,214 @@ import $ from 'jquery'
     Bigscreen.applyOrientation()
     Bigscreen.applySize()
 
-    // Embedding, hosting and "navhostpill"
-    const initUrl = document.location.href // important this is stored before any work is done that may change this value
-    let streamframe = $body.find('#stream-panel iframe')
-    const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube)\/([A-z0-9_\-]{3,64})$/
+    // Embedding, hosting, and the host pill.
+    const initUrl = document.location.href // Important this is stored before any work is done that may change this value.
+    const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube|youtube-live)\/([A-z0-9_\-]{3,64})$/
 
-    const streamWrap = $body.find('#stream-wrap')
-    const embedInfo = {
-        embed: false,
-        platform: streamWrap.data('platform'),
-        title: 'Bigscreen',
-        name: streamWrap.data('name'),
-        id: null,
-        url: '/bigscreen',
-        parents: streamWrap.data('twitch-parents')
+    let activeStreamIndex = 0
+    const streams = []
+    $body.find('.stream-details').each(function() {
+        const $this = $(this)
+        streams.push({
+            platform: $this.data('platform'),
+            name: $this.data('name'),
+            parents: $this.data('twitch-parents')
+        })
+    })
+
+    const displayName = $body.find('.stream-display-name').data('display-name')
+
+    const streamStatus = { live: false, host: null, preview: null }
+    const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
+
+    let streamFrame = $body.find('#stream-panel iframe')
+    const closeIcon = '<i class="fas fa-fw fa-times-circle"></i>'
+    const hostPill = $body.find('#nav-host-pill')
+    hostPill.left = hostPill.find('#nav-host-pill-type')
+    hostPill.right = hostPill.find('#nav-host-pill-name')
+    hostPill.icon = hostPill.find('#nav-host-pill-icon')
+
+    if (streams.length > 1) {
+        hostPill.icon.addClass('clickable')
     }
 
-    const streamInfo = {live: false, host: null, preview: null},
-        defaultEmbedInfo = Object.assign({}, embedInfo),
-        navpillclasses = ['embedded','hidden','hosting','online','offline'],
-        navhostpill = {container: $body.find('#nav-host-pill')},
-        iconTwitch = '<i class="fab fa-fw fa-twitch"></i>',
-        iconClose = '<i class="fas fa-fw fa-times-circle"></i>'
-    navhostpill.left = navhostpill.container.find('#nav-host-pill-type')
-    navhostpill.right = navhostpill.container.find('#nav-host-pill-name')
-    navhostpill.icon = navhostpill.container.find('#nav-host-pill-icon')
-
-    const updateStreamFrame = function(){
-        let src = ''
-        switch(embedInfo.platform) {
+    const embedUrlForEmbedInfo = embedInfo => {
+        switch (embedInfo.platform) {
             case 'twitch':
-                src = 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
-                break;
+                return 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
             case 'twitch-vod':
-                src = 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
-                break;
+                return 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
             case 'twitch-clip':
-                src = 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
-                break;
+                return 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
             case 'youtube':
-                src = 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
-                break;
-        }
-        if (src !== '' && streamframe.attr('src') !== src) { // avoids a flow issue when in
-            const frame = streamframe.clone()
-            frame.attr('src', src)
-            streamframe.replaceWith(frame)
-            streamframe = frame
+                return 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
+            case 'youtube-live':
+                return 'https://www.youtube.com/embed/live_stream?' + $.param({ channel: embedInfo.name })
+            default: // Unsupported platform.
+                return null
         }
     }
 
-    const updateStreamPill = function(){
-        navhostpill.container.removeClass(navpillclasses.join(' '))
-        if (!embedInfo.embed) {
-            if (streamInfo.host && !streamInfo.live) {
-                navhostpill.container.addClass('hosting');
-                navhostpill.left.text('HOSTING')
-                navhostpill.right.text(streamInfo.host.name)
-                navhostpill.icon.html(iconTwitch)
-            } else {
-                navhostpill.left.text(streamInfo.live ? 'LIVE' : 'OFFLINE')
-                navhostpill.right.text('Destiny')
-                navhostpill.icon.html(iconTwitch)
-            }
-        } else {
-            navhostpill.container.addClass('embedded');
-            navhostpill.left.text('EMBED')
-            navhostpill.right.text(embedInfo.title)
-            navhostpill.icon.html(iconClose)
+    const iconForPlatform = platform => {
+        switch (platform) {
+            case 'twitch':
+            case 'twitch-vod':
+            case 'twitch-clip':
+                return '<i class="fab fa-fw fa-twitch"></i>'
+            case 'youtube':
+            case 'youtube-live':
+                return '<i class="fab fa-fw fa-youtube"></i>'
+            default: // Unsupported platform.
+                return null
         }
-        navhostpill.container
-            .toggleClass('online', streamInfo.live)
-            .toggleClass('offline', !!streamInfo.live)
+    }
+
+    const updateStreamFrame = function() {
+        const src = embedUrlForEmbedInfo(embedInfo)
+
+        if (src && streamFrame.attr('src') !== src) {
+            // Replace existing iframe with a new one to avoid unwanted history entries.
+            const frame = streamFrame.clone()
+            frame.attr('src', src)
+            streamFrame.replaceWith(frame)
+            streamFrame = frame
+        }
+    }
+
+    const updateStreamPill = function(animateIcon = false) {
+        hostPill.removeClass('hidden hosting embedded')
+
+        if (embedInfo.embeddingOtherContent) {
+            hostPill.addClass('embedded');
+
+            hostPill.left.text('EMBED')
+            hostPill.right.text(embedInfo.name)
+            hostPill.icon.html(closeIcon)
+        } else if (streamStatus.host) {
+            hostPill.addClass('hosting');
+
+            hostPill.left.text('HOSTING')
+            hostPill.right.text(streamStatus.host.name)
+            hostPill.icon.html(iconForPlatform('twitch'))
+        } else {
+            hostPill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
+            hostPill.right.text(displayName)
+
+            const newIcon = iconForPlatform(embedInfo.platform)
+            if (animateIcon) {
+                const $oldIcon = hostPill.icon.find('i')
+
+                const $newIcon = $(newIcon)
+                hostPill.icon.append($newIcon)
+
+                // Trigger animations.
+                $oldIcon.addClass('animate-icon remove')
+                $newIcon.addClass('animate-icon add')
+
+                // Remove unused class/icon after the animation ends.
+                setTimeout(function() {
+                    $newIcon.removeClass('animate-icon add')
+                    $oldIcon.remove()
+                }, 300)
+            } else {
+                hostPill.icon.html(newIcon)
+            }
+        }
     }
 
     const toggleEmbedHost = function() {
-        if (!embedInfo.embed && streamInfo.host) {
-            embedInfo.embed = true
-            embedInfo.platform = 'twitch'
-            embedInfo.title = streamInfo.host['display_name']
-            embedInfo.name = streamInfo.host['name']
-            embedInfo.id = streamInfo.host['id']
+        if (!embedInfo.embeddingOtherContent && streamStatus.host) {
+            embedInfo.embeddingOtherContent = true
+            embedInfo.platform = 'twitch' // Only twitch streams can be hosted.
+            embedInfo.name = streamStatus.host.name
+
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
-        } else if (embedInfo.embed) {
-            embedInfo.embed = false
-            embedInfo.platform = defaultEmbedInfo.platform
-            embedInfo.title = defaultEmbedInfo.title
-            embedInfo.name = defaultEmbedInfo.name
-            embedInfo.id = defaultEmbedInfo.id
-            Object.assign(embedInfo, defaultEmbedInfo)
+        } else if (embedInfo.embeddingOtherContent) {
+            embedInfo.embeddingOtherContent = false
+            embedInfo.platform = streams[activeStreamIndex].platform
+            embedInfo.name = streams[activeStreamIndex].name
+
             window.history.pushState(embedInfo, null, `/bigscreen`)
         }
-        updateStreamPill(streamInfo)
-        updateStreamFrame(embedInfo)
+
+        updateStreamFrame()
+        updateStreamPill()
+
         return false
     }
 
-    const fetchStreamInfo = function(){
-        return $.ajax({url: '/api/info/stream'})
-            .then(data => {
-                const {live, host, preview} = data
-                return Object.assign(streamInfo, {live, host, preview})
-            })
-            .then(updateStreamPill)
+    const cycleThroughStreams = function() {
+        if (streams.length <= 1 || !streamStatus.live || embedInfo.embeddingOtherContent) {
+            return true // Pass the click event up to the host pill.
+        }
+
+        activeStreamIndex++
+        if (activeStreamIndex >= streams.length) {
+            activeStreamIndex = 0
+        }
+        Object.assign(embedInfo, streams[activeStreamIndex])
+
+        updateStreamPill(true)
+        updateStreamFrame()
+
+        return false
     }
 
-    const handleHistoryPopState = function(){
+    const fetchStreamInfo = function() {
+        return $.ajax({ url: '/api/info/stream' })
+            .then(data => {
+                const { live, host, preview } = data
+                return Object.assign(streamStatus, { live, host, preview })
+            })
+            .then(() => updateStreamPill())
+    }
+
+    const handleHistoryPopState = function() {
         const state = window.history.state
-        if (state == null) {
-            // state is null when someone changes the hash, or back, forward browser actions are performed
-            updateEmbedInfoWithBrowserLocationHash()
-        } else {
-            // else get the state from the history and update embedInfo
+        if (state) { // Only exists when toggling the hosted stream embed.
             Object.assign(embedInfo, state)
+        } else {
+            updateEmbedInfoWithBrowserLocationHash()
         }
-        updateStreamPill(streamInfo)
-        updateStreamFrame(embedInfo)
+
+        updateStreamPill()
+        updateStreamFrame()
     }
 
     const parseEmbedHash = function(str) {
         const hash = str || window.location.hash || ''
         if (hash.length > 0 && hashregex.test(hash)) {
             const res = hash.match(hashregex),
-                id = null,
                 platform = res[1],
                 name = res[2]
-            return {platform, name, id}
+            return { platform, name }
         }
+
         return null
     }
 
     const updateEmbedInfoWithBrowserLocationHash = function() {
         const parts = parseEmbedHash(window.location.hash)
         if (parts) {
-            embedInfo.embed = true
+            embedInfo.embeddingOtherContent = true
             embedInfo.platform = parts.platform
-            embedInfo.title = parts.name
             embedInfo.name = parts.name
-            embedInfo.id = parts.id
         }
     }
 
     updateEmbedInfoWithBrowserLocationHash()
     updateStreamFrame()
 
-    // Makes it so the browser navigation,
+    hostPill.on('click touch', toggleEmbedHost)
+    hostPill.icon.on('click touch', cycleThroughStreams)
+
+    // Makes it so the browser navigation...
     window.history.replaceState(embedInfo, null, initUrl)
-    // When someone clicks the nav UI element
-    navhostpill.container.on('click touch', toggleEmbedHost)
-    // When the browser navigation is changed, also happens when you change the hash in the browser
+
+    // When the user goes back or forward or changes the hash in the URL bar.
     window.addEventListener('popstate', handleHistoryPopState)
-    // The stream status info, pinged every x seconds and on initial start up
+
+    // Fetch stream status on load and every 90 seconds thereafter.
     fetchStreamInfo().always(() => window.setInterval(fetchStreamInfo, 90000))
 
 })();

@@ -9,12 +9,19 @@ return [
     'support_email' => 'contact@destiny.gg',
     'calendar'      => 'i54j4cu9pl4270asok3mqgdrhk@group.calendar.google.com',
     'commerce'      => ['receiver_email' => 'steven.bonnell.ii@gmail.com'],
-    'embed'         => ['stream' => ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg','stage.destiny.gg']]],
     'reddit'        => ['threads' => 'https://www.reddit.com/r/destiny/hot.json'],
     'blog'          => ['feed' => 'https://blog.destiny.gg/feed/json'],
     'android'       => ['app' => 'gg.destiny.app.chat'],
     'banAppealUrl'  => 'https://www.destiny.gg/unban',
     'chatWebSocketUrl' => 'wss://chat.destiny.gg/ws',
+
+    'embed' => [
+        'displayName' => 'destiny',
+        'stream' => [
+            ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg','stage.destiny.gg']],
+            ['platform' => 'youtube-live', 'name' => 'UC554eY5jNUfDq3yDOJYirOQ']
+        ]
+    ],
 
     'twitch' => [
         'id' => 18074328,
