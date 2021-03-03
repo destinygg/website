@@ -209,19 +209,17 @@ import $ from 'jquery'
             const newIcon = iconForPlatform(embedInfo.platform)
             if (animateIcon) {
                 const $oldIcon = hostPill.icon.find('i')
+                $oldIcon.removeClass('animate-icon add')
+                $oldIcon.addClass('animate-icon remove')
 
                 const $newIcon = $(newIcon)
+                $newIcon.addClass('animate-icon add')
                 hostPill.icon.append($newIcon)
 
-                // Trigger animations.
-                $oldIcon.addClass('animate-icon remove')
-                $newIcon.addClass('animate-icon add')
-
-                // Remove unused class/icon after the animation ends.
-                setTimeout(function() {
-                    $newIcon.removeClass('animate-icon add')
-                    $oldIcon.remove()
-                }, 300)
+                // Remove old icon after the animation ends.
+                $oldIcon.on('animationend webkitanimationend', function() {
+                    $(this).remove()
+                })
             } else {
                 hostPill.icon.html(newIcon)
             }
