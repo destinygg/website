@@ -114,21 +114,40 @@ import $ from 'jquery'
     Bigscreen.applySize()
 
     // Embedding, hosting, and the host pill.
+    const defaultStreamIndex = {
+        ls: window.localStorage,
+        key: 'defaultStreamIndex',
+        get: function() {
+            const value = parseInt(this.ls.getItem(this.key))
+            if (isNaN(value)) {
+                this.ls.setItem(this.key, 0)
+                return 0
+            } else {
+                return value
+            }
+        },
+        set: function(value) {
+            this.ls.setItem(this.key, value)
+        }
+    }
+
     const initUrl = document.location.href // Important this is stored before any work is done that may change this value.
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube|youtube-live)\/([A-z0-9_\-]{3,64})$/
 
-    let activeStreamIndex = 0
     const streams = []
     $body.find('.stream-details').each(function() {
         const $this = $(this)
         streams.push({
             platform: $this.data('platform'),
-            name: $this.data('name'),
-            parents: $this.data('twitch-parents')
+            name: $this.data('name')
         })
     })
+    const index = defaultStreamIndex.get()
+    let activeStreamIndex = index < streams.length ? index : 0
 
-    const displayName = $body.find('.stream-display-name').data('display-name')
+    const streamsMetadata = $body.find('.streams-metadata')
+    const displayName = streamsMetadata.data('display-name')
+    const twitchParents = streamsMetadata.data('twitch-parents')
 
     const streamStatus = { live: false, host: null, preview: null }
     const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
@@ -147,11 +166,11 @@ import $ from 'jquery'
     const embedUrlForEmbedInfo = embedInfo => {
         switch (embedInfo.platform) {
             case 'twitch':
-                return 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
+                return 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: twitchParents }, true)
             case 'twitch-vod':
-                return 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
+                return 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: twitchParents }, true)
             case 'twitch-clip':
-                return 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
+                return 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: twitchParents }, true)
             case 'youtube':
                 return 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
             case 'youtube-live':
@@ -209,19 +228,17 @@ import $ from 'jquery'
             const newIcon = iconForPlatform(embedInfo.platform)
             if (animateIcon) {
                 const $oldIcon = hostPill.icon.find('i')
+                $oldIcon.removeClass('animate-icon add')
+                $oldIcon.addClass('animate-icon remove')
 
                 const $newIcon = $(newIcon)
+                $newIcon.addClass('animate-icon add')
                 hostPill.icon.append($newIcon)
 
-                // Trigger animations.
-                $oldIcon.addClass('animate-icon remove')
-                $newIcon.addClass('animate-icon add')
-
-                // Remove unused class/icon after the animation ends.
-                setTimeout(function() {
-                    $newIcon.removeClass('animate-icon add')
-                    $oldIcon.remove()
-                }, 300)
+                // Remove old icon after the animation ends.
+                $oldIcon.on('animationend webkitanimationend', function() {
+                    $(this).remove()
+                })
             } else {
                 hostPill.icon.html(newIcon)
             }
@@ -259,6 +276,7 @@ import $ from 'jquery'
             activeStreamIndex = 0
         }
         Object.assign(embedInfo, streams[activeStreamIndex])
+        defaultStreamIndex.set(activeStreamIndex)
 
         updateStreamPill(true)
         updateStreamFrame()

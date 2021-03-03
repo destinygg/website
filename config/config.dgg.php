@@ -17,8 +17,9 @@ return [
 
     'embed' => [
         'displayName' => 'destiny',
+        'twitchParents' => ['www.destiny.gg', 'stage.destiny.gg'],
         'stream' => [
-            ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg','stage.destiny.gg']],
+            ['platform' => 'twitch', 'name' => 'destiny'],
             ['platform' => 'youtube-live', 'name' => 'UC554eY5jNUfDq3yDOJYirOQ']
         ]
     ],
@@ -83,7 +84,8 @@ return [
         '/podcastrss' => 'https://destiny.libsyn.com/rss',
         '/shop' => 'https://dggstore.com',
         '/discord' => 'https://discordapp.com/invite/destiny',
-	'/unban' => 'https://goo.gl/forms/iRwqtqPRvJYln2lf2',
+        '/unban' => 'https://goo.gl/forms/iRwqtqPRvJYln2lf2',
+        '/positions' => 'https://positions.destiny.gg',
     ],
 
     'merch' => [

@@ -1871,11 +1871,11 @@ img.tier-4-flair {
 
 .animate-icon {
   &.remove {
-    animation: slide-up-off-screen 300ms;
+    animation: slide-up-off-screen 300ms forwards;
   }
 
   &.add {
-    animation: slide-up-on-screen 300ms;
+    animation: slide-up-on-screen 300ms forwards;
   }
 
   animation-fill-mode: forwards;
