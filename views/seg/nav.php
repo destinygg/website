@@ -44,7 +44,7 @@ use Destiny\Common\Session\Session;
                     <a class="nav-link" title="Facebook" href="/facebook">Facebook</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" title="Blog" href="/blog">Blog</a>
+                    <a class="nav-link" title="Positions" href="/positions">Positions</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/discord" rel="discord" title="Join discord"><span>Discord</span></a>
@@ -52,7 +52,6 @@ use Destiny\Common\Session\Session;
                 <li class="nav-item">
                     <a class="nav-link" title="Donate" href="/donate">Donate</a>
                 </li>
-
                 <?php if(!Session::hasRole(UserRole::SUBSCRIBER)): ?>
                     <li class="nav-item subscribe">
                         <a class="nav-link" href="/subscribe" rel="subscribe" title="Get your own subscription"><span>Subscribe</span></a>
