@@ -114,10 +114,26 @@ import $ from 'jquery'
     Bigscreen.applySize()
 
     // Embedding, hosting, and the host pill.
+    const defaultStreamIndex = {
+        ls: window.localStorage,
+        key: 'defaultStreamIndex',
+        get: function() {
+            const value = parseInt(this.ls.getItem(this.key))
+            if (isNaN(value)) {
+                this.ls.setItem(this.key, 0)
+                return 0
+            } else {
+                return value
+            }
+        },
+        set: function(value) {
+            this.ls.setItem(this.key, value)
+        }
+    }
+
     const initUrl = document.location.href // Important this is stored before any work is done that may change this value.
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube|youtube-live)\/([A-z0-9_\-]{3,64})$/
 
-    let activeStreamIndex = 0
     const streams = []
     $body.find('.stream-details').each(function() {
         const $this = $(this)
@@ -126,7 +142,8 @@ import $ from 'jquery'
             name: $this.data('name')
         })
     })
-
+    const index = defaultStreamIndex.get()
+    let activeStreamIndex = index < streams.length ? index : 0
 
     const streamsMetadata = $body.find('.streams-metadata')
     const displayName = streamsMetadata.data('display-name')
@@ -259,6 +276,7 @@ import $ from 'jquery'
             activeStreamIndex = 0
         }
         Object.assign(embedInfo, streams[activeStreamIndex])
+        defaultStreamIndex.set(activeStreamIndex)
 
         updateStreamPill(true)
         updateStreamFrame()
