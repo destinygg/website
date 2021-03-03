@@ -17,8 +17,9 @@ return [
 
     'embed' => [
         'displayName' => 'destiny',
+        'twitchParents' => ['www.destiny.gg', 'stage.destiny.gg'],
         'stream' => [
-            ['platform' => 'twitch', 'name' => 'destiny', 'twitchParents' => ['www.destiny.gg','stage.destiny.gg']],
+            ['platform' => 'twitch', 'name' => 'destiny'],
             ['platform' => 'youtube-live', 'name' => 'UC554eY5jNUfDq3yDOJYirOQ']
         ]
     ],

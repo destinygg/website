@@ -123,12 +123,14 @@ import $ from 'jquery'
         const $this = $(this)
         streams.push({
             platform: $this.data('platform'),
-            name: $this.data('name'),
-            parents: $this.data('twitch-parents')
+            name: $this.data('name')
         })
     })
 
-    const displayName = $body.find('.stream-display-name').data('display-name')
+
+    const streamsMetadata = $body.find('.streams-metadata')
+    const displayName = streamsMetadata.data('display-name')
+    const twitchParents = streamsMetadata.data('twitch-parents')
 
     const streamStatus = { live: false, host: null, preview: null }
     const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
@@ -147,11 +149,11 @@ import $ from 'jquery'
     const embedUrlForEmbedInfo = embedInfo => {
         switch (embedInfo.platform) {
             case 'twitch':
-                return 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: embedInfo.parents }, true)
+                return 'https://player.twitch.tv/?' + $.param({ channel: embedInfo.name, parent: twitchParents }, true)
             case 'twitch-vod':
-                return 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: embedInfo.parents }, true)
+                return 'https://player.twitch.tv/?' + $.param({ video: embedInfo.name, parent: twitchParents }, true)
             case 'twitch-clip':
-                return 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: embedInfo.parents }, true)
+                return 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: twitchParents }, true)
             case 'youtube':
                 return 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
             case 'youtube-live':
