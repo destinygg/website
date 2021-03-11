@@ -267,7 +267,7 @@ import $ from 'jquery'
     }
 
     const cycleThroughStreams = function() {
-        if (streams.length <= 1 || !streamStatus.live || embedInfo.embeddingOtherContent) {
+        if (streams.length <= 1 || embedInfo.embeddingOtherContent) {
             return true // Pass the click event up to the host pill.
         }
 
