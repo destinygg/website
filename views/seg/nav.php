@@ -70,12 +70,14 @@ use Destiny\Common\Session\Session;
 
             <ul class="navbar-nav" id="secondary-navbar">
 
-                <li class="nav-item hidden" id="nav-host-pill">
-                    <div id="nav-host-pill-button">
-                        <span id="nav-host-pill-type"></span>
-                        <span id="nav-host-pill-name"></span>
+                <li class="nav-item hidden" id="host-pill">
+                    <div id="host-pill-button">
+                        <div id="host-pill-text">
+                            <span id="host-pill-type"></span>
+                            <span id="host-pill-name"></span>
+                        </div>
                         <div class="divider"></div>
-                        <div id="nav-host-pill-icon"></div>
+                        <div id="host-pill-icon"></div>
                     </div>
                 </li>
 
