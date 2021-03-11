@@ -216,15 +216,16 @@ import $ from 'jquery'
             hostPill.type.text('EMBED')
             hostPill.name.text(embedInfo.name)
             hostPill.icon.html(closeIcon)
-        } else if (streamStatus.host) {
-            hostPill.addClass('hosting');
-
-            hostPill.type.text('HOSTING')
-            hostPill.name.text(streamStatus.host.name)
-            hostPill.icon.html(iconForPlatform('twitch'))
         } else {
-            hostPill.type.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
-            hostPill.name.text(displayName)
+            if (streamStatus.host) {
+                hostPill.addClass('hosting');
+
+                hostPill.type.text('HOSTING')
+                hostPill.name.text(streamStatus.host.name)
+            } else {
+                hostPill.type.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
+                hostPill.name.text(displayName)
+            }
 
             const newIcon = iconForPlatform(embedInfo.platform)
             if (animateIcon) {
