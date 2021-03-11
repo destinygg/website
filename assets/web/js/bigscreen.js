@@ -155,8 +155,8 @@ import $ from 'jquery'
     let streamFrame = $body.find('#stream-panel iframe')
     const closeIcon = '<i class="fas fa-fw fa-times-circle"></i>'
     const hostPill = $body.find('#host-pill')
-    hostPill.left = hostPill.find('#host-pill-type')
-    hostPill.right = hostPill.find('#host-pill-name')
+    hostPill.type = hostPill.find('#host-pill-type')
+    hostPill.name = hostPill.find('#host-pill-name')
     hostPill.icon = hostPill.find('#host-pill-icon')
 
     if (streams.length > 1) {
@@ -212,18 +212,18 @@ import $ from 'jquery'
         if (embedInfo.embeddingOtherContent) {
             hostPill.addClass('embedded');
 
-            hostPill.left.text('EMBED')
-            hostPill.right.text(embedInfo.name)
+            hostPill.type.text('EMBED')
+            hostPill.name.text(embedInfo.name)
             hostPill.icon.html(closeIcon)
         } else if (streamStatus.host) {
             hostPill.addClass('hosting');
 
-            hostPill.left.text('HOSTING')
-            hostPill.right.text(streamStatus.host.name)
+            hostPill.type.text('HOSTING')
+            hostPill.name.text(streamStatus.host.name)
             hostPill.icon.html(iconForPlatform('twitch'))
         } else {
-            hostPill.left.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
-            hostPill.right.text(displayName)
+            hostPill.type.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
+            hostPill.name.text(displayName)
 
             const newIcon = iconForPlatform(embedInfo.platform)
             if (animateIcon) {
