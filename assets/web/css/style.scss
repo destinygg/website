@@ -1785,7 +1785,7 @@ img.tier-4-flair {
   align-items: center;
 }
 
-#nav-host-pill {
+#host-pill {
   display: none;
   cursor: default;
   height: 42px;
@@ -1793,16 +1793,16 @@ img.tier-4-flair {
   &.embedded,
   &.hosting {
     cursor: pointer;
-    &:hover #nav-host-pill-icon,
-    &:hover #nav-host-pill-type {
+    &:hover #host-pill-icon,
+    &:hover #host-pill-type {
       opacity: 1;
     }
-    &:hover #nav-host-pill-name {
+    &:hover #host-pill-name {
       color: $color-light;
     }
   }
 
-  #nav-host-pill-button {
+  #host-pill-button {
     margin: 0.3em 1em;
     display: flex;
 
@@ -1815,7 +1815,7 @@ img.tier-4-flair {
     background-color: $color-surface-dark2;
     font-size: 0.9em;
 
-    #nav-host-pill-name {
+    #host-pill-name {
       margin: 0 0.75em 0 0.5em;
       text-transform: uppercase;
       max-width: 110px;
@@ -1823,7 +1823,7 @@ img.tier-4-flair {
       text-overflow: ellipsis;
     }
 
-    #nav-host-pill-type {
+    #host-pill-type {
       text-transform: uppercase;
       margin-left: 1em;
       opacity: 0.5;
@@ -1836,7 +1836,7 @@ img.tier-4-flair {
       opacity: 0.5;
     }
 
-    #nav-host-pill-icon {
+    #host-pill-icon {
       position: relative;
       height: 100%;
       width: 35px;
@@ -1861,7 +1861,7 @@ img.tier-4-flair {
 
   }
 
-  &.embedded #nav-host-pill-button {
+  &.embedded #host-pill-button {
     box-shadow: inset 0 0 3px 1px #00000045;
     border: 1px solid #212121;
     background-color: #aa1c1c;
@@ -1910,7 +1910,7 @@ img.tier-4-flair {
   }
 }
 
-#bigscreen #nav-host-pill {
+#bigscreen #host-pill {
   display: flex;
 }
 
@@ -1925,7 +1925,7 @@ img.tier-4-flair {
   }
 }
 @include media-breakpoint-down(md) {
-  #bigscreen #nav-host-pill {
+  #bigscreen #host-pill {
     display: none;
   }
   #secondary-navbar .nav-label {

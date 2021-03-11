@@ -154,10 +154,10 @@ import $ from 'jquery'
 
     let streamFrame = $body.find('#stream-panel iframe')
     const closeIcon = '<i class="fas fa-fw fa-times-circle"></i>'
-    const hostPill = $body.find('#nav-host-pill')
-    hostPill.left = hostPill.find('#nav-host-pill-type')
-    hostPill.right = hostPill.find('#nav-host-pill-name')
-    hostPill.icon = hostPill.find('#nav-host-pill-icon')
+    const hostPill = $body.find('#host-pill')
+    hostPill.left = hostPill.find('#host-pill-type')
+    hostPill.right = hostPill.find('#host-pill-name')
+    hostPill.icon = hostPill.find('#host-pill-icon')
 
     if (streams.length > 1) {
         hostPill.icon.addClass('clickable')
