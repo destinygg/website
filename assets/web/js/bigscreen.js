@@ -155,6 +155,7 @@ import $ from 'jquery'
     let streamFrame = $body.find('#stream-panel iframe')
     const closeIcon = '<i class="fas fa-fw fa-times-circle"></i>'
     const hostPill = $body.find('#host-pill')
+    hostPill.text = hostPill.find('#host-pill-text')
     hostPill.type = hostPill.find('#host-pill-type')
     hostPill.name = hostPill.find('#host-pill-name')
     hostPill.icon = hostPill.find('#host-pill-icon')
@@ -266,22 +267,20 @@ import $ from 'jquery'
         return false
     }
 
-    const cycleThroughStreams = function() {
-        if (streams.length <= 1 || embedInfo.embeddingOtherContent) {
-            return true // Pass the click event up to the host pill.
+    const handlePlatformIconClick = function() {
+        if (embedInfo.embeddingOtherContent) {
+            toggleEmbedHost()
+        } else {
+            activeStreamIndex++
+            if (activeStreamIndex >= streams.length) {
+                activeStreamIndex = 0
+            }
+            Object.assign(embedInfo, streams[activeStreamIndex])
+            defaultStreamIndex.set(activeStreamIndex)
+
+            updateStreamPill(true)
+            updateStreamFrame()
         }
-
-        activeStreamIndex++
-        if (activeStreamIndex >= streams.length) {
-            activeStreamIndex = 0
-        }
-        Object.assign(embedInfo, streams[activeStreamIndex])
-        defaultStreamIndex.set(activeStreamIndex)
-
-        updateStreamPill(true)
-        updateStreamFrame()
-
-        return false
     }
 
     const fetchStreamInfo = function() {
@@ -329,8 +328,8 @@ import $ from 'jquery'
     updateEmbedInfoWithBrowserLocationHash()
     updateStreamFrame()
 
-    hostPill.on('click touch', toggleEmbedHost)
-    hostPill.icon.on('click touch', cycleThroughStreams)
+    hostPill.text.on('click touch', toggleEmbedHost)
+    hostPill.icon.on('click touch', handlePlatformIconClick)
 
     // Makes it so the browser navigation...
     window.history.replaceState(embedInfo, null, initUrl)

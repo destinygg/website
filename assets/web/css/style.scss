@@ -1792,19 +1792,17 @@ img.tier-4-flair {
 
   &.embedded,
   &.hosting {
-    cursor: pointer;
-    &:hover #host-pill-icon,
-    &:hover #host-pill-type {
-      opacity: 1;
-    }
-    &:hover #host-pill-name {
-      color: $color-light;
+    #host-pill-text {
+      cursor: pointer;
+
+      &:hover #host-pill-name {
+        color: $color-light;
+      }
     }
   }
 
   #host-pill-button {
     margin: 0.3em 1em;
-    display: flex;
 
     transition: background-color 150ms linear;
     border: 1px solid #3b3b3b;
@@ -1814,6 +1812,12 @@ img.tier-4-flair {
     align-items: center;
     background-color: $color-surface-dark2;
     font-size: 0.9em;
+
+    #host-pill-text {
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
 
     #host-pill-name {
       margin: 0 0.75em 0 0.5em;

@@ -72,8 +72,10 @@ use Destiny\Common\Session\Session;
 
                 <li class="nav-item hidden" id="host-pill">
                     <div id="host-pill-button">
-                        <span id="host-pill-type"></span>
-                        <span id="host-pill-name"></span>
+                        <div id="host-pill-text">
+                            <span id="host-pill-type"></span>
+                            <span id="host-pill-name"></span>
+                        </div>
                         <div class="divider"></div>
                         <div id="host-pill-icon"></div>
                     </div>
