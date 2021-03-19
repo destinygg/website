@@ -14,64 +14,57 @@ use InvalidArgumentException;
  */
 class TwitchApiService extends Service {
 
+    const PRIVATE_API_URL = 'https://gql.twitch.tv/gql';
+    const PRIVATE_API_CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
+
     private $apiBase = 'https://api.twitch.tv/kraken';
-    private $tmiBase = 'https://tmi.twitch.tv';
 
     public function getApiCredentials(): array {
         return Config::$a['oauth_providers']['twitch'];
     }
 
-    /**
-     * What channel {you} are hosting
-     * @return array|null
-     */
-    public function getChannelHostWithInfo($id) {
-        $host = $this->getChannelHost($id);
-        if (!empty($host) && isset($host['target_id'])) {
-            $target = $this->getStreamLiveDetails($host['target_id']);
-            if (!empty($target) && isset($target['channel'])) {
-                $channel = $target['channel'];
+    public function getHostedChannelForUser(int $userId): ?array {
+        try {
+            $httpClient = HttpClient::instance();
+            $response = $httpClient->post(self::PRIVATE_API_URL, [
+                'headers' => [
+                    'User-Agent' => Config::userAgent(),
+                    'Client-ID' => self::PRIVATE_API_CLIENT_ID,
+                ],
+                'json' => [
+                    'query' => "query {
+                      user(id: $userId) {
+                        hosting {
+                          id
+                          login
+                          displayName
+                          stream {
+                            previewImageURL(width: 320, height: 180)
+                          }
+                        }
+                      }
+                    }"
+                ],
+                'http_errors' => true,
+            ]);
+
+            $json = json_decode($response->getBody(), true);
+            if (!empty($json) && isset($json['data']) && isset($json['data']['user']) && isset($json['data']['user']['hosting'])) {
+                $hosting = $json['data']['user']['hosting'];
                 return [
-                    'id' => $channel['_id'],
-                    'url' => $channel['url'],
-                    'name' => $channel['name'],
-                    'preview' => $target['preview']['medium'],
-                    'display_name' => $channel['display_name'],
+                    'id' => $hosting['id'],
+                    'name' => $hosting['login'],
+                    'display_name' => $hosting['displayName'],
+                    'preview' => $hosting['stream']['previewImageURL'],
+                    'url' => "https://twitch.tv/{$hosting['login']}",
                 ];
             }
+        } catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            Log::error('Non-200 status code when getting hosted channel. ' . \GuzzleHttp\Psr7\str($e->getResponse()));
+        } catch (Exception $e) {
+            Log::error('Error getting hosted channel. ' . $e->getMessage());
         }
-        return null;
-    }
 
-    /**
-     * What channel {you} are hosting
-     * @param int $id stream id
-     * @return array|mixed
-     */
-    public function getChannelHost($id){
-        $conf = $this->getApiCredentials();
-        $client = HttpClient::instance();
-        $response = $client->get("$this->tmiBase/hosts", [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Accept' => 'application/vnd.twitchtv.v5+json',
-                'Client-ID' => $conf['client_id']
-            ],
-            'query' => [
-                'include_logins' => '1',
-                'host' => $id
-            ]
-        ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
-            try {
-                $json = \GuzzleHttp\json_decode($response->getBody(), true);
-                if (!empty($json) && isset($json['hosts']))
-                    return $json['hosts'][0];
-                return $json;
-            } catch (InvalidArgumentException $e) {
-                Log::error("Failed to parse channel host. " . $e->getMessage());
-            }
-        }
         return null;
     }
 
@@ -203,7 +196,7 @@ class TwitchApiService extends Service {
         } else {
 
             $broadcasts = $this->getPastBroadcasts($channelId, 1);
-            $host = $this->getChannelHostWithInfo($channel['_id']);
+            $host = $this->getHostedChannelForUser($channelId);
             $lastPreview = (!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])) ? $broadcasts['videos'][0]['preview'] : null;
             $data['host'] = $host;
             $data['preview'] = !empty($host) ? $host['preview'] : $lastPreview;
