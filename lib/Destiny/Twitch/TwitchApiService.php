@@ -18,7 +18,6 @@ class TwitchApiService extends Service {
     const PRIVATE_API_CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
 
     private $apiBase = 'https://api.twitch.tv/kraken';
-    private $tmiBase = 'https://tmi.twitch.tv';
 
     public function getApiCredentials(): array {
         return Config::$a['oauth_providers']['twitch'];
@@ -66,60 +65,6 @@ class TwitchApiService extends Service {
             Log::error('Error getting hosted channel. ' . $e->getMessage());
         }
 
-        return null;
-    }
-
-    /**
-     * What channel {you} are hosting
-     * @return array|null
-     */
-    public function getChannelHostWithInfo($id) {
-        $host = $this->getChannelHost($id);
-        if (!empty($host) && isset($host['target_id'])) {
-            $target = $this->getStreamLiveDetails($host['target_id']);
-            if (!empty($target) && isset($target['channel'])) {
-                $channel = $target['channel'];
-                return [
-                    'id' => $channel['_id'],
-                    'url' => $channel['url'],
-                    'name' => $channel['name'],
-                    'preview' => $target['preview']['medium'],
-                    'display_name' => $channel['display_name'],
-                ];
-            }
-        }
-        return null;
-    }
-
-    /**
-     * What channel {you} are hosting
-     * @param int $id stream id
-     * @return array|mixed
-     */
-    public function getChannelHost($id){
-        $conf = $this->getApiCredentials();
-        $client = HttpClient::instance();
-        $response = $client->get("$this->tmiBase/hosts", [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Accept' => 'application/vnd.twitchtv.v5+json',
-                'Client-ID' => $conf['client_id']
-            ],
-            'query' => [
-                'include_logins' => '1',
-                'host' => $id
-            ]
-        ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
-            try {
-                $json = \GuzzleHttp\json_decode($response->getBody(), true);
-                if (!empty($json) && isset($json['hosts']))
-                    return $json['hosts'][0];
-                return $json;
-            } catch (InvalidArgumentException $e) {
-                Log::error("Failed to parse channel host. " . $e->getMessage());
-            }
-        }
         return null;
     }
 
