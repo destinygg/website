@@ -432,7 +432,8 @@ class SubscriptionsService extends Service {
             $stmt = $conn->executeQuery(
                 'SELECT *
                 FROM dfl_users
-                WHERE username IN (?)',
+                WHERE username IN (?)
+                    AND allowGifting = 1',
                 [$usernames],
                 [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]
             );
