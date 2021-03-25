@@ -137,6 +137,8 @@ class ImageService extends Service {
             $name = uniqid() . ".$ext"; // TODO collision
             $info = getimagesize($upload['tmp_name']);
 
+            if (!file_exists($destination))
+                mkdir($destination);
             if (!$info)
                 throw new RuntimeException('Failed to extract dimensions.');
             if (is_file($destination . $name) && !unlink($destination . $name))
