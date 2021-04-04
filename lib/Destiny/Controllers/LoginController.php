@@ -50,8 +50,7 @@ class LoginController {
             }
         } else {
             if (Session::hasRole(UserRole::USER)) {
-                Session::setErrorBag('You are already signed in');
-                return 'redirect: /profile';
+                return 'redirect: /profile/authentication';
             }
             $app = [];
         }
