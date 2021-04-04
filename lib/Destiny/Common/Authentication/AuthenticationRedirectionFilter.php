@@ -60,10 +60,12 @@ class AuthenticationRedirectionFilter {
             if (!Session::hasRole(UserRole::USER)) {
                 throw new Exception ('Authentication required for account merge');
             }
-            $userId = Session::getCredentials()->getUserId();
-            $userAuthService->saveUserAuthWithOAuth($authResponse, $userId);
-            Session::setSuccessBag('Profile connected!');
-            return 'redirect: /profile/authentication';
+            if ($authService->validateAuthAccountDetails($authResponse)) {
+                $userId = Session::getCredentials()->getUserId();
+                $userAuthService->saveUserAuthWithOAuth($authResponse, $userId);
+                Session::setSuccessBag('Profile connected!');
+                return 'redirect: /profile/authentication';
+            }
         }
 
         /**
@@ -85,6 +87,9 @@ class AuthenticationRedirectionFilter {
             if (!empty($email)) {
                 $authService->validateEmail($email);
             }
+
+            $authService->validateAuthAccountDetails($authResponse);
+
             if (empty($username)) {
                 $username = $this->buildTempUsername();
             } else {

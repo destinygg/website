@@ -2,10 +2,12 @@
 namespace Destiny\Common\Authentication;
 
 use DateInterval;
+use DateTime;
 use Destiny\Chat\ChatRedisService;
 use Destiny\Chat\EmoteService;
 use Destiny\Commerce\SubscriptionsService;
 use Destiny\Common\Application;
+use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
@@ -20,6 +22,7 @@ use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
 use Destiny\Google\YouTubeAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
+use Destiny\Reddit\RedditService;
 use Destiny\StreamElements\StreamElementsAuthHandler;
 use Destiny\StreamLabs\StreamLabsAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
@@ -386,6 +389,39 @@ class AuthenticationService extends Service {
             }
         } catch (Exception $e) {
             Log::error("Error flagging user for update. {$e->getMessage()}");
+        }
+    }
+
+    /**
+     * Checks if the auth provider account meets all requirements to connect.
+     */
+    public function validateAuthAccountDetails(OAuthResponse $oauthResponse): bool {
+        switch ($oauthResponse->getAuthProvider()) {
+            case AuthProvider::REDDIT:
+                $redditService = RedditService::instance(); 
+                $userIdentity = $redditService->getUserIdentity($oauthResponse->getAccessToken());
+                if (empty($userIdentity)) {
+                    throw new Exception('There was an error validating your account. Please try again later.');
+                }
+
+                $minimumAccountAgeDays = Config::$a['oauth_providers']['reddit']['minimum_account_age_days'];
+                $accountCreationDate = (new DateTime())->setTimestamp($userIdentity['created_utc']);
+                $accountAge = date_diff(new DateTime(), $accountCreationDate);
+                $isOldEnough = $accountAge->days >= $minimumAccountAgeDays;
+
+                $minimumKarma = Config::$a['oauth_providers']['reddit']['minimum_karma'];
+                $hasEnoughKarma = $userIdentity['total_karma'] >= $minimumKarma;
+
+                Log::debug("Reddit account age: {$accountAge->days}");
+                Log::debug("Reddit account total karma: {$userIdentity['total_karma']}");
+
+                if (!$isOldEnough || !$hasEnoughKarma) {
+                    throw new Exception("Your reddit account needs at least $minimumKarma karma and must be at least $minimumAccountAgeDays days old to connect.");
+                }
+
+                return true;
+            default:
+                return true;
         }
     }
 
