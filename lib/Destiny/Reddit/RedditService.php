@@ -22,6 +22,8 @@ use function GuzzleHttp\json_decode;
  */
 class RedditService extends Service {
 
+    const API_BASE_URL = 'https://oauth.reddit.com/api';
+
     /**
      * @return null|array
      */
@@ -66,4 +68,21 @@ class RedditService extends Service {
         return null;
     }
 
+    public function getUserIdentity(string $oauthAccessToken): ?array {
+        try {
+            $client = HttpClient::instance();
+            $response = $client->get(self::API_BASE_URL . '/v1/me', [
+                'headers' => [
+                    'User-Agent' => Config::userAgent(),
+                    'Authorization' => "Bearer $oauthAccessToken",
+                ],
+                'http_errors' => true,
+            ]);
+
+            return json_decode($response->getBody(), true);
+        } catch (Exception $e) {
+            Log::error('Failed to get reddit user identity. ' . $e->getMessage());
+            return null;
+        }
+    }
 }
