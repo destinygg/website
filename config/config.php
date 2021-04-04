@@ -95,7 +95,9 @@ return [
         'reddit' => [
             'client_id' => '',
             'client_secret' => '',
-            'redirect_uri' => 'https://localhost/auth/reddit'
+            'redirect_uri' => 'https://localhost/auth/reddit',
+            'minimum_karma' => 100,
+            'minimum_account_age_days' => 30
         ],
         'discord' => [
             'client_id' => '',
