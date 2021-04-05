@@ -1,6 +1,6 @@
 {
   "name": "dgg-website",
-  "version": "2.27.0",
+  "version": "2.28.0",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
@@ -68,7 +68,7 @@
     "webpack-cli": "^3.3.8"
   },
   "engines": {
-    "node": "~5.0.2",
-    "npm": "~3.3.12"
+    "node": ">=5.0.2",
+    "npm": ">=3.3.12"
   }
 }
