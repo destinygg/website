@@ -143,6 +143,12 @@ use Destiny\Common\Config;
                     </div>
                 </div>
             <?php endforeach; ?>
+
+            <?php if(empty($this->youtubeMembership) && empty($this->user['istwitchsubscriber']) && empty($this->subscriptions)): ?>
+                <div class="content-dark clearfix" style="margin-top: 10px;">
+                    <div class="ds-block">You have no active subscriptions.</div>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 
