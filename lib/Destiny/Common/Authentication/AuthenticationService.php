@@ -229,7 +229,9 @@ class AuthenticationService extends Service {
         }
 
         $sub = $subscriptionService->getUserActiveSubscription($user['userId']);
-        $youtubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($user['userId']);
+        if (Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['sync_memberships']) {
+            $youtubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($user['userId']);
+        }
 
         if (!empty ($sub)) {
             $creds->addRoles(UserRole::SUBSCRIBER);
