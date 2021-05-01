@@ -6,7 +6,7 @@ use Destiny\LibSyn\LibSynFeedService;
 use Destiny\Reddit\RedditService;
 use Destiny\Twitch\TwitchApiService;
 use Destiny\Twitter\TwitterAuthHandler;
-use Destiny\Youtube\YoutubeApiService;
+use Destiny\YouTube\YouTubeApiService;
 
 class TestApi extends PHPUnit\Framework\TestCase {
 
@@ -86,9 +86,9 @@ class TestApi extends PHPUnit\Framework\TestCase {
         self::assertNotEmpty($json);
     }
 
-    public function testYoutubeApi() {
-        $apiService = YoutubeApiService::instance();
-        $json = $apiService->getYoutubePlaylist();
+    public function testYouTubeApi() {
+        $apiService = YouTubeApiService::instance();
+        $json = $apiService->getYouTubePlaylist();
         echo json_encode($json, JSON_PRETTY_PRINT);
         self::assertTrue($json != null);
     }

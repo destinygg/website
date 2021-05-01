@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Youtube;
+namespace Destiny\YouTube;
 
 use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Config;
@@ -10,7 +10,7 @@ use Destiny\Common\Utils\Http;
 use Exception;
 
 /**
- * @method static YoutubeApiService instance()
+ * @method static YouTubeApiService instance()
  */
 class YouTubeApiService extends Service {
     private $apiBase = 'https://www.googleapis.com/youtube/v3';

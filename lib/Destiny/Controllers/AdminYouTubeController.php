@@ -10,8 +10,8 @@ use Destiny\Common\Log;
 use Destiny\Common\Session\Session;
 use Destiny\Common\ViewModel;
 use Destiny\Tasks\YouTubeMembersFullSync;
-use Destiny\Youtube\YouTubeAdminApiService;
-use Destiny\Youtube\YouTubeBroadcasterAuthHandler;
+use Destiny\YouTube\YouTubeAdminApiService;
+use Destiny\YouTube\YouTubeBroadcasterAuthHandler;
 
 /**
  * @Controller

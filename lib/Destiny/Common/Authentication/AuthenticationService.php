@@ -230,7 +230,7 @@ class AuthenticationService extends Service {
 
         $sub = $subscriptionService->getUserActiveSubscription($user['userId']);
         if (Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['sync_memberships']) {
-            $youtubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($user['userId']);
+            $youTubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($user['userId']);
         }
 
         if (!empty ($sub)) {
@@ -257,10 +257,10 @@ class AuthenticationService extends Service {
                 'start' => Date::getDateTime($sub['createdDate'])->format(Date::FORMAT),
                 'end' => Date::getDateTime($sub['endDate'])->format(Date::FORMAT)
             ]);
-        } else if (!empty($youtubeMembership)) {
+        } else if (!empty($youTubeMembership)) {
             $creds->addRoles(UserRole::SUBSCRIBER);
             $creds->addFeatures(UserFeature::SUBSCRIBER);
-            switch($youtubeMembership['name']) {
+            switch($youTubeMembership['name']) {
                 case Config::$a['commerce']['tiers'][0]['tierLabel']:
                     $creds->addFeatures(UserFeature::SUBSCRIBERT1);
                     break;
