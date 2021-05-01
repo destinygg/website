@@ -47,15 +47,12 @@ class YouTubeBroadcasterAuthHandler extends YouTubeAuthHandler {
                 'client_id' => $conf['client_id'],
                 'client_secret' => $conf['client_secret'],
                 'refresh_token' => $refreshToken
-            ]
+            ],
+            'http_errors' => true,
         ]);
 
-        if (!empty($response) && $response->getStatusCode() == Http::STATUS_OK) {
-            $data = json_decode($response->getBody(), true);
-            FilterParams::required($data, 'access_token');
-            return $data;
-        }
-
-        throw new Exception('Failed to refresh access token.');
+        $data = json_decode($response->getBody(), true);
+        FilterParams::required($data, 'access_token');
+        return $data;
     }
 }

@@ -71,12 +71,13 @@ abstract class AbstractAuthService extends Service {
     /**
      * @return string
      */
-    protected function getValidAccessToken(): string {
+    protected function getValidAccessToken(): ?string {
         $auth = $this->getDefaultAuth();
         if (!empty($auth) && !empty($auth['refreshToken'])) {
             if ($this->authHandler->isTokenExpired($auth)) {
-                $data = $this->authHandler->renewToken($auth['refreshToken']);
                 try {
+                    $data = $this->authHandler->renewToken($auth['refreshToken']);
+
                     $userAuthService = UserAuthService::instance();
                     $userAuthService->updateUserAuth($auth['id'], [
                         'accessToken' => $data['access_token'],
@@ -84,10 +85,12 @@ abstract class AbstractAuthService extends Service {
                         'createdDate' => Date::getSqlDateTime(),
                         'modifiedDate' => Date::getSqlDateTime()
                     ]);
+
+                    return (string) $data['access_token'];
                 } catch (Exception $e) {
-                    Log::error("Error saving access token.", $auth);
+                    Log::error("Failed to refresh $this->provider access token. " . $e->getMessage());
+                    return null;
                 }
-                return (string) $data['access_token'];
             }
         }
         return !empty($auth) ? (string) $auth['accessToken'] : '';
