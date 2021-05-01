@@ -6,17 +6,20 @@ use Destiny\Common\Annotation\Controller;
 use Destiny\Common\Annotation\HttpMethod;
 use Destiny\Common\Annotation\Route;
 use Destiny\Common\Annotation\Secure;
+use Destiny\Common\Log;
+use Destiny\Common\Session\Session;
 use Destiny\Common\ViewModel;
-use Destiny\Google\YouTubeAdminService;
-use Destiny\Google\YouTubeAuthHandler;
+use Destiny\Tasks\YouTubeMembersFullSync;
+use Destiny\Youtube\YouTubeAdminApiService;
+use Destiny\Youtube\YouTubeBroadcasterAuthHandler;
 
 /**
  * @Controller
  */
 class AdminYouTubeController extends AdminIntegrationController {
     function afterConstruct() {
-        $this->authHandler = YouTubeAuthHandler::instance();
-        $this->authenticatedService = YouTubeAdminService::instance();
+        $this->authHandler = YouTubeBroadcasterAuthHandler::instance();
+        $this->authenticatedService = YouTubeAdminApiService::instance();
         $this->title = 'YouTube Integration';
         $this->index = '/admin/youtube';
     }
@@ -46,6 +49,16 @@ class AdminYouTubeController extends AdminIntegrationController {
      * @HttpMethod ({"GET"})
      */
     public function exchange(array $params): string {
-        return parent::exchange($params);
+        $redirectUrl = parent::exchange($params);
+        // If the session success bag contains a message, assume auth completed
+        // successfully and immediately run the task that syncs memberships and
+        // membership levels.
+        if (Session::has('modelSuccess')) {
+            try {
+                (new YouTubeMembersFullSync())->execute();
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
+            }
+        }
     }
 }

@@ -80,6 +80,11 @@ return [
         'youtube' => [
             'client_id' => '',
             'client_secret' => '',
+            'redirect_uri' => ''
+        ],
+        'youtubebroadcaster' => [
+            'client_id' => '',
+            'client_secret' => '',
             'redirect_uri' => 'https://localhost/admin/youtube/auth'
         ],
         'twitch' => [
@@ -161,10 +166,9 @@ return [
         ]
     ],
 
-    'youtube' => [
-        'apikey' => '',
-        'playlistId' => '',
-        'user' => '',
+    'youtubebroadcaster' => [
+        'sync_memberships' => false,
+        'channelId' => '',
         'dgg_user' => -1
     ],
 

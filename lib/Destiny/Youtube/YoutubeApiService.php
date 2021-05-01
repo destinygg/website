@@ -1,53 +1,47 @@
 <?php
 namespace Destiny\Youtube;
 
+use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Config;
 use Destiny\Common\HttpClient;
-use Destiny\Common\Log;
 use Destiny\Common\Service;
-use Destiny\Common\Utils\Date;
+use Destiny\Common\User\UserAuthService;
 use Destiny\Common\Utils\Http;
-use InvalidArgumentException;
+use Exception;
 
 /**
  * @method static YoutubeApiService instance()
  */
-class YoutubeApiService extends Service {
+class YouTubeApiService extends Service {
+    private $apiBase = 'https://www.googleapis.com/youtube/v3';
+    private $provider = AuthProvider::YOUTUBE;
 
     /**
-     * @return array|null
+     * @throws Exception
      */
-    public function getYoutubePlaylist(array $params = []) {
-        // Get the channel ID's from a specific person
-        // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=Destiny&key={1}
-        // GET https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={0}&key={1}
-        $params ['limit'] = (isset ($params ['limit'])) ? intval($params ['limit']) : 4;
+    public function getChannelsForUserId(int $userId): array {
+        $oauthDetails = UserAuthService::instance()->getByUserIdAndProvider($userId, $this->provider);
+        if (empty($oauthDetails)) {
+            throw new Exception("Error getting YT channel IDs because no OAuth details exist for user `$userId`.");
+        }
+
         $client = HttpClient::instance();
-        $response = $client->get('https://www.googleapis.com/youtube/v3/search', [
-            'headers' => ['User-Agent' => Config::userAgent()],
+        $response = $client->get("$this->apiBase/channels", [
+            'headers' => [
+                'User-Agent' => Config::userAgent(),
+                'Authorization' => "Bearer {$oauthDetails['accessToken']}"
+            ],
             'query' => [
-                'order' => 'date',
-                'type' => 'video',
-                'part' => 'snippet',
-                'key' => Config::$a ['youtube'] ['apikey'],
-                'channelId' => Config::$a ['youtube'] ['playlistId'],
-                'maxResults' => intval($params ['limit']),
+                'part' => 'id,snippet',
+                'mine' => 'true'
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
-            try {
-                $json = \GuzzleHttp\json_decode($response->getBody(), true);
-                if (is_array($json ['items'])) {
-                    foreach ($json ['items'] as $i => $item) {
-                        $item ['snippet'] ['publishedAt'] = Date::getDateTime($item ['snippet'] ['publishedAt']);
-                    }
-                    return $json;
-                }
-            } catch (InvalidArgumentException $e) {
-                Log::error("Failed to parse youtube playlist. " . $e->getMessage());
-            }
-        }
-        return null;
-    }
 
+        if ($response->getStatusCode() !== Http::STATUS_OK) {
+            throw new Exception("Got a non-200 response when fetching YouTube channels for user `$userId`: `$response->getBody()`.");
+        }
+
+        $json = json_decode($response->getBody(), true);
+        return $json['items'];
+    }
 }

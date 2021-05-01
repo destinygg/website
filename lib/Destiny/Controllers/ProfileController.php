@@ -32,6 +32,9 @@ use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
+use Destiny\Youtube\YouTubeAuthHandler;
+use Destiny\Youtube\YouTubeApiService;
+use Destiny\YouTube\YouTubeMembershipService;
 
 /**
  * @Controller
@@ -57,6 +60,10 @@ class ProfileController {
         $model->gifts = $subscriptionsService->findByGifterIdAndStatus($userId, SubscriptionStatus::ACTIVE);
         $model->discordAuthProfile = $userAuthService->getByUserIdAndProvider($userId, AuthProvider::DISCORD);
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
+
+        $model->youtubeAuthDetails = $userAuthService->getByUserIdAndProvider($userId, AuthProvider::YOUTUBE);
+        $model->youtubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($userId);
+
         $model->title = 'Account';
         return 'profile/account';
     }
@@ -557,6 +564,39 @@ class ProfileController {
         } else {
             Session::setErrorBag('Minecraft name already in use');
         }
+        return 'redirect: /profile';
+    }
+
+    /**
+     * @Route ("/profile/auth/youtube")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     */
+    public function authYouTube(): string {
+        return 'redirect: ' . YouTubeAuthHandler::instance()->getAuthorizationUrl();
+    }
+
+    /**
+     * @Route ("/profile/auth/youtube/cb")
+     * @HttpMethod ({"GET"})
+     * @Secure ({"USER"})
+     */
+    public function authYouTubeCallback(array $params): string {
+        $response = YouTubeAuthHandler::instance()->exchangeCode($params);
+        $userId = Session::getCredentials()->getUserId();
+        UserAuthService::instance()->saveUserAuthWithOAuth($response, $userId);
+
+        try {
+            $channels = YouTubeApiService::instance()->getChannelsForUserId($userId);
+            YouTubeMembershipService::instance()->addChannelsForUserId($channels, $userId);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            Session::setErrorBag('Error syncing YouTube channels. Please try again later.');
+            return 'redirect: /profile';
+        }
+
+        AuthenticationService::instance()->flagUserForUpdate($userId);
+        Session::setSuccessBag('Authorization completed successfully!');
         return 'redirect: /profile';
     }
 

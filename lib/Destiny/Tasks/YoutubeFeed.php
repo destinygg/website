@@ -6,7 +6,7 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Images\ImageDownloadUtil;
-use Destiny\Youtube\YoutubeApiService;
+use Destiny\Youtube\YouTubeAdminApiService;
 
 /**
  * @Schedule(frequency=30,period="minute")
@@ -14,7 +14,7 @@ use Destiny\Youtube\YoutubeApiService;
 class YoutubeFeed implements TaskInterface {
 
     public function execute() {
-        $json = YoutubeApiService::instance()->getYoutubePlaylist();
+        $json = YouTubeAdminApiService::instance()->getRecentYouTubeUploads();
         if (!empty ($json)) {
             foreach ($json ['items'] as $i => $item) {
                 $path = ImageDownloadUtil::download($json ['items'][$i]['snippet']['thumbnails']['high']['url']);

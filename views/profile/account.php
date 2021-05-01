@@ -1,6 +1,7 @@
 <?php
 namespace Destiny;
 use Destiny\Commerce\PaymentStatus;
+use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\Date;
@@ -61,71 +62,95 @@ use Destiny\Common\Config;
         </section>
     <?php endif ?>
 
-    <?php if(!empty($this->subscriptions) || $this->user['istwitchsubscriber'] == 1): ?>
-        <section class="container">
-            <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>
-            <div id="subscription-content" class="content collapse">
+    <section class="container">
+        <h3 class="collapsed" data-toggle="collapse" data-target="#subscription-content">Subscription</h3>
+        <div id="subscription-content" class="content collapse">
 
-                <?php if($this->user['istwitchsubscriber'] == 1): ?>
-                    <div class="content-dark clearfix" style="margin-top: 10px;">
-                        <div class="ds-block">
-                            <div class="subscription" style="width: auto;">
-                                <h3>Twitch</h3>
-                            </div>
-                            <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
+            <?php if (Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['sync_memberships']): ?>
+                <div class="content-dark clearfix" style="margin-top: 10px;">
+                    <div class="ds-block">
+                        <div class="subscription" style="width: auto;">
+                            <h3>YouTube</h3>
                         </div>
+                        <?php if (!empty($this->youtubeAuthDetails)): ?>
+                            <?php if (!empty($this->youtubeMembership)): ?>
+                                <p>You have an active <em><?= Tpl::out($this->youtubeMembership['name']) ?></em> membership for your <em><?= Tpl::out($this->youtubeMembership['channelTitle']) ?></em> YouTube channel!</p>
+                            <?php else: ?>
+                                <p>You don't have an active YouTube membership. Membership status updates every 5 minutes.</p>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <p>Log in with your YouTube account to sync your YouTube membership.</p>
+                            <a href="/profile/auth/youtube" class="btn btn-primary">Log in with YouTube</a>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
+                </div>
+            <?php endif; ?>
 
-                <?php foreach($this->subscriptions as $subscription): ?>
-                    <div class="content-dark clearfix" style="margin-top:10px;">
-                        <div class="ds-block">
-                            <div class="subscription" style="width: auto;">
-                                <h3><?=$subscription['type']['tierLabel']?></h3>
-                                <p>
-                                    <span class="sub-amount">$<?=$subscription['type']['amount']?></span>
-                                    (<?=$subscription['type']['billingFrequency']?> <?=strtolower($subscription['type']['billingPeriod'])?>
-                                    <?php if($subscription['recurring'] == 1): ?><strong>Recurring</strong><?php endif ?>)
-                                </p>
+            <?php if($this->user['istwitchsubscriber'] == 1): ?>
+                <div class="content-dark clearfix" style="margin-top: 10px;">
+                    <div class="ds-block">
+                        <div class="subscription" style="width: auto;">
+                            <h3>Twitch</h3>
+                        </div>
+                        <span>You have an active Twitch subscription</span> <i class="icon-twitch"></i>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php foreach($this->subscriptions as $subscription): ?>
+                <div class="content-dark clearfix" style="margin-top:10px;">
+                    <div class="ds-block">
+                        <div class="subscription" style="width: auto;">
+                            <h3><?=$subscription['type']['tierLabel']?></h3>
+                            <p>
+                                <span class="sub-amount">$<?=$subscription['type']['amount']?></span>
+                                (<?=$subscription['type']['billingFrequency']?> <?=strtolower($subscription['type']['billingPeriod'])?>
+                                <?php if($subscription['recurring'] == 1): ?><strong>Recurring</strong><?php endif ?>)
+                            </p>
+                            <dl>
+                                <dt>Remaining time</dt>
+                                <dd><?=Date::getRemainingTime(Date::getDateTime($subscription['endDate']))?></dd>
+                            </dl>
+                            <?php if(strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE)===0 && $subscription['recurring'] == 1): ?>
+                                <?php
+                                $billingNextDate = Date::getDateTime($subscription['billingNextDate']);
+                                $billingStartDate = Date::getDateTime($subscription['billingStartDate']);
+                                ?>
                                 <dl>
-                                    <dt>Remaining time</dt>
-                                    <dd><?=Date::getRemainingTime(Date::getDateTime($subscription['endDate']))?></dd>
+                                    <dt>Next billing date</dt>
+                                    <?php if($billingNextDate > $billingStartDate): ?>
+                                        <dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
+                                    <?php else: ?>
+                                        <dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
+                                    <?php endif ?>
                                 </dl>
-                                <?php if(strcasecmp($subscription['paymentStatus'], PaymentStatus::ACTIVE)===0 && $subscription['recurring'] == 1): ?>
-                                    <?php
-                                    $billingNextDate = Date::getDateTime($subscription['billingNextDate']);
-                                    $billingStartDate = Date::getDateTime($subscription['billingStartDate']);
-                                    ?>
-                                    <dl>
-                                        <dt>Next billing date</dt>
-                                        <?php if($billingNextDate > $billingStartDate): ?>
-                                            <dd><?=Tpl::moment($billingNextDate, Date::STRING_FORMAT_YEAR)?></dd>
-                                        <?php else: ?>
-                                            <dd><?=Tpl::moment($billingStartDate, Date::STRING_FORMAT_YEAR)?></dd>
-                                        <?php endif ?>
-                                    </dl>
-                                <?php endif ?>
-                                <?php if(strcasecmp($subscription['status'], SubscriptionStatus::PENDING)===0): ?>
-                                    <dl>
-                                        <dt>This subscription is currently</dt>
-                                        <dd><span class="badge badge-warning"><?=Tpl::out(strtoupper($subscription['status']))?></span></dd>
-                                    </dl>
-                                <?php endif ?>
-                                <?php if(!empty($subscription['gifterUsername'])): ?>
-                                    <p>
-                                        <i class="fas fa-gift"></i> This subscription was gifted by <span class="badge badge-success"><?=Tpl::out($subscription['gifterUsername'])?></span>
-                                    </p>
-                                <?php endif ?>
-                                <div style="margin-top:20px;">
-                                    <a class="btn btn-primary" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Update</a>
-                                </div>
+                            <?php endif ?>
+                            <?php if(strcasecmp($subscription['status'], SubscriptionStatus::PENDING)===0): ?>
+                                <dl>
+                                    <dt>This subscription is currently</dt>
+                                    <dd><span class="badge badge-warning"><?=Tpl::out(strtoupper($subscription['status']))?></span></dd>
+                                </dl>
+                            <?php endif ?>
+                            <?php if(!empty($subscription['gifterUsername'])): ?>
+                                <p>
+                                    <i class="fas fa-gift"></i> This subscription was gifted by <span class="badge badge-success"><?=Tpl::out($subscription['gifterUsername'])?></span>
+                                </p>
+                            <?php endif ?>
+                            <div style="margin-top:20px;">
+                                <a class="btn btn-primary" href="/subscription/<?=$subscription['subscriptionId']?>/cancel">Update</a>
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-    <?php endif ?>
+                </div>
+            <?php endforeach; ?>
+
+            <?php if(empty($this->youtubeMembership) && empty($this->user['istwitchsubscriber']) && empty($this->subscriptions)): ?>
+                <div class="content-dark clearfix" style="margin-top: 10px;">
+                    <div class="ds-block">You have no active subscriptions.</div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
 
     <?php if(!empty($this->gifts)): ?>
         <section class="container">

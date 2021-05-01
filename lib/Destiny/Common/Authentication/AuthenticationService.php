@@ -20,7 +20,7 @@ use Destiny\Common\Utils\CryptoOpenSSL;
 use Destiny\Common\Utils\Date;
 use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
-use Destiny\Google\YouTubeAuthHandler;
+use Destiny\Google\YouTubeBroadcasterAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Reddit\RedditService;
 use Destiny\StreamElements\StreamElementsAuthHandler;
@@ -28,6 +28,7 @@ use Destiny\StreamLabs\StreamLabsAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitch\TwitchBroadcastAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
+use Destiny\YouTube\YouTubeMembershipService;
 
 /**
  * @method static AuthenticationService instance()
@@ -227,7 +228,11 @@ class AuthenticationService extends Service {
             $creds->addFeatures(UserFeature::SUBSCRIBER_TWITCH);
         }
 
-        $sub = $subscriptionService->getUserActiveSubscription($user ['userId']);
+        $sub = $subscriptionService->getUserActiveSubscription($user['userId']);
+        if (Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['sync_memberships']) {
+            $youtubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($user['userId']);
+        }
+
         if (!empty ($sub)) {
             $creds->addRoles(UserRole::SUBSCRIBER);
             $creds->addFeatures(UserFeature::SUBSCRIBER);
@@ -252,6 +257,23 @@ class AuthenticationService extends Service {
                 'start' => Date::getDateTime($sub['createdDate'])->format(Date::FORMAT),
                 'end' => Date::getDateTime($sub['endDate'])->format(Date::FORMAT)
             ]);
+        } else if (!empty($youtubeMembership)) {
+            $creds->addRoles(UserRole::SUBSCRIBER);
+            $creds->addFeatures(UserFeature::SUBSCRIBER);
+            switch($youtubeMembership['name']) {
+                case Config::$a['commerce']['tiers'][0]['tierLabel']:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT1);
+                    break;
+                case Config::$a['commerce']['tiers'][1]['tierLabel']:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT2);
+                    break;
+                case Config::$a['commerce']['tiers'][2]['tierLabel']:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT3);
+                    break;
+                case Config::$a['commerce']['tiers'][3]['tierLabel']:
+                    $creds->addFeatures(UserFeature::SUBSCRIBERT4);
+                    break;
+            }
         } else if ($user['istwitchsubscriber']) {
             $creds->addRoles(UserRole::SUBSCRIBER);
             $creds->addFeatures(UserFeature::SUBSCRIBER);
@@ -263,6 +285,7 @@ class AuthenticationService extends Service {
                 'end' => null
             ]);
         }
+
         return $creds;
     }
 
@@ -467,6 +490,9 @@ class AuthenticationService extends Service {
                 break;
             case AuthProvider::YOUTUBE:
                 $authHandler = new YouTubeAuthHandler();
+                break;
+            case AuthProvider::YOUTUBE_BROADCASTER:
+                $authHandler = new YouTubeBroadcasterAuthHandler();
                 break;
             case AuthProvider::REDDIT:
                 $authHandler = new RedditAuthHandler();

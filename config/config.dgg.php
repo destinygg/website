@@ -37,7 +37,8 @@ return [
     'twitchbroadcaster' => [
         'dgg_user' => 10
     ],
-    'youtube' => [
+    'youtubebroadcaster' => [
+        'sync_memberships' => false,
         'dgg_user' => 10
     ],
 

@@ -4,7 +4,7 @@ namespace Destiny\StreamElements;
 use Destiny\Common\Authentication\AbstractAuthService;
 use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\HttpClient;
-use Destiny\StreamLabs\StreamLabsAuthHandler;
+use Destiny\StreamElements\StreamElementsAuthHandler;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -18,7 +18,7 @@ class StreamElementsService extends AbstractAuthService {
 
     function afterConstruct() {
         parent::afterConstruct();
-        $this->authHandler = StreamLabsAuthHandler::instance();
+        $this->authHandler = StreamElementsAuthHandler::instance();
     }
 
     /**
