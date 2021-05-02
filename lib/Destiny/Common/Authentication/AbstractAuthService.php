@@ -87,7 +87,7 @@ abstract class AbstractAuthService extends Service {
                     ]);
 
                     return (string) $data['access_token'];
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     Log::error("Failed to refresh $this->provider access token. " . $e->getMessage());
                     return null;
                 }

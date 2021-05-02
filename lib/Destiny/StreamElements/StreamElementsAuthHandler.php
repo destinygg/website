@@ -52,7 +52,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     function renewToken(string $refreshToken): array {
         $conf = $this->getAuthProviderConf();

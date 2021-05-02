@@ -36,7 +36,7 @@ class YouTubeBroadcasterAuthHandler extends YouTubeAuthHandler {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function renewToken(string $refreshToken): array {
         $conf = $this->getAuthProviderConf();
