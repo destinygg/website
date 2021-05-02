@@ -120,7 +120,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         $json = json_decode($response->getBody(), true);
 
         $videoIds = array_map(function($playlistItem) {
-            return $playlistItem['id'];
+            return $playlistItem['snippet']['resourceId']['videoId'];
         }, $json['items']);
 
         $videos = $this->getVideos($videoIds);
