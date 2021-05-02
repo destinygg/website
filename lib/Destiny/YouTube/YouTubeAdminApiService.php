@@ -112,24 +112,16 @@ class YouTubeAdminApiService extends AbstractAuthService {
         $response = $this->performGet('playlistItems', [
             'part' => 'snippet,status',
             'playlistId' => $uploadsPlaylistId,
-            'maxResults' => 25, // Fetch extra videos to ensure we have enough after non-public videos are filtered out.
+            'maxResults' => 50,
         ]);
 
         Log::debug("Got playlist items: `{$response->getBody()}`.");
+
         $json = json_decode($response->getBody(), true);
-
-        $json['items'] = array_filter($json['items'], function($video) {
-            return $video['status']['privacyStatus'] === 'public';
-        });
-
-        foreach ($json['items'] as $video) {
-            $video['snippet']['publishedAt'] = Date::getDateTime($video['snippet']['publishedAt']);
-        }
-
-        return $json;
+        return $json['items'];
     }
 
-    private function getUploadsPlaylistIdForChannel(string $channelId): string {
+    public function getUploadsPlaylistIdForChannel(string $channelId): string {
         $response = $this->performGet('channels', [
             'part' => 'contentDetails',
             'id' => $channelId
