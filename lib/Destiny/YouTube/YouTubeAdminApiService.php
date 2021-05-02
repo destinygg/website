@@ -118,7 +118,13 @@ class YouTubeAdminApiService extends AbstractAuthService {
         Log::debug("Got playlist items: `{$response->getBody()}`.");
 
         $json = json_decode($response->getBody(), true);
-        return $json['items'];
+
+        $videoIds = array_map(function($playlistItem) {
+            return $playlistItem['id'];
+        }, $json['items']);
+
+        $videos = $this->getVideos($videoIds);
+        return $videos;
     }
 
     public function getUploadsPlaylistIdForChannel(string $channelId): string {
@@ -134,6 +140,20 @@ class YouTubeAdminApiService extends AbstractAuthService {
         }
 
         return $channels[0]['contentDetails']['relatedPlaylists']['uploads'];
+    }
+
+    public function getVideos(array $videoIds): array {
+        if (empty($videoIds)) {
+            return [];
+        }
+
+        $response = $this->performGet('videos', [
+            'part' => 'liveStreamingDetails,snippet,status',
+            'id' => implode(',', $videoIds),
+        ]);
+
+        $json = json_decode($response->getBody(), true);
+        return $json['items'];
     }
 
     private function performGet(string $path, array $query) {
