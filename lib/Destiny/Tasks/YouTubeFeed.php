@@ -14,6 +14,8 @@ use Destiny\YouTube\YouTubeAdminApiService;
 class YouTubeFeed implements TaskInterface {
 
     public function execute() {
+        return null;
+
         $json = YouTubeAdminApiService::instance()->getRecentYouTubeUploads();
         if (!empty ($json)) {
             foreach ($json ['items'] as $i => $item) {
