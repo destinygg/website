@@ -11,9 +11,9 @@ use Destiny\Common\Utils\Date;
                 <h3 class="title clearfix">
                     <span>Videos</span> <a href="/youtube" class="youtube-title">youtube.com</a>
                 </h3>
-                <?php if(isset($this->playlist['items']) && !empty($this->playlist['items'])): ?>
+                <?php if(isset($this->playlist) && !empty($this->playlist)): ?>
                     <ul class="thumbnails">
-                        <?php foreach($this->playlist['items'] as $vid ): ?>
+                        <?php foreach($this->playlist as $vid ): ?>
                             <?php $title = Tpl::out($vid['snippet']['title'])?>
                             <li>
                                 <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
