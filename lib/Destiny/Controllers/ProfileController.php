@@ -32,8 +32,8 @@ use Destiny\Google\GoogleRecaptchaHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
-use Destiny\Youtube\YouTubeAuthHandler;
-use Destiny\Youtube\YouTubeApiService;
+use Destiny\YouTube\YouTubeAuthHandler;
+use Destiny\YouTube\YouTubeApiService;
 use Destiny\YouTube\YouTubeMembershipService;
 
 /**
@@ -61,8 +61,8 @@ class ProfileController {
         $model->discordAuthProfile = $userAuthService->getByUserIdAndProvider($userId, AuthProvider::DISCORD);
         $model->subscriptions = $subscriptionsService->getUserActiveAndPendingSubscriptions($userId);
 
-        $model->youtubeAuthDetails = $userAuthService->getByUserIdAndProvider($userId, AuthProvider::YOUTUBE);
-        $model->youtubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($userId);
+        $model->youTubeAuthDetails = $userAuthService->getByUserIdAndProvider($userId, AuthProvider::YOUTUBE);
+        $model->youTubeMembership = YouTubeMembershipService::instance()->getMembershipDetailsForUserId($userId);
 
         $model->title = 'Account';
         return 'profile/account';

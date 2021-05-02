@@ -52,7 +52,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     function renewToken(string $refreshToken): array {
         $conf = $this->getAuthProviderConf();
@@ -64,14 +64,13 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
                 'client_secret' => $conf['client_secret'],
                 'redirect_uri' => $conf['redirect_uri'],
                 'refresh_token' => $refreshToken
-            ]
+            ],
+            'http_errors' => true,
         ]);
-        if (!empty($response) && $response->getStatusCode() == Http::STATUS_OK) {
-            $data = json_decode((string)$response->getBody(), true);
-            FilterParams::required($data, 'access_token');
-            return $data;
-        }
-        throw new Exception("Failed to refresh access token");
+
+        $data = json_decode((string)$response->getBody(), true);
+        FilterParams::required($data, 'access_token');
+        return $data;
     }
 
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Youtube;
+namespace Destiny\YouTube;
 
 use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Config;
@@ -36,7 +36,7 @@ class YouTubeBroadcasterAuthHandler extends YouTubeAuthHandler {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function renewToken(string $refreshToken): array {
         $conf = $this->getAuthProviderConf();
@@ -47,15 +47,12 @@ class YouTubeBroadcasterAuthHandler extends YouTubeAuthHandler {
                 'client_id' => $conf['client_id'],
                 'client_secret' => $conf['client_secret'],
                 'refresh_token' => $refreshToken
-            ]
+            ],
+            'http_errors' => true,
         ]);
 
-        if (!empty($response) && $response->getStatusCode() == Http::STATUS_OK) {
-            $data = json_decode($response->getBody(), true);
-            FilterParams::required($data, 'access_token');
-            return $data;
-        }
-
-        throw new Exception('Failed to refresh access token.');
+        $data = json_decode($response->getBody(), true);
+        FilterParams::required($data, 'access_token');
+        return $data;
     }
 }

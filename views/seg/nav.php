@@ -32,7 +32,7 @@ use Destiny\Common\Session\Session;
                 <?php endif ?>
 
                 <li class="nav-item">
-                    <a class="nav-link" title="Youtube" href="/youtube">Youtube</a>
+                    <a class="nav-link" title="YouTube" href="/youtube">YouTube</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" title="Instagram" href="/instagram">Instagram</a>

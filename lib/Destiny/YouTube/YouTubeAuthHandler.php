@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Youtube;
+namespace Destiny\YouTube;
 
 use Destiny\Common\Authentication\AuthProvider;
 use Destiny\Common\Authentication\OAuthResponse;

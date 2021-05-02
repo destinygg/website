@@ -6,12 +6,12 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Images\ImageDownloadUtil;
-use Destiny\Youtube\YouTubeAdminApiService;
+use Destiny\YouTube\YouTubeAdminApiService;
 
 /**
  * @Schedule(frequency=30,period="minute")
  */
-class YoutubeFeed implements TaskInterface {
+class YouTubeFeed implements TaskInterface {
 
     public function execute() {
         $json = YouTubeAdminApiService::instance()->getRecentYouTubeUploads();

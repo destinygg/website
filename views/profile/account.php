@@ -72,9 +72,9 @@ use Destiny\Common\Config;
                         <div class="subscription" style="width: auto;">
                             <h3>YouTube</h3>
                         </div>
-                        <?php if (!empty($this->youtubeAuthDetails)): ?>
-                            <?php if (!empty($this->youtubeMembership)): ?>
-                                <p>You have an active <em><?= Tpl::out($this->youtubeMembership['name']) ?></em> membership for your <em><?= Tpl::out($this->youtubeMembership['channelTitle']) ?></em> YouTube channel!</p>
+                        <?php if (!empty($this->youTubeAuthDetails)): ?>
+                            <?php if (!empty($this->youTubeMembership)): ?>
+                                <p>You have an active <em><?= Tpl::out($this->youTubeMembership['name']) ?></em> membership for your <em><?= Tpl::out($this->youTubeMembership['channelTitle']) ?></em> YouTube channel!</p>
                             <?php else: ?>
                                 <p>You don't have an active YouTube membership. Membership status updates every 5 minutes.</p>
                             <?php endif; ?>
@@ -144,7 +144,7 @@ use Destiny\Common\Config;
                 </div>
             <?php endforeach; ?>
 
-            <?php if(empty($this->youtubeMembership) && empty($this->user['istwitchsubscriber']) && empty($this->subscriptions)): ?>
+            <?php if(empty($this->youTubeMembership) && empty($this->user['istwitchsubscriber']) && empty($this->subscriptions)): ?>
                 <div class="content-dark clearfix" style="margin-top: 10px;">
                     <div class="ds-block">You have no active subscriptions.</div>
                 </div>

@@ -1,5 +1,5 @@
 <?php
-namespace Destiny\Youtube;
+namespace Destiny\YouTube;
 
 use Destiny\Common\Application;
 use Destiny\Common\Authentication\AbstractAuthService;
@@ -89,7 +89,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         return $json['items'];
     }
 
-    public function getRecentYouTubeUploads(int $limit = 4): array {
+    public function getRecentYouTubeUploads(): array {
         $channelId = Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['channelId'];
         if (empty($channelId)) {
             return [];
@@ -110,13 +110,18 @@ class YouTubeAdminApiService extends AbstractAuthService {
         Log::debug("Got ID of uploads playlist: `$uploadsPlaylistId`.");
 
         $response = $this->performGet('playlistItems', [
-            'part' => 'snippet',
+            'part' => 'snippet,status',
             'playlistId' => $uploadsPlaylistId,
-            'maxResults' => $limit
+            'maxResults' => 25, // Fetch extra videos to ensure we have enough after non-public videos are filtered out.
         ]);
 
         Log::debug("Got playlist items: `{$response->getBody()}`.");
         $json = json_decode($response->getBody(), true);
+
+        $json['items'] = array_filter($json['items'], function($video) {
+            return $video['status']['privacyStatus'] === 'public';
+        });
+
         foreach ($json['items'] as $video) {
             $video['snippet']['publishedAt'] = Date::getDateTime($video['snippet']['publishedAt']);
         }
