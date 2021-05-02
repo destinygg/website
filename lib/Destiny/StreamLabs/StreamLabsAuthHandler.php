@@ -109,4 +109,10 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
             'verified' => true,
         ]);
     }
+
+    public function isTokenExpired(array $auth): bool {
+        // According to StreamLabs, their access tokens never expire.
+        // https://dev.streamlabs.com/docs/oauth-2 
+        return false;
+    }
 }
