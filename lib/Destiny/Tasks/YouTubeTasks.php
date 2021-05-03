@@ -116,6 +116,6 @@ class YouTubeTasks implements TaskInterface {
     }
 
     private function urlForVideo(array $video): string {
-        return "https://www.youtube.com/watch?v={$video['snippet']['resourceId']['videoId']}";
+        return "https://www.youtube.com/watch?v={$video['id']}";
     }
 }

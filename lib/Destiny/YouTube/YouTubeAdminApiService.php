@@ -110,7 +110,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         Log::debug("Got ID of uploads playlist: `$uploadsPlaylistId`.");
 
         $response = $this->performGet('playlistItems', [
-            'part' => 'snippet,status',
+            'part' => 'snippet',
             'playlistId' => $uploadsPlaylistId,
             'maxResults' => 50,
         ]);
@@ -148,7 +148,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         }
 
         $response = $this->performGet('videos', [
-            'part' => 'liveStreamingDetails,snippet,status',
+            'part' => 'id,liveStreamingDetails,snippet,status',
             'id' => implode(',', $videoIds),
         ]);
 
