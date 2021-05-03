@@ -173,7 +173,7 @@ import $ from 'jquery'
             case 'twitch-clip':
                 return 'https://clips.twitch.tv/embed?' + $.param({ clip: embedInfo.name, parent: twitchParents }, true)
             case 'youtube':
-                return 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name)
+                return 'https://www.youtube.com/embed/' + encodeURIComponent(embedInfo.name) + '?' + $.param({ autoplay: 1, playsinline: 1 }, true)
             case 'youtube-live':
                 return 'https://www.youtube.com/embed/live_stream?' + $.param({ channel: embedInfo.name })
             default: // Unsupported platform.
