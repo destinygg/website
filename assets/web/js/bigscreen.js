@@ -134,20 +134,23 @@ import $ from 'jquery'
     const initUrl = document.location.href // Important this is stored before any work is done that may change this value.
     const hashregex = /^#(twitch|twitch-vod|twitch-clip|youtube|youtube-live)\/([A-z0-9_\-]{3,64})$/
 
-    const streams = []
-    $body.find('.stream-details').each(function() {
-        const $this = $(this)
-        streams.push({
-            platform: $this.data('platform'),
-            name: $this.data('name')
-        })
-    })
-    const index = defaultStreamIndex.get()
-    let activeStreamIndex = index < streams.length ? index : 0
-
     const streamsMetadata = $body.find('.streams-metadata')
     const displayName = streamsMetadata.data('display-name')
     const twitchParents = streamsMetadata.data('twitch-parents')
+    const embedTwitchStream = streamsMetadata.data('embed-twitch-stream')
+    const embedYouTubeStream = streamsMetadata.data('embed-youtube-stream')
+    const twitchChannelName = streamsMetadata.data('twitch-channel-name')
+
+    const streams = []
+    if (embedTwitchStream) {
+        streams.push({ platform: 'twitch', name: twitchChannelName })
+    }
+    if (embedYouTubeStream) {
+        streams.push({ platform: 'youtube', name: null })
+    }
+
+    const index = defaultStreamIndex.get()
+    let activeStreamIndex = index < streams.length ? index : 0
 
     const streamStatus = { live: false, host: null }
     const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
@@ -196,6 +199,15 @@ import $ from 'jquery'
     }
 
     const updateStreamFrame = function() {
+        // No YouTube stream URL, so the stream must be offline.
+        if (embedInfo.platform === 'youtube' && embedInfo.name === null) {
+            const frame = streamFrame.clone()
+            frame.removeAttr('src')
+            streamFrame.replaceWith(frame)
+            streamFrame = frame
+            return
+        }
+
         const src = embedUrlForEmbedInfo(embedInfo)
 
         if (src && streamFrame.attr('src') !== src) {
