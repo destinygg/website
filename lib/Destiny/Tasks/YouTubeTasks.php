@@ -94,10 +94,10 @@ class YouTubeTasks implements TaskInterface {
             return;
         }
 
-        $actualStartTime = $currentBroadcast['snippet']['actualStartTime'] ?? null;
+        $actualStartTime = $currentBroadcast['liveStreamingDetails']['actualStartTime'] ?? null;
         $startTime = !empty($actualStartTime) ? Date::getDateTime($actualStartTime) : null;
 
-        $actualEndTime = $currentBroadcast['snippet']['actualEndTime'] ?? null;
+        $actualEndTime = $currentBroadcast['liveStreamingDetails']['actualEndTime'] ?? null;
         $endTime = !empty($actualEndTime) ? Date::getDateTime($actualEndTime) : null;
 
         $livestreamStatus = [
