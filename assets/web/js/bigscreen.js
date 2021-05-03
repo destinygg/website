@@ -149,7 +149,7 @@ import $ from 'jquery'
     const displayName = streamsMetadata.data('display-name')
     const twitchParents = streamsMetadata.data('twitch-parents')
 
-    const streamStatus = { live: false, host: null, preview: null }
+    const streamStatus = { live: false, host: null }
     const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
 
     let streamFrame = $body.find('#stream-panel iframe')
@@ -287,8 +287,8 @@ import $ from 'jquery'
     const fetchStreamInfo = function() {
         return $.ajax({ url: '/api/info/stream' })
             .then(data => {
-                const { live, host, preview } = data
-                return Object.assign(streamStatus, { live, host, preview })
+                const { live, host } = data
+                return Object.assign(streamStatus, { live, host })
             })
             .then(() => updateStreamPill())
     }
