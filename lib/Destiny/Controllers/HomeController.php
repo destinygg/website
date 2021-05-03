@@ -9,6 +9,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
+use Destiny\Tasks\YouTubeTasks;
 use Destiny\Twitch\TwitchWebHookService;
 
 /**
@@ -25,8 +26,8 @@ class HomeController {
         $model->posts = $cache->fetch ( 'recentposts' );
         $model->recenttracks = $cache->fetch ( 'recenttracks' );
         $model->toptracks = $cache->fetch ( 'toptracks' );
-        $model->playlist = $cache->fetch ( 'youtubeplaylist' );
-        $model->broadcasts = $cache->fetch ( 'pastbroadcasts' );
+        $model->playlist = $cache->fetch(YouTubeTasks::RECENT_YOUTUBE_UPLOADS_CACHE_KEY);
+        $model->broadcasts = $cache->fetch(YouTubeTasks::RECENT_YOUTUBE_LIVESTREAM_VODS_CACHE_KEY);
         $model->libsynfeed = $cache->fetch ( 'libsynfeed' );
         $model->merchandise = Config::$a['merch'];
         return 'home';

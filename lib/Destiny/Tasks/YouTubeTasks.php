@@ -35,15 +35,19 @@ class YouTubeTasks implements TaskInterface {
         });
         $recentPublicVideoUploads = array_slice($recentPublicVideoUploads, 0, self::MAX_RECENT_VIDEO_UPLOADS);
 
+        $normalizedUploads = [];
         for ($i = 0; $i < count($recentPublicVideoUploads); $i++) {
-            $path = ImageDownloadUtil::download($recentPublicVideoUploads[$i]['snippet']['thumbnails']['high']['url']);
-            if (!empty($path)) {
-                $recentPublicVideoUploads[$i]['snippet']['thumbnails']['high']['url'] = Config::cdni() . '/' . $path;
-            }
+            $video = $recentPublicVideoUploads[$i];
+            $path = ImageDownloadUtil::download($video['snippet']['thumbnails']['high']['url']);
+            $normalizedUploads[] = [
+                'videoUrl' => $this->urlForVideo($video),
+                'title' => $video['snippet']['title'],
+                'thumbnailUrl' => !empty($path) ? Config::cdni() . '/' . $path : null,
+            ];
         }
 
         $cache = Application::getNsCache();
-        $cache->save(self::RECENT_YOUTUBE_UPLOADS_CACHE_KEY, $recentPublicVideoUploads);
+        $cache->save(self::RECENT_YOUTUBE_UPLOADS_CACHE_KEY, $normalizedUploads);
     }
 
     public function updateRecentLivestreamVODs(array $videos) {
@@ -56,14 +60,23 @@ class YouTubeTasks implements TaskInterface {
         });
         $completedBroadcasts = array_slice($completedBroadcasts, 0, self::MAX_RECENT_LIVESTREAM_VODS);
 
+        $normalizedBroadcasts = [];
         for ($i = 0; $i < count($completedBroadcasts); $i++) {
-            $path = ImageDownloadUtil::download($completedBroadcasts[$i]['snippet']['thumbnails']['high']['url']);
-            if (!empty($path)) {
-                $completedBroadcasts[$i]['snippet']['thumbnails']['high']['url'] = Config::cdni() . '/' . $path;
-            }
+            $broadcast = $completedBroadcasts[$i];
+            $path = ImageDownloadUtil::download($broadcast['snippet']['thumbnails']['high']['url']);
+            $normalizedBroadcasts[] = [
+                'videoUrl' => $this->urlForVideo($broadcast),
+                'title' => $broadcast['snippet']['title'],
+                'thumbnailUrl' => !empty($path) ? Config::cdni() . '/' . $path : null,
+                'startTime' => $broadcast['liveStreamingDetails']['actualStartTime'],
+            ];
         }
 
         $cache = Application::getNsCache();
-        $cache->save(self::RECENT_YOUTUBE_LIVESTREAM_VODS_CACHE_KEY, $completedBroadcasts);
+        $cache->save(self::RECENT_YOUTUBE_LIVESTREAM_VODS_CACHE_KEY, $normalizedBroadcasts);
+    }
+
+    private function urlForVideo(array $video): string {
+        return "https://www.youtube.com/watch?v={$video['snippet']['resourceId']['videoId']}";
     }
 }

@@ -14,11 +14,11 @@ use Destiny\Common\Utils\Date;
                 <?php if(isset($this->playlist) && !empty($this->playlist)): ?>
                     <ul class="thumbnails">
                         <?php foreach($this->playlist as $vid ): ?>
-                            <?php $title = Tpl::out($vid['snippet']['title'])?>
+                            <?php $title = Tpl::out($vid['title'])?>
                             <li>
                                 <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$title?>">
-                                    <a href="https://www.youtube.com/watch?v=<?=$vid['snippet']['resourceId']['videoId']?>">
-                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$title?>" data-src="<?=$vid['snippet']['thumbnails']['high']['url']?>" />
+                                    <a href="<?=$vid['videoUrl']?>">
+                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$title?>" data-src="<?=$vid['thumbnailUrl']?>" />
                                     </a>
                                 </div>
                             </li>
@@ -34,14 +34,14 @@ use Destiny\Common\Utils\Date;
                 <h3 class="title clearfix">
                     <span>Broadcasts</span> <a href="/twitch" class="twitch-title">twitch.tv</a>
                 </h3>
-                <?php if(isset($this->broadcasts) && !empty($this->broadcasts['videos'])):?>
+                <?php if(!empty($this->broadcasts)) :?>
                     <ul class="thumbnails">
-                        <?php foreach( $this->broadcasts['videos'] as $broadcast ):?>
-                            <?php $time = Date::getElapsedTime(Date::getDateTime($broadcast['recorded_at']))?>
+                        <?php foreach( $this->broadcasts as $broadcast ):?>
+                            <?php $time = Date::getElapsedTime(Date::getDateTime($broadcast['startTime']))?>
                             <li>
                                 <div class="thumbnail" data-placement="bottom" data-toggle="tooltip" title="<?=$time?>">
-                                    <a href="<?=$broadcast['url']?>">
-                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$time?>" data-src="<?=$broadcast['preview']?>" />
+                                    <a href="<?=$broadcast['videoUrl']?>">
+                                        <img src="<?=Config::cdnv()?>/img/320x240.gif" class="img_320x240" alt="<?=$time?>" data-src="<?=$broadcast['thumbnailUrl']?>" />
                                     </a>
                                 </div>
                             </li>
