@@ -49,13 +49,23 @@ class HomeController {
     public function streamInfo(Response $response) {
         $cache = Application::getNsCache();
         $liveStatus = $cache->fetch(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id']);
-        $streaminfo = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
+        $twitchStreamInfo = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
+        $youtubeStreamInfo = $cache->fetch(YouTubeTasks::YOUTUBE_LIVESTREAM_STATUS_CACHE_KEY);
+        $hostedChannel = $cache->fetch(TwitchWebHookService::CACHE_KEY_HOSTED_CHANNEL);
         // We try use the response from the webhook as a live indicator, otherwise fall back to the stream info from the http api
         $streaminfo['live'] = ($liveStatus === false) ? $streaminfo['live'] : $liveStatus['live'];
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'private');
         $response->addHeader(Http::HEADER_PRAGMA, 'public');
         $response->addHeader(Http::HEADER_ETAG, md5(var_export($streaminfo, true)));
-        return $streaminfo;
+        return [
+            'data' => [
+                'hostedChannel' => $hostedChannel,
+                'streams' => [
+                    'twitch' => $twitchStreamInfo,
+                    'youtube' => $youtubeStreamInfo,
+                ],
+            ],
+        ];
     }
 
     /**

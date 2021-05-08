@@ -34,6 +34,7 @@ class TwitchWebHookService extends Service {
 
     const CACHE_KEY_PREFIX = 'twitch.stream.';
     const CACHE_KEY_STREAM_STATUS = 'streamstatus';
+    const CACHE_KEY_HOSTED_CHANNEL = 'hostedChannel';
     const CACHE_KEY_ACCESS_TOKEN = 'accesstoken';
 
     /**

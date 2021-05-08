@@ -142,17 +142,17 @@ import $ from 'jquery'
     const twitchChannelName = streamsMetadata.data('twitch-channel-name')
 
     const streams = []
+    let hostedChannel = null
     if (embedTwitchStream) {
-        streams.push({ platform: 'twitch', name: twitchChannelName })
+        streams.push({ live: false, platform: 'twitch', name: twitchChannelName })
     }
     if (embedYouTubeStream) {
-        streams.push({ platform: 'youtube', name: null })
+        streams.push({ live: false, platform: 'youtube', name: null })
     }
 
     const index = defaultStreamIndex.get()
     let activeStreamIndex = index < streams.length ? index : 0
 
-    const streamStatus = { live: false, host: null }
     const embedInfo = { ...streams[activeStreamIndex], embeddingOtherContent: false }
 
     let streamFrame = $body.find('#stream-panel iframe')
@@ -229,13 +229,14 @@ import $ from 'jquery'
             hostPill.name.text(embedInfo.name)
             hostPill.icon.html(closeIcon)
         } else {
-            if (streamStatus.host) {
+            if (hostedChannel) {
                 hostPill.addClass('hosting');
 
                 hostPill.type.text('HOSTING')
-                hostPill.name.text(streamStatus.host.name)
+                hostPill.name.text(hostedChannel.name)
             } else {
-                hostPill.type.text(streamStatus.live ? 'LIVE' : 'OFFLINE')
+                const currentStream = streams[activeStreamIndex]
+                hostPill.type.text(currentStream.live ? 'LIVE' : 'OFFLINE')
                 hostPill.name.text(displayName)
             }
 
@@ -260,10 +261,10 @@ import $ from 'jquery'
     }
 
     const toggleEmbedHost = function() {
-        if (!embedInfo.embeddingOtherContent && streamStatus.host) {
+        if (!embedInfo.embeddingOtherContent && hostedChannel) {
             embedInfo.embeddingOtherContent = true
             embedInfo.platform = 'twitch' // Only twitch streams can be hosted.
-            embedInfo.name = streamStatus.host.name
+            embedInfo.name = hostedChannel.name
 
             window.history.pushState(embedInfo, null, `#twitch/${embedInfo.name}`)
         } else if (embedInfo.embeddingOtherContent) {
@@ -298,9 +299,19 @@ import $ from 'jquery'
 
     const fetchStreamInfo = function() {
         return $.ajax({ url: '/api/info/stream' })
-            .then(data => {
-                const { live, host } = data
-                return Object.assign(streamStatus, { live, host })
+            .then(response => {
+                const { data: { streams: { twitch, youtube }, hostedChannel: newHostedChannel } } = response
+                hostedChannel = newHostedChannel
+                streams.forEach((stream, i) => {
+                    switch (stream.platform) {
+                        case 'twitch':
+                            streams[i].live = twitch?.live
+                            break
+                        case 'youtube':
+                            streams[i].live = youtube?.live
+                            break
+                    }
+                })
             })
             .then(() => updateStreamPill())
     }
