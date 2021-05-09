@@ -102,6 +102,13 @@ class YouTubeTasks implements TaskInterface {
 
         $live = !empty($startTime) && empty($endTime);
 
+        $duration = null;
+        if ($live) {
+            $duration = time() - $startTime->getTimestamp();
+        } else if (!empty($startTime) && !empty($endTime)) { // The stream is complete.
+            $duration = $endTime->getTimestamp() - $startTime->getTimestamp();
+        }
+
         $livestreamStatus = [
             'live' => $live,
             'game' => null,
@@ -109,7 +116,7 @@ class YouTubeTasks implements TaskInterface {
             'preview' => $currentBroadcast['snippet']['thumbnails']['medium']['url'],
             'started_at' => !empty($startTime) ? $startTime->format(Date::FORMAT) : null,
             'ended_at' => !empty($endTime) ? $endTime->format(Date::FORMAT) : null,
-            'duration' => !empty($startTime) ? time() - $startTime->getTimestamp() : null,
+            'duration' => $duration,
             'viewers' => $live ? $currentBroadcast['liveStreamingDetails']['concurrentViewers'] : 0,
         ];
 
