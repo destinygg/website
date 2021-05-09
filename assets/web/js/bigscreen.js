@@ -200,7 +200,7 @@ import $ from 'jquery'
 
     const updateStreamFrame = function() {
         // No YouTube stream URL, so the stream must be offline.
-        if (embedInfo.platform === 'youtube' && embedInfo.name === null) {
+        if (embedInfo.platform === 'youtube' && !embedInfo.name) {
             const frame = streamFrame.clone()
             frame.removeAttr('src')
             streamFrame.replaceWith(frame)
@@ -285,6 +285,10 @@ import $ from 'jquery'
         if (embedInfo.embeddingOtherContent) {
             toggleEmbedHost()
         } else {
+            if (streams.length <= 1) {
+                return
+            }
+
             activeStreamIndex++
             if (activeStreamIndex >= streams.length) {
                 activeStreamIndex = 0
@@ -308,7 +312,17 @@ import $ from 'jquery'
                             streams[i].live = twitch?.live
                             break
                         case 'youtube':
-                            streams[i].live = youtube?.live
+                            const { live, videoId } = youtube
+
+                            streams[i].live = live
+                            // Update the embed if the video ID of the stream changed.
+                            if (live && streams[i].name !== videoId) {
+                                streams[i].name = videoId
+                                updateStreamFrame()
+                            } else if (!live) {
+                                streams[i].name = null
+                                updateStreamFrame()
+                            }
                             break
                     }
                 })

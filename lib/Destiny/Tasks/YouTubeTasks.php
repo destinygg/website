@@ -118,6 +118,7 @@ class YouTubeTasks implements TaskInterface {
             'ended_at' => !empty($endTime) ? $endTime->format(Date::FORMAT) : null,
             'duration' => $duration,
             'viewers' => $live ? $currentBroadcast['liveStreamingDetails']['concurrentViewers'] : 0,
+            'videoId' => $currentBroadcast['id'],
         ];
 
         $cache = Application::getNsCache();
