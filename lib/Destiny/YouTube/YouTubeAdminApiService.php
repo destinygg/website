@@ -89,7 +89,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         return $json['items'];
     }
 
-    public function getRecentYouTubeUploads(): array {
+    public function getRecentYouTubeVideos(): array {
         $channelId = Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['channelId'];
         if (empty($channelId)) {
             return [];

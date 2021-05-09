@@ -14,20 +14,20 @@ use Destiny\YouTube\YouTubeAdminApiService;
  * @Schedule(frequency=1, period="minute")
  */
 class YouTubeTasks implements TaskInterface {
-    const RECENT_YOUTUBE_UPLOADS_CACHE_KEY = 'youtubeplaylist';
-    const RECENT_YOUTUBE_LIVESTREAM_VODS_CACHE_KEY = 'youtubevods';
-    const YOUTUBE_LIVESTREAM_STATUS_CACHE_KEY = 'ytstreamstatus';
+    const CACHE_KEY_RECENT_YOUTUBE_UPLOADS = 'youtubeplaylist';
+    const CACHE_KEY_RECENT_YOUTUBE_LIVESTREAM_VODS = 'youtubevods';
+    const CACHE_KEY_YOUTUBE_LIVESTREAM_STATUS = 'ytstreamstatus';
     const MAX_RECENT_VIDEO_UPLOADS = 4;
     const MAX_RECENT_LIVESTREAM_VODS = 4;
 
     public function execute() {
         try {
-            $videos = YouTubeAdminApiService::instance()->getRecentYouTubeUploads();
+            $videos = YouTubeAdminApiService::instance()->getRecentYouTubeVideos();
             $this->updateRecentVideoUploads($videos);
             $this->updateRecentLivestreamVODs($videos);
             $this->updateLivestreamStatus($videos);
         } catch (Exception $e) {
-            Log::error("Fetching recent YouTube uploads failed. {$e->getMessage()}");
+            Log::error("Fetching recent YouTube videos failed. {$e->getMessage()}");
         }
     }
 
@@ -50,7 +50,7 @@ class YouTubeTasks implements TaskInterface {
         }
 
         $cache = Application::getNsCache();
-        $cache->save(self::RECENT_YOUTUBE_UPLOADS_CACHE_KEY, $normalizedUploads);
+        $cache->save(self::CACHE_KEY_RECENT_YOUTUBE_UPLOADS, $normalizedUploads);
     }
 
     public function updateRecentLivestreamVODs(array $videos) {
@@ -76,7 +76,7 @@ class YouTubeTasks implements TaskInterface {
         }
 
         $cache = Application::getNsCache();
-        $cache->save(self::RECENT_YOUTUBE_LIVESTREAM_VODS_CACHE_KEY, $normalizedBroadcasts);
+        $cache->save(self::CACHE_KEY_RECENT_YOUTUBE_LIVESTREAM_VODS, $normalizedBroadcasts);
     }
 
     public function updateLivestreamStatus(array $videos) {
@@ -85,7 +85,7 @@ class YouTubeTasks implements TaskInterface {
         foreach ($videos as $video) {
             if (!empty($video['liveStreamingDetails'])) {
                 $currentBroadcast = $video;
-                break; 
+                break;
             }
         }
 
@@ -121,7 +121,7 @@ class YouTubeTasks implements TaskInterface {
         ];
 
         $cache = Application::getNsCache();
-        $cache->save(self::YOUTUBE_LIVESTREAM_STATUS_CACHE_KEY, $livestreamStatus);
+        $cache->save(self::CACHE_KEY_YOUTUBE_LIVESTREAM_STATUS, $livestreamStatus);
     }
 
     private function urlForVideo(array $video): string {
