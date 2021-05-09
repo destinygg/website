@@ -60,5 +60,7 @@ class AdminYouTubeController extends AdminIntegrationController {
                 Log::error($e->getMessage());
             }
         }
+
+        return $redirectUrl;
     }
 }
