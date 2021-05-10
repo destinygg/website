@@ -7,6 +7,7 @@ use Destiny\Twitch\TwitchWebHookService;
 
 $cache = Application::getNsCache();
 $info = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
+$hostedChannel = $cache->fetch(TwitchWebHookService::CACHE_KEY_HOSTED_CHANNEL);
 ?>
 <section id="header-band">
     <div class="container">
@@ -26,7 +27,7 @@ $info = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
         </div>
 
         <?php if(!empty($info)): ?>
-        <div id="stream-status" class="<?= (!empty($info['host'])) ? 'hosting': (($info['live']) ? 'online':'offline') ?>">
+        <div id="stream-status" class="<?= (!empty($hostedChannel)) ? 'hosting': (($info['live']) ? 'online':'offline') ?>">
             <div id="stream-status-info-offline">
                 <h3>Stream offline</h3>
                 <p>Ended <span id="stream-status-end"><?= Tpl::fromNow(Date::getDateTime($info['ended_at'])) ?></span>.
@@ -39,11 +40,11 @@ $info = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
             </div>
             <div id="stream-status-info-host">
                 <h3>Stream host</h3>
-                <p>Watch <a id="stream-status-host" href="<?= (!empty($info['host'])) ? Tpl::out($info['host']['url']):'' ?>" target="_blank"><?= (!empty($info['host'])) ? Tpl::out($info['host']['display_name']):'' ?></a>!
+                <p>Watch <a id="stream-status-host" href="<?= (!empty($hostedChannel)) ? Tpl::out($hostedChannel['url']):'' ?>" target="_blank"><?= (!empty($hostedChannel)) ? Tpl::out($hostedChannel['display_name']):'' ?></a>!
                     <br /> Join the <a class="badge badge-secondary" href="/bigscreen">chat</a>.</p>
             </div>
             <div id="stream-status-preview">
-                <a href="/bigscreen" style="background-image: url('<?= Tpl::out($info['preview']) ?>');"></a>
+                <a href="/bigscreen" style="background-image: url('<?= !empty($hostedChannel) ? Tpl::out($hostedChannel['preview']) : Tpl::out($info['preview']) ?>');"></a>
                 <div class="dropdown">
                     <span class="dropdown-toggle fas fa-clone fa-flip-horizontal" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">

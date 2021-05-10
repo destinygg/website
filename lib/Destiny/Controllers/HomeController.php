@@ -9,6 +9,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
+use Destiny\Tasks\YouTubeTasks;
 use Destiny\Twitch\TwitchWebHookService;
 
 /**
@@ -25,8 +26,8 @@ class HomeController {
         $model->posts = $cache->fetch ( 'recentposts' );
         $model->recenttracks = $cache->fetch ( 'recenttracks' );
         $model->toptracks = $cache->fetch ( 'toptracks' );
-        $model->playlist = $cache->fetch ( 'youtubeplaylist' );
-        $model->broadcasts = $cache->fetch ( 'pastbroadcasts' );
+        $model->playlist = $cache->fetch(YouTubeTasks::CACHE_KEY_RECENT_YOUTUBE_UPLOADS);
+        $model->broadcasts = $cache->fetch(YouTubeTasks::CACHE_KEY_RECENT_YOUTUBE_LIVESTREAM_VODS);
         $model->libsynfeed = $cache->fetch ( 'libsynfeed' );
         $model->merchandise = Config::$a['merch'];
         return 'home';
@@ -48,13 +49,27 @@ class HomeController {
     public function streamInfo(Response $response) {
         $cache = Application::getNsCache();
         $liveStatus = $cache->fetch(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id']);
-        $streaminfo = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
+        $twitchStreamInfo = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
+        $youtubeStreamInfo = $cache->fetch(YouTubeTasks::CACHE_KEY_YOUTUBE_LIVESTREAM_STATUS);
+        $hostedChannel = $cache->fetch(TwitchWebHookService::CACHE_KEY_HOSTED_CHANNEL);
+
         // We try use the response from the webhook as a live indicator, otherwise fall back to the stream info from the http api
-        $streaminfo['live'] = ($liveStatus === false) ? $streaminfo['live'] : $liveStatus['live'];
+        $twitchStreamInfo['live'] = ($liveStatus === false) ? $twitchStreamInfo['live'] : $liveStatus['live'];
+
+        $data = [
+            'data' => [
+                'hostedChannel' => $hostedChannel,
+                'streams' => [
+                    'twitch' => $twitchStreamInfo,
+                    'youtube' => $youtubeStreamInfo,
+                ],
+            ],
+        ];
+
         $response->addHeader(Http::HEADER_CACHE_CONTROL, 'private');
         $response->addHeader(Http::HEADER_PRAGMA, 'public');
-        $response->addHeader(Http::HEADER_ETAG, md5(var_export($streaminfo, true)));
-        return $streaminfo;
+        $response->addHeader(Http::HEADER_ETAG, md5(var_export($data, true)));
+        return $data;
     }
 
     /**

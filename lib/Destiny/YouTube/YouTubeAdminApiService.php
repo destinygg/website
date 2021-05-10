@@ -89,7 +89,7 @@ class YouTubeAdminApiService extends AbstractAuthService {
         return $json['items'];
     }
 
-    public function getRecentYouTubeUploads(): array {
+    public function getRecentYouTubeVideos(): array {
         $channelId = Config::$a[AuthProvider::YOUTUBE_BROADCASTER]['channelId'];
         if (empty($channelId)) {
             return [];
@@ -110,26 +110,24 @@ class YouTubeAdminApiService extends AbstractAuthService {
         Log::debug("Got ID of uploads playlist: `$uploadsPlaylistId`.");
 
         $response = $this->performGet('playlistItems', [
-            'part' => 'snippet,status',
+            'part' => 'snippet',
             'playlistId' => $uploadsPlaylistId,
-            'maxResults' => 25, // Fetch extra videos to ensure we have enough after non-public videos are filtered out.
+            'maxResults' => 50,
         ]);
 
         Log::debug("Got playlist items: `{$response->getBody()}`.");
+
         $json = json_decode($response->getBody(), true);
 
-        $json['items'] = array_filter($json['items'], function($video) {
-            return $video['status']['privacyStatus'] === 'public';
-        });
+        $videoIds = array_map(function($playlistItem) {
+            return $playlistItem['snippet']['resourceId']['videoId'];
+        }, $json['items']);
 
-        foreach ($json['items'] as $video) {
-            $video['snippet']['publishedAt'] = Date::getDateTime($video['snippet']['publishedAt']);
-        }
-
-        return $json;
+        $videos = $this->getVideos($videoIds);
+        return $videos;
     }
 
-    private function getUploadsPlaylistIdForChannel(string $channelId): string {
+    public function getUploadsPlaylistIdForChannel(string $channelId): string {
         $response = $this->performGet('channels', [
             'part' => 'contentDetails',
             'id' => $channelId
@@ -142,6 +140,20 @@ class YouTubeAdminApiService extends AbstractAuthService {
         }
 
         return $channels[0]['contentDetails']['relatedPlaylists']['uploads'];
+    }
+
+    public function getVideos(array $videoIds): array {
+        if (empty($videoIds)) {
+            return [];
+        }
+
+        $response = $this->performGet('videos', [
+            'part' => 'id,liveStreamingDetails,snippet,status',
+            'id' => implode(',', $videoIds),
+        ]);
+
+        $json = json_decode($response->getBody(), true);
+        return $json['items'];
     }
 
     private function performGet(string $path, array $query) {

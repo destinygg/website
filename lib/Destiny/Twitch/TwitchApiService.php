@@ -156,7 +156,6 @@ class TwitchApiService extends Service {
      *   'ended_at'         => null,
      *   'duration'         => 0,
      *   'viewers'          => 0,
-     *   'host'             => null
      * ]
      * @return array|null
      */
@@ -187,7 +186,6 @@ class TwitchApiService extends Service {
         if (!empty($live)) {
 
             $created = Date::getDateTime($live['created_at']);
-            $data['host'] = null;
             $data['preview'] = $live['preview']['medium'];
             $data['started_at'] = $created->format(Date::FORMAT);
             $data['duration'] = time() - $created->getTimestamp();
@@ -196,10 +194,8 @@ class TwitchApiService extends Service {
         } else {
 
             $broadcasts = $this->getPastBroadcasts($channelId, 1);
-            $host = $this->getHostedChannelForUser($channelId);
             $lastPreview = (!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])) ? $broadcasts['videos'][0]['preview'] : null;
-            $data['host'] = $host;
-            $data['preview'] = !empty($host) ? $host['preview'] : $lastPreview;
+            $data['preview'] = $lastPreview;
             $data['started_at'] = null;
             $data['duration'] = 0;
             $data['viewers'] = 0;

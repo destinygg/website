@@ -1,7 +1,12 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Application;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
+use Destiny\Tasks\YouTubeTasks;
+
+$cache = Application::getNsCache();
+$youTubeStreamInfo = $cache->fetch(YouTubeTasks::CACHE_KEY_YOUTUBE_LIVESTREAM_STATUS);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,10 +22,16 @@ use Destiny\Common\Config;
 
     <div id="bigscreen-layout">
         <div id="stream-panel">
-            <div class="streams-metadata" data-display-name="<?= Config::$a['embed']['displayName'] ?>" data-twitch-parents="<?= Tpl::arrayOut(Config::$a['embed']['twitchParents']) ?>"></div>
-            <?php foreach (Config::$a['embed']['stream'] as $streamDetails): ?>
-                <div class="stream-details" data-platform="<?= $streamDetails['platform'] ?>" data-name="<?= $streamDetails['name'] ?>"></div>
-            <?php endforeach; ?>
+            <div
+                class="streams-metadata"
+                data-embed-twitch-stream="<?= Config::$a['embed']['embedTwitchStream'] ?>"
+                data-embed-youtube-stream="<?= Config::$a['embed']['embedYouTubeStream'] ?>"
+                data-twitch-channel-name="<?= Config::$a['twitch']['user'] ?>"
+                data-youtube-stream-video-id="<?= !empty($youTubeStreamInfo) && !empty($youTubeStreamInfo['videoId']) ? $youTubeStreamInfo['videoId'] : null ?>"
+                data-display-name="<?= Config::$a['embed']['displayName'] ?>"
+                data-twitch-parents="<?= Tpl::arrayOut(Config::$a['embed']['twitchParents']) ?>"
+            >
+            </div>
             <div id="stream-wrap">
                 <iframe seamless="seamless" allowfullscreen></iframe>
             </div>

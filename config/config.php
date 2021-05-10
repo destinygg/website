@@ -21,12 +21,8 @@ return [
     'embed' => [
         'displayName' => 'destiny',
         'twitchParents' => ['localhost'], // Domains that will embed Twitch streams, e.g., 'www.example.com'. See https://discuss.dev.twitch.tv/t/twitch-embedded-player-updates-in-2020/23956 for more details.
-        'stream' => [
-            [
-                'platform' => '',
-                'name' => '',
-            ]
-        ],
+        'embedTwitchStream' => false, // Requires the broadcaster to set their channel name in the `twitch` config array.
+        'embedYouTubeStream' => false, // Requires the broadcaster to set their channel ID in the `youtubebroadcaster` config array and to authenticate on `/admin/youtube`.
         'chat' => '/embed/chat'
     ],
 

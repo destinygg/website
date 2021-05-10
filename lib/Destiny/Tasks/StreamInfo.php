@@ -17,8 +17,11 @@ class StreamInfo implements TaskInterface {
     public function execute() {
         $cache = Application::getNsCache();
         $twitchApiService = TwitchApiService::instance();
+
+        $twitchChannelId = Config::$a['twitch']['id'];
+
         $info = $twitchApiService->getStreamStatus(
-            Config::$a['twitch']['id'],
+            $twitchChannelId,
             $cache->fetch('lasttimeonline')
         );
         if (!empty($info)) {
@@ -30,10 +33,18 @@ class StreamInfo implements TaskInterface {
             if (!empty($path)) {
                 $info['preview'] = Config::cdni() . '/' . $path;
             }
+
             $islive = !empty($info['host']) ? false : (($info['live'] == true) ? true : false);
             $cache->save(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id'], ['time' => time(), 'live' => $islive]);
             $cache->save(TwitchWebHookService::CACHE_KEY_STREAM_STATUS, $info);
         }
-    }
 
+        $hostedChannel = $twitchApiService->getHostedChannelForUser($twitchChannelId);
+        if (!empty($hostedChannel) && !empty($hostedChannel['preview'])) {
+            $path = ImageDownloadUtil::download($hostedChannel['preview'], true);
+            $hostedChannel['preview'] = !empty($path) ? Config::cdni() . '/' . $path : null;
+        }
+
+        $cache->save(TwitchWebHookService::CACHE_KEY_HOSTED_CHANNEL, $hostedChannel);
+    }
 }
