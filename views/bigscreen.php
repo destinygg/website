@@ -1,7 +1,12 @@
 <?php
 namespace Destiny;
+use Destiny\Common\Application;
 use Destiny\Common\Utils\Tpl;
 use Destiny\Common\Config;
+use Destiny\Tasks\YouTubeTasks;
+
+$cache = Application::getNsCache();
+$youTubeStreamInfo = $cache->fetch(YouTubeTasks::CACHE_KEY_YOUTUBE_LIVESTREAM_STATUS);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +27,7 @@ use Destiny\Common\Config;
                 data-embed-twitch-stream="<?= Config::$a['embed']['embedTwitchStream'] ?>"
                 data-embed-youtube-stream="<?= Config::$a['embed']['embedYouTubeStream'] ?>"
                 data-twitch-channel-name="<?= Config::$a['twitch']['user'] ?>"
+                data-youtube-stream-video-id="<?= !empty($youTubeStreamInfo) && !empty($youTubeStreamInfo['videoId']) ? $youTubeStreamInfo['videoId'] : null ?>"
                 data-display-name="<?= Config::$a['embed']['displayName'] ?>"
                 data-twitch-parents="<?= Tpl::arrayOut(Config::$a['embed']['twitchParents']) ?>"
             >

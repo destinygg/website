@@ -140,6 +140,7 @@ import $ from 'jquery'
     const embedTwitchStream = streamsMetadata.data('embed-twitch-stream')
     const embedYouTubeStream = streamsMetadata.data('embed-youtube-stream')
     const twitchChannelName = streamsMetadata.data('twitch-channel-name')
+    const youTubeStreamVideoId = streamsMetadata.data('youtube-stream-video-id')
 
     const streams = []
     let hostedChannel = null
@@ -147,7 +148,7 @@ import $ from 'jquery'
         streams.push({ live: false, platform: 'twitch', name: twitchChannelName })
     }
     if (embedYouTubeStream) {
-        streams.push({ live: false, platform: 'youtube', name: null })
+        streams.push({ live: false, platform: 'youtube', name: youTubeStreamVideoId })
     }
 
     const index = defaultStreamIndex.get()
