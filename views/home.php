@@ -14,7 +14,6 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/nav.php' ?>
     <?php include 'seg/banner.php' ?>
     <?php include 'seg/panel.shop.php' ?>
-    <?php include 'seg/panel.podcasts.php' ?>
     <?php include 'seg/panel.reddit.php' ?>
     <?php include 'seg/panel.videos.php' ?>
     <?php include 'seg/panel.music.php' ?>
