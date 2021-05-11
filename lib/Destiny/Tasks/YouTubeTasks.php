@@ -116,7 +116,7 @@ class YouTubeTasks implements TaskInterface {
             'started_at' => !empty($startTime) ? $startTime->format(Date::FORMAT) : null,
             'ended_at' => !empty($endTime) ? $endTime->format(Date::FORMAT) : null,
             'duration' => $duration,
-            'viewers' => $live ? $currentBroadcast['liveStreamingDetails']['concurrentViewers'] : 0,
+            'viewers' => $live ? (int) $currentBroadcast['liveStreamingDetails']['concurrentViewers'] : 0,
             'videoId' => $live ? $currentBroadcast['id'] : null,
         ];
 
