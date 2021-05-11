@@ -111,7 +111,6 @@ class YouTubeTasks implements TaskInterface {
 
         $livestreamStatus = [
             'live' => $live,
-            'game' => null,
             'status_text' => $currentBroadcast['snippet']['title'],
             'preview' => $currentBroadcast['snippet']['thumbnails']['medium']['url'],
             'started_at' => !empty($startTime) ? $startTime->format(Date::FORMAT) : null,
