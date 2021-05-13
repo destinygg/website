@@ -62,7 +62,7 @@ return [
         '/ting' => 'https://ting.7eer.net/c/72409/87559/2020',
         '/eve' => 'https://secure.eveonline.com/trial/?invc=7a8cfcda-5915-4297-9cf9-ed898d984ff2&action=buddy',
         '/schedule' => 'https://www.google.com/calendar/embed?src=i54j4cu9pl4270asok3mqgdrhk%40group.calendar.google.com',
-        '/shirt' => 'https://dggstore.com/',
+        '/shirt' => 'https://shop.destiny.gg/',
         '/forge' => 'https://bit.ly/ForgeDestiny',
         '/facebook' => 'https://www.facebook.com/OmniDestiny',
         '/youtube' => 'https://www.youtube.com/user/Destiny',
@@ -81,7 +81,7 @@ return [
         '/instagram' => 'https://www.instagram.com/destiny/',
         '/podcast' => 'https://destiny.libsyn.com/',
         '/podcastrss' => 'https://destiny.libsyn.com/rss',
-        '/shop' => 'https://dggstore.com',
+        '/shop' => 'https://shop.destiny.gg',
         '/discord' => 'https://discordapp.com/invite/destiny',
         '/unban' => 'https://goo.gl/forms/iRwqtqPRvJYln2lf2',
         '/positions' => 'https://positions.destiny.gg',
@@ -91,32 +91,32 @@ return [
         [
             'title' => 'DuckerZ Shirt',
             'image' => 'merch-duckerz-shirt',
-            'url' => 'https://dggstore.com/products/copy-of-cinnabonnelli-shirt-unisex-short-sleeve-tee',
+            'url' => 'https://shop.destiny.gg',
         ],
         [
             'title' => 'WeebiDesti Shirt',
             'image' => 'merch-weebidesti-shirt',
-            'url' => 'https://dggstore.com/products/weebidesti-unisex-short-sleeve-tee',
+            'url' => 'https://shop.destiny.gg',
         ],
         [
             'title' => 'The Original Memer Shirt',
             'image' => 'merch-the-original-memer-shirt',
-            'url' => 'https://dggstore.com/products/the-original-memer-unisex-short-sleeve-tee',
+            'url' => 'https://shop.destiny.gg',
         ],
         [
             'title' => 'Destinygg Hoodie',
             'image' => 'merch-destinygg-hoodie',
-            'url' => 'https://dggstore.com/products/destiny-unisex-full-zip-hooded-sweatshirt',
+            'url' => 'https://shop.destiny.gg',
         ],
         [
             'title' => 'CinnaBonnelli Shirt',
             'image' => 'merch-cinnabonnelli-shirt',
-            'url' => 'https://dggstore.com/products/cinnabonnelli-shirt-unisex-short-sleeve-tee',
+            'url' => 'https://shop.destiny.gg',
         ],
         [
             'title' => 'LeRuse Shirt',
             'image' => 'merch-leruse-shirt',
-            'url' => 'https://dggstore.com/products/leruse-unisex-short-sleeve-tee',
+            'url' => 'https://shop.destiny.gg',
         ],
     ]
 ];
