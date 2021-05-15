@@ -100,6 +100,8 @@ class YouTubeTasks implements TaskInterface {
         $actualEndTime = $currentBroadcast['liveStreamingDetails']['actualEndTime'] ?? null;
         $endTime = !empty($actualEndTime) ? Date::getDateTime($actualEndTime) : null;
 
+        $thumbnailUrl = ImageDownloadUtil::download($currentBroadcast['snippet']['thumbnails']['medium']['url']);
+
         $live = !empty($startTime) && empty($endTime);
 
         $duration = null;
@@ -112,7 +114,7 @@ class YouTubeTasks implements TaskInterface {
         $livestreamStatus = [
             'live' => $live,
             'status_text' => $currentBroadcast['snippet']['title'],
-            'preview' => $currentBroadcast['snippet']['thumbnails']['medium']['url'],
+            'preview' => !empty($thumbnailUrl) ? Config::cdni() . '/' . $thumbnailUrl: null,
             'started_at' => !empty($startTime) ? $startTime->format(Date::FORMAT) : null,
             'ended_at' => !empty($endTime) ? $endTime->format(Date::FORMAT) : null,
             'duration' => $duration,
