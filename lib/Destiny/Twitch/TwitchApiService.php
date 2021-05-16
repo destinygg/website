@@ -194,7 +194,7 @@ class TwitchApiService extends Service {
         } else {
 
             $broadcasts = $this->getPastBroadcasts($channelId, 1);
-            $lastPreview = (!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])) ? $broadcasts['videos'][0]['preview'] : null;
+            $lastPreview = (!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])) ? $broadcasts['videos'][0]['preview']['medium'] : null;
             $data['preview'] = $lastPreview;
             $data['started_at'] = null;
             $data['duration'] = 0;
