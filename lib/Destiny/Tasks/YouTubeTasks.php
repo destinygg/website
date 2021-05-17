@@ -90,7 +90,7 @@ class YouTubeTasks implements TaskInterface {
         }
 
         if (empty($currentBroadcast)) {
-            Log::warning('No YouTube livestreams found.');
+            Log::warn('No YouTube livestreams found.');
             return;
         }
 
