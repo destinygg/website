@@ -159,7 +159,7 @@ class TwitchApiService extends Service {
      * ]
      * @return array|null
      */
-    public function getStreamStatus(int $channelId, bool $lastOnline = false) {
+    public function getStreamStatus(int $channelId, string $lastOnline = null) {
         $channel = $this->getChannel($channelId);
 
         if (empty($channel)) {
