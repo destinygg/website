@@ -184,26 +184,14 @@ const $document = $(document),
             start = el.find('#stream-status-start'),
             host = el.find('#stream-status-host');
 
-        let status = {
-            live: false,
-            game: null,
-            preview: "",
-            status_text: "",
-            started_at: null,
-            ended_at: "",
-            duration: 0,
-            viewers: 0,
-            host: {}
-        };
-
-        const updateStatus = function(status){
-            let state = (status['host'] && status.host['id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
+        const updateStatus = function(status, hostedChannel){
+            let state = (hostedChannel && hostedChannel['id'] !== undefined) ? 'hosting' : (status.live ? 'online':'offline');
             el.removeClass('online offline hosting').addClass(state);
             end.text(moment(status.ended_at).fromNow());
             start.text(moment(status.started_at).fromNow());
             if(state === 'hosting'){
-                host.text(status.host['display_name']);
-                host.attr('href', status.host['url']);
+                host.text(hostedChannel['display_name']);
+                host.attr('href', hostedChannel['url']);
             }
         };
 
@@ -211,11 +199,10 @@ const $document = $(document),
             $.ajax({
                 url: '/api/info/stream',
                 type: 'GET',
-                success: function(data) {
+                success: function(response) {
+                    const { data: { streams: { twitch } }, hostedChannel } = response;
                     try {
-                        if(data !== null && data !== undefined){
-                            updateStatus($.extend(status, data));
-                        }
+                        updateStatus(twitch, hostedChannel);
                     } catch(ignored){}
                 }
             });

@@ -294,6 +294,9 @@ class SubscriptionController {
             $subInfo = $payPalApiService->extractSubscriptionInfoFromCheckoutResponse($checkoutResponse);
             $payments = $payPalApiService->getCheckoutResponsePayments($doECResponse);
 
+            // If there are no payments, the transaction is "pending".
+            $paymentSuccessful = count($payments) > 0;
+
             $subscriptionType = SubscriptionsService::instance()->getSubscriptionType($subInfo['subscriptionId']);
             if (empty($subscriptionType)) {
                 throw new Exception('Invalid subscription type.');
@@ -350,8 +353,8 @@ class SubscriptionController {
         $subscribeMessage = Session::getAndRemove('subscribeMessage');
         $subscribeMessage = mb_substr(trim($subscribeMessage), 0, 250);
 
-        // Mass gifts have an additional alert.
-        if ($subInfo['purchaseType'] === SubPurchaseType::MASS_GIFT) {
+        // Mass gifts have an additional alert. We only issue alerts if the payment was successful.
+        if ($paymentSuccessful && $subInfo['purchaseType'] === SubPurchaseType::MASS_GIFT) {
             $redisService = ChatRedisService::instance();
 
             $subWord = $subInfo['quantity'] == 1 ? 'sub' : 'subs';
@@ -374,7 +377,7 @@ class SubscriptionController {
         }
 
         // Log the subscription event in Discord.
-        if ($subscribeMessage !== '') {
+        if ($paymentSuccessful && $subscribeMessage !== '') {
             DiscordMessenger::send('New subscriber', [
                 'fields' => [
                     ['title' => 'User', 'value' => DiscordMessenger::userLink($buyingUser['userId'], $buyingUser['username']), 'short' => false],
@@ -383,8 +386,10 @@ class SubscriptionController {
             ]);
         }
 
-        foreach ($receivingUsers as $receivingUser) {
-            $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser, $broadcastMessage);
+        if ($paymentSuccessful) {
+            foreach ($receivingUsers as $receivingUser) {
+                $this->performPostSubscriptionActions($subscriptionType, $receivingUser, $buyingUser, $broadcastMessage);
+            }
         }
 
         // We pass the token rather than the transaction ID to handle scenarios
