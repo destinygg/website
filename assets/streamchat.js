@@ -12,7 +12,7 @@ const chat = new Chat({
 });
 
 $('body,html').css('background', 'transparent')
-chat.withGui(require('dgg-chat-gui/assets/views/stream.html'))
+chat.withGui(require('dgg-chat-gui/assets/views/stream.html').default)
     .then(() => {
         chat.settings.set('fontscale', Chat.reqParam('f') || 'auto')
         chat.applySettings(false)
