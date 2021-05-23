@@ -1,7 +1,7 @@
 const webpack = require("webpack");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const ManifestPlugin = require("webpack-manifest-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const fs = require("fs");
 
 const entries = {
@@ -72,7 +72,7 @@ module.exports = {
       dry: false,
     }),
     new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
-    new ManifestPlugin(),
+    new WebpackManifestPlugin(),
     {
       apply: (c) =>
         c.hooks.afterEmit.tap("webpackManifestPlugin", covertManifestJsonToPhp),
