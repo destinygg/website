@@ -6,21 +6,14 @@
   "scripts": {
     "ini": "node scripts/tasks/ini.js",
     "watch": "webpack -w",
-    "build": "webpack -p --verbose --mode=production"
+    "build": "webpack --mode=production"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/destinygg/website.git"
   },
-  "keywords": [
-    "destiny.gg",
-    "destinygg",
-    "dgg"
-  ],
-  "browserslist": [
-    "> 0.25%",
-    "not dead"
-  ],
+  "keywords": ["destiny.gg", "destinygg", "dgg"],
+  "browserslist": ["> 0.25%", "not dead"],
   "author": "Destiny.gg Foundation",
   "contributors": [],
   "homepage": "http://www.destiny.gg/",
