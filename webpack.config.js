@@ -57,6 +57,7 @@ module.exports = {
   entry: entryPoints,
   output: {
     path: __dirname + "/static",
+    publicPath: "",
     filename: "[name].[contenthash].js",
   },
   plugins: [
