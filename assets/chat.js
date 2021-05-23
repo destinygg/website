@@ -11,7 +11,7 @@ const chat = new Chat({
     banAppealUrl: script.getAttribute('data-ban-appeal-url')
 });
 
-chat.withGui(require('dgg-chat-gui/assets/views/embed.html'))
+chat.withGui(require('dgg-chat-gui/assets/views/embed.html').default)
     .then(() => chat.loadUserAndSettings())
     .then(() => chat.loadEmotesAndFlairs())
     .then(() => chat.loadHistory())
