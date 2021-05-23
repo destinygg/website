@@ -12,11 +12,12 @@ const chat = new Chat({
 });
 
 $('body,html').css('background', 'transparent')
-chat.withGui(require('dgg-chat-gui/assets/views/stream.html'))
+chat.withGui(require('dgg-chat-gui/assets/views/stream.html').default)
     .then(() => {
         chat.settings.set('fontscale', Chat.reqParam('f') || 'auto')
         chat.applySettings(false)
     })
+    .then(() => chat.loadUserAndSettings())
     .then(() => chat.loadEmotesAndFlairs())
     .then(() => chat.loadHistory())
     .then(() => chat.connect())
