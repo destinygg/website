@@ -48,87 +48,89 @@ const cacheGroups = Object.keys(entries).reduce(
   }
 );
 
-module.exports = {
-  optimization: {
-    minimize: true,
-    runtimeChunk: "single",
-    splitChunks: { cacheGroups },
-  },
-  entry: entryPoints,
-  output: {
-    path: __dirname + "/static",
-    publicPath: "",
-    filename: "[name].[contenthash].js",
-  },
-  plugins: [
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // cache|flairs|emotes
-    new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: [
-        "**",
-        "!cache/**",
-        "!flairs/**",
-        "!emotes/**",
-      ],
-      verbose: true,
-      dry: false,
-    }),
-    new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
-    new WebpackManifestPlugin(),
-    {
-      apply: (c) =>
-        c.hooks.afterEmit.tap("webpackManifestPlugin", covertManifestJsonToPhp),
+module.exports = (env, argv) => {
+  return {
+    optimization: {
+      minimize: argv.mode === 'production',
+      runtimeChunk: "single",
+      splitChunks: { cacheGroups },
     },
-  ],
-  watchOptions: {
-    ignored: /(node_modules)/,
-  },
-  module: {
-    rules: [
-      {
-        test: /\.m?js$/,
-        exclude: /(node_modules)/,
-        loader: "babel-loader",
-        options: { presets: ["@babel/preset-env"] },
-      },
-      {
-        test: /\.(sa|sc|c)ss$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader",
-          "sass-loader",
+    entry: entryPoints,
+    output: {
+      path: __dirname + "/static",
+      publicPath: "",
+      filename: "[name].[contenthash].js",
+    },
+    plugins: [
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // cache|flairs|emotes
+      new CleanWebpackPlugin({
+        cleanOnceBeforeBuildPatterns: [
+          "**",
+          "!cache/**",
+          "!flairs/**",
+          "!emotes/**",
         ],
-      },
+        verbose: true,
+        dry: false,
+      }),
+      new MiniCssExtractPlugin({ filename: "[name].[contenthash].css" }),
+      new WebpackManifestPlugin(),
       {
-        test: /\.(eot|ttf|woff2?)$/,
-        loader: "file-loader",
-        options: { name: "font/[name].[ext]" },
-      },
-      {
-        test: /fa-.*\.svg/,
-        loader: "file-loader",
-        options: { name: "font/[name].[ext]" },
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        exclude: /fa-.*\.svg/,
-        loader: "file-loader",
-        options: { name: "img/[name].[ext]" },
-      },
-      {
-        test: /\.(html)$/,
-        loader: "html-loader",
-        options: { minimize: true },
+        apply: (c) =>
+          c.hooks.afterEmit.tap("webpackManifestPlugin", covertManifestJsonToPhp),
       },
     ],
-  },
-  resolve: {
-    alias: { jquery: "jquery/src/jquery" },
-    extensions: [".js"],
-    symlinks: false,
-  },
-  context: __dirname,
-  devtool: false,
+    watchOptions: {
+      ignored: /(node_modules)/,
+    },
+    module: {
+      rules: [
+        {
+          test: /\.m?js$/,
+          exclude: /(node_modules)/,
+          loader: "babel-loader",
+          options: { presets: ["@babel/preset-env"] },
+        },
+        {
+          test: /\.(sa|sc|c)ss$/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            "css-loader",
+            "postcss-loader",
+            "sass-loader",
+          ],
+        },
+        {
+          test: /\.(eot|ttf|woff2?)$/,
+          loader: "file-loader",
+          options: { name: "font/[name].[ext]" },
+        },
+        {
+          test: /fa-.*\.svg/,
+          loader: "file-loader",
+          options: { name: "font/[name].[ext]" },
+        },
+        {
+          test: /\.(png|jpg|gif|svg)$/,
+          exclude: /fa-.*\.svg/,
+          loader: "file-loader",
+          options: { name: "img/[name].[ext]" },
+        },
+        {
+          test: /\.(html)$/,
+          loader: "html-loader",
+          options: { minimize: true },
+        },
+      ],
+    },
+    resolve: {
+      alias: { jquery: "jquery/src/jquery" },
+      extensions: [".js"],
+      symlinks: false,
+    },
+    context: __dirname,
+    devtool: argv.mode === 'development' ? 'inline-source-map' : false
+  };
 };
 
 function covertManifestJsonToPhp() {

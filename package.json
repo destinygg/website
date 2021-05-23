@@ -6,7 +6,8 @@
   "scripts": {
     "ini": "node scripts/tasks/ini.js",
     "watch": "webpack -w",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development"
   },
   "repository": {
     "type": "git",
