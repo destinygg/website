@@ -1,6 +1,6 @@
 {
   "name": "dgg-website",
-  "version": "2.30.1",
+  "version": "2.31.0",
   "description": "Destiny.gg front-end",
   "main": "destiny",
   "scripts": {
@@ -13,8 +13,15 @@
     "type": "git",
     "url": "git://github.com/destinygg/website.git"
   },
-  "keywords": ["destiny.gg", "destinygg", "dgg"],
-  "browserslist": ["> 0.25%", "not dead"],
+  "keywords": [
+    "destiny.gg",
+    "destinygg",
+    "dgg"
+  ],
+  "browserslist": [
+    "> 0.25%",
+    "not dead"
+  ],
   "author": "Destiny.gg Foundation",
   "contributors": [],
   "homepage": "http://www.destiny.gg/",
