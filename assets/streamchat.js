@@ -15,6 +15,7 @@ $('body,html').css('background', 'transparent')
 chat.withGui(require('dgg-chat-gui/assets/views/stream.html').default)
     .then(() => {
         chat.settings.set('fontscale', Chat.reqParam('f') || 'auto')
+        chat.settings.set('censorbadwords', true)
         chat.applySettings(false)
     })
     .then(() => chat.loadEmotesAndFlairs())
