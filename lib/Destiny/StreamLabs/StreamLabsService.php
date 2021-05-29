@@ -68,10 +68,13 @@ class StreamLabsService extends AbstractAuthService {
     }
 
     public function sendSubAlert(array $subscriptionType, string $message, string $username) {
+        // We set `user_message` to a space rather than leaving it empty. If we
+        // leave it empty, StreamLabs uses the value of the `message` param for
+        // both, which results in the TTS reading the event metadata.
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $message,
-            'user_message' => $this->buildEventMetadata(
+            'user_message' => $message ?: ' ',
+            'message' => $this->buildEventMetadata(
                 SubAlertEvent::SUB,
                 [
                     'user' => $username,
@@ -85,8 +88,8 @@ class StreamLabsService extends AbstractAuthService {
     public function sendResubAlert(array $subscriptionType, string $message, string $username, int $streak) {
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $message,
-            'user_message' => $this->buildEventMetadata(
+            'user_message' => $message ?: ' ',
+            'message' => $this->buildEventMetadata(
                 SubAlertEvent::RESUB,
                 [
                     'user' => $username,
@@ -101,8 +104,8 @@ class StreamLabsService extends AbstractAuthService {
     public function sendDirectGiftAlert(array $subscriptionType, string $message, string $username, string $giftee) {
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $message,
-            'user_message' => $this->buildEventMetadata(
+            'user_message' => $message ?: ' ',
+            'message' => $this->buildEventMetadata(
                 SubAlertEvent::DIRECT_GIFT,
                 [
                     'user' => $username,
@@ -117,8 +120,8 @@ class StreamLabsService extends AbstractAuthService {
     public function sendMassGiftAlert(array $subscriptionType, string $message, string $username, int $quantity) {
         $this->sendAlert([
             'type' => StreamLabsAlertsType::ALERT_SUBSCRIPTION,
-            'message' => $message,
-            'user_message' => $this->buildEventMetadata(
+            'user_message' => $message ?: ' ',
+            'message' => $this->buildEventMetadata(
                 SubAlertEvent::MASS_GIFT,
                 [
                     'user' => $username,
