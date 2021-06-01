@@ -126,7 +126,7 @@ class ChatRedisService extends Service {
     }
 
     public function removeChatSession(string $sessionId): int {
-        return $this->redis->delete("CHAT:session-$sessionId");
+        return $this->redis->del("CHAT:session-$sessionId");
     }
 
     public function sendRefreshUser(SessionCredentials $credentials): int {
