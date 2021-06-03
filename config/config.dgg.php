@@ -82,6 +82,7 @@ return [
         '/unban' => 'https://goo.gl/forms/iRwqtqPRvJYln2lf2',
         '/positions' => 'https://positions.destiny.gg',
         '/tiktok' => 'https://www.tiktok.com/@destiny',
+        '/tiktokdebates' => 'https://forms.gle/THkB3ywDe8EZyH1L9',
     ],
 
     'merch' => [
