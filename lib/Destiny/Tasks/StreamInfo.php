@@ -13,6 +13,7 @@ use Destiny\Twitch\TwitchWebHookService;
  * @Schedule(frequency=1,period="minute")
  */
 class StreamInfo implements TaskInterface {
+    const CACHE_KEY_LAST_TIME_ONLINE = 'lasttimeonline';
 
     public function execute() {
         $cache = Application::getNsCache();
@@ -22,10 +23,10 @@ class StreamInfo implements TaskInterface {
 
         $info = $twitchApiService->getStreamStatus(
             $twitchChannelId,
-            $cache->fetch('lasttimeonline')
+            $cache->fetch(self::CACHE_KEY_LAST_TIME_ONLINE)
         );
         if (!empty($info)) {
-            $cache->save('lasttimeonline', $info['ended_at']);
+            $cache->save(self::CACHE_KEY_LAST_TIME_ONLINE, $info['ended_at']);
 
             if (!empty($info['preview'])) {
                 $path = ImageDownloadUtil::download($info['preview'], true);
