@@ -20,7 +20,6 @@ use Destiny\Common\Utils\CryptoOpenSSL;
 use Destiny\Common\Utils\Date;
 use Destiny\Discord\DiscordAuthHandler;
 use Destiny\Google\GoogleAuthHandler;
-use Destiny\Google\YouTubeBroadcasterAuthHandler;
 use Destiny\Reddit\RedditAuthHandler;
 use Destiny\Reddit\RedditService;
 use Destiny\StreamElements\StreamElementsAuthHandler;
@@ -29,6 +28,7 @@ use Destiny\Twitch\TwitchAuthHandler;
 use Destiny\Twitch\TwitchBroadcastAuthHandler;
 use Destiny\Twitter\TwitterAuthHandler;
 use Destiny\YouTube\YouTubeMembershipService;
+use Destiny\YouTube\YouTubeBroadcasterAuthHandler;
 
 /**
  * @method static AuthenticationService instance()
