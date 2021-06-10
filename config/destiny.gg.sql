@@ -330,7 +330,7 @@ CREATE TABLE `youtube_members` (
     PRIMARY KEY (`memberChannelId`, `creatorChannelId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `users_youtube_channel_ids` (
+CREATE TABLE IF NOT EXISTS `users_youtube_channels` (
     `userId` int(14) NOT NULL,
     `channelId` varchar(255) NOT NULL,
     `channelTitle` varchar(255) NOT NULL,
