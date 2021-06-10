@@ -159,7 +159,7 @@ class TwitchApiService extends Service {
      * ]
      * @return array|null
      */
-    public function getStreamStatus(int $channelId, string $lastOnline = null) {
+    public function getStreamStatus(int $channelId, string $lastOnline = null, int $lastStreamDuration = null) {
         $channel = $this->getChannel($channelId);
 
         if (empty($channel)) {
@@ -197,7 +197,7 @@ class TwitchApiService extends Service {
             $lastPreview = (!empty($broadcasts) && isset($broadcasts['videos']) && !empty($broadcasts['videos'])) ? $broadcasts['videos'][0]['preview']['medium'] : null;
             $data['preview'] = $lastPreview;
             $data['started_at'] = null;
-            $data['duration'] = 0;
+            $data['duration'] = $lastStreamDuration;
             $data['viewers'] = 0;
 
         }
