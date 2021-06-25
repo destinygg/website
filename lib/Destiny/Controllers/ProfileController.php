@@ -467,10 +467,14 @@ class ProfileController {
         $userId = Session::getCredentials()->getUserId();
         FilterParams::isArray($params, 'selected');
         $userAuthService = UserAuthService::instance();
+        $currentAuthProvider = Session::getCredentials()->getAuthProvider();
+        $error = false;
         foreach ($params['selected'] as $id) {
-            $userAuthService->removeByIdAndUserId((int) $id, $userId);
+            if($currentAuthProvider !== $id) $userAuthService->removeByIdAndUserId((int) $id, $userId);
+            else $error = true;
         }
-        Session::setSuccessBag("Login provider(s) removed");
+        if($error) Session::setErrorBag("You cannot remove the auth provider you logged in with!");
+        else Session::setSuccessBag("Login provider(s) removed");
         return 'redirect: /profile/authentication';
     }
 
