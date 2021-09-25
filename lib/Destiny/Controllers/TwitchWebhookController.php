@@ -26,7 +26,14 @@ class TwitchWebhookController {
     function callback(Request $request): string {
         try {
             $twitchEventSubService = TwitchEventSubService::instance();
-            return $twitchEventSubService->handleIncomingEvent($request);
+
+            if ($twitchEventSubService->isCallbackVerificationRequest($request)) {
+                $twitchEventSubService->handleCallbackVerificationRequest($request);
+            } else if ($twitchEventSubService->isNotificationRequest($request)) {
+                $twitchEventSubService->handleIncomingEvent($request);
+            } else {
+                throw Exception('Invalid request type received.');
+            }
         } catch (Exception $e) {
             Log::error("Error handling twitch webhook callback. {$e->getMessage()}");
         }

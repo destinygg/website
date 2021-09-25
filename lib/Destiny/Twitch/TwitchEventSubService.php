@@ -152,6 +152,16 @@ class TwitchEventSubService extends Service {
         }
     }
 
+    public function isCallbackVerificationRequest(Request $request) {
+        $messageType = $request->getHeader('Twitch-Eventsub-Message-Type');
+        return !empty($messageType) && $messageType[0] === 'webhook_callback_verification';
+    }
+
+    public function isNotificationRequest(Request $request) {
+        $messageType = $request->getHeader('Twitch-Eventsub-Message-Type');
+        return !empty($messageType) && $messageType[0] === 'notification';
+    }
+
     /**
      * Returns an app access token. If not in cache or expired, gets a new one and caches it.
      */
