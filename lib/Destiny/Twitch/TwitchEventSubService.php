@@ -123,6 +123,35 @@ class TwitchEventSubService extends Service {
         }
     }
 
+    public function getActiveSubscriptions(): array {
+        $config = Config::$a['oauth_providers']['twitch'];
+
+        $client = HttpClient::instance();
+        $response = $client->get(self::API_BASE . '/eventsub/subscriptions', [
+            'headers' => [
+                'User-Agent' => Config::userAgent(),
+                'Client-ID' => $config['client_id'],
+                'Authorization' => 'Bearer ' . $this->getAppAccessToken()
+            ],
+        ]);
+
+        if ($response->getStatusCode() == Http::STATUS_OK) {
+            $payload = json_decode($response->getBody());
+            $subbedEvents = $payload->data;
+            $subbedEventTypes = array_map(
+                function($subbedEvent) {
+                    return $subbedEvent->type;
+                },
+                $subbedEvents
+            );
+
+            // An array of all event types we're currently subscribed to.
+            return $subbedEventTypes;
+        } else {
+            throw new Exception('Error getting active Twitch EventSub subscriptions.');
+        }
+    }
+
     /**
      * Returns an app access token. If not in cache or expired, gets a new one and caches it.
      */
