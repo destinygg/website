@@ -20,24 +20,6 @@ class TwitchWebhookController {
      * Handle incoming twitch webhook callback requests
      *
      * @Route ("/api/twitch/webhook")
-     * @HttpMethod ({"GET"})
-     * @ResponseBody
-     */
-    function notify(Request $request): string {
-        try {
-            $webhookService = TwitchWebHookService::instance();
-            return $webhookService->handleIncomingNotify($request);
-        } catch (Exception $e) {
-            Log::error("Error handling twitch webhook notify. {$e->getMessage()}");
-        }
-        return 'error';
-    }
-
-    /**
-     * Method always returns a 200 response
-     * Handle incoming twitch webhook callback requests
-     *
-     * @Route ("/api/twitch/webhook")
      * @HttpMethod ({"POST"})
      * @ResponseBody
      */
