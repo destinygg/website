@@ -71,10 +71,8 @@ class TwitchEventSubService extends Service {
 
     // https://dev.twitch.tv/docs/eventsub#verify-a-signature
     private function verifyMessageSignature(Request $request): bool {
-        // Header values are returned as an array. If that header doesn't exist,
-        // an empty array is returned.
-        $messageId = $request->getHeader('Twitch-Eventsub-Message-Id');
-        $messageTimestamp = $request->getHeader('Twitch-Eventsub-Message-Timestamp');
+        $messageId = $request->header('Twitch-Eventsub-Message-Id');
+        $messageTimestamp = $request->header('Twitch-Eventsub-Message-Timestamp');
         $requestBody = $request->getBody();
 
         if (empty($messageId) || empty($messageTimestamp)) {
@@ -86,16 +84,16 @@ class TwitchEventSubService extends Service {
 
         $signature = hash_hmac(
             'sha256',
-            $messageId[0] + $messageTimestamp[0] + $requestBody,
+            $messageId + $messageTimestamp + $requestBody,
             Config::$a['twitch']['eventsub_secret']
         );
 
-        $requestSignature = $request->getHeader('Twitch-Eventsub-Message-Signature');
+        $requestSignature = $request->header('Twitch-Eventsub-Message-Signature');
         if (empty($requestSignature)) {
             throw new Exception('Error verifying Twitch EventSub message signature. Request signature is missing.');
         }
 
-        return $requestSignature[0] === "sha256=$signature";
+        return $requestSignature === "sha256=$signature";
     }
 
     public function handleIncomingEvent(Request $request) {
@@ -153,13 +151,13 @@ class TwitchEventSubService extends Service {
     }
 
     public function isCallbackVerificationRequest(Request $request) {
-        $messageType = $request->getHeader('Twitch-Eventsub-Message-Type');
-        return !empty($messageType) && $messageType[0] === 'webhook_callback_verification';
+        $messageType = $request->header('Twitch-Eventsub-Message-Type');
+        return !empty($messageType) && $messageType === 'webhook_callback_verification';
     }
 
     public function isNotificationRequest(Request $request) {
-        $messageType = $request->getHeader('Twitch-Eventsub-Message-Type');
-        return !empty($messageType) && $messageType[0] === 'notification';
+        $messageType = $request->header('Twitch-Eventsub-Message-Type');
+        return !empty($messageType) && $messageType === 'notification';
     }
 
     /**
