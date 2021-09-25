@@ -32,7 +32,7 @@ class TwitchWebhookController {
             } else if ($twitchEventSubService->isNotificationRequest($request)) {
                 $twitchEventSubService->handleIncomingEvent($request);
             } else {
-                throw Exception('Invalid request type received.');
+                throw new Exception('Invalid request type received.');
             }
         } catch (Exception $e) {
             Log::error("Error handling twitch webhook callback. {$e->getMessage()}");
