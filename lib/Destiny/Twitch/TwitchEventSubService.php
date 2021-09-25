@@ -140,8 +140,18 @@ class TwitchEventSubService extends Service {
 
             $payload = json_decode($response->getBody());
             $subbedEvents = $payload->data;
-            $subbedEventTypes = array_map(
+
+            // We only receive notifications for event types marked as
+            // `enabled`.
+            $subbedEvents = array_filter(
+                $subbedEvents,
                 function($subbedEvent) {
+                    return $subbedEvent->status === 'enabled';
+                }
+            );
+
+            $subbedEventTypes = array_map(
+                function($subbedEvents) {
                     return $subbedEvent->type;
                 },
                 $subbedEvents
