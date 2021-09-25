@@ -6,7 +6,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
-use Destiny\Twitch\TwitchWebHookService;
+use Destiny\Twitch\TwitchEventSubService;
 
 /**
  * This method periodically subscribes to the twitch web hook api
@@ -15,17 +15,25 @@ use Destiny\Twitch\TwitchWebHookService;
  * @Schedule(frequency=1,period="hour")
  */
 class TwitchWebhook implements TaskInterface {
+    const SUPPORTED_EVENTS = [
+        TwitchEventSubService::EVENT_STREAM_ONLINE,
+        TwitchEventSubService::EVENT_STREAM_OFFLINE
+    ];
 
     public function execute() {
         try {
-            $id = Config::$a['twitch']['id'];
-            $twitchWebhookService = TwitchWebHookService::instance();
-            $twitchWebhookService->sendSubscriptionRequest(
-                TwitchWebHookService::MODE_SUBSCRIBE,
-                TwitchWebHookService::TOPIC_STREAM,
-                TwitchWebHookService::API_BASE . "/streams?user_id=$id",
-                $id
-            );
+            $twitchUserId = Config::$a['twitch']['id'];
+            $twitchEventSubService = TwitchEventSubService::instance();
+
+            $activeSubEvents = $twitchEventSubService->getActiveSubscriptions(); 
+            foreach (self::SUPPORTED_EVENTS as $eventType) {
+                if (!in_array($eventType, $activeSubEvents)) {
+                    $twitchEventSubService->subscribe(
+                        $eventType,
+                        $twitchUserId
+                    );
+                }
+            }
         } catch (Exception $e) {
             Log::error('Error handling twitch hook cron task ' . $e->getMessage());
         }
