@@ -8,7 +8,7 @@ use Destiny\Common\Annotation\Route;
 use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Request;
-use Destiny\Twitch\TwitchWebHookService;
+use Destiny\Twitch\TwitchEventSubService;
 
 /**
  * @Controller
@@ -25,8 +25,8 @@ class TwitchWebhookController {
      */
     function callback(Request $request): string {
         try {
-            $webhookService = TwitchWebHookService::instance();
-            return $webhookService->handleIncomingWebhook($request);
+            $twitchEventSubService = TwitchEventSubService::instance();
+            return $twitchEventSubService->handleIncomingEvent($request);
         } catch (Exception $e) {
             Log::error("Error handling twitch webhook callback. {$e->getMessage()}");
         }

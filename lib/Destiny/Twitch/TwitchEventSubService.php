@@ -98,7 +98,7 @@ class TwitchEventSubService extends Service {
         return $requestSignature[0] === "sha256=$signature";
     }
 
-    private function handleIncomingEvent(Request $request) {
+    public function handleIncomingEvent(Request $request) {
         $payload = json_decode($request->getBody());
         $type = $payload->subscription->type ?? null;
 
