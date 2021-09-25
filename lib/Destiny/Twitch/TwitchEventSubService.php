@@ -93,6 +93,8 @@ class TwitchEventSubService extends Service {
             throw new Exception('Error verifying Twitch EventSub message signature. Request signature is missing.');
         }
 
+        Log::debug("Request header signature is `$requestSignature`. Computed signature is `sha256=$signature`.");
+
         return $requestSignature === "sha256=$signature";
     }
 
@@ -134,6 +136,8 @@ class TwitchEventSubService extends Service {
         ]);
 
         if ($response->getStatusCode() == Http::STATUS_OK) {
+            Log::debug("Body of response from active subscription request is `{$response->getBody()}`.");
+
             $payload = json_decode($response->getBody());
             $subbedEvents = $payload->data;
             $subbedEventTypes = array_map(
@@ -152,11 +156,13 @@ class TwitchEventSubService extends Service {
 
     public function isCallbackVerificationRequest(Request $request) {
         $messageType = $request->header('Twitch-Eventsub-Message-Type');
+        Log::debug("EventSub message type is `$messageType`.");
         return !empty($messageType) && $messageType === 'webhook_callback_verification';
     }
 
     public function isNotificationRequest(Request $request) {
         $messageType = $request->header('Twitch-Eventsub-Message-Type');
+        Log::debug("EventSub message type is `$messageType`.");
         return !empty($messageType) && $messageType === 'notification';
     }
 
