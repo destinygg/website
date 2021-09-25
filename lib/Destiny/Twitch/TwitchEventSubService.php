@@ -71,8 +71,8 @@ class TwitchEventSubService extends Service {
 
     // https://dev.twitch.tv/docs/eventsub#verify-a-signature
     private function verifyMessageSignature(Request $request): bool {
-        $messageId = $request->header('Twitch-Eventsub-Message-Id');
-        $messageTimestamp = $request->header('Twitch-Eventsub-Message-Timestamp');
+        $messageId = $request->header('HTTP_TWITCH_EVENTSUB_MESSAGE_ID');
+        $messageTimestamp = $request->header('HTTP_TWITCH_EVENTSUB_MESSAGE_TIMESTAMP');
         $requestBody = $request->getBody();
 
         if (empty($messageId) || empty($messageTimestamp)) {
@@ -88,7 +88,7 @@ class TwitchEventSubService extends Service {
             Config::$a['twitch']['eventsub_secret']
         );
 
-        $requestSignature = $request->header('Twitch-Eventsub-Message-Signature');
+        $requestSignature = $request->header('HTTP_TWITCH_EVENTSUB_MESSAGE_SIGNATURE');
         if (empty($requestSignature)) {
             throw new Exception('Error verifying Twitch EventSub message signature. Request signature is missing.');
         }
@@ -165,13 +165,13 @@ class TwitchEventSubService extends Service {
     }
 
     public function isCallbackVerificationRequest(Request $request) {
-        $messageType = $request->header('Twitch-Eventsub-Message-Type');
+        $messageType = $request->header('HTTP_TWITCH_EVENTSUB_MESSAGE_TYPE');
         Log::debug("EventSub message type is `$messageType`.");
         return !empty($messageType) && $messageType === 'webhook_callback_verification';
     }
 
     public function isNotificationRequest(Request $request) {
-        $messageType = $request->header('Twitch-Eventsub-Message-Type');
+        $messageType = $request->header('HTTP_TWITCH_EVENTSUB_MESSAGE_TYPE');
         Log::debug("EventSub message type is `$messageType`.");
         return !empty($messageType) && $messageType === 'notification';
     }
