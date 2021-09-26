@@ -60,7 +60,7 @@ class TwitchEventSubService extends Service {
         Log::debug("Headers in EventSub callback verification request are `$headers`.");
 
         if (!$this->verifyMessageSignature($request)) {
-            throw new Exception('Twitch EventSub callback signature is invalid.');
+            throw new TwitchEventSubSignatureInvalidException('Twitch EventSub callback signature is invalid.');
         }
 
         $payload = json_decode($request->getBody(), true);
@@ -245,3 +245,5 @@ class TwitchEventSubService extends Service {
         return $accessToken;
     }
 }
+
+class TwitchEventSubSignatureInvalidException extends Exception {}
