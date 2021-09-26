@@ -33,18 +33,17 @@ class TwitchWebhookController {
                 return $challenge;
             } else if ($twitchEventSubService->isNotificationRequest($request)) {
                 $twitchEventSubService->handleIncomingEvent($request);
-            } else {
-                return null;
             }
+
+            return null;
         } catch (TwitchEventSubSignatureInvalidException $e) {
             $response->setStatus(Http::STATUS_UNAUTHORIZED);
             return null;
         } catch(Exception $e) {
             Log::error("Error handling twitch webhook callback. {$e->getMessage()}");
+            $response->setStatus(Http::STATUS_ERROR);
+            return null;
         }
-
-        $response->setStatus(Http::STATUS_ERROR);
-        return null;
     }
 
 }
