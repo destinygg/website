@@ -106,6 +106,10 @@ class TwitchEventSubService extends Service {
     }
 
     public function handleIncomingEvent(Request $request) {
+        if (!$this->verifyMessageSignature($request)) {
+            throw new TwitchEventSubSignatureInvalidException('Twitch EventSub callback signature is invalid.');
+        }
+
         $payload = json_decode($request->getBody());
         $type = $payload->subscription->type ?? null;
 
