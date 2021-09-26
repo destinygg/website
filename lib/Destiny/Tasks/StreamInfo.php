@@ -7,7 +7,6 @@ use Destiny\Common\Config;
 use Destiny\Common\Cron\TaskInterface;
 use Destiny\Common\Images\ImageDownloadUtil;
 use Destiny\Twitch\TwitchApiService;
-use Destiny\Twitch\TwitchWebHookService;
 
 /**
  * @Schedule(frequency=1,period="minute")
@@ -44,8 +43,8 @@ class StreamInfo implements TaskInterface {
             }
 
             $islive = !empty($info['host']) ? false : (($info['live'] == true) ? true : false);
-            $cache->save(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id'], ['time' => time(), 'live' => $islive]);
-            $cache->save(TwitchWebHookService::CACHE_KEY_STREAM_STATUS, $info);
+            $cache->save(TwitchApiService::CACHE_KEY_PREFIX . Config::$a['twitch']['id'], ['time' => time(), 'live' => $islive]);
+            $cache->save(TwitchApiService::CACHE_KEY_STREAM_STATUS, $info);
         }
 
         $hostedChannel = $twitchApiService->getHostedChannelForUser($twitchChannelId);
@@ -54,6 +53,6 @@ class StreamInfo implements TaskInterface {
             $hostedChannel['preview'] = !empty($path) ? Config::cdni() . '/' . $path : null;
         }
 
-        $cache->save(TwitchWebHookService::CACHE_KEY_HOSTED_CHANNEL, $hostedChannel);
+        $cache->save(TwitchApiService::CACHE_KEY_HOSTED_CHANNEL, $hostedChannel);
     }
 }

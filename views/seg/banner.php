@@ -3,11 +3,11 @@ use Destiny\Common\Application;
 use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
-use Destiny\Twitch\TwitchWebHookService;
+use Destiny\Twitch\TwitchApiService;
 
 $cache = Application::getNsCache();
-$info = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
-$hostedChannel = $cache->fetch(TwitchWebHookService::CACHE_KEY_HOSTED_CHANNEL);
+$info = $cache->fetch(TwitchApiService::CACHE_KEY_STREAM_STATUS);
+$hostedChannel = $cache->fetch(TwitchApiService::CACHE_KEY_HOSTED_CHANNEL);
 ?>
 <section id="header-band">
     <div class="container">

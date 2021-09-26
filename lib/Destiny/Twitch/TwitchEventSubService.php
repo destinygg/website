@@ -20,8 +20,6 @@ class TwitchEventSubService extends Service {
     const EVENT_STREAM_ONLINE = 'stream.online';
     const EVENT_STREAM_OFFLINE = 'stream.offline';
 
-    const CACHE_KEY_ACCESS_TOKEN = 'accesstoken';
-
     public function subscribe(string $subscriptionType, int $userId) {
         $config = Config::$a['oauth_providers']['twitch'];
         $callback = Config::$a['twitch']['webhooks_callback'];
@@ -238,12 +236,12 @@ class TwitchEventSubService extends Service {
         $cache = Application::getNsCache();
         $twitchAuthHandler = TwitchAuthHandler::instance();
 
-        $accessToken = $cache->fetch(self::CACHE_KEY_ACCESS_TOKEN);
+        $accessToken = $cache->fetch(TwitchApiService::CACHE_KEY_ACCESS_TOKEN);
         if (!$accessToken || !($twitchAuthHandler->validateToken($accessToken))) {
             Log::debug('App access token not in cache or expired. Getting a new one.');
             $response = $twitchAuthHandler->getToken(['grant_type' => TwitchAuthHandler::GRANT_TYPE_APP]);
             $accessToken = $response['access_token'];
-            $cache->save(self::CACHE_KEY_ACCESS_TOKEN, $accessToken);
+            $cache->save(TwitchApiService::CACHE_KEY_ACCESS_TOKEN, $accessToken);
         }
 
         return $accessToken;

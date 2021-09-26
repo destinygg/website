@@ -19,6 +19,11 @@ class TwitchApiService extends Service {
 
     private $apiBase = 'https://api.twitch.tv/kraken';
 
+    const CACHE_KEY_PREFIX = 'twitch.stream.';
+    const CACHE_KEY_STREAM_STATUS = 'streamstatus';
+    const CACHE_KEY_HOSTED_CHANNEL = 'hostedChannel';
+    const CACHE_KEY_ACCESS_TOKEN = 'accesstoken';
+
     public function getApiCredentials(): array {
         return Config::$a['oauth_providers']['twitch'];
     }
