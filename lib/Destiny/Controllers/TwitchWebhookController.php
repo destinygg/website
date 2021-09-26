@@ -29,7 +29,8 @@ class TwitchWebhookController {
             $twitchEventSubService = TwitchEventSubService::instance();
 
             if ($twitchEventSubService->isCallbackVerificationRequest($request)) {
-                $twitchEventSubService->handleCallbackVerificationRequest($request);
+                $challenge = $twitchEventSubService->handleCallbackVerificationRequest($request);
+                return $challenge;
             } else if ($twitchEventSubService->isNotificationRequest($request)) {
                 $twitchEventSubService->handleIncomingEvent($request);
             } else {
