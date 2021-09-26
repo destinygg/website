@@ -43,7 +43,7 @@ class TwitchEventSubService extends Service {
                 'transport' => [
                     'method' => 'webhook',
                     'callback' => $callback,
-                    'secret' => strval($secret)
+                    'secret' => $secret
                 ]
             ]
         ]);
@@ -85,9 +85,13 @@ class TwitchEventSubService extends Service {
             throw new Exception('Error verifying Twitch EventSub message signature. Request body is empty.');
         }
 
+        Log::debug("Message ID is `$messageId`.");
+        Log::debug("Message timestamp is `$messageTimestamp`.");
+        Log::debug("Request body is `$requestBody`.");
+
         $signature = hash_hmac(
             'sha256',
-            $messageId + $messageTimestamp + $requestBody,
+            $messageId . $messageTimestamp . $requestBody,
             Config::$a['twitch']['eventsub_secret']
         );
 
