@@ -127,11 +127,11 @@ class TwitchEventSubService extends Service {
 
     private function handleStreamStatusChange(bool $online) {
         $redis = ChatRedisService::instance();
-        if ($online) {
-            $redis->sendBroadcast('Destiny is online!');
-        } else {
-            $redis->sendBroadcast('Destiny is offline...');
-        }
+        $redis->sendBroadcast(
+            $online ?
+            Config::$a['twitch']['online_message'] :
+            Config::$a['twitch']['offline_message']
+        );
     }
 
     private function getSubscriptions(): array {
