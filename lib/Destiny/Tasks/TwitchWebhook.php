@@ -25,7 +25,11 @@ class TwitchWebhook implements TaskInterface {
             $twitchUserId = Config::$a['twitch']['id'];
             $twitchEventSubService = TwitchEventSubService::instance();
 
-            $activeSubEvents = $twitchEventSubService->getActiveSubscriptions(); 
+            $twitchEventSubService->pruneInactiveSubscriptions();
+
+            $activeSubEvents = $twitchEventSubService->getActiveSubscriptionEventTypes();
+            $jsonActiveSubEvents = json_encode($activeSubEvents);
+            Log::debug("Active sub events are `$jsonActiveSubEvents`.");
             foreach (self::SUPPORTED_EVENTS as $eventType) {
                 if (!in_array($eventType, $activeSubEvents)) {
                     $twitchEventSubService->subscribe(

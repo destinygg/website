@@ -55,7 +55,10 @@ class TwitchEventSubService extends Service {
         }
     }
 
-    private function handleCallbackVerificationRequest(Request $request): string {
+    public function handleCallbackVerificationRequest(Request $request): string {
+        $headers = json_encode($request->headers);
+        Log::debug("Headers in EventSub callback verification request are `$headers`.");
+
         if (!$this->verifyMessageSignature($request)) {
             throw new Exception('Twitch EventSub callback signature is invalid.');
         }
@@ -123,7 +126,7 @@ class TwitchEventSubService extends Service {
         }
     }
 
-    public function getActiveSubscriptions(): array {
+    private function getSubscriptions(): array {
         $config = Config::$a['oauth_providers']['twitch'];
 
         $client = HttpClient::instance();
@@ -141,26 +144,70 @@ class TwitchEventSubService extends Service {
             $payload = json_decode($response->getBody());
             $subbedEvents = $payload->data;
 
-            // We only receive notifications for event types marked as
-            // `enabled`.
-            $subbedEvents = array_filter(
-                $subbedEvents,
-                function($subbedEvent) {
-                    return $subbedEvent->status === 'enabled';
-                }
-            );
-
-            $subbedEventTypes = array_map(
-                function($subbedEvents) {
-                    return $subbedEvent->type;
-                },
-                $subbedEvents
-            );
-
-            // An array of all event types we're currently subscribed to.
-            return $subbedEventTypes;
+            return $subbedEvents;
         } else {
             throw new Exception('Error getting active Twitch EventSub subscriptions.');
+        }
+    }
+
+    public function getActiveSubscriptionEventTypes(): array {
+        $subbedEvents = $this->getSubscriptions();
+
+        // We only receive notifications for event types marked as
+        // `enabled`.
+        $subbedEvents = array_filter(
+            $subbedEvents,
+            function($subbedEvent) {
+                return $subbedEvent->status === 'enabled';
+            }
+        );
+
+        $subbedEventTypes = array_map(
+            function($subbedEvent) {
+                return $subbedEvent->type;
+            },
+            $subbedEvents
+        );
+
+        // An array of all event types we're currently subscribed to.
+        return $subbedEventTypes;
+    }
+
+    public function pruneInactiveSubscriptions() {
+        $subbedEvents = $this->getSubscriptions();
+
+        $subbedEvents = array_filter(
+            $subbedEvents,
+            function($subbedEvent) {
+                return $subbedEvent->status !== 'enabled';
+            }
+        );
+
+        $inactiveSubscriptionIds = array_map(
+            function($subbedEvent) {
+                return $subbedEvent->id;
+            },
+            $subbedEvents
+        );
+
+        $client = HttpClient::instance();
+        $config = Config::$a['oauth_providers']['twitch'];
+        foreach ($inactiveSubscriptionIds as $id) {
+            Log::debug("Deleting subscription with ID `$id`.");
+            $response = $client->delete(self::API_BASE . '/eventsub/subscriptions', [
+                'headers' => [
+                    'User-Agent' => Config::userAgent(),
+                    'Client-ID' => $config['client_id'],
+                    'Authorization' => 'Bearer ' . $this->getAppAccessToken()
+                ],
+                'query' => [
+                    'id' => $id
+                ]
+            ]);
+
+            if ($response->getStatusCode() !== Http::STATUS_NO_CONTENT) {
+                throw new Exception("Failed to delete EventSub subscription with id `$id`. Status code is `{$response->getStatusCode()}`. Response body is `{$response->getBody()}`.");
+            }
         }
     }
 
