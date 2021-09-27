@@ -191,6 +191,9 @@ return [
         'id' => -1,
         'user' => '',
         'webhooks_callback' => '',
+        'eventsub_secret' => '', // Must be between 10 and 100 characters.
+        'online_message' => 'Online! :)',
+        'offline_message' => 'Offline... :(',
     ],
 
     'discord' => [

@@ -10,7 +10,7 @@ use Destiny\Common\Response;
 use Destiny\Common\Utils\Http;
 use Destiny\Common\ViewModel;
 use Destiny\Tasks\YouTubeTasks;
-use Destiny\Twitch\TwitchWebHookService;
+use Destiny\Twitch\TwitchApiService;
 
 /**
  * @Controller
@@ -48,10 +48,10 @@ class HomeController {
      */
     public function streamInfo(Response $response) {
         $cache = Application::getNsCache();
-        $liveStatus = $cache->fetch(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id']);
-        $twitchStreamInfo = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
+        $liveStatus = $cache->fetch(TwitchApiService::CACHE_KEY_PREFIX . Config::$a['twitch']['id']);
+        $twitchStreamInfo = $cache->fetch(TwitchApiService::CACHE_KEY_STREAM_STATUS);
         $youtubeStreamInfo = $cache->fetch(YouTubeTasks::CACHE_KEY_YOUTUBE_LIVESTREAM_STATUS);
-        $hostedChannel = $cache->fetch(TwitchWebHookService::CACHE_KEY_HOSTED_CHANNEL);
+        $hostedChannel = $cache->fetch(TwitchApiService::CACHE_KEY_HOSTED_CHANNEL);
 
         // We try use the response from the webhook as a live indicator, otherwise fall back to the stream info from the http api
         $twitchStreamInfo['live'] = ($liveStatus === false) ? $twitchStreamInfo['live'] : $liveStatus['live'];

@@ -25,6 +25,8 @@ return [
     'twitch' => [
         'id' => 18074328,
         'user' => 'destiny',
+        'online_message' => 'Destiny is live! AngelThump',
+        'offline_message' => 'Destiny is offline... I enjoyed my stay. dggL',
     ],
     'streamelements' => [
         'dgg_user' => 10
