@@ -13,6 +13,7 @@ use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Utils\Http;
 use Destiny\Twitch\TwitchAuthHandler;
+use GuzzleHttp\Exception\RequestException;
 
 class TwitchEventSubService extends Service {
     const API_BASE = 'https://api.twitch.tv/helix';
@@ -26,30 +27,31 @@ class TwitchEventSubService extends Service {
         $secret = Config::$a['twitch']['eventsub_secret'];
 
         $client = HttpClient::instance();
-        $response = $client->post(self::API_BASE . '/eventsub/subscriptions', [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Client-ID' => $config['client_id'],
-                'Authorization' => 'Bearer ' . $this->getAppAccessToken()
-            ],
-            'json' => [
-                'type' => $subscriptionType,
-                'version' => '1',
-                'condition' => [
-                    'broadcaster_user_id' => strval($userId)
+        try {
+            $response = $client->post(self::API_BASE . '/eventsub/subscriptions', [
+                'headers' => [
+                    'User-Agent' => Config::userAgent(),
+                    'Client-ID' => $config['client_id'],
+                    'Authorization' => 'Bearer ' . $this->getAppAccessToken()
                 ],
-                'transport' => [
-                    'method' => 'webhook',
-                    'callback' => $callback,
-                    'secret' => $secret
-                ]
-            ]
-        ]);
+                'json' => [
+                    'type' => $subscriptionType,
+                    'version' => '1',
+                    'condition' => [
+                        'broadcaster_user_id' => strval($userId)
+                    ],
+                    'transport' => [
+                        'method' => 'webhook',
+                        'callback' => $callback,
+                        'secret' => $secret
+                    ]
+                ],
+                'http_errors' => true
+            ]);
 
-        if ($response->getStatusCode() == Http::STATUS_ACCEPTED) {
             return true;
-        } else {
-            throw new Exception('Error sending Twitch EventSub subscription request. ' . $response->getBody());
+        } catch (RequestException $e) {
+            throw new Exception('Error subscribing to Twitch EventSub event.', $e);
         }
     }
 
@@ -136,23 +138,22 @@ class TwitchEventSubService extends Service {
         $config = Config::$a['oauth_providers']['twitch'];
 
         $client = HttpClient::instance();
-        $response = $client->get(self::API_BASE . '/eventsub/subscriptions', [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Client-ID' => $config['client_id'],
-                'Authorization' => 'Bearer ' . $this->getAppAccessToken()
-            ],
-        ]);
-
-        if ($response->getStatusCode() == Http::STATUS_OK) {
-            Log::debug("Body of response from active subscription request is `{$response->getBody()}`.");
+        try {
+            $response = $client->get(self::API_BASE . '/eventsub/subscriptions', [
+                'headers' => [
+                    'User-Agent' => Config::userAgent(),
+                    'Client-ID' => $config['client_id'],
+                    'Authorization' => 'Bearer ' . $this->getAppAccessToken()
+                ],
+                'http_errors' => true
+            ]);
 
             $payload = json_decode($response->getBody());
             $subbedEvents = $payload->data;
 
             return $subbedEvents;
-        } else {
-            throw new Exception('Error getting active Twitch EventSub subscriptions.');
+        } catch (RequestException $e) {
+            throw new Exception('Error getting Twitch EventSub subscriptions.', $e);
         }
     }
 
@@ -198,22 +199,23 @@ class TwitchEventSubService extends Service {
 
         $client = HttpClient::instance();
         $config = Config::$a['oauth_providers']['twitch'];
-        foreach ($inactiveSubscriptionIds as $id) {
-            Log::debug("Deleting subscription with ID `$id`.");
-            $response = $client->delete(self::API_BASE . '/eventsub/subscriptions', [
-                'headers' => [
-                    'User-Agent' => Config::userAgent(),
-                    'Client-ID' => $config['client_id'],
-                    'Authorization' => 'Bearer ' . $this->getAppAccessToken()
-                ],
-                'query' => [
-                    'id' => $id
-                ]
-            ]);
-
-            if ($response->getStatusCode() !== Http::STATUS_NO_CONTENT) {
-                throw new Exception("Failed to delete EventSub subscription with id `$id`. Status code is `{$response->getStatusCode()}`. Response body is `{$response->getBody()}`.");
+        try {
+            foreach ($inactiveSubscriptionIds as $id) {
+                Log::debug("Deleting subscription with ID `$id`.");
+                $response = $client->delete(self::API_BASE . '/eventsub/subscriptions', [
+                    'headers' => [
+                        'User-Agent' => Config::userAgent(),
+                        'Client-ID' => $config['client_id'],
+                        'Authorization' => 'Bearer ' . $this->getAppAccessToken()
+                    ],
+                    'query' => [
+                        'id' => $id
+                    ],
+                    'http_errors' => true
+                ]);
             }
+        } catch (RequestException $e) {
+            throw new Exception("Failed to delete EventSub subscription with ID `$id`.", $e);
         }
     }
 
