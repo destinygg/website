@@ -141,7 +141,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
         $response = $client->get("$this->authBase/validate", [
             'headers' => [
                 'User-Agent' => Config::userAgent(),
-                'Authorization' => 'OAuth ' . $accessToken
+                'Authorization' => 'Bearer ' . $accessToken
             ]
         ]);
 
