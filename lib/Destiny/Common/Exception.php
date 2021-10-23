@@ -33,10 +33,10 @@ class Exception extends \Exception implements JsonSerializable {
             $request = $previous->getRequest();
             $result = [
                 'request' => [
-                    'uri' => $request->getUri(),
+                    'uri' => (string) $request->getUri(),
                     'method' => $request->getMethod(),
                     'headers' => $request->getHeaders(),
-                    'body' => $request->getBody()
+                    'body' => (string) $request->getBody()
                 ]
             ];
 
@@ -45,7 +45,7 @@ class Exception extends \Exception implements JsonSerializable {
                 $result['response'] = [
                     'statusCode' => $response->getStatusCode(),
                     'headers' => $response->getHeaders(),
-                    'body' => $response->getBody()
+                    'body' => (string) $response->getBody()
                 ];
             }
 
