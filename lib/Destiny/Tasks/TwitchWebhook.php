@@ -39,7 +39,7 @@ class TwitchWebhook implements TaskInterface {
                 }
             }
         } catch (Exception $e) {
-            Log::error('Error handling twitch hook cron task ' . $e->getMessage());
+            Log::error("Error running TwitchWebhook task: {$e->getMessage()}", $e->extractRequestResponse());
         }
     }
 
