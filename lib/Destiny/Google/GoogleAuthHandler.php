@@ -9,6 +9,7 @@ use Destiny\Common\Exception;
 use Destiny\Common\Session\Session;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * @method static GoogleAuthHandler instance()
@@ -37,23 +38,27 @@ class GoogleAuthHandler extends AbstractAuthHandler {
         FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $client = $this->getHttpClient();
-        $response = $client->post("$this->authBase/token", [
-            'headers' => ['User-Agent' => Config::userAgent()],
-            'form_params' => [
-                'grant_type' => 'authorization_code',
-                'client_id' => $conf['client_id'],
-                'client_secret' => $conf['client_secret'],
-                'redirect_uri' => $conf['redirect_uri'],
-                'code' => $params['code']
-            ]
-        ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+
+        try {
+            $response = $client->post("$this->authBase/token", [
+                'headers' => ['User-Agent' => Config::userAgent()],
+                'form_params' => [
+                    'grant_type' => 'authorization_code',
+                    'client_id' => $conf['client_id'],
+                    'client_secret' => $conf['client_secret'],
+                    'redirect_uri' => $conf['redirect_uri'],
+                    'code' => $params['code']
+                ],
+                'http_errors'=> true
+            ]);
+
             // TODO use provided JWT id_token instead of getting user info later
             $data = json_decode((string) $response->getBody(), true);
             FilterParams::required($data, 'access_token');
             return $data;
+        } catch (RequestException $e) {
+            throw new Exception('Failed to get Google auth token.', $e);
         }
-        throw new Exception("Failed to get token response");
     }
 
     /**

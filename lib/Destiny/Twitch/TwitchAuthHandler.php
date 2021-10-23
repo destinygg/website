@@ -8,6 +8,7 @@ use Destiny\Common\Config;
 use Destiny\Common\Exception;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\Http;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * TODO validating requests
@@ -64,19 +65,22 @@ class TwitchAuthHandler extends AbstractAuthHandler {
             ];
         }
 
-        $response = $client->post("$this->authBase/token", [
-            'headers' => [
-                'User-Agent' => Config::userAgent(),
-                'Client-ID' => $conf['client_id']
-            ],
-            'form_params' => $form_params
-        ]);
-        if($response->getStatusCode() == Http::STATUS_OK) {
+        try {
+            $response = $client->post("$this->authBase/token", [
+                'headers' => [
+                    'User-Agent' => Config::userAgent(),
+                    'Client-ID' => $conf['client_id']
+                ],
+                'form_params' => $form_params,
+                'http_errors'=> true
+            ]);
+
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             return $data;
+        } catch (RequestException $e) {
+            throw new Exception('Failed to get Twitch auth token.', $e);
         }
-        throw new Exception ('Failed to get token response');
     }
 
     /**
