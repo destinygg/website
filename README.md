@@ -1,6 +1,11 @@
 # Destiny.gg
 Source code for the website [www.destiny.gg](http://www.destiny.gg/)
-This is a work in progress!
+
+## Important Notice
+
+As of 10/23/2021 this repository is no longer being publicly maintained. Code in it's current state is left for historic preservation, but will no longer be receiving updates or support.
+
+Inquiries can be submitted via email to contact@destiny.gg
 
 ## License
 
