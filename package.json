@@ -40,7 +40,7 @@
     "chart.js": "^2.8.0",
     "dgg-chat-gui": "^2.8.2",
     "jquery": "^3.6.0",
-    "jquery-validation": "^1.19.3",
+    "jquery-validation": "^1.19.4",
     "moment": "^2.29.1",
     "popper.js": "^1.15.0",
     "roboto-fontface": "^0.10.0",
