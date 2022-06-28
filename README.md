@@ -45,7 +45,7 @@ Then download and install [glue](http://glue.readthedocs.org/) and [composer](ht
 ```shell
 npm install webpack -g
 npm ci
-composer install -no-dev
+composer install --no-dev
 ```
 
 #### You can now build the project.
