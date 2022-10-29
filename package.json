@@ -41,7 +41,7 @@
     "dgg-chat-gui": "^2.8.2",
     "jquery": "^3.6.0",
     "jquery-validation": "^1.19.3",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "popper.js": "^1.15.0",
     "roboto-fontface": "^0.10.0",
     "throttle-debounce": "^3.0.1",
